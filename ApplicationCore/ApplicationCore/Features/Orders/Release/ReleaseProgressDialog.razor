@@ -1,0 +1,57 @@
+﻿@using ApplicationCore.Infrastructure
+@using MediatR
+@using System.Diagnostics
+@inject OrderState OrderState
+@inject IJSRuntime JSRuntime
+@inherits BaseListenerComponent
+@implements IListener<OrderReleaseProgressNotification>
+@implements IListener<OrderReleaseCompletedNotification>
+
+<textarea @ref="_area" disabled id="releaseprogress" @bind="@_content" class="w-full h-64 text-xs"> </textarea>
+
+<button disabled="@(!_releaseDone)" @onclick="CloseDialog" class="rounded-md px-3 py-2 mt-3 bg-blue-500 hover:bg-blue-700 disabled:bg-blue-200 disabled:text-gray-50 disabled:cursor-not-allowed text-white">Close</button>
+
+@code {
+
+    [CascadingParameter]
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter]
+    public Func<Task>? TriggerReleaseAction { get; set; }
+
+    private ElementReference _area;
+    private string _content = "";
+    private bool _releaseDone = false;
+
+    protected override async Task OnInitializedAsync() {
+        if (TriggerReleaseAction is not null) {
+            await TriggerReleaseAction();
+        } else {
+            _content = "nothing to do";
+            _releaseDone = true;
+        }
+    }
+
+    public void Handle(OrderReleaseProgressNotification notification) {
+        Debug.WriteLine(notification.Message);
+        InvokeAsync(() => {
+            _content += notification.Message + '\n';
+            JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _area });
+            StateHasChanged();
+        }).Wait(); // Calling this sometimes breaks (because handle is being called from another thread maybe??)
+    }
+
+    public void Handle(OrderReleaseCompletedNotification notification) {
+        InvokeAsync(() => {
+            _content += "DONE";
+            JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _area });
+            _releaseDone = true;
+            StateHasChanged();
+        }).Wait(); // Calling this sometimes breaks (because handle is being called from another thread maybe??)
+    }
+
+    private async Task CloseDialog() {
+        await BlazoredModal.CloseAsync();
+    }
+
+}

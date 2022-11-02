@@ -1,0 +1,258 @@
+﻿using ApplicationCore.Features.Companies.Queries;
+using ApplicationCore.Features.ExcelTemplates.Contracts;
+using ApplicationCore.Features.ExcelTemplates.Domain;
+using ApplicationCore.Features.Orders.Domain;
+using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Release.Handlers.CutListing.Models;
+using ApplicationCore.Infrastructure;
+using MediatR;
+using Microsoft.Extensions.Logging;
+
+namespace ApplicationCore.Features.Orders.Release.Handlers.CutListing;
+
+public class CutListHandler : INotificationHandler<TriggerOrderReleaseNotification> {
+
+    private readonly ILogger<CutListHandler> _logger;
+    private readonly IBus _bus;
+    private readonly IUIBus _uibus;
+    private readonly ConstructionValues _construction;
+
+    public CutListHandler(ILogger<CutListHandler> logger, IBus bus, IUIBus uibus, ConstructionValues construction) {
+        _logger = logger;
+        _bus = bus;
+        _uibus = uibus;
+        _construction = construction;
+    }
+
+    public async Task Handle(TriggerOrderReleaseNotification notification, CancellationToken cancellationToken) {
+
+        if (!notification.ReleaseProfile.GenerateCutList) {
+            _uibus.Publish(new OrderReleaseProgressNotification("Not creating Cut Lists, because option was disabled"));
+            return;
+        }
+
+        var order = notification.Order;
+        
+        var customerName = await GetCompanyName(order.CustomerId);
+        var vendorName = await GetCompanyName(order.VendorId);
+
+        CutList cutList = CreateStdCutList(order, customerName, vendorName, _construction);
+        CutList optimizedCutList = CreateOptimizedCutList(order, customerName, vendorName, _construction);
+        CutList bottomCutList = CreateBottomCutList(order, customerName, vendorName, _construction);
+
+        var config = new ClosedXMLTemplateConfiguration() { TemplateFilePath = notification.ReleaseProfile.CutListTemplatePath };
+        string outputDir = notification.ReleaseProfile.CutListOutputDirectory;
+        bool doPrint = notification.ReleaseProfile.PrintCutList;
+        string prefix = $"{order.Number} - {order.Name}";
+
+        var responseStd = await _bus.Send(new FillTemplateRequest(cutList, outputDir, $"{prefix} CUTLIST", doPrint, config), cancellationToken);
+        responseStd.Match(
+            r => {
+                _logger.LogInformation("Drawer Box Cut List Created : {FilePath}", r.FilePath);
+                _uibus.Publish(new OrderReleaseProgressNotification($"Cut List created {r.FilePath}"));
+            },
+            error => {
+                _logger.LogError("Error creating Cut List : {Error}", error);
+                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating Cut List {error.Message}"));
+            }
+        );
+
+        var responseOptimized = await _bus.Send(new FillTemplateRequest(optimizedCutList, outputDir, $"{prefix} OPTIMIZED CUTLIST", doPrint, config), cancellationToken);
+        responseOptimized.Match(
+            r => {
+                _logger.LogInformation("Drawer Box Cut List Created : {FilePath}", r.FilePath);
+                _uibus.Publish(new OrderReleaseProgressNotification($"Cut List created {r.FilePath}"));
+            },
+            error => {
+                _logger.LogError("Error creating Cut List : {Error}", error);
+                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating Cut List {error.Message}"));
+            }
+        );
+
+        var responseBottom = await _bus.Send(new FillTemplateRequest(bottomCutList, outputDir, $"{prefix} BOTTOM CUTLIST", doPrint, config), cancellationToken);
+        responseBottom.Match(
+            r => {
+                _logger.LogInformation("Drawer Box Cut List Created : {FilePath}", r.FilePath);
+                _uibus.Publish(new OrderReleaseProgressNotification($"Cut List created {r.FilePath}"));
+            },
+            error => {
+                _logger.LogError("Error creating Cut List : {Error}", error);
+                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating Cut List {error.Message}"));
+            }
+        );
+
+        // TODO: if necessary, format the generated cutlist note field when the note is really long by writing the note in the left cell, autofit the row then merge the cells
+
+
+    }
+
+    private async Task<string> GetCompanyName(Guid companyId) {
+        var response = await _bus.Send(new GetCompanyById.Query(companyId));
+
+        string name = "";
+        response.Match(
+            company => {
+                name = company.Name;
+            },
+            error => {
+                name = "Unknown";
+            }
+        );
+
+        return name;
+    }
+
+    private static CutList CreateStdCutList(Order order, string customerName, string vendorName, ConstructionValues construction) {
+        int groupNum = 0;
+        int lineNum = 1;
+        var cutlistItems = order.Boxes
+                                .SelectMany(b =>
+                                {
+                                    groupNum++;
+
+                                    var items = new List<Item>();
+                                    foreach (var part in b.GetParts(construction))
+                                    {
+                                        items.Add(new()
+                                        {
+                                            GroupNumber = groupNum,
+                                            CabNumber = groupNum, // TODO: get cabnumber from part
+                                            LineNumber = lineNum++,
+                                            PartName = part.Type.ToString(),
+                                            Qty = part.Qty,
+                                            Width = part.Width.AsMillimeters(),
+                                            Length = part.Length.AsMillimeters(),
+                                            Comment = part.Comment,
+                                            Material = part.MaterialName,
+                                            Size = $"{part.Width.AsInchFraction()}\"W x {part.Length.AsInchFraction()}\"L",
+                                        });
+                                    }
+
+                                    return items;
+                                })
+                                .ToList();
+
+        return CreateCutList(order, customerName, vendorName, cutlistItems);
+
+    }
+
+    private static CutList CreateOptimizedCutList(Order order, string customerName, string vendorName, ConstructionValues construction) {
+        int groupNum = 0;
+        int lineNum = 1;
+        var cutlistItems = order.Boxes
+                                .SelectMany(b => b.GetParts(construction).Where(p => p.Type != DrawerBoxPartType.Bottom))
+                                .GroupBy(p => (p.MaterialName, p.Width, p.Length)) // TODO: if there are multiple scoop fronts they should be grouped together
+                                .Select(g =>
+                                {
+                                    var qty = g.Sum(b => b.Qty);
+                                    groupNum++;
+                                    return new Item()
+                                    {
+                                        GroupNumber = groupNum,
+                                        CabNumber = groupNum, // TODO: get cabnumber from part
+                                        LineNumber = lineNum++,
+                                        PartName = DrawerBoxPartType.Unkown.ToString(),
+                                        Qty = qty,
+                                        Width = g.Key.Width.AsMillimeters(),
+                                        Length = g.Key.Length.AsMillimeters(),
+                                        Comment = "",
+                                        Material = g.Key.MaterialName,
+                                        Size = $"{g.Key.Width.AsInchFraction()}\"W x {g.Key.Length.AsInchFraction()}\"L",
+                                    };
+                                })
+                                .ToList();
+
+        return CreateCutList(order, customerName, vendorName, cutlistItems);
+
+    }
+
+    private static CutList CreateBottomCutList(Order order, string customerName, string vendorName, ConstructionValues construction) {
+        int groupNum = 0;
+        int lineNum = 1;
+
+        var cutlistItems = order.Boxes
+                                .SelectMany(b =>
+                                {
+                                    groupNum++;
+
+                                    var items = new List<Item>();
+                                    foreach (var part in b.GetParts(construction).Where(p => p.Type == DrawerBoxPartType.Bottom))
+                                    {
+                                        items.Add(new()
+                                        {
+                                            GroupNumber = groupNum,
+                                            CabNumber = groupNum, // TODO: get cabnumber from part
+                                            LineNumber = lineNum++,
+                                            PartName = part.Type.ToString(),
+                                            Qty = part.Qty,
+                                            Width = Math.Round(part.Width.AsMillimeters(), 2),
+                                            Length = Math.Round(part.Length.AsMillimeters(), 2),
+                                            Comment = part.Comment,
+                                            Material = part.MaterialName,
+                                            Size = $"{part.Width.AsInchFraction()}\"W x {part.Length.AsInchFraction()}\"L",
+                                        });
+                                    }
+
+                                    return items;
+                                })
+                                .ToList();
+
+        return CreateCutList(order, customerName, vendorName, cutlistItems);
+
+    }
+
+    private static CutList CreateCutList(Order order, string customerName, string vendorName, List<Item> cutlistItems) {
+
+        // TODO: if a drawerbox has a different option then the most common option than it should be shown in a part comment
+
+        var clips = order.Boxes
+                        .Select(b => b.Options.Clips)
+                        .GroupBy(c => c.Id)
+                        .OrderByDescending(g => g.Count())
+                        .First()
+                        .First()
+                        .Name;
+
+        var notch = order.Boxes
+                        .Select(b => b.Options.Notches)
+                        .GroupBy(c => c.Id)
+                        .OrderByDescending(g => g.Count())
+                        .First()
+                        .First()
+                        .Name;
+
+        var postFin = order.Boxes
+                        .Select(b => b.Options.PostFinish)
+                        .GroupBy(c => c)
+                        .OrderByDescending(g => g.Count())
+                        .First()
+                        .First();
+
+        var mountingHoles = order.Boxes
+                        .Select(b => b.Options.FaceMountingHoles)
+                        .GroupBy(c => c)
+                        .OrderByDescending(g => g.Count())
+                        .First()
+                        .First();
+
+        var cutlist = new CutList() {
+            Header = new Header() {
+                OrderNumber = order.Number,
+                OrderName = order.Name,
+                BoxCount = order.Boxes.Sum(b => b.Qty),
+                Clips = $"Clips: {clips}",
+                MountingHoles = $"Mounting Holes : {(mountingHoles ? "Yes" : "No")}", // Get the most common mounting holes option
+                Notch = $"Notch: {notch}",
+                PostFinish = $"Post Finish: {(postFin ? "Yes" : "No")}",
+                CustomerName = customerName,
+                VendorName = vendorName,
+                Note = order.CustomerComment,
+                OrderDate = order.OrderDate.ToShortDateString(),
+            },
+            Items = cutlistItems
+        };
+        return cutlist;
+    }
+
+
+}

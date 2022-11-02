@@ -1,0 +1,67 @@
+﻿using ApplicationCore.Features.Labels.Contracts;
+using ApplicationCore.Features.Labels.Domain;
+using ApplicationCore.Infrastructure;
+using MediatR;
+using Microsoft.Extensions.Logging;
+
+namespace ApplicationCore.Features.Orders.Release.Handlers;
+
+internal class BoxLabelsHandler : INotificationHandler<TriggerOrderReleaseNotification> {
+
+    private readonly ILogger<BoxLabelsHandler> _logger;
+    private readonly IBus _bus;
+    private readonly IUIBus _uibus;
+
+    public BoxLabelsHandler(ILogger<BoxLabelsHandler> logger, IBus bus, IUIBus uibus) {
+        _bus = bus;
+        _uibus = uibus;
+        _logger = logger;
+    }
+
+    public async Task Handle(TriggerOrderReleaseNotification notification, CancellationToken cancellationToken) {
+
+        if (!notification.ReleaseProfile.PrintBoxLabels) {
+            _uibus.Publish(new OrderReleaseProgressNotification("Not printing box labels, because option was disabled"));
+            return;
+        }
+        var order = notification.Order;
+
+        var configuration = new LabelPrinterConfiguration(notification.ReleaseProfile.BoxLabelsTemplateFilePath);
+
+        var labels = new List<Label>();
+        foreach (var box in order.Boxes) {
+
+            string sizeStr = $"{box.Height.AsInchFraction}\"Hx{box.Width.AsInchFraction}\"Wx{box.Depth.AsInchFraction}\"D";
+
+            var fields = new Dictionary<string, string>() {
+                { "OrderNumber", order.Number },
+                { "OrderName", order.Name },
+                { "Comment", order.CustomerComment },
+                { "Qty", box.Qty.ToString() },
+                { "LineNum", box.LineInOrder.ToString() },
+                { "Size", sizeStr },
+            };
+
+            foreach (var field in order.Info) {
+                fields.Add(field.Key, field.Value);
+            }
+
+            labels.Add(new Label(fields));
+
+        }
+
+        var response = await _bus.Send(new PrintLabelsRequest(labels, configuration), cancellationToken);
+
+        response.Match(
+            _ => {
+                _logger.LogInformation("Printed {Count} box labels", labels.Count);
+                _uibus.Publish(new OrderReleaseProgressNotification($"{labels.Count} box labels printed"));
+            },
+            error => {
+                _logger.LogInformation("Error printing box labels {Error}", error);
+                _uibus.Publish(new OrderReleaseProgressNotification($"Error printing box labels\n{error.Message}"));
+            }
+        );
+
+    }
+}
