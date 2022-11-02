@@ -1,0 +1,174 @@
+﻿@page "/companies/releaseprofile"
+@using ApplicationCore.Features.Companies.Domain.ValueObjects
+@using ApplicationCore.Features.Companies.Commands
+@using ApplicationCore.Features.Companies.Domain
+@using ApplicationCore.Features.Companies.Queries
+@using ApplicationCore.Infrastructure
+@inject CompanyState CompanyState
+@inject IBus Bus
+@inject NavigationManager NavigationManager
+
+<h3>Release Profile</h3>
+
+@if (CompanyState.Company is null) {
+    <span>No company selected.</span>
+} else if (_profile is null) {
+    @if (_isLoading) {
+        <span>Loading...</span>
+    } else {
+        <span>No release profile data.</span>
+    }
+} else {
+
+    <section class="mb-5 w-full">
+        <h3>Cut Lists</h3>
+        <div class="mt-2">
+            <input type="checkbox" class="h-4 w-4" @bind="_profile.GenerateCutList" />
+            <label class="ml-2 text-sm font-medium text-gray-700">Generate Cut List</label>
+        </div>
+
+        <div class="mt-2">
+            <input type="checkbox" class="h-4 w-4" @bind="_profile.PrintCutList" />
+            <label class="ml-2 text-sm font-medium text-gray-700">Print Cut List</label>
+        </div>
+
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">Cut List Output Directory</label>
+            <input type="text" class="mt-1 w-full" @bind="_profile.CutListOutputDirectory" />
+        </div>
+
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">Cut List Template Path</label>
+            <input type="text" class="mt-1 w-full" @bind="_profile.CutListTemplatePath" />
+        </div>
+    </section>
+
+    <section class="mb-5 w-full">
+        <h3>Packing Lists</h3>
+        <div class="mt-2">
+            <input type="checkbox" class="h-4 w-4" @bind="_profile.GeneratePackingList" />
+            <label class="ml-2 text-sm font-medium text-gray-700">Generate Packing List</label>
+        </div>
+
+        <div class="mt-2">
+            <input type="checkbox" class="h-4 w-4" @bind="_profile.PrintPackingList" />
+            <label class="ml-2 text-sm font-medium text-gray-700">Print Packing List</label>
+        </div>
+
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">Packing List Output Directory</label>
+            <input type="text" class="mt-1 w-full" @bind="_profile.PackingListOutputDirectory" />
+        </div>
+        
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">Packing List Template Path</label>
+            <input type="text" class="mt-1 w-full" @bind="_profile.PackingListTemplatePath" />
+        </div>
+    </section>
+
+    <section class="mb-5 w-full">
+        <h3>Invoice</h3>
+        <div class="mt-2">
+            <input type="checkbox" class="h-4 w-4" @bind="_profile.GenerateInvoice" />
+            <label class="ml-2 text-sm font-medium text-gray-700">Generate Invoice</label>
+        </div>
+
+        <div class="mt-2">
+            <input type="checkbox" class="h-4 w-4" @bind="_profile.PrintInvoice" />
+            <label class="ml-2 text-sm font-medium text-gray-700">Print Invoice</label>
+        </div>
+
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">Invoice Output Directory</label>
+            <input type="text" class="mt-1 w-full" @bind="_profile.InvoiceOutputDirectory" />
+        </div>
+
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">Invoice Template Path</label>
+            <input type="text" class="mt-1 w-full" @bind="_profile.InvoiceTemplatePath" />
+        </div>
+    </section>
+
+    <section class="mb-5 w-full">
+        <h3>BOL</h3>
+        <div class="mt-2">
+            <input type="checkbox" class="h-4 w-4" @bind="_profile.GenerateBOL" />
+            <label class="ml-2 text-sm font-medium text-gray-700">Generate BOL</label>
+        </div>
+
+        <div class="mt-2">
+            <input type="checkbox" class="h-4 w-4" @bind="_profile.PrintBOL" />
+            <label class="ml-2 text-sm font-medium text-gray-700">Print BOL</label>
+        </div>
+
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">BOL Output Directory</label>
+            <input type="text" class="mt-1 w-full" @bind="_profile.BOLOutputDirectory" />
+        </div>
+
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">BOL Template Path</label>
+            <input type="text" class="mt-1 w-full" @bind="_profile.BOLTemplateFilePath" />
+        </div>
+    </section>
+
+    <section class="mb-5 w-full">
+        <h3>Labels</h3>
+        <div class="mt-2">
+            <input type="checkbox" class="h-4 w-4" @bind="_profile.PrintBoxLabels" />
+            <label class="ml-2 text-sm font-medium text-gray-700">Print Box Labels</label>
+        </div>
+
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">Box Label Template</label>
+            <input type="text" class="mt-1 w-full" @bind="_profile.BoxLabelsTemplateFilePath" />
+        </div>
+
+        <div class="mt-2">
+            <input type="checkbox" class="h-4 w-4" @bind="_profile.PrintOrderLabel" />
+            <label class="ml-2 text-sm font-medium text-gray-700">Print Order Label</label>
+        </div>
+
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">Order Label Template</label>
+            <input type="text" class="mt-1 w-full" @bind="_profile.OrderLabelTemplateFilePath" />
+        </div>
+
+        <div class="mt-2">
+            <input type="checkbox" class="h-4 w-4" @bind="_profile.PrintADuiePyleLabel" />
+            <label class="ml-2 text-sm font-medium text-gray-700">Print A Duie Pyle Labels</label>
+        </div>
+
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">A Duie Pyle Label Template</label>
+            <input type="text" class="mt-1 w-full" @bind="_profile.ADuiePyleLabelTemplateFilePath" />
+        </div>
+    </section>
+
+    <button type="button" class="btn btn-primary" @onclick="UpdateProfile">Save</button>
+
+}
+
+@code {
+
+    private bool _isLoading = true;
+    private ReleaseProfile? _profile = null;
+
+    protected override async Task OnInitializedAsync() {
+        if (CompanyState.Company is null) return;
+        var result = await Bus.Send(new GetReleaseProfileByVendorId.Query(CompanyState.Company.Id));
+        result.Match(
+            profile => _profile = profile,
+            error => {
+                // TODO: display error
+            }
+        );
+        _isLoading = false;
+    }
+
+    private async Task UpdateProfile() {
+        if (CompanyState.Company is null || _profile is null) return;
+        await Bus.Send(new AssignVendorReleaseProfile.Command(CompanyState.Company.Id, _profile));
+    }
+
+}

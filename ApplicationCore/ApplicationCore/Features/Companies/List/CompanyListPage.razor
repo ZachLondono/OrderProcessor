@@ -1,0 +1,61 @@
+﻿@page "/companies/list"
+@using ApplicationCore.Infrastructure
+@inject NavigationManager NavigationManager
+@inject CompanyState CompanyState
+@inject IBus Bus
+
+
+<h1 class="text-3xl mb-2 dark:text-white">Companies</h1>
+
+@if (_isLoading) {
+    <span>Loading...</span>
+} else if (_companies is null) {
+    <span>Could not load orders</span>
+    <button type="button" class="text-white bg-blue-700 rounded-md text-xs px-2.5 py-1 mr-2 mb-2 hover:bg-blue-800" @onclick="LoadCompanies">Refresh</button>
+} else {
+
+	<h2 class="text-lg  mb-2 dark:text-gray-300">All companies</h2>
+	<table class="w-full table-auto">
+		<thead class="border-b border-slate-300">
+			<tr>
+				<th class="p-5 dark:text-gray-500">Name</th>
+			</tr>
+		</thead>
+		<tbody>
+            @foreach (var order in _companies) {
+                <tr class="justify-center hover:bg-slate-200 dark:hover:bg-slate-500 cursor-pointer" @onclick="async () => await OpenCompany(order.Id)">
+                    <td class="p-5 border-b dark:border-slate-500 dark:text-white">@order.Name</td>
+                </tr>
+            }
+		</tbody>
+	</table>
+
+}
+
+@code {
+    private bool _isLoading = true;
+    private IEnumerable<CompanyListItem>? _companies = null;
+
+    protected override async Task OnInitializedAsync() {
+        await LoadCompanies();
+    }
+
+    private async Task OpenCompany(Guid companyId) {
+        await CompanyState.LoadCompany(companyId);
+        NavigationManager.NavigateTo("/companies/details", true);
+    }
+
+    private async Task LoadCompanies() {
+        _isLoading = true;
+        var result = await Bus.Send(new GetCompanyList.Query());
+        result.Match(
+            companies => _companies = companies,
+            error => {
+                // TODO: display error
+            }
+        );
+        _isLoading = false;
+        StateHasChanged();
+    }
+
+}

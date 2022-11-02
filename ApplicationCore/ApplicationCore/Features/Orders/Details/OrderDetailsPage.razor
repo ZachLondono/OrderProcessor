@@ -1,0 +1,457 @@
+﻿@page "/orders/details"
+@using ApplicationCore.Features.Companies
+@using ApplicationCore.Features.Companies.Domain
+@using ApplicationCore.Features.Companies.Queries
+@using ApplicationCore.Features.Orders.Domain
+@using ApplicationCore.Features.Orders.Queries
+@using ApplicationCore.Features.Orders.Release
+@using ApplicationCore.Infrastructure
+@using System.Diagnostics
+@inject IBus Bus
+@inject OrderState OrderState
+@inject NavigationManager NavigationManager
+@inject CompanyState CompanyState
+
+@if (OrderState.Order is null) {
+    <span>No order selected</span>
+} else {
+    
+    <span class="@($"pill {OrderState.Order.Status.GetColor()}")">@OrderState.Order.Status</span>
+
+    <EditForm Model="@_infoModel" OnValidSubmit="@SaveOrder">
+        <div class="grid" style="grid-template-columns: 1fr auto;">
+            <div>
+                <div class="mb-4">
+                    <label id="number" class="text-lg w-24 inline-block dark:text-gray-400">Number</label>
+                    <InputText Value="@_infoModel.Number" ValueChanged="@NumberChanged" ValueExpression="() => _infoModel.Number" for="number" class="text-xl w-64 border-b-2 bg-transparent border-gray-400 focus:border-black focus:outline-0 active:outline-0 transition ease-in-out duration-300 dark:text-white"> </InputText>
+                </div>
+                <div>
+                    <label id="name" class="text-lg w-24 inline-block dark:text-gray-400">Name</label>
+                    <InputText Value="@_infoModel.Name" ValueChanged="@NameChanged" ValueExpression="() => _infoModel.Name" for="name" class="text-xl w-64 border-b-2 bg-transparent border-gray-400 focus:border-black focus:outline-0 active:outline-0 transition ease-in-out duration-300 dark:text-white"></InputText>
+                </div>
+            </div>
+            <div class="row-span-2 ml-5">
+                <div class="mb-4">
+                    <button type="submit" id="save" class="flex justify-center items-center w-48 btn-primary">
+                        @if (_isSaving) {
+                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        }
+                        @if (_isDirty) {
+                            <span>Save</span>
+                        } else {
+                            <span>Saved</span>
+                        }
+                    </button>
+                </div>
+                <div class="mb-4">
+                    <button type="button" @onclick="ReleaseOrder" class="float-left flex justify-center items-center btn-secondary h-10 w-36 rounded-none rounded-l-md">
+                        @if (_isReleasing) {
+                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        }
+                        Release
+                    </button><!--
+                 --><button class="flex justify-center btn-secondary w-12 h-10 rounded-none rounded-r-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                </div>
+                @if (OrderState.Order.Status == Status.Released) {
+                    <div class="mb-4">
+                        <button type="button" @onclick="CompleteOrder" class="w-48 px-5 py-2 rounded-md bg-green-500 hover:bg-green-700 text-white">
+                            Complete
+                        </button>
+                    </div>
+                }
+            </div>
+            <InputTextArea placeholder="Note" Value="@_infoModel.ProductionNote" ValueChanged="@NoteChanged" ValueExpression="() => _infoModel.ProductionNote" for="note" class="w-full mt-5 ease-in-out duration-300"></InputTextArea>
+        </div>
+    </EditForm>
+
+    <section class="mt-6" id="companyInfo">
+        <div>
+            @if(_customer is not null) {
+                <label id="customer" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Customer</label>
+                <span class="text-lg hover:underline cursor-pointer dark:text-white h-5 align-middle" @onclick="() => ViewCompany(_customer)">@_customer.Name</span>
+                <svg @onclick="SelectCustomer" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-4 inline-block text-black dark:text-white cursor-pointer">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                </svg>
+            } else {
+                <span>No customer info</span>
+            }
+        </div>
+        <div>
+            @if(_vendor is not null) {
+                <label id="vendor" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Vendor</label>
+                <span class="text-lg hover:underline cursor-pointer dark:text-white h-5 align-middle" @onclick="() => ViewCompany(_vendor)">@_vendor.Name</span>
+                <svg @onclick="SelectVendor" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-4 inline-block text-black dark:text-white cursor-pointer">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                </svg>
+            } else {
+                <span>No vendor info</span>
+            }
+        </div>
+        <div>
+            <label id="comment" class="text-md w-24 inline-block dark:text-gray-400">Comment</label>
+            <span class="text-lg dark:text-white">@OrderState.Order.CustomerComment</span>
+        </div>
+    </section>
+
+    <section class="mt-10" id="dates">
+        <div>
+            <label id="orderdate" class="text-md w-24 inline-block dark:text-gray-400">Order Date</label>
+            <span class="text-lg dark:text-white">@OrderState.Order.OrderDate.ToShortDateString()</span>
+        </div>
+        <div>
+            <label id="releasedate" class="text-md w-24 inline-block dark:text-gray-400">Release Date</label>
+            <span class="text-lg dark:text-white">@(OrderState.Order.Status == Status.Pending || OrderState.Order.ReleaseDate is null ? "Not Released" : ((DateTime) OrderState.Order.ReleaseDate).ToShortDateString())</span>
+        </div>
+        @if(OrderState.Order.Status != Status.Completed || OrderState.Order.CompleteDate is null) {
+            <div>
+                <label id="productiondate" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Prod. Date</label>
+                <!--TODO: onclick open scheduler -->
+                <span class="hover:underline cursor-pointer text-lg dark:text-white h-5 align-middle">
+                    @( OrderState.Order.ProductionDate is null ? "Not Scheduled" : ((DateTime)OrderState.Order.ProductionDate).ToShortDateString())
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-4 inline-block text-black dark:text-white">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
+                    </svg>
+                </span>
+            </div>
+        } else {
+            <div>
+                <label id="completedate" class="text-md w-24 inline-block dark:text-gray-400">Comp. Date</label>
+                <span class="text-lg dark:text-white">@(((DateTime)OrderState.Order.CompleteDate).ToShortDateString())</span>
+            </div>
+        }
+    </section>
+
+    <section class="mt-10" id="prices">
+        <div>
+            <label id="subtotal" class="text-md w-24 inline-block dark:text-gray-400">Sub Total</label>
+            <span class="text-lg dark:text-white">$@(OrderState.Order.SubTotal)</span>
+        </div>
+        @if(OrderState.Order.PriceAdjustment != 0M) {
+            <div>
+                <label id="subtotal" class="text-md w-24 inline-block dark:text-gray-400">Price Adj.</label>
+                <span class="text-lg dark:text-white">$@(OrderState.Order.PriceAdjustment)</span>
+            </div>
+            <div>
+                <label id="subtotal" class="text-md w-24 inline-block dark:text-gray-400">Net Total</label>
+                <span class="text-lg dark:text-white">$@(OrderState.Order.AdjustedSubTotal)</span>
+            </div>
+        }
+        <div>
+            <label id="tax" class="text-md w-24 inline-block dark:text-gray-400">Tax</label>
+            <span class="text-lg dark:text-white">$@(OrderState.Order.Tax)</span>
+        </div>
+        <div>
+            <label id="shipping" class="text-md w-24 inline-block dark:text-gray-400">Shipping</label>
+            <span class="text-lg dark:text-white">$@(OrderState.Order.Shipping)</span>
+        </div>
+        <div>
+            <label id="totalprice" class="text-md w-24 inline-block dark:text-gray-400">Total Price</label>
+            <span class="text-lg dark:text-white">$@(OrderState.Order.Total)</span>
+        </div>
+    </section>
+
+    @if (OrderState.Order.Info.Count() != 0) {
+        <section class="mt-10" id="dynamicValues">
+            <table>
+                <thead class="border-b border-slate-300">
+                    <tr class="dark:bg-slate-700 dark:text-gray-500">
+                        <th class="px-3">Name</th>
+                        <th class="px-3">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in OrderState.Order.Info) {
+                        <tr class="border-b dark:border-slate-500">
+                            <td class="px-3 font-medium dark:text-gray-400">@item.Key</td>
+                            <td class="px-3 dark:text-white">@item.Value</td>
+		                </tr>
+                    }
+                </tbody>
+            </table>
+	    </section>
+    }
+
+    @if(OrderState.Order.AdditionalItems.Count() != 0) {
+        <section class="mt-10" id="additionalItems">
+		    <table class="table-auto">
+			    <thead class="border-b border-slate-300">
+                    <tr class="dark:bg-slate-700 dark:text-gray-500">
+					    <th class="px-3">Description</th>
+					    <th class="px-3">Price</th>
+				    </tr>
+			    </thead>
+			    <tbody>
+                    @foreach (var item in OrderState.Order.AdditionalItems) {
+                        <tr>
+                            <td class="px-3 border-b font-medium dark:border-slate-500 dark:text-gray-400">@item.Description</td>
+                            <td class="px-3 border-b dark:border-slate-500 dark:text-white">$@item.Price.ToString("0.00")</td>
+				        </tr>
+                    }
+			    </tbody>
+		    </table>
+	    </section>
+    }
+
+    <section class="mt-10" id="drawerBoxes">
+        <header>
+            <h3 class="dark:text-gray-400">Drawer Boxes (@OrderState.Order.Boxes.Sum(b => b.Qty))</h3>
+        </header>
+        <div class="my-2">
+            <button disabled="@_useInches" @onclick="ToggleUnits" class="btn-secondary dark:disabled:bg-sky-500 disabled:bg-sky-500 px-3.5 py-1 rounded-r-none rounded-l-md w-14 transition ease-in-out duration-300">in</button><!--
+         --><button disabled="@(!_useInches)" @onclick="ToggleUnits" class="btn-secondary dark:disabled:bg-sky-500 disabled:bg-sky-500 px-3.5 py-1 rounded-l-none rounded-r-md w-14 transition ease-in-out duration-300">mm</button>
+		</div>
+        @if (OrderState.Order.Boxes.Count() == 0) {
+            <span>No drawer boxes in order</span>
+        } else {
+            <div class="overflow-x-scroll rounded-md">
+                <table class="table-auto">
+                    <thead class="border-b border-slate-300">
+                        <tr class="dark:bg-slate-700 dark:text-gray-500">
+                            <th colspan="14"></th>
+                            <th colspan="3" class="border-l border-r">U Box</th>
+                            <th colspan="2" class="border-r">Fixed Divs.</th>
+                            <th colspan="2"></th>
+                        </tr>
+                        <tr class="dark:bg-slate-700 dark:text-gray-500">
+                            <th class="p-5">#</th>
+                            <th class="p-5">Qty</th>
+                            <th class="p-5">Height</th>
+                            <th class="p-5">Width</th>
+                            <th class="p-5">Depth</th>
+                            <th class="p-5">Box Material</th>
+                            <th class="p-5">Bottom Material</th>
+                            <th class="p-5">Scoop</th>
+                            <th class="p-5">Logo</th>
+                            <th class="p-5">Post Finish</th>
+                            <th class="p-5">Mounting Holes</th>
+                            <th class="p-5">Clips</th>
+                            <th class="p-5">Notches</th>
+                            <th class="p-5">Accessory</th>
+                            <th class="p-5 border-l">A</th>
+                            <th class="p-5">B</th>
+                            <th class="p-5">C</th>
+                            <th class="p-5 border-l"># Wide</th>
+                            <th class="p-5 border-r"># Deep</th>
+                            <th class="p-5">Unit $</th>
+                            <th class="p-5">Ext. $</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var box in OrderState.Order.Boxes.OrderBy(b => b.LineInOrder)) {
+                            <tr>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.LineInOrder</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Qty</td>
+                                @if (_useInches) {
+                                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Height.GetFormatedFraction())"</td>
+                                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Width.GetFormatedFraction())"</td>
+                                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Depth.GetFormatedFraction())"</td>
+                                } else {
+                                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Height.AsMillimeters().ToString("0.00")</td>
+                                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Width.AsMillimeters().ToString("0.00")</td>
+                                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Depth.AsMillimeters().ToString("0.00")</td>
+                                }
+                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.BoxMaterial.Name</td>
+                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.BottomMaterial.Name</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.ScoopFront ? "Y" : "N")</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.Logo ? "Y" : "N")</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.PostFinish ? "Y" : "N")</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.FaceMountingHoles ? "Y" : "N")</td>
+                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.Clips.Name</td>
+                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.Notches.Name</td>
+                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.Accessory.Name</td>
+                                @if(box.Options.UBoxDimensions is not null) {
+                                    @if (_useInches) {
+                                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Options.UBoxDimensions.A.GetFormatedFraction())"</td>
+                                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Options.UBoxDimensions.B.GetFormatedFraction())"</td>
+                                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Options.UBoxDimensions.C.GetFormatedFraction())"</td>
+                                    } else {
+                                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.UBoxDimensions.A.AsMillimeters().ToString("0.00")</td>
+                                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.UBoxDimensions.B.AsMillimeters().ToString("0.00")</td>
+                                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.UBoxDimensions.C.AsMillimeters().ToString("0.00")</td>
+                                    }
+                                } else {
+                                    <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white"></td>
+                                    <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white"></td>
+                                    <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white"></td>
+                                }
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.FixedDivdersCounts?.WideCount</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.FixedDivdersCounts?.DeepCount</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">$@box.UnitPrice.ToString("0.00")</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">$@((box.UnitPrice * box.Qty).ToString("0.00"))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+}
+
+@code {
+
+    [CascadingParameter]
+    public IModalService Modal { get; set; } = default!;
+
+    private Company? _customer = null, _vendor = null;
+
+    private bool _useInches = false;
+
+    private InfoModel _infoModel = new();
+
+    private bool _isSaving = false;
+    private bool _isReleasing = false;
+    private bool _isDirty = false;
+
+    protected override async Task OnInitializedAsync() {
+        if (OrderState.Order is null) return;
+        _infoModel = new() {
+                Name = OrderState.Order.Name,
+                Number = OrderState.Order.Number,
+                ProductionNote = OrderState.Order.ProductionNote
+        };
+        await LoadCustomer();
+        await LoadVendor();
+    }
+
+    private void ViewCompany(Company company) {
+        CompanyState.ReplaceCompany(company);
+        NavigationManager.NavigateTo("/companies/details", true);
+    }
+
+    private async Task LoadCustomer() {
+        if (OrderState.Order is null) return;
+        var result = await Bus.Send(new GetCompanyById.Query(OrderState.Order.CustomerId));
+        result.Match(
+            customer => _customer = customer,
+            error => {
+                // TODO: log error
+            }
+        );
+    }
+
+    private async Task LoadVendor() {
+        if (OrderState.Order is null) return;
+        var result = await Bus.Send(new GetCompanyById.Query(OrderState.Order.VendorId));
+        result.Match(
+            vendor => _vendor = vendor,
+            error => {
+                // TODO: log error
+            }
+        );
+    }
+
+    private async Task SelectCustomer() {
+
+        if (OrderState.Order is null) return;
+
+        async Task SetCustomer(object? result) {
+            if (OrderState.Order is null) return;
+            if (result is Guid customerId) OrderState.UpdateCustomer(customerId);
+            await LoadCustomer();
+            _isDirty = true;
+        }
+
+        await SelectCompanyModal(SetCustomer);
+
+    }
+
+    private async Task SelectVendor() {
+
+        if (OrderState.Order is null) return;
+
+        async Task SetVendor(object? result) {
+            if (OrderState.Order is null) return;
+            if (result is Guid vendorId) OrderState.UpdateVendor(vendorId);
+            await LoadVendor();
+            _isDirty = true;
+        }
+
+        await SelectCompanyModal(SetVendor);
+
+    }
+
+    private async Task SelectCompanyModal(Func<object?, Task> onConfirmation) {
+
+        var dialog = Modal.Show<SelectCompanyDialog>();
+        var result = await dialog.Result;
+
+        if (result.Confirmed) {
+            await onConfirmation(result.Data);
+        }
+
+    }
+
+    private void NumberChanged(string value) {
+        _infoModel.Number = value;
+        UpdateInfo();
+    }
+
+    private void NameChanged(string value) {
+        _infoModel.Name = value;
+        UpdateInfo();
+    }
+
+    private void NoteChanged(string value) {
+        _infoModel.ProductionNote = value;
+        UpdateInfo();
+    }
+
+    private void UpdateInfo() {
+        if (OrderState.Order is null) return;
+        OrderState.UpdateInfo(_infoModel.Number, _infoModel.Name, _infoModel.ProductionNote); // TODO: update production note
+        _isDirty = true;
+    }
+
+    private async Task SaveOrder() {
+        _isSaving = true;
+        await OrderState.SaveChanges();
+        _isSaving = false;
+        _isDirty = false;
+    }
+
+    private async Task ReleaseOrder() {
+        _isReleasing = true;
+
+        var parameters = new ModalParameters().Add("TriggerReleaseAction", (async () => await OrderState.Release()));
+        var options =  new ModalOptions() {
+            HideCloseButton = true,
+            DisableBackgroundCancel = true,
+            Size = ModalSize.Large
+        };
+
+        var dialog = Modal.Show<ReleaseProgressDialog>("Order Release Progress", parameters, options);
+        _ = await dialog.Result;
+
+        _isReleasing = false;
+        _isDirty = true;
+    }
+
+    private void CompleteOrder() {
+        OrderState.Complete();
+        _isDirty = true;
+    }
+
+    private void ToggleUnits() {
+        _useInches = !_useInches;
+    }
+
+    class InfoModel {
+
+        public string Number { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string ProductionNote { get; set; } = string.Empty;
+
+    }
+
+}

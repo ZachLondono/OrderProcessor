@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+button {
+	@apply rounded-md px-3 py-2 text-white enabled:hover:scale-105 shadow-md enabled:hover:shadow-lg disabled:cursor-not-allowed transition ease-in-out
+}
+
+.btn-primary {
+	@apply bg-primary border border-primary hover:bg-primary-hover hover:border-primary-hover disabled:bg-primary-disabled disabled:border-primary-disabled
+}
+
+.btn-secondary {
+	@apply dark:text-slate-200 bg-secondary dark:bg-dark-secondary border border-secondary dark:border-dark-secondary hover:bg-secondary-hover dark:hover:bg-dark-secondary-hover hover:border-secondary-hover dark:hover:border-dark-secondary-hover disabled:bg-secondary-disabled dark:disabled:bg-dark-secondary-disabled disabled:border-secondary-disabled dark:disabled:border-dark-secondary-disabled dark:disabled:text-slate-300
+}
+
+.btn-outline-primary {
+	@apply bg-transparent hover:bg-transparent text-primary hover:text-primary-hover border border-primary hover:border-primary-hover
+}
+
+.btn-outline-secondary {
+	@apply bg-transparent hover:bg-transparent text-secondary hover:text-secondary-hover border border-secondary hover:border-secondary-hover
+}
+
+input[type=text] {
+	@apply px-3 py-2 rounded-md dark:bg-slate-500 dark:text-slate-200 border focus:outline-0 border-gray-300 shadow-md focus:border-primary focus:ring-2 focus:ring-primary dark:border-slate-400
+}
+
+::placeholder {
+	@apply dark:text-gray-300
+}
+
+textarea {
+	@apply px-3 py-2 rounded-md dark:bg-slate-500 dark:text-slate-200 border focus:outline-0 border-gray-300 shadow-md focus:border-primary focus:ring-2 focus:ring-primary dark:border-slate-400
+}
+
+.pill {
+	@apply rounded-full px-3 py-1 text-slate-200 text-xs inline-block lowercase
+}
+
+.pill-primary {
+	@apply bg-primary
+}
+
+.pill-secondary {
+	@apply bg-secondary
+}
+
+.table {
+	@apply border-collapse border dark:border-slate-400
+}
+
+.table > thead {
+	@apply bg-slate-100 dark:bg-slate-600 dark:border-slate-400
+}
+
+.table > tbody {
+	@apply dark:bg-slate-800 dark:border-slate-400
+}
+
+.table tr {
+	@apply border-b dark:border-slate-400
+}
+
+.table th {
+	@apply px-5 py-2 text-slate-900 dark:text-slate-200
+}
+
+.table td {
+	@apply px-5 py-3 text-slate-500 dark:text-slate-400
+}
+
+.table-hover tbody tr {
+	@apply hover:bg-slate-50 dark:hover:bg-slate-700
+}

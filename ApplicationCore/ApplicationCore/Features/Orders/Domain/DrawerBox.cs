@@ -1,0 +1,81 @@
+﻿using ApplicationCore.Features.Orders.Domain.ValueObjects;
+
+namespace ApplicationCore.Features.Orders.Domain;
+
+public class DrawerBox {
+
+    public Guid Id { get; }
+    public int LineInOrder { get; }
+    public decimal UnitPrice { get; }
+    public int Qty { get; }
+    public Dimension Height { get; }
+    public Dimension Width { get; }
+    public Dimension Depth { get; }
+    public DrawerBoxOptions Options { get; }
+
+    public DrawerBox(Guid id, int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, DrawerBoxOptions options) {
+        Id = id;
+        LineInOrder = line;
+        UnitPrice = unitPrice;
+        Qty = qty;
+        Height = height;
+        Width = width;
+        Depth = depth;
+        Options = options;
+    }
+
+    public static DrawerBox Create(int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, DrawerBoxOptions options) {
+        return new(Guid.NewGuid(), line, unitPrice, qty, height, width, depth, options);
+    }
+
+    public IEnumerable<DrawerBoxPart> GetParts(ConstructionValues construction){
+
+        string boxMaterial = Options.BoxMaterial.Name;
+        if (construction.MaterialCodes.ContainsKey(Options.BoxMaterial.Id.ToString())) {
+            boxMaterial = construction.MaterialCodes[Options.BoxMaterial.Id.ToString()];
+        }
+
+        string botMaterial = Options.BottomMaterial.Name;
+        if (construction.MaterialCodes.ContainsKey(Options.BottomMaterial.Id.ToString())) {
+            botMaterial = construction.MaterialCodes[Options.BottomMaterial.Id.ToString()];
+        }
+
+        string accComment = Options.Accessory.Name.Equals("None") ? "" : Options.Accessory.Name;
+        string logoComment = Options.Logo ? "Logo" : "";
+
+        var fbAdj = Dimension.FromMillimeters(construction.FrontBackWidthAdjustment);
+        var sdAdj = Dimension.FromMillimeters(construction.SideLengthAdjustment);
+        var btAdj = Dimension.FromMillimeters(construction.BottomSizeAdjustment);
+
+        var front = new DrawerBoxPart(DrawerBoxPartType.Front, Qty, Height, Width + fbAdj, boxMaterial, Options.ScoopFront ? "Scoop Front" : "");
+        var back = new DrawerBoxPart(DrawerBoxPartType.Back, Qty, Height, Width + fbAdj, boxMaterial, accComment);
+        var side = new DrawerBoxPart(DrawerBoxPartType.Side, Qty * 2, Height, Depth + sdAdj, boxMaterial, logoComment);
+        var bottom = new DrawerBoxPart(DrawerBoxPartType.Bottom, Qty, Width + btAdj, Depth + btAdj, botMaterial, "");
+
+        if (Options.UBoxDimensions is not null) {
+
+            var a = Options.UBoxDimensions.A;
+            var b = Options.UBoxDimensions.B;
+            var c = Options.UBoxDimensions.C;
+            var diff = Width - (a + b);
+
+            var leftBack = new DrawerBoxPart(DrawerBoxPartType.BackLeft, Qty, Height, a + fbAdj, boxMaterial, "");
+            var rightBack = new DrawerBoxPart(DrawerBoxPartType.BackRight, Qty, Height, b + fbAdj, boxMaterial, "");
+            var centerBack = new DrawerBoxPart(DrawerBoxPartType.BackCenter, Qty, Height, diff + fbAdj, boxMaterial, "");
+            var sideCenter = new DrawerBoxPart(DrawerBoxPartType.SideCenter, Qty, Height, c + sdAdj, boxMaterial, "");
+
+            return new List<DrawerBoxPart>() {
+                front, leftBack, rightBack, centerBack, sideCenter, side, bottom
+            };
+
+        } else { 
+
+            return new List<DrawerBoxPart>() {
+                front, back, side, bottom
+            };
+
+        }
+
+    }
+
+}

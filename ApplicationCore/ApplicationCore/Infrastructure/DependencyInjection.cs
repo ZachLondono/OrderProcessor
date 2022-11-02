@@ -1,0 +1,39 @@
+﻿using ApplicationCore.Infrastructure.Data;
+using Dapper;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace ApplicationCore.Infrastructure;
+
+public static class DependencyInjection {
+
+    public static IServiceCollection AddApplicationInfrastructure(this IServiceCollection services, IConfiguration configuration) {
+
+        var cacheConfig = configuration.GetRequiredSection("Cache").Get<CacheConfiguration>();
+
+        if (cacheConfig is null || !cacheConfig.UseLocalCache) {
+            services.AddSingleton<IBus, MediatRBus>();
+        } else {
+            services.AddSingleton(cacheConfig);
+            services.AddSingleton<MediatRBus>();
+            services.AddSingleton<IBus, CachedBusDecorator>();
+        }
+
+        services.AddSingleton<IUIBus, UIBus>();
+
+        SqlMapper.RemoveTypeMap(typeof(decimal));
+        SqlMapper.AddTypeHandler(new SqliteDecimalTypeHandler());
+        SqlMapper.AddTypeHandler(new SqliteFixedDivdersCountsTypeHandler());
+        SqlMapper.AddTypeHandler(new SqliteUBoxDimensionTypeHandler());
+        SqlMapper.AddTypeHandler(new SqliteDimensionTypeHandler());
+        SqlMapper.AddTypeHandler(new SqliteKVEnumerableTypeHandler());
+        SqlMapper.AddTypeHandler(new SqliteGuidTypeHandler());
+        SqlMapper.RemoveTypeMap(typeof(Guid));
+        SqlMapper.RemoveTypeMap(typeof(Guid?));
+        services.AddSingleton<IDbConnectionFactory, SqliteDbConnectionFactory>();
+
+        return services;
+
+    }
+
+}
