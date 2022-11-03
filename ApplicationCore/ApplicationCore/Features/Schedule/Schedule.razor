@@ -4,6 +4,7 @@
 @using ApplicationCore.Features.Companies.Create
 @using ApplicationCore.Features.Orders
 @using ApplicationCore.Features.Orders.Commands
+@using ApplicationCore.Features.Orders.Domain
 @using ApplicationCore.Features.Orders.Loader
 @using ApplicationCore.Infrastructure
 @inject IBus Bus
@@ -11,6 +12,78 @@
 @inject CompanyState CompanyState
 @inject NavigationManager NavigationManager
 
+<EditForm Model="@_model">
+    <label for="date">Selected Date</label>
+    <InputDate id="date" Value="@_model.Date" TValue="DateTime" ValueChanged="OnDateSet" ValueExpression="() => _model.Date"></InputDate>
+</EditForm>
+
+
+@if (_hasError) {
+    <div class="bg-red-500 text-white font-bold">@_errorMessage</div>
+}
+
+<table class="table table-hover">
+
+    <thead>
+        <tr>
+            <th>Status</th>
+            <th>Number</th>
+            <th>Name</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach(var order in _orders) {
+            <tr class="cursor-pointer">
+                <td>
+                    <span class="@($"pill {order.Status.GetColor()}")">@order.Status</span>
+                </td>
+                <td>@order.Number</td>
+                <td>@order.Name</td>
+                <td>
+                    @if(order.Status == Status.Released) {
+                        <button class="btn-primary">Complete</button>
+                    }
+                </td>
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+
 @code {
+
+    private DateModel _model = new();
+    private bool _hasError = false;
+    private string _errorMessage = "";
+    private IEnumerable<ScheduledOrder> _orders = Enumerable.Empty<ScheduledOrder>();
+
+    protected override async Task OnInitializedAsync() {
+        await OnDateSet(DateTime.Today);
+    }
+
+    private async Task OnDateSet(DateTime date) {
+        var response = await Bus.Send(new GetOrdersByDate.Query((DateTime) date));
+        response.Match(
+            orders => {
+                _orders = orders;
+                _hasError = false;
+            },
+            error => {
+                // TODO: log error
+                _hasError = true;
+                _errorMessage = error.Message;
+            }
+        );
+
+        _model.Date = date;
+    }
+
+    public class DateModel {
+        public DateTime Date { get; set; } = DateTime.Today;
+    }
 
 }
