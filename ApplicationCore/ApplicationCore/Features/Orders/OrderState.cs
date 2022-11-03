@@ -52,6 +52,12 @@ public class OrderState {
         IsDirty = true;
     }
 
+    public void ScheduleProduction(DateTime productionDate) {
+        if (Order is null) return;
+        Order = new Order(Order.Id, Order.Status, Order.Number, Order.Name, Order.CustomerId, Order.VendorId, Order.ProductionNote, Order.CustomerComment, Order.OrderDate, Order.ReleaseDate, productionDate, Order.CompleteDate, Order.Tax, Order.Shipping, Order.PriceAdjustment, Order.Info, Order.Boxes, Order.AdditionalItems);
+        IsDirty = true;
+    }
+
     public async Task SaveChanges() {
         if (Order is null) return;
         await _bus.Send(new UpdateOrder.Command(Order));

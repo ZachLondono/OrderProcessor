@@ -73,64 +73,71 @@
             </div>
             <InputTextArea placeholder="Note" Value="@_infoModel.ProductionNote" ValueChanged="@NoteChanged" ValueExpression="() => _infoModel.ProductionNote" for="note" class="w-full mt-5"></InputTextArea>
         </div>
-    </EditForm>
 
-    <section class="mt-6" id="companyInfo">
-        <div>
-            @if(_customer is not null) {
-                <label id="customer" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Customer</label>
-                <span class="text-lg hover:underline cursor-pointer dark:text-white h-5 align-middle" @onclick="() => ViewCompany(_customer)">@_customer.Name</span>
-                <svg @onclick="SelectCustomer" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-4 inline-block text-black dark:text-white cursor-pointer">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                </svg>
-            } else {
-                <span>No customer info</span>
-            }
-        </div>
-        <div>
-            @if(_vendor is not null) {
-                <label id="vendor" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Vendor</label>
-                <span class="text-lg hover:underline cursor-pointer dark:text-white h-5 align-middle" @onclick="() => ViewCompany(_vendor)">@_vendor.Name</span>
-                <svg @onclick="SelectVendor" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-4 inline-block text-black dark:text-white cursor-pointer">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                </svg>
-            } else {
-                <span>No vendor info</span>
-            }
-        </div>
-        <div>
-            <label id="comment" class="text-md w-24 inline-block dark:text-gray-400">Comment</label>
-            <span class="text-lg dark:text-white">@OrderState.Order.CustomerComment</span>
-        </div>
-    </section>
-
-    <section class="mt-10" id="dates">
-        <div>
-            <label id="orderdate" class="text-md w-24 inline-block dark:text-gray-400">Order Date</label>
-            <span class="text-lg dark:text-white">@OrderState.Order.OrderDate.ToShortDateString()</span>
-        </div>
-        <div>
-            <label id="releasedate" class="text-md w-24 inline-block dark:text-gray-400">Release Date</label>
-            <span class="text-lg dark:text-white">@(OrderState.Order.Status == Status.Pending || OrderState.Order.ReleaseDate is null ? "Not Released" : ((DateTime) OrderState.Order.ReleaseDate).ToShortDateString())</span>
-        </div>
-        @if(OrderState.Order.Status != Status.Completed || OrderState.Order.CompleteDate is null) {
+        <section class="mt-6" id="companyInfo">
             <div>
-                <label id="productiondate" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Prod. Date</label>
-                <!--TODO: onclick open scheduler -->
-                <span class="hover:underline cursor-pointer text-lg dark:text-white h-5 align-middle">
-                    @( OrderState.Order.ProductionDate is null ? "Not Scheduled" : ((DateTime)OrderState.Order.ProductionDate).ToShortDateString())
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-4 inline-block text-black dark:text-white">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
+                @if(_customer is not null) {
+                    <label id="customer" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Customer</label>
+                    <span class="text-lg hover:underline cursor-pointer dark:text-white h-5 align-middle" @onclick="() => ViewCompany(_customer)">@_customer.Name</span>
+                    <svg @onclick="SelectCustomer" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-4 inline-block text-black dark:text-white cursor-pointer">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                     </svg>
-                </span>
+                } else {
+                    <span>No customer info</span>
+                }
             </div>
-        } else {
             <div>
-                <label id="completedate" class="text-md w-24 inline-block dark:text-gray-400">Comp. Date</label>
-                <span class="text-lg dark:text-white">@(((DateTime)OrderState.Order.CompleteDate).ToShortDateString())</span>
+                @if(_vendor is not null) {
+                    <label id="vendor" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Vendor</label>
+                    <span class="text-lg hover:underline cursor-pointer dark:text-white h-5 align-middle" @onclick="() => ViewCompany(_vendor)">@_vendor.Name</span>
+                    <svg @onclick="SelectVendor" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-4 inline-block text-black dark:text-white cursor-pointer">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                    </svg>
+                } else {
+                    <span>No vendor info</span>
+                }
             </div>
-        }
-    </section>
+            <div>
+                <label id="comment" class="text-md w-24 inline-block dark:text-gray-400">Comment</label>
+                <span class="text-lg dark:text-white">@OrderState.Order.CustomerComment</span>
+            </div>
+        </section>
+
+        <section class="mt-10" id="dates">
+            <div>
+                <label id="orderdate" class="text-md w-24 inline-block dark:text-gray-400">Order Date</label>
+                <span class="text-lg dark:text-white">@OrderState.Order.OrderDate.ToShortDateString()</span>
+            </div>
+            <div>
+                <label id="releasedate" class="text-md w-24 inline-block dark:text-gray-400">Release Date</label>
+                <span class="text-lg dark:text-white">@(OrderState.Order.Status == Status.Pending || OrderState.Order.ReleaseDate is null ? "Not Released" : ((DateTime) OrderState.Order.ReleaseDate).ToShortDateString())</span>
+            </div>
+            @if(OrderState.Order.Status != Status.Completed || OrderState.Order.CompleteDate is null) {
+                <div>
+
+                    <label id="productiondate" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Prod. Date</label>
+                    @if(OrderState.Order.ProductionDate is null) {
+                        <span class="text-lg dark:text-white h-5 align-middle" title="Release order to assign production date">Not Scheduled</span>
+                    } else {
+                        <InputDate TValue="DateTime" Value="@_infoModel.ProductionDate" ValueChanged="@ProductionDateChanged" ValueExpression="() => _infoModel.ProductionDate" class="hover:underline cursor-pointer text-lg dark:text-white h-5 align-middle"></InputDate>
+                    }
+
+                    @*<span class="hover:underline cursor-pointer text-lg dark:text-white h-5 align-middle">
+                        @( OrderState.Order.ProductionDate is null ? "Not Scheduled" : ((DateTime)OrderState.Order.ProductionDate).ToShortDateString())
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-4 inline-block text-black dark:text-white">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
+                        </svg>
+                    </span>*@
+                </div>
+            } else {
+                <div>
+                    <label id="completedate" class="text-md w-24 inline-block dark:text-gray-400">Comp. Date</label>
+                    <span class="text-lg dark:text-white">@(((DateTime)OrderState.Order.CompleteDate).ToShortDateString())</span>
+                </div>
+            }
+        </section>
+    
+    </EditForm>
 
     <section class="mt-10" id="prices">
         <div>
@@ -318,7 +325,8 @@
         _infoModel = new() {
                 Name = OrderState.Order.Name,
                 Number = OrderState.Order.Number,
-                ProductionNote = OrderState.Order.ProductionNote
+                ProductionNote = OrderState.Order.ProductionNote,
+                ProductionDate = (OrderState.Order.ProductionDate is null ? DateTime.Now : (DateTime) OrderState.Order.ProductionDate)
         };
         await LoadCustomer();
         await LoadVendor();
@@ -413,6 +421,12 @@
         _isDirty = true;
     }
 
+    private void ProductionDateChanged(DateTime value) {
+        _infoModel.ProductionDate = value;
+        OrderState.ScheduleProduction(value);
+        _isDirty = true;
+    }
+
     private async Task SaveOrder() {
         _isSaving = true;
         await OrderState.SaveChanges();
@@ -451,6 +465,7 @@
         public string Number { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string ProductionNote { get; set; } = string.Empty;
+        public DateTime ProductionDate { get; set; } = DateTime.Now;
 
     }
 

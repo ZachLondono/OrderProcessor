@@ -21,9 +21,19 @@ public class UpdateOrder {
 
             using var connection = _factory.CreateConnection();
 
-            // TODO: update order comment and info fields
+            // TODO: update info fields and add additional items
 
-            const string command = "UPDATE orders SET status = @Status, number = @Number, name = @Name, customerid = @CustomerId, vendorid = @VendorId, productionnote = @ProductionNote, orderdate = @OrderDate, releasedate = @ReleaseDate WHERE id = @Id;";
+            const string command = @"UPDATE orders SET
+                                        status = @Status,
+                                        number = @Number,
+                                        name = @Name,
+                                        customerid = @CustomerId,
+                                        vendorid = @VendorId,
+                                        productionnote = @ProductionNote,
+                                        orderdate = @OrderDate,
+                                        releasedate = @ReleaseDate,
+                                        productiondate = @ProductionDate
+                                    WHERE id = @Id;";
 
             await connection.ExecuteAsync(command, new {
                 request.Order.Id,
@@ -35,6 +45,7 @@ public class UpdateOrder {
                 request.Order.ProductionNote,
                 request.Order.OrderDate,
                 request.Order.ReleaseDate,
+                request.Order.ProductionDate
             });
 
             return new Response();
