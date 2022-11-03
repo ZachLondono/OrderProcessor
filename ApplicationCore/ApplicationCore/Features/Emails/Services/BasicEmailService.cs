@@ -13,12 +13,27 @@ internal class BasicEmailService : IEmailService {
 
     public async Task<string> SendEmailAsync(Email email) {
 
+        var body = new BodyBuilder {
+            TextBody = email.Body
+        };
+
+        var multiPart = new Multipart("mixed") {
+            body.ToMessageBody()
+        };
+
+        foreach (var attachment in email.Attachments) {
+            multiPart.Add(new MimePart() {
+                Content = new MimeContent(File.OpenRead(attachment)),
+                ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                ContentTransferEncoding = ContentEncoding.Base64,
+                FileName = Path.GetFileName(attachment)
+            });
+        }
+
         var message = new MimeMessage {
             Sender = MailboxAddress.Parse(email.Sender.Email),
             Subject = email.Subject,
-            Body = new BodyBuilder {
-                TextBody = email.Body
-            }.ToMessageBody()
+            Body = multiPart
         };
 
         message.To.AddRange(
