@@ -45,8 +45,8 @@ public static class DependencyInjection {
         services.AddTransient<ILabelPrinterService, DymoLabelPrinterService>();
         services.AddTransient<ILabelTemplateReader, DymoLabelTemplateReader>();
 
-        var invoiceEmailConfig = configuration.GetRequiredSection("InvoiceEmail").Get<InvoiceEmailConfiguration>();
-        services.AddSingleton<InvoiceEmailConfiguration>(invoiceEmailConfig);
+        var invoiceEmailConfig = configuration.GetRequiredSection("Email").Get<EmailConfiguration>();
+        services.AddSingleton<EmailConfiguration>(invoiceEmailConfig);
 
         services.AddEmailing();
 

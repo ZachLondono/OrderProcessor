@@ -2,10 +2,15 @@
 using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.Emails.Contracts;
 using ApplicationCore.Features.Emails.Domain;
-using ApplicationCore.Features.Emails.Services;
+using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Infrastructure;
+using ApplicationCore.Shared;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using Unit = QuestPDF.Infrastructure.Unit;
 
 namespace ApplicationCore.Features.Orders.Complete;
 
@@ -13,12 +18,14 @@ public class SendInvoiceEmail : INotificationHandler<TriggerOrderCompleteNotific
 
     private readonly ILogger<SendInvoiceEmail> _logger;
     private readonly IBus _bus;
-    private readonly InvoiceEmailConfiguration _configuration;
+    private readonly EmailConfiguration _configuration;
+    private readonly IFileReader _fileReader;
 
-    public SendInvoiceEmail(ILogger<SendInvoiceEmail> logger, IBus bus, InvoiceEmailConfiguration configuration) {
+    public SendInvoiceEmail(ILogger<SendInvoiceEmail> logger, IBus bus, EmailConfiguration configuration, IFileReader fileReader) {
         _logger = logger;
         _bus = bus;
         _configuration = configuration;
+        _fileReader = fileReader;
     }
 
     public async Task Handle(TriggerOrderCompleteNotification notification, CancellationToken cancellationToken) {
@@ -26,6 +33,7 @@ public class SendInvoiceEmail : INotificationHandler<TriggerOrderCompleteNotific
         if (!notification.CompleteProfile.EmailInvoice) return;
 
         var order = notification.Order;
+        var profile = notification.CompleteProfile;
 
         Company? customer = await GetCompany(order.CustomerId);
         Company? vendor = await GetCompany(order.VendorId);
@@ -34,15 +42,26 @@ public class SendInvoiceEmail : INotificationHandler<TriggerOrderCompleteNotific
             return;
         }
 
-        var sender = new EmailSender(_configuration.SenderName, _configuration.SenderEmail, _configuration.SenderPassword, _configuration.Host, _configuration.Port);
-        var recipients = new string[] { customer.InvoiceEmail, vendor.InvoiceEmail };
+        var doc = GenerateInvoicePDF(order, customer, vendor);
+        string pdfPath = GetAvailableFileName(profile.InvoicePDFDirectory, $"{order.Number} - INVOICE");
+        doc.GeneratePdf(pdfPath);
+
+
+        var sender = new EmailSender(profile.EmailSenderName, profile.EmailSenderEmail, profile.EmailSenderPassword, _configuration.Host, _configuration.Port);
+        var recipients = new string[] { customer.InvoiceEmail, vendor.InvoiceEmail }.Where(r => !string.IsNullOrWhiteSpace(r));
+        if (!recipients.Any()) {
+            // TODO: show no recipients warning
+            return;
+        }
+
+        // TODO: use templates for subject and body
         string subject = $"{order.Number} - INVOICE";
         string body = $"Please see attached invoice";
 
-        var email = new Email(sender, recipients, subject, body);
+        var email = new Email(sender, recipients, subject, body, new string[] { pdfPath });
 
-        var response = await _bus.Send(new SendEmailRequest(email));
-
+        var response = await _bus.Send(new SendEmailRequest(email), cancellationToken);
+        
         response.Match(
             serverResponse => {
                 _logger.LogInformation("Email server response {Response}", serverResponse.ServerResponse);
@@ -69,5 +88,172 @@ public class SendInvoiceEmail : INotificationHandler<TriggerOrderCompleteNotific
         return company;
     }
 
+    private string GetAvailableFileName(string direcotry, string filename) {
+
+        int index = 1;
+
+        string filepath = Path.Combine(direcotry, $"{filename}.pdf");
+
+        while (_fileReader.DoesFileExist(filepath)) {
+
+            filepath = Path.Combine(direcotry, $"{filename} ({index++}).pdf");
+
+        }
+
+        return filepath;
+
+    }
+
+    private static Document GenerateInvoicePDF(Order order, Company customer, Company vendor) {
+
+        return Document.Create(container => {
+
+            container.Page(page => {
+
+                var pageSize = PageSizes.A4;
+                page.Size(pageSize);
+                page.Margin(0, Unit.Centimetre);
+                page.PageColor(Colors.White);
+
+                page.Header()
+                    .AlignCenter()
+                    .Text("Invoice")
+                    .FontSize(28);
+
+                page.Content()
+                    .PaddingVertical(1, Unit.Centimetre)
+                    .Column(col => {
+
+                        col.Item().Table(table => {
+
+                            uint companyRow = 1;
+                            TextSpanDescriptor CompanyInfoCell(TableDescriptor table, string text, float fontSize) {
+                                return table.Cell().Row(companyRow++).Column(2).AlignMiddle().PaddingLeft(5).AlignLeft().Text(text).FontSize(fontSize);
+                            }
+
+                            table.Cell().Row(companyRow).Column(1).AlignMiddle().AlignRight().Text("From").Italic().FontSize(12);
+                            CompanyInfoCell(table, vendor.Name, 16).Bold();
+                            CompanyInfoCell(table, vendor.Address.Line1, 12);
+                            CompanyInfoCell(table, $"{vendor.Address.City}, {vendor.Address.State} {vendor.Address.Zip}", 12);
+                            CompanyInfoCell(table, vendor.PhoneNumber, 12);
+
+                            table.Cell().Row(companyRow++).Text("");
+                            table.Cell().Row(companyRow).Column(1).AlignMiddle().AlignRight().Text("To").Italic().FontSize(12);
+                            CompanyInfoCell(table, customer.Name, 16).Bold();
+                            CompanyInfoCell(table, customer.Address.Line1, 12);
+                            CompanyInfoCell(table, $"{customer.Address.City}, {customer.Address.State} {customer.Address.Zip}", 12);
+                            CompanyInfoCell(table, customer.PhoneNumber, 12);
+
+                            int maxCharCount = 0;
+                            float fontSize = 12;
+                            uint infoRow = 1;
+                            void AddInfo(TableDescriptor table, string key, string value, bool bold = false) {
+                                var header = table.Cell().Row(infoRow).Column(4).AlignMiddle().AlignRight().Text(key).FontSize(fontSize);
+                                if (bold) header.Bold();
+                                table.Cell().Row(infoRow).Column(5).AlignMiddle().AlignLeft().PaddingLeft(5).Text(value).FontSize(fontSize);
+
+                                if (value.Length > maxCharCount) maxCharCount = value.Length;
+                                infoRow++;
+                            }
+
+                            AddInfo(table, "Date:", DateTime.Today.ToShortDateString(), true);
+                            AddInfo(table, "Invoice #:", order.Number, true);
+                            AddInfo(table, "Job:", order.Name, true);
+                            AddInfo(table, "Terms:", "COD", true);
+
+                            AddInfo(table, "", ""); // blank row
+
+                            AddInfo(table, "Subtotal:", $"${order.SubTotal}");
+                            if (order.PriceAdjustment != 0) { 
+                                AddInfo(table, "Discount:", $"${order.PriceAdjustment}");
+                                AddInfo(table, "Net Amt.:", $"${order.AdjustedSubTotal}");
+                            }
+                            AddInfo(table, "Sales Tax:", $"${order.Tax}");
+                            AddInfo(table, "Total:", $"${order.Total}", true);
+
+                            float col1Width = 60f;
+                            float companyNameWidth = (vendor.Name.Length > customer.Name.Length ? vendor.Name.Length : customer.Name.Length) * 16 * 0.6f;
+                            float tableHeaderWidth = 60f;
+                            float tableValueWidth = maxCharCount * fontSize * 0.6f;
+
+                            var spacing = pageSize.Width - (col1Width + companyNameWidth + tableHeaderWidth + tableValueWidth);
+                            if (spacing < 0) {
+                                tableValueWidth += spacing;
+                                spacing = pageSize.Width - (col1Width + companyNameWidth + tableHeaderWidth + tableValueWidth);
+                            }
+
+                            table.ColumnsDefinition(columns => {
+                                columns.ConstantColumn(col1Width);
+                                columns.ConstantColumn(companyNameWidth);
+                                columns.ConstantColumn(spacing);
+                                columns.ConstantColumn(tableHeaderWidth);
+                                columns.ConstantColumn(tableValueWidth);
+                            });
+
+                        });
+
+                        col.Item().Height(35);
+
+                        col.Item().AlignCenter().Table(table => {
+
+                            table.ColumnsDefinition(columns => {
+                                columns.ConstantColumn(30, Unit.Point);
+                                columns.ConstantColumn(30, Unit.Point);
+                                columns.ConstantColumn(150, Unit.Point);
+                                columns.ConstantColumn(30, Unit.Point);
+                                columns.ConstantColumn(40, Unit.Point);
+                                columns.ConstantColumn(40, Unit.Point);
+                                columns.ConstantColumn(40, Unit.Point);
+                                columns.ConstantColumn(50, Unit.Point);
+                                columns.ConstantColumn(50, Unit.Point);
+                            });
+
+                            table.Cell().Row(1).Column(2).BorderTop(1).BorderLeft(1).AlignMiddle().AlignCenter().Text("2").FontSize(12);
+                            table.Cell().Row(1).Column(3).BorderTop(1).BorderRight(1).AlignMiddle().AlignLeft().Text("Boxes in Order").FontSize(12);
+
+                            table.Cell().Row(2).Column(1).BorderLeft(1).BorderTop(1).Background("#CED5EA").PaddingVertical(3).AlignMiddle().AlignCenter().Text("Line").Bold().FontSize(11);
+                            table.Cell().Row(2).Column(2).BorderLeft(1).BorderTop(1).Background("#CED5EA").PaddingVertical(3).AlignMiddle().AlignCenter().Text("Qty").Bold().FontSize(11);
+                            table.Cell().Row(2).Column(3).BorderLeft(1).BorderTop(1).Background("#CED5EA").PaddingVertical(3).AlignMiddle().AlignCenter().Text("Description").Bold().FontSize(11);
+                            table.Cell().Row(2).Column(4).BorderLeft(1).BorderTop(1).Background("#CED5EA").PaddingVertical(3).AlignMiddle().AlignCenter().Text("Logo").Bold().FontSize(11);
+                            table.Cell().Row(2).Column(5).BorderLeft(1).BorderTop(1).Background("#CED5EA").PaddingVertical(3).AlignMiddle().AlignCenter().Text("Height").Bold().FontSize(11);
+                            table.Cell().Row(2).Column(6).BorderLeft(1).BorderTop(1).Background("#CED5EA").PaddingVertical(3).AlignMiddle().AlignCenter().Text("Width").Bold().FontSize(11);
+                            table.Cell().Row(2).Column(7).BorderLeft(1).BorderTop(1).Background("#CED5EA").PaddingVertical(3).AlignMiddle().AlignCenter().Text("Depth").Bold().FontSize(11);
+                            table.Cell().Row(2).Column(8).BorderLeft(1).BorderTop(1).Background("#CED5EA").PaddingVertical(3).AlignMiddle().AlignCenter().Text("Price").Bold().FontSize(11);
+                            table.Cell().Row(2).Column(9).BorderLeft(1).BorderTop(1).BorderRight(1).Background("#CED5EA").PaddingVertical(3).AlignMiddle().AlignCenter().Text("Ext. Price").Bold().FontSize(11);
+
+                            uint row = 3;
+                            foreach (var box in order.Boxes) {
+                                table.Cell().Row(row).Column(1).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(box.LineInOrder).FontSize(10);
+                                table.Cell().Row(row).Column(2).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(box.Qty).FontSize(10);
+                                table.Cell().Row(row).Column(3).BorderLeft(1).BorderTop(1).AlignMiddle().AlignLeft().PaddingLeft(2).Text("Dovetail Drawer Box").FontSize(10);
+                                table.Cell().Row(row).Column(4).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(box.Options.Logo ? "Y" : "N").FontSize(10);
+                                table.Cell().Row(row).Column(5).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(box.Height.AsInchFraction()).FontSize(10);
+                                table.Cell().Row(row).Column(6).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(box.Width.AsInchFraction()).FontSize(10);
+                                table.Cell().Row(row).Column(7).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(box.Depth.AsInchFraction()).FontSize(10);
+                                table.Cell().Row(row).Column(8).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text($"${box.UnitPrice}").FontSize(10);
+                                table.Cell().Row(row).Column(9).BorderLeft(1).BorderTop(1).BorderRight(1).AlignMiddle().AlignCenter().Text($"${box.UnitPrice * box.Qty}").FontSize(10);
+                                row++;
+                            }
+                            table.Cell().Row(row).ColumnSpan(9).BorderTop(1);
+
+
+                        });
+
+                    });
+
+                page.Footer()
+                    .AlignCenter()
+                    .Text(x => {
+                        x.Span("Page ");
+                        x.CurrentPageNumber();
+                        x.Span(" of ");
+                        x.TotalPages();
+                    });
+
+            });
+
+        });
+
+    }
 
 }
