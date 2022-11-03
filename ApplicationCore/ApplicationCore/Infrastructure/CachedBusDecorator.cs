@@ -21,8 +21,6 @@ internal class CachedBusDecorator : IBus {
 
     public async Task<Response<TResponse>> Send<TResponse>(IQuery<TResponse> request, CancellationToken cancellationToken = default) {
 
-        // TODO: distinguish between a query and a command so that only queries are cached (ie. a save command should fire every time it is called)
-        // If the request is just a command, do not cache the response, since there is no response
         if (typeof(TResponse) == typeof(Unit)) return await _bus.Send(request, cancellationToken);
 
         if (_cachedResponses.ContainsKey(request)) {
