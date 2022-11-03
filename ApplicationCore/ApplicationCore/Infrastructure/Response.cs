@@ -31,6 +31,11 @@ public class Response<TSuccess> {
         }
     }
 
+    public void OnError(Action<Error> onError) {
+        if (_isSuccess || _error is null) return;
+        onError(_error!);
+    }
+
 }
 
 public class Response : Response<Unit> {
