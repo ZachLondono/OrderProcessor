@@ -1,0 +1,102 @@
+﻿@page "/companies/completeprofile"
+@using ApplicationCore.Features.Companies.Domain.ValueObjects
+@using ApplicationCore.Features.Companies.Commands
+@using ApplicationCore.Features.Companies.Domain
+@using ApplicationCore.Features.Companies.Queries
+@using ApplicationCore.Infrastructure
+@inject CompanyState CompanyState
+@inject IBus Bus
+@inject NavigationManager NavigationManager
+
+<h3>Complete Profile</h3>
+
+@if (_hasError) {
+
+    <div class="bg-red-300">
+        <h3 class="text-white">Error</h3>
+        <span class="text-white">@_errorMessage</span>
+    </div>
+
+}
+
+@if (CompanyState.Company is null) {
+    <span>No company selected.</span>
+} else if (_profile is null) {
+    @if (_isLoading) {
+        <span>Loading...</span>
+    } else {
+        <span>No release profile data.</span>
+    }
+} else {
+
+    <section class="mb-5 w-full">
+        <h3>Cut Lists</h3>
+        <div class="mt-2">
+            <input type="checkbox" class="h-4 w-4" @bind="_profile.EmailInvoice" />
+            <label class="ml-2 text-sm font-medium text-gray-700">Email Invoice</label>
+        </div>
+
+        <div class="mt-2">
+            <input type="checkbox" class="h-4 w-4" @bind="_profile.InvoicePDFDirectory" />
+            <label class="ml-2 text-sm font-medium text-gray-700">Invoice PDF Directory</label>
+        </div>
+
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">Sender Name</label>
+            <input type="text" class="mt-1 w-full" @bind="_profile.EmailSenderName" />
+        </div>
+
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">Sender Email</label>
+            <input type="text" class="mt-1 w-full" @bind="_profile.EmailSenderEmail" />
+        </div>
+
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">Sender Password</label>
+            <input type="password" class="mt-1 w-full" @bind="_profile.EmailSenderPassword" />
+        </div>
+
+    </section>
+
+    <button type="button" class="btn btn-primary" @onclick="UpdateProfile">Save</button>
+
+}
+
+
+@code {
+
+    private bool _isLoading = true;
+    private CompleteProfile? _profile = null;
+
+    private bool _hasError = false;
+    private string _errorMessage = "";
+
+    protected override async Task OnInitializedAsync() {
+        if (CompanyState.Company is null) return;
+        var result = await Bus.Send(new GetCompleteProfileByVendorId.Query(CompanyState.Company.Id));
+        result.Match(
+            profile => {
+                _profile = profile;
+                _hasError = false;
+            },
+            error => {
+                _hasError = true;
+                _errorMessage = error.Message;
+            }
+        );
+        _isLoading = false;
+    }
+
+    private async Task UpdateProfile() {
+        if (CompanyState.Company is null || _profile is null) return;
+        var result = await Bus.Send(new AssignVendorCompleteProfile.Command(CompanyState.Company.Id, _profile));
+        result.Match(
+            success => _hasError = false,
+            error => {
+                _hasError = true;
+                _errorMessage = error.Message;
+            }
+        );
+    }
+
+}

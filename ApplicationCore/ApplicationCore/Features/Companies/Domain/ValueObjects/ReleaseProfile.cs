@@ -16,12 +16,6 @@ public class ReleaseProfile {
     public string InvoiceOutputDirectory { get; set; } = string.Empty;
     public bool PrintInvoice { get; set; }
     public string InvoiceTemplatePath { get; set; } = string.Empty;// TODO rename to ...FilePath
-    //public bool EmailInvoicePDF { get; set; } // TODO: use excel interop to turn the invoice into a pdf
-    //public string InvoiceEmailSenderName { get; set; } = string.Empty;
-    //public string InvoiceEmailSenderEmail { get; set; } = string.Empty;
-    //public string InvoiceEmailSenderPassword { get; set; } = string.Empty;
-    //public string InvoiceEmailSenderHost { get; set; } = string.Empty;
-    //public int InvoiceEmailSenderPort { get; set; }
 
     public bool GenerateBOL { get; set; }
     public string BOLOutputDirectory { get; set; } = string.Empty;

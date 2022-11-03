@@ -21,7 +21,11 @@ public class GetCompleteProfileByVendorId {
 
             using var connection = _factory.CreateConnection();
             const string query = @"SELECT
-                                    emailinvoice
+                                    emailinvoice,
+                                    invoicepdfdirectory,
+                                    emailsenderemail,
+                                    emailsendername,
+                                    emailsenderpassword
                                 FROM completeprofiles
                                 WHERE vendorid = @VendorId;";
             var profile = await connection.QuerySingleOrDefaultAsync<CompleteProfile>(query, request);

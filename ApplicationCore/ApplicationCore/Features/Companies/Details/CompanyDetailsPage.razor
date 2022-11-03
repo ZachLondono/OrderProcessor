@@ -28,6 +28,7 @@
 					<span>Save</span>
 				</button>
 				<button class="btn btn-secondary w-48 mt-2 lg:mt-0 lg:ml-3" @onclick="ViewReleaseProfile">Release Settings</button>
+				<button class="btn btn-secondary w-48 mt-2 lg:mt-0 lg:ml-3" @onclick="ViewCompleteProfile">Complete Settings</button>
 			</div>
 		</div>
 
@@ -146,6 +147,10 @@
 
 	private void ViewReleaseProfile() {
 		NavigationManager.NavigateTo("/companies/releaseprofile", true);
+	}
+
+	private void ViewCompleteProfile() {
+		NavigationManager.NavigateTo("/companies/completeprofile", true);
 	}
 
 	private async Task OpenOrder(Guid orderId) {

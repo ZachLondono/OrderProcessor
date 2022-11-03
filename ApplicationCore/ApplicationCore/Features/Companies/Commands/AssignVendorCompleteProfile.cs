@@ -21,7 +21,7 @@ public class AssignVendorCompleteProfile {
 
             using var connection = _factory.CreateConnection();
 
-            const string existQuery = "SELECT 1 FROM releaseprofiles WHERE vendorid = @VendorId;";
+            const string existQuery = "SELECT 1 FROM completeprofiles WHERE vendorid = @VendorId;";
 
             int exists = connection.QuerySingleOrDefault<int>(existQuery, request);
 
@@ -31,19 +31,40 @@ public class AssignVendorCompleteProfile {
 
                 command = @"UPDATE completeprofiles
                             SET
-                                emailinvoice = @EmailInvoice
+                                emailinvoice = @EmailInvoice,
+                                invoicepdfdirectory = @InvoicePDFDirectory,
+                                emailsenderemail = @EmailSenderEmail,
+                                emailsendername = @EmailSenderName,
+                                emailsenderpassword = @EmailSenderPassword
                             WHERE vendorid = @VendorId;";
 
             } else {
 
                 command = @"INSERT INTO completeprofiles
-                                (emailinvoice)
+                                (vendorid,
+                                emailinvoice,
+                                invoicepdfdirectory,
+                                emailsendername,
+                                emailsenderemail,
+                                emailsenderpassword)
                             VALUES
-                                (@EmailInvoice);";
+                                (@VendorId,
+                                @EmailInvoice,
+                                @InvoiecPDFDirectory,
+                                @EmailSenderName,
+                                @EmailSenderEmail,
+                                @EmailSenderPassword);";
 
             }
 
-            await connection.ExecuteAsync(command, request.Profile);
+            await connection.ExecuteAsync(command, new {
+                request.VendorId,
+                request.Profile.EmailInvoice,
+                request.Profile.InvoicePDFDirectory,
+                request.Profile.EmailSenderName,
+                request.Profile.EmailSenderEmail,
+                request.Profile.EmailSenderPassword,
+            });
 
             return new Response();
 
