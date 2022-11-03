@@ -66,7 +66,11 @@
     }
 
     private async Task OnDateSet(DateTime date) {
-        var response = await Bus.Send(new GetOrdersByDate.Query((DateTime) date));
+
+        var startDate = date;
+        var endDate = date.AddDays(1).AddSeconds(-1);
+
+        var response = await Bus.Send(new GetOrdersByDate.Query(startDate, endDate));
         response.Match(
             orders => {
                 _orders = orders;

@@ -6,7 +6,7 @@ namespace ApplicationCore.Features.Schedule;
 
 public class GetOrdersByDate {
 
-    public record Query(DateTime Date) : IQuery<IEnumerable<ScheduledOrder>>;
+    public record Query(DateTime StartDate, DateTime EndDate) : IQuery<IEnumerable<ScheduledOrder>>;
 
     public class Handler : QueryHandler<Query, IEnumerable<ScheduledOrder>> {
 
@@ -22,14 +22,14 @@ public class GetOrdersByDate {
                 
                 using var connection = _factory.CreateConnection();
 
-                const string sql = "SELECT id, number, name, productiondate, status FROM orders WHERE date(productiondate) = date(@Date);";
+                const string sql = "SELECT id, number, name, productiondate, status FROM orders WHERE datetime(productiondate) >= datetime(@StartDate) AND datetime(productiondate) <= datetime(@EndDate);";
                 var orders = await connection.QueryAsync<ScheduledOrder>(sql, query);
 
                 return new(orders);
 
             } catch (Exception e) {
                 return new(new Error() {
-                    Message = $"Exception thrown while trying to find orders scheduled for date {query.Date.ToShortDateString()}\n\nException:\n{e.Message}"
+                    Message = $"Exception thrown while trying to find orders scheduled for date {query.StartDate.ToShortDateString()} - {query.EndDate.ToShortDateString()}\n\nException:\n{e.Message}"
                 });
             }
 
