@@ -71,7 +71,7 @@
                     </div>
                 }
             </div>
-            <InputTextArea placeholder="Note" Value="@_infoModel.ProductionNote" ValueChanged="@NoteChanged" ValueExpression="() => _infoModel.ProductionNote" for="note" class="w-full mt-5 ease-in-out duration-300"></InputTextArea>
+            <InputTextArea placeholder="Note" Value="@_infoModel.ProductionNote" ValueChanged="@NoteChanged" ValueExpression="() => _infoModel.ProductionNote" for="note" class="w-full mt-5"></InputTextArea>
         </div>
     </EditForm>
 
@@ -437,8 +437,8 @@
         _isDirty = true;
     }
 
-    private void CompleteOrder() {
-        OrderState.Complete();
+    private async Task CompleteOrder() {
+        await OrderState.Complete();
         _isDirty = true;
     }
 
