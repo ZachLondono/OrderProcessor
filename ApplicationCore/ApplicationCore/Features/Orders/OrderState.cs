@@ -36,25 +36,25 @@ public class OrderState {
 
     public void UpdateInfo(string number, string name, string productionNote) {
         if (Order is null) return;
-        Order = new Order(Order.Id, Order.Status, number, name, Order.CustomerId, Order.VendorId, productionNote, Order.CustomerComment, Order.OrderDate, Order.ReleaseDate, Order.ProductionDate, Order.CompleteDate, Order.Tax, Order.Shipping, Order.PriceAdjustment, Order.Info, Order.Boxes, Order.AdditionalItems);
+        Order = new Order(Order.Id, Order.Source, Order.Status, number, name, Order.CustomerId, Order.VendorId, productionNote, Order.CustomerComment, Order.OrderDate, Order.ReleaseDate, Order.ProductionDate, Order.CompleteDate, Order.Tax, Order.Shipping, Order.PriceAdjustment, Order.Info, Order.Boxes, Order.AdditionalItems);
         IsDirty = true;
     }
 
     public void UpdateCustomer(Guid customerId) {
         if (Order is null) return;
-        Order = new Order(Order.Id, Order.Status, Order.Number, Order.Name, customerId, Order.VendorId, Order.ProductionNote, Order.CustomerComment, Order.OrderDate, Order.ReleaseDate, Order.ProductionDate, Order.CompleteDate, Order.Tax, Order.Shipping, Order.PriceAdjustment, Order.Info, Order.Boxes, Order.AdditionalItems);
+        Order = new Order(Order.Id, Order.Source, Order.Status, Order.Number, Order.Name, customerId, Order.VendorId, Order.ProductionNote, Order.CustomerComment, Order.OrderDate, Order.ReleaseDate, Order.ProductionDate, Order.CompleteDate, Order.Tax, Order.Shipping, Order.PriceAdjustment, Order.Info, Order.Boxes, Order.AdditionalItems);
         IsDirty = true;
     }
 
     public void UpdateVendor(Guid vendorId) {
         if (Order is null) return;
-        Order = new Order(Order.Id, Order.Status, Order.Number, Order.Name, Order.CustomerId, vendorId, Order.ProductionNote, Order.CustomerComment, Order.OrderDate, Order.ReleaseDate, Order.ProductionDate, Order.CompleteDate, Order.Tax, Order.Shipping, Order.PriceAdjustment, Order.Info, Order.Boxes, Order.AdditionalItems);
+        Order = new Order(Order.Id, Order.Source, Order.Status, Order.Number, Order.Name, Order.CustomerId, vendorId, Order.ProductionNote, Order.CustomerComment, Order.OrderDate, Order.ReleaseDate, Order.ProductionDate, Order.CompleteDate, Order.Tax, Order.Shipping, Order.PriceAdjustment, Order.Info, Order.Boxes, Order.AdditionalItems);
         IsDirty = true;
     }
 
     public void ScheduleProduction(DateTime productionDate) {
         if (Order is null) return;
-        Order = new Order(Order.Id, Order.Status, Order.Number, Order.Name, Order.CustomerId, Order.VendorId, Order.ProductionNote, Order.CustomerComment, Order.OrderDate, Order.ReleaseDate, productionDate, Order.CompleteDate, Order.Tax, Order.Shipping, Order.PriceAdjustment, Order.Info, Order.Boxes, Order.AdditionalItems);
+        Order = new Order(Order.Id, Order.Source, Order.Status, Order.Number, Order.Name, Order.CustomerId, Order.VendorId, Order.ProductionNote, Order.CustomerComment, Order.OrderDate, Order.ReleaseDate, productionDate, Order.CompleteDate, Order.Tax, Order.Shipping, Order.PriceAdjustment, Order.Info, Order.Boxes, Order.AdditionalItems);
         IsDirty = true;
     }
 

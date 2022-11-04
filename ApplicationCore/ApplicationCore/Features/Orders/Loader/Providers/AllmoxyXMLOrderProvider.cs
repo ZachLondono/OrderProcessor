@@ -83,6 +83,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         }
 
         var result = await _bus.Send(new CreateNewOrder.Command(data.Name, data.Id.ToString(), customer.Id, metroVendorId, data.Note, orderDate, tax, shipping, priceAdjustment, info, boxes, Enumerable.Empty<AdditionalItem>()));
+            result = await _bus.Send(new CreateNewOrder.Command(source, data.Id.ToString(), data.Name, customer.Id, metroVendorId, data.Note, orderDate, tax, shipping, priceAdjustment, info, boxes, Enumerable.Empty<AdditionalItem>()));
 
         Order? order = null;
 

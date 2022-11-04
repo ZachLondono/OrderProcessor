@@ -3,6 +3,7 @@
 public class Order {
 
     public Guid Id { get; }
+    public string Source { get; private set; }
     public Status Status { get; private set; }
     public string Number { get; }
     public string Name { get; }
@@ -35,8 +36,9 @@ public class Order {
 
     // TODO: Add related files
 
-    public Order(Guid id,  Status status, string number, string name, Guid customerId, Guid vendorId, string productionNote, string customerComment, DateTime orderDate, DateTime? releaseDate, DateTime? productionDate, DateTime? completeDate, decimal tax, decimal shipping, decimal priceAdjustment, IReadOnlyDictionary<string, string> info, IEnumerable<DrawerBox> boxes, IEnumerable<AdditionalItem> additionalItems) {
+    public Order(Guid id, string source, Status status, string number, string name, Guid customerId, Guid vendorId, string productionNote, string customerComment, DateTime orderDate, DateTime? releaseDate, DateTime? productionDate, DateTime? completeDate, decimal tax, decimal shipping, decimal priceAdjustment, IReadOnlyDictionary<string, string> info, IEnumerable<DrawerBox> boxes, IEnumerable<AdditionalItem> additionalItems) {
         Id = id;
+        Source = source;
         Status = status;
         Number = number;
         Name = name;
@@ -56,8 +58,8 @@ public class Order {
         AdditionalItems = additionalItems;
     }
 
-    public static Order Create(string number, string name, Guid customerId, Guid vendorId, string comment, DateTime orderDate, decimal tax, decimal shipping, decimal priceAdjustment, IReadOnlyDictionary<string, string> info, IEnumerable<DrawerBox> boxes, IEnumerable<AdditionalItem> additionalItems) {
-        return new Order(Guid.NewGuid(), Status.Pending, number, name, customerId, vendorId, "", comment, orderDate, null, null, null, tax, shipping, priceAdjustment, info, boxes, additionalItems);
+    public static Order Create(string source, string number, string name, Guid customerId, Guid vendorId, string comment, DateTime orderDate, decimal tax, decimal shipping, decimal priceAdjustment, IReadOnlyDictionary<string, string> info, IEnumerable<DrawerBox> boxes, IEnumerable<AdditionalItem> additionalItems, Guid? id = null) {
+        return new Order(id ?? Guid.NewGuid(), source, Status.Pending, number, name, customerId, vendorId, "", comment, orderDate, null, null, null, tax, shipping, priceAdjustment, info, boxes, additionalItems);
     }
 
     public void Release() {

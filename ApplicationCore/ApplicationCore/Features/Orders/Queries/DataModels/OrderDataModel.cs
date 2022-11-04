@@ -4,6 +4,8 @@ namespace ApplicationCore.Features.Orders.Queries.DataModels;
 
 public class OrderDataModel {
 
+    public string Source { get; set; } = string.Empty;
+
     public string Number { get; set; } = string.Empty;
 
     public string Name { get; set; } = string.Empty;
@@ -35,7 +37,7 @@ public class OrderDataModel {
     public IEnumerable<KeyValuePair<string, string>> Info { get; set; } = new Dictionary<string, string>();
 
     public Order AsDomainModel(Guid orderId, IEnumerable<DrawerBox> boxes, IEnumerable<AdditionalItem> items) {
-        return new Order(orderId, Status, Number, Name, CustomerId, VendorId, ProductionNote, CustomerComment, OrderDate, ReleaseDate, ProductionDate, CompleteDate, Tax, Shipping, PriceAdjustment, new Dictionary<string,string>(Info), boxes, items);
+        return new Order(orderId, Source, Status, Number, Name, CustomerId, VendorId, ProductionNote, CustomerComment, OrderDate, ReleaseDate, ProductionDate, CompleteDate, Tax, Shipping, PriceAdjustment, new Dictionary<string,string>(Info), boxes, items);
     }
 
 }
