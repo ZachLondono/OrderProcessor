@@ -1,6 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Loader;
-
-namespace ApplicationCore.Features.Orders.Providers;
+﻿namespace ApplicationCore.Features.Orders.Loader.Providers;
 
 public interface IOrderProviderFactory {
 

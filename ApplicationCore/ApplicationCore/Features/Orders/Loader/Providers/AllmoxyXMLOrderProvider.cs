@@ -11,9 +11,9 @@ using ApplicationCore.Features.Orders.Queries;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
 using System.Xml.Serialization;
-using DrawerBoxModel = ApplicationCore.Features.Orders.Providers.AllmoxyXMLModels.DrawerBoxModel;
+using DrawerBoxModel = ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels.DrawerBoxModel;
 
-namespace ApplicationCore.Features.Orders.Providers;
+namespace ApplicationCore.Features.Orders.Loader.Providers;
 
 internal class AllmoxyXMLOrderProvider : IOrderProvider {
 

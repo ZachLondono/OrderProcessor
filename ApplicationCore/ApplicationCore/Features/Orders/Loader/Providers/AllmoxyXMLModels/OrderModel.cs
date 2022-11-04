@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace ApplicationCore.Features.Orders.Providers.AllmoxyXMLModels;
+namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
 [XmlRoot("order")]
 public class OrderModel {

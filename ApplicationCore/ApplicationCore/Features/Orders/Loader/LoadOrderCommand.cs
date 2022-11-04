@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Domain;
-using ApplicationCore.Features.Orders.Providers;
+using ApplicationCore.Features.Orders.Loader.Providers;
 using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Features.Orders.Loader;

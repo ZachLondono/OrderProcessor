@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Loader;
+using ApplicationCore.Features.Orders.Loader.Providers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationCore.Features.Orders.Providers;

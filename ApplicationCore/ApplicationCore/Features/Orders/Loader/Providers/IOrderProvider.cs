@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Domain;
 
-namespace ApplicationCore.Features.Orders.Providers;
+namespace ApplicationCore.Features.Orders.Loader.Providers;
 
 public interface IOrderProvider {
 
