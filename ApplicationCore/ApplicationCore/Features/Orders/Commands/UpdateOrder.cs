@@ -9,7 +9,7 @@ public class UpdateOrder {
 
     public record Command(Order Order) : ICommand;
 
-    public class Handler : ICommandHandler<Command> {
+    public class Handler : CommandHandler<Command> {
 
         private readonly IDbConnectionFactory _factory;
 

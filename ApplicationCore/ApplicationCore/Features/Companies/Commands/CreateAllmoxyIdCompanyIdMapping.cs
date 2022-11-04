@@ -8,7 +8,7 @@ public class CreateAllmoxyIdCompanyIdMapping {
 
     public record Command(int AllmoxyId, Guid CompanyId) : ICommand;
 
-    public class Handler : ICommandHandler<Command> {
+    public class Handler : CommandHandler<Command> {
 
         private readonly IDbConnectionFactory _factory;
 

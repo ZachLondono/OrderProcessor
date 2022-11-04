@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Labels.Handlers;
 
-public class PrintLabelsHandler : ICommandHandler<PrintLabelsRequest> {
+public class PrintLabelsHandler : CommandHandler<PrintLabelsRequest> {
 
     private readonly ILogger<PrintLabelsHandler> _logger;
     private readonly ILabelPrinterService _labelPrinterService;

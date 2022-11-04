@@ -10,7 +10,7 @@ public class UpdateCompany {
 
     public record Command(Company Company) : ICommand;
 
-    public class Handler : ICommandHandler<Command> {
+    public class Handler : CommandHandler<Command> {
 
         private readonly IDbConnectionFactory _factory;
 

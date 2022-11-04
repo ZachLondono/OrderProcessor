@@ -9,7 +9,7 @@ public class AssignVendorReleaseProfile {
 
     public record Command(Guid VendorId, ReleaseProfile Profile) : ICommand;
 
-    public class Handler : ICommandHandler<Command> {
+    public class Handler : CommandHandler<Command> {
 
         private readonly IDbConnectionFactory _factory;
 
