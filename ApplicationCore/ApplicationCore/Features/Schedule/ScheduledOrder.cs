@@ -10,8 +10,13 @@ public class ScheduledOrder {
 
     public string Name { get; set; } = string.Empty;
 
-    public DateTime ScheduledDate { get; set; }
+    public DateTime ProductionDate { get; set; }
 
     public Status Status { get; set; }
+
+    public string CustomerName { get; set; } = string.Empty;
+
+    public string VendorName { get; set; } = string.Empty;
+
 
 }
