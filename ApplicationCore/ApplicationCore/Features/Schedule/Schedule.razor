@@ -14,7 +14,7 @@
     </div>
 </EditForm>
 
-<button class="btn-primary my-3">Print Report</button>
+<button class="btn-primary my-3" @onclick="GenerateProductionReport">Print Report</button>
 
 
 @if (_hasError) {
@@ -93,6 +93,9 @@
 
 @code {
 
+    [CascadingParameter]
+    public IModalService Modal { get; set; } = default!;
+
     private DateModel _model = new();
     private bool _hasError = false;
     private string _errorMessage = "";
@@ -157,6 +160,20 @@
         bool activeCustomer = _customers.Any(c => c.Active && order.CustomerName.Equals(c.Name));
         bool activeVendor = _vendors.Any(v => v.Active && order.VendorName.Equals(v.Name));
         return activeCustomer && activeVendor;
+    }
+
+    private async Task GenerateProductionReport() {
+        var allOrders = _ordersByDate.Values.SelectMany(o => o);
+
+        var parameters = new ModalParameters().Add("Orders", allOrders);
+        var options = new ModalOptions() {
+                HideCloseButton = true,
+                DisableBackgroundCancel = true,
+                Size = ModalSize.Medium
+            };
+
+        var dialog = Modal.Show<ReportDialog>("Generating Report", parameters, options);
+        _ = await dialog.Result;
     }
 
     public class DateModel {
