@@ -1,0 +1,86 @@
+﻿@using ApplicationCore.Infrastructure
+@inject IBus Bus
+
+@if (_hasError) {
+    <div class="bg-red-500 text-white font-bold">@_errorMessage</div>
+}
+
+@if (_isGeneratingReport) {
+
+    <span>Generating report...</span>
+
+} else if (_isDone) {
+
+    <span>Done generating report</span>
+    <button class="btn-primary" @onclick="BlazoredModal.CloseAsync">Close</button>
+
+} else {
+    <EditForm Model="_settings" OnValidSubmit="GenerateReport">
+        
+        <div>
+            <label for="outputdir">Output Directory</label>
+            <InputText id="outputdir" placeholder="path/to/output" @bind-Value="_settings.OutputDirectory" />
+        </div>
+
+        <div>
+            <label for="title">Report Title</label>
+            <InputText id="title" placeholder="report title" @bind-Value="_settings.ReportTitle"/>
+        </div>
+
+        <div>
+            <InputCheckbox id="doprint" @bind-Value="_settings.DoPrint" />
+            <label for="doprint">Do Print</label>
+        </div>
+
+
+        <div>
+            <label for="templatepath">Tempalte Path</label>
+            <InputText id="templatepath" @bind-Value="_settings.TemplatePath" />
+        </div>
+
+        <button class="btn-primary" type="submit">Generate</button>
+
+    </EditForm>
+}
+
+@code {
+
+    [CascadingParameter]
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter]
+    public IEnumerable<ScheduledOrder> Orders { get; set; } = Enumerable.Empty<ScheduledOrder>();
+
+    private ReportSettings _settings = new();
+
+    private bool _isGeneratingReport = false;
+    private bool _isDone = false;
+    private bool _hasError = false;
+    private string _errorMessage = "";
+
+    private async Task GenerateReport() {
+
+        _isGeneratingReport = true;
+        var command = new GenerateProductionReport.Command(Orders, _settings.OutputDirectory, _settings.ReportTitle, _settings.TemplatePath, _settings.DoPrint);
+        var result = await Bus.Send(command);
+
+        result.OnError(error => {
+            _hasError = true;
+            _errorMessage = error.Message;
+        });
+
+        _isGeneratingReport = false;
+        _isDone = true;
+
+    }
+
+    public class ReportSettings {
+
+        public string OutputDirectory { get; set; } = string.Empty;
+        public string ReportTitle { get; set; } = string.Empty;
+        public bool DoPrint { get; set; }
+        public string TemplatePath { get; set; } = string.Empty;
+
+    }
+
+}
