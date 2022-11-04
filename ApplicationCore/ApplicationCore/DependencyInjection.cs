@@ -14,6 +14,7 @@ using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Labels.Services;
 using ApplicationCore.Features.Orders.Complete;
 using ApplicationCore.Features.Emails;
+using ApplicationCore.Features.Orders.Loader.Providers;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
