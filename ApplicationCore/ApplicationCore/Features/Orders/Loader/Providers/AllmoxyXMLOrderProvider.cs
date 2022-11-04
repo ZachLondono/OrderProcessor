@@ -6,7 +6,6 @@ using ApplicationCore.Features.Orders.Commands;
 using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
-using ApplicationCore.Features.Orders.Providers.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.Queries;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
@@ -21,14 +20,16 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
     private readonly IFileReader _fileReader;
     private readonly IBus _bus;
     private readonly AllmoxyConfiguration _configuration;
+    private readonly IMessageBoxService _messageBoxService;
 
     private readonly Dictionary<Guid, DrawerBoxOption> _optionCache = new();
 
-    public AllmoxyXMLOrderProvider(IFilePicker filePicker, IFileReader fileReader, IBus bus, AllmoxyConfiguration configuration) {
+    public AllmoxyXMLOrderProvider(IFilePicker filePicker, IFileReader fileReader, IBus bus, AllmoxyConfiguration configuration, IMessageBoxService messageBoxService) {
         _filePicker = filePicker;
         _fileReader = fileReader;
         _bus = bus;
         _configuration = configuration;
+        _messageBoxService = messageBoxService;
     }
 
     public async Task<Order?> LoadOrderData() {
@@ -40,8 +41,27 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
         if (serializer.Deserialize(fileStream) is not OrderModel data) throw new InvalidDataException($"Could not parse order from given file {filepath}");
 
-        bool didError = false;
+        string source = GetAllmoxySource(data.Id.ToString());
+        var existsResult = _bus.Send(new GetOrderIdWithSource.Query(source)).Result;
+        Guid? existingOrderId = null;
+        existsResult.Match(
+            existingId => {
 
+                if (existingId is null) return;
+
+                var result = _messageBoxService.OpenDialogYesNo("An order from this source already exists, do you want to overwrite the existing order?", "Order Exists");
+                if (result is YesNoResult.Yes) {
+                    existingOrderId = existingId;
+                }
+
+            },
+            error => {
+                // TODO: log error
+                _messageBoxService.OpenDialog("Error", $"Error checking if order exists\n{error.Message}");
+            }
+        );
+
+        bool didError = false;
         Company? customer = null;
         var response = await _bus.Send(new GetCompanyByAllmoxyId.Query(data.CustomerId));
 
@@ -82,11 +102,15 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             orderDate = DateTime.Now;
         }
 
-        var result = await _bus.Send(new CreateNewOrder.Command(data.Name, data.Id.ToString(), customer.Id, metroVendorId, data.Note, orderDate, tax, shipping, priceAdjustment, info, boxes, Enumerable.Empty<AdditionalItem>()));
+
+        Response<Order> result;
+        if (existingOrderId is null) {
             result = await _bus.Send(new CreateNewOrder.Command(source, data.Id.ToString(), data.Name, customer.Id, metroVendorId, data.Note, orderDate, tax, shipping, priceAdjustment, info, boxes, Enumerable.Empty<AdditionalItem>()));
+        } else {
+            result = await _bus.Send(new OverwriteExistingOrderWithId.Command((Guid)existingOrderId, source, data.Id.ToString(), data.Name, customer.Id, metroVendorId, data.Note, orderDate, tax, shipping, priceAdjustment, info, boxes, Enumerable.Empty<AdditionalItem>()));
+        }
 
         Order? order = null;
-
         result.Match(
             o => order = o,
             error => {
@@ -169,6 +193,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
                 }
             );
 
+            // TODO: move unknown option into a constant or into a configuration file
             if (option is null) return new DrawerBoxOption(Guid.Parse("d3030d0a-8992-4b6b-8577-9d4ac43b7cf7"), "UNKNOWN");
 
             _optionCache.Add(optionid, option);
@@ -176,7 +201,8 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         }
 
         return new DrawerBoxOption(Guid.Parse("d3030d0a-8992-4b6b-8577-9d4ac43b7cf7"), "UNKNOWN");
-
     }
+
+    private static string GetAllmoxySource(string orderNumber) => $"https://metrodrawerboxes.allmoxy.com/orders/quote/{orderNumber}";
 
 }
