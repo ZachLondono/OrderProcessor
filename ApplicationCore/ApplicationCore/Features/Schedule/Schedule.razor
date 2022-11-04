@@ -1,26 +1,45 @@
 ﻿@page "/"
-@using ApplicationCore.Features.Companies
-@using ApplicationCore.Features.Companies.Commands
-@using ApplicationCore.Features.Companies.Create
-@using ApplicationCore.Features.Orders
-@using ApplicationCore.Features.Orders.Commands
 @using ApplicationCore.Features.Orders.Domain
-@using ApplicationCore.Features.Orders.Loader
 @using ApplicationCore.Infrastructure
 @inject IBus Bus
-@inject OrderState OrderState
-@inject CompanyState CompanyState
-@inject NavigationManager NavigationManager
 
 <EditForm Model="@_model">
-    <label for="date">Selected Date</label>
-    <InputDate id="date" Value="@_model.Date" TValue="DateTime" ValueChanged="OnDateSet" ValueExpression="() => _model.Date"></InputDate>
+    <div>
+        <label for="startdate">Start Date</label>
+        <InputDate id="startdate" Value="@_model.StartDate" TValue="DateTime" ValueChanged="OnStartDateSet" ValueExpression="() => _model.StartDate"></InputDate>
+    </div>
+    <div>
+        <label for="enddate">End Date</label>
+        <InputDate id="enddate" Value="@_model.EndDate" TValue="DateTime" ValueChanged="OnEndDateSet" ValueExpression="() => _model.EndDate"></InputDate>
+    </div>
 </EditForm>
+
+<button class="btn-primary my-3">Print Report</button>
 
 
 @if (_hasError) {
     <div class="bg-red-500 text-white font-bold">@_errorMessage</div>
 }
+
+<div class="mt-3">
+    <span>Vendors</span>
+    @foreach (var vendor in _vendors) {
+        <div>
+            <input type="checkbox" checked="@vendor.Active" @onclick="@(() => ToggleCompany(vendor))"/>
+            <label class="text-black">@vendor.Name</label>
+        </div>
+    }
+</div>
+
+<div class="my-3">
+    <span>Customers</span>
+    @foreach (var customer in _customers) {
+        <div>
+            <input type="checkbox" checked="@customer.Active" @onclick="@(() => ToggleCompany(customer))"/>
+            <label class="text-black">@customer.Name</label>
+        </div>
+    }
+</div>
 
 <table class="table table-hover">
 
@@ -35,22 +54,40 @@
 
     <tbody>
 
-        @foreach(var order in _orders) {
-            <tr class="cursor-pointer">
-                <td>
-                    <span class="@($"pill {order.Status.GetColor()}")">@order.Status</span>
-                </td>
-                <td>@order.Number</td>
-                <td>@order.Name</td>
-                <td>
-                    @if(order.Status == Status.Released) {
-                        <button class="btn-primary">Complete</button>
-                    }
-                </td>
-            </tr>
+        @{
+            bool showHeaders = (_ordersByDate.Keys.Count > 1);
+            foreach (var date in _ordersByDate.Keys) {
+                var orders = _ordersByDate[date].Where(IsActive).ToList();
+                if (!orders.Any()) continue;
+                @if (showHeaders) {
+                    <tr>
+                        <th colspan="4" class="text-center">@date.ToShortDateString() (@orders.Count)</th>
+                    </tr>
+                }
+                @foreach (var order in orders) {
+                    <tr class="cursor-pointer h-16">
+                        <td>
+                            <span class="@($"pill {order.Status.GetColor()}")">@order.Status</span>
+                        </td>
+                        <td>@order.Number</td>
+                        <td>@order.Name</td>
+                        <td>
+                            <button class="btn-primary text-xs" hidden="@(order.Status != Status.Released)">Complete</button>
+                        </td>
+                    </tr>
+                }
+            }
         }
 
     </tbody>
+
+    <tfoot>
+
+        <tr>
+            <td colspan="4" class="text-center">@(_ordersByDate.Values.SelectMany(o=>o).Count(IsActive)) Orders</td>
+        </tr>
+
+    </tfoot>
 
 </table>
 
@@ -59,22 +96,48 @@
     private DateModel _model = new();
     private bool _hasError = false;
     private string _errorMessage = "";
-    private IEnumerable<ScheduledOrder> _orders = Enumerable.Empty<ScheduledOrder>();
+    private Dictionary<DateOnly, List<ScheduledOrder>> _ordersByDate = new();
+    private List<Company> _vendors = new();
+    private List<Company> _customers = new();
 
     protected override async Task OnInitializedAsync() {
-        await OnDateSet(DateTime.Today);
+        await OnDateChange();
     }
 
-    private async Task OnDateSet(DateTime date) {
+    private async Task OnStartDateSet(DateTime date) {
+        _model.StartDate = date;
+        await OnDateChange();
+    }
 
-        var startDate = date;
-        var endDate = date.AddDays(1).AddSeconds(-1);
+    private async Task OnEndDateSet(DateTime date) {
+        _model.EndDate = date;
+        await OnDateChange();
+    }
+
+    private async Task OnDateChange() {
+
+        var startDate = _model.StartDate;
+        var endDate = _model.EndDate.AddDays(1).AddSeconds(-1);
 
         var response = await Bus.Send(new GetOrdersByDate.Query(startDate, endDate));
         response.Match(
             orders => {
-                _orders = orders;
+
+                _vendors = orders.Select(o => o.VendorName)
+                                .Distinct()
+                                .Select(v => new Company(v, true))
+                                .ToList();
+
+                _customers = orders.Select(o => o.CustomerName)
+                                .Distinct()
+                                .Select(v => new Company(v, true))
+                                .ToList();
+
+                _ordersByDate = orders.GroupBy(o => DateOnly.FromDateTime(o.ProductionDate))
+                                        .ToDictionary(k => k.Key, g => g.ToList());
+
                 _hasError = false;
+
             },
             error => {
                 // TODO: log error
@@ -83,11 +146,34 @@
             }
         );
 
-        _model.Date = date;
+    }
+
+    private void ToggleCompany(Company company) {
+        company.Toggle();
+        StateHasChanged();
+    }
+
+    private bool IsActive(ScheduledOrder order) {
+        bool activeCustomer = _customers.Any(c => c.Active && order.CustomerName.Equals(c.Name));
+        bool activeVendor = _vendors.Any(v => v.Active && order.VendorName.Equals(v.Name));
+        return activeCustomer && activeVendor;
     }
 
     public class DateModel {
-        public DateTime Date { get; set; } = DateTime.Today;
+        public DateTime StartDate { get; set; } = DateTime.Today;
+        public DateTime EndDate { get; set; } = DateTime.Today;
+    }
+
+    public class Company {
+        public string Name { get; }
+        public bool Active { get; set; } = true;
+        public Company(string name, bool active) {
+            Name = name;
+            Active = active;
+        }
+        public void Toggle() {
+            Active = !Active;
+        }
     }
 
 }
