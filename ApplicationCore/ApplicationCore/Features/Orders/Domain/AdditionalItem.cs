@@ -12,4 +12,6 @@ public class AdditionalItem {
         Price = price;
     }
 
+    public static AdditionalItem Create(string description, decimal price) => new(Guid.NewGuid(), description, price);
+
 }
