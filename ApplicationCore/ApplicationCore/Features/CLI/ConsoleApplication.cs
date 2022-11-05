@@ -1,0 +1,55 @@
+﻿using ApplicationCore.Features.Orders.Loader;
+using ApplicationCore.Infrastructure;
+using ApplicationCore.Shared;
+using CommandLine;
+
+namespace ApplicationCore.Features.CLI;
+
+public class ConsoleApplication {
+
+    private readonly IBus _bus;
+    private readonly IMessageBoxService _messageBoxService;
+
+    public ConsoleApplication(IBus bus, IMessageBoxService messageBoxService) {
+        _bus = bus;
+        _messageBoxService = messageBoxService;
+    }
+
+    public async Task Run(string[] args) {
+
+        await Parser.Default
+                    .ParseArguments<ConsoleApplicationOption>(args)
+                    .WithNotParsed(errors => {
+                        
+                        string errorMessage = "";
+                        foreach (var error in errors) {
+                            errorMessage += error + "\n";
+                        }
+                        _messageBoxService.OpenDialog(errorMessage, "Error");
+
+                    }).WithParsedAsync(async option => {
+                        
+                        var provider = ParseProviderType(option.Provider);
+                        if (provider is not OrderSourceType.Unknown) {
+                            var result = await _bus.Send(new LoadOrderCommand.Command(provider, option.Source));
+                            result.Match(
+                                order => _messageBoxService.OpenDialog($"New order loaded\n{order.Name}\n{order.Id}", "New Order"),
+                                error => _messageBoxService.OpenDialog($"Error loading order\n{error.Message}", "Error")
+                            );
+                        } else {
+                            _messageBoxService.OpenDialog($"Unkown order provider '{option.Provider}'", "Unkown provider");
+                        }
+
+                    });
+
+    }
+
+    private static OrderSourceType ParseProviderType(string provider) => provider switch {
+        "allmoxy" => OrderSourceType.AllmoxyXML,
+        //"hafele" => OrderSourceType.HafeleExcel,
+        //"richelieu" => OrderSourceType.RichelieuAPI,
+        "ot" => OrderSourceType.OTExcel,
+        _ => OrderSourceType.Unknown
+    };
+
+}

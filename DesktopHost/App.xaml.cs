@@ -7,8 +7,7 @@ using ApplicationCore;
 using MediatR;
 using System;
 using System.Windows;
-using ApplicationCore.Infrastructure;
-using DesktopHost.Services;
+using ApplicationCore.Features.CLI;
 
 namespace DesktopHost;
 
@@ -22,9 +21,10 @@ public partial class App : Application {
         var configuration = BuildConfiguration();
         var serviceProvider = BuildServiceProvider(configuration);
 
-        if (e.Args.Length == 1) {
+        if (e.Args.Length > 0) {
             try {
-                TryLoadOrderFromFile(serviceProvider, e.Args[0]);
+                var app = serviceProvider.GetRequiredService<ConsoleApplication>();
+                app.Run(e.Args).Wait();
             } catch (Exception ex) {
                 MessageBox.Show($"Error loading order\n{ex}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -35,23 +35,6 @@ public partial class App : Application {
 
         new MainWindow(serviceProvider).Show();
 
-    }
-
-    private static void TryLoadOrderFromFile(IServiceProvider serviceProvider, string filePath) {
-        var bus = serviceProvider.GetRequiredService<IBus>();
-        var messageBox = serviceProvider.GetRequiredService<IMessageBoxService>();
-
-        var loader = new LoadOrderFromExcelService(bus, messageBox);
-
-        var response = loader.LoadOrder(filePath);
-
-        string content = "Nothing happend";
-        response.Match(
-            order => content = $"Order loaded: \n{order.Name}\n{order.Id}",
-            error => content = "Error loading order \n" + error.Message
-        );
-
-        messageBox.OpenDialog(content, "Load order result");
     }
 
     private static IConfiguration BuildConfiguration()
@@ -65,6 +48,7 @@ public partial class App : Application {
                             .AddApplicationCoreServices(configuration)
                             .AddSingleton<IFilePicker, WPFDialogFilePicker>()
                             .AddSingleton<IMessageBoxService, WPFMessageBox>()
+                            .AddSingleton<ConsoleApplication>()
                             .AddSingleton(configuration)
                             .AddLogging(ConfigureLogging);
 
