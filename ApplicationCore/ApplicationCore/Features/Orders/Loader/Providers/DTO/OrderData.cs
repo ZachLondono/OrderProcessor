@@ -1,0 +1,29 @@
+﻿namespace ApplicationCore.Features.Orders.Loader.Providers.DTO;
+
+public record OrderData {
+
+    public string Number { get; set; } = string.Empty;
+
+    public string Name { get; set; } = string.Empty;
+
+    public string Comment { get; set; } = string.Empty;
+
+    public decimal Tax { get; set; }
+
+    public decimal Shipping { get; set; }
+
+    public decimal PriceAdjustment { get; set; }
+
+    public DateTime OrderDate { get; set; }
+
+    public Guid CustomerId { get; set; }
+
+    public Guid VendorId { get; set; }
+
+    public Dictionary<string, string> Info { get; set; } = new();
+
+    public List<DrawerBoxData> Boxes { get; set; } = new();
+
+    public List<AdditionalItemData> AdditionalItems { get; set; } = new();
+
+}
