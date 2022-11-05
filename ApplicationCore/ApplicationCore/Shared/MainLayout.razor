@@ -7,6 +7,7 @@
 @inject NavigationManager NavigationManager
 @inject OrderState OrderState
 @inject IBus Bus
+@inject IFilePicker FilePicker
 
 <div class="page">
 	<header class="w-48 h-screen fixed top-0 left-0 bg-slate-100 dark:bg-slate-700">
@@ -96,7 +97,10 @@
 	public IModalService Modal { get; set; } = default!;
 
 	private async Task LoadOrder() {
-		var response = await Bus.Send(new LoadOrderCommand.Command(OrderSource.AllmoxyXML));
+		//_configuration.DefaultDirectory
+		bool wasPicked = FilePicker.TryPickFile("Select Allmoxy Order File", "C:\\Users\\Zachary Londono\\Desktop\\ExampleConfiguration", new("XML files (*.xml)", ".xml"), out string filepath);
+		if (!wasPicked) throw new InvalidDataException("No file was picked");
+		var response = await Bus.Send(new LoadOrderCommand.Command(OrderSourceType.AllmoxyXML, filepath));
 		response.Match(
 			order => {
 				OrderState.ReplaceOrder(order);

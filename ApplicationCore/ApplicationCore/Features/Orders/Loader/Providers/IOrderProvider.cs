@@ -1,9 +1,12 @@
-﻿using ApplicationCore.Features.Orders.Domain;
+﻿using ApplicationCore.Features.Orders.Loader.Providers.DTO;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 
-public interface IOrderProvider {
+public abstract class OrderProvider {
 
-    public Task<Order?> LoadOrderData();
+    public abstract Task<ValidationResult> ValidateSource(string source);
+
+    // TODO: use different return type to return error messages
+    public abstract Task<OrderData?> LoadOrderData(string source);
 
 }

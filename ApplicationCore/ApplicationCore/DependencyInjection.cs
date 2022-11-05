@@ -34,7 +34,9 @@ public static class DependencyInjection {
         var allmoxyConfig = configuration.GetRequiredSection("AllmoxyConfiguration").Get<AllmoxyConfiguration>();
         services.AddSingleton<AllmoxyConfiguration>(allmoxyConfig);
         services.AddTransient<AllmoxyXMLOrderProvider>();
-        
+
+        services.AddTransient<OTExcelProvider>();
+
         services.AddTransient<ITemplateFiller, ClosedXMLTemplateFiller>();
         services.AddTransient<IExcelTemplate, ClosedXMLTemplate>();
         services.AddTransient<IExcelTemplateFactory, ExcelTemplateFactory>();

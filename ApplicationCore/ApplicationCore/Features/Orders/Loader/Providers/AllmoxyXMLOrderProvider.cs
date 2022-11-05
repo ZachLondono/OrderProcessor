@@ -2,11 +2,9 @@
 using ApplicationCore.Features.Companies.Domain;
 using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Queries;
-using ApplicationCore.Features.Orders.Commands;
-using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
-using ApplicationCore.Features.Orders.Queries;
+using ApplicationCore.Features.Orders.Loader.Providers.DTO;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
 using System.Xml.Serialization;
@@ -14,52 +12,61 @@ using DrawerBoxModel = ApplicationCore.Features.Orders.Loader.Providers.AllmoxyX
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 
-internal class AllmoxyXMLOrderProvider : IOrderProvider {
+internal class AllmoxyXMLOrderProvider : OrderProvider {
 
-    private readonly IFilePicker _filePicker;
     private readonly IFileReader _fileReader;
     private readonly IBus _bus;
     private readonly AllmoxyConfiguration _configuration;
-    private readonly IMessageBoxService _messageBoxService;
 
-    private readonly Dictionary<Guid, DrawerBoxOption> _optionCache = new();
+    private string? _readSource = null;
+    private OrderModel? _sourceData = null;
 
-    public AllmoxyXMLOrderProvider(IFilePicker filePicker, IFileReader fileReader, IBus bus, AllmoxyConfiguration configuration, IMessageBoxService messageBoxService) {
-        _filePicker = filePicker;
+    public AllmoxyXMLOrderProvider(IFileReader fileReader, IBus bus, AllmoxyConfiguration configuration) {
         _fileReader = fileReader;
         _bus = bus;
         _configuration = configuration;
-        _messageBoxService = messageBoxService;
     }
 
-    public async Task<Order?> LoadOrderData() {
-        bool wasPicked = _filePicker.TryPickFile("Select Allmoxy Order File", _configuration.DefaultDirectory, new("XML files (*.xml)", ".xml"), out string filepath);
-        if (!wasPicked) throw new InvalidDataException("No file was picked");
-
-        using var fileStream = _fileReader.OpenReadFileStream(filepath);
+    private void ReadData(string source) {
+        using var fileStream = _fileReader.OpenReadFileStream(source);
         var serializer = new XmlSerializer(typeof(OrderModel));
+        if (serializer.Deserialize(fileStream) is not OrderModel data) throw new InvalidDataException($"Could not parse order from given file {source}");
+        _readSource = source;
+        _sourceData = data;
+    }
 
-        if (serializer.Deserialize(fileStream) is not OrderModel data) throw new InvalidDataException($"Could not parse order from given file {filepath}");
+    public override Task<ValidationResult> ValidateSource(string source) {
 
-        string source = GetAllmoxySource(data.Id.ToString());
-        var existsResult = _bus.Send(new GetOrderIdWithSource.Query(source)).Result;
-        Guid? existingOrderId = null;
-        existsResult.Match(
-            existingId => {
+        try {
 
-                if (existingId is null) return;
+            // TODO: instead of actually reading the data, it can be checked for valid XML schema, then there is no need for the private fields
+            ReadData(source);
 
-                var result = _messageBoxService.OpenDialogYesNo("An order from this source already exists, do you want to overwrite the existing order?", "Order Exists");
-                if (result is YesNoResult.Yes) {
-                    existingOrderId = existingId;
-                }
+            return Task.FromResult(new ValidationResult() {
+                IsValid = true
+            });
 
-            },
-            error => {
-                // TODO: log error
-                _messageBoxService.OpenDialog("Error", $"Error checking if order exists\n{error.Message}");
-            }
-        );
+        } catch {
+
+            return Task.FromResult(new ValidationResult() {
+                IsValid = false,
+                ErrorMessage = "File does not contain valid order data"
+            });
+
+        }
+        
+    }
+
+    public override async Task<OrderData?> LoadOrderData(string source) {
+
+        if (_readSource is null || _sourceData is null || !_readSource.Equals(source)) {
+            // TODO: instead of actually reading the data, it can be checked for valid XML schema, then there is no need for the private fields
+            ReadData(source);
+        }
+
+        if (_sourceData is null) throw new InvalidDataException("Invalid order data");
+
+        OrderModel data = _sourceData;
 
         bool didError = false;
         Company? customer = null;
@@ -83,8 +90,10 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         if (customer is null || didError) return null;
 
         int line = 1;
-        var mappingTasks = data.DrawerBoxes.Select(async b => await MapToDrawerBox(b, line++)).ToList();
-        var boxes = await Task.WhenAll(mappingTasks);
+        var boxes = data.DrawerBoxes
+                        .Select(b => MapToDrawerBox(b, line++))
+                        .ToList();
+
         var tax = data.Invoice.Tax;
         var shipping = data.Invoice.Shipping;
         var priceAdjustment = 0m;
@@ -96,29 +105,28 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             { "Allmoxy Customer Id", data.CustomerId.ToString() }
         };
 
+        var additionalItems = new List<AdditionalItemData>();
+
         var metroVendorId = Guid.Parse(_configuration.VendorId);
 
         if (!DateTime.TryParse(data.OrderDate, out DateTime orderDate)) {
             orderDate = DateTime.Now;
         }
 
-
-        Response<Order> result;
-        if (existingOrderId is null) {
-            result = await _bus.Send(new CreateNewOrder.Command(source, data.Id.ToString(), data.Name, customer.Id, metroVendorId, data.Note, orderDate, tax, shipping, priceAdjustment, info, boxes, Enumerable.Empty<AdditionalItem>()));
-        } else {
-            result = await _bus.Send(new OverwriteExistingOrderWithId.Command((Guid)existingOrderId, source, data.Id.ToString(), data.Name, customer.Id, metroVendorId, data.Note, orderDate, tax, shipping, priceAdjustment, info, boxes, Enumerable.Empty<AdditionalItem>()));
-        }
-
-        Order? order = null;
-        result.Match(
-            o => order = o,
-            error => {
-                // TODO: log error
-            }
-        );
-
-        return order;
+        return new OrderData() {
+            Number = data.Id.ToString(),
+            Name = data.Name,
+            Comment = data.Note,
+            Tax = tax,
+            Shipping = shipping,
+            PriceAdjustment = priceAdjustment,
+            OrderDate = orderDate,
+            CustomerId = customer.Id,
+            VendorId = metroVendorId,
+            AdditionalItems = additionalItems,
+            Boxes = boxes,
+            Info = info
+        };
 
     }
 
@@ -152,57 +160,33 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     }
 
-    private async Task<DrawerBox> MapToDrawerBox(DrawerBoxModel data, int line) {
+    private DrawerBoxData MapToDrawerBox(DrawerBoxModel data, int line)
+        => new() {
+            Line = line,
+            UnitPrice = data.Price,
+            Qty = data.Qty,
+            Height = Dimension.FromInches(data.Dimensions.Height),
+            Width = Dimension.FromInches(data.Dimensions.Width),
+            Depth = Dimension.FromInches(data.Dimensions.Depth),
+            Logo = false,
+            PostFinish = false,
+            ScoopFront = false,
+            FaceMountingHoles = false,
+            UBox = false,
+            FixedDividers = false,
+            BoxMaterialOptionId = GetOptionId(data.Material),
+            BottomMaterialOptionId = GetOptionId(data.Bottom),
+            ClipsOptionId = GetOptionId(data.Clips),
+            NotchOptionId = GetOptionId(data.Notch),
+            InsertOptionId = GetOptionId(data.Insert),
+        };
 
-        return DrawerBox.Create(
-            line,
-            data.Price,
-            data.Qty,
-            Dimension.FromInches(data.Dimensions.Height),
-            Dimension.FromInches(data.Dimensions.Width),
-            Dimension.FromInches(data.Dimensions.Depth),
-            new(
-                boxMaterial: await GetOption(data.Material),
-                bottomMaterial: await GetOption(data.Bottom),
-                clips: await GetOption(data.Clips),
-                notches: await GetOption(data.Notch),
-                accessory: await GetOption(data.Insert),
-                logo: false,
-                facemountingholes: false,
-                postFinish: false,
-                scoopFront: false,
-                uBoxDimensions: null, //new() { A = Dimension.FromInches(5), B = Dimension.FromInches(5), C = Dimension.FromInches(5) },
-                fixedDivdersCounts: null //new() { WideCount = 2, DeepCount = 2 }
-                )
-            );
-    }
-
-    private async Task<DrawerBoxOption> GetOption(string optionname) {
-
+    private Guid GetOptionId(string optionname) {
         if (_configuration.OptionMap.TryGetValue(optionname, out string? optionidstr) && optionidstr is not null) {
             var optionid = Guid.Parse(optionidstr);
-
-            if (_optionCache.TryGetValue(optionid, out DrawerBoxOption? option)) return option;
-
-            var response = await _bus.Send(new GetDrawerBoxOptionById.Query(optionid));
-
-            response.Match(
-                o => option = o,
-                error => {
-                    // TODO: log error
-                }
-            );
-
-            // TODO: move unknown option into a constant or into a configuration file
-            if (option is null) return new DrawerBoxOption(Guid.Parse("d3030d0a-8992-4b6b-8577-9d4ac43b7cf7"), "UNKNOWN");
-
-            _optionCache.Add(optionid, option);
-            return option;
+            return optionid;
         }
-
-        return new DrawerBoxOption(Guid.Parse("d3030d0a-8992-4b6b-8577-9d4ac43b7cf7"), "UNKNOWN");
+        return Guid.Parse("d3030d0a-8992-4b6b-8577-9d4ac43b7cf7");
     }
-
-    private static string GetAllmoxySource(string orderNumber) => $"https://metrodrawerboxes.allmoxy.com/orders/quote/{orderNumber}";
 
 }
