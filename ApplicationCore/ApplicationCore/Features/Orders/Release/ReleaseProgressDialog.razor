@@ -16,20 +16,12 @@
     [CascadingParameter]
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
-    [Parameter]
-    public Func<Task>? TriggerReleaseAction { get; set; }
-
     private ElementReference _area;
     private string _content = "";
     private bool _releaseDone = false;
 
-    protected override async Task OnInitializedAsync() {
-        if (TriggerReleaseAction is not null) {
-            await TriggerReleaseAction();
-        } else {
-            _content = "nothing to do";
-            _releaseDone = true;
-        }
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (firstRender) await OrderState.Release();
     }
 
     public void Handle(OrderReleaseProgressNotification notification) {
