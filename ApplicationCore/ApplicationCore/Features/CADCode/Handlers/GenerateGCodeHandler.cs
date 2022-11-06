@@ -1,9 +1,10 @@
 ﻿using ApplicationCore.Features.CADCode.Contracts;
 using ApplicationCore.Features.CADCode.Services;
+using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Features.CADCode.Handlers;
 
-internal class CNCReleaseRequestHandler /* : AsyncRequestHandler<OrderReleaseTriggerHandler> */ {
+internal class CNCReleaseRequestHandler : CommandHandler<CNCReleaseRequest> {
 
     private readonly ICNCService _cncService;
     private readonly ICNCConfigurationProvider _configurationProvider;
@@ -13,9 +14,14 @@ internal class CNCReleaseRequestHandler /* : AsyncRequestHandler<OrderReleaseTri
         _configurationProvider = configurationProvider;
     }
 
-    public void Handle(CNCReleaseRequest notification) {
-        var machineConfigurations = _configurationProvider.GetConfigurations();
-        _cncService.ExportToCNC(notification.Batch, machineConfigurations);
-    }
+    public override Task<Response> Handle(CNCReleaseRequest command) {
+        try {
+            var machineConfigurations = _configurationProvider.GetConfigurations();
+            _cncService.ExportToCNC(command.Batch, machineConfigurations);
+            return Task.FromResult(new Response());
+        } catch (Exception e) {
+            return Task.FromResult(new Response(new Error($"Exception thrown while releasing cnc program {e}")));
+        }
 
+    }
 }

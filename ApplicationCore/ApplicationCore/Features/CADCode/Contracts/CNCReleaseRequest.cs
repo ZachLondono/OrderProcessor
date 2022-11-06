@@ -1,3 +1,5 @@
-﻿namespace ApplicationCore.Features.CADCode.Contracts;
+﻿using ApplicationCore.Infrastructure;
 
-internal record CNCReleaseRequest(CNCBatch Batch);
+namespace ApplicationCore.Features.CADCode.Contracts;
+
+internal record CNCReleaseRequest(CNCBatch Batch) : ICommand;
