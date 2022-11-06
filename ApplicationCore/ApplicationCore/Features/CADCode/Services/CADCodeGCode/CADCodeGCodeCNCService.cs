@@ -10,13 +10,13 @@ namespace ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode;
 
 public class CADCodeGCodeCNCService : ICNCService {
 
-    private readonly CADCodeConfiguration _ccConfig;
+    private readonly ICADCodeConfigurationProvider _configProvider;
     private readonly IReleasePDFService _pdfService;
     private readonly IInventoryService _inventoryService;
     private readonly ICADCodeMachineConfigurationProvider _ccmachineConfigProvider;
 
-    public CADCodeGCodeCNCService(CADCodeConfiguration config, IReleasePDFService pdfService, IInventoryService inventoryService, ICADCodeMachineConfigurationProvider ccmachineConfigProvider) {
-        _ccConfig = config;
+    public CADCodeGCodeCNCService(ICADCodeConfigurationProvider configProvider, IReleasePDFService pdfService, IInventoryService inventoryService, ICADCodeMachineConfigurationProvider ccmachineConfigProvider) {
+        _configProvider = configProvider;
         _pdfService = pdfService;
         _inventoryService = inventoryService;
         _ccmachineConfigProvider = ccmachineConfigProvider;
@@ -24,6 +24,7 @@ public class CADCodeGCodeCNCService : ICNCService {
 
     public void ExportToCNC(CNCBatch batch, IEnumerable<CNCMachineConfiguration> machineConfigs) {
 
+        var cncConfig = _configProvider.GetConfiguration();
         var availableInventory = _inventoryService.GetInventory();
 
         var ccmachineConfigs = _ccmachineConfigProvider.GetConfigurations();
@@ -43,10 +44,10 @@ public class CADCodeGCodeCNCService : ICNCService {
             }
 
             // TODO: pass machine name to function call so it can generate machine-specific results
-            _ = cadCode.GenerateSinglePrograms(_ccConfig, machineConfig, ccmachineconfig);
-            var nestResults = cadCode.GenerateNestedCode(_ccConfig, machineConfig, ccmachineconfig);
+            _ = cadCode.GenerateSinglePrograms(cncConfig, machineConfig, ccmachineconfig);
+            var nestResults = cadCode.GenerateNestedCode(cncConfig, machineConfig, ccmachineconfig);
 
-            machineReleases.Add(GetMachineRelease(_ccConfig, machineConfig, nestResults, batch.Parts));
+            machineReleases.Add(GetMachineRelease(cncConfig, machineConfig, nestResults, batch.Parts));
         }
 
         var job = new ReleasedJob() {

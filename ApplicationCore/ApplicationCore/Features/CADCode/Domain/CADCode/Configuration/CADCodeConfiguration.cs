@@ -4,7 +4,6 @@ namespace ApplicationCore.Features.CADCode.Services.Domain.CADCode.Configuration
 
 public class CADCodeConfiguration {
 
-    
     [JsonPropertyName("startingProgramNumber")]
     public int StartingProgramNumber { get; init; }
     
