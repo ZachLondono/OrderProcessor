@@ -15,6 +15,7 @@ using ApplicationCore.Features.Labels.Services;
 using ApplicationCore.Features.Orders.Complete;
 using ApplicationCore.Features.Emails;
 using ApplicationCore.Features.Orders.Loader.Providers;
+using ApplicationCore.Features.CADCode;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -52,6 +53,8 @@ public static class DependencyInjection {
         services.AddSingleton<EmailConfiguration>(invoiceEmailConfig);
 
         services.AddEmailing();
+
+        services.AddCADCode(configuration);
 
         services.AddBlazoredModal();
 
