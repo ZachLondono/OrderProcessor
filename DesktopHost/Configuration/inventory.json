@@ -1,0 +1,31 @@
+[
+  {
+    "name": "MDF",
+    "thickness": 19,
+    "isGrained": false,
+    "sizes": [
+      {
+        "width": 1220,
+        "length": 1500,
+        "priority": 1
+      },
+      {
+        "width": 1525,
+        "length": 2743,
+        "priority": 2
+      }
+    ]
+  },
+  {
+    "name": "White Melamine",
+    "thickness": 19,
+    "isGrained": false,
+    "sizes": [
+      {
+        "width": 500,
+        "length": 1500,
+        "priority": 1
+      }
+    ]
+  }
+]

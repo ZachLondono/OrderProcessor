@@ -1,0 +1,42 @@
+{
+  "startingSubProgramNumber": 1,
+  "startingProgramNumber": 1,
+  "labelDataOutputDirectory": "C:\\Users\\Zachary Londono\\Desktop\\CC Output\\",
+  "pictureFileOutputDirectory": "C:\\Users\\Zachary Londono\\Desktop\\CC Output\\Pix",
+  "labelDesignFile": "",
+  "optimizerSettings": {
+    "iterations": 100,
+    "runTime": 20,
+    "utilization": 1,
+    "kerf": 12.53,
+    "panels": 10,
+    "offset": 0,
+    "showPattern": false,
+    "showResult": false
+  },
+  "filePaths_old_backup": {
+    "labelImagePath": "Y:\\CADCode",
+    "toolFilePath": "Y:\\CADCode\\cfg\\Tool Files",
+    "cutListPath": "Y:\\CADCode\\Cutlist Input",
+    "sharedFolderPath": "",
+    "labelFilePath": "Y:\\CADCode\\Label Data",
+    "labelSetupPath": "Y:\\CADCode\\Label Design Files",
+    "seeSawLabelPath": "Y:\\CADCode\\sawlabel",
+    "reportsLocation": "Y:\\CADCode\\Reports",
+    "pictureFileLocation": "Y:\\CADCode\\pix",
+    "machineToolPath": "",
+    "machinePostLocation": "Y:\\CADCode",
+    "programFileExtension": ".cnc",
+    "partsFileMaximumParts": 1,
+    "partsFileExtension": "",
+    "partsFileFormat": "",
+    "partsFileLocation": "C:\\CP3\\CPDATA",
+    "modifiedCutlistLocation": "",
+    "inventoryPath": "y:\\CADCode\\cfg\\Inventory",
+    "pathToDXFFiles": "",
+    "pathToSawPrograms": "Y:\\CADCode\\CNC Programs\\Saw\\Programs",
+    "pathToSawLists": "Y:\\CADCode\\CNC Programs\\Saw\\Lists",
+    "indexFileLocation": "Y:\\CADCode\\CNC Programs\\Andi Stratos",
+    "fileOutputDirectory": "C:\\Users\\Zachary Londono\\Desktop\\CC Output\\"
+  }
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "machineName": "Andi Stratos",
+    "toolFilePath": "Y:\\CADCode\\cfg\\Tool Files\\Andi Stratos Royal - Tools from Omni MOVED BOWL.mdb",
+    "nestedGCodeOutputDirectory": "C:\\Users\\Zachary Londono\\Desktop\\CC Output\\Nested",
+    "singleGCodeOutputDirectory": "C:\\Users\\Zachary Londono\\Desktop\\CC Output\\Single"
+  },
+  {
+    "machineName": "Omnitech",
+    "toolFilePath": "Y:\\CADCode\\cfg\\Tool Files\\Royal Omnitech Fanuc-Smart names SMALL PARTS.mdb",
+    "nestedGCodeOutputDirectory": "C:\\Users\\Zachary Londono\\Desktop\\CC Output\\Nested",
+    "singleGCodeOutputDirectory": "C:\\Users\\Zachary Londono\\Desktop\\CC Output\\Single"
+  }
+]

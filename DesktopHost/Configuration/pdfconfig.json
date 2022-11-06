@@ -1,0 +1,27 @@
+{
+  "infoLabelColumnWidth": 75.0,
+  "pageHeaderStyle": {
+    "family" :  "Calibri",
+    "fontSize": 16,
+    "fontColor": "#000000",
+    "fontWeight": 600
+  },
+  "titleStyle": {
+    "family": "Calibri",
+    "size": 10,
+    "color": "#000000",
+    "weight": 600
+  },
+  "tableHeaderStyle": {
+    "family": "Calibri",
+    "size": 8,
+    "color": "#000000",
+    "weight": 600
+  },
+  "tableCellStyle": {
+    "family": "Calibri",
+    "size": 8,
+    "color": "#000000",
+    "weight": 400
+  }
+}
