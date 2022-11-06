@@ -4,7 +4,7 @@ using System.Drawing.Drawing2D;
 
 namespace ApplicationCore.Features.CADCode.Domain;
 
-internal class Printer {
+public class Printer {
 
     private readonly Image _image;
 

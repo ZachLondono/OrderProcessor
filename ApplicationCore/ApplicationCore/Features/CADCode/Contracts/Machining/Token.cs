@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.CADCode.Contracts.Machining;
 
-internal abstract record Token {
+public abstract record Token {
 
     public Tool Tool { get; init; } = new("", 0);
     public int Sequence { get; init; }

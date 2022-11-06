@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.CADCode.Services.Domain.Inventory;
 
-internal class InventorySize {
+public class InventorySize {
 
     public int Priority { get; init; }
     public double Width { get; init; }

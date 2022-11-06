@@ -8,7 +8,7 @@ using ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode.PDF;
 
 namespace ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode;
 
-internal class CADCodeGCodeCNCService : ICNCService {
+public class CADCodeGCodeCNCService : ICNCService {
 
     private readonly CADCodeConfiguration _ccConfig;
     private readonly IReleasePDFService _pdfService;

@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.CADCode.Contracts;
 
-internal record PartMaterial {
+public record PartMaterial {
 
     public string Name { get; init; } = string.Empty;
     public double Thickness { get; init; }

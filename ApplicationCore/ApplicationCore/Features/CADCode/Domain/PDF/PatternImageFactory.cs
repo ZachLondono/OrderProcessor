@@ -6,7 +6,7 @@ using Image = System.Drawing.Image;
 
 namespace ApplicationCore.Features.CADCode.Services.Domain.PDF;
 
-internal class PatternImageFactory {
+public class PatternImageFactory {
 
     public static byte[] CreatePatternImage(string imagePath, TableOrientation orientation, float sheetWidth, float sheetLength, IEnumerable<ImageText> text) {
 

@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.CADCode.Contracts.Machining;
 
-internal record Point() {
+public record Point() {
 
     public float X { get; init; }
     public float Y { get; init; }

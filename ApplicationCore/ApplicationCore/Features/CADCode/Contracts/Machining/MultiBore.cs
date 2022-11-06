@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.CADCode.Contracts.Machining;
 
-internal record MultiBore : Token {
+public record MultiBore : Token {
 
     public Point StartPosition { get; init; } = new(0, 0);
     public Point EndPosition { get; init; } = new(0, 0);

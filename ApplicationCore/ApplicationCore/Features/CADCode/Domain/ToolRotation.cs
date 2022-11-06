@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.CADCode.Services.Domain;
 
-internal enum ToolRotation {
+public enum ToolRotation {
     Clockwise,
     CounterClockwise,
     Auto

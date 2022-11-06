@@ -2,6 +2,6 @@
 
 namespace ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode.PDF;
 
-internal interface IPDFConfigurationProvider {
+public interface IPDFConfigurationProvider {
     public PDFConfiguration GetConfiguration();
 }

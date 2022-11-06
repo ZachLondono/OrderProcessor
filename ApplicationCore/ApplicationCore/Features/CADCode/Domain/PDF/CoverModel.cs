@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.CADCode.Services.Domain.PDF;
 
-internal class CoverModel {
+public class CoverModel {
 
     public string Title { get; init; } = string.Empty;
     public IReadOnlyDictionary<string, string> Info { get; init; } = new Dictionary<string, string>();

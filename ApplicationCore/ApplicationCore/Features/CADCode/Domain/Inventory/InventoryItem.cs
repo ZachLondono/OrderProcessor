@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.CADCode.Services.Domain.Inventory;
 
-internal class InventoryItem {
+public class InventoryItem {
 
     public string Name { get; init; } = string.Empty;
     public double Thickness { get; init; }

@@ -4,7 +4,7 @@ using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Features.CADCode.Handlers;
 
-internal class CNCReleaseRequestHandler : CommandHandler<CNCReleaseRequest> {
+public class CNCReleaseRequestHandler : CommandHandler<CNCReleaseRequest> {
 
     private readonly ICNCService _cncService;
     private readonly ICNCConfigurationProvider _configurationProvider;

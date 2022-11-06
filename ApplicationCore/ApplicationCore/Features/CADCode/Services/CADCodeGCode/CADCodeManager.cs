@@ -8,7 +8,7 @@ using Part = CADCode.Part;
 
 namespace ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode;
 
-internal class CADCodeManager {
+public class CADCodeManager {
 
     private readonly Dictionary<PartMaterial, List<CNCPart>> _partsByMaterial = new();
     private readonly UnitTypes _units = UnitTypes.CC_U_METRIC;

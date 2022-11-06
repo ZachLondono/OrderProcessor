@@ -2,4 +2,4 @@
 
 namespace ApplicationCore.Features.CADCode.Contracts;
 
-internal record CNCReleaseRequest(CNCBatch Batch) : ICommand;
+public record CNCReleaseRequest(CNCBatch Batch) : ICommand;

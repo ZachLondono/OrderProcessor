@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.CADCode.Services.Domain.PDF;
 
-internal class PageModel {
+public class PageModel {
 
     public string Header { get; init; } = string.Empty;
     public string Title { get; init; } = string.Empty;

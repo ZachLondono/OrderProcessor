@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode.Configuration;
 
-internal interface ICADCodeMachineConfigurationProvider {
+public interface ICADCodeMachineConfigurationProvider {
 
     public IEnumerable<CADCodeMachineConfiguration> GetConfigurations();
 

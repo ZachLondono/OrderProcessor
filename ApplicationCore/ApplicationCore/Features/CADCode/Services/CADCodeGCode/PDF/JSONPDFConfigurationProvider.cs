@@ -4,7 +4,7 @@ using ApplicationCore.Features.CADCode.Services.Domain.PDF;
 
 namespace ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode.PDF;
 
-internal class JSONPDFConfigurationProvider : IPDFConfigurationProvider {
+public class JSONPDFConfigurationProvider : IPDFConfigurationProvider {
 
     private readonly string _filepath;
 

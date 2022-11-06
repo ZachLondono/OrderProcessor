@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.CADCode.Services.Domain.CADCode;
 
-internal class OptimizationResult {
+public class OptimizationResult {
 
     public IEnumerable<UnplacedPart> UnplacedParts { get; init; } = new List<UnplacedPart>();
     public IEnumerable<PlacedPart> PlacedParts { get; init; } = new List<PlacedPart>();

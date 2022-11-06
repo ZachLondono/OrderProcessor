@@ -5,7 +5,7 @@ namespace ApplicationCore.Features.CADCode.Services.Domain.CADCode;
 /// <summary>
 /// Represents a single part that is placed in a CNC program
 /// </summary>
-internal class PlacedPart {
+public class PlacedPart {
 
     public string FileName { get; init; } = string.Empty;
 

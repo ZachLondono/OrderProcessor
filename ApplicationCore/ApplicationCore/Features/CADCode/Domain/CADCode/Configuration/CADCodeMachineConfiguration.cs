@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.CADCode.Services.Domain.CADCode.Configuration;
 
-internal class CADCodeMachineConfiguration {
+public class CADCodeMachineConfiguration {
 
     
     [JsonPropertyName("machineName")]

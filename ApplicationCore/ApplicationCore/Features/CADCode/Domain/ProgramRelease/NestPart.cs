@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.CADCode.Services.Domain.ProgramRelease;
 
-internal class NestedPart {
+public class NestedPart {
 
     public string Name { get; init; } = string.Empty;
     public string ImagePath { get; init; } = string.Empty;

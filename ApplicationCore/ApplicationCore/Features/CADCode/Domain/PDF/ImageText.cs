@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.CADCode.Services.Domain.PDF;
 
-internal record ImageText
+public record ImageText
 {
 
     public string Text { get; init; } = string.Empty;

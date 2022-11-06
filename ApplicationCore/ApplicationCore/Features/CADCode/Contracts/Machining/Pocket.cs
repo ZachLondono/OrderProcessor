@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.CADCode.Contracts.Machining;
 
-internal record Pocket : Token {
+public record Pocket : Token {
 
     public Point PositionA { get; init; } = new(0, 0);
     public Point PositionB { get; init; } = new(0, 0);

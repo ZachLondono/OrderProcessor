@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.CADCode.Contracts.Machining;
 
-internal enum OffsetType {
+public enum OffsetType {
     None,
     Left,
     Right,

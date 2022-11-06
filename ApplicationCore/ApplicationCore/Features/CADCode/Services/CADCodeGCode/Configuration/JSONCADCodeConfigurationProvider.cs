@@ -4,7 +4,7 @@ using ApplicationCore.Features.CADCode.Services.Domain.CADCode.Configuration;
 
 namespace ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode.Configuration;
 
-internal class JSONCADCodeConfigurationProvider : ICADCodeConfigurationProvider {
+public class JSONCADCodeConfigurationProvider : ICADCodeConfigurationProvider {
 
     private readonly string _filename;
 
@@ -33,7 +33,7 @@ internal class JSONCADCodeConfigurationProvider : ICADCodeConfigurationProvider 
     }
 }
 
-internal class JSONCADCodeMachineConfigurationProvider : ICADCodeMachineConfigurationProvider {
+public class JSONCADCodeMachineConfigurationProvider : ICADCodeMachineConfigurationProvider {
 
     private readonly string _filename;
 

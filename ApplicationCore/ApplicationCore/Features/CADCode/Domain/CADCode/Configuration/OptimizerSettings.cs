@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.CADCode.Services.Domain.CADCode.Configuration;
 
-internal class OptimizerSettings {
+public class OptimizerSettings {
 
     [JsonPropertyName("iterations")]
     public int Iterations { get; init; }

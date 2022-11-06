@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace ApplicationCore.Features.CADCode.Services.Domain.PDF;
 
-internal class PDFManager {
+public class PDFManager {
 
     public List<PageModel> Pages { get; init; } = new();
     public CoverModel Cover { get; set; } = new();

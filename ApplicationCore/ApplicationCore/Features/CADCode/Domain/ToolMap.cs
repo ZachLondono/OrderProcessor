@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.CADCode.Services.Domain;
 
-internal class ToolMap {
+public class ToolMap {
     
     public int SpindleCount { get; init; }
     public IList<DrillBit> DrillBlock { get; set; } = new List<DrillBit>();

@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.CADCode.Contracts.Machining;
 
-internal record Text : Token {
+public record Text : Token {
 
     public Point Position { get; init; } = new(0, 0);
     public float Rotation { get; init; }

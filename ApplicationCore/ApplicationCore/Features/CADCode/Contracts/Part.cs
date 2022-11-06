@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.CADCode.Contracts;
 
-internal class CNCPart {
+public class CNCPart {
 
     public int Qty { get; init; }
     public double Width { get; init; }

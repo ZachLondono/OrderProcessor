@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.CADCode.Services.Domain.CADCode.Configuration;
 
-internal class CADCodeConfiguration {
+public class CADCodeConfiguration {
 
     
     [JsonPropertyName("startingProgramNumber")]

@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.CADCode.Services.Domain;
 
-internal class CNCMachineConfiguration {
+public class CNCMachineConfiguration {
 
     public string MachineName { get; init; } = string.Empty;
     public ToolMap ToolMap { get; init; } = new(0);

@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.CADCode.Services.Domain.PDF;
 
-internal static class StyleExtensions {
+public static class StyleExtensions {
 
     public static TextSpanDescriptor FontWeight(this TextSpanDescriptor text, int weight) => weight switch {
         100 => text.Thin(),

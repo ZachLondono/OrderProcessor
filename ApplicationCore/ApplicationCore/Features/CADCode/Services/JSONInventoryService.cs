@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace ApplicationCore.Features.CADCode.Services;
 
-internal class JSONInventoryService : IInventoryService {
+public class JSONInventoryService : IInventoryService {
 
     private readonly string _fileName;
 

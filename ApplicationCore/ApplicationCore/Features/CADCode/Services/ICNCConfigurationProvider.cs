@@ -2,13 +2,13 @@
 
 namespace ApplicationCore.Features.CADCode.Services;
 
-internal interface ICNCConfigurationProvider {
+public interface ICNCConfigurationProvider {
 
     public IEnumerable<CNCMachineConfiguration> GetConfigurations();
 
 }
 
-internal class MockConfigurationProvider : ICNCConfigurationProvider {
+public class MockConfigurationProvider : ICNCConfigurationProvider {
     
     public IEnumerable<CNCMachineConfiguration> GetConfigurations() {
 

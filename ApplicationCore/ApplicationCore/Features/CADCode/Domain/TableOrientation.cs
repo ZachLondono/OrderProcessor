@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.CADCode.Services.Domain;
 
-internal enum TableOrientation {
+public enum TableOrientation {
     Standard,
     Rotated
 }

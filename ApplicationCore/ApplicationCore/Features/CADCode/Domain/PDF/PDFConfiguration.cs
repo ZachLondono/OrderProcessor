@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.CADCode.Services.Domain.PDF;
 
-internal class PDFConfiguration {
+public class PDFConfiguration {
 
     [JsonPropertyName("infoLabelColumnWidth")]
     public float InfoLabelColumnWidth { get; set; }

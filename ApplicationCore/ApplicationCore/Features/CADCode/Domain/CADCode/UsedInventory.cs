@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.CADCode.Services;
 
-internal class UsedInventory {
+public class UsedInventory {
 
     public string Name { get; init; } = string.Empty;
     public double Width { get; init; }

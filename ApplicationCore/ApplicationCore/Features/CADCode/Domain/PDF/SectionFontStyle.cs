@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.CADCode.Services.Domain.PDF;
 
-internal class SectionFontStyle {
+public class SectionFontStyle {
     
     [JsonPropertyName("family")]
     public string Family { get; set; } = "Arial";

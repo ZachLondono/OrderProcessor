@@ -5,7 +5,7 @@ using QuestPDF.Fluent;
 
 namespace ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode.PDF;
 
-internal class QuestPDFReleasePDFService : IReleasePDFService {
+public class QuestPDFReleasePDFService : IReleasePDFService {
 
     private readonly IPDFConfigurationProvider _configProvider;
 

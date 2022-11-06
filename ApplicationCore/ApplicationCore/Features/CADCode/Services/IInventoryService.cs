@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.CADCode.Services;
 
-internal interface IInventoryService {
+public interface IInventoryService {
 
     IEnumerable<InventoryItem> GetInventory();
 
