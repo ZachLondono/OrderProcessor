@@ -15,9 +15,10 @@ public class OrderStateTests {
 
     private readonly OrderState _sut;
     private readonly IBus _bus = Substitute.For<IBus>();
+    private readonly IUIBus _uiBus = Substitute.For<IUIBus>();
 
     public OrderStateTests() {
-        _sut = new(_bus);
+        _sut = new(_bus, _uiBus);
     }
 
     [Fact]
@@ -33,7 +34,7 @@ public class OrderStateTests {
     public void ReplaceOrder_ShouldSetOrder_AndResetIsDirty() {
 
         // Arrange
-        var order = new Order(Guid.NewGuid(), "", "", Guid.NewGuid(), Guid.NewGuid(), "", DateTime.Now, 0M, 0M, new Dictionary<string, string>(), new List<DrawerBox>(), new List<AdditionalItem>());
+        var order = ExampleOrder();
 
         // Act
         _sut.ReplaceOrder(order);
@@ -50,9 +51,10 @@ public class OrderStateTests {
         // Arrange
         string newNumber = "Number";
         string newName = "Name";
+        string note = "Production Note";
 
         // Act
-        _sut.UpdateInfo(newNumber, newName);
+        _sut.UpdateInfo(newNumber, newName, note);
 
         // Assert
         _sut.IsDirty.Should().BeFalse();
@@ -66,11 +68,12 @@ public class OrderStateTests {
         // Arrange
         string newNumber = "Number";
         string newName = "Name";
-        var order = new Order(Guid.NewGuid(), "", "", Guid.NewGuid(), Guid.NewGuid(), "", DateTime.Now, 0M, 0M, new Dictionary<string, string>(), new List<DrawerBox>(), new List<AdditionalItem>());
+        string note = "Production Note";
+        var order = ExampleOrder();
         _sut.ReplaceOrder(order);
 
         // Act
-        _sut.UpdateInfo(newNumber, newName);
+        _sut.UpdateInfo(newNumber, newName, note);
 
         // Assert
         _sut.IsDirty.Should().BeTrue();
@@ -100,7 +103,7 @@ public class OrderStateTests {
     public void UpdateCustomer_ShouldReplaceOrder_WhenOrderIsNotNull() {
 
         // Arrange
-        var order = new Order(Guid.NewGuid(), "", "", Guid.NewGuid(), Guid.NewGuid(), "", DateTime.Now, 0M, 0M, new Dictionary<string, string>(), new List<DrawerBox>(), new List<AdditionalItem>());
+        var order = ExampleOrder();
         _sut.ReplaceOrder(order);
         Guid customerId = Guid.NewGuid();
 
@@ -135,7 +138,7 @@ public class OrderStateTests {
     public void UpdateVendor_ShouldReplaceOrder_WhenOrderIsNotNull() {
 
         // Arrange
-        var order = new Order(Guid.NewGuid(), "", "", Guid.NewGuid(), Guid.NewGuid(), "", DateTime.Now, 0M, 0M, new Dictionary<string, string>(), new List<DrawerBox>(), new List<AdditionalItem>());
+        var order = ExampleOrder();
         _sut.ReplaceOrder(order);
         Guid vendorId = Guid.NewGuid();
 
@@ -169,7 +172,7 @@ public class OrderStateTests {
     public void SaveChanges_ShouldCallUpdate_AndResetIsDirty_WhenOrderIsNotNull() {
 
         // Arrange
-        var order = new Order(Guid.NewGuid(), "", "", Guid.NewGuid(), Guid.NewGuid(), "", DateTime.Now, 0M, 0M, new Dictionary<string, string>(), new List<DrawerBox>(), new List<AdditionalItem>());
+        var order = ExampleOrder();
         _sut.ReplaceOrder(order);
         Guid vendorId = Guid.NewGuid();
         _sut.UpdateVendor(vendorId);
@@ -203,12 +206,13 @@ public class OrderStateTests {
     public void Release_ShouldPublishNotification_AndSetIsDirty_WhenOrderIsNotNull() {
 
         // Arrange
-        var order = new Order(Guid.NewGuid(), "", "", Guid.NewGuid(), Guid.NewGuid(), "", DateTime.Now, 0M, 0M, new Dictionary<string, string>(), new List<DrawerBox>(), new List<AdditionalItem>());
+        var order = ExampleOrder();
         _sut.ReplaceOrder(order);
 
         var profile = new ReleaseProfile();
         var query = new GetReleaseProfileByVendorId.Query(order.VendorId);
-        _bus.Send(query).Returns(profile);
+        var response = new Response<ReleaseProfile>(profile);
+        _bus.Send(query).Returns(response);
 
         // Act
         _sut.Release().Wait();
@@ -217,7 +221,7 @@ public class OrderStateTests {
         _sut.IsDirty.Should().BeTrue();
         _sut.Order.Should().NotBeNull();
         _bus.Received(1).Send(query);
-        _bus.Received(1).Publish(new TriggerOrderReleaseNotification(profile));
+        _bus.Received(1).Publish(new TriggerOrderReleaseNotification(order, profile));
 
     }
 
@@ -225,9 +229,10 @@ public class OrderStateTests {
     public void LoadOrder_ShouldCallGetOrder_AndResetIsDirty_WhenOrderIsNotNull() {
 
         // Arrange
-        var order = new Order(Guid.NewGuid(), "", "", Guid.NewGuid(), Guid.NewGuid(), "", DateTime.Now, 0M, 0M, new Dictionary<string, string>(), new List<DrawerBox>(), new List<AdditionalItem>());
+        var order = ExampleOrder();
         var query = new GetOrderById.Query(order.Id);
-        _bus.Send(query).Returns(order);
+        var response = new Response<Order>(order);
+        _bus.Send(query).Returns(response);
 
         // Act
         _sut.LoadOrder(order.Id).Wait();
@@ -240,5 +245,7 @@ public class OrderStateTests {
 
     }
 
+
+    private static Order ExampleOrder() => new(Guid.NewGuid(), "", Status.Pending, "", "", Guid.NewGuid(), Guid.NewGuid(), "", "", DateTime.Now, null, null, null, 0M, 0M, 0M, new Dictionary<string, string>(), new List<DrawerBox>(), new List<AdditionalItem>());
 
 }

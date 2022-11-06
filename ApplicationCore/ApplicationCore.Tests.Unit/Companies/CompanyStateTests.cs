@@ -50,9 +50,12 @@ public class CompanyStateTests {
         Address addr = new() {
             Line1 = "ABC123"
         };
+        string phoneNumber = "123-456-7890";
+        string invoiceEmail = "abc@email.com";
+        string confirmationEmail = "abc@email.com";
 
         // Act
-        _sut.UpdateCompany(name, addr);
+        _sut.UpdateCompany(name, addr, phoneNumber, invoiceEmail, confirmationEmail);
 
         // Assert
         _sut.Company.Should().BeNull();
@@ -71,15 +74,21 @@ public class CompanyStateTests {
         Address addr = new() {
             Line1 = "ABC123"
         };
+        string phoneNumber = "123-456-7890";
+        string invoiceEmail = "abc@email.com";
+        string confirmationEmail = "abc@email.com";
 
         // Act
-        _sut.UpdateCompany(name, addr);
+        _sut.UpdateCompany(name, addr, phoneNumber, invoiceEmail, confirmationEmail);
 
         // Assert
         _sut.Company.Should().NotBe(company);
         _sut.Company.Should().NotBeNull();
         _sut.Company!.Address.Should().Be(addr);
         _sut.Company.Name.Should().Be(name);
+        _sut.Company.PhoneNumber.Should().Be(phoneNumber);
+        _sut.Company.InvoiceEmail.Should().Be(invoiceEmail);
+        _sut.Company.ConfirmationEmail.Should().Be(confirmationEmail);
         _sut.Company.Id.Should().Be(company.Id);
         _sut.IsDirty.Should().BeTrue();
 
@@ -109,7 +118,10 @@ public class CompanyStateTests {
         Address addr = new() {
             Line1 = "ABC123"
         };
-        _sut.UpdateCompany(name, addr);
+        string phoneNumber = "";
+        string invoiceEmail = "";
+        string confirmationEmail = "";
+        _sut.UpdateCompany(name, addr, phoneNumber, invoiceEmail, confirmationEmail);
 
         // Act
         _sut.SaveChanges().Wait();
@@ -126,7 +138,8 @@ public class CompanyStateTests {
 
         // Arrange
         var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "");
-        _bus.Send(new GetCompanyById.Query(company.Id)).Returns(company);
+        var response = new Response<Company>(company);
+        _bus.Send(new GetCompanyById.Query(company.Id)).Returns(response);
 
         // Act
         _sut.LoadCompany(company.Id).Wait();

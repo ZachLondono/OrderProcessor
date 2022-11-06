@@ -21,15 +21,18 @@ public class OrderTests {
         };
         decimal tax = 54.321M;
         decimal shipping = 123.45M;
-        var order = new Order(Guid.NewGuid(), "", "", Guid.NewGuid(), Guid.NewGuid(), "", DateTime.Now, tax, shipping, new Dictionary<string, string>(), boxes, items);
+        decimal priceAdjustment = 29.29M;
+        var order = new Order(Guid.NewGuid(), "", Status.Pending, "", "", Guid.NewGuid(), Guid.NewGuid(), "", "", DateTime.Now, null, null, null, tax, shipping, priceAdjustment, new Dictionary<string, string>(), boxes, items);
 
         // Act
         var subtotal = order.SubTotal;
         var total = order.Total;
+        var adjSubTotal = order.AdjustedSubTotal;
 
         // Assert
         subtotal.Should().Be(boxes.Sum(b => b.UnitPrice * b.Qty) + items.Sum(i => i.Price));
         total.Should().Be(boxes.Sum(b => b.UnitPrice * b.Qty) + items.Sum(i => i.Price) + tax + shipping);
+        adjSubTotal.Should().Be(subtotal + priceAdjustment);
 
     }
 
