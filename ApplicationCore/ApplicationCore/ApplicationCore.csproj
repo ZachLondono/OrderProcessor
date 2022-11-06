@@ -7,6 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <COMReference Include="CADCode">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>1</VersionMajor>
+      <Guid>e44fc22a-bb6d-41bf-9233-49d8851c0f3c</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Blazored.Modal" Version="7.1.0" />
     <PackageReference Include="ClosedXML" Version="0.95.0" />
     <PackageReference Include="ClosedXML.Report" Version="0.2.4" />
