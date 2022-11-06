@@ -8,6 +8,7 @@ namespace ApplicationCore.Infrastructure.Data;
 public class SqliteUBoxDimensionTypeHandler : SqlMapper.TypeHandler<UBoxDimensions?> {
 
     public override UBoxDimensions? Parse(object? value) {
+        if (value is null) return null;
         var val = JsonSerializer.Deserialize<UBoxDimensionsModel>((string)value);
         if (val is null) return null;
         return new UBoxDimensions() {
