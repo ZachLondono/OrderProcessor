@@ -37,15 +37,16 @@ public class AssignVendorReleaseProfile {
                                 generatebol = @GenerateBOL, boloutputdirectory = @BOLOutputDirectory, printbol = @PrintBOL, boltemplatefilepath = @BOLTemplateFilePath,
                                 printboxlabels = @PrintBoxLabels, boxlabelstemplatefilepath = @BoxLabelsTemplateFilePath,
                                 printorderlabel = @PrintOrderLabel, orderlabeltemplatefilepath = @OrderLabelTemplateFilePath,
-                                printaduiepylelabel = @PrintADuiePyleLabel, aduiepylelabeltemplatefilepath = @ADuiePyleLabelTemplateFilePath
+                                printaduiepylelabel = @PrintADuiePyleLabel, aduiepylelabeltemplatefilepath = @ADuiePyleLabelTemplateFilePath,
+                                generatecncprograms = @GenerateCNCPrograms
                             WHERE vendorid = @VendorId;";
 
             } else { 
 
                 command = @"INSERT INTO releaseprofiles
-                                (vendorid, generatecutlist, cutlistoutputdirectory, printcutlist, cutlisttemplatepath, generatepackinglist, packinglistoutputdirectory, printpackinglist, packinglisttemplatepath, generateinvoice, invoiceoutputdirectory, printinvoice, invoicetemplatepath, generatebol, boloutputdirectory, printbol, boltemplatefilepath, printboxlabels, boxlabelstemplatefilepath, printorderlabel, orderlabeltemplatefilepath, printaduiepylelabel, aduiepylelabeltemplatefilepath)
+                                (vendorid, generatecutlist, cutlistoutputdirectory, printcutlist, cutlisttemplatepath, generatepackinglist, packinglistoutputdirectory, printpackinglist, packinglisttemplatepath, generateinvoice, invoiceoutputdirectory, printinvoice, invoicetemplatepath, generatebol, boloutputdirectory, printbol, boltemplatefilepath, printboxlabels, boxlabelstemplatefilepath, printorderlabel, orderlabeltemplatefilepath, printaduiepylelabel, aduiepylelabeltemplatefilepath, generatecncprograms)
                             VALUES
-                                (@VendorId, @GenerateCutList, @CutListOutputDirectory, @PrintCutList, @CutListTemplatePath, @GeneratePackingList, @PackingListOutputDirectory, @PrintPackingList, @PackingListTemplatePath, @GenerateInvoice, @InvoiceOutputDirectory, @PrintInvoice, @InvoiceTemplatePath, @GenerateBOL, @BOLOutputDirectory, @PrintBOL, @BOLTemplateFilePath, @PrintBoxLabels, @BoxLabelsTemplateFilePath, @PrintOrderLabel, @OrderLabelTemplateFilePath, @PrintADuiePyleLabel, @ADuiePyleLabelTemplateFilePath);";
+                                (@VendorId, @GenerateCutList, @CutListOutputDirectory, @PrintCutList, @CutListTemplatePath, @GeneratePackingList, @PackingListOutputDirectory, @PrintPackingList, @PackingListTemplatePath, @GenerateInvoice, @InvoiceOutputDirectory, @PrintInvoice, @InvoiceTemplatePath, @GenerateBOL, @BOLOutputDirectory, @PrintBOL, @BOLTemplateFilePath, @PrintBoxLabels, @BoxLabelsTemplateFilePath, @PrintOrderLabel, @OrderLabelTemplateFilePath, @PrintADuiePyleLabel, @ADuiePyleLabelTemplateFilePath, @GenerateCNCPrograms);";
 
             }
 
@@ -73,6 +74,7 @@ public class AssignVendorReleaseProfile {
                 request.Profile.OrderLabelTemplateFilePath,
                 request.Profile.PrintADuiePyleLabel,
                 request.Profile.ADuiePyleLabelTemplateFilePath,
+                request.Profile.GenerateCNCPrograms
             });
 
 

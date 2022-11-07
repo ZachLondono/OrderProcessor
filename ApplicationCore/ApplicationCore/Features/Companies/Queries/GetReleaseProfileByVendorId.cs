@@ -27,7 +27,8 @@ public class GetReleaseProfileByVendorId {
                                     generatebol, boloutputdirectory, printbol, boltemplatefilepath,
                                     printboxlabels, boxlabelstemplatefilepath,
                                     printorderlabel, orderlabeltemplatefilepath,
-                                    printaduiepylelabel, aduiepylelabeltemplatefilepath
+                                    printaduiepylelabel, aduiepylelabeltemplatefilepath,
+                                    generatecncprograms
                                 FROM releaseprofiles
                                 WHERE vendorid = @VendorId;";
             var profile = await connection.QuerySingleOrDefaultAsync<ReleaseProfile>(query, request);

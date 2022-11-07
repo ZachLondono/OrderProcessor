@@ -31,6 +31,8 @@ public class ReleaseProfile {
     public bool PrintADuiePyleLabel { get; set; }
     public string ADuiePyleLabelTemplateFilePath { get; set; } = string.Empty;
 
+    public bool GenerateCNCPrograms { get; set; }
+
     //public bool WriteToGoogleSheets { get; set; }
     //public string GoogleSheetCode { get; set; } = string.Empty;
 
@@ -52,7 +54,12 @@ public class ReleaseProfile {
         PrintOrderLabel = false,
         OrderLabelTemplateFilePath = string.Empty,
         PrintADuiePyleLabel = false,
-        ADuiePyleLabelTemplateFilePath = string.Empty
+        ADuiePyleLabelTemplateFilePath = string.Empty,
+        BOLOutputDirectory = string.Empty,
+        BOLTemplateFilePath = string.Empty,
+        GenerateBOL = false,
+        PrintBOL = false,
+        GenerateCNCPrograms = false,
     };
 
 }
