@@ -53,7 +53,7 @@ public class CADCodeManager {
             //_cadCode.Optimizer = CreateOptimizer(_cadCode.BootObject, _cadCode.Files, optimizerSettings);
 
             // TODO: have to somehow check the orientation of inventory depending on the machine
-            var inventory = _availableInventory.Where(item => item.Name == material.Name && item.Thickness == material.Thickness)
+            var inventory = _availableInventory.Where(item => item.Name == material.Name && Math.Abs(item.Thickness - material.Thickness) < 0.05)
                                                 .SelectMany(item => item.AsCutListInventory(machineConfig.Orientation))
                                                 .ToList();
 
