@@ -5,6 +5,7 @@ using ApplicationCore.Features.Orders.Release;
 using ApplicationCore.Features.Orders.Queries;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Features.Orders.Complete;
+using ApplicationCore.Features.Companies.Domain.ValueObjects;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -81,21 +82,33 @@ public class OrderState {
 
     }
 
-    public async Task Release() {
+    public async Task Release(ReleaseProfile? profile) {
         if (Order is null) return;
-        var response = await _bus.Send(new GetReleaseProfileByVendorId.Query(Order.VendorId));
 
-        response.Match(
-            async profile => {
-                await _bus.Publish(new TriggerOrderReleaseNotification(Order, profile));
-                Order.Release();
-                _uibus.Publish(new OrderReleaseCompletedNotification());
-                IsDirty = true;
-            },
-            error => {
-                // TODO: notify and log error
-            }
-        );
+        ReleaseProfile? releaseProfile = profile;
+
+        if (releaseProfile is null) {
+            var response = await _bus.Send(new GetReleaseProfileByVendorId.Query(Order.VendorId));
+            response.Match(
+                p => releaseProfile = p,
+                error => {
+                    // TODO: notify and log error
+                }
+            );
+        }
+
+        if (releaseProfile is null) return; // TODO: notify of error
+
+        await ReleaseWithProfile(releaseProfile);
+
+    }
+
+    private async Task ReleaseWithProfile(ReleaseProfile profile) {
+        if (Order is null) return;
+        await _bus.Publish(new TriggerOrderReleaseNotification(Order, profile));
+        Order.Release();
+        _uibus.Publish(new OrderReleaseCompletedNotification());
+        IsDirty = true;
     }
 
     // TODO: add method to add price adjustments to order
