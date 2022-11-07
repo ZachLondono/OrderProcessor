@@ -44,7 +44,7 @@ public class JSONInventoryService : IInventoryService {
         public string Name { get; set; } = string.Empty;
 
         [JsonPropertyName("thickness")]
-        public float Thickness { get; set; }
+        public double Thickness { get; set; }
 
         [JsonPropertyName("isGrained")]
         public bool IsGrained { get; set; }
