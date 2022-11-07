@@ -1,0 +1,95 @@
+﻿@using ApplicationCore.Features.Companies.Domain.ValueObjects
+@using Blazored.Modal
+@using Blazored.Modal.Services
+
+@if(Profile is null) {
+    <span>No profile is set</span>
+} else {
+    <div>
+
+        <section>
+            <div>
+                <input type="checkbox" @bind="Profile.GenerateCutList"/>
+                <label>Generate Cut Lists</label>
+            </div>
+
+            <div>
+                <input type="checkbox" @bind="Profile.PrintCutList" />
+                <label>Print Cut Lists</label>
+            </div>
+        </section>
+
+        <section>
+            <div>
+                <input type="checkbox" @bind="Profile.GeneratePackingList" />
+                <label>Generate Packing Lists</label>
+            </div>
+
+            <div>
+                <input type="checkbox" @bind="Profile.PrintPackingList" />
+                <label>Print Packing Lists</label>
+            </div>
+        </section>
+
+        <section>
+            <div>
+                <input type="checkbox" @bind="Profile.GenerateInvoice" />
+                <label>Generate Invoice</label>
+            </div>
+            <div>
+                <input type="checkbox" @bind="Profile.PrintInvoice" />
+                <label>Print Invoice</label>
+            </div>
+        </section>
+
+        <section>
+            <div>
+                <input type="checkbox" @bind="Profile.GenerateBOL" />
+                <label>Generate BOL</label>
+            </div>
+            <div>
+                <input type="checkbox" @bind="Profile.PrintBOL" />
+                <label>Print BOL</label>
+            </div>
+        </section>
+
+        <section>
+            <div>
+                <input type="checkbox" @bind="Profile.PrintOrderLabel" />
+                <label>Print Order Labels</label>
+            </div>
+            <div>
+                <input type="checkbox" @bind="Profile.PrintBoxLabels" />
+                <label>Print Box Labels</label>
+            </div>
+            <div>
+                <input type="checkbox" @bind="Profile.PrintADuiePyleLabel" />
+                <label>Print A Duie Pyle Labels</label>
+            </div>
+        </section>
+
+        <section>
+            <div>
+                <input type="checkbox" @bind="Profile.GenerateCNCPrograms"/>
+                <label>Generate CNC Programs</label>
+            </div>
+        </section>
+
+    </div>
+
+    <button class="btn btn-primary" @onclick="OnSave">Save</button>
+}
+
+@code {
+
+    [CascadingParameter]
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter]
+    public ReleaseProfile? Profile { get; set; }
+
+    public async Task OnSave() {
+        await BlazoredModal.CloseAsync(ModalResult.Ok(Profile));
+    }
+
+}
