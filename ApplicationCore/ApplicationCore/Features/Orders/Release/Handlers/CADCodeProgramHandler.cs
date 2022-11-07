@@ -22,6 +22,11 @@ internal class CADCodeProgramHandler : INotificationHandler<TriggerOrderReleaseN
 
     public async Task Handle(TriggerOrderReleaseNotification notification, CancellationToken cancellationToken) {
 
+        if (!notification.ReleaseProfile.GenerateCNCPrograms) {
+            _uibus.Publish(new OrderReleaseProgressNotification("Not generating CADCode CNC release because option was disabled"));
+            return;
+        }
+
         _uibus.Publish(new OrderReleaseProgressNotification("Starting CADCode CNC release"));
 
         //if (true) return;
@@ -47,7 +52,7 @@ internal class CADCodeProgramHandler : INotificationHandler<TriggerOrderReleaseN
         }
 
         var batch = new CNCBatch() {
-            Name = $"{notification.Order.Number} - {notification.Order.Number}",
+            Name = $"{notification.Order.Number} - {notification.Order.Name}",
             Parts = parts
         };
 
