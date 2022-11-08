@@ -29,8 +29,6 @@ internal class CADCodeProgramHandler : INotificationHandler<TriggerOrderReleaseN
 
         _uibus.Publish(new OrderReleaseProgressNotification("Starting CADCode CNC release"));
 
-        //if (true) return;
-
         var bottoms = notification.Order.Boxes.SelectMany(b => b.GetParts(_construction).Where(p => p.Type == DrawerBoxPartType.Bottom));
 
         var parts = new List<CNCPart>();
@@ -56,12 +54,13 @@ internal class CADCodeProgramHandler : INotificationHandler<TriggerOrderReleaseN
             Parts = parts
         };
 
-        var response = await _bus.Send(new CNCReleaseRequest(batch), cancellationToken);
+        var response = await _bus.Send(new CNCReleaseRequest(batch, notification.ReleaseProfile.CNCReportOutputDirectory), cancellationToken);
 
         response.Match(
 
-            _ => {
-                _uibus.Publish(new OrderReleaseProgressNotification("CNC programs released"));
+            filePaths => {
+                foreach (var file in filePaths)
+                    _uibus.Publish(new OrderReleaseProgressNotification($"CNC job report created {file}"));
             },
             error => {
                 _uibus.Publish(new OrderReleaseProgressNotification("Error releasing CNC programs"));

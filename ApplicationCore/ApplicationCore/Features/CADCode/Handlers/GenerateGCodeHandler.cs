@@ -1,26 +1,35 @@
 ﻿using ApplicationCore.Features.CADCode.Contracts;
 using ApplicationCore.Features.CADCode.Services;
+using ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode.PDF;
 using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Features.CADCode.Handlers;
 
-public class CNCReleaseRequestHandler : CommandHandler<CNCReleaseRequest> {
+public class CNCReleaseRequestHandler : QueryHandler<CNCReleaseRequest, IEnumerable<string>> {
 
     private readonly ICNCService _cncService;
+    private readonly IReleasePDFService _pdfService;
     private readonly ICNCConfigurationProvider _configurationProvider;
 
-    public CNCReleaseRequestHandler(ICNCService cncService, ICNCConfigurationProvider configurationProvider) {
+    public CNCReleaseRequestHandler(ICNCService cncService, IReleasePDFService pdfService, ICNCConfigurationProvider configurationProvider) {
         _cncService = cncService;
+        _pdfService = pdfService;
         _configurationProvider = configurationProvider;
     }
 
-    public override Task<Response> Handle(CNCReleaseRequest command) {
+    public override Task<Response<IEnumerable<string>>> Handle(CNCReleaseRequest command) {
         try {
+
             var machineConfigurations = _configurationProvider.GetConfigurations();
-            _cncService.ExportToCNC(command.Batch, machineConfigurations);
-            return Task.FromResult(new Response());
+            // TODO: do this in a task, otherwise application hangs while waiting for CADCode
+            var job = _cncService.ExportToCNC(command.Batch, machineConfigurations);
+            var filePaths = _pdfService.GeneratePDFs(job, command.ReportOutputDirectory);
+
+            // TODO send emails to shop manager
+
+            return Task.FromResult(new Response<IEnumerable<string>>(filePaths));
         } catch (Exception e) {
-            return Task.FromResult(new Response(new Error($"Exception thrown while releasing cnc program {e}")));
+            return Task.FromResult(new Response<IEnumerable<string>>(new Error($"Exception thrown while releasing cnc program {e}")));
         }
 
     }

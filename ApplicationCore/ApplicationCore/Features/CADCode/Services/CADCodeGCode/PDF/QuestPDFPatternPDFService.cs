@@ -13,7 +13,7 @@ public class QuestPDFReleasePDFService : IReleasePDFService {
         _configProvider = configProvider;
     }
 
-    public IEnumerable<string> GeneratePDFs(ReleasedJob job) {
+    public IEnumerable<string> GeneratePDFs(ReleasedJob job, string outputDirectory) {
         
         PrintRelease(job);
 
@@ -34,22 +34,23 @@ public class QuestPDFReleasePDFService : IReleasePDFService {
 
             try {
                 var document = pdfmanager.BuildDocument();
-                var filepath = GetFileName("C:\\Users\\Zachary Londono\\Desktop\\CC Output\\", $"{job.JobName} - {release.MachineName} CUTLIST");
+                // TODO: get path from configuration
+                var filepath = GetFileName(outputDirectory, $"{job.JobName} - {release.MachineName} CUTLIST");
                 document.GeneratePdf(filepath);
                 createdFiles.Add(filepath);
 
-                document.WithMetadata(new() {
-                    RasterDpi = 216 // increase resolution of image for printing
-                });
-                var images = document.GenerateImages();
-                foreach (var data in images) {
-                    using var ms = new MemoryStream(data);
-                    var image = System.Drawing.Image.FromStream(ms);
-                    var printer = new Printer(image);
-                    // TODO get printer name (create a printer service which has the printer name configured and used everywhere that a pdf needs to be printed)
-                    //printer.Print("HP4D193E (HP Officejet Pro 8600)");
-                    printer.Print("Microsoft Print to PDF");
-                }
+                //document.WithMetadata(new() {
+                //    RasterDpi = 216 // increase resolution of image for printing
+                //});
+                //var images = document.GenerateImages();
+                //foreach (var data in images) {
+                //    using var ms = new MemoryStream(data);
+                //    var image = System.Drawing.Image.FromStream(ms);
+                //    var printer = new Printer(image);
+                //    // TODO get printer name (create a printer service which has the printer name configured and used everywhere that a pdf needs to be printed)
+                //    //printer.Print("HP4D193E (HP Officejet Pro 8600)");
+                //    printer.Print("Microsoft Print to PDF");
+                //}
 
             } catch (Exception ex)  {
                 // TODO: warn about failed pdf generation

@@ -11,18 +11,16 @@ namespace ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode;
 public class CADCodeGCodeCNCService : ICNCService {
 
     private readonly ICADCodeConfigurationProvider _configProvider;
-    private readonly IReleasePDFService _pdfService;
     private readonly IInventoryService _inventoryService;
     private readonly ICADCodeMachineConfigurationProvider _ccmachineConfigProvider;
 
-    public CADCodeGCodeCNCService(ICADCodeConfigurationProvider configProvider, IReleasePDFService pdfService, IInventoryService inventoryService, ICADCodeMachineConfigurationProvider ccmachineConfigProvider) {
+    public CADCodeGCodeCNCService(ICADCodeConfigurationProvider configProvider, IInventoryService inventoryService, ICADCodeMachineConfigurationProvider ccmachineConfigProvider) {
         _configProvider = configProvider;
-        _pdfService = pdfService;
         _inventoryService = inventoryService;
         _ccmachineConfigProvider = ccmachineConfigProvider;
     }
 
-    public void ExportToCNC(CNCBatch batch, IEnumerable<CNCMachineConfiguration> machineConfigs) {
+    public ReleasedJob ExportToCNC(CNCBatch batch, IEnumerable<CNCMachineConfiguration> machineConfigs) {
 
         var cncConfig = _configProvider.GetConfiguration();
         var availableInventory = _inventoryService.GetInventory();
@@ -50,14 +48,10 @@ public class CADCodeGCodeCNCService : ICNCService {
             machineReleases.Add(GetMachineRelease(cncConfig, machineConfig, nestResults, batch.Parts));
         }
 
-        var job = new ReleasedJob() {
+        return new ReleasedJob() {
             JobName = batch.Name,
             Releases = machineReleases
         };
-
-        _pdfService.GeneratePDFs(job);
-
-        // TODO send emails to shop manager
 
     }
 
