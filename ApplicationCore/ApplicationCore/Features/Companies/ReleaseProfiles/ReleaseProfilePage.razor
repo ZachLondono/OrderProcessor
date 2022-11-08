@@ -145,11 +145,16 @@
         </div>
     </section>
 
-    <section>
+    <section class="mb-5 w-full">
 
-        <div>
+        <div class="mt-2">
             <input type="checkbox" class="h-4 w-4" @bind="_profile.GenerateCNCPrograms" />
             <label class="ml-2 text-sm font-medium text-gray-700">Generate CNC Programs</label>
+        </div>
+
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">Report Output Directory</label>
+            <input type="text" class="mt-1 w-full" @bind="_profile.CNCReportOutputDirectory" />
         </div>
 
     </section>

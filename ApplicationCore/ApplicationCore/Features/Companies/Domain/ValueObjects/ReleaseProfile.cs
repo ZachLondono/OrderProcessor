@@ -32,10 +32,12 @@ public class ReleaseProfile {
     public string ADuiePyleLabelTemplateFilePath { get; set; } = string.Empty;
 
     public bool GenerateCNCPrograms { get; set; }
+    public string CNCReportOutputDirectory { get; set; } = string.Empty;
 
     //public bool WriteToGoogleSheets { get; set; }
     //public string GoogleSheetCode { get; set; } = string.Empty;
 
+    // TODO: By default, the file paths will be set to directories in the installation folder
     public static ReleaseProfile Default => new() {
         GenerateCutList = false,
         CutListOutputDirectory = string.Empty,
@@ -60,6 +62,7 @@ public class ReleaseProfile {
         GenerateBOL = false,
         PrintBOL = false,
         GenerateCNCPrograms = false,
+        CNCReportOutputDirectory = string.Empty,
     };
 
 }
