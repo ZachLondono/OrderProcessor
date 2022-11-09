@@ -35,9 +35,13 @@ public class DrawerBoxDataModel {
 
     public string BoxMaterialName { get; set; } = string.Empty;
 
+    public Dimension BoxMaterialThickness { get; set; } = Dimension.FromMillimeters(0);
+
     public Guid BottomMaterialId { get; set; }
 
     public string BottomMaterialName { get; set; } = string.Empty;
+
+    public Dimension BottomMaterialThickness { get; set; } = Dimension.FromMillimeters(0);
 
     public Guid ClipsId { get; set; }
 
@@ -53,8 +57,8 @@ public class DrawerBoxDataModel {
 
     public DrawerBox AsDomainModel() {
 
-        var boxMaterial = new DrawerBoxOption(BoxMaterialId, BoxMaterialName);
-        var bottomMaterial = new DrawerBoxOption(BottomMaterialId, BottomMaterialName);
+        var boxMaterial = new DrawerBoxMaterial(BoxMaterialId, BoxMaterialName, BoxMaterialThickness);
+        var bottomMaterial = new DrawerBoxMaterial(BottomMaterialId, BottomMaterialName, BottomMaterialThickness);
         var clips = new DrawerBoxOption(ClipsId, ClipsName);
         var notches = new DrawerBoxOption(NotchesId, NotchesName);
         var accessory = new DrawerBoxOption(AccessoryId, AccessoryName);

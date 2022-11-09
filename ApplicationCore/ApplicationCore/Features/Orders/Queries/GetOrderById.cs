@@ -22,10 +22,11 @@ public class GetOrderById {
 
             using var connection = _factory.CreateConnection();
 
+            
             const string boxquery = @"SELECT
                                         id, lineinorder, unitprice, qty, height_mm as height, width_mm as width, depth_mm as depth, postfinish, scoopfront, logo, facemountingholes, uboxdimensions, fixeddividers,
-                                        boxmaterialid, (SELECT name FROM drawerboxoptions WHERE id = boxmaterialid) AS boxmaterialname,
-                                        bottommaterialid, (SELECT name FROM drawerboxoptions WHERE id = bottommaterialid) AS bottommaterialname,
+                                        boxmaterialid, (SELECT name FROM drawerboxmaterials WHERE id = boxmaterialid) AS boxmaterialname, (SELECT thickness_mm FROM drawerboxmaterials WHERE id = boxmaterialid) AS boxmaterialthickness ,
+                                        bottommaterialid, (SELECT name FROM drawerboxmaterials WHERE id = bottommaterialid) AS bottommaterialname, (SELECT thickness_mm FROM drawerboxmaterials WHERE id = bottommaterialid) AS bottommaterialthickness,
                                         clipsid, (SELECT name FROM drawerboxoptions WHERE id = clipsid) AS clipsname,
                                         notchesid, (SELECT name FROM drawerboxoptions WHERE id = notchesid) AS notchesname,
                                         accessoryid, (SELECT name FROM drawerboxoptions WHERE id = accessoryid) AS accessoryname
