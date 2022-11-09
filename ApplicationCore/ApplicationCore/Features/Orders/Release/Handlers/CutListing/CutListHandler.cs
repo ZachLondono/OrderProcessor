@@ -56,7 +56,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
             }
         );
 
-        var responseOptimized = await _bus.Send(new FillTemplateRequest(optimizedCutList, outputDir, $"{prefix} OPTIMIZED CUTLIST", doPrint, config), cancellationToken);
+        var responseOptimized = await _bus.Send(new FillTemplateRequest(optimizedCutList, outputDir, $"{prefix} OPTIMIZED CUTLIST", doPrint, config));
         responseOptimized.Match(
             r => {
                 _logger.LogInformation("Drawer Box Cut List Created : {FilePath}", r.FilePath);
@@ -68,7 +68,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
             }
         );
 
-        var responseBottom = await _bus.Send(new FillTemplateRequest(bottomCutList, outputDir, $"{prefix} BOTTOM CUTLIST", doPrint, config), cancellationToken);
+        var responseBottom = await _bus.Send(new FillTemplateRequest(bottomCutList, outputDir, $"{prefix} BOTTOM CUTLIST", doPrint, config));
         responseBottom.Match(
             r => {
                 _logger.LogInformation("Drawer Box Cut List Created : {FilePath}", r.FilePath);

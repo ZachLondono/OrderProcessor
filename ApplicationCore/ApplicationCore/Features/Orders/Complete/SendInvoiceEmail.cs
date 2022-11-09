@@ -58,7 +58,7 @@ public class SendInvoiceEmail : DomainListener<TriggerOrderCompleteNotification>
 
         var email = new Email(sender, recipients, subject, body, new string[] { pdfPath });
 
-        var response = await _bus.Send(new SendEmailRequest(email), cancellationToken);
+        var response = await _bus.Send(new SendEmailRequest(email));
         
         response.Match(
             serverResponse => {
