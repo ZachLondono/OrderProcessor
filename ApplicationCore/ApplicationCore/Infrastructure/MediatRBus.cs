@@ -22,4 +22,7 @@ internal class MediatRBus : IBus {
         return _mediator.Send(request, cancellationToken);
     }
 
+    public Task<Response<TResquest>> Send<TResquest>(ICommand<TResquest> request, CancellationToken cancellationToken = default) {
+        return _mediator.Send(request, cancellationToken);
+    }
 }

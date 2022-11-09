@@ -55,4 +55,8 @@ internal class CachedBusDecorator : IBus {
     public async Task<Response> Send(ICommand request, CancellationToken cancellationToken = default) {
         return await _bus.Send(request, cancellationToken);
     }
+
+    public async Task<Response<TResquest>> Send<TResquest>(ICommand<TResquest> request, CancellationToken cancellationToken = default) {
+        return await _bus.Send(request, cancellationToken);
+    }
 }
