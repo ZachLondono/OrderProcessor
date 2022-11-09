@@ -3,12 +3,11 @@ using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.ExcelTemplates.Contracts;
 using ApplicationCore.Features.ExcelTemplates.Domain;
 using ApplicationCore.Infrastructure;
-using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.BOL;
 
-internal class BOLHandler : INotificationHandler<TriggerOrderReleaseNotification> {
+internal class BOLHandler : IDomainListener<TriggerOrderReleaseNotification> {
 
     private readonly ILogger<BOLHandler> _logger;
     private readonly IBus _bus;

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace ApplicationCore.Shared;
 
-public abstract class BaseListenerComponent : ComponentBase, IListener, IDisposable {
+public abstract class BaseListenerComponent : ComponentBase, IUIListener, IDisposable {
 
     [Inject]
     protected IUIBus? UIBus { get; set; }

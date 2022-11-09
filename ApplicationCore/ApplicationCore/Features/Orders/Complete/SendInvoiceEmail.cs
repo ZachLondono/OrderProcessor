@@ -5,16 +5,14 @@ using ApplicationCore.Features.Emails.Domain;
 using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
-using MediatR;
 using Microsoft.Extensions.Logging;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
 using Unit = QuestPDF.Infrastructure.Unit;
 
 namespace ApplicationCore.Features.Orders.Complete;
 
-public class SendInvoiceEmail : INotificationHandler<TriggerOrderCompleteNotification> {
+public class SendInvoiceEmail : IDomainListener<TriggerOrderCompleteNotification> {
 
     private readonly ILogger<SendInvoiceEmail> _logger;
     private readonly IBus _bus;

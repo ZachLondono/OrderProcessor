@@ -5,12 +5,11 @@ using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Release.Handlers.CutListing.Models;
 using ApplicationCore.Infrastructure;
-using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.CutListing;
 
-public class CutListHandler : INotificationHandler<TriggerOrderReleaseNotification> {
+public class CutListHandler : IDomainListener<TriggerOrderReleaseNotification> {
 
     private readonly ILogger<CutListHandler> _logger;
     private readonly IBus _bus;

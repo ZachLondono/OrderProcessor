@@ -1,12 +1,11 @@
 ﻿using ApplicationCore.Features.CADCode.Contracts;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Infrastructure;
-using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers;
 
-internal class CADCodeProgramHandler : INotificationHandler<TriggerOrderReleaseNotification> {
+internal class CADCodeProgramHandler : IDomainListener<TriggerOrderReleaseNotification> {
 
     private readonly ILogger<ADuiePyleLabelHandler> _logger;
     private readonly IBus _bus;

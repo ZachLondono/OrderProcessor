@@ -5,13 +5,12 @@ using ApplicationCore.Features.Orders.Release.Handlers.Invoice.Models;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
 using ClosedXML.Excel;
-using MediatR;
 using Microsoft.Extensions.Logging;
 using Company = ApplicationCore.Features.Companies.Domain.Company;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.Invoice;
 
-internal class InvoiceHandler : INotificationHandler<TriggerOrderReleaseNotification> {
+internal class InvoiceHandler : IDomainListener<TriggerOrderReleaseNotification> {
 
     private readonly ILogger<InvoiceHandler> _logger;
     private readonly IBus _bus;

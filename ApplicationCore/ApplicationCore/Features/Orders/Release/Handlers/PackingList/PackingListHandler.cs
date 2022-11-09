@@ -3,13 +3,12 @@ using ApplicationCore.Features.ExcelTemplates.Contracts;
 using ApplicationCore.Features.ExcelTemplates.Domain;
 using ApplicationCore.Features.Orders.Release.Handlers.PackingList.Models;
 using ApplicationCore.Infrastructure;
-using MediatR;
 using Microsoft.Extensions.Logging;
 using Company = ApplicationCore.Features.Companies.Domain.Company;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.PackingList;
 
-internal class PackingListHandler : INotificationHandler<TriggerOrderReleaseNotification> {
+internal class PackingListHandler : IDomainListener<TriggerOrderReleaseNotification> {
 
     private readonly ILogger<PackingListHandler> _logger;
     private readonly IBus _bus;

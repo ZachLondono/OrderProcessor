@@ -1,12 +1,11 @@
 ﻿using ApplicationCore.Features.Labels.Contracts;
 using ApplicationCore.Features.Labels.Domain;
 using ApplicationCore.Infrastructure;
-using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers;
 
-internal class BoxLabelsHandler : INotificationHandler<TriggerOrderReleaseNotification> {
+internal class BoxLabelsHandler : IDomainListener<TriggerOrderReleaseNotification> {
 
     private readonly ILogger<BoxLabelsHandler> _logger;
     private readonly IBus _bus;
