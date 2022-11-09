@@ -5,7 +5,7 @@ namespace ApplicationCore.Infrastructure;
 public class UIBus : IUIBus {
 
     // Maybe use hashset
-    private readonly List<IListener> _listeners = new();
+    private readonly List<IUIListener> _listeners = new();
 
     public void Publish<TNotification>(TNotification notification) where TNotification : IUINotification {
 
@@ -19,12 +19,12 @@ public class UIBus : IUIBus {
 
     }
 
-    public void Register(IListener listener) {
+    public void Register(IUIListener listener) {
         Debug.WriteLine($"Registering listener {listener.GetType().Name}");
         _listeners.Add(listener);
     }
 
-    public void UnRegister(IListener listener) {
+    public void UnRegister(IUIListener listener) {
         Debug.WriteLine($"UnRegistering listener {listener.GetType().Name}");
         _listeners.Remove(listener);
     }

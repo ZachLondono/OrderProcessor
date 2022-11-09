@@ -2,9 +2,9 @@
 
 public interface IUIBus {
 
-    void Register(IListener listener);
+    void Register(IUIListener listener);
 
-    void UnRegister(IListener listener);
+    void UnRegister(IUIListener listener);
 
     void Publish<TNotification>(TNotification notification) where TNotification : IUINotification;
 

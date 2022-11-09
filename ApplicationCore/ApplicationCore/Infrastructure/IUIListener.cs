@@ -1,5 +1,9 @@
 ﻿namespace ApplicationCore.Infrastructure;
 
+public interface IUIListener {
+
+}
+
 public interface IUIListener<TNotification> where TNotification : IUINotification {
 
     public void Handle(TNotification notification);
