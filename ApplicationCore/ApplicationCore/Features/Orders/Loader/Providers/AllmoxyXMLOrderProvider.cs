@@ -174,8 +174,8 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             FaceMountingHoles = false,
             UBox = false,
             FixedDividers = false,
-            BoxMaterialOptionId = GetOptionId(data.Material),
-            BottomMaterialOptionId = GetOptionId(data.Bottom),
+            BoxMaterialOptionId = GetMaterialId(data.Material),
+            BottomMaterialOptionId = GetMaterialId(data.Bottom),
             ClipsOptionId = GetOptionId(data.Clips),
             NotchOptionId = GetOptionId(data.Notch),
             InsertOptionId = GetOptionId(data.Insert),
@@ -183,6 +183,14 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
     private Guid GetOptionId(string optionname) {
         if (_configuration.OptionMap.TryGetValue(optionname, out string? optionidstr) && optionidstr is not null) {
+            var optionid = Guid.Parse(optionidstr);
+            return optionid;
+        }
+        return Guid.Parse("d3030d0a-8992-4b6b-8577-9d4ac43b7cf7");
+    }
+
+    private Guid GetMaterialId(string optionname) {
+        if (_configuration.MaterialMap.TryGetValue(optionname, out string? optionidstr) && optionidstr is not null) {
             var optionid = Guid.Parse(optionidstr);
             return optionid;
         }

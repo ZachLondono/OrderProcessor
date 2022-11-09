@@ -6,6 +6,8 @@ public class AllmoxyConfiguration {
 
     public string DefaultDirectory { get; init; } = string.Empty;
 
-    public Dictionary<string, string> OptionMap { get; init; } = new Dictionary<string, string>();
+    public Dictionary<string, string> OptionMap { get; init; } = new();
+
+    public Dictionary<string, string> MaterialMap { get; init; } = new();
 
 }
