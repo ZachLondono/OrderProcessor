@@ -4,12 +4,12 @@ namespace ApplicationCore.Features.CADCode.Contracts;
 
 public class CNCPart {
 
-    public int Qty { get; init; }
-    public double Width { get; init; }
-    public double Length { get; init; }
-    public string FileName { get; init; } = string.Empty; 
-    public string Description { get; init; } = string.Empty;
-    public PartMaterial Material { get; init; } = new();
-    public IReadOnlyList<Token> Tokens { get; init; } = new List<Token>();
+    public required int Qty { get; init; }
+    public required double Width { get; init; }
+    public required double Length { get; init; }
+    public required string FileName { get; init; }
+    public required string Description { get; init; }
+    public required PartMaterial Material { get; init; }
+    public required IReadOnlyList<Token> Tokens { get; init; }
 
 }

@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.CADCode.Contracts;
+using ApplicationCore.Features.CADCode.Contracts.Machining;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Infrastructure;
 using Microsoft.Extensions.Logging;
@@ -42,6 +43,7 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
                 Length = bottom.Length.AsMillimeters(),
                 Qty = bottom.Qty,
                 Material = new() { Name = bottom.MaterialName, Thickness = bottom.Thickness.AsMillimeters() },
+                Tokens = new List<Token>()
             };
 
             parts.Add(part);
