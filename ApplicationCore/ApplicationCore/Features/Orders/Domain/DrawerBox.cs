@@ -47,9 +47,8 @@ public class DrawerBox {
         var sdAdj = Dimension.FromMillimeters(construction.SideLengthAdjustment);
         var btAdj = Dimension.FromMillimeters(construction.BottomSizeAdjustment);
 
-        // TODO: Get material thickness from database
-        var sideThickness = Dimension.FromMillimeters(15.875);
-        var bottomThickness = Dimension.FromMillimeters(6.35);
+        var sideThickness = Options.BoxMaterial.Thickness;
+        var bottomThickness = Options.BottomMaterial.Thickness;
 
         var front = new DrawerBoxPart(DrawerBoxPartType.Front, Qty, Height, Width + fbAdj, sideThickness, boxMaterial, Options.ScoopFront ? "Scoop Front" : "");
         var back = new DrawerBoxPart(DrawerBoxPartType.Back, Qty, Height, Width + fbAdj, sideThickness, boxMaterial, accComment);
