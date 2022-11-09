@@ -4,8 +4,8 @@
 @inject OrderState OrderState
 @inject IJSRuntime JSRuntime
 @inherits BaseListenerComponent
-@implements IListener<OrderReleaseProgressNotification>
-@implements IListener<OrderReleaseCompletedNotification>
+@implements IUIListener<OrderReleaseProgressNotification>
+@implements IUIListener<OrderReleaseCompletedNotification>
 
 <textarea @ref="_area" disabled id="releaseprogress" @bind="@_content" class="w-full h-64 text-xs"> </textarea>
 

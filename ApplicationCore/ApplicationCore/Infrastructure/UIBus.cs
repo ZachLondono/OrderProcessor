@@ -9,11 +9,11 @@ public class UIBus : IUIBus {
 
     public void Publish<TNotification>(TNotification notification) where TNotification : IUINotification {
 
-        var listeners = _listeners.Where(l => l is IListener<TNotification>).Cast<IListener<TNotification>>();
+        var listeners = _listeners.Where(l => l is IUIListener<TNotification>).Cast<IUIListener<TNotification>>();
 
         Debug.WriteLine($"Publishing event {notification.GetType().Name} to {listeners.Count()} listeners");
 
-        foreach (IListener<TNotification> listener in listeners) {
+        foreach (IUIListener<TNotification> listener in listeners) {
             listener.Handle(notification);
         }
 
