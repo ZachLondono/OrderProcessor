@@ -41,7 +41,7 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
                 Width = bottom.Width.AsMillimeters(),
                 Length = bottom.Length.AsMillimeters(),
                 Qty = bottom.Qty,
-                Material = new() { Name = bottom.MaterialName, Thickness = 6.35 } // TODO: get material thickness from part
+                Material = new() { Name = bottom.MaterialName, Thickness = bottom.Thickness.AsMillimeters() },
             };
 
             parts.Add(part);

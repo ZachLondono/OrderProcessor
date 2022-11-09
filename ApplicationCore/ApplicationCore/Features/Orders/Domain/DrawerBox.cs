@@ -47,10 +47,14 @@ public class DrawerBox {
         var sdAdj = Dimension.FromMillimeters(construction.SideLengthAdjustment);
         var btAdj = Dimension.FromMillimeters(construction.BottomSizeAdjustment);
 
-        var front = new DrawerBoxPart(DrawerBoxPartType.Front, Qty, Height, Width + fbAdj, boxMaterial, Options.ScoopFront ? "Scoop Front" : "");
-        var back = new DrawerBoxPart(DrawerBoxPartType.Back, Qty, Height, Width + fbAdj, boxMaterial, accComment);
-        var side = new DrawerBoxPart(DrawerBoxPartType.Side, Qty * 2, Height, Depth + sdAdj, boxMaterial, logoComment);
-        var bottom = new DrawerBoxPart(DrawerBoxPartType.Bottom, Qty, Width + btAdj, Depth + btAdj, botMaterial, "");
+        // TODO: Get material thickness from database
+        var sideThickness = Dimension.FromMillimeters(15.875);
+        var bottomThickness = Dimension.FromMillimeters(6.35);
+
+        var front = new DrawerBoxPart(DrawerBoxPartType.Front, Qty, Height, Width + fbAdj, sideThickness, boxMaterial, Options.ScoopFront ? "Scoop Front" : "");
+        var back = new DrawerBoxPart(DrawerBoxPartType.Back, Qty, Height, Width + fbAdj, sideThickness, boxMaterial, accComment);
+        var side = new DrawerBoxPart(DrawerBoxPartType.Side, Qty * 2, Height, Depth + sdAdj, sideThickness, boxMaterial, logoComment);
+        var bottom = new DrawerBoxPart(DrawerBoxPartType.Bottom, Qty, Width + btAdj, bottomThickness, Depth + btAdj, botMaterial, "");
 
         if (Options.UBoxDimensions is not null) {
 
@@ -59,10 +63,10 @@ public class DrawerBox {
             var c = Options.UBoxDimensions.C;
             var diff = Width - (a + b);
 
-            var leftBack = new DrawerBoxPart(DrawerBoxPartType.BackLeft, Qty, Height, a + fbAdj, boxMaterial, "");
-            var rightBack = new DrawerBoxPart(DrawerBoxPartType.BackRight, Qty, Height, b + fbAdj, boxMaterial, "");
-            var centerBack = new DrawerBoxPart(DrawerBoxPartType.BackCenter, Qty, Height, diff + fbAdj, boxMaterial, "");
-            var sideCenter = new DrawerBoxPart(DrawerBoxPartType.SideCenter, Qty, Height, c + sdAdj, boxMaterial, "");
+            var leftBack = new DrawerBoxPart(DrawerBoxPartType.BackLeft, Qty, Height, sideThickness, a + fbAdj, boxMaterial, "");
+            var rightBack = new DrawerBoxPart(DrawerBoxPartType.BackRight, Qty, Height, sideThickness, b + fbAdj, boxMaterial, "");
+            var centerBack = new DrawerBoxPart(DrawerBoxPartType.BackCenter, Qty, Height, sideThickness, diff + fbAdj, boxMaterial, "");
+            var sideCenter = new DrawerBoxPart(DrawerBoxPartType.SideCenter, Qty, Height, sideThickness, c + sdAdj, boxMaterial, "");
 
             return new List<DrawerBoxPart>() {
                 front, leftBack, rightBack, centerBack, sideCenter, side, bottom
