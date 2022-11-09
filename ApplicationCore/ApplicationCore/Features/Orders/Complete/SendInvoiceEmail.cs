@@ -12,7 +12,7 @@ using Unit = QuestPDF.Infrastructure.Unit;
 
 namespace ApplicationCore.Features.Orders.Complete;
 
-public class SendInvoiceEmail : IDomainListener<TriggerOrderCompleteNotification> {
+public class SendInvoiceEmail : DomainListener<TriggerOrderCompleteNotification> {
 
     private readonly ILogger<SendInvoiceEmail> _logger;
     private readonly IBus _bus;
@@ -26,7 +26,7 @@ public class SendInvoiceEmail : IDomainListener<TriggerOrderCompleteNotification
         _fileReader = fileReader;
     }
 
-    public async Task Handle(TriggerOrderCompleteNotification notification, CancellationToken cancellationToken) {
+    public override async Task Handle(TriggerOrderCompleteNotification notification) {
 
         if (!notification.CompleteProfile.EmailInvoice) return;
 

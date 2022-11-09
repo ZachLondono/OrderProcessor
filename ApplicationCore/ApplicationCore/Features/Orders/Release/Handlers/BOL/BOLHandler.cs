@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.BOL;
 
-internal class BOLHandler : IDomainListener<TriggerOrderReleaseNotification> {
+internal class BOLHandler : DomainListener<TriggerOrderReleaseNotification> {
 
     private readonly ILogger<BOLHandler> _logger;
     private readonly IBus _bus;
@@ -19,7 +19,7 @@ internal class BOLHandler : IDomainListener<TriggerOrderReleaseNotification> {
         _logger = logger;
     }
 
-    public async Task Handle(TriggerOrderReleaseNotification notification, CancellationToken cancellationToken) {
+    public override async Task Handle(TriggerOrderReleaseNotification notification) {
 
         if (!notification.ReleaseProfile.GenerateBOL) {
             _uibus.Publish(new OrderReleaseProgressNotification("Not creating BOL, because option was disabled"));
@@ -59,7 +59,7 @@ internal class BOLHandler : IDomainListener<TriggerOrderReleaseNotification> {
             CustomerPhone = customer.PhoneNumber
         };
 
-        var bolResponse = await _bus.Send(new FillTemplateRequest(model, outputDir, $"{order.Number} - {order.Name} BOL", doPrint, config), cancellationToken);
+        var bolResponse = await _bus.Send(new FillTemplateRequest(model, outputDir, $"{order.Number} - {order.Name} BOL", doPrint, config));
 
         bolResponse.Match(
             response => {

@@ -8,7 +8,7 @@ using Company = ApplicationCore.Features.Companies.Domain.Company;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.PackingList;
 
-internal class PackingListHandler : IDomainListener<TriggerOrderReleaseNotification> {
+internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
     private readonly ILogger<PackingListHandler> _logger;
     private readonly IBus _bus;
@@ -20,7 +20,7 @@ internal class PackingListHandler : IDomainListener<TriggerOrderReleaseNotificat
         _logger = logger;
     }
 
-    public async Task Handle(TriggerOrderReleaseNotification notification, CancellationToken cancellationToken) {
+    public override async Task Handle(TriggerOrderReleaseNotification notification) {
         
         if (!notification.ReleaseProfile.GeneratePackingList) {
             _uibus.Publish(new OrderReleaseProgressNotification("Not creating packing list, because option was disabled"));
@@ -97,7 +97,7 @@ internal class PackingListHandler : IDomainListener<TriggerOrderReleaseNotificat
             }).ToList()
         };
 
-        var plResponse = await _bus.Send(new FillTemplateRequest(packinglist, outputDir, $"{order.Number} - {order.Name} PACKING LIST", doPrint, config), cancellationToken);
+        var plResponse = await _bus.Send(new FillTemplateRequest(packinglist, outputDir, $"{order.Number} - {order.Name} PACKING LIST", doPrint, config));
 
         plResponse.Match(
             (response) => {

@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers;
 
-internal class OrderLabelHandler : IDomainListener<TriggerOrderReleaseNotification> {
+internal class OrderLabelHandler : DomainListener<TriggerOrderReleaseNotification> {
 
     private readonly ILogger<OrderLabelHandler> _logger;
     private readonly IBus _bus;
@@ -18,7 +18,7 @@ internal class OrderLabelHandler : IDomainListener<TriggerOrderReleaseNotificati
         _logger = logger;
     }
 
-    public async Task Handle(TriggerOrderReleaseNotification notification, CancellationToken cancellationToken) {
+    public override async Task Handle(TriggerOrderReleaseNotification notification) {
 
         Debug.WriteLine("** Printing Label **");
 
@@ -39,7 +39,7 @@ internal class OrderLabelHandler : IDomainListener<TriggerOrderReleaseNotificati
         }
         var label = new Label(fields);
 
-        var response = await _bus.Send(new PrintLabelRequest(label, configuration), cancellationToken);
+        var response = await _bus.Send(new PrintLabelRequest(label, configuration));
 
         response.Match(
             _ => {

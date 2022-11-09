@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers;
 
-internal class CADCodeProgramHandler : IDomainListener<TriggerOrderReleaseNotification> {
+internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotification> {
 
     private readonly ILogger<ADuiePyleLabelHandler> _logger;
     private readonly IBus _bus;
@@ -19,7 +19,7 @@ internal class CADCodeProgramHandler : IDomainListener<TriggerOrderReleaseNotifi
         _construction = construction;
     }
 
-    public async Task Handle(TriggerOrderReleaseNotification notification, CancellationToken cancellationToken) {
+    public override async Task Handle(TriggerOrderReleaseNotification notification) {
 
         if (!notification.ReleaseProfile.GenerateCNCPrograms) {
             _uibus.Publish(new OrderReleaseProgressNotification("Not generating CADCode CNC release because option was disabled"));
@@ -53,7 +53,7 @@ internal class CADCodeProgramHandler : IDomainListener<TriggerOrderReleaseNotifi
             Parts = parts
         };
 
-        var response = await _bus.Send(new CNCReleaseRequest(batch, notification.ReleaseProfile.CNCReportOutputDirectory), cancellationToken);
+        var response = await _bus.Send(new CNCReleaseRequest(batch, notification.ReleaseProfile.CNCReportOutputDirectory));
 
         response.Match(
 

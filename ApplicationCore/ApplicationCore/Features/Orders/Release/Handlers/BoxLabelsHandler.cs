@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers;
 
-internal class BoxLabelsHandler : IDomainListener<TriggerOrderReleaseNotification> {
+internal class BoxLabelsHandler : DomainListener<TriggerOrderReleaseNotification> {
 
     private readonly ILogger<BoxLabelsHandler> _logger;
     private readonly IBus _bus;
@@ -17,7 +17,7 @@ internal class BoxLabelsHandler : IDomainListener<TriggerOrderReleaseNotificatio
         _logger = logger;
     }
 
-    public async Task Handle(TriggerOrderReleaseNotification notification, CancellationToken cancellationToken) {
+    public override async Task Handle(TriggerOrderReleaseNotification notification) {
 
         if (!notification.ReleaseProfile.PrintBoxLabels) {
             _uibus.Publish(new OrderReleaseProgressNotification("Not printing box labels, because option was disabled"));
@@ -49,7 +49,7 @@ internal class BoxLabelsHandler : IDomainListener<TriggerOrderReleaseNotificatio
 
         }
 
-        var response = await _bus.Send(new PrintLabelsRequest(labels, configuration), cancellationToken);
+        var response = await _bus.Send(new PrintLabelsRequest(labels, configuration));
 
         response.Match(
             _ => {

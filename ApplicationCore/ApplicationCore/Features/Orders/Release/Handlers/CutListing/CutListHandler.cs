@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.CutListing;
 
-public class CutListHandler : IDomainListener<TriggerOrderReleaseNotification> {
+public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
     private readonly ILogger<CutListHandler> _logger;
     private readonly IBus _bus;
@@ -23,7 +23,7 @@ public class CutListHandler : IDomainListener<TriggerOrderReleaseNotification> {
         _construction = construction;
     }
 
-    public async Task Handle(TriggerOrderReleaseNotification notification, CancellationToken cancellationToken) {
+    public override async Task Handle(TriggerOrderReleaseNotification notification) {
 
         if (!notification.ReleaseProfile.GenerateCutList) {
             _uibus.Publish(new OrderReleaseProgressNotification("Not creating Cut Lists, because option was disabled"));
@@ -44,7 +44,7 @@ public class CutListHandler : IDomainListener<TriggerOrderReleaseNotification> {
         bool doPrint = notification.ReleaseProfile.PrintCutList;
         string prefix = $"{order.Number} - {order.Name}";
 
-        var responseStd = await _bus.Send(new FillTemplateRequest(cutList, outputDir, $"{prefix} CUTLIST", doPrint, config), cancellationToken);
+        var responseStd = await _bus.Send(new FillTemplateRequest(cutList, outputDir, $"{prefix} CUTLIST", doPrint, config));
         responseStd.Match(
             r => {
                 _logger.LogInformation("Drawer Box Cut List Created : {FilePath}", r.FilePath);

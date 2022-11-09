@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers;
 
-internal class ADuiePyleLabelHandler : IDomainListener<TriggerOrderReleaseNotification> {
+internal class ADuiePyleLabelHandler : DomainListener<TriggerOrderReleaseNotification> {
 
     private readonly ILogger<ADuiePyleLabelHandler> _logger;
     private readonly IBus _bus;
@@ -17,7 +17,7 @@ internal class ADuiePyleLabelHandler : IDomainListener<TriggerOrderReleaseNotifi
         _logger = logger;
     }
 
-    public async Task Handle(TriggerOrderReleaseNotification notification, CancellationToken cancellationToken) {
+    public override async Task Handle(TriggerOrderReleaseNotification notification) {
 
         if (!notification.ReleaseProfile.PrintADuiePyleLabel) {
             _uibus.Publish(new OrderReleaseProgressNotification("Not printing a duie pyle label, because option was disabled"));
@@ -35,7 +35,7 @@ internal class ADuiePyleLabelHandler : IDomainListener<TriggerOrderReleaseNotifi
         }
         var label = new Label(fields);
 
-        var response = await _bus.Send(new PrintLabelRequest(label, configuration), cancellationToken);
+        var response = await _bus.Send(new PrintLabelRequest(label, configuration));
 
         response.Match(
             _ => {

@@ -17,20 +17,23 @@ public class CNCReleaseRequestHandler : CommandHandler<CNCReleaseRequest, IEnume
         _configurationProvider = configurationProvider;
     }
 
-    public override Task<Response<IEnumerable<string>>> Handle(CNCReleaseRequest command) {
+    public override async Task<Response<IEnumerable<string>>> Handle(CNCReleaseRequest command) {
         try {
 
-            var machineConfigurations = _configurationProvider.GetConfigurations();
-            // TODO: do this in a task, otherwise application hangs while waiting for CADCode
-            var job = _cncService.ExportToCNC(command.Batch, machineConfigurations);
-            var filePaths = _pdfService.GeneratePDFs(job, command.ReportOutputDirectory);
+            return await Task.Run(() => {
 
-            // TODO send emails to shop manager
+                var machineConfigurations = _configurationProvider.GetConfigurations();
+                // TODO: do this in a task, otherwise application hangs while waiting for CADCode
+                var job = _cncService.ExportToCNC(command.Batch, machineConfigurations);
+                var filePaths = _pdfService.GeneratePDFs(job, command.ReportOutputDirectory);
 
-            return Task.FromResult(new Response<IEnumerable<string>>(filePaths));
+                // TODO send emails to shop manager
+                return new Response<IEnumerable<string>>(filePaths);
+
+            });
+
         } catch (Exception e) {
-            return Task.FromResult(new Response<IEnumerable<string>>(new Error($"Exception thrown while releasing cnc program {e}")));
+            return new Response<IEnumerable<string>>(new Error($"Exception thrown while releasing cnc program {e}"));
         }
-
     }
 }

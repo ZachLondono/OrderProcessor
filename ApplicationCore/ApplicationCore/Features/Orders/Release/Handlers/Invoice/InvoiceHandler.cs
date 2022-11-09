@@ -10,7 +10,7 @@ using Company = ApplicationCore.Features.Companies.Domain.Company;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.Invoice;
 
-internal class InvoiceHandler : IDomainListener<TriggerOrderReleaseNotification> {
+internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> {
 
     private readonly ILogger<InvoiceHandler> _logger;
     private readonly IBus _bus;
@@ -24,7 +24,7 @@ internal class InvoiceHandler : IDomainListener<TriggerOrderReleaseNotification>
         _reader = reader;
     }
 
-    public async Task Handle(TriggerOrderReleaseNotification notification, CancellationToken cancellationToken) {
+    public override async Task Handle(TriggerOrderReleaseNotification notification) {
 
         if (!notification.ReleaseProfile.GenerateInvoice) {
             _uibus.Publish(new OrderReleaseProgressNotification("Not creating invoice, because option was disabled"));
@@ -106,7 +106,7 @@ internal class InvoiceHandler : IDomainListener<TriggerOrderReleaseNotification>
             }).ToList()
         };
 
-        var response = await _bus.Send(new FillTemplateRequest(packinglist, outputDir, $"{order.Number} - {order.Name} INVOICE", doPrint, config), cancellationToken);
+        var response = await _bus.Send(new FillTemplateRequest(packinglist, outputDir, $"{order.Number} - {order.Name} INVOICE", doPrint, config));
 
         FillTemplateResponse? invResponse = null;
         didError = false;
