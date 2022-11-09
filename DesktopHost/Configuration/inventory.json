@@ -27,5 +27,17 @@
         "priority": 1
       }
     ]
+  },
+  {
+    "name": "1/4\"PLY",
+    "thickness": 6.35,
+    "isGrained": false,
+    "sizes": [
+      {
+        "width": 500,
+        "length": 1500,
+        "priority": 1
+      }
+    ]
   }
 ]
