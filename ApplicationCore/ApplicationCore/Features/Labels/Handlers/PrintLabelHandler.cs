@@ -1,7 +1,6 @@
 ﻿using ApplicationCore.Features.Labels.Contracts;
 using ApplicationCore.Features.Labels.Services;
 using ApplicationCore.Infrastructure;
-using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Labels.Handlers;

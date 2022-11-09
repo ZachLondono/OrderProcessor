@@ -5,7 +5,7 @@ using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Features.CADCode.Handlers;
 
-public class CNCReleaseRequestHandler : QueryHandler<CNCReleaseRequest, IEnumerable<string>> {
+public class CNCReleaseRequestHandler : CommandHandler<CNCReleaseRequest, IEnumerable<string>> {
 
     private readonly ICNCService _cncService;
     private readonly IReleasePDFService _pdfService;

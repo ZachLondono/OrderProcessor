@@ -7,9 +7,9 @@ namespace ApplicationCore.Features.Orders.Commands;
 
 public class OverwriteExistingOrderWithId {
 
-    public record Command(Guid ExistingId, string Source, string Number, string Name, Guid CustomerId, Guid VendorId, string Comment, DateTime OrderDate, decimal Tax, decimal Shipping, decimal PriceAdjustment, IReadOnlyDictionary<string, string> Info, IEnumerable<DrawerBox> Boxes, IEnumerable<AdditionalItem> AdditionalItems) : IQuery<Order>;
+    public record Command(Guid ExistingId, string Source, string Number, string Name, Guid CustomerId, Guid VendorId, string Comment, DateTime OrderDate, decimal Tax, decimal Shipping, decimal PriceAdjustment, IReadOnlyDictionary<string, string> Info, IEnumerable<DrawerBox> Boxes, IEnumerable<AdditionalItem> AdditionalItems) : ICommand<Order>;
 
-    public class Handler : QueryHandler<Command, Order> {
+    public class Handler : CommandHandler<Command, Order> {
 
         private readonly IBus _bus;
         private readonly IDbConnectionFactory _factory;

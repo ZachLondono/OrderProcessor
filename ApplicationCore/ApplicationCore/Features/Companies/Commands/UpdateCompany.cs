@@ -2,7 +2,6 @@
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Infrastructure.Data;
 using Dapper;
-using MediatR;
 
 namespace ApplicationCore.Features.Companies.Commands;
 

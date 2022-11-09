@@ -5,7 +5,7 @@ using ApplicationCore.Shared;
 
 namespace ApplicationCore.Features.ExcelTemplates.Handlers;
 
-public class FillTemplateHandler : QueryHandler<FillTemplateRequest, FillTemplateResponse> {
+public class FillTemplateHandler : CommandHandler<FillTemplateRequest, FillTemplateResponse> {
 
     private readonly IFileReader _fileReader;
     private readonly IExcelTemplateFactory _factory;

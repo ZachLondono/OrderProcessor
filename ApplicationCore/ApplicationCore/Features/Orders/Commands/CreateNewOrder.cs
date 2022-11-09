@@ -9,9 +9,9 @@ namespace ApplicationCore.Features.Orders.Commands;
 
 public class CreateNewOrder {
 
-    public record Command(string Source, string Number, string Name, Guid CustomerId, Guid VendorId, string Comment, DateTime OrderDate, decimal Tax, decimal Shipping, decimal PriceAdjustment, IReadOnlyDictionary<string,string> Info, IEnumerable<DrawerBox> Boxes, IEnumerable<AdditionalItem> AdditionalItems, Guid? OrderId = null) : IQuery<Order>;
+    public record Command(string Source, string Number, string Name, Guid CustomerId, Guid VendorId, string Comment, DateTime OrderDate, decimal Tax, decimal Shipping, decimal PriceAdjustment, IReadOnlyDictionary<string,string> Info, IEnumerable<DrawerBox> Boxes, IEnumerable<AdditionalItem> AdditionalItems, Guid? OrderId = null) : ICommand<Order>;
 
-    public class Handler : QueryHandler<Command, Order> {
+    public class Handler : CommandHandler<Command, Order> {
 
         private readonly IDbConnectionFactory _factory;
 

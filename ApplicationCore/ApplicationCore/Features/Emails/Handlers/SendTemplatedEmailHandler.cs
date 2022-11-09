@@ -4,7 +4,7 @@ using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Features.Emails.Handlers;
 
-public class SendTemplatedEmailHandler : QueryHandler<SendTemplatedEmailRequest, SendEmailResponse> {
+public class SendTemplatedEmailHandler : CommandHandler<SendTemplatedEmailRequest, SendEmailResponse> {
 
     private readonly ITemplatedEmailService _emailService;
     private readonly IBus _bus;

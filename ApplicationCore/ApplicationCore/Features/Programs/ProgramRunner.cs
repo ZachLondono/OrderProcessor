@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Programs;
 
-public class ProgramRunner : QueryHandler<RunProgramRequest, RunProgramResponse> {
+public class ProgramRunner : CommandHandler<RunProgramRequest, RunProgramResponse> {
 
     private readonly ILogger<ProgramRunner> _logger;
     private readonly IProgramRunnerService _runnerService;

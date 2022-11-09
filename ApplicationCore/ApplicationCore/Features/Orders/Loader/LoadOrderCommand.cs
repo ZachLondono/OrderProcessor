@@ -11,9 +11,9 @@ namespace ApplicationCore.Features.Orders.Loader;
 
 public class LoadOrderCommand {
 
-    public record Command(OrderSourceType SourceType, string Source) : IQuery<Order>;
+    public record Command(OrderSourceType SourceType, string Source) : ICommand<Order>;
 
-    public class Handler : QueryHandler<Command, Order> {
+    public class Handler : CommandHandler<Command, Order> {
 
         private readonly IOrderProviderFactory _factory;
         private readonly IBus _bus;

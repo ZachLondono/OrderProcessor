@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Infrastructure;
-using MediatR;
 
 namespace ApplicationCore.Features.Emails.Contracts;
 

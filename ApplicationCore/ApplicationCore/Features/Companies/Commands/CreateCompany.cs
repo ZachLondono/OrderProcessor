@@ -8,9 +8,9 @@ namespace ApplicationCore.Features.Companies.Commands;
 
 public class CreateCompany {
 
-    public record Command(string Name, Address Address, string PhoneNumber, string InvoiceEmail, string ConfirmationEmail) : IQuery<Company>;
+    public record Command(string Name, Address Address, string PhoneNumber, string InvoiceEmail, string ConfirmationEmail) : ICommand<Company>;
 
-    public class Handler : QueryHandler<Command, Company> {
+    public class Handler : CommandHandler<Command, Company> {
 
         private readonly IDbConnectionFactory _factory;
 
