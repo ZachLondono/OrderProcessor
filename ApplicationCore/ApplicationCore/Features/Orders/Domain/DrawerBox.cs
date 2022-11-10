@@ -11,9 +11,10 @@ public class DrawerBox {
     public Dimension Height { get; }
     public Dimension Width { get; }
     public Dimension Depth { get; }
+    public string Note { get; }
     public DrawerBoxOptions Options { get; }
 
-    public DrawerBox(Guid id, int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, DrawerBoxOptions options) {
+    public DrawerBox(Guid id, int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, DrawerBoxOptions options) {
         Id = id;
         LineInOrder = line;
         UnitPrice = unitPrice;
@@ -21,11 +22,12 @@ public class DrawerBox {
         Height = height;
         Width = width;
         Depth = depth;
+        Note = note;
         Options = options;
     }
 
-    public static DrawerBox Create(int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, DrawerBoxOptions options) {
-        return new(Guid.NewGuid(), line, unitPrice, qty, height, width, depth, options);
+    public static DrawerBox Create(int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, DrawerBoxOptions options) {
+        return new(Guid.NewGuid(), line, unitPrice, qty, height, width, depth, note, options);
     }
 
     public IEnumerable<DrawerBoxPart> GetParts(ConstructionValues construction){

@@ -16,6 +16,8 @@ public record DrawerBoxData {
 
     public Dimension Depth { get; set; } = Dimension.FromMillimeters(0);
 
+    public string Note { get; set; } = string.Empty;
+
     public bool Logo { get; set; }
 
     public bool PostFinish { get; set; }

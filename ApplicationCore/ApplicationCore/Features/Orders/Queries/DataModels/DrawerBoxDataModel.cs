@@ -13,6 +13,8 @@ public class DrawerBoxDataModel {
 
     public int Qty { get; set; }
 
+    public string Note { get; set; } = string.Empty;
+
     public Dimension Height { get; set; } = Dimension.FromMillimeters(0);
 
     public Dimension Width { get; set; } = Dimension.FromMillimeters(0);
@@ -63,7 +65,7 @@ public class DrawerBoxDataModel {
         var notches = new DrawerBoxOption(NotchesId, NotchesName);
         var accessory = new DrawerBoxOption(AccessoryId, AccessoryName);
 
-        return new DrawerBox(Id, LineInOrder, UnitPrice, Qty, Height, Width, Depth, new(boxMaterial, bottomMaterial, clips, notches, accessory, Logo, PostFinish, ScoopFront, FaceMountingHoles, UBoxDimensions, FixedDividers));
+        return new DrawerBox(Id, LineInOrder, UnitPrice, Qty, Height, Width, Depth, Note, new(boxMaterial, bottomMaterial, clips, notches, accessory, Logo, PostFinish, ScoopFront, FaceMountingHoles, UBoxDimensions, FixedDividers));
 
     }
 

@@ -105,6 +105,7 @@ public class LoadOrderCommand {
                     data.Height,
                     data.Width,
                     data.Depth,
+                    data.Note,
                     options
                 );
 
