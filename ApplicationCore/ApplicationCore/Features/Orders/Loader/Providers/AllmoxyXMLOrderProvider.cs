@@ -7,6 +7,8 @@ using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.Loader.Providers.DTO;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
+using System.Xml.Linq;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 using DrawerBoxModel = ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels.DrawerBoxModel;
 
@@ -18,39 +20,35 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
     private readonly IBus _bus;
     private readonly AllmoxyConfiguration _configuration;
 
-    private string? _readSource = null;
-    private OrderModel? _sourceData = null;
-
     public AllmoxyXMLOrderProvider(IFileReader fileReader, IBus bus, AllmoxyConfiguration configuration) {
         _fileReader = fileReader;
         _bus = bus;
         _configuration = configuration;
     }
 
-    private void ReadData(string source) {
-        using var fileStream = _fileReader.OpenReadFileStream(source);
-        var serializer = new XmlSerializer(typeof(OrderModel));
-        if (serializer.Deserialize(fileStream) is not OrderModel data) throw new InvalidDataException($"Could not parse order from given file {source}");
-        _readSource = source;
-        _sourceData = data;
-    }
-
     public override Task<ValidationResult> ValidateSource(string source) {
 
         try {
 
-            // TODO: instead of actually reading the data, it can be checked for valid XML schema, then there is no need for the private fields
-            ReadData(source);
+            using var stream = new FileStream(source, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            XDocument doc = XDocument.Load(stream);
+
+            var schemas = new XmlSchemaSet();
+            schemas.Add("", _configuration.Schema);
+
+            var errors = new List<string>();
+            doc.Validate(schemas, (s, e) => errors.Add(e.Message));
 
             return Task.FromResult(new ValidationResult() {
-                IsValid = true
+                IsValid = !errors.Any(),
+                ErrorMessage = string.Join('\n', errors)
             });
 
         } catch {
 
             return Task.FromResult(new ValidationResult() {
                 IsValid = false,
-                ErrorMessage = "File does not contain valid order data"
+                ErrorMessage = "Could not validate order data"
             });
 
         }
@@ -59,14 +57,9 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
     public override async Task<OrderData?> LoadOrderData(string source) {
 
-        if (_readSource is null || _sourceData is null || !_readSource.Equals(source)) {
-            // TODO: instead of actually reading the data, it can be checked for valid XML schema, then there is no need for the private fields
-            ReadData(source);
-        }
-
-        if (_sourceData is null) throw new InvalidDataException("Invalid order data");
-
-        OrderModel data = _sourceData;
+        using var fileStream = _fileReader.OpenReadFileStream(source);
+        var serializer = new XmlSerializer(typeof(OrderModel));
+        if (serializer.Deserialize(fileStream) is not OrderModel data) throw new InvalidDataException($"Could not parse order from given file {source}");
 
         bool didError = false;
         Company? customer = null;
