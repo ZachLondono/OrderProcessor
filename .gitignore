@@ -37,4 +37,4 @@ msbuild.wrn
 .vs/
 
 # tailwind output
-app.css
+/DesktopHost/wwwroot/css/app.css
