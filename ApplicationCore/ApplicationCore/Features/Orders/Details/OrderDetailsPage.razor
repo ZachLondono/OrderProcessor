@@ -452,8 +452,7 @@
         };
 
         var dialog = Modal.Show<ReleaseProgressDialog>("Order Release Progress", parameters, options);
-        //await Task.Delay(500);
-        //await OrderState.Release();
+        
         _ = await dialog.Result;
 
         _isReleasing = false;
