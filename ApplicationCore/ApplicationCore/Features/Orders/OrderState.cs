@@ -121,7 +121,7 @@ public class OrderState {
         return new();
     }
 
-    public async Task Release(ReleaseProfile? profile) {
+    public async Task Release(ReleaseProfile? profile = null) {
         if (Order is null) return;
 
         ReleaseProfile? releaseProfile = profile;
