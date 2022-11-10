@@ -7,7 +7,7 @@ namespace ApplicationCore.Shared;
 
 internal static class ModalExtensions {
 
-    public static IModalReference OpenInformationDialog(this IModalService modal, string title, string details, MessageType messageType) {
+    public static Task<ModalResult> OpenInformationDialog(this IModalService modal, string title, string details, MessageType messageType) {
 
         var options = new ModalOptions() {
             HideHeader = true
@@ -19,10 +19,10 @@ internal static class ModalExtensions {
             { "Details", details }
         };
 
-        return modal.Show<InformationDialog>("Information", parameters, options);
+        return modal.Show<InformationDialog>("Information", parameters, options).Result;
 
     }
 
-    public static IModalReference OpenErrorDialog(this IModalService modal, Error error) => OpenInformationDialog(modal, error.Title, error.Details, MessageType.Error);
+    public static Task<ModalResult> OpenErrorDialog(this IModalService modal, Error error) => OpenInformationDialog(modal, error.Title, error.Details, MessageType.Error);
 
 }

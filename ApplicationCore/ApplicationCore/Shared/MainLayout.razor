@@ -108,7 +108,7 @@
 				NavigationManager.NavigateTo("/orders/details", true);
 			},
 			async error => {
-				_ = await Modal.OpenErrorDialog(error).Result;
+				_ = await Modal.OpenErrorDialog(error);
 			}
 		);
 	}
