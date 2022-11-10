@@ -116,20 +116,12 @@
             </div>
             @if(OrderState.Order.Status != Status.Completed || OrderState.Order.CompleteDate is null) {
                 <div>
-
                     <label id="productiondate" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Prod. Date</label>
                     @if(OrderState.Order.ProductionDate is null) {
                         <span class="text-lg dark:text-white h-5 align-middle" title="Release order to assign production date">Not Scheduled</span>
                     } else {
                         <InputDate TValue="DateTime" Value="@_infoModel.ProductionDate" ValueChanged="@ProductionDateChanged" ValueExpression="() => _infoModel.ProductionDate" class="hover:underline cursor-pointer text-lg dark:text-white h-5 align-middle"></InputDate>
                     }
-
-                    @*<span class="hover:underline cursor-pointer text-lg dark:text-white h-5 align-middle">
-                        @( OrderState.Order.ProductionDate is null ? "Not Scheduled" : ((DateTime)OrderState.Order.ProductionDate).ToShortDateString())
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-4 inline-block text-black dark:text-white">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
-                        </svg>
-                    </span>*@
                 </div>
             } else {
                 <div>
@@ -346,8 +338,8 @@
         var result = await Bus.Send(new GetCompanyById.Query(OrderState.Order.CustomerId));
         result.Match(
             customer => _customer = customer,
-            error => {
-                // TODO: log error
+            async error => {
+                _ = await Modal.OpenInformationDialog("Could not Load Customer Information", error.Title + " " + error.Details, InformationDialog.MessageType.Warning);
             }
         );
     }
@@ -357,8 +349,8 @@
         var result = await Bus.Send(new GetCompanyById.Query(OrderState.Order.VendorId));
         result.Match(
             vendor => _vendor = vendor,
-            error => {
-                // TODO: log error
+            async error => {
+                _ = await Modal.OpenInformationDialog("Could not Load Vendor Information", error.Title + " " + error.Details, InformationDialog.MessageType.Warning);
             }
         );
     }
@@ -433,9 +425,14 @@
 
     private async Task SaveOrder() {
         _isSaving = true;
-        await OrderState.SaveChanges();
+        var result = await OrderState.SaveChanges();
         _isSaving = false;
         _isDirty = false;
+
+        result.OnError(
+            async error => await Modal.OpenErrorDialog(error)
+        );
+
     }
 
     private async Task ReleaseOrder() {
@@ -460,8 +457,13 @@
     }
 
     private async Task CompleteOrder() {
-        await OrderState.Complete();
+        var result = await OrderState.Complete();
         _isDirty = true;
+
+        result.OnError(
+            async error => await Modal.OpenErrorDialog(error)
+        );
+
     }
 
     private void ToggleUnits() {
@@ -479,13 +481,13 @@
             var response = await Bus.Send(new GetReleaseProfileByVendorId.Query(vendorId));
             response.Match(
                 p => profile = p,
-                error => {
-                    // warn about error
+                async error => {
+                    _ = await Modal.OpenInformationDialog("Could not Load Release Settings", error.Title + " " + error.Details, InformationDialog.MessageType.Warning);
                 }
             );
         }
         
-        if (profile is null) return; // TODO: show warning about error
+        if (profile is null) return;
 
         var parameters = new ModalParameters();
         parameters.Add("Profile", profile);

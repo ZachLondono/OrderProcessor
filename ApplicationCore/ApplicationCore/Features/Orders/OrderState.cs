@@ -59,27 +59,66 @@ public class OrderState {
         IsDirty = true;
     }
 
-    public async Task SaveChanges() {
-        if (Order is null) return;
-        await _bus.Send(new UpdateOrder.Command(Order));
+    public async Task<Response> SaveChanges() {
+        if (Order is null) return new(new() {
+            Title = "No Order to Save",
+            Details = "There is no order set that can be saved"
+        });
+
+        var response = await _bus.Send(new UpdateOrder.Command(Order));
         IsDirty = false;
+
+        if (response.IsError) {
+
+            string details = "";
+            response.OnError(e => details = e.Details);
+
+            return new(new() {
+                Title = "Error saving order changes",
+                Details = details
+            });
+
+        }
+        return new();
+
     }
 
-    public async Task Complete() {
-        if (Order is null) return;
+    public async Task<Response> Complete() {
+        if (Order is null) return new(new() {
+            Title = "No Order to Complete",
+            Details = "There is no order set that can be completed"
+        });
+
         var response = await _bus.Send(new GetCompleteProfileByVendorId.Query(Order.VendorId));
 
+        Error? error = null;
         response.Match(
             async profile => {
-                await _bus.Publish(new TriggerOrderCompleteNotification(Order, profile));
-                Order.Complete();
-                IsDirty = true;
+
+                try { 
+
+                    await _bus.Publish(new TriggerOrderCompleteNotification(Order, profile));
+                    Order.Complete();
+                    IsDirty = true;
+
+                } catch (Exception ex) {
+                    error = new Error() {
+                        Title = "Error Completing Order",
+                        Details = ex.ToString()
+                    };
+                }
+
             },
             error => {
-                // TODO: notify and log error
+                error = new Error() {
+                    Title = "Error Completing Order",
+                    Details = "Could not load completion settings. " + error.Details
+                };
             }
         );
 
+        if (error is not null) return new(error);
+        return new();
     }
 
     public async Task Release(ReleaseProfile? profile) {
