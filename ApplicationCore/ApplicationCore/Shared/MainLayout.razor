@@ -2,6 +2,7 @@
 @using ApplicationCore.Features.Orders
 @using ApplicationCore.Features.Orders.Loader
 @using ApplicationCore.Infrastructure
+@using static ApplicationCore.Shared.InformationDialog;
 @inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
@@ -106,8 +107,8 @@
 				OrderState.ReplaceOrder(order);
 				NavigationManager.NavigateTo("/orders/details", true);
 			},
-			error => {
-				// TODO: display error
+			async error => {
+				_ = await Modal.OpenErrorDialog(error).Result;
 			}
 		);
 	}
