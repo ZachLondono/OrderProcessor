@@ -103,7 +103,8 @@ public class CompanyStateTests {
         // Assert
         _sut.Company.Should().BeNull();
         _sut.IsDirty.Should().BeFalse();
-        _bus.DidNotReceiveWithAnyArgs().Send<object>(default!);
+        _bus.DidNotReceiveWithAnyArgs().Send(default(IQuery<object>)!);
+        _bus.DidNotReceiveWithAnyArgs().Send(default(ICommand<object>)!);
 
     }
 

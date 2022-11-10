@@ -163,7 +163,8 @@ public class OrderStateTests {
         // Assert
         _sut.IsDirty.Should().BeFalse();
         _sut.Order.Should().BeNull();
-        _bus.DidNotReceiveWithAnyArgs().Send<ReleaseProfile>(default!);
+        _bus.DidNotReceiveWithAnyArgs().Send(default(IQuery<ReleaseProfile>)!);
+        _bus.DidNotReceiveWithAnyArgs().Send(default(ICommand<ReleaseProfile>)!);
         _bus.DidNotReceiveWithAnyArgs().Publish<TriggerOrderReleaseNotification>(default!);
 
     }
@@ -197,7 +198,8 @@ public class OrderStateTests {
         // Assert
         _sut.IsDirty.Should().BeFalse();
         _sut.Order.Should().BeNull();
-        _bus.DidNotReceiveWithAnyArgs().Send<ReleaseProfile>(default!);
+        _bus.DidNotReceiveWithAnyArgs().Send(default(IQuery<ReleaseProfile>)!);
+        _bus.DidNotReceiveWithAnyArgs().Send(default(ICommand<ReleaseProfile>)!);
         _bus.DidNotReceiveWithAnyArgs().Publish<TriggerOrderReleaseNotification>(default!);
 
     }

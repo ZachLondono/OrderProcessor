@@ -18,11 +18,12 @@ public class QueryMappingTests {
             VendorId = Guid.NewGuid(),
         };
 
+        var material = new DrawerBoxMaterial(Guid.NewGuid(), "", Dimension.FromMillimeters(0));
         var option = new DrawerBoxOption(Guid.NewGuid(), "");
 
         var orderId = Guid.NewGuid();
         var boxes = new List<DrawerBox>() {
-            new DrawerBox(Guid.NewGuid(), 1, 123, 1, Dimension.FromInches(5), Dimension.FromInches(5), Dimension.FromInches(5), new(option, option, option, option, option))
+            new DrawerBox(Guid.NewGuid(), 1, 123, 1, Dimension.FromInches(5), Dimension.FromInches(5), Dimension.FromInches(5), "", new(material, material, option, option, option))
         };
 
         var items = new List<AdditionalItem>() {
@@ -75,6 +76,7 @@ public class QueryMappingTests {
             Height = Dimension.FromMillimeters(25.4),
             Width = Dimension.FromMillimeters(25.4),
             Depth = Dimension.FromMillimeters(25.4),
+            Note = "Note",
             PostFinish = true,
             ScoopFront = true,
             BoxMaterialId = Guid.NewGuid(),
@@ -100,6 +102,7 @@ public class QueryMappingTests {
         box.Height.Should().Be(model.Height);
         box.Width.Should().Be(model.Width);
         box.Depth.Should().Be(model.Depth);
+        box.Note.Should().Be(model.Note);
         box.Options.PostFinish.Should().Be(model.PostFinish);
         box.Options.ScoopFront.Should().Be(model.ScoopFront);
         box.Options.BoxMaterial.Id.Should().Be(model.BoxMaterialId);

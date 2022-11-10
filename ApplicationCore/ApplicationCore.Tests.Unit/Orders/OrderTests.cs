@@ -10,10 +10,11 @@ public class OrderTests {
     public void Total_Should_EqualAllItems() {
 
         // Arrange
+        var materail = new DrawerBoxMaterial(Guid.NewGuid(), "", Dimension.FromMillimeters(0));
         var option = new DrawerBoxOption(Guid.NewGuid(), "");
         var boxes = new List<DrawerBox>() {
-            new(Guid.NewGuid(), 1, 12.3M, 5, Dimension.FromMillimeters(0), Dimension.FromMillimeters(0), Dimension.FromMillimeters(0), new(option, option, option, option, option)),
-            new(Guid.NewGuid(), 1, 32.1M, 3, Dimension.FromMillimeters(0), Dimension.FromMillimeters(0), Dimension.FromMillimeters(0), new(option, option, option, option, option))
+            new(Guid.NewGuid(), 1, 12.3M, 5, Dimension.FromMillimeters(0), Dimension.FromMillimeters(0), Dimension.FromMillimeters(0), "", new(materail, materail, option, option, option)),
+            new(Guid.NewGuid(), 1, 32.1M, 3, Dimension.FromMillimeters(0), Dimension.FromMillimeters(0), Dimension.FromMillimeters(0), "", new(materail, materail, option, option, option))
         };
         var items = new List<AdditionalItem>() {
             new(Guid.NewGuid(), "A", 5.43M),
