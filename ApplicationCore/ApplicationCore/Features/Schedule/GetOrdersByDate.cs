@@ -37,7 +37,8 @@ public class GetOrdersByDate {
             } catch (Exception e) {
                 _logger.LogError("Exception thrown while trying to find scheduled orders {Query} {Exception}", query, e);
                 return new(new Error() {
-                    Message = $"Exception thrown while trying to find orders scheduled for date {query.StartDate.ToShortDateString()} - {query.EndDate.ToShortDateString()}\n\nException:\n{e.Message}"
+                    Title = "Could not find orders",
+                    Details = $"Exception thrown while trying to find orders scheduled for date {query.StartDate.ToShortDateString()} - {query.EndDate.ToShortDateString()}\n\nException:\n{e.Message}"
                 });
             }
 

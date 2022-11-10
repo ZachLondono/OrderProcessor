@@ -33,7 +33,10 @@ public class CNCReleaseRequestHandler : CommandHandler<CNCReleaseRequest, IEnume
             });
 
         } catch (Exception e) {
-            return new Response<IEnumerable<string>>(new Error($"Exception thrown while releasing cnc program {e}"));
+            return new Response<IEnumerable<string>>(new Error() {
+                Title = "Exception thrown while releasing cnc program",
+                Details = e.ToString()
+            });
         }
     }
 }

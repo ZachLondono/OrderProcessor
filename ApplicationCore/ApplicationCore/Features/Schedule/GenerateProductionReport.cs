@@ -51,7 +51,8 @@ public class GenerateProductionReport {
             } catch (Exception e) {
                 
                 return new Response(new Error() {
-                    Message = $"Error generating production report {e.Message}",
+                    Title = "",
+                    Details = $"Error generating production report {e.Message}",
                 });
 
             }

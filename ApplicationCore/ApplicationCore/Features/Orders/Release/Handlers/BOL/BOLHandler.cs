@@ -68,7 +68,7 @@ internal class BOLHandler : DomainListener<TriggerOrderReleaseNotification> {
             },
             error => {
                 _logger.LogInformation("Error creating BOL {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating BOL {error.Message}"));
+                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating BOL {error.Details}"));
             }
         );
 

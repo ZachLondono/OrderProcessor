@@ -114,7 +114,7 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
             inv => invResponse = inv,
             error => {
                 _logger.LogInformation("Error creating invoice {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating nvoice {error.Message}"));
+                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating nvoice {error.Details}"));
                 didError = true;
             }
         );

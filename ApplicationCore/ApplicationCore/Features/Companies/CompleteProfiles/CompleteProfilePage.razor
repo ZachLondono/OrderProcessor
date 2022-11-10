@@ -81,7 +81,7 @@
             },
             error => {
                 _hasError = true;
-                _errorMessage = error.Message;
+                _errorMessage = error.Details;
             }
         );
         _isLoading = false;
@@ -94,7 +94,7 @@
             success => _hasError = false,
             error => {
                 _hasError = true;
-                _errorMessage = error.Message;
+                _errorMessage = error.Details;
             }
         );
     }

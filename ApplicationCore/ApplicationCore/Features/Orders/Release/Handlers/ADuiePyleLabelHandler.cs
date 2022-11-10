@@ -44,7 +44,7 @@ internal class ADuiePyleLabelHandler : DomainListener<TriggerOrderReleaseNotific
             },
             error => {
                 _logger.LogInformation("Error printing A Duie Pyle label {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error printing A Duie Pyle labels\n{error.Message}"));
+                _uibus.Publish(new OrderReleaseProgressNotification($"Error printing A Duie Pyle labels\n{error.Details}"));
             }
         );
 

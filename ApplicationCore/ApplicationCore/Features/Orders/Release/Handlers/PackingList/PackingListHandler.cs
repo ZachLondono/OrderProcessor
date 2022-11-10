@@ -109,7 +109,7 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
             (error) => {
 
                 _logger.LogInformation("Error creating packing list {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Packing list was not created\n{error.Message}"));
+                _uibus.Publish(new OrderReleaseProgressNotification($"Packing list was not created\n{error.Details}"));
 
             }
         );

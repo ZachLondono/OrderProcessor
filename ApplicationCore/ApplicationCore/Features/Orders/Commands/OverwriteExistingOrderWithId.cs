@@ -39,7 +39,10 @@ public class OverwriteExistingOrderWithId {
             } catch(Exception ex) {
                 trx.Rollback();
                 connection.Close();
-                return new(new Error() { Message = ex.ToString() });
+                return new(new Error() {
+                    Title = "Exception thrown while removing exisitng order data",
+                    Details = ex.ToString()
+                });
             }
 
             return await _bus.Send(new CreateNewOrder.Command(request.Source, request.Number, request.Name, request.CustomerId, request.VendorId, request.Comment, request.OrderDate, request.Tax, request.Shipping, request.PriceAdjustment, request.Info, request.Boxes, request.AdditionalItems, request.ExistingId));

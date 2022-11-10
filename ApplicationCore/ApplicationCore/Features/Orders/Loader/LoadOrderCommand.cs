@@ -33,7 +33,10 @@ public class LoadOrderCommand {
 
             if (!validation.IsValid) {
 
-                return new(new Error("The order source is invalid. " + validation.ErrorMessage));
+                return new(new Error() {
+					Title = "The order source is invalid",
+                    Details = validation.ErrorMessage
+				});
 
             }
 
@@ -49,7 +52,7 @@ public class LoadOrderCommand {
                 },
                 error => {
                     // TODO: log error
-                    _messageBoxService.OpenDialog("Error", $"Error checking if order exists\n{error.Message}");
+                    _messageBoxService.OpenDialog("Error", $"Error checking if order exists\n{error.Details}");
                 }
             );
 
@@ -57,7 +60,10 @@ public class LoadOrderCommand {
 
             if (data is null) {
 
-                return new(new Error("Could not load order from source"));
+                return new(new Error() {
+					Title = "No order was read",
+                    Details = "No data could read from the provided order source"
+				});
 
             }
 

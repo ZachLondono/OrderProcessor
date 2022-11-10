@@ -52,7 +52,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
             },
             error => {
                 _logger.LogError("Error creating Cut List : {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating Cut List {error.Message}"));
+                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating Cut List {error.Details}"));
             }
         );
 
@@ -64,7 +64,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
             },
             error => {
                 _logger.LogError("Error creating Cut List : {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating Cut List {error.Message}"));
+                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating Cut List {error.Details}"));
             }
         );
 
@@ -76,7 +76,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
             },
             error => {
                 _logger.LogError("Error creating Cut List : {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating Cut List {error.Message}"));
+                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating Cut List {error.Details}"));
             }
         );
 

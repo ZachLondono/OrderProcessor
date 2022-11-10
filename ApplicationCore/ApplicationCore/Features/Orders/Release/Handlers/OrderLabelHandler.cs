@@ -48,7 +48,7 @@ internal class OrderLabelHandler : DomainListener<TriggerOrderReleaseNotificatio
             },
             error => {
                 _logger.LogInformation("Error printing order label {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error printing order label\n{error.Message}"));
+                _uibus.Publish(new OrderReleaseProgressNotification($"Error printing order label\n{error.Details}"));
             }
         );
 

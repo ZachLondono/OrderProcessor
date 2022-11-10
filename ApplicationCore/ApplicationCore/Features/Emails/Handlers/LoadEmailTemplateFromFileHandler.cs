@@ -22,9 +22,9 @@ public class LoadEmailTemplateFromFileHandler : QueryHandler<LoadEmailTemplateFr
         var email = TryParseInvoiceEmailTemplate(templateContent);
 
         if (email is null) {
-            // TODO: return error
             return new(new Error() {
-                Message = "Could not load email template from file"
+                Title = "Invalid Template",
+                Details = "Could not load email template from file"
             });
         }
 

@@ -58,7 +58,7 @@ internal class BoxLabelsHandler : DomainListener<TriggerOrderReleaseNotification
             },
             error => {
                 _logger.LogInformation("Error printing box labels {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error printing box labels\n{error.Message}"));
+                _uibus.Publish(new OrderReleaseProgressNotification($"Error printing box labels\n{error.Details}"));
             }
         );
 
