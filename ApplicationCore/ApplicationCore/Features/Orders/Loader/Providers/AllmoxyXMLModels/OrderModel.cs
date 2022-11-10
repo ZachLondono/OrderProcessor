@@ -38,7 +38,7 @@ public class OrderModel {
     [XmlElement("shipping")]
     public ShippingModel Shipping { get; set; } = new();
 
-    [XmlElement("DrawerBox")]
+    [XmlElement("drawerbox")]
     public DrawerBoxModel[] DrawerBoxes { get; set; } = Array.Empty<DrawerBoxModel>();
 
 }
