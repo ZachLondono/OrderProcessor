@@ -24,9 +24,22 @@
     [Parameter]
     public ButtonColor Color { get; set; } = ButtonColor.Primary;
 
+    [Parameter]
+    public ButtonRounded Rounded { get; set; } = ButtonRounded.All;
+
     private string Classes() {
 
-        string baseClass = "font-semibold px-2 py-1.5 rounded";
+        string baseClass = "font-semibold px-2 py-1.5";
+
+        string roundedClass = Rounded switch
+        {
+            ButtonRounded.Left => "rounded-l",
+            ButtonRounded.Right => "rounded-r",
+            ButtonRounded.Top => "rounded-t",
+            ButtonRounded.Bottom => "rounded-b",
+            ButtonRounded.All => "rounded",
+            ButtonRounded.None => "rounded-none",
+        };
 
         string styleClass = Color switch
         {
@@ -45,7 +58,7 @@
             _ => ""
         };
 
-        return $"{baseClass} {styleClass} {Class}";
+        return $"{baseClass} {roundedClass} {styleClass} {Class}";
 
     }
 
@@ -58,6 +71,15 @@
     public enum ButtonColor {
         Primary,
         Secondary
+    }
+
+    public enum ButtonRounded {
+        Left,
+        Right,
+        Top,
+        Bottom,
+        All,
+        None
     }
 
 }
