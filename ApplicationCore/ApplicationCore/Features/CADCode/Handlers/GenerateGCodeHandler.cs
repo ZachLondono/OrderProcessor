@@ -27,6 +27,8 @@ public class CNCReleaseRequestHandler : CommandHandler<CNCReleaseRequest, IEnume
                 var job = _cncService.ExportToCNC(command.Batch, machineConfigurations);
                 var filePaths = _pdfService.GeneratePDFs(job, command.ReportOutputDirectory);
 
+                // TODO: warn when no data was released
+
                 // TODO send emails to shop manager
                 return new Response<IEnumerable<string>>(filePaths);
 

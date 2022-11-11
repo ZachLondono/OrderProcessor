@@ -28,11 +28,11 @@ public class MockConfigurationProvider : ICNCConfigurationProvider {
                 ToolMap = andiToolMap,
                 Orientation = TableOrientation.Standard
             },
-            /*new() {
+            new() {
                 MachineName = "Omnitech",
                 ToolMap = omniToolMap,
                 Orientation = TableOrientation.Rotated
-            }*/
+            }
         };
     }
 

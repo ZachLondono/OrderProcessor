@@ -56,7 +56,7 @@ public class CADCodeManager {
             var inventory = _availableInventory.Where(item => item.Name == material.Name && Math.Abs(item.Thickness - material.Thickness) < 0.05)
                                                 .SelectMany(item => item.AsCutListInventory(machineConfig.Orientation))
                                                 .ToList();
-
+            
             if (!inventory.Any()) {
                 // TODO: warn that there is no available inventory for selected material
                 continue;
