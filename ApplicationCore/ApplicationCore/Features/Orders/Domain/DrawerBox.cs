@@ -55,7 +55,7 @@ public class DrawerBox {
         var front = new DrawerBoxPart(DrawerBoxPartType.Front, Qty, Height, Width + fbAdj, sideThickness, boxMaterial, Options.ScoopFront ? "Scoop Front" : "");
         var back = new DrawerBoxPart(DrawerBoxPartType.Back, Qty, Height, Width + fbAdj, sideThickness, boxMaterial, accComment);
         var side = new DrawerBoxPart(DrawerBoxPartType.Side, Qty * 2, Height, Depth + sdAdj, sideThickness, boxMaterial, logoComment);
-        var bottom = new DrawerBoxPart(DrawerBoxPartType.Bottom, Qty, Width + btAdj, bottomThickness, Depth + btAdj, botMaterial, "");
+        var bottom = new DrawerBoxPart(DrawerBoxPartType.Bottom, Qty, Width + btAdj, Depth + btAdj, bottomThickness, botMaterial, "");
 
         if (Options.UBoxDimensions is not null) {
 
