@@ -21,9 +21,6 @@
     [Parameter]
     public ButtonColor Color { get; set; } = ButtonColor.Primary;
 
-    [Parameter]
-    public ButtonRounded Rounded { get; set; } = ButtonRounded.All;
-
     private string Classes() {
 
         string baseClass = "font-semibold px-2 py-1.5 rounded";
@@ -46,7 +43,7 @@
             - => ""
         };
 
-        return $"{baseClass} {roundedClass} {styleClass} {Class}";
+        return $"{baseClass} {styleClass} {Class}";
 
     }
 
