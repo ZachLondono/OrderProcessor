@@ -451,11 +451,18 @@
         };
 
         var dialog = Modal.Show<ReleaseProgressDialog>("Order Release Progress", parameters, options);
-        
+
         _ = await dialog.Result;
 
         _isReleasing = false;
         _isDirty = true;
+
+
+        if (OrderState.Order is not null && OrderState.Order.ProductionDate is not null) {
+            _infoModel.ProductionDate = (DateTime) OrderState.Order.ProductionDate;
+            StateHasChanged();
+        }
+
     }
 
     private async Task CompleteOrder() {
