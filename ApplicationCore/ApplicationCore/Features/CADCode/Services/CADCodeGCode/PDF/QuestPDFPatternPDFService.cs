@@ -165,8 +165,10 @@ public class QuestPDFReleasePDFService : IReleasePDFService {
 
         var toolTableContent = new List<Dictionary<string, string>>();
         var row = new Dictionary<string, string>();
+        bool hasTools = false;
         foreach (var pos in release.ToolTable.Keys.OrderBy(p => p)) {
             row.Add(pos.ToString(), release.ToolTable[pos]);
+            if (!string.IsNullOrWhiteSpace(release.ToolTable[pos])) hasTools= true;
         }
         toolTableContent.Add(row);
 
@@ -174,6 +176,11 @@ public class QuestPDFReleasePDFService : IReleasePDFService {
             Title = "Tools Used",
             Content = toolTableContent
         };
+
+        var tables = new List<Table>();
+        if (hasTools) tables.Add(toolTable);
+        tables.Add(materialTable);
+        tables.Add(partsTable);
 
         var cover = new CoverModel() {
             Title = $"{job.JobName}  [{release.MachineName}]",
@@ -183,11 +190,7 @@ public class QuestPDFReleasePDFService : IReleasePDFService {
                     {"Order Date", DateTime.Today.ToShortDateString() },
                     {"Due Date", DateTime.Today.ToShortDateString() }
                 },
-            Tables = new List<Table>() {
-                    toolTable,
-                    materialTable,
-                    partsTable,
-                }
+            Tables = tables
         };
         return cover;
     }
