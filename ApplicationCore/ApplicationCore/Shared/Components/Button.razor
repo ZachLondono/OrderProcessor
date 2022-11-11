@@ -1,5 +1,5 @@
 ﻿
-<button @onclick="async () => { OnClick(); await OnClickAsync(); }" class="@Classes()" disabled="@Disabled">@ChildContent</button>
+<button @onclick="() => OnClick()" class="@Classes()" disabled="@Disabled">@ChildContent</button>
 
 @code {
 
@@ -8,9 +8,6 @@
 
     [Parameter]
     public Action OnClick { get; set; } = new Action(() => { });
-
-    [Parameter]
-    public Func<Task> OnClickAsync { get; set; } = new Func<Task>(() => Task.CompletedTask);
 
     [Parameter]
     public ButtonStyle Style { get; set; } = ButtonStyle.Contained;
@@ -29,21 +26,12 @@
 
     private string Classes() {
 
-        string baseClass = "font-semibold px-2 py-1.5";
-
-        string roundedClass = Rounded switch
-        {
-            ButtonRounded.Left => "rounded-l",
-            ButtonRounded.Right => "rounded-r",
-            ButtonRounded.Top => "rounded-t",
-            ButtonRounded.Bottom => "rounded-b",
-            ButtonRounded.All => "rounded",
-            ButtonRounded.None => "rounded-none",
-        };
+        string baseClass = "font-semibold px-2 py-1.5 rounded";
 
         string styleClass = Color switch
         {
-            ButtonColor.Primary => Style switch {
+            ButtonColor.Primary => Style switch
+            {
                 ButtonStyle.Text => "text-blue-600 hover:bg-blue-50 active:bg-blue-200 focus:bg-blue-100 disabled:text-gray-400 disabled:pointer-events-none",
                 ButtonStyle.Outline => "outline outline-1 outline-blue-600 hover:outline-blue-700 text-blue-600 hover:bg-blue-50 active:bg-blue-200 focus:bg-blue-100 disabled:text-gray-400 disabled:outline-gray-400 disabled:pointer-events-none",
                 ButtonStyle.Contained => "text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-300 focus:bg-blue-400 shadow-md hover:shadow-lg hover:active:shadow-xl disabled:bg-gray-400 disabled:pointer-events-none",
@@ -54,8 +42,8 @@
                 ButtonStyle.Outline => "outline outline-1 outline-slate-600 hover:outline-slate-700 text-slate-600 hover:bg-slate-50 active:bg-slate-200 focus:bg-slate-100 disabled:text-gray-400 disabled:outline-gray-400 disabled:pointer-events-none",
                 ButtonStyle.Contained => "text-white bg-slate-600 hover:bg-slate-500 active:bg-slate-300 focus:bg-slate-400 shadow-md hover:shadow-lg hover:active:shadow-xl disabled:bg-gray-400 disabled:pointer-events-none",
                 _ => ""
-            },
-            _ => ""
+            }
+            - => ""
         };
 
         return $"{baseClass} {roundedClass} {styleClass} {Class}";
@@ -71,15 +59,6 @@
     public enum ButtonColor {
         Primary,
         Secondary
-    }
-
-    public enum ButtonRounded {
-        Left,
-        Right,
-        Top,
-        Bottom,
-        All,
-        None
     }
 
 }
