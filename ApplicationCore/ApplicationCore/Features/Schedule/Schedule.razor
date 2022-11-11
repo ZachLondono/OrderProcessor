@@ -1,7 +1,20 @@
 ﻿@page "/"
 @using ApplicationCore.Features.Orders.Domain
 @using ApplicationCore.Infrastructure
+@using ApplicationCore.Shared.Components
+@using static ApplicationCore.Shared.Components.Button;
 @inject IBus Bus
+
+<Button Disabled="@Disabled" Style="ButtonStyle.Contained" Rounded="ButtonRounded.Left" Class="my-3">Click Me!</Button>@*
+*@<Button Disabled="@Disabled" Style="ButtonStyle.Contained" Rounded="ButtonRounded.None" Class="my-3">Click Me!</Button>@*
+*@<Button Disabled="@Disabled" Style="ButtonStyle.Contained" Rounded="ButtonRounded.Right" Class="my-3">Click Me!</Button>
+
+<Button Disabled="@Disabled" Color="ButtonColor.Secondary" Style="ButtonStyle.Contained" Class="my-3">Click Me!</Button>
+<Button Disabled="@Disabled" Color="ButtonColor.Secondary" Style="ButtonStyle.Outline" Class="my-3">Click Me!</Button>
+<Button Disabled="@Disabled" Color="ButtonColor.Secondary" Style="ButtonStyle.Text" Class="my-3">Click Me!</Button>
+
+
+<Button OnClick="() => Disabled = !Disabled" Style="ButtonStyle.Text" Class="my-3">Click Me!</Button>
 
 <EditForm Model="@_model">
     <div>
@@ -14,8 +27,7 @@
     </div>
 </EditForm>
 
-<button class="btn-primary my-3" @onclick="GenerateProductionReport">Print Report</button>
-
+<Button Style="ButtonStyle.Outline" Class="my-3" OnClickAsync="GenerateProductionReport">Print Report</Button>
 
 @if (_hasError) {
     <div class="bg-red-500 text-white font-bold">@_errorMessage</div>
@@ -92,6 +104,14 @@
 </table>
 
 @code {
+    private bool _disabled;
+    public bool Disabled {
+        get => _disabled;
+        set {
+            _disabled = value;
+            StateHasChanged();
+        }
+    }
 
     [CascadingParameter]
     public IModalService Modal { get; set; } = default!;
