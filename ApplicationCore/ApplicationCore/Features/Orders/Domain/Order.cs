@@ -62,8 +62,10 @@ public class Order {
         return new Order(id ?? Guid.NewGuid(), source, Status.Pending, number, name, customerId, vendorId, "", comment, orderDate, null, null, null, tax, shipping, priceAdjustment, info, boxes, additionalItems);
     }
 
-    public void Release() {
+    public void Release(DateTime? productionDate = null) {
         ReleaseDate = DateTime.Now;
+        if (productionDate is not null) ProductionDate = (DateTime)productionDate;
+        else ProductionDate = DateTime.Today.AddDays(7);
         if (Status < Status.Released) Status = Status.Released;
     }
 
