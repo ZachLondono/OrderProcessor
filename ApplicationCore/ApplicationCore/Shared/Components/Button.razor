@@ -1,5 +1,5 @@
 ﻿
-<button @onclick="async () => { OnClick(); await OnClickAsync(); }" class="@Classes()" disabled="@Disabled">@ChildContent</button>
+<button @onclick="async () => { OnClick(); await OnClickAsync(); }" class="@Classes()" disabled="@Disabled" type="@Type">@ChildContent</button>
 
 @code {
 
@@ -27,6 +27,9 @@
     [Parameter]
     public ButtonRounded Rounded { get; set; } = ButtonRounded.All;
 
+    [Parameter]
+    public string Type { get; set; } = "button";
+
     private string Classes() {
 
         string baseClass = "font-semibold px-2 py-1.5";
@@ -53,6 +56,12 @@
                 ButtonStyle.Contained => "text-white bg-slate-600 hover:bg-slate-500 active:bg-slate-300 focus:bg-slate-400 shadow-md hover:shadow-lg hover:active:shadow-xl disabled:bg-gray-400 disabled:pointer-events-none",
                 _ => ""
             },
+            ButtonColor.Success => Style switch {
+                ButtonStyle.Text => "text-green-600 hover:bg-green-50 active:bg-green-200 focus:bg-green-100 disabled:text-gray-400 disabled:pointer-events-none",
+                ButtonStyle.Outline => "outline outline-1 outline-green-600 hover:outline-green-700 text-green-600 hover:bg-green-50 active:bg-green-200 focus:bg-green-100 disabled:text-gray-400 disabled:outline-gray-400 disabled:pointer-events-none",
+                ButtonStyle.Contained => "text-white bg-green-600 hover:bg-green-500 active:bg-green-300 focus:bg-green-400 shadow-md hover:shadow-lg hover:active:shadow-xl disabled:bg-gray-400 disabled:pointer-events-none",
+                _ => ""
+            },
             _ => ""
         };
 
@@ -68,7 +77,8 @@
 
     public enum ButtonColor {
         Primary,
-        Secondary
+        Secondary,
+        Success,
     }
 
     public enum ButtonRounded {
