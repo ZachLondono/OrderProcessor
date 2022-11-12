@@ -34,7 +34,7 @@ public class OrderStateTests {
     public void ReplaceOrder_ShouldSetOrder_AndResetIsDirty() {
 
         // Arrange
-        var order = ExampleOrder();
+        var order = new OrderBuilder().Buid();
 
         // Act
         _sut.ReplaceOrder(order);
@@ -69,7 +69,7 @@ public class OrderStateTests {
         string newNumber = "Number";
         string newName = "Name";
         string note = "Production Note";
-        var order = ExampleOrder();
+        var order = new OrderBuilder().Buid();
         _sut.ReplaceOrder(order);
 
         // Act
@@ -103,7 +103,7 @@ public class OrderStateTests {
     public void UpdateCustomer_ShouldReplaceOrder_WhenOrderIsNotNull() {
 
         // Arrange
-        var order = ExampleOrder();
+        var order = new OrderBuilder().Buid();
         _sut.ReplaceOrder(order);
         Guid customerId = Guid.NewGuid();
 
@@ -138,7 +138,7 @@ public class OrderStateTests {
     public void UpdateVendor_ShouldReplaceOrder_WhenOrderIsNotNull() {
 
         // Arrange
-        var order = ExampleOrder();
+        var order = new OrderBuilder().Buid();
         _sut.ReplaceOrder(order);
         Guid vendorId = Guid.NewGuid();
 
@@ -158,9 +158,10 @@ public class OrderStateTests {
     public void SaveChanges_ShouldDoNothing_WhenOrderIsNull() {
 
         // Act
-        _sut.SaveChanges().Wait();
+        var result = _sut.SaveChanges().Result;
 
         // Assert
+        result.IsError.Should().BeTrue();
         _sut.IsDirty.Should().BeFalse();
         _sut.Order.Should().BeNull();
         _bus.DidNotReceiveWithAnyArgs().Send(default(IQuery<ReleaseProfile>)!);
@@ -173,19 +174,40 @@ public class OrderStateTests {
     public void SaveChanges_ShouldCallUpdate_AndResetIsDirty_WhenOrderIsNotNull() {
 
         // Arrange
-        var order = ExampleOrder();
+        var order = new OrderBuilder().Buid();
         _sut.ReplaceOrder(order);
         Guid vendorId = Guid.NewGuid();
         _sut.UpdateVendor(vendorId);
+        _bus.Send(new UpdateOrder.Command(order)).ReturnsForAnyArgs(new Response());
 
         // Act
-        _sut.SaveChanges().Wait();
+        var result = _sut.SaveChanges().Result;
 
         // Assert
+        result.IsError.Should().BeFalse();
         _sut.IsDirty.Should().BeFalse();
         _sut.Order.Should().NotBeNull();
         _bus.Received(1).Send(new UpdateOrder.Command(_sut.Order!));
-        _bus.DidNotReceiveWithAnyArgs().Publish<TriggerOrderReleaseNotification>(default!);
+
+    }
+
+    [Fact]
+    public void SaveChanges_ShouldReturnError_WhenUpdateFails() {
+
+        // Arrange
+        var order = new OrderBuilder().Buid();
+        _sut.ReplaceOrder(order);
+        Guid vendorId = Guid.NewGuid();
+        _sut.UpdateVendor(vendorId);
+        _bus.Send(new UpdateOrder.Command(order)).ReturnsForAnyArgs(new Response(new Error() { Title = "Error", Details = "Error details" })) ;
+
+        // Act
+        var result = _sut.SaveChanges().Result;
+
+        // Assert
+        result.IsError.Should().BeTrue();
+        _sut.Order.Should().NotBeNull();
+        _bus.Received(1).Send(new UpdateOrder.Command(_sut.Order!));
 
     }
 
@@ -208,7 +230,7 @@ public class OrderStateTests {
     public void Release_ShouldPublishNotification_AndSetIsDirty_WhenOrderIsNotNull() {
 
         // Arrange
-        var order = ExampleOrder();
+        var order = new OrderBuilder().Buid();
         _sut.ReplaceOrder(order);
 
         var profile = new ReleaseProfile();
@@ -231,7 +253,7 @@ public class OrderStateTests {
     public void LoadOrder_ShouldCallGetOrder_AndResetIsDirty_WhenOrderIsNotNull() {
 
         // Arrange
-        var order = ExampleOrder();
+        var order = new OrderBuilder().Buid();
         var query = new GetOrderById.Query(order.Id);
         var response = new Response<Order>(order);
         _bus.Send(query).Returns(response);
@@ -247,7 +269,40 @@ public class OrderStateTests {
 
     }
 
+    [Fact]
+    public void ScheduleProduction_ShouldSetProductionDateAndSetDirty() {
 
-    private static Order ExampleOrder() => new(Guid.NewGuid(), "", Status.Pending, "", "", Guid.NewGuid(), Guid.NewGuid(), "", "", DateTime.Now, null, null, null, 0M, 0M, 0M, new Dictionary<string, string>(), new List<DrawerBox>(), new List<AdditionalItem>());
+        // Arrange
+        var order = new OrderBuilder().Buid();
+        _sut.ReplaceOrder(order);
+        var productionDate = DateTime.Today.AddDays(5);
+
+        // Act
+        _sut.ScheduleProduction(productionDate);
+
+        // Assert
+        _sut.IsDirty.Should().BeTrue();
+        _sut.Order.Should().NotBeNull();
+        _sut.Order!.ProductionDate.Should().Be(productionDate);
+
+    }
+
+    [Fact]
+    public void SheduleProduction_ShouldSetProductionDateAndSetDirty() {
+
+        // Arrange
+        var order = new OrderBuilder().Buid();
+        _sut.ReplaceOrder(order);
+        var productionDate = DateTime.Today.AddDays(5);
+
+        // Act
+        _sut.ScheduleProduction(productionDate);
+
+        // Assert
+        _sut.IsDirty.Should().BeTrue();
+        _sut.Order.Should().NotBeNull();
+        _sut.Order!.ProductionDate.Should().Be(productionDate);
+
+    }
 
 }
