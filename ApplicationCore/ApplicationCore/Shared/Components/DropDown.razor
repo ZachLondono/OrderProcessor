@@ -1,0 +1,65 @@
+﻿@using static ApplicationCore.Shared.Components.Button;
+<!--Wrapper-->
+<div class="relative inline-block">
+
+	<Button Color="Color" Style="Style" OnClick="Toggle" Class="@Class" Rounded="Rounded">@ButtonContent</Button>
+
+	<!--Popup Element-->
+	<div class="@GetClasses()" hidden="@_hidden">
+		@DropDownContent
+	</div>
+</div>
+
+@code {
+
+	[Parameter]
+	public RenderFragment? DropDownContent { get; set; }
+
+	[Parameter]
+	public RenderFragment? ButtonContent { get; set; }
+
+	[Parameter]
+	public DropdownPosition Position { get; set; } = DropdownPosition.BottomLeft;
+
+	[Parameter]
+	public ButtonStyle Style { get; set; } = ButtonStyle.Contained;
+
+	[Parameter]
+	public string Class { get; set; } = string.Empty;
+
+	[Parameter]
+	public ButtonColor Color { get; set; } = ButtonColor.Primary;
+
+	[Parameter]
+	public ButtonRounded Rounded { get; set; } = ButtonRounded.All;
+
+	private bool _hidden = true;
+
+	// TODO: if user clicks outside of dropdown, the dropdown should close
+	private void Toggle() {
+		_hidden = !_hidden;
+		StateHasChanged();
+	
+	}
+
+	private string GetClasses() {
+
+		string baseClass = "absolute shadow-md p-3 bg-white";
+
+		string posClass = Position switch {
+			DropdownPosition.BottomLeft => "top-full left-0",
+			DropdownPosition.BottomRight => "top-full right-0",
+			_ => ""
+		};
+
+		return $"{baseClass} {posClass}";
+
+	}
+
+	public enum DropdownPosition {
+		BottomLeft,
+		BottomRight
+		// TODO: add top, and full left or full right
+	}
+
+}
