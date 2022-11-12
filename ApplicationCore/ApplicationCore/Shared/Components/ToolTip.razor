@@ -1,0 +1,19 @@
+﻿<div class="@tooltipClass">
+    <span>@Text</span>
+    @ChildContent
+</div>
+
+@code {
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+
+    [Parameter]
+    public bool UnderLine { get; set; } = true;
+
+    private string tooltipClass => $"tooltip-wrapper {(UnderLine ? "border-b border-dotted border-black" : "")}";
+
+}
