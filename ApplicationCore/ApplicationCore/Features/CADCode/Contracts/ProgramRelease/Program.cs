@@ -1,6 +1,7 @@
-﻿namespace ApplicationCore.Features.CADCode.Services.Domain.ProgramRelease;
+﻿namespace ApplicationCore.Features.CADCode.Contracts.ProgramRelease;
 
-public class ReleasedProgram {
+public class ReleasedProgram
+{
 
     public string Name { get; init; } = string.Empty;
     public string ImagePath { get; init; } = string.Empty;

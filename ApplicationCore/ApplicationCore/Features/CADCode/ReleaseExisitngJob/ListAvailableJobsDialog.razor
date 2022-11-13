@@ -51,8 +51,12 @@
 
 @code {
 
+    [CascadingParameter]
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
     [Parameter]
     public string LabelDatabaseFilePath { get; set; } = string.Empty;
+    
     private IList<JobListItem>? _availableJobs = null;
     private Error? _error = null;
 
@@ -78,6 +82,15 @@
         // TODO: Convert to extension method
 
         return date.ToShortDateString();
+
+    }
+
+    public async Task ReturnSelectedJobs() {
+        IEnumerable<AvailableJob> selected;
+        if (_availableJobs is null) selected = Enumerable.Empty<AvailableJob>();
+        else selected = _availableJobs.Where(j => j.IsSelected).Select(j => j.Job);
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok(selected));
 
     }
 

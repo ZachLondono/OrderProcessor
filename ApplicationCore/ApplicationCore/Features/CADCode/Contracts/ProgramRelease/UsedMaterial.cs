@@ -1,6 +1,7 @@
-﻿namespace ApplicationCore.Features.CADCode.Services.Domain.ProgramRelease;
+﻿namespace ApplicationCore.Features.CADCode.Contracts.ProgramRelease;
 
-public class ProgramMaterial {
+public class ProgramMaterial
+{
 
     public string Name { get; init; } = string.Empty;
     public double Width { get; init; }

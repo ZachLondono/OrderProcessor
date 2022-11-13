@@ -1,4 +1,6 @@
-﻿namespace ApplicationCore.Features.CADCode.Services.Domain.ProgramRelease;
+﻿using ApplicationCore.Features.CADCode.Services.Domain;
+
+namespace ApplicationCore.Features.CADCode.Contracts.ProgramRelease;
 
 public class MachineRelease {
 

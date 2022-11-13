@@ -55,16 +55,27 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
             Parts = parts
         };
 
-        var response = await _bus.Send(new CNCReleaseRequest(batch, notification.ReleaseProfile.CNCReportOutputDirectory));
+		// TODO send emails to shop manager
+		var response = await _bus.Send(new CNCReleaseRequest(batch));
 
         response.Match(
 
-            filePaths => {
-                foreach (var file in filePaths)
-                    _uibus.Publish(new OrderReleaseProgressNotification($"CNC job report created {file}"));
+            async job => {
+
+                var pdfResponse = await _bus.Send(new GenerateCNCReleasePDFRequest(job, notification.ReleaseProfile.CNCReportOutputDirectory));
+                pdfResponse.Match(
+                    filePaths => {
+						foreach (var file in filePaths)
+							_uibus.Publish(new OrderReleaseProgressNotification($"CNC job report created {file}"));
+					},
+                    error => {
+						_uibus.Publish(new OrderReleaseProgressNotification($"Error releasing CNC programs [{error.Title}]"));
+					}
+                );
+
             },
             error => {
-                _uibus.Publish(new OrderReleaseProgressNotification("Error releasing CNC programs"));
+                _uibus.Publish(new OrderReleaseProgressNotification($"Error releasing CNC programs [{error.Title}]"));
             }
         );
 

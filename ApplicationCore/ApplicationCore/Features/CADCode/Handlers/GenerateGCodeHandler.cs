@@ -1,41 +1,33 @@
 ﻿using ApplicationCore.Features.CADCode.Contracts;
+using ApplicationCore.Features.CADCode.Contracts.ProgramRelease;
 using ApplicationCore.Features.CADCode.Services;
-using ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode.PDF;
 using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Features.CADCode.Handlers;
 
-public class CNCReleaseRequestHandler : CommandHandler<CNCReleaseRequest, IEnumerable<string>> {
+public class CNCReleaseRequestHandler : CommandHandler<CNCReleaseRequest, ReleasedJob> {
 
     private readonly ICNCService _cncService;
-    private readonly IReleasePDFService _pdfService;
     private readonly ICNCConfigurationProvider _configurationProvider;
 
-    public CNCReleaseRequestHandler(ICNCService cncService, IReleasePDFService pdfService, ICNCConfigurationProvider configurationProvider) {
+    public CNCReleaseRequestHandler(ICNCService cncService, ICNCConfigurationProvider configurationProvider) {
         _cncService = cncService;
-        _pdfService = pdfService;
         _configurationProvider = configurationProvider;
     }
 
-    public override async Task<Response<IEnumerable<string>>> Handle(CNCReleaseRequest command) {
+    public override async Task<Response<ReleasedJob>> Handle(CNCReleaseRequest command) {
         try {
 
-            return await Task.Run(() => {
+            return await Task.Run<Response<ReleasedJob>>(() => {
 
                 var machineConfigurations = _configurationProvider.GetConfigurations();
-                // TODO: do this in a task, otherwise application hangs while waiting for CADCode
-                var job = _cncService.ExportToCNC(command.Batch, machineConfigurations);
-                var filePaths = _pdfService.GeneratePDFs(job, command.ReportOutputDirectory);
-
-                // TODO: warn when no data was released
-
-                // TODO send emails to shop manager
-                return new Response<IEnumerable<string>>(filePaths);
+                ReleasedJob job = _cncService.ExportToCNC(command.Batch, machineConfigurations);
+                return new(job);
 
             });
 
         } catch (Exception e) {
-            return new Response<IEnumerable<string>>(new Error() {
+            return new Response<ReleasedJob>(new Error() {
                 Title = "Exception thrown while releasing cnc program",
                 Details = e.ToString()
             });

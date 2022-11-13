@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.CADCode.Services.Domain.ProgramRelease;
+﻿using ApplicationCore.Features.CADCode.Contracts.ProgramRelease;
 
 namespace ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode.PDF;
 
