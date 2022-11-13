@@ -8,4 +8,6 @@ public class Error {
 
     public Error() { }
 
+    public override string ToString() => $"{Title}\n{Details}";
+
 }
