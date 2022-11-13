@@ -15,8 +15,6 @@ public class QuestPDFReleasePDFService : IReleasePDFService {
 
     public IEnumerable<string> GeneratePDFs(ReleasedJob job, string outputDirectory) {
         
-        PrintRelease(job);
-
         var createdFiles = new List<string>();
 
         // TODO: validate configuration
@@ -61,26 +59,6 @@ public class QuestPDFReleasePDFService : IReleasePDFService {
         }
 
         return createdFiles;
-
-    }
-
-    private static void PrintRelease(ReleasedJob job) {
-
-        Console.WriteLine("=======================================");
-        Console.WriteLine($"Released Job - {job.JobName}");
-        Console.WriteLine("Machine Releases: ");
-        foreach (var release in job.Releases) {
-            Console.WriteLine($"    Machine: {release.MachineName}");
-            Console.WriteLine("    Programs: ");
-            foreach (var program in release.Programs) {
-                Console.WriteLine($"        Program: {program.Name}");
-                Console.WriteLine($"            ImagePath: {program.ImagePath}");
-                Console.WriteLine($"            Material: {program.Material.Name} {program.Material.Width}x{program.Material.Length}x{program.Material.Thickness} ({program.Material.Yield * 100:0.00}%)");
-                Console.WriteLine($"            Parts: {program.Parts.Count()}");
-            }
-
-        }
-        Console.WriteLine("=======================================");
 
     }
 
