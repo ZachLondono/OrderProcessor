@@ -37,6 +37,7 @@ public static class DependencyInjection {
         services.AddTransient<ICADCodeLabelDataBaseConnectionStringFactory, AccessCADCodeLabelDataBaseConnectionStringFactory>();
         services.AddTransient<MachineNameProvider>();
         services.AddTransient<IAvailableJobProvider, AvailableJobProvider>();
+        services.AddTransient<IExistingJobProvider, CADCodeLabelDBExistingJobProvider>();
 
         return services;
 
