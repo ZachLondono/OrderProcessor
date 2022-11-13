@@ -1,15 +1,13 @@
 ﻿@using ApplicationCore.Features.Companies.Domain.ValueObjects
-@using Blazored.Modal
-@using Blazored.Modal.Services
 
-@if(Profile is null) {
-    <span>No profile is set</span>
+@if (Profile is null) {
+    <span>Loading...</span>
 } else {
     <div>
 
         <section>
             <div>
-                <input type="checkbox" @bind="Profile.GenerateCutList"/>
+                <input type="checkbox" @bind="Profile.GenerateCutList" />
                 <label>Generate Cut Lists</label>
             </div>
 
@@ -70,26 +68,17 @@
 
         <section>
             <div>
-                <input type="checkbox" @bind="Profile.GenerateCNCPrograms"/>
+                <input type="checkbox" @bind="Profile.GenerateCNCPrograms" />
                 <label>Generate CNC Programs</label>
             </div>
         </section>
 
     </div>
-
-    <button class="btn btn-primary" @onclick="OnSave">Save</button>
 }
 
 @code {
 
-    [CascadingParameter]
-    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
-
     [Parameter]
     public ReleaseProfile? Profile { get; set; }
-
-    public async Task OnSave() {
-        await BlazoredModal.CloseAsync(ModalResult.Ok(Profile));
-    }
 
 }
