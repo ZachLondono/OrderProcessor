@@ -1,8 +1,10 @@
-﻿@using ApplicationCore.Features.Companies.Create
+﻿@using ApplicationCore.Features.CADCode.Contracts;
+@using ApplicationCore.Features.Companies.Create
 @using ApplicationCore.Features.Orders
 @using ApplicationCore.Features.Orders.Loader
 @using ApplicationCore.Features.CADCode.ReleaseExisitngJob
 @using ApplicationCore.Infrastructure
+@using System.Diagnostics;
 @using static ApplicationCore.Shared.InformationDialog;
 @inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
@@ -135,7 +137,41 @@
 		parameters.Add("LabelDatabaseFilePath", filepath);
 
 		var dialog = Modal.Show<ListAvailableJobsDialog>("Releasing Existing Job", parameters);
-		_ = await dialog.Result;
+		var result = await dialog.Result;
+
+		if (result.Confirmed && result.Data is IEnumerable<AvailableJob> selectedJobs) {
+
+			foreach (var availableJob in selectedJobs) {
+
+				var response = await Bus.Send(new ExistingJobFromLabelFileQuery(filepath, availableJob.Name));
+
+				response.Match(
+					async job => {
+
+						var pdfResponse = await Bus.Send(new GenerateCNCReleasePDFRequest(job, @"C:\Users\Zachary Londono\Desktop\ExampleConfiguration\cutlists"));
+						pdfResponse.Match(
+							files => {
+								foreach (var file in files) {
+									Debug.WriteLine($"File created {file}");
+								}
+							},
+							async error => {
+								_ = await Modal.OpenErrorDialog(error);
+							}
+						);
+
+					},
+					async error =>
+					{
+						_ = await Modal.OpenErrorDialog(error);
+					}
+				);
+
+
+			}
+
+		}
+
 	}
 
     private async Task GoBack() {
