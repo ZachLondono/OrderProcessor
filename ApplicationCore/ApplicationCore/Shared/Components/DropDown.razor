@@ -1,11 +1,13 @@
-﻿@using static ApplicationCore.Shared.Components.Button;
+﻿@using System.Diagnostics;
+@using static ApplicationCore.Shared.Components.Button;
+@inject IJSRuntime JSRuntime
 <!--Wrapper-->
 <div class="relative inline-block">
 
-	<Button Color="Color" Style="Style" OnClick="Toggle" Class="@Class" Rounded="Rounded">@ButtonContent</Button>
+	<Button Color="Color" Style="Style" OnClickAsync="Toggle" Class="@(Class + " dropdown-btn")" Rounded="Rounded">@ButtonContent</Button>
 
 	<!--Popup Element-->
-	<div class="@GetClasses()" hidden="@_hidden">
+	<div class="@PositionClasses() absolute shadow-md p-3 bg-white border border-gray-300 whitespace-nowrap dropdown" hidden @ref="_dropdown">
 		@DropDownContent
 	</div>
 </div>
@@ -33,28 +35,28 @@
 	[Parameter]
 	public ButtonRounded Rounded { get; set; } = ButtonRounded.All;
 
-	private bool _hidden = true;
+	[Parameter]
+	public Func<Task> OnOpenAsync { get; set; } = () => Task.CompletedTask;
 
-	// TODO: if user clicks outside of dropdown, the dropdown should close
-	private void Toggle() {
-		_hidden = !_hidden;
+	private ElementReference _dropdown;
+
+	private bool _loading = false;
+
+	private async Task Toggle() {
+		bool hidden = await JSRuntime.InvokeAsync<bool>("toggleDropdown", _dropdown);
 		StateHasChanged();
-	
+		if (hidden == false) {
+			_loading = true;
+			await OnOpenAsync();
+			_loading = false;
+		}
 	}
 
-	private string GetClasses() {
-
-		string baseClass = "absolute shadow-md p-3 bg-white";
-
-		string posClass = Position switch {
-			DropdownPosition.BottomLeft => "top-full left-0",
-			DropdownPosition.BottomRight => "top-full right-0",
-			_ => ""
-		};
-
-		return $"{baseClass} {posClass}";
-
-	}
+	private string PositionClasses() => Position switch {
+		DropdownPosition.BottomLeft => "top-full left-0",
+		DropdownPosition.BottomRight => "top-full right-0",
+		_ => ""
+	};
 
 	public enum DropdownPosition {
 		BottomLeft,
