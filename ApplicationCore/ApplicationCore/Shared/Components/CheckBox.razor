@@ -1,0 +1,23 @@
+﻿
+<div @onclick="ValueChanged">
+    <input type="checkbox" @bind="@IsChecked" />
+    <label>@ChildContent</label>
+</div>
+
+@code {
+    
+    [Parameter]
+    public RenderFragment? ChildContent {get; set;}
+
+    [Parameter]
+    public bool IsChecked { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsCheckedChanged { get; set; }
+
+    public async Task ValueChanged() {
+        IsChecked = !IsChecked;
+        await IsCheckedChanged.InvokeAsync(IsChecked);
+    }
+
+}
