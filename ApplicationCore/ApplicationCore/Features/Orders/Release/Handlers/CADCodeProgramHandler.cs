@@ -69,13 +69,13 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
 							_uibus.Publish(new OrderReleaseSuccessNotification($"CNC job report created {file}"));
 					},
                     error => {
-						_uibus.Publish(new OrderReleaseErrorNotification($"Error releasing CNC programs [{error.Title}]"));
+						_uibus.Publish(new OrderReleaseErrorNotification($"{error.Title} - {error.Details}"));
 					}
                 );
 
             },
             error => {
-                _uibus.Publish(new OrderReleaseErrorNotification($"Error releasing CNC programs [{error.Title}]"));
+                _uibus.Publish(new OrderReleaseErrorNotification($"{error.Title} - {error.Details}"));
             }
         );
 
