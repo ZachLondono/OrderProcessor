@@ -38,3 +38,4 @@ msbuild.wrn
 
 # tailwind output
 /DesktopHost/wwwroot/css/app.css
+/UI Mockup/*
