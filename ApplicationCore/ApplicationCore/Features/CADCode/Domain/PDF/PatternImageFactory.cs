@@ -15,10 +15,32 @@ public class PatternImageFactory {
             return Array.Empty<byte>();
         } else {
 
-            var bitmap = GetBitmapFromMetaFile(imagePath);
-            AddTextToBitmap(bitmap, text, orientation, sheetWidth, sheetLength);
-            if (orientation == TableOrientation.Rotated) bitmap.RotateFlip(RotateFlipType.Rotate270FlipNone);
-            return GetBitmapData(bitmap);
+            try { 
+                var bitmap = GetBitmapFromMetaFile(imagePath);
+                AddTextToBitmap(bitmap, text, orientation, sheetWidth, sheetLength);
+                if (orientation == TableOrientation.Rotated) bitmap.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                return GetBitmapData(bitmap);
+            } catch {
+
+                float fontSize = 14;
+                using var font = new Font("Tahoma", fontSize, FontStyle.Regular);
+
+                string errtext = $"Can not load image: '{imagePath}'";
+
+                int width = 2000;
+                int height = 200;
+                using var img = new Bitmap(width, height);
+                using var cg = Graphics.FromImage(img);
+
+                var textSize = cg.MeasureString(errtext, font);
+                var drawPoint = new PointF(width/2 - textSize.Width / 2, height/2 - textSize.Height / 2); ;
+                var rect = new RectangleF(drawPoint, textSize);
+                cg.DrawString(errtext, font, Brushes.Black, rect);
+                cg.Flush();
+
+                return GetBitmapData(img);
+
+            }
 
         }
 
