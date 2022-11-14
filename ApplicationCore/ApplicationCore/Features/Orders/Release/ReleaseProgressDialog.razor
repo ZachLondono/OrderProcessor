@@ -1,15 +1,72 @@
 ﻿@using ApplicationCore.Features.Companies.Domain.ValueObjects
 @using ApplicationCore.Infrastructure
 @using System.Diagnostics
+@using ApplicationCore.Shared.Components
+@using static ApplicationCore.Shared.Components.Button;
 @inject OrderState OrderState
 @inject IJSRuntime JSRuntime
 @inherits BaseListenerComponent
-@implements IUIListener<OrderReleaseProgressNotification>
+@implements IUIListener<OrderReleaseInfoNotification>
+@implements IUIListener<OrderReleaseErrorNotification>
+@implements IUIListener<OrderReleaseSuccessNotification>
+@implements IUIListener<OrderReleaseFileCreatedNotification>
 @implements IUIListener<OrderReleaseCompletedNotification>
 
-<textarea @ref="_area" disabled id="releaseprogress" @bind="@_content" class="w-full h-64 text-xs"> </textarea>
+@if(_releaseDone) {
+    <div>
+        <div class="text-center mb-2 font-bold text-green-500">Release Complete</div>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-16 w-16 text-green-700">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+    </div>
+} else {
+    <div>
+        <div class="text-center mb-4 font-bold text-blue-700">Releasing Order...</div>
+        <svg class="animate-spin mx-auto h-12 w-12 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-10" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+    </div>
+}
 
-<button disabled="@(!_releaseDone)" @onclick="CloseDialog" class="rounded-md px-3 py-2 mt-3 bg-blue-500 hover:bg-blue-700 disabled:bg-blue-200 disabled:text-gray-50 disabled:cursor-not-allowed text-white">Close</button>
+<div class="shadow-md max-h-48 w-full overflow-x-hidden overflow-y-scroll p-1.5" @ref="_messagebox">
+	<table class="w-full border-collapse text-xs">							
+		<tr>
+			<td colspan="2" class="text-[0.5rem] italic">
+				Progress Log
+			</td>
+		</tr>
+
+        @foreach (var message in _messages) {
+            <tr class="border-b border-gray-100">
+                <td class="w-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4">
+                        @switch (message.Type) {
+                            case LogMessageType.Info:
+                                <path class="text-blue-700" stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                                break;
+
+                            case LogMessageType.FileCreated:
+                            case LogMessageType.Success:
+                                <path class="text-green-700" stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                break;
+
+                            case LogMessageType.Error:
+                                <path class="text-red-700" stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                break;
+
+                            default:
+                                break;
+                        }
+                    </svg>
+                </td>
+                <td class="text-overflow-ellipsis">@message.Message</td>
+            </tr>
+        }
+    </table>
+</div>
+
+<Button Style="ButtonStyle.Text" Disabled="@(!_releaseDone)" OnClickAsync="CloseDialog" Class="mt-3">Close</Button>
 
 @code {
 
@@ -19,34 +76,69 @@
     [Parameter]
     public ReleaseProfile? ReleaseProfile { get; set; } = default;
 
-    private ElementReference _area;
-    private string _content = "";
+    private ElementReference _messagebox;
+    private List<ProgressLogMessage> _messages = new();
     private bool _releaseDone = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender) {
         if (firstRender) await OrderState.Release(ReleaseProfile);
     }
 
-    public void Handle(OrderReleaseProgressNotification notification) {
+    public void Handle(OrderReleaseInfoNotification notification) {
         Debug.WriteLine(notification.Message);
         InvokeAsync(() => {
-            _content += notification.Message + '\n';
-            JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _area });
+            _messages.Add(new(LogMessageType.Info, notification.Message));
             StateHasChanged();
+            JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
+        }).Wait(); // Calling this sometimes breaks (because handle is being called from another thread maybe??)
+    }
+
+    public void Handle(OrderReleaseErrorNotification notification) {
+        Debug.WriteLine(notification.Message);
+        InvokeAsync(() => {
+            _messages.Add(new(LogMessageType.Error, notification.Message));
+            StateHasChanged();
+            JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
+        }).Wait(); // Calling this sometimes breaks (because handle is being called from another thread maybe??)
+    }
+
+    public void Handle(OrderReleaseSuccessNotification notification) {
+        Debug.WriteLine(notification.Message);
+        InvokeAsync(() => {
+            _messages.Add(new(LogMessageType.Success, notification.Message));
+            StateHasChanged();
+            JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
+        }).Wait(); // Calling this sometimes breaks (because handle is being called from another thread maybe??)
+    }
+
+    public void Handle(OrderReleaseFileCreatedNotification notification) {
+        Debug.WriteLine(notification.Message);
+        InvokeAsync(() => {
+            _messages.Add(new(LogMessageType.FileCreated, notification.Message));
+            StateHasChanged();
+            JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
         }).Wait(); // Calling this sometimes breaks (because handle is being called from another thread maybe??)
     }
 
     public void Handle(OrderReleaseCompletedNotification notification) {
         InvokeAsync(() => {
-            _content += "DONE";
-            JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _area });
+            _messages.Add(new(LogMessageType.Success, "Release Complete"));
             _releaseDone = true;
             StateHasChanged();
+            JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
         }).Wait(); // Calling this sometimes breaks (because handle is being called from another thread maybe??)
     }
 
     private async Task CloseDialog() {
         await BlazoredModal.CloseAsync();
+    }
+
+    public record ProgressLogMessage(LogMessageType Type, string Message);
+    public enum LogMessageType {
+        Info,
+        Error,
+        Success,
+        FileCreated
     }
 
 }

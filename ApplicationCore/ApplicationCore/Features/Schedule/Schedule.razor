@@ -13,6 +13,9 @@
 <Button Disabled="@Disabled" Color="ButtonColor.Secondary" Style="ButtonStyle.Outline" Class="my-3">Click Me!</Button>
 <Button Disabled="@Disabled" Color="ButtonColor.Secondary" Style="ButtonStyle.Text" Class="my-3">Click Me!</Button>
 
+<Button Disabled="@Disabled" Color="ButtonColor.Success" Style="ButtonStyle.Contained" Class="my-3">Click Me!</Button>
+<Button Disabled="@Disabled" Color="ButtonColor.Success" Style="ButtonStyle.Outline" Class="my-3">Click Me!</Button>
+<Button Disabled="@Disabled" Color="ButtonColor.Success" Style="ButtonStyle.Text" Class="my-3">Click Me!</Button>
 
 <Button OnClick="() => Disabled = !Disabled" Style="ButtonStyle.Text" Class="my-3">Click Me!</Button>
 
@@ -28,6 +31,8 @@
 </EditForm>
 
 <Button Style="ButtonStyle.Outline" Class="my-3" OnClickAsync="GenerateProductionReport">Print Report</Button>
+
+<Switch @bind-IsChecked="Disabled" />
 
 @if (_hasError) {
     <div class="bg-red-500 text-white font-bold">@_errorMessage</div>

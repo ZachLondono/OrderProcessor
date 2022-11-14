@@ -20,7 +20,7 @@ internal class ADuiePyleLabelHandler : DomainListener<TriggerOrderReleaseNotific
     public override async Task Handle(TriggerOrderReleaseNotification notification) {
 
         if (!notification.ReleaseProfile.PrintADuiePyleLabel) {
-            _uibus.Publish(new OrderReleaseProgressNotification("Not printing a duie pyle label, because option was disabled"));
+            _uibus.Publish(new OrderReleaseInfoNotification("Not printing a duie pyle label, because option was disabled"));
             return;
         }
         var order = notification.Order;
@@ -40,11 +40,11 @@ internal class ADuiePyleLabelHandler : DomainListener<TriggerOrderReleaseNotific
         response.Match(
             _ => {
                 _logger.LogInformation("Printed A Duie Pyle label");
-                _uibus.Publish(new OrderReleaseProgressNotification($"A duie pyle label printed"));
+                _uibus.Publish(new OrderReleaseSuccessNotification($"A duie pyle label printed"));
             },
             error => {
                 _logger.LogInformation("Error printing A Duie Pyle label {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error printing A Duie Pyle labels\n{error.Details}"));
+                _uibus.Publish(new OrderReleaseErrorNotification($"Error printing A Duie Pyle labels\n{error.Details}"));
             }
         );
 

@@ -23,7 +23,7 @@ internal class OrderLabelHandler : DomainListener<TriggerOrderReleaseNotificatio
         Debug.WriteLine("** Printing Label **");
 
         if (!notification.ReleaseProfile.PrintOrderLabel) {
-            _uibus.Publish(new OrderReleaseProgressNotification("Not printing order label, because option was disabled"));
+            _uibus.Publish(new OrderReleaseInfoNotification("Not printing order label, because option was disabled"));
             return;
         }
 
@@ -44,11 +44,11 @@ internal class OrderLabelHandler : DomainListener<TriggerOrderReleaseNotificatio
         response.Match(
             _ => {
                 _logger.LogInformation("Printed order label");
-                _uibus.Publish(new OrderReleaseProgressNotification($"Order label printed"));
+                _uibus.Publish(new OrderReleaseSuccessNotification($"Order label printed"));
             },
             error => {
                 _logger.LogInformation("Error printing order label {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error printing order label\n{error.Details}"));
+                _uibus.Publish(new OrderReleaseErrorNotification($"Error printing order label\n{error.Details}"));
             }
         );
 

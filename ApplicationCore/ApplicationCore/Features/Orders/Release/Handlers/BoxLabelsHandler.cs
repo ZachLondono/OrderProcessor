@@ -20,7 +20,7 @@ internal class BoxLabelsHandler : DomainListener<TriggerOrderReleaseNotification
     public override async Task Handle(TriggerOrderReleaseNotification notification) {
 
         if (!notification.ReleaseProfile.PrintBoxLabels) {
-            _uibus.Publish(new OrderReleaseProgressNotification("Not printing box labels, because option was disabled"));
+            _uibus.Publish(new OrderReleaseInfoNotification("Not printing box labels, because option was disabled"));
             return;
         }
         var order = notification.Order;
@@ -54,11 +54,11 @@ internal class BoxLabelsHandler : DomainListener<TriggerOrderReleaseNotification
         response.Match(
             _ => {
                 _logger.LogInformation("Printed {Count} box labels", labels.Count);
-                _uibus.Publish(new OrderReleaseProgressNotification($"{labels.Count} box labels printed"));
+                _uibus.Publish(new OrderReleaseSuccessNotification($"{labels.Count} box labels printed"));
             },
             error => {
                 _logger.LogInformation("Error printing box labels {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error printing box labels\n{error.Details}"));
+                _uibus.Publish(new OrderReleaseErrorNotification($"Error printing box labels\n{error.Details}"));
             }
         );
 

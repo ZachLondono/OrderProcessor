@@ -23,11 +23,11 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
     public override async Task Handle(TriggerOrderReleaseNotification notification) {
 
         if (!notification.ReleaseProfile.GenerateCNCPrograms) {
-            _uibus.Publish(new OrderReleaseProgressNotification("Not generating CADCode CNC release because option was disabled"));
+            _uibus.Publish(new OrderReleaseInfoNotification("Not generating CADCode CNC release because option was disabled"));
             return;
         }
 
-        _uibus.Publish(new OrderReleaseProgressNotification("Starting CADCode CNC release"));
+        _uibus.Publish(new OrderReleaseInfoNotification("Starting CADCode CNC release"));
 
         var bottoms = notification.Order.Boxes.SelectMany(b => b.GetParts(_construction).Where(p => p.Type == DrawerBoxPartType.Bottom));
 
@@ -66,16 +66,16 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
                 pdfResponse.Match(
                     filePaths => {
 						foreach (var file in filePaths)
-							_uibus.Publish(new OrderReleaseProgressNotification($"CNC job report created {file}"));
+							_uibus.Publish(new OrderReleaseSuccessNotification($"CNC job report created {file}"));
 					},
                     error => {
-						_uibus.Publish(new OrderReleaseProgressNotification($"Error releasing CNC programs [{error.Title}]"));
+						_uibus.Publish(new OrderReleaseErrorNotification($"Error releasing CNC programs [{error.Title}]"));
 					}
                 );
 
             },
             error => {
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error releasing CNC programs [{error.Title}]"));
+                _uibus.Publish(new OrderReleaseErrorNotification($"Error releasing CNC programs [{error.Title}]"));
             }
         );
 

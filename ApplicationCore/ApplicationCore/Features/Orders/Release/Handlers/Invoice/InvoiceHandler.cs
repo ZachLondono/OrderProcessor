@@ -27,7 +27,7 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
     public override async Task Handle(TriggerOrderReleaseNotification notification) {
 
         if (!notification.ReleaseProfile.GenerateInvoice) {
-            _uibus.Publish(new OrderReleaseProgressNotification("Not creating invoice, because option was disabled"));
+            _uibus.Publish(new OrderReleaseInfoNotification("Not creating invoice, because option was disabled"));
             return;
         }
 
@@ -60,7 +60,7 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
         );
 
         if (didError || customer is null || vendor is null) {
-            _uibus.Publish(new OrderReleaseProgressNotification("Could not load customer or vendor information for order"));
+            _uibus.Publish(new OrderReleaseErrorNotification("Could not load customer or vendor information for order"));
             return;
         }
 
@@ -114,7 +114,7 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
             inv => invResponse = inv,
             error => {
                 _logger.LogInformation("Error creating invoice {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating nvoice {error.Details}"));
+                _uibus.Publish(new OrderReleaseErrorNotification($"Error creating nvoice {error.Details}"));
                 didError = true;
             }
         );
@@ -138,7 +138,7 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
         }
 
         _logger.LogInformation("Invoice created: {FilePath}", invResponse.FilePath);
-        _uibus.Publish(new OrderReleaseProgressNotification($"Invoice created {invResponse.FilePath}"));
+        _uibus.Publish(new OrderReleaseSuccessNotification($"Invoice created {invResponse.FilePath}"));
 
     }
 

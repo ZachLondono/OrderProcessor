@@ -26,7 +26,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
     public override async Task Handle(TriggerOrderReleaseNotification notification) {
 
         if (!notification.ReleaseProfile.GenerateCutList) {
-            _uibus.Publish(new OrderReleaseProgressNotification("Not creating Cut Lists, because option was disabled"));
+            _uibus.Publish(new OrderReleaseInfoNotification("Not creating Cut Lists, because option was disabled"));
             return;
         }
 
@@ -48,11 +48,11 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         responseStd.Match(
             r => {
                 _logger.LogInformation("Drawer Box Cut List Created : {FilePath}", r.FilePath);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Cut List created {r.FilePath}"));
+                _uibus.Publish(new OrderReleaseSuccessNotification($"Cut List created {r.FilePath}"));
             },
             error => {
                 _logger.LogError("Error creating Cut List : {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating Cut List {error.Details}"));
+                _uibus.Publish(new OrderReleaseErrorNotification($"Error creating Cut List {error.Details}"));
             }
         );
 
@@ -60,11 +60,11 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         responseOptimized.Match(
             r => {
                 _logger.LogInformation("Drawer Box Cut List Created : {FilePath}", r.FilePath);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Cut List created {r.FilePath}"));
+                _uibus.Publish(new OrderReleaseSuccessNotification($"Cut List created {r.FilePath}"));
             },
             error => {
                 _logger.LogError("Error creating Cut List : {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating Cut List {error.Details}"));
+                _uibus.Publish(new OrderReleaseErrorNotification($"Error creating Cut List {error.Details}"));
             }
         );
 
@@ -72,11 +72,11 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         responseBottom.Match(
             r => {
                 _logger.LogInformation("Drawer Box Cut List Created : {FilePath}", r.FilePath);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Cut List created {r.FilePath}"));
+                _uibus.Publish(new OrderReleaseSuccessNotification($"Cut List created {r.FilePath}"));
             },
             error => {
                 _logger.LogError("Error creating Cut List : {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating Cut List {error.Details}"));
+                _uibus.Publish(new OrderReleaseErrorNotification($"Error creating Cut List {error.Details}"));
             }
         );
 

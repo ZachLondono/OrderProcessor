@@ -23,7 +23,7 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
     public override async Task Handle(TriggerOrderReleaseNotification notification) {
         
         if (!notification.ReleaseProfile.GeneratePackingList) {
-            _uibus.Publish(new OrderReleaseProgressNotification("Not creating packing list, because option was disabled"));
+            _uibus.Publish(new OrderReleaseInfoNotification("Not creating packing list, because option was disabled"));
             return;
         }
 
@@ -56,8 +56,8 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
         );
 
         if (didError || customer is null || vendor is null) {
-            _uibus.Publish(new OrderReleaseProgressNotification("Could not load customer or vendor information for order"));
-            return;
+            _uibus.Publish(new OrderReleaseErrorNotification("Could not load customer or vendor information for order"));
+            return; 
         }
 
         var config = new ClosedXMLTemplateConfiguration() { TemplateFilePath = notification.ReleaseProfile.PackingListTemplatePath };
@@ -103,13 +103,13 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
             (response) => {
 
                 _logger.LogInformation("Packing list created: {FilePath}", response.FilePath);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Packing list created {response.FilePath}"));
+                _uibus.Publish(new OrderReleaseSuccessNotification($"Packing list created {response.FilePath}"));
 
             },
             (error) => {
 
                 _logger.LogInformation("Error creating packing list {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Packing list was not created\n{error.Details}"));
+                _uibus.Publish(new OrderReleaseErrorNotification($"Packing list was not created\n{error.Details}"));
 
             }
         );

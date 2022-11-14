@@ -22,7 +22,7 @@ internal class BOLHandler : DomainListener<TriggerOrderReleaseNotification> {
     public override async Task Handle(TriggerOrderReleaseNotification notification) {
 
         if (!notification.ReleaseProfile.GenerateBOL) {
-            _uibus.Publish(new OrderReleaseProgressNotification("Not creating BOL, because option was disabled"));
+            _uibus.Publish(new OrderReleaseInfoNotification("Not creating BOL, because option was disabled"));
             return;
         }
 
@@ -42,7 +42,7 @@ internal class BOLHandler : DomainListener<TriggerOrderReleaseNotification> {
         );
 
         if (didError || customer is null) {
-            _uibus.Publish(new OrderReleaseProgressNotification($"Error creating BOL, could not find customer details"));
+            _uibus.Publish(new OrderReleaseInfoNotification($"Error creating BOL, could not find customer details"));
             return;
         }
 
@@ -64,11 +64,11 @@ internal class BOLHandler : DomainListener<TriggerOrderReleaseNotification> {
         bolResponse.Match(
             response => {
                 _logger.LogInformation("BOL created: {FilePath}", response.FilePath);
-                _uibus.Publish(new OrderReleaseProgressNotification($"BOL created {response.FilePath}"));
+                _uibus.Publish(new OrderReleaseSuccessNotification($"BOL created {response.FilePath}"));
             },
             error => {
                 _logger.LogInformation("Error creating BOL {Error}", error);
-                _uibus.Publish(new OrderReleaseProgressNotification($"Error creating BOL {error.Details}"));
+                _uibus.Publish(new OrderReleaseErrorNotification($"Error creating BOL {error.Details}"));
             }
         );
 
