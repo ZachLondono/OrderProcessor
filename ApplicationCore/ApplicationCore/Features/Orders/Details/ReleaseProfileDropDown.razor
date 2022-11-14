@@ -1,76 +1,45 @@
 ﻿@using ApplicationCore.Features.Companies.Domain.ValueObjects
+@using ApplicationCore.Shared.Components
 
 @if (Profile is null) {
     <span>Loading...</span>
 } else {
     <div>
 
-        <section>
-            <div>
-                <input type="checkbox" @bind="Profile.GenerateCutList" />
-                <label>Generate Cut Lists</label>
-            </div>
+        <section class="mb-3">
+            <h3>Cut Lists</h3>
+            <CheckBox @bind-IsChecked="Profile.GenerateCutList">Generate Cut Lists</CheckBox>
+            <CheckBox @bind-IsChecked="Profile.PrintCutList">Print Cut Lists</CheckBox>
+        </section>
 
-            <div>
-                <input type="checkbox" @bind="Profile.PrintCutList" />
-                <label>Print Cut Lists</label>
-            </div>
+        <section class ="mb-3">
+            <h3>Packing List</h3>
+            <CheckBox @bind-IsChecked="Profile.GeneratePackingList">Generate Packing Lists</CheckBox>
+            <CheckBox @bind-IsChecked="Profile.PrintPackingList">Print Packing Lists</CheckBox>
+        </section>
+
+        <section class="mb-3">
+            <h3>Invoice</h3>
+            <CheckBox @bind-IsChecked="Profile.GenerateInvoice">Generate Invoice</CheckBox>
+            <CheckBox @bind-IsChecked="Profile.PrintInvoice">Print Invoice</CheckBox>
+        </section>
+
+        <section class ="mb-3">
+            <h3>BOL</h3>
+            <CheckBox @bind-IsChecked="Profile.GenerateBOL">Generate BOL</CheckBox>
+            <CheckBox @bind-IsChecked="Profile.PrintBOL">Print BOL</CheckBox>
+        </section>
+
+        <section class ="mb-3">
+            <h3>Labels</h3>
+            <CheckBox @bind-IsChecked="Profile.PrintOrderLabel">Print Order Label</CheckBox>
+            <CheckBox @bind-IsChecked="Profile.PrintBoxLabels">Print Box Labels</CheckBox>
+            <CheckBox @bind-IsChecked="Profile.PrintADuiePyleLabel">Print A Duie Pyle Labels</CheckBox>
         </section>
 
         <section>
-            <div>
-                <input type="checkbox" @bind="Profile.GeneratePackingList" />
-                <label>Generate Packing Lists</label>
-            </div>
-
-            <div>
-                <input type="checkbox" @bind="Profile.PrintPackingList" />
-                <label>Print Packing Lists</label>
-            </div>
-        </section>
-
-        <section>
-            <div>
-                <input type="checkbox" @bind="Profile.GenerateInvoice" />
-                <label>Generate Invoice</label>
-            </div>
-            <div>
-                <input type="checkbox" @bind="Profile.PrintInvoice" />
-                <label>Print Invoice</label>
-            </div>
-        </section>
-
-        <section>
-            <div>
-                <input type="checkbox" @bind="Profile.GenerateBOL" />
-                <label>Generate BOL</label>
-            </div>
-            <div>
-                <input type="checkbox" @bind="Profile.PrintBOL" />
-                <label>Print BOL</label>
-            </div>
-        </section>
-
-        <section>
-            <div>
-                <input type="checkbox" @bind="Profile.PrintOrderLabel" />
-                <label>Print Order Labels</label>
-            </div>
-            <div>
-                <input type="checkbox" @bind="Profile.PrintBoxLabels" />
-                <label>Print Box Labels</label>
-            </div>
-            <div>
-                <input type="checkbox" @bind="Profile.PrintADuiePyleLabel" />
-                <label>Print A Duie Pyle Labels</label>
-            </div>
-        </section>
-
-        <section>
-            <div>
-                <input type="checkbox" @bind="Profile.GenerateCNCPrograms" />
-                <label>Generate CNC Programs</label>
-            </div>
+            <h3>CNC</h3>
+            <CheckBox @bind-IsChecked="Profile.GenerateCNCPrograms">Generate CNC Programs</CheckBox>
         </section>
 
     </div>
