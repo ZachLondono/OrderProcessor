@@ -1,0 +1,19 @@
+﻿<label class="relative inline-block" style="width:60px; height:34px;">
+    <input type="checkbox" class="h-0 w-0 opacity-0" checked="@IsChecked" @onchange="ValueChanged" />
+	<span class="absolute rounded-full before:rounded-full cursor-pointer top-0 left-0 right-0 bottom-0 bg-slate-600 switch"></span>
+</label>
+
+@code {
+
+    [Parameter]
+    public bool IsChecked { get;  set; }
+
+    [Parameter]
+    public EventCallback<bool> IsCheckedChanged { get; set; }
+
+    public async Task ValueChanged() {
+        IsChecked = !IsChecked;
+        await IsCheckedChanged.InvokeAsync(IsChecked);
+    }
+
+}

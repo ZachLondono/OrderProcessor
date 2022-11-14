@@ -1,0 +1,22 @@
+﻿.switch {
+	transition: .4s;
+}
+
+.switch::before {
+	position: absolute;
+	content: "";
+	height: 26px;
+	width: 26px;
+	left: 4px;
+	bottom: 4px;
+	background-color: white;
+	transition: .4s;
+}
+
+input:checked + .switch {
+	background-color: #2563eb;
+}
+
+input:checked + .switch:before {
+	transform: translateX(26px);
+}
