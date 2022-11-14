@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.CADCode.Contracts;
 using ApplicationCore.Features.CADCode.Contracts.ProgramRelease;
+using ApplicationCore.Features.CADCode.Domain;
 using ApplicationCore.Features.CADCode.Services;
 using ApplicationCore.Infrastructure;
 
@@ -26,6 +27,11 @@ public class CNCReleaseRequestHandler : CommandHandler<CNCReleaseRequest, Releas
 
             });
 
+        } catch (CADCodeFailedToInitilizeException) {
+            return new Response<ReleasedJob>(new Error() {
+                Title = "Could not start CADCode",
+                Details = "Missing CADCode license key or CADCode failed while trying to initilize"
+            });
         } catch (Exception e) {
             return new Response<ReleasedJob>(new Error() {
                 Title = "Exception thrown while releasing cnc program",

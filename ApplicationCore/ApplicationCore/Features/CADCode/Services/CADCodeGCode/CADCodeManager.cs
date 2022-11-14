@@ -5,6 +5,7 @@ using ApplicationCore.Features.CADCode.Services.Domain.CADCode;
 using ApplicationCore.Features.CADCode.Services.Domain.CADCode.Configuration;
 using ApplicationCore.Features.CADCode.Services.Domain.Inventory;
 using Part = CADCode.Part;
+using ApplicationCore.Features.CADCode.Domain;
 
 namespace ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode;
 
@@ -163,7 +164,7 @@ public class CADCodeManager {
         var bootObj = CreateCADCodeObj();
 
         // TODO: do something when no licence for CADCode is found. Make sure it does not block all other processes in the release 
-        if (!_hasKey) throw new InvalidProgramException("Cannot access CADCode");
+        if (!_hasKey) throw new CADCodeFailedToInitilizeException();
 
         var files = CreateFileClass(configuration, ccmachineConfig, generationType);
         var tools = CreateToolFile(bootObj, files, ccmachineConfig.ToolFilePath);
