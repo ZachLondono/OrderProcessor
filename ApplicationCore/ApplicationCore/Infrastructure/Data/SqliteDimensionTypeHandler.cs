@@ -9,6 +9,8 @@ public class SqliteDimensionTypeHandler : SqlMapper.TypeHandler<Dimension> {
         parameter.Value = dimension.AsMillimeters();
     }
     public override Dimension Parse(object value) {
-        return Dimension.FromMillimeters((double)value);
+        if (value is double || value is float)
+            return Dimension.FromMillimeters((double)value);
+        else return Dimension.FromMillimeters(double.Parse(value.ToString()));
     }
 }
