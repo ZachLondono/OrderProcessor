@@ -50,9 +50,12 @@ internal class CADCodeLabelDBExistingJobProvider : IExistingJobProvider {
 		int index = 1;
 		foreach (var pattern in patterns) {
 
+
+			// TODO: get picture path from CADCode configuration
+
 			var parts = manufParts.Where(p => p.PatternNumber == index).Select(p => new NestedPart() {
 				Name = p.Name,
-				ImagePath = "C:\\Users\\Zachary Londono\\Desktop\\CC Output\\Pix\\002471001.wmf",
+				ImagePath = $"Y:\\CADCode\\pix\\{pattern.Name}.wmf",
 				Width = (double)p.Width,
 				Length = (double)p.Length,
 				Description = p.Description,
@@ -61,7 +64,7 @@ internal class CADCodeLabelDBExistingJobProvider : IExistingJobProvider {
 
 			var program = new ReleasedProgram() {
 				Name = pattern.Name,
-				ImagePath = "C:\\Users\\Zachary Londono\\Desktop\\CC Output\\Pix\\002471001.wmf",
+				ImagePath = $"Y:\\CADCode\\pix\\{pattern.Name}.wmf",
 				Material = new() {
 					Name = pattern.MaterialName,
 					Width = (double)pattern.MaterialWidth,
