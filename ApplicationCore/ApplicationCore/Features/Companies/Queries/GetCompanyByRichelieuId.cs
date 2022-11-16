@@ -8,7 +8,7 @@ namespace ApplicationCore.Features.Companies.Queries;
 
 public class GetCompanyByRichelieuId {
 
-    public record Query(string RichelieuId) : IQuery<Company?>;
+    public record Query(string RichelieuCompanyId) : IQuery<Company?>;
 
     public class Handler : QueryHandler<Query, Company?> {
 
