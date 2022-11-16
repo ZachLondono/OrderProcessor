@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.RichelieuXMLModels;
 
-internal class ShipToModel {
+public class ShipToModel {
 
     [XmlAttribute("richelieuNumber")]
     public required string RichelieuNumber {get; set;}

@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.RichelieuXMLModels;
 
-internal class OrderModel {
+public class OrderModel {
 
     [XmlElement("shipTo")]
     public required ShipToModel ShipTo { get; set; }

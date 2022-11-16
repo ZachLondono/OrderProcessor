@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.RichelieuXMLModels;
 
-internal class LineModel {
+public class LineModel {
 
     [XmlAttribute("sku")]
     public required string Sku { get; set; }

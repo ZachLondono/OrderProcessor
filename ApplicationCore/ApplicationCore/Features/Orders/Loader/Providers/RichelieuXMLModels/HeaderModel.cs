@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.RichelieuXMLModels;
 
-internal class HeaderModel {
+public class HeaderModel {
 
     [XmlAttribute("orderDate")]
     public required string OrderDate { get; set; }

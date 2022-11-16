@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.RichelieuXMLModels;
 
-internal class DimensionModel {
+public class DimensionModel {
 
     [XmlAttribute("unite")]
     public required string Unite { get; set; }

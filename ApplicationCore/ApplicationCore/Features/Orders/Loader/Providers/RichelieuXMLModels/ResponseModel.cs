@@ -2,7 +2,8 @@
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.RichelieuXMLModels;
 
-internal class ResponseModel {
+[XmlRoot("response")]
+public class ResponseModel {
 
     [XmlElement("order")]
     public required OrderModel Order { get; set; }
