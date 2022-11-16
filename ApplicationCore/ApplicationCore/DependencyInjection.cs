@@ -16,6 +16,7 @@ using ApplicationCore.Features.Orders.Complete;
 using ApplicationCore.Features.Emails;
 using ApplicationCore.Features.Orders.Loader.Providers;
 using ApplicationCore.Features.CADCode;
+using ApplicationCore.Features.Orders.Loader.Providers.RichelieuXMLModels;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -35,6 +36,10 @@ public static class DependencyInjection {
         var allmoxyConfig = configuration.GetRequiredSection("AllmoxyConfiguration").Get<AllmoxyConfiguration>();
         services.AddSingleton<AllmoxyConfiguration>(allmoxyConfig);
         services.AddTransient<AllmoxyXMLOrderProvider>();
+
+        var richelieuConfig = configuration.GetRequiredSection("RichelieuConfiguration").Get<RichelieuConfiguration>();
+        services.AddSingleton<RichelieuConfiguration>(richelieuConfig);
+        services.AddSingleton<RichelieuXMLOrderProvider>();
 
         services.AddTransient<OTExcelProvider>();
 
