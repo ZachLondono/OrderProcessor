@@ -10,4 +10,6 @@ internal class RichelieuConfiguration {
 
     public required Dictionary<string, string> MaterialMap { get; set; }
 
+    public required Dictionary<string, double> StandardHeightMap { get; set; }
+
 }
