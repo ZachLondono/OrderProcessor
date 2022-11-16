@@ -28,6 +28,7 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
 
     public override async Task<OrderData?> LoadOrderData(string source) {
         
+        // TODO: get order data from http api
         using var fileStream = _fileReader.OpenReadFileStream(source);
         var serializer = new XmlSerializer(typeof(ResponseModel));
         if (serializer.Deserialize(fileStream) is not ResponseModel data) throw new InvalidDataException($"Could not parse order from given file {source}");
@@ -70,8 +71,19 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
                     depthDim = Dimension.FromInches(depth);
                 }
 
+                Dimension heightDim = Dimension.FromMillimeters(0);
+                if (double.TryParse(dimension.Height, out double height)) {
+
+                    if (_configuration.StandardHeightMap.TryGetValue(height.ToString(), out double actualHeight)) {
+                        heightDim = Dimension.FromMillimeters(actualHeight);
+                    } else {
+                        heightDim = Dimension.FromMillimeters(height);
+                    }
+
+                }
+
                 var box = new DrawerBoxData() {
-                    //Height = dimension.Height, // TODO: standard heights should be set in a configuration file, if the height does not match a rounded standard height, use the exact height
+                    Height = heightDim,
                     Width = widthDim,
                     Depth = depthDim,
                     Note = dimension.Note,
@@ -112,8 +124,6 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
 
         }
 
-
-
         return order;
 
     }
@@ -140,7 +150,7 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
 
             return Task.FromResult(new ValidationResult() {
                 IsValid = false,
-                ErrorMessage = "Could not validate order data"
+                ErrorMessage = "An error occurred while trying to validate order. Make sure schema is valid."
             });
 
         }
