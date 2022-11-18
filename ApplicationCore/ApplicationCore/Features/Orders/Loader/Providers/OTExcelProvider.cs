@@ -49,7 +49,6 @@ internal class OTExcelProvider : OrderProvider {
         var depthStart = sheet.Cell("DepthStart");
 
         List<DrawerBoxData> boxes = new();
-        var optionId = Guid.NewGuid();
 
         int offset = 1;
         while (true) {
@@ -78,11 +77,11 @@ internal class OTExcelProvider : OrderProvider {
                 FaceMountingHoles = false,
                 UBox = false,
                 FixedDividers = false,
-                BoxMaterialOptionId = optionId,
-                BottomMaterialOptionId = optionId,
-                ClipsOptionId = optionId,
-                NotchOptionId = optionId,
-                InsertOptionId = optionId
+                BoxMaterialOptionId = Guid.NewGuid(),
+                BottomMaterialOptionId = Guid.NewGuid(),
+                Clips = "No Clips",
+                Notch = "No Notch",
+                Accessory = "No Accessories"
             });
 
             offset++;

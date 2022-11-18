@@ -206,19 +206,17 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
         var clips = order.Boxes
                         .Select(b => b.Options.Clips)
-                        .GroupBy(c => c.Id)
+                        .GroupBy(c => c)
                         .OrderByDescending(g => g.Count())
                         .First()
-                        .First()
-                        .Name;
+                        .First();
 
         var notch = order.Boxes
                         .Select(b => b.Options.Notches)
-                        .GroupBy(c => c.Id)
+                        .GroupBy(n => n)
                         .OrderByDescending(g => g.Count())
                         .First()
-                        .First()
-                        .Name;
+                        .First();
 
         var postFin = order.Boxes
                         .Select(b => b.Options.PostFinish)

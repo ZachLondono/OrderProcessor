@@ -29,6 +29,8 @@ public class DrawerBoxDataModel {
 
     public bool FaceMountingHoles { get; set; }
 
+    public bool Assembled { get; set; }
+
     public UBoxDimensions? UBoxDimensions { get; set; } = default;
 
     public FixedDivdersCounts? FixedDividers { get; set; } = default;
@@ -45,15 +47,15 @@ public class DrawerBoxDataModel {
 
     public Dimension BottomMaterialThickness { get; set; } = Dimension.FromMillimeters(0);
 
-    public Guid ClipsId { get; set; }
+    public string Clips { get; set; } = string.Empty;
 
-    public string ClipsName { get; set; } = string.Empty;
+	public string ClipsName { get; set; } = string.Empty;
 
-    public Guid NotchesId { get; set; }
+    public string Notches { get; set; } = string.Empty;
 
-    public string NotchesName { get; set; } = string.Empty;
+	public string NotchesName { get; set; } = string.Empty;
 
-    public Guid AccessoryId { get; set; }
+    public string Accessory { get; set; } = string.Empty;
 
     public string AccessoryName { get; set; } = string.Empty;
 
@@ -61,11 +63,8 @@ public class DrawerBoxDataModel {
 
         var boxMaterial = new DrawerBoxMaterial(BoxMaterialId, BoxMaterialName, BoxMaterialThickness);
         var bottomMaterial = new DrawerBoxMaterial(BottomMaterialId, BottomMaterialName, BottomMaterialThickness);
-        var clips = new DrawerBoxOption(ClipsId, ClipsName);
-        var notches = new DrawerBoxOption(NotchesId, NotchesName);
-        var accessory = new DrawerBoxOption(AccessoryId, AccessoryName);
-
-        return new DrawerBox(Id, LineInOrder, UnitPrice, Qty, Height, Width, Depth, Note, new(boxMaterial, bottomMaterial, clips, notches, accessory, Logo, PostFinish, ScoopFront, FaceMountingHoles, UBoxDimensions, FixedDividers));
+        
+        return new DrawerBox(Id, LineInOrder, UnitPrice, Qty, Height, Width, Depth, Note, new(boxMaterial, bottomMaterial, Clips, Notches, Accessory, Logo, PostFinish, ScoopFront, FaceMountingHoles, Assembled, UBoxDimensions, FixedDividers));
 
     }
 

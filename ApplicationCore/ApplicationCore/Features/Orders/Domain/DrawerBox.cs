@@ -42,7 +42,7 @@ public class DrawerBox {
             botMaterial = construction.MaterialCodes[Options.BottomMaterial.Id.ToString()];
         }
 
-        string accComment = Options.Accessory.Name.Equals("None") ? "" : Options.Accessory.Name;
+        string accComment = Options.Accessory.Equals("None") ? "" : Options.Accessory;
         string logoComment = Options.Logo ? "Logo" : "";
 
         var fbAdj = Dimension.FromMillimeters(construction.FrontBackWidthAdjustment);

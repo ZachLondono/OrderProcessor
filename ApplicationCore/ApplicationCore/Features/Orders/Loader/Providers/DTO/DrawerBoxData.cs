@@ -26,6 +26,8 @@ public record DrawerBoxData {
 
     public bool FaceMountingHoles { get; set; }
 
+    public bool Assembled { get; set; }
+
     public bool UBox { get; set; }
     public Dimension UBoxA { get; set; } = Dimension.FromMillimeters(0);
     public Dimension UBoxB { get; set; } = Dimension.FromMillimeters(0);
@@ -37,8 +39,9 @@ public record DrawerBoxData {
 
     public Guid BoxMaterialOptionId { get; set; }
     public Guid BottomMaterialOptionId { get; set; }
-    public Guid ClipsOptionId { get; set; }
-    public Guid NotchOptionId { get; set; }
-    public Guid InsertOptionId { get; set; }
+
+    public string Clips { get; set; } = string.Empty;
+    public string Notch { get; set; } = string.Empty;
+    public string Accessory { get; set; } = string.Empty;
 
 }
