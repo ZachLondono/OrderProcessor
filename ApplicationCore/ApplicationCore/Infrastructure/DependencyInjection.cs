@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Infrastructure.Data;
 using Dapper;
 using MediatR;
+using MediatR.Pipeline;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
@@ -34,7 +35,7 @@ public static class DependencyInjection {
         SqlMapper.RemoveTypeMap(typeof(Guid));
         SqlMapper.RemoveTypeMap(typeof(Guid?));
         services.AddSingleton<IDbConnectionFactory, SqliteDbConnectionFactory>();
-        
+
         RegisterExceptionHandlers(services);
 
         return services;
@@ -53,7 +54,7 @@ public static class DependencyInjection {
         foreach (var type in commands) {
 
             var implementationType = typeof(ExceptionBehaviorB<>).MakeGenericType(type);
-            var serviceType = typeof(IPipelineBehavior<,>).MakeGenericType(type, typeof(Response));
+            var serviceType = typeof(AsyncRequestExceptionHandler<,>).MakeGenericType(type, typeof(Response));
 
             Debug.WriteLine($"{serviceType} => {implementationType}");
 
@@ -69,7 +70,7 @@ public static class DependencyInjection {
 
             var implementationType = typeof(ExceptionBehaviorA<,>).MakeGenericType(type, successType);
             var responseType = typeof(Response<>).MakeGenericType(successType);
-            var serviceType = typeof(IPipelineBehavior<,>).MakeGenericType(type, responseType);
+            var serviceType = typeof(AsyncRequestExceptionHandler<,>).MakeGenericType(type, responseType);
 
             Debug.WriteLine($"{serviceType} => {implementationType}");
 

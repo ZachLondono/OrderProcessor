@@ -1,54 +1,62 @@
 ﻿using MediatR;
+using MediatR.Pipeline;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Infrastructure;
 
-internal class ExceptionBehaviorA<TRequest, TSuccess> : IPipelineBehavior<TRequest, Response<TSuccess>> where TRequest : IRequest<Response<TSuccess>> {
+internal class ExceptionBehaviorA<TRequest, TSuccess> : IRequestExceptionHandler<TRequest, Response<TSuccess>> where TRequest : IRequest<Response<TSuccess>> {
 
-    public Task<Response<TSuccess>> Handle(TRequest request, RequestHandlerDelegate<Response<TSuccess>> next, CancellationToken cancellationToken) {
-        
-        try {
+    public Task Handle(TRequest request, Exception exception, RequestExceptionHandlerState<Response<TSuccess>> state, CancellationToken cancellationToken) {
 
-            return next();
+        var error = new Error() {
+            Title = "Error fulfilling request",
+            Details = exception.ToString(),
+        };
 
-        } catch (Exception e) {
+        var response = new Response<TSuccess>(error);
 
-            var error = new Error() {
-                Title = "Error fulfilling request",
-                Details = e.ToString(),
-            };
+        state.SetHandled(response);
 
-            var response = new Response<TSuccess>(error);
+        return Task.CompletedTask;
 
-            return Task.FromResult(response);
+    }
+}
 
-        }
+internal class ExceptionBehaviorB<TRequest> : IRequestExceptionHandler<TRequest, Response> where TRequest : IRequest<Response> {
+
+    public Task Handle(TRequest request, Exception exception, RequestExceptionHandlerState<Response> state, CancellationToken cancellationToken) {
+
+        var error = new Error() {
+            Title = "Error fulfilling request",
+            Details = exception.ToString(),
+        };
+
+        var response = new Response(error);
+
+        state.SetHandled(response);
+
+        return Task.CompletedTask;
 
     }
 
 }
 
-internal class ExceptionBehaviorB<TRequest> : IPipelineBehavior<TRequest, Response> where TRequest : IRequest<Response> {
+public class ExceptionLoggingHandler<TRequest, TResponse, TException> : IRequestExceptionHandler<TRequest, TResponse, TException>
+         where TRequest : IRequest<TResponse>
+         where TException : Exception {
+    private readonly ILogger<ExceptionLoggingHandler<TRequest, TResponse, TException>> _logger;
 
-    public Task<Response> Handle(TRequest request, RequestHandlerDelegate<Response> next, CancellationToken cancellationToken) {
-
-        try {
-
-            return next();
-
-        } catch (Exception e) {
-
-            var error = new Error() {
-                Title = "Error fulfilling request",
-                Details = e.ToString(),
-            };
-
-            var response = new Response(error);
-
-            return Task.FromResult(response);
-
-        }
-
+    public ExceptionLoggingHandler(ILogger<ExceptionLoggingHandler<TRequest, TResponse, TException>> logger) {
+        _logger = logger;
     }
 
+    public Task Handle(TRequest request, TException exception, RequestExceptionHandlerState<TResponse> state, CancellationToken cancellationToken) {
+        _logger.LogError(exception, "Something went wrong while handling request of type {@requestType}", typeof(TRequest));
+
+        // TODO: when we want to show the user somethig went wrong, we need to expand this with something like
+        // a ResponseBase where we wrap the actual response and return an indication whether the call was successful or not.
+        state.SetHandled(default!);
+
+        return Task.CompletedTask;
+    }
 }
