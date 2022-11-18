@@ -30,7 +30,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
         try {
 
-            using var stream = new FileStream(source, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+			using var stream = _fileReader.OpenReadFileStream(source);
             XDocument doc = XDocument.Load(stream);
 
             var schemas = new XmlSchemaSet();
