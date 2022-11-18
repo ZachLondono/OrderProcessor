@@ -101,9 +101,9 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
 
                     BoxMaterialOptionId = options.BoxMaterialId,
                     BottomMaterialOptionId = options.BottomMaterialId,
-                    ClipsOptionId = options.ClipsId,
-                    NotchOptionId = options.NotchesId,
-                    InsertOptionId = options.AccessoryId
+                    Clips = options.Clips,
+                    Notch = options.Notches,
+                    Accessory = options.Accessory
                 };
 
                 order.Boxes.Add(box);
@@ -178,32 +178,31 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
         string botCode = sku.Substring(6, 2);
         string notchCode = sku.Substring(9, 2);
         string fastenerCode = sku.Substring(11, 2);
-        //string frontCode = sku.Substring(13, 1);
+        string frontCode = sku.Substring(13, 1);
         string pullOutCode = sku.Substring(14, 1);
         string rushCode = sku.Substring(15, 2);
 
-        return new SkuValues() {
+		return new SkuValues() {
             BoxMaterialId = GetMaterialId(specie),
             BottomMaterialId = GetMaterialId(botCode),
-            NotchesId = GetOptionId(notchCode),
-            ClipsId = GetOptionId(fastenerCode),
-            ScoopFront = pullOutCode.Equals("1") || pullOutCode.Equals("2") || pullOutCode.Equals("3"),
+            Notches = GetOptionName(notchCode),
+            Clips = GetOptionName(fastenerCode),
+			Accessory = GetOptionName(frontCode),
+			ScoopFront = pullOutCode.Equals("1") || pullOutCode.Equals("2") || pullOutCode.Equals("3"),
             Rush = rushCode.Equals("R3"),
 
             Logo = false,
             PostFinish = false,
             FaceMountingHoles = false,
-            AccessoryId = new Guid("45ff4d97-2077-4748-b765-75a30a1d64d1"),
         };
 
     }
 
-    private Guid GetOptionId(string optionname) {
-        if (_configuration.OptionMap.TryGetValue(optionname, out string? optionidstr) && optionidstr is not null) {
-            var optionid = Guid.Parse(optionidstr);
-            return optionid;
-        }
-        return new Guid("d3030d0a-8992-4b6b-8577-9d4ac43b7cf7");
+    private string GetOptionName(string optionkey) {
+        if (_configuration.OptionMap.TryGetValue(optionkey, out string? optionstr) && optionstr is not null) {
+            return optionstr;
+		}
+        return "";
     }
 
     private Guid GetMaterialId(string optionname) {
@@ -328,9 +327,9 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
         public bool FaceMountingHoles { get; set; }
         public Guid BoxMaterialId { get; set;}
         public Guid BottomMaterialId { get; set;}
-        public Guid ClipsId { get; set;}
-        public Guid NotchesId { get; set;}
-        public Guid AccessoryId { get; set; }
+        public string Clips { get; set; } = string.Empty;
+        public string Notches { get; set;} = string.Empty;
+        public string Accessory { get; set; } = string.Empty;
 
     }
 

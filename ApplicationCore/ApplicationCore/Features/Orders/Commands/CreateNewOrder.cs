@@ -94,8 +94,8 @@ public class CreateNewOrder {
 
         private static async Task CreateDrawerBox(DrawerBox box, Guid orderId, IDbConnection connection, IDbTransaction transaction) {
 
-            const string boxCommand = @"INSERT INTO drawerboxes (id, orderid, lineinorder, unitprice, qty, height_mm, width_mm, depth_mm, note, postfinish, scoopfront, logo, facemountingholes, boxmaterialid, bottommaterialid, clipsid, notchesid, accessoryid, uboxdimensions, fixeddividers)
-                                        VALUES (@Id, @OrderId, @LineInOrder, @UnitPrice, @Qty, @Height, @Width, @Depth, @Note, @PostFinish, @ScoopFront, @Logo, @FaceMountingHoles, @BoxMaterialId, @BottomMaterialId, @ClipsId, @NotchesId, @AccessoryId, @UBoxDimensions, @FixedDivdersCounts);";
+            const string boxCommand = @"INSERT INTO drawerboxes (id, orderid, lineinorder, unitprice, qty, height_mm, width_mm, depth_mm, note, postfinish, scoopfront, logo, facemountingholes, boxmaterialid, bottommaterialid, clips, notches, accessory, uboxdimensions, fixeddividers)
+                                        VALUES (@Id, @OrderId, @LineInOrder, @UnitPrice, @Qty, @Height, @Width, @Depth, @Note, @PostFinish, @ScoopFront, @Logo, @FaceMountingHoles, @BoxMaterialId, @BottomMaterialId, @Clips, @Notches, @Accessory, @UBoxDimensions, @FixedDivdersCounts);";
 
             await connection.ExecuteAsync(boxCommand, new {
                 box.Id,
@@ -113,9 +113,9 @@ public class CreateNewOrder {
                 box.Options.FaceMountingHoles,
                 BoxMaterialId =  box.Options.BoxMaterial.Id,
                 BottomMaterialId = box.Options.BottomMaterial.Id,
-                ClipsId = box.Options.Clips.Id,
-                NotchesId = box.Options.Notches.Id,
-                AccessoryId = box.Options.Accessory.Id,
+                box.Options.Clips,
+                box.Options.Notches,
+                box.Options.Accessory,
                 box.Options.UBoxDimensions,
                 box.Options.FixedDivdersCounts
             }, transaction);

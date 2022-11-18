@@ -86,13 +86,14 @@ public class LoadOrderCommand {
             var options = new DrawerBoxOptions(
                     new(data.BoxMaterialOptionId, "", Dimension.FromMillimeters(0)), // TODO: get option names
                     new(data.BottomMaterialOptionId, "", Dimension.FromMillimeters(0)),
-                    new(data.ClipsOptionId, ""),
-                    new(data.ClipsOptionId,""),
-                    new(data.NotchOptionId, ""),
+                    data.Clips,
+                    data.Notch,
+                    data.Accessory,
                     data.Logo,
                     data.PostFinish,
                     data.ScoopFront,
                     data.FaceMountingHoles,
+                    data.Assembled,
                     data.UBox ? new(data.UBoxA, data.UBoxB, data.UBoxC) : null,
                     data.FixedDividers ? new() : null
 

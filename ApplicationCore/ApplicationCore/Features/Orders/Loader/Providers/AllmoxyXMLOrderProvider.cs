@@ -30,16 +30,16 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
         try {
 
-            using var stream = new FileStream(source, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            XDocument doc = XDocument.Load(stream);
+			using var stream = _fileReader.OpenReadFileStream(source);
+			XDocument doc = XDocument.Load(stream);
 
-            var schemas = new XmlSchemaSet();
-            schemas.Add("", _configuration.Schema);
+			var schemas = new XmlSchemaSet();
+			schemas.Add("", _configuration.Schema);
 
-            var errors = new List<string>();
-            doc.Validate(schemas, (s, e) => errors.Add(e.Message));
+			var errors = new List<string>();
+			doc.Validate(schemas, (s, e) => errors.Add(e.Message));
 
-            return Task.FromResult(new ValidationResult() {
+			return Task.FromResult(new ValidationResult() {
                 IsValid = !errors.Any(),
                 ErrorMessage = string.Join('\n', errors)
             });
@@ -169,18 +169,10 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             FixedDividers = false,
             BoxMaterialOptionId = GetMaterialId(data.Material),
             BottomMaterialOptionId = GetMaterialId(data.Bottom),
-            ClipsOptionId = GetOptionId(data.Clips),
-            NotchOptionId = GetOptionId(data.Notch),
-            InsertOptionId = GetOptionId(data.Insert),
+            Clips = data.Clips,
+            Notch = data.Notch,
+            Accessory = data.Insert,
         };
-
-    private Guid GetOptionId(string optionname) {
-        if (_configuration.OptionMap.TryGetValue(optionname, out string? optionidstr) && optionidstr is not null) {
-            var optionid = Guid.Parse(optionidstr);
-            return optionid;
-        }
-        return Guid.Parse("d3030d0a-8992-4b6b-8577-9d4ac43b7cf7");
-    }
 
     private Guid GetMaterialId(string optionname) {
         if (_configuration.MaterialMap.TryGetValue(optionname, out string? optionidstr) && optionidstr is not null) {

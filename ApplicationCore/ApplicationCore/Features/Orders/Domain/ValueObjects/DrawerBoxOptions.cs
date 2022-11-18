@@ -4,17 +4,18 @@ public class DrawerBoxOptions {
 
     public DrawerBoxMaterial BoxMaterial { get; init; }
     public DrawerBoxMaterial BottomMaterial { get; }
-    public DrawerBoxOption Clips { get; }
-    public DrawerBoxOption Notches { get; }
-    public DrawerBoxOption Accessory { get; }
+    public string Clips { get; }
+    public string Notches { get; }
+    public string Accessory { get; }
     public bool Logo { get; }
     public bool PostFinish { get; }
     public bool ScoopFront { get; }
     public bool FaceMountingHoles { get; }
+    public bool Assembled { get; }
     public UBoxDimensions? UBoxDimensions { get; }
     public FixedDivdersCounts? FixedDivdersCounts { get; }
 
-    public DrawerBoxOptions(DrawerBoxMaterial boxMaterial, DrawerBoxMaterial bottomMaterial, DrawerBoxOption clips, DrawerBoxOption notches, DrawerBoxOption accessory, bool logo = false, bool postFinish = false, bool scoopFront = false, bool facemountingholes = false, UBoxDimensions? uBoxDimensions = null, FixedDivdersCounts? fixedDivdersCounts = null) {
+    public DrawerBoxOptions(DrawerBoxMaterial boxMaterial, DrawerBoxMaterial bottomMaterial, string clips, string notches, string accessory, bool logo = false, bool postFinish = false, bool scoopFront = false, bool facemountingholes = false, bool assembled = true, UBoxDimensions? uBoxDimensions = null, FixedDivdersCounts? fixedDivdersCounts = null) {
         BoxMaterial = boxMaterial;
         BottomMaterial = bottomMaterial;
         Clips = clips;
@@ -24,7 +25,8 @@ public class DrawerBoxOptions {
         PostFinish = postFinish;
         ScoopFront = scoopFront;
         FaceMountingHoles = facemountingholes;
-        UBoxDimensions = uBoxDimensions;
+		Assembled = assembled;
+		UBoxDimensions = uBoxDimensions;
         FixedDivdersCounts = fixedDivdersCounts;
     }
 
