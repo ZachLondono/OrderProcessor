@@ -105,6 +105,9 @@
 	public IModalService Modal { get; set; } = default!;
 
 	private async Task LoadOrder() {
+
+		try {
+
 		//_configuration.DefaultDirectory
 		bool wasPicked = FilePicker.TryPickFile("Select Allmoxy Order File", "C:\\Users\\Zachary Londono\\Desktop\\ExampleConfiguration", new("XML files (*.xml)", ".xml"), out string filepath);
 		if (!wasPicked) return;
@@ -118,6 +121,16 @@
 				_ = await Modal.OpenErrorDialog(error);
 			}
 		);
+
+		} catch (Exception e) {
+
+			_ = await Modal.OpenErrorDialog(new Error() {
+				Title = e.Message,
+				Details = e.ToString()
+			});
+
+		}
+
 	}
 
 	private async Task CreateCompany() {
