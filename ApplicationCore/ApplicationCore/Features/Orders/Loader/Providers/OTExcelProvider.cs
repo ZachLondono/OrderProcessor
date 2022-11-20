@@ -53,13 +53,13 @@ internal class OTExcelProvider : OrderProvider {
         int offset = 1;
         while (true) {
 
-            var qtyStr = GetOffsetCell(qtyStart, offset).GetValue<string>();
+            var qtyStr = qtyStart.GetOffsetCell(offset).GetValue<string>();
 
             if (string.IsNullOrWhiteSpace(qtyStr) || !int.TryParse(qtyStr, out int qty)) break;
 
-            double width = GetOffsetCell(widthStart, offset).GetValue<double>();
-            double height = GetOffsetCell(heightStart, offset).GetValue<double>();
-            double depth = GetOffsetCell(depthStart, offset).GetValue<double>();
+            double width = widthStart.GetOffsetCell(offset).GetValue<double>();
+            double height = heightStart.GetOffsetCell(offset).GetValue<double>();
+            double depth = depthStart.GetOffsetCell(offset).GetValue<double>();
 
             var heightDim = Dimension.FromInches(height);
             var widthDim = Dimension.FromInches(width);
@@ -181,10 +181,6 @@ internal class OTExcelProvider : OrderProvider {
 
         return customer;
 
-    }
-
-    private static IXLCell GetOffsetCell(IXLCell relative, int rowOffset = 0, int colOffset = 0) {
-        return relative.Address.Worksheet.Cell(relative.Address.RowNumber + rowOffset, relative.Address.ColumnNumber + colOffset);
     }
 
 }
