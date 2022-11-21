@@ -8,7 +8,7 @@ namespace ApplicationCore.Features.Companies.Commands;
 
 public class CreateCompany {
 
-    public record Command(string Name, Address Address, string PhoneNumber, string InvoiceEmail, string ConfirmationEmail) : ICommand<Company>;
+    public record Command(string Name, Address Address, string PhoneNumber, string InvoiceEmail, string ConfirmationEmail, string ContactName) : ICommand<Company>;
 
     public class Handler : CommandHandler<Command, Company> {
 
@@ -22,13 +22,13 @@ public class CreateCompany {
 
             using var connection = _factory.CreateConnection();
 
-            var company = Company.Create(request.Name, request.Address, request.PhoneNumber, request.InvoiceEmail, request.ConfirmationEmail);
+            var company = Company.Create(request.Name, request.Address, request.PhoneNumber, request.InvoiceEmail, request.ConfirmationEmail, request.ContactName);
 
             const string command = @"BEGIN TRANSACTION;
                                         INSERT INTO companies
-                                            (id, name, phonenumber, invoiceemail, confirmationemail)
+                                            (id, name, phonenumber, invoiceemail, confirmationemail, contactName)
                                         VALUES
-                                            (@Id, @Name, @PhoneNumber, @InvoiceEmail, @ConfirmationEmail);
+                                            (@Id, @Name, @PhoneNumber, @InvoiceEmail, @ConfirmationEmail, @ContactName);
                                         INSERT INTO addresses
                                             (companyid, line1, line2, line3, city, state, zip, country)
                                         VALUES
@@ -41,6 +41,7 @@ public class CreateCompany {
                 company.PhoneNumber,
                 company.InvoiceEmail,
                 company.ConfirmationEmail,
+                company.ContactName,
                 company.Address.Line1,
                 company.Address.Line2,
                 company.Address.Line3,

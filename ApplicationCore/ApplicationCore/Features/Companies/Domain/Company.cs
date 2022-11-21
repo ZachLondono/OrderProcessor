@@ -10,16 +10,18 @@ public class Company {
     public string PhoneNumber { get; }
     public string InvoiceEmail { get; }
     public string ConfirmationEmail { get; }
+    public string ContactName { get; }
 
-    public Company(Guid id, string name, Address address, string phoneNumber, string invoiceEmail, string confirmationEmail) {
+    public Company(Guid id, string name, Address address, string phoneNumber, string invoiceEmail, string confirmationEmail, string contactName) {
         Id = id;
         Name = name;
         Address = address;
         PhoneNumber = phoneNumber;
         InvoiceEmail = invoiceEmail;
         ConfirmationEmail = confirmationEmail;
+        ContactName = contactName;
     }
 
-    public static Company Create(string name, Address address, string phoneNumber, string invoiceEmail, string confirmationEmail) => new(Guid.NewGuid(), name, address, phoneNumber, invoiceEmail, confirmationEmail);
+    public static Company Create(string name, Address address, string phoneNumber, string invoiceEmail, string confirmationEmail, string contactName) => new(Guid.NewGuid(), name, address, phoneNumber, invoiceEmail, confirmationEmail, contactName);
 
 }

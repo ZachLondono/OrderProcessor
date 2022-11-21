@@ -32,7 +32,7 @@ public abstract class AbstractCompanyQueryHandler<TQuery> : QueryHandler<TQuery,
 			State = data.State,
 			Zip = data.Zip,
 			Country = data.Country
-		}, data.PhoneNumber, data.InvoiceEmail, data.ConfirmationEmail);
+		}, data.PhoneNumber, data.InvoiceEmail, data.ConfirmationEmail, data.ContactName);
 
 		return new(company);
 

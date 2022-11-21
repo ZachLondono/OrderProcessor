@@ -28,9 +28,9 @@ internal class CompanyState {
         IsDirty = false;
     }
 
-    public void UpdateCompany(string name, Address address, string phoneNumber, string invoiceEmail, string confirmationEmail) {
+    public void UpdateCompany(string name, Address address, string phoneNumber, string invoiceEmail, string confirmationEmail, string contactName) {
         if (Company is null) return;
-        Company = new Company(Company.Id, name, address, phoneNumber, invoiceEmail, confirmationEmail);
+        Company = new Company(Company.Id, name, address, phoneNumber, invoiceEmail, confirmationEmail, contactName);
         IsDirty = true;
     }
 
