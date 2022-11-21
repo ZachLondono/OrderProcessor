@@ -303,6 +303,7 @@ internal class HafeleExcelProvider : OrderProvider {
 
 		if (customer is null) {
 
+			string contact = sheet.Cell("V3").ReadString();
 			string company = sheet.Cell("V4").ReadString();
 			string addr1 = sheet.Cell("V6").ReadString();
 			string addr2 = sheet.Cell("V7").ReadString();
@@ -322,7 +323,7 @@ internal class HafeleExcelProvider : OrderProvider {
 				Country = "USA"
 			};
 
-			var createResponse = await _bus.Send(new CreateCompany.Command(company, address, phone, email, email));
+			var createResponse = await _bus.Send(new CreateCompany.Command(company, address, phone, email, email, contact));
 
 			createResponse.Match(
 				c => {

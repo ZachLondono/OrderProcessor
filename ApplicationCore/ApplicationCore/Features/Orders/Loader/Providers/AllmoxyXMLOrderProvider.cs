@@ -154,7 +154,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
         };
 
         // TODO: get customer contact info from allmoxy order data
-        var createResponse = await _bus.Send(new CreateCompany.Command(data.Customer, adderes, "", "", ""));
+        var createResponse = await _bus.Send(new CreateCompany.Command(data.Customer, adderes, "", "", "", ""));
 
         Company? customer = null;
         createResponse.Match(

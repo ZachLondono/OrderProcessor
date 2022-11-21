@@ -23,7 +23,7 @@
     }
 
     private async Task CreateCompanyAndExit() {
-        var result = await Bus.Send(new Companies.Commands.CreateCompany.Command(_companyModel.Name, new(), "", "", ""));
+        var result = await Bus.Send(new Companies.Commands.CreateCompany.Command(_companyModel.Name, new(), "", "", "", ""));
         result.Match(
             newCompany => { 
                 CompanyState.ReplaceCompany(newCompany);

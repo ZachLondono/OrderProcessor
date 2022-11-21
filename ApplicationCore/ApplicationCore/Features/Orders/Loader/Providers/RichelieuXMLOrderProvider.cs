@@ -254,7 +254,7 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
             Country = shipTo.Country
         };
 
-        var createResponse = await _bus.Send(new CreateCompany.Command(shipTo.Company, adderes, shipTo.Phone, "", ""));
+        var createResponse = await _bus.Send(new CreateCompany.Command(shipTo.Company, adderes, shipTo.Phone, "", "", ""));
 
         Company? customer = null;
         createResponse.Match(

@@ -193,7 +193,7 @@ internal class OTExcelProvider : OrderProvider {
         };
 
         // TODO: get customer contact info from allmoxy order data
-        Response<Company> createResponse = await _bus.Send(new CreateCompany.Command(name, adderes, "", "", ""));
+        Response<Company> createResponse = await _bus.Send(new CreateCompany.Command(name, adderes, "", "", "", ""));
 
         Company? customer = null;
         createResponse.Match(
