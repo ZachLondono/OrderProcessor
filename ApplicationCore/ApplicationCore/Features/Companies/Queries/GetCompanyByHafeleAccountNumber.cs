@@ -1,8 +1,6 @@
 ﻿using ApplicationCore.Features.Companies.Domain;
-using ApplicationCore.Features.Companies.Queries.DataModels;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Infrastructure.Data;
-using Dapper;
 
 namespace ApplicationCore.Features.Companies.Queries;
 
@@ -10,43 +8,20 @@ public class GetCompanyByHafeleAccountNumber {
 
     public record Query(string HafeleAccountNumber) : IQuery<Company?>;
 
-	public class Handler : QueryHandler<Query, Company?> {
+	public class Handler : AbstractCompanyQueryHandler<Query> {
 
-		private readonly IDbConnectionFactory _factory;
+		public Handler(IDbConnectionFactory factory) : base(factory) { }
 
-		public Handler(IDbConnectionFactory factory) {
-			_factory = factory;
-		}
+		protected override string GetQueryString() {
+			return @"SELECT
+						id, name, phonenumber, invoiceemail, confirmationemail, contactname, line1, line2, line3, city, state, zip, country
+					FROM
 
-		public override async Task<Response<Company?>> Handle(Query query) {
-
-            using var connection = _factory.CreateConnection();
-
-            const string sql = @"SELECT
-                                    id, name, phonenumber, invoiceemail, confirmationemail, line1, line2, line3, city, state, zip, country
-                                FROM
-                                    companies
-                                LEFT JOIN addresses ON companies.id = addresses.companyid
-                                WHERE id = (
-                                    SELECT companyid FROM hafelecompanies_companies WHERE hafeleaccountnum = @HafeleAccountNumber
-                                );";
-
-			var data = await connection.QuerySingleOrDefaultAsync<CompanyDataModel>(sql, query);
-
-			if (data is null) return new((Company?)null);
-
-			var company = new Company(data.Id, data.Name, new() {
-				Line1 = data.Line1,
-				Line2 = data.Line2,
-				Line3 = data.Line3,
-				City = data.City,
-				State = data.State,
-				Zip = data.Zip,
-				Country = data.Country
-			}, data.PhoneNumber, data.InvoiceEmail, data.ConfirmationEmail);
-
-			return new(company);
-
+						companies
+					LEFT JOIN addresses ON companies.id = addresses.companyid
+					WHERE id = (
+						SELECT companyid FROM hafelecompanies_companies WHERE hafeleaccountnum = @HafeleAccountNumber
+                    ); ";
 		}
 
 	}
