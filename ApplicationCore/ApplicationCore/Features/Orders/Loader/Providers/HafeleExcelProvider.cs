@@ -37,13 +37,13 @@ internal class HafeleExcelProvider : OrderProvider {
 			throw new InvalidDataException("Workbook does not contain order data worksheet");
 		}
 
-		if (!DateTime.TryParse(sheet.Cell("OrderDate").GetValue<string>(), out DateTime orderDate)) {
+		if (!DateTime.TryParse(sheet.Cell("OrderDate").ReadString(), out DateTime orderDate)) {
 			orderDate = DateTime.Today;
 		}
 
 		Company customer = await GetCustomerFromWorksheet(sheet);
 
-		var unitStr = sheet.Cell("Notation").GetValue<string>();
+		var unitStr = sheet.Cell("Notation").ReadString();
 		var units = unitStr switch {
 			"Metric" => Units.Millimeters,
 			"Fraction" => Units.Inches,
@@ -51,25 +51,25 @@ internal class HafeleExcelProvider : OrderProvider {
 			_ => Units.Inches, // TODO: show a warning when an unrecognized value is found
 		};
 
-		var productionTime = sheet.Cell("ProductionSelection").GetValue<string>();
+		var productionTime = sheet.Cell("ProductionSelection").ReadString();
 		bool rush = productionTime switch {
 			"Standard - 1 Week" => false,
 			"3 Day Rush" => true,
 			_ => false, // TODO: show a warning when an unrecognized value is found
 		};
 
-		var freight = wb.Cell("Standard_Freight").GetValue<decimal>();
+		var freight = wb.Cell("Standard_Freight").ReadDecimal();
 		var globalOptions = GetGlobalOptionsFromSheet(sheet);
 
-		var logoOption = sheet.Cell("LogoOption").GetValue<string>().ToLower();
-		string deliveryMethod = sheet.Cell("DeliverySelction").GetValue<string>();
+		var logoOption = sheet.Cell("LogoOption").ReadString().ToLower();
+		string deliveryMethod = sheet.Cell("DeliverySelection").ReadString();
 		var items = GetAdditionalItems(wb, logoOption, deliveryMethod);
 
-		string customerPO = sheet.Cell("K7").GetValue<string>();
-		string jobName = sheet.Cell("jobname").GetValue<string>();
-		string hafelePO = sheet.Cell("K11").GetValue<string>();
-		string hafeleOrderNum = sheet.Cell("K12").GetValue<string>();
-		string contact = sheet.Cell("V3").GetValue<string>();
+		string customerPO = sheet.Cell("K7").ReadString();
+		string jobName = sheet.Cell("jobname").ReadString();
+		string hafelePO = sheet.Cell("K11").ReadString();
+		string hafeleOrderNum = sheet.Cell("K12").ReadString();
+		string contact = sheet.Cell("V3").ReadString();
 
 		var info = new Dictionary<string, string>() {
 			{ "Customer PO", customerPO },
@@ -78,12 +78,13 @@ internal class HafeleExcelProvider : OrderProvider {
 			{ "Contact", contact }
 		};
 
-		var comment = sheet.Cell("N12").GetValue<string>();
+		var comment = sheet.Cell("N12").ReadString();
 
 		var data = new DataColumns() {
+			Line = sheet.Cell("A17"),
 			Qty = sheet.Cell("B17"),
-			Width = sheet.Cell("F17"),
 			Height = sheet.Cell("F17"),
+			Width = sheet.Cell("G17"),
 			Depth = sheet.Cell("H17"),
 			Pullout = sheet.Cell("I17"),
 			Bottom = sheet.Cell("J17"),
@@ -105,8 +106,8 @@ internal class HafeleExcelProvider : OrderProvider {
 		int offset = 0;
 		while (offset < 100) {
 
-			var qtyStr = data.Qty.GetOffsetCell(rowOffset: offset).GetString();
-			if (string.IsNullOrEmpty(qtyStr)) {
+			var qtyCell = data.Qty.GetOffsetCell(rowOffset: offset);
+			if (qtyCell.ValueIsNullOrWhitespace()) {
 				offset++;
 				continue;
 			}
@@ -169,7 +170,7 @@ internal class HafeleExcelProvider : OrderProvider {
 		var items = new List<AdditionalItemData>();
 		if (logoOption.Contains("setup")) {
 
-			var setupFee = wb.Cell("SetupFee").GetValue<decimal>();
+			var setupFee = wb.Cell("SetupFee").ReadDecimal();
 
 			items.Add(new() {
 				Description = "Logo Setup",
@@ -194,10 +195,10 @@ internal class HafeleExcelProvider : OrderProvider {
 	}
 
 	private GlobalOptions GetGlobalOptionsFromSheet(IXLWorksheet sheet) {
-		string materialName = sheet.Cell("Material").GetValue<string>();
-		string assembledStr = sheet.Cell("Assembled").GetValue<string>();
-		string postFinishStr = sheet.Cell("PostFinish").GetValue<string>();
-		string mountingHolesStr = sheet.Cell("MountingHoles").GetValue<string>();
+		string materialName = sheet.Cell("Material").ReadString();
+		string assembledStr = sheet.Cell("Assembled").ReadString();
+		string postFinishStr = sheet.Cell("PostFinish").ReadString();
+		string mountingHolesStr = sheet.Cell("MountingHoles").ReadString();
 
 		var globalOptions = new GlobalOptions() {
 
@@ -230,7 +231,7 @@ internal class HafeleExcelProvider : OrderProvider {
 
 		// TODO: move reading from sheet outside of function
 
-		string accntNum = sheet.Cell("V5").GetValue<string>();
+		string accntNum = sheet.Cell("V5").ReadString();
 		var customerResponse = await _bus.Send(new GetCompanyByHafeleAccountNumber.Query(accntNum));
 
 		Company? customer = null;
@@ -251,14 +252,14 @@ internal class HafeleExcelProvider : OrderProvider {
 
 		if (customer is null) {
 
-			string company = sheet.Cell("V4").GetValue<string>();
-			string addr1 = sheet.Cell("V6").GetValue<string>();
-			string addr2 = sheet.Cell("V7").GetValue<string>();
-			string city = sheet.Cell("V8").GetValue<string>();
-			string state = sheet.Cell("V9").GetValue<string>();
-			string zip = sheet.Cell("V10").GetValue<string>();
-			string phone = sheet.Cell("V11").GetValue<string>();
-			string email = sheet.Cell("V12").GetValue<string>();
+			string company = sheet.Cell("V4").ReadString();
+			string addr1 = sheet.Cell("V6").ReadString();
+			string addr2 = sheet.Cell("V7").ReadString();
+			string city = sheet.Cell("V8").ReadString();
+			string state = sheet.Cell("V9").ReadString();
+			string zip = sheet.Cell("V10").ReadString();
+			string phone = sheet.Cell("V11").ReadString();
+			string email = sheet.Cell("V12").ReadString();
 
 			var address = new Companies.Domain.ValueObjects.Address() {
 				Line1 = addr1,
@@ -281,6 +282,12 @@ internal class HafeleExcelProvider : OrderProvider {
 					// TODO: log error
 				}
 			);
+
+			if (customer is not null) {
+
+				await _bus.Send(new CreateHafeleIdCompanyIdMapping.Command(accntNum, customer.Id));
+
+			}
 
 		}
 
@@ -305,9 +312,9 @@ internal class HafeleExcelProvider : OrderProvider {
 
 			// TODO: formulas may make the values unreadable, may need to read cached result
 			
-			var height = data.Height.GetOffsetCell(offset).GetValue<double>();
-			var width = data.Width.GetOffsetCell(offset).GetValue<double>();
-			var depth = data.Depth.GetOffsetCell(offset).GetValue<double>();
+			var height = data.Height.GetOffsetCell(offset).ReadDouble();
+			var width = data.Width.GetOffsetCell(offset).ReadDouble();
+			var depth = data.Depth.GetOffsetCell(offset).ReadDouble();
 			if (units == Units.Millimeters) {
 				box.Height = Dimension.FromMillimeters(height);
 				box.Width = Dimension.FromMillimeters(width);
@@ -318,30 +325,31 @@ internal class HafeleExcelProvider : OrderProvider {
 				box.Depth = Dimension.FromInches(depth);
 			}
 
-			box.Qty = data.Qty.GetOffsetCell(offset).GetValue<int>();
-			box.ScoopFront = data.Pullout.GetOffsetCell(offset).GetValue<string>().Equals("Scoop Front");
-			var bottom = data.Bottom.GetOffsetCell(offset).GetValue<string>();
+			box.Line = data.Line.GetOffsetCell(offset).ReadInt();
+			box.Qty = data.Qty.GetOffsetCell(offset).ReadInt();
+			box.ScoopFront = data.Pullout.GetOffsetCell(offset).ReadString().Equals("Scoop Front");
+			var bottom = data.Bottom.GetOffsetCell(offset).ReadString();
 			box.BottomMaterialOptionId = GetMaterialId(bottom);
-			box.Notch = data.Notch.GetOffsetCell(offset).GetValue<string>();
-			box.Logo = data.Logo.GetOffsetCell(offset).GetValue<string>().Equals("Yes");
-			box.Clips = data.Clips.GetOffsetCell(offset).GetValue<string>();
-			box.Accessory = data.Accessory.GetOffsetCell(offset).GetValue<string>();
-			var jobName = data.JobName.GetOffsetCell(offset).GetValue<string>();
+			box.Notch = data.Notch.GetOffsetCell(offset).ReadString();
+			box.Logo = data.Logo.GetOffsetCell(offset).ReadString().Equals("Yes");
+			box.Clips = data.Clips.GetOffsetCell(offset).ReadString();
+			box.Accessory = data.Accessory.GetOffsetCell(offset).ReadString();
+			var jobName = data.JobName.GetOffsetCell(offset).ReadString();
 			//box.LabelFields.Add("Job Name", jobName);
-			box.Note = data.Note.GetOffsetCell(offset).GetValue<string>();
+			box.Note = data.Note.GetOffsetCell(offset).ReadString();
 
 			if (box.Accessory.Equals("Cubes")) {
 
 				box.FixedDividers = true;
-				box.DividersDeep = data.CubeFB.GetOffsetCell(offset).GetValue<int>();
-				box.DividersWide = data.CubeLR.GetOffsetCell(offset).GetValue<int>();
+				box.DividersDeep = data.CubeFB.GetOffsetCell(offset).ReadInt();
+				box.DividersWide = data.CubeLR.GetOffsetCell(offset).ReadInt();
 
-			} else if(box.Accessory.Equals("UBox")) {
+			} else if (box.Accessory.Equals("U-Box")) {
 
 				box.UBox = true;
-				var a = data.UBoxA.GetOffsetCell(offset).GetValue<double>();
-				var b = data.UBoxA.GetOffsetCell(offset).GetValue<double>();
-				var c = data.UBoxA.GetOffsetCell(offset).GetValue<double>();
+				var a = data.UBoxA.GetOffsetCell(offset).ReadDouble();
+				var b = data.UBoxA.GetOffsetCell(offset).ReadDouble();
+				var c = data.UBoxA.GetOffsetCell(offset).ReadDouble();
 
 				if (units == Units.Millimeters) {
 					box.UBoxA = Dimension.FromMillimeters(a);
@@ -373,6 +381,7 @@ internal class HafeleExcelProvider : OrderProvider {
 	}
 
 	struct DataColumns {
+		public IXLCell Line { get; set; }
 		public IXLCell Qty {  get; set; }
 		public IXLCell Width { get; set; }
 		public IXLCell Height { get; set; }
