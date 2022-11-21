@@ -2,8 +2,8 @@
 
 public class DrawerBoxOptions {
 
-    public DrawerBoxMaterial BoxMaterial { get; init; }
-    public DrawerBoxMaterial BottomMaterial { get; }
+    public DrawerBoxMaterial BoxMaterial { get; } // TODO: just store id, query for other data when needed
+    public DrawerBoxMaterial BottomMaterial { get; }    // TODO: just store id, query for other data when needed
     public string Clips { get; }
     public string Notches { get; }
     public string Accessory { get; }
