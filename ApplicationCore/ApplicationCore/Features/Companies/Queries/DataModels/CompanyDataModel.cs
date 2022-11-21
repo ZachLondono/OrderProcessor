@@ -7,6 +7,7 @@ public class CompanyDataModel {
     public string PhoneNumber { get; set; } = string.Empty;
     public string InvoiceEmail { get; set; } = string.Empty;
     public string ConfirmationEmail { get; set; } = string.Empty;
+    public string ContactName { get; set; } = string.Empty;
     public string Line1 { get; set; } = string.Empty;
     public string Line2 { get; set; } = string.Empty;
     public string Line3 { get; set; } = string.Empty;
