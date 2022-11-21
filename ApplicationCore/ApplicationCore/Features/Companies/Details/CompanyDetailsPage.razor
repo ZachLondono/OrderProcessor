@@ -48,6 +48,10 @@
 				<label id="confirmation" class="text-lg w-48 inline-block dark:text-gray-400">Confirmation Email</label>
 				<InputText @bind-Value="_companyModel.ConfirmationEmail" for="confirmation" class="text-xl w-64 border-b focus:outline-0 active:outline-0 bg-transparent dark:text-white"></InputText>
 			</div>
+			<div>
+				<label id="contact" class="text-lg w-48 inline-block dark:text-gray-400">Contact</label>
+				<InputText @bind-Value="_companyModel.ContactName" for="confirmation" class="text-xl w-64 border-b focus:outline-0 active:outline-0 bg-transparent dark:text-white"></InputText>
+			</div>
 		</fieldset>
 
 		<fieldset>
@@ -141,6 +145,7 @@
                 Address = company.Address,
 				PhoneNumber = company.PhoneNumber,
 				InvoiceEmail = company.InvoiceEmail,
+				ContactName = company.ContactName,
 				ConfirmationEmail = company.ConfirmationEmail,
             };
 	}
@@ -160,7 +165,7 @@
 
 	private async Task SaveChanges() {
 		_isSaving = true;
-		CompanyState.UpdateCompany(_companyModel.Name, _companyModel.Address, _companyModel.PhoneNumber, _companyModel.InvoiceEmail, _companyModel.ConfirmationEmail);
+		CompanyState.UpdateCompany(_companyModel.Name, _companyModel.Address, _companyModel.PhoneNumber, _companyModel.InvoiceEmail, _companyModel.ConfirmationEmail, _companyModel.ContactName);
 		await CompanyState.SaveChanges();
 		_isSaving = false;
 	}
@@ -174,6 +179,8 @@
 		public string InvoiceEmail { get; set; } = string.Empty;
 
 		public string ConfirmationEmail { get; set; } = string.Empty;
+
+		public string ContactName { get; set; } = string.Empty;
 
         public Address Address { get; set; } = new();
 
