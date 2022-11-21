@@ -113,18 +113,7 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
 
         }
 
-        if (isRush) { 
-
-            // Rush charge is included in the box price
-            order.AdditionalItems.Add(new() {
-                Description = "Rush Charge",
-                Price = 0M
-            });
-
-            // TODO: rush needs to be noted in the order
-
-        }
-
+        if (isRush) order.Rush = true;
 
 		return new() {
 			Data = order

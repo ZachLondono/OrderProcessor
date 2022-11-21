@@ -36,7 +36,7 @@ public class GetOrderById {
             var itemData = await connection.QueryAsync<AdditionalItemDataModel>(itemQuery, request);
             var items = itemData.Select(i => i.AsDomainModel());
 
-            const string query = "SELECT status, number, name, customerid, vendorid, productionNote, customercomment, orderdate, releasedate, productiondate, completedate, info, tax, priceadjustment, shipping FROM orders WHERE id = @OrderId;";
+            const string query = "SELECT status, number, name, customerid, vendorid, productionNote, customercomment, orderdate, releasedate, productiondate, completedate, info, tax, shipping, priceadjustment, rush FROM orders WHERE id = @OrderId;";
             var data = await connection.QuerySingleAsync<OrderDataModel>(query, request);
             var order = data.AsDomainModel(request.OrderId, boxes, items);
 

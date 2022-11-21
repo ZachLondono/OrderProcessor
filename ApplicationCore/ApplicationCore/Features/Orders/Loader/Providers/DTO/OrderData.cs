@@ -20,6 +20,8 @@ public record OrderData {
 
     public Guid VendorId { get; set; }
 
+    public bool Rush { get; set; }
+
     public Dictionary<string, string> Info { get; set; } = new();
 
     public List<DrawerBoxData> Boxes { get; set; } = new();

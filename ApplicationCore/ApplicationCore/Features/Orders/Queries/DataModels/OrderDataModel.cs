@@ -34,10 +34,12 @@ public class OrderDataModel {
 
     public decimal PriceAdjustment { get; set; }
 
+    public bool Rush { get; set; }
+
     public IEnumerable<KeyValuePair<string, string>> Info { get; set; } = new Dictionary<string, string>();
 
     public Order AsDomainModel(Guid orderId, IEnumerable<DrawerBox> boxes, IEnumerable<AdditionalItem> items) {
-        return new Order(orderId, Source, Status, Number, Name, CustomerId, VendorId, ProductionNote, CustomerComment, OrderDate, ReleaseDate, ProductionDate, CompleteDate, Tax, Shipping, PriceAdjustment, new Dictionary<string,string>(Info), boxes, items);
+        return new Order(orderId, Source, Status, Number, Name, CustomerId, VendorId, ProductionNote, CustomerComment, OrderDate, ReleaseDate, ProductionDate, CompleteDate, Tax, Shipping, PriceAdjustment, Rush, new Dictionary<string,string>(Info), boxes, items);
     }
 
 }

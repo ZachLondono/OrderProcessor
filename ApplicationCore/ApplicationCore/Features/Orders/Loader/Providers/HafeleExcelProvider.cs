@@ -107,13 +107,6 @@ internal class HafeleExcelProvider : OrderProvider {
 				break;
 		}
 
-		if (rush) {
-			items.Add(new() {
-				Description = "Rush",
-				Price = 0M // Rush charge is included in the box price, rather than show up as an additional item, there should be a rush flag on the order 
-			});
-		}
-
 		string customerPO = sheet.Cell("K7").ReadString();
 		string jobName = sheet.Cell("jobname").ReadString();
 		string hafelePO = sheet.Cell("K11").ReadString();
@@ -193,7 +186,8 @@ internal class HafeleExcelProvider : OrderProvider {
 				VendorId = vendorId,
 				Boxes = boxes,
 				Info = info,
-				AdditionalItems = items
+				AdditionalItems = items,
+				Rush = rush
 			},
 			Messages = messages
 		};

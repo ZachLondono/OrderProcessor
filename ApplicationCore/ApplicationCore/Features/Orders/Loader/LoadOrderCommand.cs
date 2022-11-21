@@ -85,9 +85,9 @@ public class LoadOrderCommand {
 
             Response<Order> result;
             if (existingOrderId is null) {
-                result = await _bus.Send(new CreateNewOrder.Command(request.Source, data.Number, data.Name, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Tax, data.Shipping, data.PriceAdjustment, data.Info, boxes, additionalItems));
+                result = await _bus.Send(new CreateNewOrder.Command(request.Source, data.Number, data.Name, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Tax, data.Shipping, data.PriceAdjustment, data.Rush, data.Info, boxes, additionalItems));
             } else {
-                result = await _bus.Send(new OverwriteExistingOrderWithId.Command((Guid)existingOrderId, request.Source, data.Number, data.Name, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Tax, data.Shipping, data.PriceAdjustment, data.Info, boxes, additionalItems));
+                result = await _bus.Send(new OverwriteExistingOrderWithId.Command((Guid)existingOrderId, request.Source, data.Number, data.Name, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Tax, data.Shipping, data.PriceAdjustment, data.Rush, data.Info, boxes, additionalItems));
             }
 
             return result;
