@@ -1,28 +1,38 @@
 ﻿using ApplicationCore.Shared;
 using Microsoft.Win32;
+using System;
+using System.Threading.Tasks;
 
 namespace DesktopHost.Dialogs;
 
 public class WPFDialogFilePicker : IFilePicker {
 
-    public bool TryPickFile(string title, string directory, FilePickerFilter filter, out string fileName) {
+    public async Task<bool> PickFileAsync(string title, string directory, FilePickerFilter filter, Action<string> onFilePicked) {
 
-        fileName = string.Empty;
-        var dialog = new OpenFileDialog {
-            InitialDirectory = directory,
-            Multiselect = false,
-            Title = title,
-            Filter = filter.ToFilterString()
-        };
+		// The file picker must be run in a seperate thread than the ui, otherwise it will crash the WPF application if the user takes too long to pick a file
 
-        bool? result = dialog.ShowDialog();
-        if (result is null) return false;
-        bool wasPicked = (bool) result;
-        if (!wasPicked) return false;
+		string? result = await Task.Run(() => {	
 
-        fileName = dialog.FileName;
-        return true;
+			var dialog = new OpenFileDialog {
+				InitialDirectory = directory,
+				Multiselect = false,
+				Title = title,
+				Filter = filter.ToFilterString()
+			};
 
-    }
+			bool? result = dialog.ShowDialog();
+
+			if (result is not null && (bool)result) return dialog.FileName;
+
+			return null;
+
+		});
+
+		if (result is null) return false;
+
+		onFilePicked(result);
+		return true;
+
+	}
 
 }

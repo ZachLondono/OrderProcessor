@@ -2,6 +2,6 @@
 
 public interface IFilePicker {
 
-    public bool TryPickFile(string title, string directory, FilePickerFilter filter, out string fileName);
+	public Task<bool> PickFileAsync(string title, string directory, FilePickerFilter filter, Action<string> onFilePicked);
 
 }
