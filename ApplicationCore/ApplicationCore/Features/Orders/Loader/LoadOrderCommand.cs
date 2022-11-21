@@ -3,6 +3,7 @@ using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers;
 using ApplicationCore.Features.Orders.Loader.Providers.DTO;
+using ApplicationCore.Features.Orders.Loader.Providers.Results;
 using ApplicationCore.Features.Orders.Queries;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
@@ -56,13 +57,25 @@ public class LoadOrderCommand {
                 }
             );
 
-            var data = await provider.LoadOrderData(request.Source);
+            var response = await provider.LoadOrderData(request.Source);
+            var data = response.Data;
 
             if (data is null) {
 
-                return new(new Error() {
+                string details = "No data could read from the provided order source.";
+
+                foreach (var message in response.Messages) {
+                    details += message.Severity switch {
+                        MessageSeverity.Error => " [Error]",
+						MessageSeverity.Warning => " [Warning]",
+                        _ => string.Empty
+					};
+                    details += " " + message.Message;
+                }
+
+				return new(new Error() {
 					Title = "No order was read",
-                    Details = "No data could read from the provided order source"
+                    Details = details
 				});
 
             }

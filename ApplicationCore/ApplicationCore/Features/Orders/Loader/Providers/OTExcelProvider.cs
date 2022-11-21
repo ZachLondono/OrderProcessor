@@ -21,14 +21,22 @@ internal class OTExcelProvider : OrderProvider {
         _bus = bus;
     }
 
-    public override async Task<OrderData?> LoadOrderData(string source) {
+    public override async Task<LoadOrderResult> LoadOrderData(string source) {
 
         using var stream = _fileReader.OpenReadFileStream(source);
         using var wb = new XLWorkbook(stream);
 
         var sheet = wb.Worksheet("Order");
 
-        if (sheet is null) return null; //new Response<Order>(new Error() { Message = "Order sheet could not be found" });
+        if (sheet is null) return new() {
+            Data = null,
+            Messages = new List<LoadMessage>() {
+                new() {
+                    Message = "Order sheet could not be found",
+                    Severity = MessageSeverity.Error
+                }
+            }
+        };
 
         string number = sheet.Cell("OrderNumber").GetValue<string>();
         string name = sheet.Cell("OrderName").GetValue<string>();
@@ -107,32 +115,50 @@ internal class OTExcelProvider : OrderProvider {
 
         if (customer is null) {
             customer = await CreateCustomer(customerName, customerLine1, customerLine2, customerLine3, customerCity, customerState, customerZip, customerCountry);
-            if (customer is null) return null; //new(new Error() { Message = "Could not find/create customer" });
-        }
+            if (customer is null) return new() {
+				Data = null,
+				Messages = new List<LoadMessage>() {
+				    new() {
+					    Message = "Could not find or create customer",
+					    Severity = MessageSeverity.Error
+				    }
+			    }
+			};
+		}
 
-        if (customer is null || didError) return null; //new(new Error() { Message = "Could not find/create customer" });
+        if (customer is null || didError) return new() {
+			Data = null,
+			Messages = new List<LoadMessage>() {
+					new() {
+						Message = "Could not find or create customer",
+						Severity = MessageSeverity.Error
+					}
+				}
+		};
 
-        decimal tax = 0M;
+		decimal tax = 0M;
         decimal shipping = 0M;
         decimal priceAdj = 0M;
         string orderComment = "";
         Dictionary<string, string> info = new();
         var items = new List<AdditionalItemData>();
 
-        return new OrderData() {
-            Number = number,
-            Name = name,
-            Comment = orderComment,
-            Tax = tax,
-            Shipping = shipping,
-            PriceAdjustment = priceAdj,
-            OrderDate = orderdate,
-            CustomerId = customer.Id,
-            VendorId = vendorId,
-            Info = info,
-            AdditionalItems = items,
-            Boxes = boxes
-        };
+        return new() {
+            Data = new OrderData() {
+				Number = number,
+				Name = name,
+				Comment = orderComment,
+				Tax = tax,
+				Shipping = shipping,
+				PriceAdjustment = priceAdj,
+				OrderDate = orderdate,
+				CustomerId = customer.Id,
+				VendorId = vendorId,
+				Info = info,
+				AdditionalItems = items,
+				Boxes = boxes
+			}
+		};
 
     }
 

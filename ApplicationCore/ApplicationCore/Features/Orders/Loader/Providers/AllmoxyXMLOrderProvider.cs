@@ -56,7 +56,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
         
     }
 
-    public override async Task<OrderData?> LoadOrderData(string source) {
+    public override async Task<LoadOrderResult> LoadOrderData(string source) {
 
         using var fileStream = _fileReader.OpenReadFileStream(source);
         var serializer = new XmlSerializer(typeof(OrderModel));
@@ -78,12 +78,28 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
         if (customer is null) {
             customer = await CreateCustomer(data);
-            if (customer is null) return null;
-        }
+            if (customer is null) return new() {
+				Data = null,
+				Messages = new List<LoadMessage>() {
+					new() {
+						Message = "Could not find or create customer",
+						Severity = MessageSeverity.Error
+					}
+				}
+			};
+		}
 
-        if (customer is null || didError) return null;
+        if (customer is null || didError) return new() {
+			Data = null,
+			Messages = new List<LoadMessage>() {
+					new() {
+						Message = "Could not find or create customer",
+						Severity = MessageSeverity.Error
+					}
+				}
+		};
 
-        int line = 1;
+		int line = 1;
         var boxes = data.DrawerBoxes
                         .Select(b => MapToDrawerBox(b, line++))
                         .ToList();
@@ -107,22 +123,24 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             orderDate = DateTime.Now;
         }
 
-        return new OrderData() {
-            Number = data.Id.ToString(),
-            Name = data.Name,
-            Comment = data.Note,
-            Tax = tax,
-            Shipping = shipping,
-            PriceAdjustment = priceAdjustment,
-            OrderDate = orderDate,
-            CustomerId = customer.Id,
-            VendorId = metroVendorId,
-            AdditionalItems = additionalItems,
-            Boxes = boxes,
-            Info = info
-        };
+		return new() {
+			Data = new OrderData() {
+				Number = data.Id.ToString(),
+				Name = data.Name,
+				Comment = data.Note,
+				Tax = tax,
+				Shipping = shipping,
+				PriceAdjustment = priceAdjustment,
+				OrderDate = orderDate,
+				CustomerId = customer.Id,
+				VendorId = metroVendorId,
+				AdditionalItems = additionalItems,
+				Boxes = boxes,
+				Info = info
+			}
+	    };
 
-    }
+	}
 
     private async Task<Company?> CreateCustomer(OrderModel data) {
         var adderes = new Address() {

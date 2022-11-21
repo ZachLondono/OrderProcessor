@@ -22,10 +22,11 @@ internal class HafeleExcelProvider : OrderProvider {
 		_configuration = configuration;
 	}
 
-	public override async Task<OrderData?> LoadOrderData(string source) {
+	public override async Task<LoadOrderResult> LoadOrderData(string source) {
 
 		var vendorId = new Guid(_configuration.VendorId);
 
+		var messages = new List<LoadMessage>();
 		using var stream = _fileReader.OpenReadFileStream(source);
 		using var wb = new XLWorkbook(stream);
 
@@ -35,29 +36,52 @@ internal class HafeleExcelProvider : OrderProvider {
 		} else if (wb.Worksheets.Contains("Dovetail")) {
 			sheet = wb.Worksheet("Dovetail");
 		} else {
-			throw new InvalidDataException("Workbook does not contain order data worksheet");
+
+			return new() {
+				Data = null,
+				Messages = new List<LoadMessage>() {
+					new() {
+						Message = "Workbook does not contain order data worksheet",
+						Severity = MessageSeverity.Error,
+					}
+				}
+			};
+
 		}
 
 		if (!DateTime.TryParse(sheet.Cell("OrderDate").ReadString(), out DateTime orderDate)) {
 			orderDate = DateTime.Today;
 		}
 
-		Company customer = await GetCustomerFromWorksheet(sheet);
+		Company? customer = await GetCustomerFromWorksheet(sheet);
+		if (customer is null) return new() {
+			Data = null,
+			Messages = new List<LoadMessage>() {
+				new() {
+					Message = "Could not load or create customer",
+					Severity = MessageSeverity.Error,
+				}
+			}
+		};
+
 
 		var unitStr = sheet.Cell("Notation").ReadString();
-		var units = unitStr switch {
-			"Metric" => Units.Millimeters,
-			"Fraction" => Units.Inches,
-			"Decimal" => Units.Inches,
-			_ => Units.Inches, // TODO: show a warning when an unrecognized value is found
-		};
-
-		var productionTime = sheet.Cell("ProductionSelection").ReadString();
-		bool rush = productionTime switch {
-			"Standard - 1 Week" => false,
-			"3 Day Rush" => true,
-			_ => false, // TODO: show a warning when an unrecognized value is found
-		};
+		Units units = Units.Inches;
+		switch (unitStr) {
+			case "Metric":
+				units = Units.Millimeters;
+				break;
+			case "Fraction":
+			case "Decimal":
+				units = Units.Inches;
+				break;
+			default:
+				messages.Add(new() {
+					Message = $"Unrecognized unit selection '{unitStr}'",
+					Severity = MessageSeverity.Warning
+				});
+				break;
+		}
 
 		var freight = wb.Cell("Standard_Freight").ReadDecimal();
 		var globalOptions = GetGlobalOptionsFromSheet(sheet);
@@ -65,6 +89,30 @@ internal class HafeleExcelProvider : OrderProvider {
 		var logoOption = sheet.Cell("LogoOption").ReadString().ToLower();
 		string deliveryMethod = sheet.Cell("DeliverySelection").ReadString();
 		var items = GetAdditionalItems(wb, logoOption, deliveryMethod);
+
+		var productionTime = sheet.Cell("ProductionSelection").ReadString();
+		bool rush = false;
+		switch (productionTime) {
+			case "Standard - 1 Week":
+				rush = false;
+				break;
+			case "3 Day Rush":
+				rush = true;
+				break;
+			default:
+				messages.Add(new() {
+					Message = $"Unrecognized production time selection '{productionTime}'",
+					Severity = MessageSeverity.Warning
+				});
+				break;
+		}
+
+		if (rush) {
+			items.Add(new() {
+				Description = "Rush",
+				Price = 0M // Rush charge is included in the box price, rather than show up as an additional item, there should be a rush flag on the order 
+			});
+		}
 
 		string customerPO = sheet.Cell("K7").ReadString();
 		string jobName = sheet.Cell("jobname").ReadString();
@@ -121,7 +169,10 @@ internal class HafeleExcelProvider : OrderProvider {
 
 			} else {
 
-				// Warn about error reading box
+				messages.Add(new() {
+					Message = $"Error reading drawer box on row '{qtyCell.WorksheetRow}'",
+					Severity = MessageSeverity.Warning
+				});
 
 			}
 
@@ -129,22 +180,23 @@ internal class HafeleExcelProvider : OrderProvider {
 
 		}
 
-		var order = new OrderData() {
-			Number = hafelePO,
-			Name = jobName,
-			OrderDate = orderDate,
-			Comment = comment,
-			CustomerId = customer.Id,
-			PriceAdjustment = 0M,
-			Shipping = freight,
-			Tax = 0,
-			VendorId = vendorId,
-			Boxes = boxes,
-			Info = info,
-			AdditionalItems = items
+		return new() {
+			Data = new OrderData() {
+				Number = hafelePO,
+				Name = jobName,
+				OrderDate = orderDate,
+				Comment = comment,
+				CustomerId = customer.Id,
+				PriceAdjustment = 0M,
+				Shipping = freight,
+				Tax = 0,
+				VendorId = vendorId,
+				Boxes = boxes,
+				Info = info,
+				AdditionalItems = items
+			},
+			Messages = messages
 		};
-
-		return order;
 
 	}
 
@@ -228,7 +280,7 @@ internal class HafeleExcelProvider : OrderProvider {
 		return globalOptions;
 	}
 
-	private async Task<Company> GetCustomerFromWorksheet(IXLWorksheet sheet) {
+	private async Task<Company?> GetCustomerFromWorksheet(IXLWorksheet sheet) {
 
 		// TODO: move reading from sheet outside of function
 
@@ -247,9 +299,7 @@ internal class HafeleExcelProvider : OrderProvider {
 			}
 		);
 
-		if (hasError) {
-			throw new InvalidDataException("Could not get customer");
-		}
+		if (hasError) return null;
 
 		if (customer is null) {
 
@@ -292,9 +342,7 @@ internal class HafeleExcelProvider : OrderProvider {
 
 		}
 
-		if (hasError || customer is null) {
-			throw new InvalidDataException("Could not get customer");
-		}
+		if (hasError || customer is null) return null;
 
 		return customer;
 
