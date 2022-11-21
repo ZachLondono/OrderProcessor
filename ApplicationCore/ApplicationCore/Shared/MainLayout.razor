@@ -108,19 +108,20 @@
 
 		try {
 
-		//_configuration.DefaultDirectory
-		bool wasPicked = FilePicker.TryPickFile("Select Allmoxy Order File", "C:\\Users\\Zachary Londono\\Desktop\\ExampleConfiguration", new("XML files (*.xml)", ".xml"), out string filepath);
-		if (!wasPicked) return;
+			//_configuration.DefaultDirectory
+			string filepath = string.Empty;
+			bool wasPicked = await FilePicker.PickFileAsync("Select Hafele Order File", "C:\\Users\\Zachary Londono\\Desktop\\ExampleConfiguration", new("Excel files (*.xlsx)", ".xlsx"), (selected) => filepath = selected);
+			if (!wasPicked) return;
 		var response = await Bus.Send(new LoadOrderCommand.Command(OrderSourceType.AllmoxyXML, filepath));
-		response.Match(
-			order => {
-				OrderState.ReplaceOrder(order);
-				NavigationManager.NavigateTo("/orders/details", true);
-			},
-			async error => {
-				_ = await Modal.OpenErrorDialog(error);
-			}
-		);
+			response.Match(
+				order => {
+					OrderState.ReplaceOrder(order);
+					NavigationManager.NavigateTo("/orders/details", true);
+				},
+				async error => {
+					_ = await Modal.OpenErrorDialog(error);
+				}
+			);
 
 		} catch (Exception e) {
 
@@ -143,7 +144,8 @@
 	}
 
 	private async Task CreateReleaseForExistingOrder() {
-		bool wasPicked = FilePicker.TryPickFile("Select CADCode Label Database", "C:\\Users\\Zachary Londono\\Desktop\\ExampleConfiguration", new("Label database (*.mdb)", ".mdb"), out string filepath);
+		string filepath = string.Empty;
+		bool wasPicked = await FilePicker.PickFileAsync("Select CADCode Label Database", "C:\\Users\\Zachary Londono\\Desktop\\ExampleConfiguration", new("Label database (*.mdb)", ".mdb"), (selected) => filepath = selected);
 		if (!wasPicked) return;
 
 		var parameters = new ModalParameters();

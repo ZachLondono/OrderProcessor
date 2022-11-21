@@ -32,6 +32,8 @@ public static class DependencyInjection {
         services.AddSingleton<CompanyState>();
         services.AddSingleton<IServiceProvider>(sp => sp);
         
+        // TODO: validate configuration data
+
         services.AddTransient<IOrderProviderFactory, OrderProviderFactory>();
         var allmoxyConfig = configuration.GetRequiredSection("AllmoxyConfiguration").Get<AllmoxyConfiguration>();
         services.AddSingleton<AllmoxyConfiguration>(allmoxyConfig);
@@ -42,6 +44,10 @@ public static class DependencyInjection {
         services.AddSingleton<RichelieuXMLOrderProvider>();
 
         services.AddTransient<OTExcelProvider>();
+
+        var hafeleConfig = configuration.GetRequiredSection("HafeleConfiguration").Get<HafeleConfiguration>();
+        services.AddSingleton<HafeleConfiguration>(hafeleConfig);
+        services.AddSingleton<HafeleExcelProvider>();
 
         services.AddTransient<ITemplateFiller, ClosedXMLTemplateFiller>();
         services.AddTransient<IExcelTemplate, ClosedXMLTemplate>();
