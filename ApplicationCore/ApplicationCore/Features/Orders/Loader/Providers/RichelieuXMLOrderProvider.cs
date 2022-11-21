@@ -4,6 +4,7 @@ using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers.DTO;
+using ApplicationCore.Features.Orders.Loader.Providers.Results;
 using ApplicationCore.Features.Orders.Loader.Providers.RichelieuXMLModels;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;

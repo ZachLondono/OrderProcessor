@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Orders.Loader.Providers;
+﻿namespace ApplicationCore.Features.Orders.Loader.Providers.Results;
 
 public record ValidationResult {
 
