@@ -274,8 +274,8 @@
                                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Width.AsMillimeters().ToString("0.00")</td>
                                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Depth.AsMillimeters().ToString("0.00")</td>
                                 }
-                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.BoxMaterialId</td>
-                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.BottomMaterialId</td>
+                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@_materialNames[box.Options.BoxMaterialId]</td>
+                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@_materialNames[box.Options.BottomMaterialId]</td>
                                 <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.ScoopFront ? "Y" : "N")</td>
                                 <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.Logo ? "Y" : "N")</td>
                                 <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.PostFinish ? "Y" : "N")</td>
@@ -320,6 +320,7 @@
     private Company? _customer = null;
     private Company? _vendor = null;
     private ReleaseProfile? _customReleaseProfile = null;
+    private Dictionary<Guid, string> _materialNames = new();
 
     private bool _useInches = false;
 
@@ -339,6 +340,17 @@
         };
         await LoadCustomer();
         await LoadVendor();
+
+        var materialIds = OrderState.Order
+                                    .Boxes
+                                    .SelectMany(b => new Guid[] { b.Options.BoxMaterialId, b.Options.BottomMaterialId })
+                                    .Distinct();
+
+        _materialNames = new Dictionary<Guid, string>();
+        foreach (var id in materialIds) {
+            var name = await GetMaterialName(id);
+            _materialNames.Add(id, name);
+        }
 
     }
 
@@ -423,6 +435,19 @@
             await onConfirmation(result.Data);
         }
 
+    }
+
+    private async Task<string> GetMaterialName(Guid materialId) {
+        var matResponse = await Bus.Send(new GetDrawerBoxMaterialById.Query(materialId));
+        var materialName = "UNKOWN";
+        matResponse.Match(
+            m => {
+                if (m is not null) materialName = m.Name;
+            },
+            error => { }
+        );
+
+        return materialName;
     }
 
     private void NumberChanged(string value) {
