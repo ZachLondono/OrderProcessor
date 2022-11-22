@@ -379,7 +379,7 @@ internal class HafeleExcelProvider : OrderProvider {
 			box.Clips = data.Clips.GetOffsetCell(offset).ReadString();
 			box.Accessory = data.Accessory.GetOffsetCell(offset).ReadString();
 			var jobName = data.JobName.GetOffsetCell(offset).ReadString();
-			//box.LabelFields.Add("Job Name", jobName);
+			box.LabelFields.Add("Job Name", jobName);
 			box.Note = data.Note.GetOffsetCell(offset).ReadString();
 
 			if (box.Accessory.Equals("Cubes")) {
