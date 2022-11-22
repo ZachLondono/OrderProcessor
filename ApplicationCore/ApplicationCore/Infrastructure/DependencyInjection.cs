@@ -30,7 +30,7 @@ public static class DependencyInjection {
         SqlMapper.AddTypeHandler(new SqliteFixedDivdersCountsTypeHandler());
         SqlMapper.AddTypeHandler(new SqliteUBoxDimensionTypeHandler());
         SqlMapper.AddTypeHandler(new SqliteDimensionTypeHandler());
-        SqlMapper.AddTypeHandler(new SqliteKVEnumerableTypeHandler());
+        SqlMapper.AddTypeHandler(new SqliteDictionaryEnumerableTypeHandler());
         SqlMapper.AddTypeHandler(new SqliteGuidTypeHandler());
         SqlMapper.RemoveTypeMap(typeof(Guid));
         SqlMapper.RemoveTypeMap(typeof(Guid?));
