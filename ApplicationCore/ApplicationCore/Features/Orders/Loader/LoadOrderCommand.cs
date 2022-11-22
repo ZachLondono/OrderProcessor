@@ -97,8 +97,8 @@ public class LoadOrderCommand {
         private static DrawerBox MapDataToDrawerBox(DrawerBoxData data) {
 
             var options = new DrawerBoxOptions(
-                    new(data.BoxMaterialOptionId, "", Dimension.FromMillimeters(0)),
-                    new(data.BottomMaterialOptionId, "", Dimension.FromMillimeters(0)),
+                    data.BoxMaterialOptionId,
+                    data.BottomMaterialOptionId,
                     data.Clips,
                     data.Notch,
                     data.Accessory,

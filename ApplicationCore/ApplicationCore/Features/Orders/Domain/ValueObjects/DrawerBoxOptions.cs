@@ -2,8 +2,8 @@
 
 public class DrawerBoxOptions {
 
-    public DrawerBoxMaterial BoxMaterial { get; } // TODO: just store id, query for other data when needed
-    public DrawerBoxMaterial BottomMaterial { get; }    // TODO: just store id, query for other data when needed
+    public Guid BoxMaterialId { get; }
+    public Guid BottomMaterialId { get; }
     public string Clips { get; }
     public string Notches { get; }
     public string Accessory { get; }
@@ -15,9 +15,9 @@ public class DrawerBoxOptions {
     public UBoxDimensions? UBoxDimensions { get; }
     public FixedDivdersCounts? FixedDivdersCounts { get; }
 
-    public DrawerBoxOptions(DrawerBoxMaterial boxMaterial, DrawerBoxMaterial bottomMaterial, string clips, string notches, string accessory, bool logo = false, bool postFinish = false, bool scoopFront = false, bool facemountingholes = false, bool assembled = true, UBoxDimensions? uBoxDimensions = null, FixedDivdersCounts? fixedDivdersCounts = null) {
-        BoxMaterial = boxMaterial;
-        BottomMaterial = bottomMaterial;
+    public DrawerBoxOptions(Guid boxMaterialId, Guid bottomMaterialId, string clips, string notches, string accessory, bool logo = false, bool postFinish = false, bool scoopFront = false, bool facemountingholes = false, bool assembled = true, UBoxDimensions? uBoxDimensions = null, FixedDivdersCounts? fixedDivdersCounts = null) {
+        BoxMaterialId = boxMaterialId;
+        BottomMaterialId = bottomMaterialId;
         Clips = clips;
         Notches = notches;
         Accessory = accessory;

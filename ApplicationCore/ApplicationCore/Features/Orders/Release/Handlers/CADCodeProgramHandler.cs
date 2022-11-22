@@ -1,6 +1,8 @@
 ﻿using ApplicationCore.Features.CADCode.Contracts;
 using ApplicationCore.Features.CADCode.Contracts.Machining;
+using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Queries;
 using ApplicationCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 
@@ -36,13 +38,22 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
         int index = 1;
         foreach (var bottom in bottoms) {
 
+            var matResponse = await _bus.Send(new GetDrawerBoxMaterialById.Query(bottom.MaterialId));
+            DrawerBoxMaterial material = new DrawerBoxMaterial(Guid.Empty, "UNKOWN", Dimension.FromMillimeters(0));
+            matResponse.Match(
+                m => {
+                    if (m is not null) material = m;
+                },
+                error => { }
+            ); 
+
             var part = new CNCPart() {
                 FileName = $"Bottom{index++}",  // TODO: encode more part informaiton in file name
                 Description = "Drawer Box Bottom",
                 Width = bottom.Width.AsMillimeters(),
                 Length = bottom.Length.AsMillimeters(),
                 Qty = bottom.Qty,
-                Material = new() { Name = bottom.MaterialName, Thickness = bottom.Thickness.AsMillimeters() },
+                Material = new() { Name = material.Name, Thickness = material.Thickness.AsMillimeters() },
                 Tokens = new List<Token>()
             };
 

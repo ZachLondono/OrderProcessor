@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using System.Text.Json;
 
 namespace ApplicationCore.Features.Orders.Queries.DataModels;
 
@@ -21,7 +22,7 @@ public class DrawerBoxDataModel {
 
     public Dimension Depth { get; set; } = Dimension.FromMillimeters(0);
 
-    public Dictionary<string, string> LabelFields { get; set; } = new();
+    public IDictionary<string, string> LabelFields { get; set; } = new Dictionary<string, string>();
 
     public bool PostFinish { get; set; }
 
@@ -39,15 +40,7 @@ public class DrawerBoxDataModel {
 
     public Guid BoxMaterialId { get; set; }
 
-    public string BoxMaterialName { get; set; } = string.Empty;
-
-    public Dimension BoxMaterialThickness { get; set; } = Dimension.FromMillimeters(0);
-
     public Guid BottomMaterialId { get; set; }
-
-    public string BottomMaterialName { get; set; } = string.Empty;
-
-    public Dimension BottomMaterialThickness { get; set; } = Dimension.FromMillimeters(0);
 
     public string Clips { get; set; } = string.Empty;
 
@@ -63,10 +56,7 @@ public class DrawerBoxDataModel {
 
     public DrawerBox AsDomainModel() {
 
-        var boxMaterial = new DrawerBoxMaterial(BoxMaterialId, BoxMaterialName, BoxMaterialThickness);
-        var bottomMaterial = new DrawerBoxMaterial(BottomMaterialId, BottomMaterialName, BottomMaterialThickness);
-        
-        return new DrawerBox(Id, LineInOrder, UnitPrice, Qty, Height, Width, Depth, Note, LabelFields, new(boxMaterial, bottomMaterial, Clips, Notches, Accessory, Logo, PostFinish, ScoopFront, FaceMountingHoles, Assembled, UBoxDimensions, FixedDividers));
+        return new DrawerBox(Id, LineInOrder, UnitPrice, Qty, Height, Width, Depth, Note, LabelFields.AsReadOnly(), new(BoxMaterialId, BottomMaterialId, Clips, Notches, Accessory, Logo, PostFinish, ScoopFront, FaceMountingHoles, Assembled, UBoxDimensions, FixedDividers));
 
     }
 

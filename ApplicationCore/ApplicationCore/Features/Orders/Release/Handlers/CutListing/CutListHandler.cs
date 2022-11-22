@@ -3,9 +3,11 @@ using ApplicationCore.Features.ExcelTemplates.Contracts;
 using ApplicationCore.Features.ExcelTemplates.Domain;
 using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Queries;
 using ApplicationCore.Features.Orders.Release.Handlers.CutListing.Models;
 using ApplicationCore.Infrastructure;
 using Microsoft.Extensions.Logging;
+using MoreLinq;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.CutListing;
 
@@ -35,9 +37,19 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         var customerName = await GetCompanyName(order.CustomerId);
         var vendorName = await GetCompanyName(order.VendorId);
 
-        CutList cutList = CreateStdCutList(order, customerName, vendorName, _construction);
-        CutList optimizedCutList = CreateOptimizedCutList(order, customerName, vendorName, _construction);
-        CutList bottomCutList = CreateBottomCutList(order, customerName, vendorName, _construction);
+        var materialIds = order.Boxes
+                                .SelectMany(b => new Guid[] { b.Options.BoxMaterialId, b.Options.BottomMaterialId } )
+                                .Distinct();
+
+        var materialNames = new Dictionary<Guid, string>();
+        foreach (var id in materialIds) {
+            var name = await GetMaterialName(id);
+            materialNames.Add(id, name);
+        }
+
+        CutList cutList = CreateStdCutList(order, customerName, vendorName, _construction, materialNames);
+        CutList optimizedCutList = CreateOptimizedCutList(order, customerName, vendorName, _construction, materialNames);
+        CutList bottomCutList = CreateBottomCutList(order, customerName, vendorName, _construction, materialNames);
 
         var config = new ClosedXMLTemplateConfiguration() { TemplateFilePath = notification.ReleaseProfile.CutListTemplatePath };
         string outputDir = notification.ReleaseProfile.CutListOutputDirectory;
@@ -85,6 +97,19 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
     }
 
+    private async Task<string> GetMaterialName(Guid materialId) {
+        var matResponse = await _bus.Send(new GetDrawerBoxMaterialById.Query(materialId));
+        var materialName = "UNKOWN";
+        matResponse.Match(
+            m => {
+                if (m is not null) materialName = m.Name;
+            },
+            error => { }
+        );
+
+        return materialName;
+    }
+
     private async Task<string> GetCompanyName(Guid companyId) {
         var response = await _bus.Send(new GetCompanyById.Query(companyId));
 
@@ -101,19 +126,17 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         return name;
     }
 
-    private static CutList CreateStdCutList(Order order, string customerName, string vendorName, ConstructionValues construction) {
+    private static CutList CreateStdCutList(Order order, string customerName, string vendorName, ConstructionValues construction, Dictionary<Guid, string> materialNames) {
         int groupNum = 0;
         int lineNum = 1;
         var cutlistItems = order.Boxes
-                                .SelectMany(b =>
-                                {
+                                .SelectMany(b => {
                                     groupNum++;
 
                                     var items = new List<Item>();
-                                    foreach (var part in b.GetParts(construction))
-                                    {
-                                        items.Add(new()
-                                        {
+                                    foreach (var part in b.GetParts(construction)) {
+
+                                        items.Add(new() {
                                             GroupNumber = groupNum,
                                             CabNumber = groupNum, // TODO: get cabnumber from part
                                             LineNumber = lineNum++,
@@ -122,7 +145,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                             Width = part.Width.AsMillimeters(),
                                             Length = part.Length.AsMillimeters(),
                                             Comment = part.Comment,
-                                            Material = part.MaterialName,
+                                            Material = materialNames[part.MaterialId],
                                             Size = $"{part.Width.AsInchFraction()}\"W x {part.Length.AsInchFraction()}\"L",
                                         });
                                     }
@@ -135,12 +158,12 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
     }
 
-    private static CutList CreateOptimizedCutList(Order order, string customerName, string vendorName, ConstructionValues construction) {
+    private static CutList CreateOptimizedCutList(Order order, string customerName, string vendorName, ConstructionValues construction, Dictionary<Guid, string> materialNames) {
         int groupNum = 0;
         int lineNum = 1;
         var cutlistItems = order.Boxes
                                 .SelectMany(b => b.GetParts(construction).Where(p => p.Type != DrawerBoxPartType.Bottom))
-                                .GroupBy(p => (p.MaterialName, p.Width, p.Length)) // TODO: if there are multiple scoop fronts they should be grouped together
+                                .GroupBy(p => (p.MaterialId, p.Width, p.Length)) // TODO: if there are multiple scoop fronts they should be grouped together
                                 .Select(g =>
                                 {
                                     var qty = g.Sum(b => b.Qty);
@@ -155,7 +178,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                         Width = g.Key.Width.AsMillimeters(),
                                         Length = g.Key.Length.AsMillimeters(),
                                         Comment = "",
-                                        Material = g.Key.MaterialName,
+                                        Material = materialNames[g.Key.MaterialId],
                                         Size = $"{g.Key.Width.AsInchFraction()}\"W x {g.Key.Length.AsInchFraction()}\"L",
                                     };
                                 })
@@ -165,7 +188,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
     }
 
-    private static CutList CreateBottomCutList(Order order, string customerName, string vendorName, ConstructionValues construction) {
+    private static CutList CreateBottomCutList(Order order, string customerName, string vendorName, ConstructionValues construction, Dictionary<Guid, string> materialNames) {
         int groupNum = 0;
         int lineNum = 1;
 
@@ -187,7 +210,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                             Width = Math.Round(part.Width.AsMillimeters(), 2),
                                             Length = Math.Round(part.Length.AsMillimeters(), 2),
                                             Comment = part.Comment,
-                                            Material = part.MaterialName,
+                                            Material = materialNames[part.MaterialId],
                                             Size = $"{part.Width.AsInchFraction()}\"W x {part.Length.AsInchFraction()}\"L",
                                         });
                                     }

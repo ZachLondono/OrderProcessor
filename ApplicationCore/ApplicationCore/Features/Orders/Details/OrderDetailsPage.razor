@@ -274,8 +274,8 @@
                                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Width.AsMillimeters().ToString("0.00")</td>
                                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Depth.AsMillimeters().ToString("0.00")</td>
                                 }
-                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.BoxMaterial.Name</td>
-                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.BottomMaterial.Name</td>
+                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.BoxMaterialId</td>
+                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.BottomMaterialId</td>
                                 <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.ScoopFront ? "Y" : "N")</td>
                                 <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.Logo ? "Y" : "N")</td>
                                 <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.PostFinish ? "Y" : "N")</td>
