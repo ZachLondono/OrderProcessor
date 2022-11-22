@@ -18,6 +18,8 @@ public record DrawerBoxData {
 
     public string Note { get; set; } = string.Empty;
 
+    public Dictionary<string, string> LabelFields { get; set; } = new();
+
     public bool Logo { get; set; }
 
     public bool PostFinish { get; set; }

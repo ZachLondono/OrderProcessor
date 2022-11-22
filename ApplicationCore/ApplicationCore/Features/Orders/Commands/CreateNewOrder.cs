@@ -47,7 +47,7 @@ public class CreateNewOrder {
                     order.ReleaseDate,
                     order.ProductionDate,
                     order.CompleteDate,
-                    Info = (IEnumerable<KeyValuePair<string, string>>) order.Info,
+                    Info = (IDictionary<string, string>) order.Info,
                     order.Tax,
                     order.Shipping,
                     order.PriceAdjustment,
@@ -95,8 +95,8 @@ public class CreateNewOrder {
 
         private static async Task CreateDrawerBox(DrawerBox box, Guid orderId, IDbConnection connection, IDbTransaction transaction) {
 
-            const string boxCommand = @"INSERT INTO drawerboxes (id, orderid, lineinorder, unitprice, qty, height_mm, width_mm, depth_mm, note, postfinish, scoopfront, logo, facemountingholes, boxmaterialid, bottommaterialid, clips, notches, accessory, uboxdimensions, fixeddividers)
-                                        VALUES (@Id, @OrderId, @LineInOrder, @UnitPrice, @Qty, @Height, @Width, @Depth, @Note, @PostFinish, @ScoopFront, @Logo, @FaceMountingHoles, @BoxMaterialId, @BottomMaterialId, @Clips, @Notches, @Accessory, @UBoxDimensions, @FixedDivdersCounts);";
+            const string boxCommand = @"INSERT INTO drawerboxes (id, orderid, lineinorder, unitprice, qty, height_mm, width_mm, depth_mm, note, labelfields, postfinish, scoopfront, logo, facemountingholes, boxmaterialid, bottommaterialid, clips, notches, accessory, uboxdimensions, fixeddividers)
+                                        VALUES (@Id, @OrderId, @LineInOrder, @UnitPrice, @Qty, @Height, @Width, @Depth, @Note, @LabelFields, @PostFinish, @ScoopFront, @Logo, @FaceMountingHoles, @BoxMaterialId, @BottomMaterialId, @Clips, @Notches, @Accessory, @UBoxDimensions, @FixedDivdersCounts);";
 
             await connection.ExecuteAsync(boxCommand, new {
                 box.Id,
@@ -108,6 +108,7 @@ public class CreateNewOrder {
                 box.Width,
                 box.Depth,
                 box.Note,
+                LabelFields = (IDictionary<string, string>) box.LabelFields,
                 box.Options.PostFinish,
                 box.Options.ScoopFront,
                 box.Options.Logo,

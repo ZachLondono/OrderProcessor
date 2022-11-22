@@ -12,9 +12,10 @@ public class DrawerBox {
     public Dimension Width { get; }
     public Dimension Depth { get; }
     public string Note { get; }
+    public IReadOnlyDictionary<string, string> LabelFields { get; }
     public DrawerBoxOptions Options { get; }
 
-    public DrawerBox(Guid id, int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, DrawerBoxOptions options) {
+    public DrawerBox(Guid id, int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options) {
         Id = id;
         LineInOrder = line;
         UnitPrice = unitPrice;
@@ -23,11 +24,12 @@ public class DrawerBox {
         Width = width;
         Depth = depth;
         Note = note;
+        LabelFields = labelFields;
         Options = options;
     }
 
-    public static DrawerBox Create(int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, DrawerBoxOptions options) {
-        return new(Guid.NewGuid(), line, unitPrice, qty, height, width, depth, note, options);
+    public static DrawerBox Create(int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields,DrawerBoxOptions options) {
+        return new(Guid.NewGuid(), line, unitPrice, qty, height, width, depth, note, labelFields, options);
     }
 
     public IEnumerable<DrawerBoxPart> GetParts(ConstructionValues construction){

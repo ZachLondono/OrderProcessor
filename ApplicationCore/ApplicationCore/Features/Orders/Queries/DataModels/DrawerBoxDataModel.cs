@@ -21,6 +21,8 @@ public class DrawerBoxDataModel {
 
     public Dimension Depth { get; set; } = Dimension.FromMillimeters(0);
 
+    public Dictionary<string, string> LabelFields { get; set; } = new();
+
     public bool PostFinish { get; set; }
 
     public bool ScoopFront { get; set; }
@@ -64,7 +66,7 @@ public class DrawerBoxDataModel {
         var boxMaterial = new DrawerBoxMaterial(BoxMaterialId, BoxMaterialName, BoxMaterialThickness);
         var bottomMaterial = new DrawerBoxMaterial(BottomMaterialId, BottomMaterialName, BottomMaterialThickness);
         
-        return new DrawerBox(Id, LineInOrder, UnitPrice, Qty, Height, Width, Depth, Note, new(boxMaterial, bottomMaterial, Clips, Notches, Accessory, Logo, PostFinish, ScoopFront, FaceMountingHoles, Assembled, UBoxDimensions, FixedDividers));
+        return new DrawerBox(Id, LineInOrder, UnitPrice, Qty, Height, Width, Depth, Note, LabelFields, new(boxMaterial, bottomMaterial, Clips, Notches, Accessory, Logo, PostFinish, ScoopFront, FaceMountingHoles, Assembled, UBoxDimensions, FixedDividers));
 
     }
 

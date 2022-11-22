@@ -120,6 +120,7 @@ public class LoadOrderCommand {
                     data.Width,
                     data.Depth,
                     data.Note,
+                    data.LabelFields,
                     options
                 );
 
