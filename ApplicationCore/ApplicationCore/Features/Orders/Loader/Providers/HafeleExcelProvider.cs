@@ -112,12 +112,14 @@ internal class HafeleExcelProvider : OrderProvider {
 		string hafelePO = sheet.Cell("K11").ReadString();
 		string hafeleOrderNum = sheet.Cell("K12").ReadString();
 		string contact = sheet.Cell("V3").ReadString();
+        string accntNum = sheet.Cell("V5").ReadString();
 
-		var info = new Dictionary<string, string>() {
+        var info = new Dictionary<string, string>() {
 			{ "Customer PO", customerPO },
 			{ "Hafele Order Number", hafeleOrderNum },
 			{ "Delivery", deliveryMethod },
-			{ "Contact", contact }
+			{ "Contact", contact },
+			{ "Account Number", accntNum }
 		};
 
 		var comment = sheet.Cell("N12").ReadString();
