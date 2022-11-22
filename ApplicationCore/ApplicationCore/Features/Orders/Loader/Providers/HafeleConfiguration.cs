@@ -2,7 +2,7 @@
 
 internal class HafeleConfiguration {
 
-	public string VendorId { get; set; }
+	public string VendorId { get; set; } = string.Empty;
 
 	public string DefaultDirectory { get; init; } = string.Empty;
 
