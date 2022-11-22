@@ -147,29 +147,29 @@
     <section class="mt-10" id="prices">
         <div>
             <label id="subtotal" class="text-md w-24 inline-block dark:text-gray-400">Sub Total</label>
-            <span class="text-lg dark:text-white">$@(OrderState.Order.SubTotal)</span>
+            <span class="text-lg dark:text-white">$@(OrderState.Order.SubTotal.ToString("0.00"))</span>
         </div>
         @if(OrderState.Order.PriceAdjustment != 0M) {
             <div>
                 <label id="subtotal" class="text-md w-24 inline-block dark:text-gray-400">Price Adj.</label>
-                <span class="text-lg dark:text-white">$@(OrderState.Order.PriceAdjustment)</span>
+                <span class="text-lg dark:text-white">$@(OrderState.Order.PriceAdjustment.ToString("0.00"))</span>
             </div>
             <div>
                 <label id="subtotal" class="text-md w-24 inline-block dark:text-gray-400">Net Total</label>
-                <span class="text-lg dark:text-white">$@(OrderState.Order.AdjustedSubTotal)</span>
+                <span class="text-lg dark:text-white">$@(OrderState.Order.AdjustedSubTotal.ToString("0.00"))</span>
             </div>
         }
         <div>
             <label id="tax" class="text-md w-24 inline-block dark:text-gray-400">Tax</label>
-            <span class="text-lg dark:text-white">$@(OrderState.Order.Tax)</span>
+            <span class="text-lg dark:text-white">$@(OrderState.Order.Tax.ToString("0.00"))</span>
         </div>
         <div>
             <label id="shipping" class="text-md w-24 inline-block dark:text-gray-400">Shipping</label>
-            <span class="text-lg dark:text-white">$@(OrderState.Order.Shipping)</span>
+            <span class="text-lg dark:text-white">$@(OrderState.Order.Shipping.ToString("0.00"))</span>
         </div>
         <div>
             <label id="totalprice" class="text-md w-24 inline-block dark:text-gray-400">Total Price</label>
-            <span class="text-lg dark:text-white">$@(OrderState.Order.Total)</span>
+            <span class="text-lg dark:text-white">$@(OrderState.Order.Total.ToString("0.00"))</span>
         </div>
     </section>
 
