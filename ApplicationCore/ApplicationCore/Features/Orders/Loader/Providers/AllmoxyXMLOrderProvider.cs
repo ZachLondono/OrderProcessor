@@ -198,7 +198,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             var optionid = Guid.Parse(optionidstr);
             return optionid;
         }
-        return Guid.Parse("d3030d0a-8992-4b6b-8577-9d4ac43b7cf7");
+        return Guid.Empty;
     }
 
 }

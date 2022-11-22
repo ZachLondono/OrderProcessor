@@ -203,7 +203,7 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
             var optionid = Guid.Parse(optionidstr);
             return optionid;
         }
-        return new Guid("d3030d0a-8992-4b6b-8577-9d4ac43b7cf7");
+        return Guid.Empty;
     }
 
     private async Task<Guid> GetCustomerId(ShipToModel shipTo) {
