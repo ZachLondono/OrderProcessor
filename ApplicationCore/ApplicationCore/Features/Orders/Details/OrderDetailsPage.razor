@@ -439,7 +439,7 @@
 
     private async Task<string> GetMaterialName(Guid materialId) {
         var matResponse = await Bus.Send(new GetDrawerBoxMaterialById.Query(materialId));
-        var materialName = "UNKOWN";
+        var materialName = "UNKNOWN";
         matResponse.Match(
             m => {
                 if (m is not null) materialName = m.Name;

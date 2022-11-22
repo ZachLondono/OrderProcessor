@@ -112,7 +112,7 @@
 			string filepath = string.Empty;
 			bool wasPicked = await FilePicker.PickFileAsync("Select Hafele Order File", "C:\\Users\\Zachary Londono\\Desktop\\ExampleConfiguration", new("Excel files (*.xlsx)", ".xlsx"), (selected) => filepath = selected);
 			if (!wasPicked) return;
-		var response = await Bus.Send(new LoadOrderCommand.Command(OrderSourceType.AllmoxyXML, filepath));
+			var response = await Bus.Send(new LoadOrderCommand.Command(OrderSourceType.HafeleExcel, filepath));
 			response.Match(
 				order => {
 					OrderState.ReplaceOrder(order);

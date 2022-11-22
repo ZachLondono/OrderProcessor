@@ -39,7 +39,7 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
         foreach (var bottom in bottoms) {
 
             var matResponse = await _bus.Send(new GetDrawerBoxMaterialById.Query(bottom.MaterialId));
-            DrawerBoxMaterial material = new DrawerBoxMaterial(Guid.Empty, "UNKOWN", Dimension.FromMillimeters(0));
+            DrawerBoxMaterial material = new DrawerBoxMaterial(Guid.Empty, "UNKNOWN", Dimension.FromMillimeters(0));
             matResponse.Match(
                 m => {
                     if (m is not null) material = m;

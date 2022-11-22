@@ -4,7 +4,7 @@
 public record DrawerBoxPart(DrawerBoxPartType Type, int Qty, Dimension Width, Dimension Length, Guid MaterialId, string Comment);
 
 public enum DrawerBoxPartType {
-    Unkown,
+    Unknown,
     Front,
     Back,
     Side,

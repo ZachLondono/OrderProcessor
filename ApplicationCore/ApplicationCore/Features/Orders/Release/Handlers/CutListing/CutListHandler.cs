@@ -99,7 +99,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
     private async Task<string> GetMaterialName(Guid materialId) {
         var matResponse = await _bus.Send(new GetDrawerBoxMaterialById.Query(materialId));
-        var materialName = "UNKOWN";
+        var materialName = "UNKNOWN";
         matResponse.Match(
             m => {
                 if (m is not null) materialName = m.Name;
@@ -173,7 +173,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                         GroupNumber = groupNum,
                                         CabNumber = groupNum, // TODO: get cabnumber from part
                                         LineNumber = lineNum++,
-                                        PartName = DrawerBoxPartType.Unkown.ToString(),
+                                        PartName = DrawerBoxPartType.Unknown.ToString(),
                                         Qty = qty,
                                         Width = g.Key.Width.AsMillimeters(),
                                         Length = g.Key.Length.AsMillimeters(),

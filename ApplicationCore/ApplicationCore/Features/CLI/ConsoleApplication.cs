@@ -37,7 +37,7 @@ public class ConsoleApplication {
                                 error => _messageBoxService.OpenDialog($"Error loading order\n{error.Details}", "Error")
                             );
                         } else {
-                            _messageBoxService.OpenDialog($"Unkown order provider '{option.Provider}'", "Unkown provider");
+                            _messageBoxService.OpenDialog($"Unknown order provider '{option.Provider}'", "Unknown provider");
                         }
 
                     });
