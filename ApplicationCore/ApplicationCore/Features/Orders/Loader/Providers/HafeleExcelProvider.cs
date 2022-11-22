@@ -135,7 +135,8 @@ internal class HafeleExcelProvider : OrderProvider {
 			Clips = sheet.Cell("M17"),
 			Accessory = sheet.Cell("N17"),
 			JobName = sheet.Cell("O17"),
-			Note = sheet.Cell("S17"),
+            UnitPrice = sheet.Cell("P17"),
+            Note = sheet.Cell("S17"),
 			UBoxA = sheet.Cell("U17"),
 			UBoxB = sheet.Cell("U17"),
 			UBoxC = sheet.Cell("U17"),
@@ -379,6 +380,7 @@ internal class HafeleExcelProvider : OrderProvider {
 			box.Clips = data.Clips.GetOffsetCell(offset).ReadString();
 			box.Accessory = data.Accessory.GetOffsetCell(offset).ReadString();
 			var jobName = data.JobName.GetOffsetCell(offset).ReadString();
+			box.UnitPrice = data.UnitPrice.GetOffsetCell(offset).ReadDecimal();
 			box.LabelFields.Add("Job Name", jobName);
 			box.Note = data.Note.GetOffsetCell(offset).ReadString();
 
@@ -437,7 +439,8 @@ internal class HafeleExcelProvider : OrderProvider {
 		public IXLCell Clips { get; set; }
 		public IXLCell Accessory { get; set; }
 		public IXLCell JobName { get; set; }
-		public IXLCell Note { get; set; }
+        public IXLCell UnitPrice { get; set; }
+        public IXLCell Note { get; set; }
 		public IXLCell UBoxA { get; set; }
 		public IXLCell UBoxB { get; set; }
 		public IXLCell UBoxC { get; set; }
