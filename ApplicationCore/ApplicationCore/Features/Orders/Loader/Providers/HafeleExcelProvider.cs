@@ -38,16 +38,32 @@ internal class HafeleExcelProvider : OrderProvider {
 			sheet = wb.Worksheet("Dovetail");
 		} else {
 
-			return null;
+            _uiBus.Publish(new OrderLoadMessage() {
+                Message = $"Could not find order sheet in workbook",
+                Severity = MessageSeverity.Error
+            });
 
+            return null;
         }
 
-		if (!DateTime.TryParse(sheet.Cell("OrderDate").ReadString(), out DateTime orderDate)) {
+		var orderDateStr = sheet.Cell("OrderDate").ReadString();
+        if (!DateTime.TryParse(orderDateStr, out DateTime orderDate)) {
 			orderDate = DateTime.Today;
-		}
+            _uiBus.Publish(new OrderLoadMessage() {
+                Message = $"Could not read order date '{orderDateStr}'",
+                Severity = MessageSeverity.Warning
+            });
+        }
 
 		Company? customer = await GetCustomerFromWorksheet(sheet);
-		if (customer is null) return null;
+		if (customer is null) {
+            _uiBus.Publish(new OrderLoadMessage() {
+                Message = "Could not read/save customer information",
+                Severity = MessageSeverity.Error
+            });
+
+            return null;
+		}
 
 
         var unitStr = sheet.Cell("Notation").ReadString();
@@ -150,7 +166,7 @@ internal class HafeleExcelProvider : OrderProvider {
 
 			} else {
                 _uiBus.Publish(new OrderLoadMessage() {
-                    Message = $"Error reading drawer box on row '{qtyCell.WorksheetRow}'",
+                    Message = $"Error reading drawer box on row '{qtyCell.WorksheetRow().RowNumber()}'",
                     Severity = MessageSeverity.Warning
                 });
             }
@@ -196,9 +212,9 @@ internal class HafeleExcelProvider : OrderProvider {
 
 	}
 
-	private static List<AdditionalItemData> GetAdditionalItems(XLWorkbook wb, string logoOption, string deliveryMethod) {
+	private List<AdditionalItemData> GetAdditionalItems(XLWorkbook wb, string logoOption, string deliveryMethod) {
 		var items = new List<AdditionalItemData>();
-		if (logoOption.Contains("setup")) {
+		if (logoOption.Equals("Yes-Inside w/ Setup") || logoOption.Equals("Yes-Outside w/ Setup")) {
 
 			var setupFee = wb.Cell("SetupFee").ReadDecimal();
 
@@ -207,7 +223,14 @@ internal class HafeleExcelProvider : OrderProvider {
 				Price = setupFee
 			});
 
-		}
+		} else if (logoOption.Equals("Yes-Inside") && logoOption.Equals("Yes-Outside") && logoOption.Equals("No") && !string.IsNullOrWhiteSpace(logoOption)) {
+            
+			_uiBus.Publish(new OrderLoadMessage() {
+                Message = $"Unknown logo selection '{logoOption}'",
+                Severity = MessageSeverity.Error
+            });
+
+        }
 
 		if (deliveryMethod.Equals("Liftgate required")) {
 
@@ -219,69 +242,136 @@ internal class HafeleExcelProvider : OrderProvider {
 				Price = liftgateFee
 			});
 
+		} else if (!deliveryMethod.Equals("Standard Pallet") && !string.IsNullOrWhiteSpace(deliveryMethod)) {
+
+			_uiBus.Publish(new OrderLoadMessage() {
+				Message = $"Unknown delivery method selection '{deliveryMethod}'",
+				Severity = MessageSeverity.Error
+			});
+
 		}
 
 		return items;
 	}
 
 	private GlobalOptions GetGlobalOptionsFromSheet(IXLWorksheet sheet) {
-		string materialName = sheet.Cell("Material").ReadString();
-		string assembledStr = sheet.Cell("Assembled").ReadString();
-		string postFinishStr = sheet.Cell("PostFinish").ReadString();
-		string mountingHolesStr = sheet.Cell("MountingHoles").ReadString();
+        string materialName = sheet.Cell("Material").ReadString();
+        string assembledStr = sheet.Cell("Assembled").ReadString();
+        string postFinishStr = sheet.Cell("PostFinish").ReadString();
+        string mountingHolesStr = sheet.Cell("MountingHoles").ReadString();
 
-		var globalOptions = new GlobalOptions() {
+        var globalOptions = new GlobalOptions() {
+            MaterialId = GetMaterialId(materialName),
+            Assembled = ParseAssemblyOption(assembledStr),
+            PostFinished = ParsePostFinishOption(postFinishStr),
+            FaceMountingHoles = ParseMountHolesOption(mountingHolesStr)
+        };
 
-			MaterialId = GetMaterialId(materialName),
+        return globalOptions;
+    }
 
-			Assembled = assembledStr switch {
-				"Assembled" or "" => true,
-				"Flat Pack" => false,
-				_ => true // TODO: show a warning when an unrecognized value is found
-			},
+	private bool ParseMountHolesOption(string mountingHolesStr) {
+        switch (mountingHolesStr) {
+            case "Yes":
+                return true;
+            case "":
+            case "No":
+                return false;
+            default:
+                _uiBus.Publish(new OrderLoadMessage() {
+                    Message = $"Unknown mounting holes option option '{mountingHolesStr}'",
+                    Severity = MessageSeverity.Warning
+                });
+                return false;
+        }
+    }
 
-			PostFinished = postFinishStr switch {
-				"Yes" => true,
-				"No" or "" => false,
-				_ => false // TODO: show a warning when an unrecognized value is found
-			},
+    private bool ParsePostFinishOption(string postFinishStr) {
+        switch (postFinishStr) {
+            case "Yes":
+                return true;
+            case "":
+            case "No":
+                return false;
+            default:
+                _uiBus.Publish(new OrderLoadMessage() {
+                    Message = $"Unknown post finish option option '{postFinishStr}'",
+                    Severity = MessageSeverity.Warning
+                });
+                return false;
+        }
+    }
 
-			FaceMountingHoles = mountingHolesStr switch {
-				"Yes" => true,
-				"No" or "" => false,
-				_ => false // TODO: show a warning when an unrecognized value is found
-			}
+    private bool ParseAssemblyOption(string assembledStr) {
+        switch (assembledStr) {
+            case "":
+            case "Assembled":
+                return true;
+            case "FlatPack":
+                return false;
+            default:
+                _uiBus.Publish(new OrderLoadMessage() {
+                    Message = $"Unknown assebly option '{assembledStr}'",
+                    Severity = MessageSeverity.Warning
+                });
+				return true;
+        }
+    }
 
-		};
-
-		return globalOptions;
-	}
-
-	private async Task<Company?> GetCustomerFromWorksheet(IXLWorksheet sheet) {
+    private async Task<Company?> GetCustomerFromWorksheet(IXLWorksheet sheet) {
 
 		// TODO: move reading from sheet outside of function
 
 		string accntNum = sheet.Cell("V5").ReadString();
-		var customerResponse = await _bus.Send(new GetCompanyByHafeleAccountNumber.Query(accntNum));
-
+        
 		Company? customer = null;
-		bool hasError = false;
-		customerResponse.Match(
-			c => {
-				customer = c;
-			},
-			error => {
-				hasError = true;
-				// TODO: log error
-			}
-		);
+        bool hasError = false;
+        
+		if (string.IsNullOrWhiteSpace(accntNum)) {
+            
+			_uiBus.Publish(new OrderLoadMessage() {
+                Message = $"No customer account number found",
+                Severity = MessageSeverity.Warning
+            });
 
-		if (hasError) return null;
+        } else {
 
-		if (customer is null) {
+            var customerResponse = await _bus.Send(new GetCompanyByHafeleAccountNumber.Query(accntNum));
 
-			string contact = sheet.Cell("V3").ReadString();
-			string company = sheet.Cell("V4").ReadString();
+            customerResponse.Match(
+                c => {
+                    customer = c;
+                },
+                error => {
+                    hasError = true;
+
+                    _uiBus.Publish(new OrderLoadMessage() {
+                        Message = error.Title,
+                        Severity = MessageSeverity.Error
+                    });
+                }
+            );
+
+            if (hasError) return null;
+
+        }
+
+        if (customer is null) {
+
+            string company = sheet.Cell("V4").ReadString();
+
+			if (string.IsNullOrWhiteSpace(company)) { 
+				
+				_uiBus.Publish(new OrderLoadMessage() {
+					Message = "No customer name entered",
+					Severity = MessageSeverity.Error
+				});
+
+				return null;
+
+            }
+
+            string contact = sheet.Cell("V3").ReadString();
 			string addr1 = sheet.Cell("V6").ReadString();
 			string addr2 = sheet.Cell("V7").ReadString();
 			string city = sheet.Cell("V8").ReadString();
@@ -308,9 +398,13 @@ internal class HafeleExcelProvider : OrderProvider {
 				},
 				error => {
 					hasError = true;
-					// TODO: log error
-				}
-			);
+
+                    _uiBus.Publish(new OrderLoadMessage() {
+                        Message = error.Title,
+                        Severity = MessageSeverity.Error
+                    });
+                }
+            );
 
 			if (customer is not null) {
 
@@ -405,7 +499,13 @@ internal class HafeleExcelProvider : OrderProvider {
 			var optionid = Guid.Parse(optionidstr);
 			return optionid;
 		}
-		return Guid.Empty;
+
+        _uiBus.Publish(new OrderLoadMessage() {
+            Message = $"Unknown or empty material selection '{optionname}'",
+            Severity = MessageSeverity.Warning
+        });
+
+        return Guid.Empty;
 	}
 
 	struct DataColumns {
