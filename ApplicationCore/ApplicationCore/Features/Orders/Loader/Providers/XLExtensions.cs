@@ -35,7 +35,7 @@ internal static class XLExtensions {
 
 		if (wasRead) return val;
 
-		return default;
+		throw new InvalidDataException($"Could not read double from cell {cell}");
 
 	}
 
@@ -55,9 +55,9 @@ internal static class XLExtensions {
 
 		if (wasRead) return val;
 
-		return default;
+        throw new InvalidDataException($"Could not read decimal from cell {cell}");
 
-	}
+    }
 
 	public static int ReadInt(this IXLCell cell) {
 
@@ -75,9 +75,9 @@ internal static class XLExtensions {
 
 		if (wasRead) return val;
 
-		return default;
+        throw new InvalidDataException($"Could not read integer from cell {cell}");
 
-	}
+    }
 
 	public static bool ValueIsNullOrWhitespace(this IXLCell cell) {
 
