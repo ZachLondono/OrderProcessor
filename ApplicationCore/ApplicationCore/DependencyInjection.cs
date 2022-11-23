@@ -43,6 +43,8 @@ public static class DependencyInjection {
         services.AddSingleton<RichelieuConfiguration>(richelieuConfig);
         services.AddSingleton<RichelieuXMLOrderProvider>();
 
+        var otConfig = configuration.GetRequiredSection("OTConfiguration").Get<OTConfiguration>();
+        services.AddSingleton<OTConfiguration>(otConfig);
         services.AddTransient<OTExcelProvider>();
 
         var hafeleConfig = configuration.GetRequiredSection("HafeleConfiguration").Get<HafeleConfiguration>();
