@@ -1,7 +1,6 @@
-﻿using ApplicationCore.Infrastructure;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 
-namespace ApplicationCore.Shared;
+namespace ApplicationCore.Infrastructure;
 
 public abstract class BaseListenerComponent : ComponentBase, IUIListener, IDisposable {
 
@@ -14,7 +13,7 @@ public abstract class BaseListenerComponent : ComponentBase, IUIListener, IDispo
     }
 
     public void Dispose() {
-        if (UIBus is not null)  UIBus.UnRegister(this);
+        if (UIBus is not null) UIBus.UnRegister(this);
         GC.SuppressFinalize(this);
     }
 }
