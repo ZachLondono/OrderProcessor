@@ -84,47 +84,37 @@
 
     public void Handle(OrderReleaseInfoNotification notification) {
         Debug.WriteLine(notification.Message);
-        InvokeAsync(() => {
-            _messages.Add(new(LogMessageType.Info, notification.Message));
-            StateHasChanged();
-            JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
-        }).Wait(); // Calling this sometimes breaks (because handle is being called from another thread maybe??)
+        _messages.Add(new(LogMessageType.Info, notification.Message));
+        InvokeAsync(StateHasChanged);
+        JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
     }
 
     public void Handle(OrderReleaseErrorNotification notification) {
         Debug.WriteLine(notification.Message);
-        InvokeAsync(() => {
-            _messages.Add(new(LogMessageType.Error, notification.Message));
-            StateHasChanged();
-            JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
-        }).Wait(); // Calling this sometimes breaks (because handle is being called from another thread maybe??)
+        _messages.Add(new(LogMessageType.Error, notification.Message));
+        InvokeAsync(StateHasChanged);
+        JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
     }
 
     public void Handle(OrderReleaseSuccessNotification notification) {
         Debug.WriteLine(notification.Message);
-        InvokeAsync(() => {
-            _messages.Add(new(LogMessageType.Success, notification.Message));
-            StateHasChanged();
-            JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
-        }).Wait(); // Calling this sometimes breaks (because handle is being called from another thread maybe??)
+        _messages.Add(new(LogMessageType.Success, notification.Message));
+        InvokeAsync(StateHasChanged);
+        JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
     }
 
     public void Handle(OrderReleaseFileCreatedNotification notification) {
         Debug.WriteLine(notification.Message);
-        InvokeAsync(() => {
-            _messages.Add(new(LogMessageType.FileCreated, notification.Message));
-            StateHasChanged();
-            JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
-        }).Wait(); // Calling this sometimes breaks (because handle is being called from another thread maybe??)
+        _messages.Add(new(LogMessageType.FileCreated, notification.Message));
+        InvokeAsync(StateHasChanged);
+        JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
     }
 
     public void Handle(OrderReleaseCompletedNotification notification) {
-        InvokeAsync(() => {
-            _messages.Add(new(LogMessageType.Success, "Release Complete"));
-            _releaseDone = true;
-            StateHasChanged();
-            JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
-        }).Wait(); // Calling this sometimes breaks (because handle is being called from another thread maybe??)
+        _messages.Add(new(LogMessageType.Success, "Release Complete"));
+        _releaseDone = true;
+        InvokeAsync(StateHasChanged);
+        JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
     }
 
     private async Task CloseDialog() {
