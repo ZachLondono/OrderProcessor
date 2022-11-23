@@ -7,7 +7,6 @@ public abstract class OrderProvider {
 
     public abstract Task<ValidationResult> ValidateSource(string source);
 
-    // TODO: use different return type to return error messages
-    public abstract Task<LoadOrderResult> LoadOrderData(string source);
+    public abstract Task<OrderData?> LoadOrderData(string source);
 
 }

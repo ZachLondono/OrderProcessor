@@ -13,20 +13,21 @@ namespace ApplicationCore.Features.Orders.Loader.Providers;
 internal class HafeleExcelProvider : OrderProvider {
 
 	private readonly IBus _bus;
+	private readonly IUIBus _uiBus;
 	private readonly IFileReader _fileReader;
 	private readonly HafeleConfiguration _configuration;
 
-	public HafeleExcelProvider(IBus bus, IFileReader fileReader, HafeleConfiguration configuration) {
+	public HafeleExcelProvider(IBus bus, IUIBus uiBus, IFileReader fileReader, HafeleConfiguration configuration) {
 		_bus = bus;
-		_fileReader = fileReader;
+		_uiBus = uiBus;
+        _fileReader = fileReader;
 		_configuration = configuration;
 	}
 
-	public override async Task<LoadOrderResult> LoadOrderData(string source) {
+	public override async Task<OrderData?> LoadOrderData(string source) {
 
 		var vendorId = new Guid(_configuration.VendorId);
 
-		var messages = new List<LoadMessage>();
 		using var stream = _fileReader.OpenReadFileStream(source);
 		using var wb = new XLWorkbook(stream);
 
@@ -37,35 +38,19 @@ internal class HafeleExcelProvider : OrderProvider {
 			sheet = wb.Worksheet("Dovetail");
 		} else {
 
-			return new() {
-				Data = null,
-				Messages = new List<LoadMessage>() {
-					new() {
-						Message = "Workbook does not contain order data worksheet",
-						Severity = MessageSeverity.Error,
-					}
-				}
-			};
+			return null;
 
-		}
+        }
 
 		if (!DateTime.TryParse(sheet.Cell("OrderDate").ReadString(), out DateTime orderDate)) {
 			orderDate = DateTime.Today;
 		}
 
 		Company? customer = await GetCustomerFromWorksheet(sheet);
-		if (customer is null) return new() {
-			Data = null,
-			Messages = new List<LoadMessage>() {
-				new() {
-					Message = "Could not load or create customer",
-					Severity = MessageSeverity.Error,
-				}
-			}
-		};
+		if (customer is null) return null;
 
 
-		var unitStr = sheet.Cell("Notation").ReadString();
+        var unitStr = sheet.Cell("Notation").ReadString();
 		Units units = Units.Inches;
 		switch (unitStr) {
 			case "Metric":
@@ -76,7 +61,7 @@ internal class HafeleExcelProvider : OrderProvider {
 				units = Units.Inches;
 				break;
 			default:
-				messages.Add(new() {
+				_uiBus.Publish(new OrderLoadMessage() {
 					Message = $"Unrecognized unit selection '{unitStr}'",
 					Severity = MessageSeverity.Warning
 				});
@@ -100,10 +85,10 @@ internal class HafeleExcelProvider : OrderProvider {
 				rush = true;
 				break;
 			default:
-				messages.Add(new() {
-					Message = $"Unrecognized production time selection '{productionTime}'",
-					Severity = MessageSeverity.Warning
-				});
+                _uiBus.Publish(new OrderLoadMessage() {
+                    Message = $"Unrecognized production time selection '{productionTime}'",
+                    Severity = MessageSeverity.Warning
+                });
 				break;
 		}
 
@@ -164,35 +149,30 @@ internal class HafeleExcelProvider : OrderProvider {
 				boxes.Add(box);
 
 			} else {
-
-				messages.Add(new() {
-					Message = $"Error reading drawer box on row '{qtyCell.WorksheetRow}'",
-					Severity = MessageSeverity.Warning
-				});
-
-			}
+                _uiBus.Publish(new OrderLoadMessage() {
+                    Message = $"Error reading drawer box on row '{qtyCell.WorksheetRow}'",
+                    Severity = MessageSeverity.Warning
+                });
+            }
 
 			offset++;
 
 		}
 
-		return new() {
-			Data = new OrderData() {
-				Number = hafelePO,
-				Name = jobName,
-				OrderDate = orderDate,
-				Comment = comment,
-				CustomerId = customer.Id,
-				PriceAdjustment = 0M,
-				Shipping = freight,
-				Tax = 0,
-				VendorId = vendorId,
-				Boxes = boxes,
-				Info = info,
-				AdditionalItems = items,
-				Rush = rush
-			},
-			Messages = messages
+		return new OrderData() {
+			Number = hafelePO,
+			Name = jobName,
+			OrderDate = orderDate,
+			Comment = comment,
+			CustomerId = customer.Id,
+			PriceAdjustment = 0M,
+			Shipping = freight,
+			Tax = 0,
+			VendorId = vendorId,
+			Boxes = boxes,
+			Info = info,
+			AdditionalItems = items,
+			Rush = rush
 		};
 
 	}

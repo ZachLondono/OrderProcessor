@@ -8,7 +8,6 @@ using ApplicationCore.Features.Companies.Commands;
 using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Domain;
 using ApplicationCore.Features.Orders.Loader.Providers.Results;
-using DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 
@@ -16,40 +15,28 @@ internal class OTExcelProvider : OrderProvider {
 
     private readonly IFileReader _fileReader;
     private readonly IBus _bus;
+    private readonly IUIBus _uiBus;
     private readonly OTConfiguration _configuration;
 
-    public OTExcelProvider(IFileReader fileReader, IBus bus, OTConfiguration configuration) {
+    public OTExcelProvider(IFileReader fileReader, IBus bus, IUIBus uiBus, OTConfiguration configuration) {
         _fileReader = fileReader;
         _bus = bus;
+        _uiBus = uiBus;
         _configuration = configuration;
     }
 
-    public override async Task<LoadOrderResult> LoadOrderData(string source) {
+    public override async Task<OrderData?> LoadOrderData(string source) {
 
         using var stream = _fileReader.OpenReadFileStream(source);
         using var wb = new XLWorkbook(stream);
 
         var sheet = wb.Worksheet("Order");
 
-        if (sheet is null) return new() {
-            Data = null,
-            Messages = new List<LoadMessage>() {
-                new() {
-                    Message = "Order sheet could not be found",
-                    Severity = MessageSeverity.Error
-                }
-            }
-        };
+        if (sheet is null) return null;
 
-        var messages = new List<LoadMessage>();
-
-        var (customer, customerMessages) = await GetCustomerFromWorksheet(sheet);
-        messages.AddRange(customerMessages);
-
-        if (customer is null) return new() {
-            Messages = messages,
-            Data = null
-        };
+        var customer = await GetCustomerFromWorksheet(sheet);
+        
+        if (customer is null) return null;
 
         if (!DateTime.TryParse(sheet.Cell("Date").ReadString(), out DateTime orderDate)) {
             orderDate = DateTime.Today;
@@ -75,10 +62,11 @@ internal class OTExcelProvider : OrderProvider {
                 postFinish = false;
                 break;
             default:
-                messages.Add(new() {
+                _uiBus.Publish(new OrderLoadMessage() {
                     Severity = MessageSeverity.Warning,
                     Message = $"Unkown post finish value '{postFinishStr}'"
                 });
+
                 postFinish = false;
                 break;
         }
@@ -108,7 +96,7 @@ internal class OTExcelProvider : OrderProvider {
                 rush = true;
                 break;
             default:
-                messages.Add(new() {
+                _uiBus.Publish(new OrderLoadMessage() {
                     Severity = MessageSeverity.Warning,
                     Message = $"Unkown production time value '{production}'"
                 });
@@ -162,7 +150,7 @@ internal class OTExcelProvider : OrderProvider {
 
         var vendorId = new Guid(_configuration.VendorIds[vendorName]);
 
-        var order = new OrderData() {
+        return new OrderData() {
             Number = trackingNumber,
             Name = jobName,
             Comment = orderNotes,
@@ -178,11 +166,6 @@ internal class OTExcelProvider : OrderProvider {
             Boxes = boxes,
             AdditionalItems = new(),
             Info = new(),
-        };
-
-        return new() {
-            Messages = messages,
-            Data = order
         };
 
     }
@@ -278,14 +261,13 @@ internal class OTExcelProvider : OrderProvider {
 
     }
 
-    private async Task<(Company?, List<LoadMessage>)> GetCustomerFromWorksheet(IXLWorksheet sheet) {
+    private async Task<Company?> GetCustomerFromWorksheet(IXLWorksheet sheet) {
 
         // TODO: move reading from sheet outside of function
 
         string customerName = sheet.Cell("CustomerName").ReadString();
         var customerResponse = await _bus.Send(new GetCompanyByName.Query(customerName));
 
-        List<LoadMessage> messages = new();
         Company? customer = null;
         bool hasError = false;
         customerResponse.Match(
@@ -295,14 +277,14 @@ internal class OTExcelProvider : OrderProvider {
             error => {
                 hasError = true;
                 // TODO: log error
-                messages.Add(new() {
+                _uiBus.Publish(new OrderLoadMessage() {
                     Severity = MessageSeverity.Error,
                     Message = error.Title
                 });
             }
         );
 
-        if (hasError) return (null, messages);
+        if (hasError) return null;
 
         if (customer is null) {
 
@@ -336,7 +318,7 @@ internal class OTExcelProvider : OrderProvider {
                 error => {
                     hasError = true;
                     // TODO: log error
-                    messages.Add(new() {
+                    _uiBus.Publish(new OrderLoadMessage() {
                         Severity = MessageSeverity.Error,
                         Message = error.Title
                     });
@@ -345,9 +327,9 @@ internal class OTExcelProvider : OrderProvider {
 
         }
 
-        if (hasError || customer is null) return (null, messages);
+        if (hasError || customer is null) return null;
 
-        return (customer, messages);
+        return customer;
 
     }
 

@@ -27,7 +27,7 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
         _configuration = config;
     }
 
-    public override async Task<LoadOrderResult> LoadOrderData(string source) {
+    public override async Task<OrderData?> LoadOrderData(string source) {
         
         // TODO: get order data from http api
         using var fileStream = _fileReader.OpenReadFileStream(source);
@@ -115,9 +115,7 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
 
         if (isRush) order.Rush = true;
 
-		return new() {
-			Data = order
-		};
+        return order;
 
 	}
 
