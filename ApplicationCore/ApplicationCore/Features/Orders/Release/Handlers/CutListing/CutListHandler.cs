@@ -116,7 +116,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         string name = "";
         response.Match(
             company => {
-                name = company.Name;
+                name = company?.Name ?? "Unknown";
             },
             error => {
                 name = "Unknown";
