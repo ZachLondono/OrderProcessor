@@ -116,7 +116,7 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
 
     }
 
-    private async Task<Response<Company>> GetCompany(Guid companyId) {
+    private async Task<Response<Company?>> GetCompany(Guid companyId) {
         return await _bus.Send(new GetCompanyById.Query(companyId));
     }
 
