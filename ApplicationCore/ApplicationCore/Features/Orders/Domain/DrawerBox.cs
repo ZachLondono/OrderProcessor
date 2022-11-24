@@ -36,8 +36,8 @@ public class DrawerBox {
 
         string accComment = Options.Accessory.Equals("None") ? "" : Options.Accessory;
         string logoComment = Options.Logo switch {
-            LogoPosition.Inside => "Yes-Inside",
-            LogoPosition.Outside => "Yes-Outside",
+            LogoPosition.Inside => "Logo-Inside",
+            LogoPosition.Outside => "Logo-Outside",
             LogoPosition.None or _ => "",
         };
 
