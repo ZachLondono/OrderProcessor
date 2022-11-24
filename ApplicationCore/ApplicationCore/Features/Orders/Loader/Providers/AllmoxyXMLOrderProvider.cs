@@ -162,9 +162,17 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             Height = Dimension.FromInches(data.Dimensions.Height),
             Width = Dimension.FromInches(data.Dimensions.Width),
             Depth = Dimension.FromInches(data.Dimensions.Depth),
-            Logo = false,
+            Logo = data.Logo switch {
+                "No" => LogoPosition.None,
+                "Yes" => LogoPosition.Inside,
+                _ => LogoPosition.None // TODO: warn about unknown value
+            },
             PostFinish = false,
-            ScoopFront = false,
+            ScoopFront = data.Scoop switch {
+				"No" => false,
+				"Yes" => true,
+				_ => false // TODO: warn about unknown value
+			},
             FaceMountingHoles = false,
             UBox = false,
             FixedDividers = false,

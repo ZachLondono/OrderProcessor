@@ -92,12 +92,12 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
                     Line = lineNum++,
                     UnitPrice = decimal.Parse(dimension.Price),
 
-                    Logo = options.Logo,
                     PostFinish = options.PostFinish,
                     ScoopFront = options.ScoopFront,
                     FaceMountingHoles = options.FaceMountingHoles,
+					Logo = options.Logo ? LogoPosition.Inside : LogoPosition.Outside,
 
-                    UBox = false,
+					UBox = false,
                     FixedDividers = false,
 
                     BoxMaterialOptionId = options.BoxMaterialId,

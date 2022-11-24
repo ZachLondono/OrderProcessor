@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.ExcelTemplates.Contracts;
 using ApplicationCore.Features.ExcelTemplates.Domain;
+using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Release.Handlers.Invoice.Models;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
@@ -97,7 +98,7 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
                 Line = b.LineInOrder,
                 Qty = b.Qty,
                 Description = "Drawer Box",
-                Logo = b.Options.Logo ? "Y" : "N",
+                Logo = b.Options.Logo == LogoPosition.None ? "N" : "Y",
                 Height = b.Height.AsInchFraction().ToString(),
                 Width = b.Width.AsInchFraction().ToString(),
                 Depth = b.Depth.AsInchFraction().ToString(),

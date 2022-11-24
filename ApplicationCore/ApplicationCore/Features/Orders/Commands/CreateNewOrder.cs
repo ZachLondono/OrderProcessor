@@ -111,7 +111,7 @@ public class CreateNewOrder {
                 LabelFields = (IDictionary<string, string>) box.LabelFields,
                 box.Options.PostFinish,
                 box.Options.ScoopFront,
-                box.Options.Logo,
+				Logo = box.Options.Logo.ToString(),
                 box.Options.FaceMountingHoles,
                 box.Options.BoxMaterialId,
                 box.Options.BottomMaterialId,

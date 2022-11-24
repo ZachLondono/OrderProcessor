@@ -3,6 +3,7 @@ using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.Emails.Contracts;
 using ApplicationCore.Features.Emails.Domain;
 using ApplicationCore.Features.Orders.Domain;
+using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
 using Microsoft.Extensions.Logging;
@@ -224,7 +225,7 @@ public class SendInvoiceEmail : DomainListener<TriggerOrderCompleteNotification>
                                 table.Cell().Row(row).Column(1).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(box.LineInOrder).FontSize(10);
                                 table.Cell().Row(row).Column(2).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(box.Qty).FontSize(10);
                                 table.Cell().Row(row).Column(3).BorderLeft(1).BorderTop(1).AlignMiddle().AlignLeft().PaddingLeft(2).Text("Dovetail Drawer Box").FontSize(10);
-                                table.Cell().Row(row).Column(4).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(box.Options.Logo ? "Y" : "N").FontSize(10);
+                                table.Cell().Row(row).Column(4).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(box.Options.Logo == LogoPosition.None ? "N" : "Y").FontSize(10);
                                 table.Cell().Row(row).Column(5).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(box.Height.AsInchFraction()).FontSize(10);
                                 table.Cell().Row(row).Column(6).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(box.Width.AsInchFraction()).FontSize(10);
                                 table.Cell().Row(row).Column(7).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(box.Depth.AsInchFraction()).FontSize(10);

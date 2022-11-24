@@ -28,7 +28,7 @@ public class DrawerBoxDataModel {
 
     public bool ScoopFront { get; set; }
 
-    public bool Logo { get; set; }
+    public LogoPosition Logo { get; set; }
 
     public bool FaceMountingHoles { get; set; }
 

@@ -5,6 +5,7 @@
 @using ApplicationCore.Features.Companies.Domain
 @using ApplicationCore.Features.Companies.Queries
 @using ApplicationCore.Features.Orders.Domain
+@using ApplicationCore.Features.Orders.Domain.ValueObjects;
 @using ApplicationCore.Features.Orders.Queries
 @using ApplicationCore.Features.Orders.Release
 @using ApplicationCore.Infrastructure
@@ -277,7 +278,7 @@
                                 <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@_materialNames[box.Options.BoxMaterialId]</td>
                                 <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@_materialNames[box.Options.BottomMaterialId]</td>
                                 <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.ScoopFront ? "Y" : "N")</td>
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.Logo ? "Y" : "N")</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.Logo == LogoPosition.None ? "N" : "Y")</td>
                                 <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.PostFinish ? "Y" : "N")</td>
                                 <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.FaceMountingHoles ? "Y" : "N")</td>
                                 <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.Assembled ? "Y" : "N")</td>

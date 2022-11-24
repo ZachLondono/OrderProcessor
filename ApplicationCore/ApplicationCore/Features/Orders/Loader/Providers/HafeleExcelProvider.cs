@@ -452,13 +452,16 @@ internal class HafeleExcelProvider : OrderProvider {
 			var bottom = data.Bottom.GetOffsetCell(offset).ReadString();
 			box.BottomMaterialOptionId = GetMaterialId(bottom);
 			box.Notch = data.Notch.GetOffsetCell(offset).ReadString();
-			box.Logo = data.Logo.GetOffsetCell(offset).ReadString().Equals("Yes");
 			box.Clips = data.Clips.GetOffsetCell(offset).ReadString();
 			box.Accessory = data.Accessory.GetOffsetCell(offset).ReadString();
 			var jobName = data.JobName.GetOffsetCell(offset).ReadString();
 			box.UnitPrice = data.UnitPrice.GetOffsetCell(offset).ReadDecimal();
 			box.LabelFields.Add("Job Name", jobName);
 			box.Note = data.Note.GetOffsetCell(offset).ReadString();
+			box.Logo = data.Logo.GetOffsetCell(offset).ReadString() switch {
+				"Yes" => LogoPosition.Outside,
+				_ => LogoPosition.None
+			};
 
 			if (box.Accessory.Equals("Cubes")) {
 

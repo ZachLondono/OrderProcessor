@@ -32,10 +32,14 @@ public class DrawerBox {
         return new(Guid.NewGuid(), line, unitPrice, qty, height, width, depth, note, labelFields, options);
     }
 
-    public IEnumerable<DrawerBoxPart> GetParts(ConstructionValues construction){
+    public IEnumerable<DrawerBoxPart> GetParts(ConstructionValues construction) {
 
         string accComment = Options.Accessory.Equals("None") ? "" : Options.Accessory;
-        string logoComment = Options.Logo ? "Logo" : "";
+        string logoComment = Options.Logo switch {
+            LogoPosition.Inside => "Yes-Inside",
+            LogoPosition.Outside => "Yes-Outside",
+            LogoPosition.None or _ => "",
+        };
 
         var fbAdj = Dimension.FromMillimeters(construction.FrontBackWidthAdjustment);
         var sdAdj = Dimension.FromMillimeters(construction.SideLengthAdjustment);

@@ -227,11 +227,11 @@ internal class OTExcelProvider : OrderProvider {
 
             string logo = data.Logo.GetOffsetCell(offset).ReadString();
             if (logo.Equals("Yes")) {
-                box.Logo = true;
+                box.Logo = LogoPosition.Inside;
             } else if (logo.Equals("No") || logo.Equals(string.Empty)) {
-                box.Logo = false;
+                box.Logo = LogoPosition.None;
             } else { 
-                box.Logo = false;
+                box.Logo = LogoPosition.None;
                 // TODO: warn about unkown value
             }
 

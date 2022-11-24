@@ -20,7 +20,7 @@ public record DrawerBoxData {
 
     public Dictionary<string, string> LabelFields { get; set; } = new();
 
-    public bool Logo { get; set; }
+    public LogoPosition Logo { get; set; }
 
     public bool PostFinish { get; set; }
 
