@@ -40,7 +40,7 @@
             ButtonRounded.Top => "rounded-t",
             ButtonRounded.Bottom => "rounded-b",
             ButtonRounded.All => "rounded",
-            ButtonRounded.None => "rounded-none",
+            ButtonRounded.None or _ => "rounded-none",
         };
 
         string styleClass = Color switch {
