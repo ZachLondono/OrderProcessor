@@ -31,39 +31,10 @@ public static class DependencyInjection {
         services.AddSingleton<OrderState>();
         services.AddSingleton<CompanyState>();
         services.AddSingleton<IServiceProvider>(sp => sp);
-        
+
         // TODO: validate configuration data
 
-        services.AddTransient<IOrderProviderFactory, OrderProviderFactory>();
-        var allmoxyConfig = configuration.GetRequiredSection("AllmoxyConfiguration").Get<AllmoxyConfiguration>();
-        services.AddSingleton<AllmoxyConfiguration>(allmoxyConfig);
-        services.AddTransient<AllmoxyXMLOrderProvider>();
-
-        var richelieuConfig = configuration.GetRequiredSection("RichelieuConfiguration").Get<RichelieuConfiguration>();
-        services.AddSingleton<RichelieuConfiguration>(richelieuConfig);
-        services.AddSingleton<RichelieuXMLOrderProvider>();
-
-        var otConfig = configuration.GetRequiredSection("OTConfiguration").Get<OTConfiguration>();
-        services.AddSingleton<OTConfiguration>(otConfig);
-        services.AddTransient<OTExcelProvider>();
-
-        var hafeleConfig = configuration.GetRequiredSection("HafeleConfiguration").Get<HafeleConfiguration>();
-        services.AddSingleton<HafeleConfiguration>(hafeleConfig);
-        services.AddSingleton<HafeleExcelProvider>();
-
-        services.AddTransient<ITemplateFiller, ClosedXMLTemplateFiller>();
-        services.AddTransient<IExcelTemplate, ClosedXMLTemplate>();
-        services.AddTransient<IExcelTemplateFactory, ExcelTemplateFactory>();
-        services.AddTransient<IExcelPrinter, ProcessExcelPrinter>();
-
-        var constructionConfig = configuration.GetRequiredSection("DrawerBoxConstruction").Get<ConstructionValues>();
-        services.AddSingleton<ConstructionValues>(constructionConfig);
-
-        services.AddTransient<ILabelPrinterService, DymoLabelPrinterService>();
-        services.AddTransient<ILabelTemplateReader, DymoLabelTemplateReader>();
-
-        var invoiceEmailConfig = configuration.GetRequiredSection("Email").Get<EmailConfiguration>();
-        services.AddSingleton<EmailConfiguration>(invoiceEmailConfig);
+        services.AddOrderLoading(configuration);
 
         services.AddEmailing();
 
