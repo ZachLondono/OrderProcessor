@@ -1,22 +1,15 @@
-﻿using ApplicationCore.Features.Orders.Providers;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.CompilerServices;
 using ApplicationCore.Features.Orders;
 using ApplicationCore.Features.Companies;
 using Blazored.Modal;
-using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
-using ApplicationCore.Features.ExcelTemplates.Domain;
 using ApplicationCore.Shared;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Features.Orders.Domain.ValueObjects;
-using ApplicationCore.Features.Labels.Services;
-using ApplicationCore.Features.Orders.Complete;
 using ApplicationCore.Features.Emails;
-using ApplicationCore.Features.Orders.Loader.Providers;
 using ApplicationCore.Features.CADCode;
-using ApplicationCore.Features.Orders.Loader.Providers.RichelieuXMLModels;
+using ApplicationCore.Features.Orders.Loader;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
