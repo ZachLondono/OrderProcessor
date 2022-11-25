@@ -19,11 +19,13 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
 
     private readonly IFileReader _fileReader;
     private readonly IBus _bus;
+    private readonly LoadingMessagePublisher _publisher;
     private readonly RichelieuConfiguration _configuration;
 
-    public RichelieuXMLOrderProvider(IFileReader fileReader, IBus bus, RichelieuConfiguration config) {
+    public RichelieuXMLOrderProvider(IFileReader fileReader, IBus bus, LoadingMessagePublisher publisher, RichelieuConfiguration config) {
         _fileReader = fileReader;
         _bus = bus;
+        _publisher = publisher;
         _configuration = config;
     }
 
@@ -32,7 +34,17 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
         // TODO: get order data from http api
         using var fileStream = _fileReader.OpenReadFileStream(source);
         var serializer = new XmlSerializer(typeof(ResponseModel));
-        if (serializer.Deserialize(fileStream) is not ResponseModel data) throw new InvalidDataException($"Could not parse order from given file {source}");
+        if (serializer.Deserialize(fileStream) is not ResponseModel data) {
+            _publisher.PublishError("Could not find order information in given data");
+            return null;
+        }
+
+        var customer = await GetCustomerId(data.Order.ShipTo);
+
+        if (customer is null) {
+            _publisher.PublishError("Could not read/save customer information");
+            return null;
+        }
 
         var order = new OrderData {
             Name = data.Order.Header.ClientPO,
@@ -40,7 +52,7 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
             Comment = data.Order.Header.Note,
             OrderDate = DateTime.Parse(data.Order.Header.OrderDate),
             VendorId = _configuration.VendorId,
-            CustomerId = await GetCustomerId(data.Order.ShipTo),
+            CustomerId = customer.Id,
 
             Tax = 0M,
             Shipping = 0M,
@@ -62,15 +74,8 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
 
             foreach (var dimension in line.Dimensions) {
 
-                Dimension widthDim = Dimension.FromMillimeters(0);
-                if (TryParseComplexNumber(dimension.Width, out double width)) {
-                    widthDim = Dimension.FromInches(width);
-                }
-
-                Dimension depthDim = Dimension.FromMillimeters(0);
-                if (TryParseComplexNumber(dimension.Depth, out double depth)) {
-                    depthDim = Dimension.FromInches(depth);
-                }
+                Dimension widthDim = ParseComplexNumber(dimension.Width);
+                Dimension depthDim = ParseComplexNumber(dimension.Depth);
 
                 Dimension heightDim = Dimension.FromMillimeters(0);
                 if (double.TryParse(dimension.Height, out double height)) {
@@ -81,6 +86,12 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
                         heightDim = Dimension.FromMillimeters(height);
                     }
 
+                } else {
+                    _publisher.PublishWarning($"Could not read dimension value '{dimension.Width}'");
+                }
+
+                if (!decimal.TryParse(dimension.Price, out decimal unitPrice)) {
+                    _publisher.PublishWarning($"Could not read unit price '{dimension.Price}'");
                 }
 
                 var box = new DrawerBoxData() {
@@ -90,14 +101,14 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
                     Note = dimension.Note,
                     Qty = int.Parse(dimension.Qty),
                     Line = lineNum++,
-                    UnitPrice = decimal.Parse(dimension.Price),
+                    UnitPrice = unitPrice,
 
                     PostFinish = options.PostFinish,
                     ScoopFront = options.ScoopFront,
                     FaceMountingHoles = options.FaceMountingHoles,
-					Logo = options.Logo ? LogoPosition.Inside : LogoPosition.Outside,
+                    Logo = options.Logo ? LogoPosition.Inside : LogoPosition.None,
 
-					UBox = false,
+                    UBox = false,
                     FixedDividers = false,
 
                     BoxMaterialOptionId = options.BoxMaterialId,
@@ -118,6 +129,17 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
         return order;
 
 	}
+
+    private Dimension ParseComplexNumber(string value) {
+        Dimension dimension = Dimension.FromMillimeters(0);
+        if (TryParseComplexNumber(value, out double depth)) {
+            dimension = Dimension.FromInches(depth);
+        } else {
+            _publisher.PublishWarning($"Could not read dimension value '{value}'");
+        }
+
+        return dimension;
+    }
 
     public override Task<ValidationResult> ValidateSource(string source) {
 
@@ -165,6 +187,10 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
          * 15-16	Rush			|	R0->No Rush, R3->3 Day Rush
          */
 
+        if (sku.Length != 15) {
+            _publisher.PublishError($"SKU length is not 15 characters '{sku}'");
+        }
+
         string specie = sku.Substring(3, 2);
         string botCode = sku.Substring(6, 2);
         string notchCode = sku.Substring(9, 2);
@@ -193,7 +219,8 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
         if (_configuration.OptionMap.TryGetValue(optionkey, out string? optionstr) && optionstr is not null) {
             return optionstr;
 		}
-        return "";
+        _publisher.PublishWarning($"Unrecognized option code '{optionkey}'");
+        return string.Empty;
     }
 
     private Guid GetMaterialId(string optionname) {
@@ -201,10 +228,11 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
             var optionid = Guid.Parse(optionidstr);
             return optionid;
         }
+        _publisher.PublishWarning($"Unrecognized material code '{optionname}'");
         return Guid.Empty;
     }
 
-    private async Task<Guid> GetCustomerId(ShipToModel shipTo) {
+    private async Task<Company?> GetCustomerId(ShipToModel shipTo) {
 
         Company? customer = null;
         var response = await _bus.Send(new GetCompanyByRichelieuId.Query(shipTo.RichelieuNumber));
@@ -214,18 +242,13 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
                 customer = c;
             },
             error => {
-                // TODO: log error
+                _publisher.PublishWarning(error.Title);
             }
         );
 
-        if (customer is null) {
-            customer = await CreateCustomer(shipTo);
-            if (customer is null) {
-                throw new InvalidProgramException("Could not create customer");
-            }
-        }
+        customer ??= await CreateCustomer(shipTo);
 
-        return customer.Id;
+        return customer;
 
     }
 
@@ -250,7 +273,7 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
                 await _bus.Send(new CreateRichelieuIdCompanyIdMapping.Command(shipTo.RichelieuNumber, customer.Id));
             },
             error => {
-                // TODO: log error
+                _publisher.PublishWarning(error.Title);
                 customer = null;
             }
         );

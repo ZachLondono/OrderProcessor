@@ -19,11 +19,13 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
     private readonly IFileReader _fileReader;
     private readonly IBus _bus;
+    private readonly LoadingMessagePublisher _publisher;
     private readonly AllmoxyConfiguration _configuration;
 
-    public AllmoxyXMLOrderProvider(IFileReader fileReader, IBus bus, AllmoxyConfiguration configuration) {
+    public AllmoxyXMLOrderProvider(IFileReader fileReader, IBus bus, LoadingMessagePublisher publisher, AllmoxyConfiguration configuration) {
         _fileReader = fileReader;
         _bus = bus;
+        _publisher = publisher;
         _configuration = configuration;
     }
 
@@ -60,7 +62,10 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
         using var fileStream = _fileReader.OpenReadFileStream(source);
         var serializer = new XmlSerializer(typeof(OrderModel));
-        if (serializer.Deserialize(fileStream) is not OrderModel data) throw new InvalidDataException($"Could not parse order from given file {source}");
+        if (serializer.Deserialize(fileStream) is not OrderModel data) {
+            _publisher.PublishError("Could not find order information in given data");
+            return null;
+        }
 
         bool didError = false;
         Company? customer = null;
@@ -71,17 +76,17 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
                 customer = c;
             },
             error => {
-                // TODO: log error
+                _publisher.PublishError(error.Title);
                 didError = true;
             }
         );
 
-        if (customer is null) {
-            customer = await CreateCustomer(data);
-            if (customer is null) return null;
-		}
+        customer ??= await CreateCustomer(data);
 
-        if (customer is null || didError) return null;
+        if (customer is null || didError) {
+            _publisher.PublishError("Could not find/save customer information");
+            return null;
+        }
 
         int line = 1;
         var boxes = data.DrawerBoxes
@@ -103,7 +108,9 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
         var metroVendorId = Guid.Parse(_configuration.VendorId);
 
-        if (!DateTime.TryParse(data.OrderDate, out DateTime orderDate)) {
+        string orderDateStr = data.OrderDate;
+        if (!DateTime.TryParse(orderDateStr, out DateTime orderDate)) {
+            _publisher.PublishWarning($"Could not parse order data '{orderDateStr}'");
             orderDate = DateTime.Now;
         }
 
@@ -145,7 +152,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
                 await _bus.Send(new CreateAllmoxyIdCompanyIdMapping.Command(data.CustomerId, customer.Id));
             },
             error => {
-                // TODO: log error
+                _publisher.PublishError(error.Title);
                 customer = null;
             }
         );
@@ -154,25 +161,44 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
     }
 
-    private DrawerBoxData MapToDrawerBox(DrawerBoxModel data, int line)
-        => new() {
+    private DrawerBoxData MapToDrawerBox(DrawerBoxModel data, int line) {
+
+        LogoPosition logo = LogoPosition.None;
+        switch (data.Logo) {
+            case "No":
+                logo = LogoPosition.None;
+                break;
+            case "Yes":
+                logo = LogoPosition.Inside;
+                break;
+            default:
+                _publisher.PublishWarning($"Unrecognized logo option '{data.Logo}'");
+                break;
+        }
+
+        bool scoopFront = false;
+        switch (data.Scoop) {
+            case "No":
+                scoopFront = false;
+                break;
+            case "Yes":
+                scoopFront = true;
+                break;
+            default:
+                _publisher.PublishWarning($"Unrecognized scoop option '{data.Scoop}'");
+                break;
+        }
+
+        return new() {
             Line = line,
             UnitPrice = data.Price,
             Qty = data.Qty,
             Height = Dimension.FromInches(data.Dimensions.Height),
             Width = Dimension.FromInches(data.Dimensions.Width),
             Depth = Dimension.FromInches(data.Dimensions.Depth),
-            Logo = data.Logo switch {
-                "No" => LogoPosition.None,
-                "Yes" => LogoPosition.Inside,
-                _ => LogoPosition.None // TODO: warn about unknown value
-            },
+            Logo = logo,
             PostFinish = false,
-            ScoopFront = data.Scoop switch {
-				"No" => false,
-				"Yes" => true,
-				_ => false // TODO: warn about unknown value
-			},
+            ScoopFront = scoopFront,
             FaceMountingHoles = false,
             UBox = false,
             FixedDividers = false,
@@ -182,12 +208,14 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             Notch = data.Notch,
             Accessory = data.Insert,
         };
+    }
 
     private Guid GetMaterialId(string optionname) {
         if (_configuration.MaterialMap.TryGetValue(optionname, out string? optionidstr) && optionidstr is not null) {
             var optionid = Guid.Parse(optionidstr);
             return optionid;
         }
+        _publisher.PublishWarning($"Unrecognized material name '{optionname}'");
         return Guid.Empty;
     }
 

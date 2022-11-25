@@ -13,13 +13,13 @@ namespace ApplicationCore.Features.Orders.Loader.Providers;
 internal class HafeleExcelProvider : OrderProvider {
 
 	private readonly IBus _bus;
-	private readonly IUIBus _uiBus;
-	private readonly IFileReader _fileReader;
+    private readonly LoadingMessagePublisher _publisher;
+    private readonly IFileReader _fileReader;
 	private readonly HafeleConfiguration _configuration;
 
-	public HafeleExcelProvider(IBus bus, IUIBus uiBus, IFileReader fileReader, HafeleConfiguration configuration) {
+	public HafeleExcelProvider(IBus bus, LoadingMessagePublisher publisher, IFileReader fileReader, HafeleConfiguration configuration) {
 		_bus = bus;
-		_uiBus = uiBus;
+        _publisher = publisher;
         _fileReader = fileReader;
 		_configuration = configuration;
 	}
@@ -37,31 +37,19 @@ internal class HafeleExcelProvider : OrderProvider {
 		} else if (wb.Worksheets.Contains("Dovetail")) {
 			sheet = wb.Worksheet("Dovetail");
 		} else {
-
-            _uiBus.Publish(new OrderLoadMessage() {
-                Message = $"Could not find order sheet in workbook",
-                Severity = MessageSeverity.Error
-            });
-
+            _publisher.PublishError($"Could not find order sheet in workbook");
             return null;
         }
 
 		var orderDateStr = sheet.Cell("OrderDate").ReadString();
         if (!DateTime.TryParse(orderDateStr, out DateTime orderDate)) {
 			orderDate = DateTime.Today;
-            _uiBus.Publish(new OrderLoadMessage() {
-                Message = $"Could not read order date '{orderDateStr}'",
-                Severity = MessageSeverity.Warning
-            });
+            _publisher.PublishWarning($"Could not read order date '{orderDateStr}'");
         }
 
 		Company? customer = await GetCustomerFromWorksheet(sheet);
 		if (customer is null) {
-            _uiBus.Publish(new OrderLoadMessage() {
-                Message = "Could not read/save customer information",
-                Severity = MessageSeverity.Error
-            });
-
+            _publisher.PublishError("Could not read/save customer information");
             return null;
 		}
 
@@ -77,10 +65,7 @@ internal class HafeleExcelProvider : OrderProvider {
 				units = Units.Inches;
 				break;
 			default:
-				_uiBus.Publish(new OrderLoadMessage() {
-					Message = $"Unrecognized unit selection '{unitStr}'",
-					Severity = MessageSeverity.Warning
-				});
+				_publisher.PublishWarning($"Unrecognized unit selection '{unitStr}'");
 				break;
 		}
 
@@ -101,10 +86,7 @@ internal class HafeleExcelProvider : OrderProvider {
 				rush = true;
 				break;
 			default:
-                _uiBus.Publish(new OrderLoadMessage() {
-                    Message = $"Unrecognized production time selection '{productionTime}'",
-                    Severity = MessageSeverity.Warning
-                });
+                _publisher.PublishWarning($"Unrecognized production time selection '{productionTime}'");
 				break;
 		}
 
@@ -165,10 +147,7 @@ internal class HafeleExcelProvider : OrderProvider {
 				boxes.Add(box);
 
 			} else {
-                _uiBus.Publish(new OrderLoadMessage() {
-                    Message = $"Error reading drawer box on row '{qtyCell.WorksheetRow().RowNumber()}'",
-                    Severity = MessageSeverity.Warning
-                });
+                _publisher.PublishWarning($"Error reading drawer box on row '{qtyCell.WorksheetRow().RowNumber()}'");
             }
 
 			offset++;
@@ -224,12 +203,7 @@ internal class HafeleExcelProvider : OrderProvider {
 			});
 
 		} else if (logoOption.Equals("Yes-Inside") && logoOption.Equals("Yes-Outside") && logoOption.Equals("No") && !string.IsNullOrWhiteSpace(logoOption)) {
-            
-			_uiBus.Publish(new OrderLoadMessage() {
-                Message = $"Unknown logo selection '{logoOption}'",
-                Severity = MessageSeverity.Error
-            });
-
+			_publisher.PublishWarning($"Unknown logo selection '{logoOption}'");
         }
 
 		if (deliveryMethod.Equals("Liftgate required")) {
@@ -243,12 +217,7 @@ internal class HafeleExcelProvider : OrderProvider {
 			});
 
 		} else if (!deliveryMethod.Equals("Standard Pallet") && !string.IsNullOrWhiteSpace(deliveryMethod)) {
-
-			_uiBus.Publish(new OrderLoadMessage() {
-				Message = $"Unknown delivery method selection '{deliveryMethod}'",
-				Severity = MessageSeverity.Error
-			});
-
+			_publisher.PublishWarning($"Unknown delivery method selection '{deliveryMethod}'");
 		}
 
 		return items;
@@ -278,10 +247,7 @@ internal class HafeleExcelProvider : OrderProvider {
             case "No":
                 return false;
             default:
-                _uiBus.Publish(new OrderLoadMessage() {
-                    Message = $"Unknown mounting holes option option '{mountingHolesStr}'",
-                    Severity = MessageSeverity.Warning
-                });
+                _publisher.PublishWarning($"Unknown mounting holes option option '{mountingHolesStr}'");
                 return false;
         }
     }
@@ -294,10 +260,7 @@ internal class HafeleExcelProvider : OrderProvider {
             case "No":
                 return false;
             default:
-                _uiBus.Publish(new OrderLoadMessage() {
-                    Message = $"Unknown post finish option option '{postFinishStr}'",
-                    Severity = MessageSeverity.Warning
-                });
+                _publisher.PublishWarning($"Unknown post finish option option '{postFinishStr}'");
                 return false;
         }
     }
@@ -310,10 +273,7 @@ internal class HafeleExcelProvider : OrderProvider {
             case "FlatPack":
                 return false;
             default:
-                _uiBus.Publish(new OrderLoadMessage() {
-                    Message = $"Unknown assebly option '{assembledStr}'",
-                    Severity = MessageSeverity.Warning
-                });
+                _publisher.PublishWarning($"Unknown assebly option '{assembledStr}'");
 				return true;
         }
     }
@@ -328,12 +288,7 @@ internal class HafeleExcelProvider : OrderProvider {
         bool hasError = false;
         
 		if (string.IsNullOrWhiteSpace(accntNum)) {
-            
-			_uiBus.Publish(new OrderLoadMessage() {
-                Message = $"No customer account number found",
-                Severity = MessageSeverity.Warning
-            });
-
+			_publisher.PublishWarning($"No customer account number found");
         } else {
 
             var customerResponse = await _bus.Send(new GetCompanyByHafeleAccountNumber.Query(accntNum));
@@ -344,11 +299,7 @@ internal class HafeleExcelProvider : OrderProvider {
                 },
                 error => {
                     hasError = true;
-
-                    _uiBus.Publish(new OrderLoadMessage() {
-                        Message = error.Title,
-                        Severity = MessageSeverity.Error
-                    });
+                    _publisher.PublishError(error.Title);
                 }
             );
 
@@ -360,15 +311,9 @@ internal class HafeleExcelProvider : OrderProvider {
 
             string company = sheet.Cell("V4").ReadString();
 
-			if (string.IsNullOrWhiteSpace(company)) { 
-				
-				_uiBus.Publish(new OrderLoadMessage() {
-					Message = "No customer name entered",
-					Severity = MessageSeverity.Error
-				});
-
+			if (string.IsNullOrWhiteSpace(company)) {
+                _publisher.PublishWarning("No customer name entered");
 				return null;
-
             }
 
             string contact = sheet.Cell("V3").ReadString();
@@ -398,11 +343,7 @@ internal class HafeleExcelProvider : OrderProvider {
 				},
 				error => {
 					hasError = true;
-
-                    _uiBus.Publish(new OrderLoadMessage() {
-                        Message = error.Title,
-                        Severity = MessageSeverity.Error
-                    });
+                    _publisher.PublishError(error.Title);
                 }
             );
 
@@ -490,9 +431,9 @@ internal class HafeleExcelProvider : OrderProvider {
 
 			return true;
 
-		} catch {
-			// TODO: log exception
-			return false;
+		} catch (Exception ex) {
+			_publisher.PublishWarning(ex.Message);
+            return false;
 		} 
 
 	}
@@ -502,12 +443,7 @@ internal class HafeleExcelProvider : OrderProvider {
 			var optionid = Guid.Parse(optionidstr);
 			return optionid;
 		}
-
-        _uiBus.Publish(new OrderLoadMessage() {
-            Message = $"Unknown or empty material selection '{optionname}'",
-            Severity = MessageSeverity.Warning
-        });
-
+        _publisher.PublishWarning($"Unknown or empty material selection '{optionname}'");
         return Guid.Empty;
 	}
 

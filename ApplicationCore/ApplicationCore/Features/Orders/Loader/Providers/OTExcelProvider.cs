@@ -15,13 +15,13 @@ internal class OTExcelProvider : OrderProvider {
 
     private readonly IFileReader _fileReader;
     private readonly IBus _bus;
-    private readonly IUIBus _uiBus;
+    private readonly LoadingMessagePublisher _publisher;
     private readonly OTConfiguration _configuration;
 
-    public OTExcelProvider(IFileReader fileReader, IBus bus, IUIBus uiBus, OTConfiguration configuration) {
+    public OTExcelProvider(IFileReader fileReader, IBus bus, LoadingMessagePublisher publisher, OTConfiguration configuration) {
         _fileReader = fileReader;
         _bus = bus;
-        _uiBus = uiBus;
+        _publisher = publisher;
         _configuration = configuration;
     }
 
@@ -32,13 +32,21 @@ internal class OTExcelProvider : OrderProvider {
 
         var sheet = wb.Worksheet("Order");
 
-        if (sheet is null) return null;
+        if (sheet is null) {
+            _publisher.PublishError("Order worksheet could not be found, no order data can be read");
+            return null;
+        }
 
         var customer = await GetCustomerFromWorksheet(sheet);
-        
-        if (customer is null) return null;
 
-        if (!DateTime.TryParse(sheet.Cell("Date").ReadString(), out DateTime orderDate)) {
+        if (customer is null) {
+            _publisher.PublishError("Could not read/save customer information");
+            return null;
+        }
+
+        string orderDateStr = sheet.Cell("Date").ReadString();
+        if (!DateTime.TryParse(orderDateStr, out DateTime orderDate)) {
+            _publisher.PublishWarning($"Could not parse order date value '{orderDateStr}'");
             orderDate = DateTime.Today;
         }
 
@@ -62,11 +70,7 @@ internal class OTExcelProvider : OrderProvider {
                 postFinish = false;
                 break;
             default:
-                _uiBus.Publish(new OrderLoadMessage() {
-                    Severity = MessageSeverity.Warning,
-                    Message = $"Unkown post finish value '{postFinishStr}'"
-                });
-
+                _publisher.PublishWarning($"Unrecognized post finish value '{postFinishStr}'");
                 postFinish = false;
                 break;
         }
@@ -96,10 +100,7 @@ internal class OTExcelProvider : OrderProvider {
                 rush = true;
                 break;
             default:
-                _uiBus.Publish(new OrderLoadMessage() {
-                    Severity = MessageSeverity.Warning,
-                    Message = $"Unkown production time value '{production}'"
-                });
+                _publisher.PublishWarning($"Unrecognized production time value '{production}'");
                 rush = false;
                 break;
         }
@@ -142,7 +143,11 @@ internal class OTExcelProvider : OrderProvider {
 
             var wasRead = TryReadBox(columns, offset, out DrawerBoxData box, options);
 
-            boxes.Add(box);
+            if (wasRead) { 
+                boxes.Add(box);
+            } else {
+                _publisher.PublishWarning($"Could not read box on row '{qtyCell.WorksheetRow().RowNumber()}'");
+            }
 
             offset++;
 
@@ -222,7 +227,7 @@ internal class OTExcelProvider : OrderProvider {
                 box.ScoopFront = false;
             } else {
                 box.ScoopFront = false;
-                // TODO: warn about unkown value
+                _publisher.PublishWarning($"Unrecognized pull out value '{pullout}' in cell {data.PullOut.Address}");
             }
 
             string logo = data.Logo.GetOffsetCell(offset).ReadString();
@@ -232,7 +237,7 @@ internal class OTExcelProvider : OrderProvider {
                 box.Logo = LogoPosition.None;
             } else { 
                 box.Logo = LogoPosition.None;
-                // TODO: warn about unkown value
+                _publisher.PublishWarning($"Unrecognized logo value '{logo}' in cell {data.PullOut.Address}");
             }
 
             string accessory = data.Accessory.GetOffsetCell(offset).ReadString();
@@ -276,11 +281,7 @@ internal class OTExcelProvider : OrderProvider {
             },
             error => {
                 hasError = true;
-                // TODO: log error
-                _uiBus.Publish(new OrderLoadMessage() {
-                    Severity = MessageSeverity.Error,
-                    Message = error.Title
-                });
+                _publisher.PublishError(error.Title);
             }
         );
 
@@ -318,10 +319,7 @@ internal class OTExcelProvider : OrderProvider {
                 error => {
                     hasError = true;
                     // TODO: log error
-                    _uiBus.Publish(new OrderLoadMessage() {
-                        Severity = MessageSeverity.Error,
-                        Message = error.Title
-                    });
+                    _publisher.PublishError(error.Title);
                 }
             );
 
@@ -333,11 +331,12 @@ internal class OTExcelProvider : OrderProvider {
 
     }
 
-    private static Guid GetMaterialId(string name, Dictionary<string, string> materialMap) {
+    private Guid GetMaterialId(string name, Dictionary<string, string> materialMap) {
         if (!materialMap.ContainsKey(name)) return Guid.Empty;
         try {
             return Guid.Parse(materialMap[name]);
         } catch {
+            _publisher.PublishWarning($"Unrecognized material '{name}'");
             return Guid.Empty;
         }
     }
