@@ -16,7 +16,7 @@ namespace DesktopHost;
 /// </summary>
 public partial class App : Application {
 
-    private void Application_Startup(object sender, StartupEventArgs e) {
+    private async void Application_Startup(object sender, StartupEventArgs e) {
 
         var configuration = BuildConfiguration();
         var serviceProvider = BuildServiceProvider(configuration);
@@ -24,7 +24,7 @@ public partial class App : Application {
         if (e.Args.Length > 0) {
             try {
                 var app = serviceProvider.GetRequiredService<ConsoleApplication>();
-                app.Run(e.Args).Wait();
+                await app.Run(e.Args);
             } catch (Exception ex) {
                 MessageBox.Show($"Error loading order\n{ex}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
