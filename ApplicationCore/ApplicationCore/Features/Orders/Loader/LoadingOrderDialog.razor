@@ -112,7 +112,10 @@
             },
             error => {
 
-                // TODO: display error
+                _messages.Add(new OrderLoadMessage() {
+                    Severity = MessageSeverity.Error,
+                    Message = error.Title
+                });
                 _state = State.Error;
 
             }
