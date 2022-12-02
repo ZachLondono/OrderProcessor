@@ -39,5 +39,30 @@
         "priority": 1
       }
     ]
+  },
+  {
+    "name": "MDF-3/4\"",
+    "thickness": 19.1,
+    "isGrained": false,
+    "sizes": [
+      {
+        "width": 1524,
+        "length": 3352,
+        "priority": 1
+      }
+    ]
+  },
+  {
+    "name": "MDF-1/4\"",
+    "thickness": 6.35,
+    "isGrained": false,
+    "sizes": [
+      {
+        "width": 1500,
+        "length": 2500,
+        "priority": 1
+      }
+    ]
   }
+
 ]
