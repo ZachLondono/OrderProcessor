@@ -5,9 +5,10 @@
 @using static ApplicationCore.Shared.Components.Button;
 @inject IBus Bus
 
+@*
 <Button Disabled="@Disabled" Style="ButtonStyle.Contained" Rounded="ButtonRounded.Left" Class="my-3">Click Me!</Button>@*
-*@<Button Disabled="@Disabled" Style="ButtonStyle.Contained" Rounded="ButtonRounded.None" Class="my-3">Click Me!</Button>@*
-*@<Button Disabled="@Disabled" Style="ButtonStyle.Contained" Rounded="ButtonRounded.Right" Class="my-3">Click Me!</Button>
+<Button Disabled="@Disabled" Style="ButtonStyle.Contained" Rounded="ButtonRounded.None" Class="my-3">Click Me!</Button>
+<Button Disabled="@Disabled" Style="ButtonStyle.Contained" Rounded="ButtonRounded.Right" Class="my-3">Click Me!</Button>
 
 <Button Disabled="@Disabled" Color="ButtonColor.Secondary" Style="ButtonStyle.Contained" Class="my-3">Click Me!</Button>
 <Button Disabled="@Disabled" Color="ButtonColor.Secondary" Style="ButtonStyle.Outline" Class="my-3">Click Me!</Button>
@@ -18,6 +19,7 @@
 <Button Disabled="@Disabled" Color="ButtonColor.Success" Style="ButtonStyle.Text" Class="my-3">Click Me!</Button>
 
 <Button OnClick="() => Disabled = !Disabled" Style="ButtonStyle.Text" Class="my-3">Click Me!</Button>
+*@
 
 <EditForm Model="@_model">
     <div>
