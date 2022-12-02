@@ -18,7 +18,7 @@ internal class CSVParser : ICSVParser {
         _fileReader = fileReader;
     }
 
-    public Task<CSVParseResult> ParsePartsAsync(string filepath) {
+    public async Task<CSVParseResult> ParsePartsAsync(string filepath) {
 
         var config = new CsvConfiguration(CultureInfo.InvariantCulture) {
             PrepareHeaderForMatch = args => args.Header.Replace(" ", "")
@@ -31,10 +31,10 @@ internal class CSVParser : ICSVParser {
         using var reader = new StreamReader(fs);
         using var csv = new CsvReader(reader, config);
 
-        csv.Read();
+        await csv.ReadAsync();
         csv.ReadHeader();
 
-        while (csv.Read()) {
+        while (await csv.ReadAsync()) {
 
             var tokenName = csv.GetField(5)?.ToLower() ?? string.Empty;
 
@@ -71,11 +71,11 @@ internal class CSVParser : ICSVParser {
 
         }
 
-        return Task.FromResult<CSVParseResult>(new() {
-			Messages = messages,
-			Parts = parts
-		});
+        return new() {
+            Messages = messages,
+            Parts = parts
+        };
 
-    }
+	}
 
 }
