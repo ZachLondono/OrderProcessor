@@ -6,6 +6,6 @@ namespace ApplicationCore.Features.CADCode.Services;
 
 public interface ICNCService {
 
-    ReleasedJob ExportToCNC(CNCBatch batch, IEnumerable<CNCMachineConfiguration> machineConfigs);
+    Task<ReleasedJob> ExportToCNC(CNCBatch batch, IEnumerable<CNCMachineConfiguration> machineConfigs);
 
 }

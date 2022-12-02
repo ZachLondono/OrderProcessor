@@ -6,6 +6,7 @@ using ApplicationCore.Features.CADCode.Services.Domain.CADCode.Configuration;
 using ApplicationCore.Features.CADCode.Services.Domain.Inventory;
 using Part = CADCode.Part;
 using ApplicationCore.Features.CADCode.Domain;
+using System.Diagnostics;
 
 namespace ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode;
 
@@ -67,15 +68,18 @@ public class CADCodeManager {
                 _cadCode!.Optimizer.AddSheetStockByRef(item, _units);
             });
 
-            parts.ForEach(p => _cadCode.Code.AddNestedPartMachining(p, machineConfig.ToolMap, machineConfig.Orientation));
+            // Border neets to be called once per batch with non-zero values for the panel dimensions
+            _cadCode.Code.Border(1, 1, 1f, UnitTypes.CC_U_METRIC, OriginType.CC_LL, optimzationBatchName, AxisTypes.CC_AUTO_AXIS);
+			
+            parts.ForEach(p => _cadCode.Code.AddNestedPartMachining(p, machineConfig.ToolMap));
 
-            int line = 0;
+			int line = 0;
             parts.ForEach(part => {
                 _cadCode.Labels.NewLabel();
-                _cadCode.Labels.AddField("WidthInches", (part.Width / 25.4).ToString("0.00"));
-                _cadCode.Labels.AddField("LengthInches", (part.Length / 25.4).ToString("0.00"));
-                _cadCode.Labels.AddField("Width", (part.Width).ToString("0"));
-                _cadCode.Labels.AddField("Length", (part.Length).ToString("0"));
+                _cadCode.Labels.AddField("WidthInches", (part.Length / 25.4).ToString("0.00"));
+                _cadCode.Labels.AddField("LengthInches", (part.Width / 25.4).ToString("0.00"));
+                _cadCode.Labels.AddField("Width", (part.Length).ToString("0"));
+                _cadCode.Labels.AddField("Length", (part.Width).ToString("0"));
                 _cadCode.Labels.AddField("Job Name", _jobName);
                 _cadCode.Labels.AddField("Description", part.Description);
                 _cadCode.Labels.AddField("Current Date", date);
@@ -88,8 +92,8 @@ public class CADCodeManager {
 
             // TODO: investigate if there is another way of figuring out what parts are on what sheet, because the current way creates labels that are not accurate ( i don't think this is necessary, i think CADCode does it the same way as implemented here)
             var optimizedParts = parts.SelectMany(part => part.GetAsCADCodeParts(_units, machineConfig.Orientation)).ToList();
-            
-            optimizedParts.ForEach(part => {
+
+			optimizedParts.ForEach(part => {
                 _cadCode.Optimizer.AddPartByRef(ref part);
             });
 
@@ -111,6 +115,8 @@ public class CADCodeManager {
 
             PrintMissedEvents(_cadCode.BootObject);
 
+            Reset();
+
         }
 
 
@@ -127,12 +133,12 @@ public class CADCodeManager {
 
         foreach (var parts in _partsByMaterial.Values) {
             foreach (var part in parts) {
-                _cadCode.Code.AddSingleProgram(part, _units, machineConfig.ToolMap, machineConfig.Orientation);
+                _cadCode.Code.AddSingleProgram(part, _units, machineConfig.ToolMap);
             }
         }
 
         int ret = _cadCode.Code.DoOutput(_units, 0, 0);
-        if (ret != 0) Console.WriteLine("Error while releasing single programs");
+        if (ret != 0) Debug.WriteLine("Error while releasing single programs");
 
         var fileNames = _cadCode.Code.GetProcessedFileNames();
         if (fileNames is null) return processedFiles;
@@ -143,11 +149,17 @@ public class CADCodeManager {
 
         PrintMissedEvents(_cadCode.BootObject);
 
-        return processedFiles;
+		Reset();
+
+		return processedFiles;
     }
 
-    public void Reset() {
-        _cadCode = null;
+    private void Reset() {
+        if (_cadCode is null) return;
+		UnregisterCodeEventHandlers(_cadCode.Code);
+		UnregisterOptimizerEvents(_cadCode.Optimizer);
+		UnregisterToolFileEvents(_cadCode.Tools);
+		_cadCode = null;
     }
 
     private static void PrintMissedEvents(CADCodeBootObject boot) {
@@ -178,7 +190,7 @@ public class CADCodeManager {
 
     }
 
-    private static void PrintResult(OptimizationResult nestResult) {
+	private static void PrintResult(OptimizationResult nestResult) {
 
         //Console.WriteLine("************************************");
         //Console.WriteLine("Single Parts:");
@@ -196,36 +208,36 @@ public class CADCodeManager {
             Console.WriteLine($"        {part}");
         }
 
-        Console.WriteLine(" Used Inventory:");
+        Debug.WriteLine(" Used Inventory:");
         for (int i = 0; i < inventory.Length; i++) {
 
             var item = inventory[i];
-            Console.WriteLine($"        ({item.SheetsUsed}) {item.Name} - {item.Width}x{item.Length}x{item.Thickness} grained:{item.IsGrained}");
+            Debug.WriteLine($"        ({item.SheetsUsed}) {item.Name} - {item.Width}x{item.Length}x{item.Thickness} grained:{item.IsGrained}");
 
             IEnumerable<(int QtyOnSheet, string FileName)> partsOnMaterial = placed.Where(p => p.UsedInventoryIndex == i)
                                                                                     .GroupBy(p => p.FileName)
                                                                                     .Select(g => (g.Count(), g.Key));
             foreach (var (QtyOnSheet, FileName) in partsOnMaterial) {
-                Console.WriteLine($"            ({QtyOnSheet}) {FileName}");
+                Debug.WriteLine($"            ({QtyOnSheet}) {FileName}");
             }
 
         }
 
-        Console.WriteLine(" Programs:");
+        Debug.WriteLine(" Programs:");
         for (int i = 0; i < programs.Length; i++) {
 
             var prorgam = programs[i];
-            Console.WriteLine($"        {prorgam}");
+            Debug.WriteLine($"        {prorgam}");
 
             IEnumerable<(int QtyOnSheet, string FileName)> partsInProgram = placed.Where(p => p.ProgramIndex == i)
                                                                                     .GroupBy(p => p.FileName)
                                                                                     .Select(g => (g.Count(), g.Key));
             foreach (var (QtyOnSheet, FileName) in partsInProgram) {
-                Console.WriteLine($"            ({QtyOnSheet}) {FileName}");
+                Debug.WriteLine($"            ({QtyOnSheet}) {FileName}");
             }
 
         }
-        Console.WriteLine("************************************");
+        Debug.WriteLine("************************************");
 
     }
 
@@ -250,7 +262,7 @@ public class CADCodeManager {
                 Length = length,
                 Thickness = thickness,
                 SheetsUsed = sheetsUsed,
-                IsGrained = (i.Graining == "True") // TODO: check what this string is supposed to be
+                IsGrained = (i.Graining == "1")
             };
         })
         .ToArray();
@@ -279,47 +291,37 @@ public class CADCodeManager {
         };
 
         return result;
-    }
+	}
 
-    private static CADCodeLabelClass GetLabelClass(CADCodeBootObject bootObject, CADCodeFileClass files, string jobName, string optimizationBatchName) {
+	private CADCodeBootObject CreateCADCodeObj() {
+		_hasKey = true;
+		var bootObj = new CADCodeBootObject {
+			//MessageMethod = MessageTypes.CC_USE_EVENTS,
+			MessageMethod = MessageTypes.CC_USE_MESSAGEBOX,
+			DebugMode = CC_DebugModes.CC_DEBUG_NONE
+		};
+		bootObj.CreateError += BootObj_CreateError;
+		bootObj.Init();
+		bootObj.CreateError -= BootObj_CreateError;
+		return bootObj;
+	}
+
+	private void BootObj_CreateError(int errorCode, string message) {
+		Debug.WriteLine($"[BootEvent] CreateError {errorCode} {message}");
+		if (errorCode == 33012) _hasKey = false;
+	}
+
+	private static CADCodeLabelClass GetLabelClass(CADCodeBootObject bootObject, CADCodeFileClass files, string jobName, string optimizationBatchName) {
         var labels = bootObject.CreateLabels();
         labels.FileLocations = files;
         labels.JobName = $"{jobName}_{optimizationBatchName}";
         labels.SetupFileName = "Y:\\CADCode\\cfg\\Label Design Files\\DoorDrawerPatterns.mdb"; // Label design file
 
-        labels.Progress += Labels_Progress;
-
         // TODO: need to make sure that the paths exist (do this when initilizing the cadcode object)
         // TODO: it seems like if the label file is not a valid path (the directory must exist) then the CADCode.Part.Rotated property is not set
         labels.LabelFileName = $"{jobName}.mdb";
-        //Console.WriteLine(labels.IncludePictureInDatabase);
-        //labels.IncludePictureInDatabase = true;
-        //labels.NewLabel();
-        //labels.EndLabel();
-        //labels.PageFileName = "DoorDrawerPatterns.mdb";
         return labels;
     }
-
-    private static void Labels_Progress(int L) {
-        Console.WriteLine($"[LabelEvent] Progress {L}");
-    }
-
-    private CADCodeBootObject CreateCADCodeObj() {
-        _hasKey = true;
-        var bootObj = new CADCodeBootObject {
-            //MessageMethod = MessageTypes.CC_USE_EVENTS,
-            MessageMethod = MessageTypes.CC_USE_MESSAGEBOX,
-            DebugMode = CC_DebugModes.CC_DEBUG_NONE
-        };
-        bootObj.CreateError += BootObj_CreateError;
-        bootObj.Init();
-        return bootObj;
-    }
-
-    private void BootObj_CreateError(int errorCode, string message) {
-        Console.WriteLine($"[BootEvent] CreateError {errorCode} {message}");
-        if (errorCode == 33012) _hasKey = false;
-}
 
     private CADCodeCodeClass CreateCodeClass(CADCodeBootObject bootObject, CADCodeFileClass files, CADCodeToolFileClass tools, string jobName) {
         var code = bootObject.CreateCode();
@@ -338,16 +340,22 @@ public class CADCodeManager {
         return code;
     }
 
-    private void Code_Progress(int L) {
-        //Console.WriteLine($"[CodeEvent] Progress - '{L}'");
-    }
+    private void UnregisterCodeEventHandlers(CADCodeCodeClass code) {
+		code.FileWritten -= Code_FileWritten;
+		code.MachiningError -= Code_MachiningError;
+		code.Progress -= Code_Progress;
+	}
 
-    private void Code_MachiningError(int L, string S) {
-        Console.WriteLine($"[CodeEvent] Error - '{S}'");
+    private void Code_Progress(int L) {
+		Debug.WriteLine($"[CodeEvent] Progress - '{L}'");
+	}
+
+	private void Code_MachiningError(int L, string S) {
+		Debug.WriteLine($"[CodeEvent] Error - '{S}'");
     }
 
     private void Code_FileWritten(string Filename) {
-        Console.WriteLine($"[CodeEvent] File written '{Filename}'");
+        Debug.WriteLine($"[CodeEvent] File written '{Filename}'");
     }
 
     private static CADCodeToolFileClass CreateToolFile(CADCodeBootObject bootObject, CADCodeFileClass files, string toolFilePath) {
@@ -358,8 +366,12 @@ public class CADCodeManager {
         return tools;
     }
 
+    private static void UnregisterToolFileEvents(CADCodeToolFileClass tools) {
+		tools.ToolFileError -= Tools_ToolFileError;
+	}
+
     private static void Tools_ToolFileError(int L, string S) {
-        Console.WriteLine($"[ToolEvent] Error - '{S}'");
+		Debug.WriteLine($"[ToolEvent] Error - '{S}'");
     }
 
     private static CADCodePanelOptimizerClass CreateOptimizer(CADCodeBootObject bootObject, CADCodeFileClass files, OptimizerSettings  optimizerSettings) {
@@ -368,21 +380,28 @@ public class CADCodeManager {
         optimizer.OptimizeError += Optimizer_OptimizeError;
         optimizer.Progress += Optimizer_Progress;
 
+        optimizer.OutputUnits = UnitTypes.CC_U_METRIC;
         optimizer.FileLocations = files;
         optimizer.Settings(optimizerSettings.Iterations, optimizerSettings.RunTime, optimizerSettings.Utilization, optimizerSettings.Kerf, optimizerSettings.Panels, optimizerSettings.Offset);
         return optimizer;
     }
 
-    private static void Optimizer_Progress(int L) {
-        //Console.WriteLine($"[OptimizeEvent] Progress - '{L}'");
-    }
+    private static void UnregisterOptimizerEvents(CADCodePanelOptimizerClass optimizer) {
+		optimizer.FileWritten -= Optimizer_FileWritten;
+		optimizer.OptimizeError -= Optimizer_OptimizeError;
+		optimizer.Progress -= Optimizer_Progress;
+	}
 
-    private static void Optimizer_OptimizeError(int L, string S) {
-        Console.WriteLine($"[OptimizeEvent] Error - '{S}'");
+    private static void Optimizer_Progress(int L) {
+		Debug.WriteLine($"[OptimizeEvent] Progress - '{L}'");
+	}
+
+	private static void Optimizer_OptimizeError(int L, string S) {
+        Debug.WriteLine($"[OptimizeEvent] Error - '{S}'");
     }
 
     private static void Optimizer_FileWritten(string Filename) {
-        Console.WriteLine($"[OptimizeEvent] File written '{Filename}'");
+        Debug.WriteLine($"[OptimizeEvent] File written '{Filename}'");
     }
 
     private static CADCodeFileClass CreateFileClass(CADCodeConfiguration ccConfig, CADCodeMachineConfiguration machineConfiguration, GenerationType generationType) => new() {

@@ -7,10 +7,10 @@ namespace ApplicationCore.Features.CADCode.Services;
 internal class CADCodeLabelDBExistingJobProvider : IExistingJobProvider {
 
 	private readonly MachineNameProvider _machineNameProvider;
-	private readonly ICADCodeLabelDataBaseConnectionStringFactory _connFactory;
+	private readonly ICADCodeLabelDataBaseConnectionFactory _connFactory;
 	private readonly ICNCConfigurationProvider _cncConfigProvider;
 
-	public CADCodeLabelDBExistingJobProvider(MachineNameProvider machineNameProvider, ICADCodeLabelDataBaseConnectionStringFactory connFactory, ICNCConfigurationProvider cncConfigProvider) {
+	public CADCodeLabelDBExistingJobProvider(MachineNameProvider machineNameProvider, ICADCodeLabelDataBaseConnectionFactory connFactory, ICNCConfigurationProvider cncConfigProvider) {
 		_machineNameProvider = machineNameProvider;
 		_connFactory = connFactory;
 		_cncConfigProvider = cncConfigProvider;
@@ -70,7 +70,7 @@ internal class CADCodeLabelDBExistingJobProvider : IExistingJobProvider {
 					Width = (double)pattern.MaterialWidth,
 					Length = (double)pattern.MaterialLength,
 					Thickness = (double)pattern.MaterialThickness,
-					IsGrained = (inventory.Where(i => i.Name.Equals(pattern.MaterialName)).First().Grained.Equals("true") ? true : false),
+					IsGrained = inventory.First(i => i.Name.Equals(pattern.MaterialName)).Grained.Equals("true") ? true : false,
 					Yield = 0
 				},
 				Parts = parts

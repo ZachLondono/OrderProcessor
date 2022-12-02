@@ -8,7 +8,7 @@ namespace ApplicationCore.Features.CADCode.Services.Domain.PDF;
 
 public class PatternImageFactory {
 
-    public static byte[] CreatePatternImage(string imagePath, TableOrientation orientation, float sheetWidth, float sheetLength, IEnumerable<ImageText> text) {
+    public static byte[] CreatePatternImage(string imagePath, TableOrientation orientation, double sheetWidth, double sheetLength, IEnumerable<ImageText> text) {
 
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
             // TODO: use skia sharp for cross platform support
@@ -47,10 +47,10 @@ public class PatternImageFactory {
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
-    static void AddTextToBitmap(Bitmap bitmap, IEnumerable<ImageText> patternTexts, TableOrientation orientation, float sheetWidth, float sheetLength) {
+    static void AddTextToBitmap(Bitmap bitmap, IEnumerable<ImageText> patternTexts, TableOrientation orientation, double sheetWidth, double sheetLength) {
 
-        float mmToPxScaleX = bitmap.Width / sheetLength;
-        float mmToPxScaleY = bitmap.Height / sheetWidth;
+		double mmToPxScaleX = bitmap.Width / sheetLength;
+		double mmToPxScaleY = bitmap.Height / sheetWidth;
 
         float fontSize = 8;
         using var font = new Font("Tahoma", fontSize, FontStyle.Bold);
@@ -62,8 +62,8 @@ public class PatternImageFactory {
             cg.InterpolationMode = InterpolationMode.HighQualityBicubic;
             cg.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-            float x = text.Location.X * mmToPxScaleX;
-            float y = text.Location.Y * mmToPxScaleY;
+            double x = text.Location.X * mmToPxScaleX;
+			double y = text.Location.Y * mmToPxScaleY;
             if (orientation == TableOrientation.Standard) y = bitmap.Height - y;
             else {
                 //var temp = x;
@@ -74,11 +74,11 @@ public class PatternImageFactory {
             var textSize = cg.MeasureString(text.Text, font);
             PointF drawPoint;
             if (orientation == TableOrientation.Rotated) {
-                cg.TranslateTransform(x, y);
+                cg.TranslateTransform((float) x, (float)y);
                 cg.RotateTransform(90);
                 drawPoint = new PointF(-textSize.Width / 2, -textSize.Height / 2);
             } else {
-                drawPoint = new PointF(x - textSize.Width / 2, y - textSize.Height / 2);
+                drawPoint = new PointF((float) x - textSize.Width / 2, (float) y - textSize.Height / 2);
             }
 
             var rect = new RectangleF(drawPoint, textSize);

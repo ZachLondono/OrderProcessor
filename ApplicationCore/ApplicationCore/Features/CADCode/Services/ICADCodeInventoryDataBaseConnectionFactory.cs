@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.CADCode.Services;
 
-internal interface ICADCodeLabelDataBaseConnectionStringFactory {
+public interface ICADCodeInventoryDataBaseConnectionFactory {
 
     public IDbConnection CreateConnection(string filePath);
 

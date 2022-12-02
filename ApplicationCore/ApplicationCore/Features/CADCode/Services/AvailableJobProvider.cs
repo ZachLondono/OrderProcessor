@@ -6,9 +6,9 @@ namespace ApplicationCore.Features.CADCode.Services;
 internal class AvailableJobProvider : IAvailableJobProvider {
 
     private readonly MachineNameProvider _machineNameProvider;
-    private readonly ICADCodeLabelDataBaseConnectionStringFactory _connFactory;
+    private readonly ICADCodeLabelDataBaseConnectionFactory _connFactory;
 
-    public AvailableJobProvider(MachineNameProvider machineNameProvider, ICADCodeLabelDataBaseConnectionStringFactory connFactory) {
+    public AvailableJobProvider(MachineNameProvider machineNameProvider, ICADCodeLabelDataBaseConnectionFactory connFactory) {
         _machineNameProvider = machineNameProvider;
         _connFactory = connFactory;
     }

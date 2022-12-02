@@ -12,10 +12,10 @@ public class JSONInventoryService : IInventoryService {
         _fileName = fileName;
     }
 
-    public IEnumerable<InventoryItem> GetInventory() {
+    public async Task<IEnumerable<InventoryItem>> GetInventory() {
 
         using var stream = File.OpenRead(_fileName);
-        var inventory = JsonSerializer.Deserialize<List<InventoryItemModel>>(stream);
+        var inventory = await JsonSerializer.DeserializeAsync<List<InventoryItemModel>>(stream);
 
         if (inventory is null) return new List<InventoryItem>();
 

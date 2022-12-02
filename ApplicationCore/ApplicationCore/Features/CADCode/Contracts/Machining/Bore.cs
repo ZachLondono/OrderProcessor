@@ -3,6 +3,6 @@
 public record Bore : Token {
 
     public Point Position { get; init; } = new(0, 0);
-    public float Depth { get; init; }
+    public double Depth { get; init; }
 
 }

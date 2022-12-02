@@ -37,83 +37,266 @@ static class CADCodeExtensions {
     }
 
 
-    public static void AddNestedPartMachining(this CADCodeCodeClass code, CNCPart part, ToolMap toolMap, TableOrientation orientation) {
+    public static void AddNestedPartMachining(this CADCodeCodeClass code, CNCPart part, ToolMap toolMap) {
 
-        // ANDI config
-        //code.NestedPart((float)part.Width, (float)part.Length, OriginType.CC_LL, part.FileName, AxisTypes.CC_X_AXIS, 90);
+		code.NestedPart((float) part.Length, (float) part.Width, OriginType.CC_LL, part.FileName, AxisTypes.CC_AUTO_AXIS, 0);
 
-        float width = (float)part.Width; //(float)(orientation == TableOrientation.Standard ? part.Width : part.Length);
-        float length = (float)part.Length; //(float)(orientation == TableOrientation.Standard ? part.Length : part.Width);
-
-        code.NestedPart(width, length, OriginType.CC_LL, part.FileName, AxisTypes.CC_AUTO_AXIS, 0);
-        
-        foreach (var token in part.Tokens) {
-            code.AddMachining(token, toolMap, orientation);
+		foreach (var token in part.Tokens) {
+            code.AddMachining(token, toolMap);
         }
 
     }
 
-    public static void AddSingleProgram(this CADCodeCodeClass code, CNCPart part, UnitTypes units, ToolMap toolMap, TableOrientation orientation) {
+    public static void AddSingleProgram(this CADCodeCodeClass code, CNCPart part, UnitTypes units, ToolMap toolMap) {
 
-        float width = (float) part.Width; // (float)(orientation == TableOrientation.Standard ? part.Width : part.Length);
-        float length = (float) part.Length;//(float)(orientation == TableOrientation.Standard ? part.Length : part.Width);
-
-        code.Border(width, length, (float)part.Material.Thickness, units, OriginType.CC_LL, part.FileName, AxisTypes.CC_X_AXIS);
+        code.Border((float) part.Length, (float) part.Width, (float)part.Material.Thickness, units, OriginType.CC_LL, part.FileName, AxisTypes.CC_X_AXIS);
         
         foreach (var token in part.Tokens) {
-            code.AddMachining(token, toolMap, orientation);
+            code.AddMachining(token, toolMap);
         }
 
         code.EndPanel();
 
     }
 
-    public static void AddMachining(this CADCodeCodeClass code, Token token, ToolMap toolMap, TableOrientation orientation) {
+    public static void AddMachining(this CADCodeCodeClass code, Token token, ToolMap toolMap) {
 
         // TODO: need to get the tool specs (already have tool map passed in here, maybe a better way?)
 
-        var (tool, _) = toolMap.Tools[token.Tool.Name];
-
-        // TODO: **** switch all x and y positions based on table orientation ****
+        var (tool, _) = toolMap.Tools[token.Tool.Name.ToLower()];
 
         if (token is Bore bore) {
-            code.Bore(bore.Position.X, bore.Position.Y, bore.Depth, FaceTypes.CC_UPPER_FACE, bore.Tool.Diameter, bore.Tool.Name, "", "", (float) tool.SpindleSpeed, (float)tool.FeedSpeed, bore.RType, bore.Sequence, bore.PassCount);
+
+            code.Bore((float)bore.Position.X,
+                      (float)bore.Position.Y,
+                      (float)bore.Depth,
+                             FaceTypes.CC_UPPER_FACE,
+                      (float)bore.Tool.Diameter,
+                             bore.Tool.Name,
+                             "",
+                             "",
+                      (float)tool.SpindleSpeed,
+                      (float)tool.FeedSpeed,
+                             bore.RType,
+                             bore.Sequence,
+                             bore.PassCount);
+
         } else if (token is MultiBore multiBore) {
-            code.MultiBore(multiBore.StartPosition.X, multiBore.StartPosition.Y, multiBore.Depth, multiBore.EndPosition.X, multiBore.EndPosition.Y, FaceTypes.CC_UPPER_FACE, multiBore.Tool.Diameter, multiBore.Tool.Name, multiBore.Pitch, (float)tool.SpindleSpeed, (float)tool.FeedSpeed, multiBore.RType, multiBore.NumberOfHoles, multiBore.Sequence, multiBore.PassCount);
+
+            code.MultiBore((float)multiBore.StartPosition.X,
+                            (float)multiBore.StartPosition.Y,
+                            (float)multiBore.Depth,
+                            (float)multiBore.EndPosition.X,
+                            (float)multiBore.EndPosition.Y,
+                                   FaceTypes.CC_UPPER_FACE,
+                            (float)multiBore.Tool.Diameter,
+                                   multiBore.Tool.Name,
+                            (float)multiBore.Pitch,
+                            (float)tool.SpindleSpeed,
+                            (float)tool.FeedSpeed,
+                                   multiBore.RType,
+                                   multiBore.NumberOfHoles,
+                                   multiBore.Sequence,
+                                   multiBore.PassCount);
+
         } else if (token is Pocket pocket) {
-            code.Pocket(pocket.PositionA.X, pocket.PositionA.Y, pocket.PositionB.X, pocket.PositionB.Y, pocket.PositionC.X, pocket.PositionC.Y, pocket.PositionD.X, pocket.PositionD.Y, pocket.StartDepth, pocket.EndDepth, pocket.Tool.Name, FaceTypes.CC_UPPER_FACE, (float)tool.FeedSpeed, (float)tool.EntrySpeed, (float)tool.SpindleSpeed, (float)tool.CornerFeed, pocket.RType, pocket.Sequence, pocket.Climb, pocket.PassCount);
-        }else if (token is Route route) {
-            code.RouteLine(route.StartPosition.X, route.StartPosition.Y, route.StartDepth, route.EndPosition.X, route.EndPosition.Y, route.EndDepth, route.Tool.Name, route.Tool.Diameter, route.Offset.Type.AsCCOffsetType(), route.Offset.Amount, tool.Rotation.AsCCRotationType(), FaceTypes.CC_UPPER_FACE, (float)tool.FeedSpeed, (float)tool.EntrySpeed, (float)tool.SpindleSpeed, (float)tool.CornerFeed, route.RType, route.Sequence, route.PassCount);
-        } else if (token is Arc arc) {
-            code.RouteArc(arc.PositionA.X, arc.PositionA.Y, arc.StartDepth, arc.PositionD.X, arc.PositionD.Y, arc.EndDepth, arc.Tool.Name, arc.Tool.Diameter, arc.Offset.Type.AsCCOffsetType(), arc.Offset.Amount, tool.Rotation.AsCCRotationType(), FaceTypes.CC_UPPER_FACE, (float)tool.FeedSpeed, (float)tool.EntrySpeed, (float)tool.SpindleSpeed, (float)tool.CornerFeed, arc.RType, arc.PositionB.X, arc.PositionB.Y, arc.PositionC.X, arc.PositionC.Y, arc.Radius, arc.Direction.AsCCArcType(), arc.Bulge, arc.Sequence, arc.PassCount);
-        } else if (token is Text text) {
-            throw new NotImplementedException("Rectangle is not implemented");
+
+            code.Pocket((float)pocket.PositionA.X,
+                        (float)pocket.PositionA.Y,
+                        (float)pocket.PositionB.X,
+                        (float)pocket.PositionB.Y,
+                        (float)pocket.PositionC.X,
+                        (float)pocket.PositionC.Y,
+                        (float)pocket.PositionD.X,
+                        (float)pocket.PositionD.Y,
+                        (float)pocket.StartDepth,
+                        (float)pocket.EndDepth,
+                               pocket.Tool.Name,
+                               FaceTypes.CC_UPPER_FACE,
+                        (float)tool.FeedSpeed,
+                        (float)tool.EntrySpeed,
+                        (float)tool.SpindleSpeed,
+                        (float)tool.CornerFeed,
+                               pocket.RType,
+                               pocket.Sequence,
+                               pocket.Climb,
+                               pocket.PassCount);
+
+        } else if (token is PocketArc parc) {
+
+			code.DefinePocket((float)parc.StartPosition.X,
+								(float)parc.StartPosition.Y,
+								(float)parc.StartDepth,
+								(float)parc.EndPosition.X,
+								(float)parc.EndPosition.Y,
+								(float)parc.EndDepth,
+									   0,
+									   0,
+									   0,
+								(float)parc.Radius,
+									   parc.Direction.AsCCArcType(),
+									   parc.Offset.Type.AsCCOffsetType(),
+								(float)parc.Offset.Amount,
+									   tool.Rotation.AsCCRotationType(),
+									   0,
+									   tool.Name,
+								(float)tool.Diameter,
+								(float)tool.FeedSpeed,
+								(float)tool.EntrySpeed,
+									   0,
+									   parc.Sequence,
+									   Array.Empty<byte>(),
+									   false,
+									   parc.PassCount);
+
+
+		} else if (token is PocketSegment psegment) {
+
+            code.DefinePocket((float)psegment.StartPosition.X,
+                                (float)psegment.StartPosition.Y,
+                                (float)psegment.StartDepth,
+                                (float)psegment.EndPosition.X,
+                                (float)psegment.EndPosition.Y,
+                                (float)psegment.EndDepth,
+                                       0,
+                                       0,
+                                       0,
+                                       0,
+                                       ArcTypes.CC_UNKNOWN_ARC,
+                                       psegment.Offset.Type.AsCCOffsetType(),
+                                (float)psegment.Offset.Amount,
+                                       tool.Rotation.AsCCRotationType(),
+                                       0,
+                                       tool.Name,
+                                (float)tool.Diameter,
+                                (float)tool.FeedSpeed,
+                                (float)tool.EntrySpeed,
+                                       0,
+                                       psegment.Sequence,
+                                       Array.Empty<byte>(),
+                                       false,
+                                       psegment.PassCount);
+
+
+        } else if (token is RouteArc arc) {
+
+            code.RouteArc((float)arc.StartPosition.X,
+                            (float)arc.StartPosition.Y,
+                            (float)arc.StartDepth,
+                            (float)arc.EndPosition.X,
+                            (float)arc.EndPosition.Y,
+                            (float)arc.EndDepth,
+                                   arc.Tool.Name,
+                            (float)arc.Tool.Diameter,
+                                   arc.Offset.Type.AsCCOffsetType(),
+                            (float)arc.Offset.Amount,
+                                   tool.Rotation.AsCCRotationType(),
+                                   FaceTypes.CC_UPPER_FACE,
+                            (float)tool.FeedSpeed,
+                            (float)tool.EntrySpeed,
+                            (float)tool.SpindleSpeed,
+                            (float)tool.CornerFeed,
+                                   arc.RType,
+                                   0,
+                                   0,
+                                   0,
+                                   0,
+							(float)arc.Radius,
+                                   arc.Direction.AsCCArcType(),
+                                   0,
+                                   arc.Sequence,
+                                   arc.PassCount);
+
+        } else if (token is RouteLine route) {
+
+			code.RouteLine((float)route.StartPosition.X,
+                            (float)route.StartPosition.Y,
+                            (float)route.StartDepth,
+                            (float)route.EndPosition.X,
+                            (float)route.EndPosition.Y,
+                            (float)route.EndDepth,
+                                   route.Tool.Name,
+                            (float)route.Tool.Diameter,
+                                   route.Offset.Type.AsCCOffsetType(),
+                            (float)route.Offset.Amount,
+                                   tool.Rotation.AsCCRotationType(),
+                                   FaceTypes.CC_UPPER_FACE,
+                            (float)tool.FeedSpeed,
+                            (float)tool.EntrySpeed,
+                            (float)tool.SpindleSpeed,
+                            (float)tool.CornerFeed,
+                                   route.RType,
+                                   route.Sequence,
+                                   route.PassCount);
+
+        } else if (token is OutlineArc oarc) {
+
+			code.DefineOutLine((float)oarc.Start.X,
+								(float)oarc.Start.Y,
+								(float)oarc.End.X,
+								(float)oarc.End.Y,
+									   0,
+									   0,
+								(float)oarc.Radius,
+									   oarc.Direction.AsCCArcType(),
+									   oarc.Offset.Type.AsCCOffsetType(),
+									   tool.Name,
+								(float)tool.FeedSpeed,
+								(float)tool.SpindleSpeed,
+									   oarc.Sequence,
+									   oarc.PassCount,
+									   0);
+
+		} else if (token is OutlineSegment osegment) {
+
+            code.DefineOutLine((float)osegment.Start.X,
+                                (float)osegment.Start.Y,
+                                (float)osegment.End.X,
+								(float)osegment.End.Y,
+                                       0,
+                                       0,
+                                       0,
+                                       ArcTypes.CC_UNKNOWN_ARC,
+                                       osegment.Offset.Type.AsCCOffsetType(),
+                                       tool.Name,
+                                (float)tool.FeedSpeed,
+								(float)tool.SpindleSpeed,
+                                       osegment.Sequence,
+                                       osegment.PassCount,
+                                       0);
+
         } else if (token is Rectangle rectangle) {
-            throw new NotImplementedException("Rectangle is not implemented");
+
+            var components = rectangle.GetComponents();
+            foreach (var component in components) {
+                code.AddMachining(component, toolMap);
+            }
+
         }
         
     }
 
-    public static List<Part> GetAsCADCodeParts(this CNCPart part, UnitTypes units, TableOrientation orientation) {
+	public static List<Part> GetAsCADCodeParts(this CNCPart part, UnitTypes units, TableOrientation orientation) {
         var ccparts = new List<Part>();
         for (int i = 0; i < part.Qty; i++) {
-
-            string width = part.Width.ToString();//(orientation == TableOrientation.Standard ? part.Width : part.Length).ToString();
-            string length = part.Length.ToString();//(orientation == TableOrientation.Standard ? part.Length : part.Width).ToString();
 
             var ccpart = new Part() {
                 QuantityOrdered = 1,
                 Face5Filename = part.FileName,
-                Length = length,
-                Width = width,
+                Length = part.Length.ToString(), // The length is the PanelXDimension
+                Width = part.Width.ToString(), // The width is the PanelYDimension
                 Thickness = (float)part.Material.Thickness,
                 Description1 = part.Description,
                 Material = part.Material.Name,
                 Units = units,
                 RotationAllowed = 1,
-                //DoLabel = false,
+                Rotated = false,
+                ContainsShape = part.ContainsShape,
+                RouteShape = part.ContainsShape,
+                PerimeterRoute = true
             };
-            ccparts.Add(ccpart);
+
+			ccparts.Add(ccpart);
         }
         return ccparts;
     }
@@ -152,7 +335,7 @@ static class CADCodeExtensions {
                 Width = (orientation == TableOrientation.Standard ? size.Width : size.Length).ToString(),
                 Thickness = item.Thickness.ToString(),
                 Priority = size.Priority.ToString(),
-                Graining = item.IsGrained ? "True" : "False", // TODO: check what this is supposed to be
+                Graining = item.IsGrained ? "1" : "0",
 
                 // TODO add supply to inventory
                 Supply = "999",

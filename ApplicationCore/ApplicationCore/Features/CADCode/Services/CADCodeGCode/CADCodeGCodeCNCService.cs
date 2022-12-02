@@ -20,35 +20,42 @@ public class CADCodeGCodeCNCService : ICNCService {
         _ccmachineConfigProvider = ccmachineConfigProvider;
     }
 
-    public ReleasedJob ExportToCNC(CNCBatch batch, IEnumerable<CNCMachineConfiguration> machineConfigs) {
+    public async Task<ReleasedJob> ExportToCNC(CNCBatch batch, IEnumerable<CNCMachineConfiguration> machineConfigs) {
 
         var cncConfig = _configProvider.GetConfiguration();
-        var availableInventory = _inventoryService.GetInventory();
+        var availableInventory = await _inventoryService.GetInventory();
 
         var ccmachineConfigs = _ccmachineConfigProvider.GetConfigurations();
         var ccmachineConfigDict = ccmachineConfigs.ToDictionary(c => c.MachineName, c => c);
 
-        var cadCode = new CADCodeManager(batch.Name, availableInventory);
-        foreach (var part in batch.Parts)
-            cadCode.AddPart(part);
+        var machineReleases = await Task.Run<IEnumerable<MachineRelease>>(() => {
 
-        var machineReleases = new List<MachineRelease>();
-        foreach (var machineConfig in machineConfigs) {
+            var cadCode = new CADCodeManager(batch.Name, availableInventory);
+            foreach (var part in batch.Parts)
+                cadCode.AddPart(part);
 
-            if (!ccmachineConfigDict.TryGetValue(machineConfig.MachineName, out CADCodeMachineConfiguration? ccmachineconfig) || ccmachineconfig is null) {
-                Console.WriteLine($"No CADCode configuration for machine {machineConfig.MachineName}");
-                // TODO show warning for missing CADCode configuration
-                continue;
+            var machineReleases = new List<MachineRelease>();
+            foreach (var machineConfig in machineConfigs) {
+
+                if (!ccmachineConfigDict.TryGetValue(machineConfig.MachineName, out CADCodeMachineConfiguration? ccmachineconfig) || ccmachineconfig is null) {
+                    Console.WriteLine($"No CADCode configuration for machine {machineConfig.MachineName}");
+                    // TODO show warning for missing CADCode configuration
+                    continue;
+                }
+
+                // TODO: pass machine name to function call so it can generate machine-specific results
+                _ = cadCode.GenerateSinglePrograms(cncConfig, machineConfig, ccmachineconfig);
+                var nestResults = cadCode.GenerateNestedCode(cncConfig, machineConfig, ccmachineconfig);
+
+                machineReleases.Add(GetMachineRelease(cncConfig, machineConfig, nestResults, batch.Parts));
             }
 
-            // TODO: pass machine name to function call so it can generate machine-specific results
-            _ = cadCode.GenerateSinglePrograms(cncConfig, machineConfig, ccmachineconfig);
-            var nestResults = cadCode.GenerateNestedCode(cncConfig, machineConfig, ccmachineconfig);
+            return machineReleases;
 
-            machineReleases.Add(GetMachineRelease(cncConfig, machineConfig, nestResults, batch.Parts));
-        }
+        });
 
-        return new ReleasedJob() {
+
+		return new ReleasedJob() {
             JobName = batch.Name,
             Releases = machineReleases
         };
@@ -64,7 +71,7 @@ public class CADCodeGCodeCNCService : ICNCService {
 
         foreach (var result in optiResult) { 
             if (result.Programs.Length != 0) { 
-                var matPrograms = result.PlacedParts.GroupBy(p => p.ProgramIndex).Select(g => {
+                var matPrograms = result.PlacedParts.Where(p => p.ProgramIndex != -1).GroupBy(p => p.ProgramIndex).Select(g => {
                     var programName = result.Programs[g.Key];
                     var inventory = result.UsedInventory[g.First().UsedInventoryIndex];
                     var totalArea = inventory.Width * inventory.Length;

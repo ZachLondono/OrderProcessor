@@ -85,7 +85,7 @@ public class QuestPDFReleasePDFService : IReleasePDFService {
             // TODO: add an option to use the file name or the line number (in the pattern)
             //int index = 1;
             var imgtxts = program.Parts.Select(p => new ImageText() { Text = $"{p.Name}", Location = p.Center });
-            byte[] imageData = PatternImageFactory.CreatePatternImage(program.ImagePath, release.MachineTableOrientation, (float)program.Material.Width, (float)program.Material.Length, imgtxts);
+            byte[] imageData = PatternImageFactory.CreatePatternImage(program.ImagePath, release.MachineTableOrientation, program.Material.Width, program.Material.Length, imgtxts);
 
             pages.Add(new() {
                 Header = $"{job.JobName}  [{release.MachineName}]",

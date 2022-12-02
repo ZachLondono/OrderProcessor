@@ -45,13 +45,14 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
                     if (m is not null) material = m;
                 },
                 error => { }
-            ); 
+            );
 
             var part = new CNCPart() {
                 FileName = $"Bottom{index++}",  // TODO: encode more part informaiton in file name
                 Description = "Drawer Box Bottom",
-                Width = bottom.Width.AsMillimeters(),
-                Length = bottom.Length.AsMillimeters(),
+                Length = bottom.Width.AsMillimeters(),
+                Width = bottom.Length.AsMillimeters(),
+                ContainsShape = false,
                 Qty = bottom.Qty,
                 Material = new() { Name = material.Name, Thickness = material.Thickness.AsMillimeters() },
                 Tokens = new List<Token>()

@@ -4,9 +4,9 @@ namespace ApplicationCore.Features.CADCode.Services;
 
 internal class MachineNameProvider {
 
-    private readonly ICADCodeLabelDataBaseConnectionStringFactory _connFactory;
+    private readonly ICADCodeLabelDataBaseConnectionFactory _connFactory;
 
-    public MachineNameProvider(ICADCodeLabelDataBaseConnectionStringFactory connFactory) {
+    public MachineNameProvider(ICADCodeLabelDataBaseConnectionFactory connFactory) {
         _connFactory = connFactory;
     }
 

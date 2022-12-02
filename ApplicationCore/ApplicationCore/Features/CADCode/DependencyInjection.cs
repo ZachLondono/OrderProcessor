@@ -2,6 +2,7 @@
 using ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode;
 using ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode.Configuration;
 using ApplicationCore.Features.CADCode.Services.Services.CADCodeGCode.PDF;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,12 +13,17 @@ public static class DependencyInjection {
     public static IServiceCollection AddCADCode(this IServiceCollection services, IConfiguration config) {
 
         var cadcode = config.GetRequiredSection("CADCode");
-        
+
         // TODO: improve how configuration is stored
 
-        var inventory = cadcode.GetValue<string>("InventoryConfig");
-        var jsonInventory = new JSONInventoryService(inventory);
-        services.AddTransient<IInventoryService>(s => jsonInventory);
+        //var inventory = cadcode.GetValue<string>("InventoryConfig");
+        //var jsonInventory = new JSONInventoryService(inventory);
+        //services.AddTransient<IInventoryService>(s => jsonInventory);
+
+        const string inventoryFile = @"Y:\CADCode\cfg\Inventory\Omnitech Inventory - Backup.mdb";
+        var databaseInventory = new MDBInventoryService(inventoryFile, new AccessCADCodeInventoryDataBaseConnectionFactory());
+		services.AddTransient<IInventoryService>(s => databaseInventory);
+
 
         var cadcodeconfig = cadcode.GetValue<string>("CADCodeConfig");
         var jsonCADCode = new JSONCADCodeConfigurationProvider(cadcodeconfig);
@@ -34,10 +40,11 @@ public static class DependencyInjection {
         services.AddTransient<ICNCConfigurationProvider, MockConfigurationProvider>(); // TODO: replace with real configuration provider
         services.AddTransient<IReleasePDFService, QuestPDFReleasePDFService>();
         services.AddTransient<ICNCService, CADCodeGCodeCNCService>();
-        services.AddTransient<ICADCodeLabelDataBaseConnectionStringFactory, AccessCADCodeLabelDataBaseConnectionStringFactory>();
+        services.AddTransient<ICADCodeLabelDataBaseConnectionFactory, AccessCADCodeLabelDataBaseConnectionFactory>();
         services.AddTransient<MachineNameProvider>();
         services.AddTransient<IAvailableJobProvider, AvailableJobProvider>();
         services.AddTransient<IExistingJobProvider, CADCodeLabelDBExistingJobProvider>();
+        services.AddTransient<ICSVParser, CSVParser>();
 
         return services;
 

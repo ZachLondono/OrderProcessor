@@ -4,6 +4,6 @@ namespace ApplicationCore.Features.CADCode.Services;
 
 public interface IInventoryService {
 
-    IEnumerable<InventoryItem> GetInventory();
+    Task<IEnumerable<InventoryItem>> GetInventory();
 
 }

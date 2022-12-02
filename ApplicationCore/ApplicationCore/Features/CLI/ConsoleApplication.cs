@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Loader;
+﻿using ApplicationCore.Features.CADCode.Contracts;
+using ApplicationCore.Features.Orders.Loader;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
 using CommandLine;
@@ -17,7 +18,7 @@ public class ConsoleApplication {
 
     public async Task Run(string[] args) {
 
-        await Parser.Default
+		await Parser.Default
                     .ParseArguments<ConsoleApplicationOption>(args)
                     .WithNotParsed(errors => {
                         
@@ -29,20 +30,36 @@ public class ConsoleApplication {
 
                     }).WithParsedAsync(async option => {
                         
-                        var provider = ParseProviderType(option.Provider);
-                        if (provider is not OrderSourceType.Unknown) {
-                            var result = await _bus.Send(new LoadOrderCommand.Command(provider, option.Source));
+                        if (!string.IsNullOrWhiteSpace(option.CSVTokenFilePath)) {
+
+							var result = await _bus.Send(new ReleaseCADCodeCSVBatchCommand(option.CSVTokenFilePath, @"C:\Users\Zachary Londono\Desktop\ExampleConfiguration\cutlists"));
                             result.Match(
+                                success => {
+                                    _messageBoxService.OpenDialog("Files created", "Success");
+								},
+                                error => {
+									_messageBoxService.OpenDialog(error.Details, error.Title);
+								}
+                            );
+
+						} else { 
+
+                            var provider = ParseProviderType(option.Provider);
+                            if (provider is not OrderSourceType.Unknown) {
+                                var result = await _bus.Send(new LoadOrderCommand.Command(provider, option.Source));
+                                result.Match(
                                 order => _messageBoxService.OpenDialog($"New order loaded\n{order.Name}\n{order.Id}", "New Order"),
                                 error => _messageBoxService.OpenDialog($"Error loading order\n{error.Details}", "Error")
-                            );
-                        } else {
-                            _messageBoxService.OpenDialog($"Unknown order provider '{option.Provider}'", "Unknown provider");
-                        }
+                                );
+                            } else {
+                                _messageBoxService.OpenDialog($"Unknown order provider '{option.Provider}'", "Unknown provider");
+                            }
 
-                    });
+						}
 
-    }
+					});
+
+	}
 
     private static OrderSourceType ParseProviderType(string provider) => provider switch {
         "allmoxy" => OrderSourceType.AllmoxyXML,
