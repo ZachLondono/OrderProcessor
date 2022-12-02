@@ -18,12 +18,9 @@ public class QueryMappingTests {
             VendorId = Guid.NewGuid(),
         };
 
-        var material = new DrawerBoxMaterial(Guid.NewGuid(), "", Dimension.FromMillimeters(0));
-        var option = new DrawerBoxOption(Guid.NewGuid(), "");
-
         var orderId = Guid.NewGuid();
         var boxes = new List<DrawerBox>() {
-            new DrawerBox(Guid.NewGuid(), 1, 123, 1, Dimension.FromInches(5), Dimension.FromInches(5), Dimension.FromInches(5), "", new(material, material, option, option, option))
+            new DrawerBoxBuilder().Build()
         };
 
         var items = new List<AdditionalItem>() {
@@ -67,7 +64,9 @@ public class QueryMappingTests {
     [Fact]
     public void DrawerBoxDataModel_ShouldMapToDomainModel() {
 
-        // Arrange
+        throw new NotImplementedException();
+
+        /*// Arrange
         var model = new DrawerBoxDataModel() {
             Id = Guid.NewGuid(),
             LineInOrder = 1,
@@ -80,14 +79,9 @@ public class QueryMappingTests {
             PostFinish = true,
             ScoopFront = true,
             BoxMaterialId = Guid.NewGuid(),
-            BoxMaterialName = "Box Material Name",
             BottomMaterialId = Guid.NewGuid(),
-            BottomMaterialName = "Bot Material Name",
-            ClipsId = Guid.NewGuid(),
             ClipsName = "Clips",
-            NotchesId = Guid.NewGuid(),
             NotchesName = "Notches",
-            AccessoryId = Guid.NewGuid(),
             AccessoryName = "Accessory"
         };
 
@@ -105,8 +99,8 @@ public class QueryMappingTests {
         box.Note.Should().Be(model.Note);
         box.Options.PostFinish.Should().Be(model.PostFinish);
         box.Options.ScoopFront.Should().Be(model.ScoopFront);
-        box.Options.BoxMaterial.Id.Should().Be(model.BoxMaterialId);
-        box.Options.BoxMaterial.Name.Should().Be(model.BoxMaterialName);
+        box.Options.BoxMaterialId.Id.Should().Be(model.BoxMaterialId);
+        box.Options.BoxMaterialId.Name.Should().Be(model.BoxMaterialName);
         box.Options.BottomMaterial.Id.Should().Be(model.BottomMaterialId);
         box.Options.BottomMaterial.Name.Should().Be(model.BottomMaterialName);
         box.Options.Clips.Id.Should().Be(model.ClipsId);
@@ -115,7 +109,7 @@ public class QueryMappingTests {
         box.Options.Notches.Name.Should().Be(model.NotchesName);
         box.Options.Accessory.Id.Should().Be(model.AccessoryId);
         box.Options.Accessory.Name.Should().Be(model.AccessoryName);
-
+*/
 
     }
 

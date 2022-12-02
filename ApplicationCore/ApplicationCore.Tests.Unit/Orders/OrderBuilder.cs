@@ -20,6 +20,7 @@ internal class OrderBuilder {
     private decimal _tax = decimal.Zero;
     private decimal _shipping = decimal.Zero;
     private decimal _priceAdjustment = decimal.Zero;
+    private bool _rush = false;
     private Dictionary<string,string> _info = new();
     private List<AdditionalItem> _items = new();
     private List<DrawerBox> _boxes = new();
@@ -119,6 +120,11 @@ internal class OrderBuilder {
         return this;
     }
 
-    public Order Buid() => new(_id, _source, _status, _number, _name, _customerId, _vendorId, _note, _comment, _orderDate, _releaseDate, _productionDate, _completeDate, _tax, _shipping, _priceAdjustment, _info, _boxes, _items);
+    public OrderBuilder WithRush(bool rush) {
+        _rush = rush;
+        return this;
+    }
+
+    public Order Buid() => new(_id, _source, _status, _number, _name, _customerId, _vendorId, _note, _comment, _orderDate, _releaseDate, _productionDate, _completeDate, _tax, _shipping, _priceAdjustment, _rush, _info, _boxes, _items);
 
 }

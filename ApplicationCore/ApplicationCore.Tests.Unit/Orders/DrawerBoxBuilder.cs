@@ -13,12 +13,14 @@ public class DrawerBoxBuilder {
     private Dimension _width = Dimension.FromMillimeters(0);
     private Dimension _depth = Dimension.FromMillimeters(0);
     private string _note = string.Empty;
-    private DrawerBoxOptions _options = new(
-        new DrawerBoxMaterial(Guid.NewGuid(), "",Dimension.FromMillimeters(0)),
-        new DrawerBoxMaterial(Guid.NewGuid(), "", Dimension.FromMillimeters(0)),
-        new DrawerBoxOption(Guid.NewGuid(), ""),
-        new DrawerBoxOption(Guid.NewGuid(), ""),
-        new DrawerBoxOption(Guid.NewGuid(), ""));
+    private Dictionary<string, string> _labelFields = new();
+	private DrawerBoxOptions _options = new(
+        Guid.NewGuid(),
+        Guid.NewGuid(),
+        "",
+        "",
+        "",
+        LogoPosition.None);
 
     public DrawerBoxBuilder WithId(Guid id) {
         _id = id;
@@ -60,6 +62,16 @@ public class DrawerBoxBuilder {
         return this;
     }
 
-    public DrawerBox Build() => new DrawerBox(_id, _line, _unitPrice, _qty, _height, _width, _depth, _note, _options);
+    public DrawerBoxBuilder WithNote(string note) {
+        _note = note;
+        return this;
+    }
+
+    public DrawerBoxBuilder WithLabelFields(Dictionary<string, string> fields) {
+        _labelFields = fields;
+        return this;
+    }
+
+    public DrawerBox Build() => new DrawerBox(_id, _line, _unitPrice, _qty, _height, _width, _depth, _note, _labelFields, _options);
 
 }

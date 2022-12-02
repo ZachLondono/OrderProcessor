@@ -31,7 +31,7 @@ public class CompanyStateTests {
     public void ReplaceCompany_ShouldSetCopmany_AndResetIsDirty() {
 
         // Arrange
-        var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "");
+        var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "", "");
 
         // Act
         _sut.ReplaceCompany(company);
@@ -53,9 +53,10 @@ public class CompanyStateTests {
         string phoneNumber = "123-456-7890";
         string invoiceEmail = "abc@email.com";
         string confirmationEmail = "abc@email.com";
+        string contactName = "Bob";
 
-        // Act
-        _sut.UpdateCompany(name, addr, phoneNumber, invoiceEmail, confirmationEmail);
+		// Act
+		_sut.UpdateCompany(name, addr, phoneNumber, invoiceEmail, confirmationEmail, contactName);
 
         // Assert
         _sut.Company.Should().BeNull();
@@ -67,7 +68,7 @@ public class CompanyStateTests {
     public void UpdateCompany_ShouldReplaceCopmany_AndSetIsDirty_WhenCompanyIsSet() {
 
         // Arrange
-        var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "");
+        var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "", "");
         _sut.ReplaceCompany(company);
 
         string name = "NewName";
@@ -77,12 +78,13 @@ public class CompanyStateTests {
         string phoneNumber = "123-456-7890";
         string invoiceEmail = "abc@email.com";
         string confirmationEmail = "abc@email.com";
+		string contactName = "Bob";
 
-        // Act
-        _sut.UpdateCompany(name, addr, phoneNumber, invoiceEmail, confirmationEmail);
+		// Act
+		_sut.UpdateCompany(name, addr, phoneNumber, invoiceEmail, confirmationEmail, contactName);
 
-        // Assert
-        _sut.Company.Should().NotBe(company);
+		// Assert
+		_sut.Company.Should().NotBe(company);
         _sut.Company.Should().NotBeNull();
         _sut.Company!.Address.Should().Be(addr);
         _sut.Company.Name.Should().Be(name);
@@ -112,7 +114,7 @@ public class CompanyStateTests {
     public void UpdateCompany_ShouldCallUpdate_AndResetIsDirty_WhenCompanyIsSet() {
 
         // Arrange
-        var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "");
+        var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "", "");
         _sut.ReplaceCompany(company);
 
         string name = "NewName";
@@ -122,7 +124,8 @@ public class CompanyStateTests {
         string phoneNumber = "";
         string invoiceEmail = "";
         string confirmationEmail = "";
-        _sut.UpdateCompany(name, addr, phoneNumber, invoiceEmail, confirmationEmail);
+        string contactName = "";
+        _sut.UpdateCompany(name, addr, phoneNumber, invoiceEmail, confirmationEmail, contactName);
 
         // Act
         _sut.SaveChanges().Wait();
@@ -138,7 +141,7 @@ public class CompanyStateTests {
     public void LoadCompany_ShouldCallQuery_AndSetCompany() {
 
         // Arrange
-        var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "");
+        var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "", "");
         var response = new Response<Company>(company);
         _bus.Send(new GetCompanyById.Query(company.Id)).Returns(response);
 
