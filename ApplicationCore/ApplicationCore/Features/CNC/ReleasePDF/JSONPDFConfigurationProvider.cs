@@ -1,20 +1,22 @@
 ﻿using System.Text.Json.Serialization;
 using System.Text.Json;
-using ApplicationCore.Features.CNC.Services.Domain.PDF;
 
-namespace ApplicationCore.Features.CNC.Services.Services.CADCodeGCode.PDF;
+namespace ApplicationCore.Features.CNC.ReleasePDF;
 
-public class JSONPDFConfigurationProvider : IPDFConfigurationProvider {
+public class JSONPDFConfigurationProvider : IPDFConfigurationProvider
+{
 
     private readonly string _filepath;
 
     public JSONPDFConfigurationProvider(string filepath) => _filepath = filepath;
 
-    public PDFConfiguration GetConfiguration() {
+    public PDFConfiguration GetConfiguration()
+    {
 
         using var stream = File.OpenRead(_filepath);
 
-        var options = new JsonSerializerOptions {
+        var options = new JsonSerializerOptions
+        {
             Converters = {
                 new JsonStringEnumConverter( JsonNamingPolicy.CamelCase)
             },

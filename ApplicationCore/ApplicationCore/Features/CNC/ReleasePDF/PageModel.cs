@@ -1,6 +1,7 @@
-﻿namespace ApplicationCore.Features.CNC.Services.Domain.PDF;
+﻿namespace ApplicationCore.Features.CNC.ReleasePDF;
 
-public class PageModel {
+public class PageModel
+{
 
     public string Header { get; init; } = string.Empty;
     public string Title { get; init; } = string.Empty;

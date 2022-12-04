@@ -2,25 +2,34 @@
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using ApplicationCore.Features.CNC.Services.Domain;
 using Image = System.Drawing.Image;
 
-namespace ApplicationCore.Features.CNC.Services.Domain.PDF;
+namespace ApplicationCore.Features.CNC.ReleasePDF;
 
-public class PatternImageFactory {
+public class PatternImageFactory
+{
 
-    public static byte[] CreatePatternImage(string imagePath, TableOrientation orientation, double sheetWidth, double sheetLength, IEnumerable<ImageText> text) {
+    public static byte[] CreatePatternImage(string imagePath, TableOrientation orientation, double sheetWidth, double sheetLength, IEnumerable<ImageText> text)
+    {
 
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
             // TODO: use skia sharp for cross platform support
             return Array.Empty<byte>();
-        } else {
+        }
+        else
+        {
 
-            try { 
+            try
+            {
                 var bitmap = GetBitmapFromMetaFile(imagePath);
                 AddTextToBitmap(bitmap, text, orientation, sheetWidth, sheetLength);
                 if (orientation == TableOrientation.Rotated) bitmap.RotateFlip(RotateFlipType.Rotate270FlipNone);
                 return GetBitmapData(bitmap);
-            } catch {
+            }
+            catch
+            {
 
                 float fontSize = 14;
                 using var font = new Font("Tahoma", fontSize, FontStyle.Regular);
@@ -33,7 +42,7 @@ public class PatternImageFactory {
                 using var cg = Graphics.FromImage(img);
 
                 var textSize = cg.MeasureString(errtext, font);
-                var drawPoint = new PointF(width/2 - textSize.Width / 2, height/2 - textSize.Height / 2); ;
+                var drawPoint = new PointF(width / 2 - textSize.Width / 2, height / 2 - textSize.Height / 2); ;
                 var rect = new RectangleF(drawPoint, textSize);
                 cg.DrawString(errtext, font, Brushes.Black, rect);
                 cg.Flush();
@@ -47,15 +56,17 @@ public class PatternImageFactory {
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
-    static void AddTextToBitmap(Bitmap bitmap, IEnumerable<ImageText> patternTexts, TableOrientation orientation, double sheetWidth, double sheetLength) {
+    static void AddTextToBitmap(Bitmap bitmap, IEnumerable<ImageText> patternTexts, TableOrientation orientation, double sheetWidth, double sheetLength)
+    {
 
-		double mmToPxScaleX = bitmap.Width / sheetLength;
-		double mmToPxScaleY = bitmap.Height / sheetWidth;
+        double mmToPxScaleX = bitmap.Width / sheetLength;
+        double mmToPxScaleY = bitmap.Height / sheetWidth;
 
         float fontSize = 8;
         using var font = new Font("Tahoma", fontSize, FontStyle.Bold);
 
-        foreach (ImageText text in patternTexts) {
+        foreach (ImageText text in patternTexts)
+        {
 
             using var cg = Graphics.FromImage(bitmap);
             cg.SmoothingMode = SmoothingMode.AntiAlias;
@@ -63,9 +74,10 @@ public class PatternImageFactory {
             cg.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
             double x = text.Location.X * mmToPxScaleX;
-			double y = text.Location.Y * mmToPxScaleY;
+            double y = text.Location.Y * mmToPxScaleY;
             if (orientation == TableOrientation.Standard) y = bitmap.Height - y;
-            else {
+            else
+            {
                 //var temp = x;
                 //x = y;
                 //y = temp;
@@ -73,12 +85,15 @@ public class PatternImageFactory {
 
             var textSize = cg.MeasureString(text.Text, font);
             PointF drawPoint;
-            if (orientation == TableOrientation.Rotated) {
-                cg.TranslateTransform((float) x, (float)y);
+            if (orientation == TableOrientation.Rotated)
+            {
+                cg.TranslateTransform((float)x, (float)y);
                 cg.RotateTransform(90);
                 drawPoint = new PointF(-textSize.Width / 2, -textSize.Height / 2);
-            } else {
-                drawPoint = new PointF((float) x - textSize.Width / 2, (float) y - textSize.Height / 2);
+            }
+            else
+            {
+                drawPoint = new PointF((float)x - textSize.Width / 2, (float)y - textSize.Height / 2);
             }
 
             var rect = new RectangleF(drawPoint, textSize);
@@ -91,22 +106,29 @@ public class PatternImageFactory {
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
-    private static Bitmap TrimBitmapWhiteSpace(Bitmap bitmap) {
+    private static Bitmap TrimBitmapWhiteSpace(Bitmap bitmap)
+    {
         int w = bitmap.Width;
         int h = bitmap.Height;
 
-        bool IsAllWhiteRow(int row) {
-            for (int i = 0; i < w; i++) {
-                if (bitmap.GetPixel(i, row).R != 255) {
+        bool IsAllWhiteRow(int row)
+        {
+            for (int i = 0; i < w; i++)
+            {
+                if (bitmap.GetPixel(i, row).R != 255)
+                {
                     return false;
                 }
             }
             return true;
         }
 
-        bool IsAllWhiteColumn(int col) {
-            for (int i = 0; i < h; i++) {
-                if (bitmap.GetPixel(col, i).R != 255) {
+        bool IsAllWhiteColumn(int col)
+        {
+            for (int i = 0; i < h; i++)
+            {
+                if (bitmap.GetPixel(col, i).R != 255)
+                {
                     return false;
                 }
             }
@@ -114,37 +136,43 @@ public class PatternImageFactory {
         }
 
         int leftMost = 0;
-        for (int col = 0; col < w; col++) {
+        for (int col = 0; col < w; col++)
+        {
             if (IsAllWhiteColumn(col)) leftMost = col + 1;
             else break;
         }
 
         int rightMost = w - 1;
-        for (int col = rightMost; col > 0; col--) {
+        for (int col = rightMost; col > 0; col--)
+        {
             if (IsAllWhiteColumn(col)) rightMost = col - 1;
             else break;
         }
 
         int topMost = 0;
-        for (int row = 0; row < h; row++) {
+        for (int row = 0; row < h; row++)
+        {
             if (IsAllWhiteRow(row)) topMost = row + 1;
             else break;
         }
 
         int bottomMost = h - 1;
-        for (int row = bottomMost; row > 0; row--) {
+        for (int row = bottomMost; row > 0; row--)
+        {
             if (IsAllWhiteRow(row)) bottomMost = row - 1;
             else break;
         }
 
-        if (rightMost == 0 && bottomMost == 0 && leftMost == w && topMost == h) {
+        if (rightMost == 0 && bottomMost == 0 && leftMost == w && topMost == h)
+        {
             return bitmap;
         }
 
         int croppedWidth = rightMost - leftMost + 1;
         int croppedHeight = bottomMost - topMost + 1;
 
-        try {
+        try
+        {
             Bitmap target = new Bitmap(croppedWidth, croppedHeight);
             using (Graphics g = Graphics.FromImage(target))
             {
@@ -154,13 +182,16 @@ public class PatternImageFactory {
                     GraphicsUnit.Pixel);
             }
             return target;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             throw new Exception(string.Format("Values are top={0} bottom={1} left={2} right={3}", topMost, bottomMost, leftMost, rightMost), ex);
         }
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
-    static Bitmap GetBitmapFromMetaFile(string path) {
+    static Bitmap GetBitmapFromMetaFile(string path)
+    {
 
         using Metafile? img = Image.FromFile(path) as Metafile;
         if (img is null) return new Bitmap(0, 0);
@@ -180,7 +211,8 @@ public class PatternImageFactory {
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
-    static byte[] GetBitmapData(Bitmap bitmap) {
+    static byte[] GetBitmapData(Bitmap bitmap)
+    {
         using var ms = new MemoryStream();
         bitmap.Save(ms, ImageFormat.Png);
         return ms.ToArray();

@@ -1,6 +1,7 @@
-﻿namespace ApplicationCore.Features.CNC.Services.Domain.PDF;
+﻿namespace ApplicationCore.Features.CNC.ReleasePDF;
 
-public class CoverModel {
+public class CoverModel
+{
 
     public string Title { get; init; } = string.Empty;
     public IReadOnlyDictionary<string, string> Info { get; init; } = new Dictionary<string, string>();

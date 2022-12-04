@@ -2,35 +2,44 @@
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
-namespace ApplicationCore.Features.CNC.Services.Domain.PDF;
+namespace ApplicationCore.Features.CNC.ReleasePDF;
 
-public class PDFManager {
+public class PDFManager
+{
 
     public List<PageModel> Pages { get; init; } = new();
     public CoverModel Cover { get; set; } = new();
     private readonly PDFConfiguration _config;
 
-    public PDFManager(PDFConfiguration config) {
+    public PDFManager(PDFConfiguration config)
+    {
         _config = config;
     }
 
-    public Document BuildDocument() {
-        return Document.Create(d => {
-            if (Cover is not null) {
-                d.Page(page => {
+    public Document BuildDocument()
+    {
+        return Document.Create(d =>
+        {
+            if (Cover is not null)
+            {
+                d.Page(page =>
+                {
                     BuildSummary(page, Cover, _config);
                 });
             }
 
-            foreach (var data in Pages) {
-                d.Page(page => {
+            foreach (var data in Pages)
+            {
+                d.Page(page =>
+                {
                     BuildPage(page, data, _config);
                 });
             }
         });
     }
 
-    private static void BuildSummary(PageDescriptor page, CoverModel summary, PDFConfiguration config) {
+    private static void BuildSummary(PageDescriptor page, CoverModel summary, PDFConfiguration config)
+    {
 
         page.Size(PageSizes.A4);
         page.Margin(2.54f, Unit.Centimetre);
@@ -42,7 +51,8 @@ public class PDFManager {
             .Text(summary.Title)
             .WithStyle(pageHeaderStyle);
 
-        page.Content().Column(c => {
+        page.Content().Column(c =>
+        {
 
             var titleStyle = config.TitleStyle;
             var tableHeaderStyle = config.TableHeaderStyle;
@@ -50,13 +60,16 @@ public class PDFManager {
 
             c.Spacing(20);
 
-            c.Item().Table(t => {
-                t.ColumnsDefinition(c => {
+            c.Item().Table(t =>
+            {
+                t.ColumnsDefinition(c =>
+                {
                     c.ConstantColumn(config.InfoLabelColumnWidth);
                     c.RelativeColumn();
                 });
 
-                foreach (var item in summary.Info) {
+                foreach (var item in summary.Info)
+                {
                     t.Cell().BorderTop(0.5f)
                             .BorderLeft(0.5f)
                             .BorderBottom(0.5f)
@@ -78,15 +91,21 @@ public class PDFManager {
             });
 
 
-            foreach (var tabledata in summary.Tables) {
+            foreach (var tabledata in summary.Tables)
+            {
 
                 c.Item()
-                    .Column(c => {
+                    .Column(c =>
+                    {
                         c.Item().Text(tabledata.Title).WithStyle(titleStyle);
-                        if (tabledata.Content.Count == 0) {
+                        if (tabledata.Content.Count == 0)
+                        {
                             c.Item().Text("no data").Italic();
-                        } else {
-                            c.Item().Table(t => {
+                        }
+                        else
+                        {
+                            c.Item().Table(t =>
+                            {
                                 BuildTable(t, tabledata, config);
                             });
                         }
@@ -98,7 +117,8 @@ public class PDFManager {
 
     }
 
-    private static void BuildPage(PageDescriptor page, PageModel data, PDFConfiguration config) {
+    private static void BuildPage(PageDescriptor page, PageModel data, PDFConfiguration config)
+    {
 
         page.Size(PageSizes.A4);
         page.MarginHorizontal(2, Unit.Centimetre);
@@ -113,7 +133,8 @@ public class PDFManager {
         var titleStyle = config.TitleStyle;
         page.Content()
             .PaddingVertical(1, Unit.Centimetre)
-            .Column(x => {
+            .Column(x =>
+            {
                 if (data.ImageData.Length != 0) x.Item().Image(data.ImageData);
                 x.Item().AlignCenter()
                         .Text(data.Title)
@@ -122,21 +143,25 @@ public class PDFManager {
                         .PaddingBottom(20)
                         .Text(data.Subtitle)
                         .WithStyle(titleStyle);
-                x.Item().Column(c => {
+                x.Item().Column(c =>
+                {
                     c.Item().AlignLeft()
                         .Text(data.Parts.Title)
                         .WithStyle(titleStyle);
-                    c.Item().Table(t => {
+                    c.Item().Table(t =>
+                    {
                         BuildTable(t, data.Parts, config);
                     });
                 });
             });
 
         page.Footer()
-            .Column(c => {
+            .Column(c =>
+            {
                 c.Item()
                 .AlignCenter()
-                .Text(x => {
+                .Text(x =>
+                {
                     x.DefaultTextStyle(x => x.FontSize(10));
                     x.Span("Page ");
                     x.CurrentPageNumber();
@@ -151,16 +176,19 @@ public class PDFManager {
 
     }
 
-    private static void BuildTable(TableDescriptor table, Table data, PDFConfiguration config) {
+    private static void BuildTable(TableDescriptor table, Table data, PDFConfiguration config)
+    {
 
         var headers = data.Content.SelectMany(r => r.Keys).Distinct();
 
-        table.ColumnsDefinition(c => {
+        table.ColumnsDefinition(c =>
+        {
             foreach (var key in headers) c.RelativeColumn();
         });
 
         var headerStyle = config.TableHeaderStyle;
-        table.Header(h => {
+        table.Header(h =>
+        {
             foreach (var key in headers)
                 h.Cell()
                     .BorderTop(0.5f)
@@ -175,8 +203,10 @@ public class PDFManager {
         });
 
         var cellStyle = config.TableCellStyle;
-        foreach (var row in data.Content) {
-            foreach (var key in headers) {
+        foreach (var row in data.Content)
+        {
+            foreach (var key in headers)
+            {
                 string? value;
                 if (!row.TryGetValue(key, out value)) value = "";
                 table.Cell()
