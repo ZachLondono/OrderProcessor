@@ -41,7 +41,6 @@ public static class DependencyInjection {
         services.AddTransient<ICNCConfigurationProvider, MockConfigurationProvider>(); // TODO: replace with real configuration provider
         services.AddTransient<IReleasePDFWriter, QuestPDFWriter>();
         services.AddTransient<ICNCService, CADCodeGCodeCNCService>();
-        services.AddTransient<ICADCodeLabelDataBaseConnectionFactory, AccessCADCodeLabelDataBaseConnectionFactory>();
         services.AddTransient<MachineNameProvider>();
         services.AddTransient<IAvailableJobProvider, AvailableJobProvider>();
         services.AddTransient<IExistingJobProvider, CADCodeLabelDBExistingJobProvider>();

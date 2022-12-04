@@ -1,10 +1,9 @@
 ﻿using System.Data;
 using System.Data.OleDb;
 
-namespace ApplicationCore.Features.CNC.LabelDB;
+namespace ApplicationCore.Shared;
 
-internal class AccessCADCodeLabelDataBaseConnectionFactory : ICADCodeLabelDataBaseConnectionFactory
-{
+internal class AccessDBConnectionFactory : IAccessDBConnectionFactory {
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
     public IDbConnection CreateConnection(string filePath) => new OleDbConnection($"Provider=Microsoft.ACE.OLEDB.12.0;data source={filePath}");

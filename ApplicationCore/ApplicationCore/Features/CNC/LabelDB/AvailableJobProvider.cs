@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.CNC.GCode;
+using ApplicationCore.Shared;
 using Dapper;
 
 namespace ApplicationCore.Features.CNC.LabelDB;
@@ -7,9 +8,9 @@ internal class AvailableJobProvider : IAvailableJobProvider
 {
 
     private readonly MachineNameProvider _machineNameProvider;
-    private readonly ICADCodeLabelDataBaseConnectionFactory _connFactory;
+    private readonly IAccessDBConnectionFactory _connFactory;
 
-    public AvailableJobProvider(MachineNameProvider machineNameProvider, ICADCodeLabelDataBaseConnectionFactory connFactory)
+    public AvailableJobProvider(MachineNameProvider machineNameProvider, IAccessDBConnectionFactory connFactory)
     {
         _machineNameProvider = machineNameProvider;
         _connFactory = connFactory;

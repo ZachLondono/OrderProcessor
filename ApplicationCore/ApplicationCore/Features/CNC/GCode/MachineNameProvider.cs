@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.CNC.LabelDB;
+﻿using ApplicationCore.Shared;
 using Dapper;
 
 namespace ApplicationCore.Features.CNC.GCode;
@@ -6,9 +6,9 @@ namespace ApplicationCore.Features.CNC.GCode;
 internal class MachineNameProvider
 {
 
-    private readonly ICADCodeLabelDataBaseConnectionFactory _connFactory;
+    private readonly IAccessDBConnectionFactory _connFactory;
 
-    public MachineNameProvider(ICADCodeLabelDataBaseConnectionFactory connFactory)
+    public MachineNameProvider(IAccessDBConnectionFactory connFactory)
     {
         _connFactory = connFactory;
     }

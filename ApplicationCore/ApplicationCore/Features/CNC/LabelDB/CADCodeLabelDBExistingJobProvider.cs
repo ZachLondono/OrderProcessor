@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.CNC.GCode;
 using ApplicationCore.Features.CNC.GCode.Contracts.ProgramRelease;
 using ApplicationCore.Features.CNC.GCode.Domain;
+using ApplicationCore.Shared;
 using Dapper;
 
 namespace ApplicationCore.Features.CNC.LabelDB;
@@ -9,10 +10,10 @@ internal class CADCodeLabelDBExistingJobProvider : IExistingJobProvider
 {
 
     private readonly MachineNameProvider _machineNameProvider;
-    private readonly ICADCodeLabelDataBaseConnectionFactory _connFactory;
+    private readonly IAccessDBConnectionFactory _connFactory;
     private readonly ICNCConfigurationProvider _cncConfigProvider;
 
-    public CADCodeLabelDBExistingJobProvider(MachineNameProvider machineNameProvider, ICADCodeLabelDataBaseConnectionFactory connFactory, ICNCConfigurationProvider cncConfigProvider)
+    public CADCodeLabelDBExistingJobProvider(MachineNameProvider machineNameProvider, IAccessDBConnectionFactory connFactory, ICNCConfigurationProvider cncConfigProvider)
     {
         _machineNameProvider = machineNameProvider;
         _connFactory = connFactory;
