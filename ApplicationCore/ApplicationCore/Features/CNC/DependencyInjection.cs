@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.CNC.CSV;
 using ApplicationCore.Features.CNC.GCode;
 using ApplicationCore.Features.CNC.GCode.Configuration;
-using ApplicationCore.Features.CNC.LabelDB;
+using ApplicationCore.Features.CNC.LabelDB.Services;
 using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
 using ApplicationCore.Features.CNC.ReleasePDF.Services;
 using Microsoft.Extensions.Configuration;

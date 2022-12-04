@@ -1,20 +1,17 @@
 ﻿using ApplicationCore.Shared;
 using Dapper;
 
-namespace ApplicationCore.Features.CNC.GCode;
+namespace ApplicationCore.Features.CNC.LabelDB.Services;
 
-internal class MachineNameProvider
-{
+internal class MachineNameProvider {
 
     private readonly IAccessDBConnectionFactory _connFactory;
 
-    public MachineNameProvider(IAccessDBConnectionFactory connFactory)
-    {
+    public MachineNameProvider(IAccessDBConnectionFactory connFactory) {
         _connFactory = connFactory;
     }
 
-    public async Task<string> GetMachineNameAsync(string filePath, string jobName)
-    {
+    public async Task<string> GetMachineNameAsync(string filePath, string jobName) {
 
         using var connection = _connFactory.CreateConnection(filePath);
 
