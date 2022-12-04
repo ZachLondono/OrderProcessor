@@ -11,12 +11,12 @@ namespace ApplicationCore.Features.Orders.Release.Handlers;
 
 internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotification> {
 
-    private readonly ILogger<ADuiePyleLabelHandler> _logger;
+    private readonly ILogger<CADCodeProgramHandler> _logger;
     private readonly IBus _bus;
     private readonly IUIBus _uibus;
     private readonly ConstructionValues _construction;
 
-    public CADCodeProgramHandler(ILogger<ADuiePyleLabelHandler> logger, IBus bus, IUIBus uibus, ConstructionValues construction) {
+    public CADCodeProgramHandler(ILogger<CADCodeProgramHandler> logger, IBus bus, IUIBus uibus, ConstructionValues construction) {
         _bus = bus;
         _uibus = uibus;
         _logger = logger;
