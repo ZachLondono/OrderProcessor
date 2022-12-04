@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Features.CNC.GCode.Domain.Inventory;
-using ApplicationCore.Features.CNC.Services.Domain.Inventory;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 

@@ -1,9 +1,6 @@
 ﻿using CADCode;
-using ApplicationCore.Features.CNC.Services.Domain.CADCode;
 using Part = CADCode.Part;
-using ApplicationCore.Features.CNC.Domain;
 using System.Diagnostics;
-using ApplicationCore.Features.CNC.Services;
 using ApplicationCore.Features.CNC.GCode.Domain.CADCode.Configuration;
 using ApplicationCore.Features.CNC.GCode.Domain.CADCode;
 using ApplicationCore.Features.CNC.GCode.Domain.Inventory;

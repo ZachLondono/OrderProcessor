@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Features.CNC.GCode.Domain.Inventory;
-using ApplicationCore.Features.CNC.Services.Domain.Inventory;
 using Dapper;
 
 namespace ApplicationCore.Features.CNC.GCode;
