@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.CNC.Contracts;
-using ApplicationCore.Features.CNC.Contracts.Machining;
+﻿using ApplicationCore.Features.CNC.GCode.Contracts;
+using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
 using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Queries;

@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.CNC.Services;
+﻿using ApplicationCore.Features.CNC.GCode;
 using Dapper;
 
 namespace ApplicationCore.Features.CNC.LabelDB;

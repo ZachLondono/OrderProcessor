@@ -1,7 +1,7 @@
 ﻿using CsvHelper.Configuration;
 using CsvHelper;
 using CsvHelper.TypeConversion;
-using ApplicationCore.Features.CNC.Contracts.Machining;
+using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
 
 namespace ApplicationCore.Features.CNC.CSV;
 

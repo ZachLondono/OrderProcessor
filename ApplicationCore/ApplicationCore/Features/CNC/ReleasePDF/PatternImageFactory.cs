@@ -2,7 +2,7 @@
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using ApplicationCore.Features.CNC.Services.Domain;
+using ApplicationCore.Features.CNC.GCode.Domain;
 using Image = System.Drawing.Image;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF;

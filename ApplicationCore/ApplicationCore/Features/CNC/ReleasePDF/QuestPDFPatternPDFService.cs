@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.CNC.Contracts.ProgramRelease;
-using ApplicationCore.Features.CNC.Domain;
+﻿using ApplicationCore.Features.CNC.Domain;
+using ApplicationCore.Features.CNC.GCode.Contracts.ProgramRelease;
 using QuestPDF.Fluent;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF;

@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.CNC.Contracts.Machining;
+﻿using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF;
 

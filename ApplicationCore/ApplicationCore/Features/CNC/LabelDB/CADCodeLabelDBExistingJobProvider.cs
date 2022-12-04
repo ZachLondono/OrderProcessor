@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.CNC.Contracts.ProgramRelease;
-using ApplicationCore.Features.CNC.Services;
-using ApplicationCore.Features.CNC.Services.Domain;
+﻿using ApplicationCore.Features.CNC.GCode;
+using ApplicationCore.Features.CNC.GCode.Contracts.ProgramRelease;
+using ApplicationCore.Features.CNC.GCode.Domain;
 using Dapper;
 
 namespace ApplicationCore.Features.CNC.LabelDB;

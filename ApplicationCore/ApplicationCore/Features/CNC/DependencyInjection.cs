@@ -1,8 +1,10 @@
 ﻿using ApplicationCore.Features.CNC.CSV;
+using ApplicationCore.Features.CNC.GCode;
+using ApplicationCore.Features.CNC.GCode.CADCodeGCode.Configuration;
+using ApplicationCore.Features.CNC.GCode.Configuration;
 using ApplicationCore.Features.CNC.LabelDB;
 using ApplicationCore.Features.CNC.ReleasePDF;
 using ApplicationCore.Features.CNC.Services;
-using ApplicationCore.Features.CNC.Services.Services.CADCodeGCode;
 using ApplicationCore.Features.CNC.Services.Services.CADCodeGCode.Configuration;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.Extensions.Configuration;

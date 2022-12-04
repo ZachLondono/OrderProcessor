@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.CNC.Contracts.Machining;
+﻿using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
 using CsvHelper.Configuration.Attributes;
 
 namespace ApplicationCore.Features.CNC.CSV;
