@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.CNC.CSV;
+using ApplicationCore.Features.CNC.LabelDB;
 using ApplicationCore.Features.CNC.ReleasePDF;
 using ApplicationCore.Features.CNC.Services;
 using ApplicationCore.Features.CNC.Services.Services.CADCodeGCode;

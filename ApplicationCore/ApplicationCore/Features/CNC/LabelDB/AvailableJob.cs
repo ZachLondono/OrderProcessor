@@ -1,3 +1,3 @@
-﻿namespace ApplicationCore.Features.CNC.Contracts;
+﻿namespace ApplicationCore.Features.CNC.LabelDB;
 
 public record AvailableJob(string Name, DateTime Created, string MachineName);
