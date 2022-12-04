@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.CNC.GCode.Contracts;
+﻿using ApplicationCore.Features.CNC.GCode;
+using ApplicationCore.Features.CNC.GCode.Contracts;
 using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
 using ApplicationCore.Features.CNC.ReleasePDF;
 using ApplicationCore.Features.Orders.Domain;
@@ -69,16 +70,16 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
         };
 
 		// TODO send emails to shop manager
-		var response = await _bus.Send(new CNCReleaseRequest(batch));
+		var response = await _bus.Send(new GenerateGCode.Command(batch));
 
         response.Match(
 
             async job => {
 
-                var pdfResponse = await _bus.Send(new GenerateCNCReleasePDFRequest(job, notification.ReleaseProfile.CNCReportOutputDirectory));
+                var pdfResponse = await _bus.Send(new GenerateCNCReleasePDF.Command(job, notification.ReleaseProfile.CNCReportOutputDirectory));
                 pdfResponse.Match(
-                    filePaths => {
-						foreach (var file in filePaths)
+                    pdfResult => {
+						foreach (var file in pdfResult.FilePaths)
 							_uibus.Publish(new OrderReleaseSuccessNotification($"CNC job report created {file}"));
 					},
                     error => {
