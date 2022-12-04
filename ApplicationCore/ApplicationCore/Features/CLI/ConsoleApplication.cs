@@ -1,4 +1,9 @@
-﻿using ApplicationCore.Features.CNC.CSV;
+﻿using ApplicationCore.Features.CNC;
+using ApplicationCore.Features.CNC.CSV;
+using ApplicationCore.Features.CNC.GCode;
+using ApplicationCore.Features.CNC.GCode.Contracts;
+using ApplicationCore.Features.CNC.ReleasePDF;
+using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Features.Orders.Loader;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
@@ -32,15 +37,7 @@ public class ConsoleApplication {
                         
                         if (!string.IsNullOrWhiteSpace(option.CSVTokenFilePath)) {
 
-							var result = await _bus.Send(new ReleaseCADCodeCSVBatchCommand(option.CSVTokenFilePath, @"C:\Users\Zachary Londono\Desktop\ExampleConfiguration\cutlists"));
-                            result.Match(
-                                success => {
-                                    _messageBoxService.OpenDialog("Files created", "Success");
-								},
-                                error => {
-									_messageBoxService.OpenDialog(error.Details, error.Title);
-								}
-                            );
+                            await GenerateReleaseFromTokenCSV(option.CSVTokenFilePath);
 
 						} else { 
 
@@ -60,6 +57,49 @@ public class ConsoleApplication {
 					});
 
 	}
+
+    private async Task GenerateReleaseFromTokenCSV(string filepath) {
+
+		var result = await _bus.Send(new ReadTokensFromCSVFile.Command(filepath));
+		result.Match(
+			async result => {
+
+                var parser = new CSVTokensParser();
+                var batch = parser.ParseTokens(result);
+				await GenerateGCodeForBatch(batch);
+
+			},
+            error => _messageBoxService.OpenDialog(error.Details, error.Title)
+		);
+
+	}
+
+    private async Task GenerateGCodeForBatch(CNCBatch batch) {
+
+        var response = await _bus.Send(new GenerateGCode.Command(batch));
+		response.Match(
+            result => _ = GeneratePDFRelease(result),
+            error =>  _messageBoxService.OpenDialog(error.Details, error.Title)
+        );
+
+    }
+
+    private async Task GeneratePDFRelease(ReleasedJob job) {
+
+		var pdfResponse = await _bus.Send(new GenerateCNCReleasePDF.Command(job, @"C:\Users\Zachary Londono\Desktop\ExampleConfiguration\cutlists"));
+		pdfResponse.Match(
+			pdfResult => {
+				string message = "";
+				foreach (var file in pdfResult.FilePaths) {
+					message += file + "\n";
+				}
+				_messageBoxService.OpenDialog(message, "Generated Files");
+			},
+			error => _messageBoxService.OpenDialog(error.Details, error.Title)
+		);
+
+	}
+
 
     private static OrderSourceType ParseProviderType(string provider) => provider switch {
         "allmoxy" => OrderSourceType.AllmoxyXML,
