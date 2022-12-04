@@ -1,6 +1,7 @@
-﻿namespace ApplicationCore.Features.CNC.Domain.CSV;
+﻿namespace ApplicationCore.Features.CNC.CSV;
 
-internal class CSVParseResult {
+internal class CSVParseResult
+{
 
     public IEnumerable<CSVPart> Parts { get; set; } = Enumerable.Empty<CSVPart>();
 
@@ -8,7 +9,8 @@ internal class CSVParseResult {
 
     public record ParseMessage(MessageSeverity Severity, string Message);
 
-    public enum MessageSeverity {
+    public enum MessageSeverity
+    {
         Warning,
         Error
     }

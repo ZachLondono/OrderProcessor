@@ -1,26 +1,29 @@
-﻿using ApplicationCore.Features.CNC.Domain.CSV;
-using ApplicationCore.Shared;
+﻿using ApplicationCore.Shared;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
-using static ApplicationCore.Features.CNC.Domain.CSV.CSVParseResult;
+using static ApplicationCore.Features.CNC.CSV.CSVParseResult;
 
-namespace ApplicationCore.Features.CNC.Services;
+namespace ApplicationCore.Features.CNC.CSV;
 
-internal class CSVParser : ICSVParser {
+internal class CSVParser : ICSVParser
+{
 
     private readonly ILogger<CSVParser> _logger;
     private readonly IFileReader _fileReader;
 
-    public CSVParser(ILogger<CSVParser> logger, IFileReader fileReader) {
+    public CSVParser(ILogger<CSVParser> logger, IFileReader fileReader)
+    {
         _logger = logger;
         _fileReader = fileReader;
     }
 
-    public async Task<CSVParseResult> ParsePartsAsync(string filepath) {
+    public async Task<CSVParseResult> ParsePartsAsync(string filepath)
+    {
 
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture) {
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
             PrepareHeaderForMatch = args => args.Header.Replace(" ", "")
         };
 
@@ -34,36 +37,47 @@ internal class CSVParser : ICSVParser {
         await csv.ReadAsync();
         csv.ReadHeader();
 
-        while (await csv.ReadAsync()) {
+        while (await csv.ReadAsync())
+        {
 
             var tokenName = csv.GetField(5)?.ToLower() ?? string.Empty;
 
-            if (tokenName.Equals("border")) {
+            if (tokenName.Equals("border"))
+            {
 
-                try {
+                try
+                {
 
                     var border = csv.GetRecord<CSVBorder>();
                     if (border is null) continue;
-                    parts.Push(new() {
+                    parts.Push(new()
+                    {
                         Border = border
                     });
-					_logger.LogInformation("Border record read: {border}", border);
+                    _logger.LogInformation("Border record read: {border}", border);
 
-				} catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     _logger.LogError("Exception while parsing border {EX}", ex);
                     messages.Add(new(MessageSeverity.Warning, "Could not parse border"));
                 }
 
-            } else if (!string.IsNullOrWhiteSpace(tokenName)) {
+            }
+            else if (!string.IsNullOrWhiteSpace(tokenName))
+            {
 
-                try {
+                try
+                {
 
                     var token = csv.GetRecord<CSVToken>();
                     if (token is null) continue;
                     parts.Peek().Tokens.Add(token);
-					_logger.LogInformation("Token record read: {Token}", token);
+                    _logger.LogInformation("Token record read: {Token}", token);
 
-				} catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     _logger.LogError("Exception while parsing token {EX}", ex);
                     messages.Add(new(MessageSeverity.Warning, "Could not parse token"));
                 }
@@ -71,11 +85,12 @@ internal class CSVParser : ICSVParser {
 
         }
 
-        return new() {
+        return new()
+        {
             Messages = messages,
             Parts = parts
         };
 
-	}
+    }
 
 }

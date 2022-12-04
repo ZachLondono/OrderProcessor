@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Infrastructure;
 
-namespace ApplicationCore.Features.CNC.Contracts;
+namespace ApplicationCore.Features.CNC.CSV;
 
 public record ReleaseCADCodeCSVBatchCommand(string FilePath, string CNCReportOutputDirectory) : ICommand;
