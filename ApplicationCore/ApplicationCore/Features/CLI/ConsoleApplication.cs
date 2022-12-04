@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.CADCode.Contracts;
+﻿using ApplicationCore.Features.CNC.Contracts;
 using ApplicationCore.Features.Orders.Loader;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;

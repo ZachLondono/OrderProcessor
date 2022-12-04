@@ -8,7 +8,7 @@ using Blazored.Modal;
 using ApplicationCore.Shared;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Features.Emails;
-using ApplicationCore.Features.CADCode;
+using ApplicationCore.Features.CNC;
 using ApplicationCore.Features.Orders.Loader;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]

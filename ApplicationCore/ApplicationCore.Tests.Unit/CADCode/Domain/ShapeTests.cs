@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.CADCode.Domain;
+﻿using ApplicationCore.Features.CNC.Domain;
 using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.CADCode.Domain;
