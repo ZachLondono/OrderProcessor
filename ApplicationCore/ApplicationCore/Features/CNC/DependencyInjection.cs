@@ -44,7 +44,7 @@ public static class DependencyInjection {
         services.AddTransient<MachineNameProvider>();
         services.AddTransient<IAvailableJobProvider, AvailableJobProvider>();
         services.AddTransient<IExistingJobProvider, CADCodeLabelDBExistingJobProvider>();
-        services.AddTransient<ICSVParser, CSVParser>();
+        services.AddTransient<ICSVReader, CSVReader>();
 
         return services;
 

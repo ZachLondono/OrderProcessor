@@ -1,12 +1,22 @@
-﻿using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
+﻿using ApplicationCore.Features.CNC.CSV.Converters;
 using CsvHelper.Configuration.Attributes;
 
-namespace ApplicationCore.Features.CNC.CSV;
+namespace ApplicationCore.Features.CNC.CSV.Contracts;
 
-internal record CSVToken
-{
+public record CSVToken {
 
-    public string MachiningToken { get; init; } = string.Empty;
+	public string JobName { get; init; } = string.Empty;
+
+	public string ProductID { get; init; } = string.Empty;
+
+	public string PartID { get; init; } = string.Empty;
+
+	public string PartName { get; init; } = string.Empty;
+
+	[TypeConverter(typeof(NumberConverter<int>))]
+	public int Quantity { get; init; }
+
+	public string MachiningToken { get; init; } = string.Empty;
 
     [TypeConverter(typeof(NumberConverter<double>))]
     public double StartX { get; init; }
@@ -44,8 +54,7 @@ internal record CSVToken
     [TypeConverter(typeof(NumberConverter<int>))]
     public int Passes { get; init; }
 
-    [TypeConverter(typeof(OffsetTypeConverter))]
-    public OffsetType OffsetSide { get; init; } = OffsetType.None;
+    public string OffsetSide { get; init; } = string.Empty;
 
     public string ToolNumber { get; init; } = string.Empty;
 
@@ -60,5 +69,25 @@ internal record CSVToken
 
     [TypeConverter(typeof(NumberConverter<double>))]
     public double SpindleSpeed { get; init; }
+
+	public string Filename { get; init; } = string.Empty;
+
+	public string Face6Filename { get; init; } = string.Empty;
+
+	public string Face6Flag { get; init; } = string.Empty;
+
+	public string Material { get; init; } = string.Empty;
+
+	[TypeConverter(typeof(BooleanTypeConverter))]
+	public bool Graining { get; init; }
+
+	[TypeConverter(typeof(NumberConverter<int>))]
+	public int Rotation { get; init; }
+
+	[TypeConverter(typeof(BooleanTypeConverter))]
+	public bool IslandPart { get; init; }
+
+	[TypeConverter(typeof(BooleanTypeConverter))]
+	public bool SmallPart { get; init; }
 
 }
