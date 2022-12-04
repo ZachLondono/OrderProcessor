@@ -1,13 +1,13 @@
 ﻿using CADCode;
 using Part = CADCode.Part;
 using System.Diagnostics;
-using ApplicationCore.Features.CNC.GCode.Domain.CADCode.Configuration;
 using ApplicationCore.Features.CNC.GCode.Domain.CADCode;
 using ApplicationCore.Features.CNC.GCode.Domain.Inventory;
 using ApplicationCore.Features.CNC.GCode.Domain;
 using ApplicationCore.Features.CNC.GCode.Contracts;
+using ApplicationCore.Features.CNC.GCode.Configuration;
 
-namespace ApplicationCore.Features.CNC.GCode;
+namespace ApplicationCore.Features.CNC.GCode.Services;
 
 public class CADCodeManager
 {

@@ -2,8 +2,7 @@
 
 namespace ApplicationCore.Features.CNC.GCode.Contracts;
 
-public class CNCPart
-{
+public class CNCPart {
 
     public required int Qty { get; init; }
     public required double Length { get; init; }

@@ -1,9 +1,10 @@
 ﻿using ApplicationCore.Features.CNC.CSV;
-using ApplicationCore.Features.CNC.GCode;
 using ApplicationCore.Features.CNC.GCode.Configuration;
+using ApplicationCore.Features.CNC.GCode.Services;
 using ApplicationCore.Features.CNC.LabelDB.Services;
 using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
 using ApplicationCore.Features.CNC.ReleasePDF.Services;
+using ApplicationCore.Shared;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,7 +23,7 @@ public static class DependencyInjection {
         //services.AddTransient<IInventoryService>(s => jsonInventory);
 
         const string inventoryFile = @"Y:\CADCode\cfg\Inventory\Omnitech Inventory - Backup.mdb";
-        var databaseInventory = new MDBInventoryService(inventoryFile, new AccessCADCodeInventoryDataBaseConnectionFactory());
+        var databaseInventory = new MDBInventoryService(inventoryFile, new AccessDBConnectionFactory());
 		services.AddTransient<IInventoryService>(s => databaseInventory);
 
 

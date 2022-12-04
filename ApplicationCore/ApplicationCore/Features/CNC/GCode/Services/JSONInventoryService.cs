@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ApplicationCore.Features.CNC.GCode;
+namespace ApplicationCore.Features.CNC.GCode.Services;
 
 public class JSONInventoryService : IInventoryService
 {

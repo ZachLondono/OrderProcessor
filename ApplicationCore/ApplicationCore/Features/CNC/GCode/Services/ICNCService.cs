@@ -2,7 +2,7 @@
 using ApplicationCore.Features.CNC.GCode.Domain;
 using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 
-namespace ApplicationCore.Features.CNC.GCode;
+namespace ApplicationCore.Features.CNC.GCode.Services;
 
 public interface ICNCService
 {

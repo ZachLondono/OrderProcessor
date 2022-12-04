@@ -1,9 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ApplicationCore.Features.CNC.GCode.Domain.CADCode.Configuration;
+namespace ApplicationCore.Features.CNC.GCode.Configuration;
 
-public class CADCodeConfiguration
-{
+public class CADCodeConfiguration {
 
     [JsonPropertyName("startingProgramNumber")]
     public int StartingProgramNumber { get; init; }

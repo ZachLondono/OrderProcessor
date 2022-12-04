@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using System.Text.Json;
-using ApplicationCore.Features.CNC.GCode.Domain.CADCode.Configuration;
 
 namespace ApplicationCore.Features.CNC.GCode.Configuration;
 

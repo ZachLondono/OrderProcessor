@@ -2,19 +2,22 @@
 using ApplicationCore.Shared;
 using Dapper;
 
-namespace ApplicationCore.Features.CNC.GCode;
+namespace ApplicationCore.Features.CNC.GCode.Services;
 
-public class MDBInventoryService : IInventoryService {
+public class MDBInventoryService : IInventoryService
+{
 
     private readonly string _filePath;
     private readonly IAccessDBConnectionFactory _factory;
 
-    public MDBInventoryService(string filePath, IAccessDBConnectionFactory factory) {
+    public MDBInventoryService(string filePath, IAccessDBConnectionFactory factory)
+    {
         _filePath = filePath;
         _factory = factory;
     }
 
-    public async Task<IEnumerable<InventoryItem>> GetInventory() {
+    public async Task<IEnumerable<InventoryItem>> GetInventory()
+    {
 
         using var connection = _factory.CreateConnection(_filePath);
 
@@ -27,15 +30,18 @@ public class MDBInventoryService : IInventoryService {
 
         return data.Where(i => i.Width != 0 && i.Length != 0)
             .GroupBy(i => i.SheetStock)
-            .Select(group => {
+            .Select(group =>
+            {
 
                 var item = group.First();
 
-                return new InventoryItem() {
+                return new InventoryItem()
+                {
                     Name = group.Key,
                     IsGrained = item.Graining == 1,
                     Thickness = item.Thickness / (item.Units == 0 ? 25.4 : 1),
-                    Sizes = group.Select(i => new InventorySize() {
+                    Sizes = group.Select(i => new InventorySize()
+                    {
                         Width = i.Width / (item.Units == 0 ? 25.4 : 1),
                         Length = i.Length / (item.Units == 0 ? 25.4 : 1),
                         Priority = i.Priority
@@ -47,7 +53,8 @@ public class MDBInventoryService : IInventoryService {
 
     }
 
-    class InventoryItemModel {
+    class InventoryItemModel
+    {
 
         public string SheetStock { get; set; } = string.Empty;
 
