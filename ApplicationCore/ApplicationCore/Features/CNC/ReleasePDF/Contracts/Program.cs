@@ -1,7 +1,6 @@
-﻿namespace ApplicationCore.Features.CNC.GCode.Contracts.ProgramRelease;
+﻿namespace ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 
-public class ReleasedProgram
-{
+public class ReleasedProgram {
 
     public string Name { get; init; } = string.Empty;
     public string ImagePath { get; init; } = string.Empty;

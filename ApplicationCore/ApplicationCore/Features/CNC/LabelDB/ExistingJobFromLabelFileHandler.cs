@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.CNC.GCode.Contracts.ProgramRelease;
+﻿using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Features.CNC.LabelDB;

@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.CNC.GCode.Contracts;
-using ApplicationCore.Features.CNC.GCode.Contracts.ProgramRelease;
 using ApplicationCore.Features.CNC.GCode.Domain;
+using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 
 namespace ApplicationCore.Features.CNC.GCode;
 

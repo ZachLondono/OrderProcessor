@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.CNC.GCode;
-using ApplicationCore.Features.CNC.GCode.Contracts.ProgramRelease;
 using ApplicationCore.Features.CNC.GCode.Domain;
+using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Shared;
 using Dapper;
 

@@ -1,9 +1,8 @@
 ﻿using ApplicationCore.Features.CNC.GCode.Domain;
 
-namespace ApplicationCore.Features.CNC.GCode.Contracts.ProgramRelease;
+namespace ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 
-public class MachineRelease
-{
+public class MachineRelease {
 
     public string MachineName { get; init; } = string.Empty;
     public IReadOnlyDictionary<int, string> ToolTable { get; init; } = new Dictionary<int, string>();

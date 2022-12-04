@@ -1,7 +1,6 @@
-﻿namespace ApplicationCore.Features.CNC.GCode.Contracts.ProgramRelease;
+﻿namespace ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 
-public class ProgramMaterial
-{
+public class ProgramMaterial {
 
     public string Name { get; init; } = string.Empty;
     public double Width { get; init; }

@@ -1,9 +1,8 @@
 ﻿using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
 
-namespace ApplicationCore.Features.CNC.GCode.Contracts.ProgramRelease;
+namespace ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 
-public class NestedPart
-{
+public class NestedPart {
 
     public string Name { get; init; } = string.Empty;
     public string ImagePath { get; init; } = string.Empty;

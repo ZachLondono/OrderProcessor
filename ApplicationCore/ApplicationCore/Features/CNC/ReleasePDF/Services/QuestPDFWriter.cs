@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.CNC.GCode.Contracts.ProgramRelease;
-using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
+﻿using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
+using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
 using ApplicationCore.Features.CNC.ReleasePDF.Styling;
 using QuestPDF.Fluent;
