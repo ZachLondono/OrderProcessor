@@ -1,20 +1,20 @@
 ﻿using ApplicationCore.Features.CNC.GCode.Contracts.ProgramRelease;
+using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
+using ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
+using ApplicationCore.Features.CNC.ReleasePDF.Styling;
 using QuestPDF.Fluent;
 
-namespace ApplicationCore.Features.CNC.ReleasePDF;
+namespace ApplicationCore.Features.CNC.ReleasePDF.Services;
 
-public class QuestPDFReleasePDFService : IReleasePDFService
-{
+public class QuestPDFWriter : IReleasePDFWriter {
 
     private readonly IPDFConfigurationProvider _configProvider;
 
-    public QuestPDFReleasePDFService(IPDFConfigurationProvider configProvider)
-    {
+    public QuestPDFWriter(IPDFConfigurationProvider configProvider) {
         _configProvider = configProvider;
     }
 
-    public IEnumerable<string> GeneratePDFs(ReleasedJob job, string outputDirectory)
-    {
+    public IEnumerable<string> GeneratePDFs(ReleasedJob job, string outputDirectory) {
 
         var createdFiles = new List<string>();
 
@@ -27,8 +27,7 @@ public class QuestPDFReleasePDFService : IReleasePDFService
             CoverModel cover = CreateCover(job, release);
             List<PageModel> pages = CreatePages(job, release);
 
-            var pdfmanager = new PDFManager(config)
-            {
+            var pdfmanager = new PDFBuilder(config) {
                 Pages = pages,
                 Cover = cover
             };
@@ -68,17 +67,14 @@ public class QuestPDFReleasePDFService : IReleasePDFService
 
     }
 
-    private static List<PageModel> CreatePages(ReleasedJob job, MachineRelease release)
-    {
+    private static List<PageModel> CreatePages(ReleasedJob job, MachineRelease release) {
 
         var pages = new List<PageModel>();
-        foreach (var program in release.Programs)
-        {
+        foreach (var program in release.Programs) {
 
             var partsTableContent = new List<Dictionary<string, string>>();
             var partGroups = program.Parts.GroupBy(p => p.Name);
-            foreach (var group in partGroups)
-            {
+            foreach (var group in partGroups) {
                 var part = group.First();
                 partsTableContent.Add(new()  {
                         { "Qty", group.Count().ToString() },
@@ -96,16 +92,14 @@ public class QuestPDFReleasePDFService : IReleasePDFService
             var imgtxts = program.Parts.Select(p => new ImageText() { Text = $"{p.Name}", Location = p.Center });
             byte[] imageData = PatternImageFactory.CreatePatternImage(program.ImagePath, release.MachineTableOrientation, program.Material.Width, program.Material.Length, imgtxts);
 
-            pages.Add(new()
-            {
+            pages.Add(new() {
                 Header = $"{job.JobName}  [{release.MachineName}]",
                 Title = program.Name,
                 Subtitle = $"{material.Name} - {material.Width}x{material.Length}x{material.Thickness} (grained:{(material.IsGrained ? "yes" : "no")})",
 
                 Footer = "footer",
                 ImageData = imageData,
-                Parts = new Table()
-                {
+                Parts = new Table() {
                     Title = "Parts on Sheet",
                     Content = partsTableContent
                 },
@@ -116,12 +110,10 @@ public class QuestPDFReleasePDFService : IReleasePDFService
         return pages;
     }
 
-    private static CoverModel CreateCover(ReleasedJob job, MachineRelease release)
-    {
+    private static CoverModel CreateCover(ReleasedJob job, MachineRelease release) {
         var usedmaterials = release.Programs.Select(p => p.Material).GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained));
         var materialTableContent = new List<Dictionary<string, string>>();
-        foreach (var mat in usedmaterials)
-        {
+        foreach (var mat in usedmaterials) {
             materialTableContent.Add(new() {
                     { "Qty", mat.Count().ToString() },
                     { "Name", mat.Key.Name },
@@ -132,16 +124,14 @@ public class QuestPDFReleasePDFService : IReleasePDFService
                 });
         }
 
-        var materialTable = new Table()
-        {
+        var materialTable = new Table() {
             Title = "Materials Used",
             Content = materialTableContent
         };
 
         var releasedparts = release.Programs.SelectMany(p => p.Parts).GroupBy(p => p.Name);
         var partsTableContent = new List<Dictionary<string, string>>();
-        foreach (var group in releasedparts)
-        {
+        foreach (var group in releasedparts) {
             var part = group.First();
             partsTableContent.Add(new() {
                     { "Qty", group.Count().ToString() },
@@ -151,8 +141,7 @@ public class QuestPDFReleasePDFService : IReleasePDFService
                 });
         }
 
-        var partsTable = new Table()
-        {
+        var partsTable = new Table() {
             Title = "Parts in Release",
             Content = partsTableContent
         };
@@ -160,15 +149,13 @@ public class QuestPDFReleasePDFService : IReleasePDFService
         var toolTableContent = new List<Dictionary<string, string>>();
         var row = new Dictionary<string, string>();
         bool hasTools = false;
-        foreach (var pos in release.ToolTable.Keys.OrderBy(p => p))
-        {
+        foreach (var pos in release.ToolTable.Keys.OrderBy(p => p)) {
             row.Add(pos.ToString(), release.ToolTable[pos]);
             if (!string.IsNullOrWhiteSpace(release.ToolTable[pos])) hasTools = true;
         }
         toolTableContent.Add(row);
 
-        var toolTable = new Table()
-        {
+        var toolTable = new Table() {
             Title = "Tools Used",
             Content = toolTableContent
         };
@@ -178,8 +165,7 @@ public class QuestPDFReleasePDFService : IReleasePDFService
         tables.Add(materialTable);
         tables.Add(partsTable);
 
-        var cover = new CoverModel()
-        {
+        var cover = new CoverModel() {
             Title = $"{job.JobName}  [{release.MachineName}]",
             Info = new Dictionary<string, string>() {
                     {"Vendor", "VendorName" },
@@ -192,14 +178,12 @@ public class QuestPDFReleasePDFService : IReleasePDFService
         return cover;
     }
 
-    private static string GetFileName(string path, string filename)
-    {
+    private static string GetFileName(string path, string filename) {
 
         int num = 0;
 
         string fullpath = Path.Combine(path, $"{filename}.pdf");
-        while (File.Exists(fullpath))
-        {
+        while (File.Exists(fullpath)) {
             fullpath = Path.Combine(path, $"{filename} ({++num}).pdf");
         }
 

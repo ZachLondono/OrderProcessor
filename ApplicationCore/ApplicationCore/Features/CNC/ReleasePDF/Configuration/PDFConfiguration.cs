@@ -1,9 +1,9 @@
 ﻿using System.Text.Json.Serialization;
+using ApplicationCore.Features.CNC.ReleasePDF.Styling;
 
-namespace ApplicationCore.Features.CNC.ReleasePDF;
+namespace ApplicationCore.Features.CNC.ReleasePDF.Configuration;
 
-public class PDFConfiguration
-{
+public class PDFConfiguration {
 
     [JsonPropertyName("infoLabelColumnWidth")]
     public float InfoLabelColumnWidth { get; set; }

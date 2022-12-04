@@ -1,12 +1,10 @@
 ﻿using QuestPDF.Fluent;
 
-namespace ApplicationCore.Features.CNC.ReleasePDF;
+namespace ApplicationCore.Features.CNC.ReleasePDF.Styling;
 
-public static class StyleExtensions
-{
+public static class StyleExtensions {
 
-    public static TextSpanDescriptor FontWeight(this TextSpanDescriptor text, int weight) => weight switch
-    {
+    public static TextSpanDescriptor FontWeight(this TextSpanDescriptor text, int weight) => weight switch {
         100 => text.Thin(),
         200 => text.ExtraLight(),
         300 => text.Light(),

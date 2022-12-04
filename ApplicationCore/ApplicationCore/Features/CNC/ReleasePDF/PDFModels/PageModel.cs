@@ -1,7 +1,8 @@
-﻿namespace ApplicationCore.Features.CNC.ReleasePDF;
+﻿using ApplicationCore.Features.CNC.ReleasePDF.Styling;
 
-public class PageModel
-{
+namespace ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
+
+public class PageModel {
 
     public string Header { get; init; } = string.Empty;
     public string Title { get; init; } = string.Empty;

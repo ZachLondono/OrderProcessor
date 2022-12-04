@@ -1,9 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ApplicationCore.Features.CNC.ReleasePDF;
+namespace ApplicationCore.Features.CNC.ReleasePDF.Styling;
 
-public class SectionFontStyle
-{
+public class SectionFontStyle {
 
     [JsonPropertyName("family")]
     public string Family { get; set; } = "Arial";

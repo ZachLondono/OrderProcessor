@@ -1,4 +1,6 @@
-﻿namespace ApplicationCore.Features.CNC.ReleasePDF;
+﻿using ApplicationCore.Features.CNC.ReleasePDF.Styling;
+
+namespace ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
 
 public class CoverModel
 {

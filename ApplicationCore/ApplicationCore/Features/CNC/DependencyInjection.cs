@@ -2,7 +2,8 @@
 using ApplicationCore.Features.CNC.GCode;
 using ApplicationCore.Features.CNC.GCode.Configuration;
 using ApplicationCore.Features.CNC.LabelDB;
-using ApplicationCore.Features.CNC.ReleasePDF;
+using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
+using ApplicationCore.Features.CNC.ReleasePDF.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -38,7 +39,7 @@ public static class DependencyInjection {
         services.AddTransient<IPDFConfigurationProvider>(s => jsonPDF);
 
         services.AddTransient<ICNCConfigurationProvider, MockConfigurationProvider>(); // TODO: replace with real configuration provider
-        services.AddTransient<IReleasePDFService, QuestPDFReleasePDFService>();
+        services.AddTransient<IReleasePDFWriter, QuestPDFWriter>();
         services.AddTransient<ICNCService, CADCodeGCodeCNCService>();
         services.AddTransient<ICADCodeLabelDataBaseConnectionFactory, AccessCADCodeLabelDataBaseConnectionFactory>();
         services.AddTransient<MachineNameProvider>();
