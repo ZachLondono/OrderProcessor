@@ -8,6 +8,8 @@ using ApplicationCore.Features.Orders.Loader;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
 using CommandLine;
+using Microsoft.Extensions.Logging;
+using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace ApplicationCore.Features.CLI;
 
@@ -15,11 +17,15 @@ public class ConsoleApplication {
 
     private readonly IBus _bus;
     private readonly IMessageBoxService _messageBoxService;
+    private readonly ILogger<ConsoleApplication> _logger;
+    private readonly ILoggerFactory _loggerFactory;
 
-    public ConsoleApplication(IBus bus, IMessageBoxService messageBoxService) {
+    public ConsoleApplication(IBus bus, IMessageBoxService messageBoxService, ILogger<ConsoleApplication> logger, ILoggerFactory loggerFactory) {
         _bus = bus;
         _messageBoxService = messageBoxService;
-    }
+        _logger = logger;
+		_loggerFactory = loggerFactory;
+	}
 
     public async Task Run(string[] args) {
 
@@ -37,7 +43,9 @@ public class ConsoleApplication {
                         
                         if (!string.IsNullOrWhiteSpace(option.CSVTokenFilePath)) {
 
-                            await GenerateReleaseFromTokenCSV(option.CSVTokenFilePath);
+                            _logger.LogInformation("Generating release for tokens at {FilePath}", option.CSVTokenFilePath);
+
+							await GenerateReleaseFromTokenCSV(option.CSVTokenFilePath);
 
 						} else { 
 
@@ -60,31 +68,63 @@ public class ConsoleApplication {
 
     private async Task GenerateReleaseFromTokenCSV(string filepath) {
 
-		var result = await _bus.Send(new ReadTokensFromCSVFile.Command(filepath));
-		result.Match(
-			async result => {
+        _logger.LogInformation("Reading tokens from csv file");
 
-                var parser = new CSVTokensParser();
-                var batch = parser.ParseTokens(result);
-				await GenerateGCodeForBatch(batch);
+		var result = await _bus.Send(new ReadTokensFromCSVFile.Command(filepath));
+
+        List<CNCBatch> batches = new();
+
+		result.Match(
+			result => {
+
+                _logger.LogInformation("Converting csv tokens to CNC operations");
+
+				var parser = new CSVTokensParser(_loggerFactory.CreateLogger<CSVTokensParser>());
+                var parsedBatches = parser.ParseTokens(result).ToList();
+                batches.AddRange(parsedBatches);
 
 			},
-            error => _messageBoxService.OpenDialog(error.Details, error.Title)
+            error => {
+				_logger.LogError("Error reading batches from csv tokens {Error}", error);
+                _messageBoxService.OpenDialog(error.Details, error.Title);
+            }
 		);
+
+
+		_logger.LogInformation("Found {BatchCount} batches in csv tokens", batches.Count);
+
+		foreach (var batch in batches) {
+			await GenerateGCodeForBatch(batch);
+		}
 
 	}
 
     private async Task GenerateGCodeForBatch(CNCBatch batch) {
 
-        var response = await _bus.Send(new GenerateGCode.Command(batch));
+		_logger.LogInformation("Generating gcode for batch {BatchName}", batch.Name);
+
+		ReleasedJob? job = null;
+
+		var response = await _bus.Send(new GenerateGCode.Command(batch));
 		response.Match(
-            result => _ = GeneratePDFRelease(result),
-            error =>  _messageBoxService.OpenDialog(error.Details, error.Title)
+            result => job = result,
+            error => {
+                _logger.LogError("Error generating GCode for batch {BatchName} {Error}", batch.Name, error);
+                _messageBoxService.OpenDialog(error.Details, error.Title);
+            }
         );
+
+        if (job is not null) {
+            await GeneratePDFRelease(job);
+		} else {
+            _logger.LogError("GenerateGCode command returned null or an error");
+        }
 
     }
 
     private async Task GeneratePDFRelease(ReleasedJob job) {
+
+		_logger.LogInformation("Generating pdf for job {JobName}", job.JobName);
 
 		var pdfResponse = await _bus.Send(new GenerateCNCReleasePDF.Command(job, @"C:\Users\Zachary Londono\Desktop\ExampleConfiguration\cutlists"));
 		pdfResponse.Match(
