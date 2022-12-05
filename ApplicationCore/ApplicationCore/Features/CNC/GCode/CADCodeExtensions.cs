@@ -76,7 +76,12 @@ static class CADCodeExtensions
 
         // TODO: need to get the tool specs (already have tool map passed in here, maybe a better way?)
 
-        var (tool, _) = toolMap.Tools[token.Tool.Name.ToLower()];
+        RouterBit tool = new("", 0, ToolRotation.Auto, 0, 0, 0, 0);
+        if (toolMap.Tools.TryGetValue(token.Tool.Name, out (RouterBit tool, int) result)) {
+            tool = result.tool;
+        }
+
+        //var (tool, _) = toolMap.Tools[token.Tool.Name.ToLower()];
 
         if (token is Bore bore)
         {
@@ -329,8 +334,8 @@ static class CADCodeExtensions
                 Rotated = false,
                 ContainsShape = part.ContainsShape,
                 RouteShape = part.ContainsShape,
-                PerimeterRoute = true
-            };
+                PerimeterRoute = !part.ContainsShape
+			};
 
             ccparts.Add(ccpart);
         }
