@@ -6,7 +6,7 @@ namespace ApplicationCore.Features.CNC.GCode.Domain;
 
 public interface ShapeSegment { };
 
-public record ArcSegment(Point Start, Point End, double Radius, ArcDirection Direction) : ShapeSegment;
+public record ArcSegment(Point Start, Point End, Point Center, double Radius, ArcDirection Direction) : ShapeSegment;
 
 public record LineSegment(Point Start, Point End) : ShapeSegment;
 
@@ -38,15 +38,13 @@ public class Shape
 
                 var vector = new Vector(end.X - start.X, end.Y - start.Y);
                 var normal = vector.GetNormal();
-                start = new(
+                var newStart = new Point(
                     start.X + normal.X * fillet.Radius,
                     start.Y + normal.Y * fillet.Radius
                 );
 
                 // Adjust start position of this new line, and end position of previous fillet
-                fillet.End = start;
-
-                if (fillet.End != start) throw new InvalidOperationException("Non-continuous route");
+                fillet.End = newStart;
 
                 if (last.Previous is not null && last.Previous.Value is Line prevline)
                 {
@@ -58,9 +56,21 @@ public class Shape
                     };
 
 
-                }
+                    //line1 = start => prevline.Start;
+                    var vector1 = new Vector(fillet.Start.X - start.X, fillet.Start.Y - start.Y);
 
-            }
+					//line2 = start => end;
+					var vector2 = new Vector(fillet.End.X - start.X, fillet.End.Y - start.Y);
+
+                    var sum = vector1 + vector2;
+
+                    fillet.Center = new(start.X + sum.X, start.Y + sum.Y);
+                    
+				}
+
+                start = newStart;
+
+			}
             else if (last.ValueRef is Line line && line.End != start)
             {
                 throw new InvalidOperationException("Non-continuous route");
@@ -106,7 +116,8 @@ public class Shape
             Start = line.End,
             Radius = radius,
             End = new(0, 0),                 // To be set when next line is given
-            Direction = ArcDirection.Unknown // To be set when next line is given
+            Center = new(0, 0),              // To be set when next line is given
+			Direction = ArcDirection.Unknown // To be set when next line is given
         });
 
     }
@@ -119,7 +130,7 @@ public class Shape
         return _list.Select<IShapeComponent, ShapeSegment>(c =>
         {
             if (c is Line line) return new LineSegment(line.Start, line.End);
-            else if (c is Fillet fillet) return new ArcSegment(fillet.Start, fillet.End, fillet.Radius, fillet.Direction);
+            else if (c is Fillet fillet) return new ArcSegment(fillet.Start, fillet.End, fillet.Center, fillet.Radius, fillet.Direction);
             throw new UnreachableException("Unknown segment type");
         });
 
@@ -150,9 +161,10 @@ public class Shape
     private class Fillet : IShapeComponent
     {
         public required Point Start { get; set; }
+        public required Point Center { get; set; }
         public required Point End { get; set; }
-        public ArcDirection Direction { get; set; }
-        public double Radius { get; set; }
+        public required ArcDirection Direction { get; set; }
+        public required double Radius { get; set; }
     }
 
     struct Vector
@@ -174,6 +186,12 @@ public class Shape
             X = x;
             Y = y;
         }
+
+        public static Vector operator +(Vector left, Vector right) => new ()
+        {
+            X = left.X + right.X,
+            Y = left.Y + right.Y
+        };
 
     }
 
