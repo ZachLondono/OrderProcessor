@@ -61,6 +61,7 @@ public record Rectangle : CompositeToken
                     Offset = Offset,
                     StartDepth = StartDepth,
                     EndDepth = EndDepth,
+                    Center = arc.Center,
                     PassCount = PassCount,
                     RType = RType,
                     Sequence = Sequence,
