@@ -89,9 +89,9 @@ public class CSVTokensParser {
 
 	private static Rectangle CSVTokenToRectangle(CSVToken token) => new() {
 		PositionA = new(token.StartX, token.StartY),
-		PositionB = new(token.CenterX, token.CenterY),
-		PositionC = new(token.PocketX, token.PocketY),
-		PositionD = new(token.EndX, token.StartY),
+		PositionB = new(token.PocketX, token.PocketY),
+		PositionC = new(token.EndX, token.EndY),
+		PositionD = new(token.CenterX, token.CenterY),
 		StartDepth = token.StartZ,
 		EndDepth = token.EndZ,
 		PassCount = token.Passes,
@@ -105,7 +105,7 @@ public class CSVTokensParser {
 	private static RouteLine CSVTokenToRouteLine(CSVToken token) => new() {
 		StartPosition = new(token.StartX, token.StartY),
 		StartDepth = token.StartZ,
-		EndPosition = new(token.EndX, token.StartY),
+		EndPosition = new(token.EndX, token.EndY),
 		EndDepth = token.EndZ,
 		PassCount = token.Passes,
 		Sequence = token.SequenceNumber,
@@ -118,7 +118,7 @@ public class CSVTokensParser {
 	private static RouteArc CSVTokenToRouteArc(CSVToken token, bool clockwise) => new() {
 		StartPosition = new(token.StartX, token.StartY),
 		StartDepth = token.StartZ,
-		EndPosition = new(token.EndX, token.StartY),
+		EndPosition = new(token.EndX, token.EndY),
 		EndDepth = token.EndZ,
 		Radius = token.Radius,
 		Direction = clockwise ? ArcDirection.Clockwise : ArcDirection.CounterClockwise,
@@ -131,9 +131,9 @@ public class CSVTokensParser {
 
 	private static Pocket CSVTokenToPocket(CSVToken token) => new() {
 		PositionA = new(token.StartX, token.StartY),
-		PositionB = new(token.CenterX, token.CenterY),
-		PositionC = new(token.PocketX, token.PocketY),
-		PositionD = new(token.EndX, token.StartY),
+		PositionB = new(token.PocketX, token.PocketY),
+		PositionC = new(token.EndX, token.EndY),
+		PositionD = new(token.CenterX, token.CenterY),
 		StartDepth = token.StartZ,
 		EndDepth = token.EndZ,
 		PassCount = token.Passes,
@@ -146,7 +146,7 @@ public class CSVTokensParser {
 	private static PocketSegment CSVTokenToPocketSegment(CSVToken token) => new() {
 		StartPosition = new(token.StartX, token.StartY),
 		StartDepth = token.StartZ,
-		EndPosition = new(token.EndX, token.StartY),
+		EndPosition = new(token.EndX, token.EndY),
 		EndDepth = token.EndZ,
 		PassCount = token.Passes,
 		Sequence = token.SequenceNumber,
