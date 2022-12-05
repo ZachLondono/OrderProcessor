@@ -1,6 +1,8 @@
 ﻿using ApplicationCore.Features.CNC.CSV.Contracts;
 using ApplicationCore.Features.CNC.GCode.Contracts;
 using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
+using ApplicationCore.Features.CNC.GCode.Domain;
+using ApplicationCore.Features.CNC.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.CNC;
@@ -53,26 +55,125 @@ public class CSVTokensParser {
 
 	}
 
-	private CNCPart MapCSVPartToCNCPart(CSVPart csvpart) => new() {
-		
-		// TODO: parse shape and fillet tokens
+	private CNCPart MapCSVPartToCNCPart(CSVPart csvpart) {
 
-		Description = csvpart.Border.Description,
-		FileName = csvpart.Border.FileName,
-		Length = csvpart.Border.Length,
-		Width = csvpart.Border.Width,
-		Qty = csvpart.Border.Qty,
-		ContainsShape = csvpart.Tokens.Any(t => t.MachiningToken.ToLower() == "shape"),
-		Tokens = csvpart.Tokens
+		bool containsShape = csvpart.Tokens.Any(t => t.MachiningToken.ToLower() == "shape");
+
+		List<Token> tokens = new();
+
+		if (containsShape) {
+
+			int idx = csvpart.Tokens.FindLastIndex(t => t.MachiningToken.ToLower() == "shape");
+
+			var outline = csvpart.Tokens.Take(idx + 1);
+
+			tokens.AddRange(OutlineTokensFromCSV(outline));
+
+			tokens.AddRange(
+					csvpart.Tokens
+							.Skip(idx + 1)
+							.Select(MapCSVTokenToCNCToken)
+							.Where(t => t != null)
+							.Cast<Token>()
+				);
+
+		} else {
+
+			tokens = csvpart.Tokens
 						.Select(MapCSVTokenToCNCToken)
 						.Where(t => t != null)
 						.Cast<Token>()
-						.ToList(),
-		Material = new() {
-			Name = csvpart.Border.Material,
-			Thickness = csvpart.Border.Thickness
+						.ToList();
+
 		}
-	};
+
+		return new() {
+			Description = csvpart.Border.Description,
+			FileName = csvpart.Border.FileName,
+			Length = csvpart.Border.Length,
+			Width = csvpart.Border.Width,
+			Qty = csvpart.Border.Qty,
+			ContainsShape = containsShape,
+			Tokens = tokens,
+			Material = new() {
+				Name = csvpart.Border.Material,
+				Thickness = csvpart.Border.Thickness
+			}
+		};
+	}
+
+	private IEnumerable<Token> OutlineTokensFromCSV(IEnumerable<CSVToken> tokens) {
+
+		// TODO: move shape class to CNC.Shared namespace
+		Shape shape = new();
+
+		foreach (var segment in tokens) {
+
+			switch (segment.MachiningToken.ToLower()) {
+
+				case "shape":
+					var start = new Point(
+							segment.StartX,
+							segment.StartY);
+
+					var end = new Point(
+							segment.EndX,
+							segment.EndY);
+
+					shape.AddLine(start, end);
+					break;
+
+				case "fillet":
+					shape.AddFillet(segment.Radius);
+					break;
+
+			}
+
+		}
+
+		var segments = shape.GetSegments();
+
+		List<Token> outline = new();
+		foreach (var segment in segments) {
+
+			if (segment is ArcSegment arc) {
+
+				outline.Add(new OutlineArc() {
+					Start = arc.Start,
+					End = arc.End,
+					Center = arc.Center,
+					Direction = arc.Direction,
+					Radius = arc.Radius,
+					RType = "",
+
+					// TODO: get these values from csv token
+					Sequence = 0,
+					Offset = new RouteOffset(OffsetType.Outside, 0),
+					PassCount = 1,
+					Tool = new Tool("", 0)
+				});
+
+			} else if (segment is LineSegment line) {
+
+				outline.Add(new OutlineSegment() {
+					Start = line.Start,
+					End = line.End,
+					RType = "",
+
+					// TODO: get these values from csv token
+					Sequence = 0,
+					Offset = new RouteOffset(OffsetType.Outside, 0),
+					PassCount = 1,
+					Tool = new Tool("", 0)
+				});
+
+			}
+
+		}
+
+		return outline;
+
+	}
 
 	private Token? MapCSVTokenToCNCToken(CSVToken token)
 		=> token.MachiningToken.ToLower() switch {
