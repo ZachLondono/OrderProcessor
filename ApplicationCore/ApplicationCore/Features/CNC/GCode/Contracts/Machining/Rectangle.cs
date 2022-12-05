@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.CNC.GCode.Domain;
+using ApplicationCore.Features.CNC.Shared;
 using System.Diagnostics;
 using System.Linq;
 

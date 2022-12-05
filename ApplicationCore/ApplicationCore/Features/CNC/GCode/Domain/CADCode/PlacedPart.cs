@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
+﻿using ApplicationCore.Features.CNC.Shared;
 
 namespace ApplicationCore.Features.CNC.GCode.Domain.CADCode;
 

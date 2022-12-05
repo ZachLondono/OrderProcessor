@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
+using ApplicationCore.Features.CNC.Shared;
 using System.Diagnostics;
 
 namespace ApplicationCore.Features.CNC.GCode.Domain;
