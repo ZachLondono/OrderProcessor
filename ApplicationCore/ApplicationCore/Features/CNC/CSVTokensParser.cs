@@ -231,19 +231,37 @@ public class CSVTokensParser {
 		RType = ""
 	};
 
-	private static Pocket CSVTokenToPocket(CSVToken token) => new() {
-		PositionA = new(token.StartX, token.StartY),
-		PositionB = new(token.PocketX, token.PocketY),
-		PositionC = new(token.EndX, token.EndY),
-		PositionD = new(token.CenterX, token.CenterY),
-		StartDepth = token.StartZ,
-		EndDepth = token.EndZ,
-		PassCount = token.Passes,
-		Sequence = token.SequenceNumber,
-		Tool = new(token.ToolNumber, token.ToolDiameter),
-		Climb = 0,
-		RType = ""
-	};
+	private static Token CSVTokenToPocket(CSVToken token) {
+
+		if (token.StartX == 0 && token.StartY == 0 && token.EndX == 0 && token.EndY == 0 && token.PocketX == 0 && token.PocketY == 0 && token.Radius != 0) {
+
+			return new PocketCircle() {
+				CenterPosition = new(token.CenterX, token.CenterY),
+				Depth = token.StartZ,
+				PassCount = token.Passes,
+				Radius = token.Radius,
+				RType = "",
+				Sequence = token.SequenceNumber,
+				Tool = new(token.ToolNumber, token.ToolDiameter)
+			};
+
+		}
+
+		return new Pocket() {
+			PositionA = new(token.StartX, token.StartY),
+			PositionB = new(token.PocketX, token.PocketY),
+			PositionC = new(token.EndX, token.EndY),
+			PositionD = new(token.CenterX, token.CenterY),
+			StartDepth = token.StartZ,
+			EndDepth = token.EndZ,
+			PassCount = token.Passes,
+			Sequence = token.SequenceNumber,
+			Tool = new(token.ToolNumber, token.ToolDiameter),
+			Climb = 0,
+			RType = ""
+		};
+
+	}
 
 	private static PocketSegment CSVTokenToPocketSegment(CSVToken token) => new() {
 		StartPosition = new(token.StartX, token.StartY),
