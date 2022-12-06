@@ -123,7 +123,7 @@ static class CADCodeExtensions
         }
         else if (token is Pocket pocket)
         {
-
+            
             code.Pocket((float)pocket.PositionA.X,
                         (float)pocket.PositionA.Y,
                         (float)pocket.PositionB.X,
@@ -149,7 +149,8 @@ static class CADCodeExtensions
         else if (token is PocketArc parc)
         {
 
-            code.DefinePocket((float)parc.StartPosition.X,
+			object?[] normal = new object?[14] { 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f };
+			code.DefinePocket((float)parc.StartPosition.X,
                                 (float)parc.StartPosition.Y,
                                 (float)parc.StartDepth,
                                 (float)parc.EndPosition.X,
@@ -170,7 +171,7 @@ static class CADCodeExtensions
                                 (float)tool.EntrySpeed,
                                        0,
                                        parc.Sequence,
-                                       Array.Empty<byte>(),
+									   normal,
                                        false,
                                        parc.PassCount);
 
@@ -179,7 +180,8 @@ static class CADCodeExtensions
         else if (token is PocketSegment psegment)
         {
 
-            code.DefinePocket((float)psegment.StartPosition.X,
+			object?[] normal = new object?[14] { 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f };
+			code.DefinePocket((float)psegment.StartPosition.X,
                                 (float)psegment.StartPosition.Y,
                                 (float)psegment.StartDepth,
                                 (float)psegment.EndPosition.X,
@@ -200,7 +202,7 @@ static class CADCodeExtensions
                                 (float)tool.EntrySpeed,
                                        0,
                                        psegment.Sequence,
-                                       Array.Empty<byte>(),
+									   normal,
                                        false,
                                        psegment.PassCount);
 
@@ -301,10 +303,10 @@ static class CADCodeExtensions
                                        0);
 
         }
-        else if (token is Rectangle rectangle)
+        else if (token is CompositeToken ctoken)
         {
 
-            var components = rectangle.GetComponents();
+			var components = ctoken.GetComponents();
             foreach (var component in components)
             {
                 code.AddMachining(component, toolMap);
@@ -312,7 +314,7 @@ static class CADCodeExtensions
 
         }
 
-    }
+	}
 
     public static List<Part> GetAsCADCodeParts(this CNCPart part, UnitTypes units, TableOrientation orientation)
     {
