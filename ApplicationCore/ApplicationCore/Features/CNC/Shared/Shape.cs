@@ -1,8 +1,7 @@
 ﻿using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
-using ApplicationCore.Features.CNC.Shared;
 using System.Diagnostics;
 
-namespace ApplicationCore.Features.CNC.GCode.Domain;
+namespace ApplicationCore.Features.CNC.Shared;
 
 public interface ShapeSegment { };
 
@@ -59,18 +58,18 @@ public class Shape
                     //line1 = start => prevline.Start;
                     var vector1 = new Vector(fillet.Start.X - start.X, fillet.Start.Y - start.Y);
 
-					//line2 = start => end;
-					var vector2 = new Vector(fillet.End.X - start.X, fillet.End.Y - start.Y);
+                    //line2 = start => end;
+                    var vector2 = new Vector(fillet.End.X - start.X, fillet.End.Y - start.Y);
 
                     var sum = vector1 + vector2;
 
                     fillet.Center = new(start.X + sum.X, start.Y + sum.Y);
-                    
-				}
+
+                }
 
                 start = newStart;
 
-			}
+            }
             else if (last.ValueRef is Line line && line.End != start)
             {
                 throw new InvalidOperationException("Non-continuous route");
@@ -97,6 +96,9 @@ public class Shape
 
     public void AddFillet(double radius)
     {
+
+        // TODO: check that fillet radius is valid and not too large, given the lengths of the connecting lines
+
         if (radius == 0) return;
         if (_list.Last is null) throw new InvalidOperationException("Cannot start a route sequence with a fillet");
         if (_list.Last() is Fillet) throw new InvalidOperationException("Cannot add two successive fillets to the same route sequence");
@@ -117,7 +119,7 @@ public class Shape
             Radius = radius,
             End = new(0, 0),                 // To be set when next line is given
             Center = new(0, 0),              // To be set when next line is given
-			Direction = ArcDirection.Unknown // To be set when next line is given
+            Direction = ArcDirection.Unknown // To be set when next line is given
         });
 
     }
@@ -187,7 +189,7 @@ public class Shape
             Y = y;
         }
 
-        public static Vector operator +(Vector left, Vector right) => new ()
+        public static Vector operator +(Vector left, Vector right) => new()
         {
             X = left.X + right.X,
             Y = left.Y + right.Y

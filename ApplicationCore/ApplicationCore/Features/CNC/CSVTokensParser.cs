@@ -1,7 +1,6 @@
 ﻿using ApplicationCore.Features.CNC.CSV.Contracts;
 using ApplicationCore.Features.CNC.GCode.Contracts;
 using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
-using ApplicationCore.Features.CNC.GCode.Domain;
 using ApplicationCore.Features.CNC.Shared;
 using Microsoft.Extensions.Logging;
 
