@@ -51,6 +51,9 @@ public record CSVToken {
     [TypeConverter(typeof(NumberConverter<double>))]
     public double Radius { get; init; }
 
+	[TypeConverter(typeof(NumberConverter<double>))]
+	public double Pitch { get; init; }
+
     [TypeConverter(typeof(NumberConverter<int>))]
     public int Passes { get; init; }
 

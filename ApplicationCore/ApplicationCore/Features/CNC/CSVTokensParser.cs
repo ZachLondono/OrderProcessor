@@ -184,6 +184,8 @@ public class CSVTokensParser {
 			"cwarc" => CSVTokenToRouteArc(token, true),
 			"pocket" => CSVTokenToPocket(token),
 			"freepocket" => CSVTokenToPocketSegment(token),
+			"bore" => CSVTokenToBore(token),
+			"multibore" => CSVTokenToMuliBore(token),
 			_ => UnrecognizedTokenFound(token)
 		};
 
@@ -252,6 +254,27 @@ public class CSVTokensParser {
 		Sequence = token.SequenceNumber,
 		Tool = new(token.ToolNumber, token.ToolDiameter),
 		Offset = ParseRouteOffset(token),
+		RType = ""
+	};
+
+	private static Bore CSVTokenToBore(CSVToken token) => new() {
+		Position = new(token.StartX, token.StartY),
+		Depth = token.StartZ,
+		PassCount = token.Passes,
+		Sequence = token.SequenceNumber,
+		Tool = new(token.ToolNumber, token.ToolDiameter),
+		RType = ""
+	};
+
+	private static MultiBore CSVTokenToMuliBore(CSVToken token) => new() {
+		StartPosition = new(token.StartX, token.StartY),
+		EndPosition = new(token.EndX, token.EndY),
+		NumberOfHoles = 0, // token.Holes
+		Pitch = token.Pitch,
+		Depth = token.StartZ,
+		PassCount = token.Passes,
+		Sequence = token.SequenceNumber,
+		Tool = new(token.ToolNumber, token.ToolDiameter),
 		RType = ""
 	};
 
