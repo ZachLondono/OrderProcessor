@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.CNC.GCode;
+﻿using ApplicationCore.Features.CNC;
+using ApplicationCore.Features.CNC.GCode;
 using ApplicationCore.Features.CNC.GCode.Contracts;
 using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
 using ApplicationCore.Features.CNC.ReleasePDF;
@@ -72,9 +73,11 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
 		// TODO send emails to shop manager
 		var response = await _bus.Send(new GenerateGCode.Command(batch));
 
-        response.Match(
+        await response.MatchAsync(
 
-            async job => {
+            async result => {
+
+                var job = new GCodeToReleasedJobConverter().ConvertResult(result, batch.Name, batch.Parts);
 
                 var pdfResponse = await _bus.Send(new GenerateCNCReleasePDF.Command(job, notification.ReleaseProfile.CNCReportOutputDirectory));
                 pdfResponse.Match(
@@ -90,6 +93,7 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
             },
             error => {
                 _uibus.Publish(new OrderReleaseErrorNotification($"{error.Title} - {error.Details}"));
+                return Task.CompletedTask;
             }
         );
 

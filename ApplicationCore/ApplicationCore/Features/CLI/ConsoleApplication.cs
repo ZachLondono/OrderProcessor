@@ -108,11 +108,11 @@ public class ConsoleApplication {
 
 		_logger.LogInformation("Generating gcode for batch {BatchName}", batch.Name);
 
-		ReleasedJob? job = null;
+        ReleasedJob? job = null;
 
-		var response = await _bus.Send(new GenerateGCode.Command(batch));
-		response.Match(
-            result => job = result,
+        var response = await _bus.Send(new GenerateGCode.Command(batch));
+        response.Match(
+            result => job = new GCodeToReleasedJobConverter().ConvertResult(result, batch.Name, batch.Parts),
             error => {
                 _logger.LogError("Error generating GCode for batch {BatchName} {Error}", batch.Name, error);
                 _messageBoxService.OpenDialog(error.Details, error.Title);
@@ -120,8 +120,8 @@ public class ConsoleApplication {
         );
 
         if (job is not null) {
-			await GeneratePDFRelease(job);
-		} else {
+            await GeneratePDFRelease(job);
+        } else {
             _logger.LogError("GenerateGCode command returned null or an error");
         }
 
