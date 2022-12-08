@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Features.CNC.LabelDB.Contracts;
 using ApplicationCore.Features.CNC.LabelDB.Services;
-using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Features.CNC.LabelDB;
