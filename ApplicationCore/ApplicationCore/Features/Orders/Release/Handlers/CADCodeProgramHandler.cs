@@ -7,6 +7,7 @@ using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Queries;
 using ApplicationCore.Infrastructure;
+using ApplicationCore.Shared.Domain;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers;

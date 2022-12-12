@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Orders.Domain.ValueObjects;
+﻿namespace ApplicationCore.Shared.Domain;
 
 public class Dimension {
 
@@ -53,7 +53,7 @@ public class Dimension {
         // Accuracy is the maximum relative error; convert to absolute maxError
         double maxError = sign == 0 ? accuracy : value * accuracy;
 
-        int n = (int)Math.Floor(value);
+        int n = (int) Math.Floor(value);
         value -= n;
 
         if (value < maxError) {
@@ -75,27 +75,9 @@ public class Dimension {
             denominator = denominator * (int)z + previousDenominator;
             previousDenominator = temp;
             numerator = Convert.ToInt32(value * denominator);
-        }
-        while (Math.Abs(value - (double)numerator / denominator) > maxError && z != (int)z);
+        } while (Math.Abs(value - (double)numerator / denominator) > maxError && z != (int)z);
 
         return new Fraction((n * denominator + numerator) * sign, denominator);
-    }
-
-    public struct Fraction {
-        public int N { get; }
-        public int D { get; }
-        public Fraction(int n, int d) {
-            N = n;
-            D = d;
-        }
-        public override string ToString() {
-            if (N == 0) return "0";
-            int whole = N / D;
-            int n = N - (whole * D);
-            if (whole == 0) return $"{n}/{D}";
-            else if (n != 0) return $"{whole} {n}/{D}";
-            else return whole.ToString();
-        }
     }
 
 }

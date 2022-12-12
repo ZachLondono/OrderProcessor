@@ -8,6 +8,7 @@ using ApplicationCore.Features.Orders.Loader.Providers.Results;
 using ApplicationCore.Features.Orders.Loader.Providers.RichelieuXMLModels;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
+using ApplicationCore.Shared.Domain;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.Schema;

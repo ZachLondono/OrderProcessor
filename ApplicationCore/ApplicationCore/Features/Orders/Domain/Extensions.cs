@@ -1,6 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Domain.ValueObjects;
-using static ApplicationCore.Features.Orders.Domain.ValueObjects.Dimension;
-
+﻿using ApplicationCore.Shared.Domain;
 namespace ApplicationCore.Features.Orders.Domain;
 
 public static class Extensions {

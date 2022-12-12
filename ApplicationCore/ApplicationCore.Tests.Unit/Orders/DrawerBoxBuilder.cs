@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Tests.Unit.Orders;
 

@@ -1,14 +1,16 @@
-﻿using ApplicationCore.Features.Orders.Domain.ValueObjects;
+﻿using ApplicationCore.Shared.Domain;
 using FluentAssertions;
 using Microsoft.AspNetCore.Components.Forms;
 using System.Diagnostics;
 
-namespace ApplicationCore.Tests.Unit.Orders;
+namespace ApplicationCore.Tests.Unit.Shared;
 
-public class DimensionTests {
+public class DimensionTests
+{
 
     [Fact]
-    public void FromInches_ShouldEqualAsInches() {
+    public void FromInches_ShouldEqualAsInches()
+    {
 
         // Arrange
         double val = 123.456;
@@ -22,7 +24,8 @@ public class DimensionTests {
     }
 
     [Fact]
-    public void FromMillimeters_ShouldEqualAsMillimeters() {
+    public void FromMillimeters_ShouldEqualAsMillimeters()
+    {
 
         // Arrange
         double val = 123.456;
@@ -36,7 +39,8 @@ public class DimensionTests {
     }
 
     [Fact]
-    public void FromMillimeters_ShouldConvert_ToInches() {
+    public void FromMillimeters_ShouldConvert_ToInches()
+    {
 
         // Arrange
         double val = 123.456;
@@ -50,7 +54,8 @@ public class DimensionTests {
     }
 
     [Fact]
-    public void FromInches_ShouldConvert_ToMillimeters() {
+    public void FromInches_ShouldConvert_ToMillimeters()
+    {
 
         // Arrange
         double val = 123.456;
@@ -64,7 +69,8 @@ public class DimensionTests {
     }
 
     [Fact]
-    public void MultiplicationOfInchesAndInt_ShouldBeCorrect() {
+    public void MultiplicationOfInchesAndInt_ShouldBeCorrect()
+    {
 
         // Arrange
         double val1 = 123.456;
@@ -83,7 +89,8 @@ public class DimensionTests {
     }
 
     [Fact]
-    public void MultiplicationOfMillimetersAndInt_ShouldBeCorrect() {
+    public void MultiplicationOfMillimetersAndInt_ShouldBeCorrect()
+    {
 
         // Arrange
         double val1 = 123.456;
@@ -102,7 +109,8 @@ public class DimensionTests {
     }
 
     [Fact]
-    public void MultiplicationOfInchesAndDouble_ShouldBeCorrect() {
+    public void MultiplicationOfInchesAndDouble_ShouldBeCorrect()
+    {
 
         // Arrange
         double val1 = 123.456;
@@ -121,7 +129,8 @@ public class DimensionTests {
     }
 
     [Fact]
-    public void MultiplicationOfMillimetersAndDouble_ShouldBeCorrect() {
+    public void MultiplicationOfMillimetersAndDouble_ShouldBeCorrect()
+    {
 
         // Arrange
         double val1 = 123.456;
@@ -140,7 +149,8 @@ public class DimensionTests {
     }
 
     [Fact]
-    public void DivisionOfInchesAndInches_ShouldBeCorrect() {
+    public void DivisionOfInchesAndInches_ShouldBeCorrect()
+    {
 
         // Arrange
         double val1 = 123.456;
@@ -149,14 +159,15 @@ public class DimensionTests {
 
         // Act
         var result1 = dim1 / qty;
-        
+
         // Assert
         result1.AsInches().Should().Be(val1 / qty);
 
     }
 
     [Fact]
-    public void DivisionOfMillimetersAndInches_ShouldBeCorrect() {
+    public void DivisionOfMillimetersAndInches_ShouldBeCorrect()
+    {
 
         // Arrange
         double val1 = 123.456;
@@ -165,14 +176,15 @@ public class DimensionTests {
 
         // Act
         var result1 = dim1 / qty;
-        
+
         // Assert
         result1.AsMillimeters().Should().Be(val1 / qty);
 
     }
 
     [Fact]
-    public void DivisionOfInchesAndDoubles_ShouldBeCorrect() {
+    public void DivisionOfInchesAndDoubles_ShouldBeCorrect()
+    {
 
         // Arrange
         double val1 = 123.456;
@@ -188,7 +200,8 @@ public class DimensionTests {
     }
 
     [Fact]
-    public void DivisionOfMillimetersAndDoubles_ShouldBeCorrect() {
+    public void DivisionOfMillimetersAndDoubles_ShouldBeCorrect()
+    {
 
         // Arrange
         double val1 = 123.456;
@@ -204,7 +217,8 @@ public class DimensionTests {
     }
 
     [Fact]
-    public void AdditionOfInches_ShouldBeCorrect() {
+    public void AdditionOfInches_ShouldBeCorrect()
+    {
 
         // Arrange
         double val1 = 123.456;
@@ -222,7 +236,8 @@ public class DimensionTests {
     }
 
     [Fact]
-    public void AdditionOfMillimeters_ShouldBeCorrect() {
+    public void AdditionOfMillimeters_ShouldBeCorrect()
+    {
 
         // Arrange
         double val1 = 123.456;
@@ -240,7 +255,8 @@ public class DimensionTests {
     }
 
     [Fact]
-    public void SubtractionOfInches_ShouldBeCorrect() {
+    public void SubtractionOfInches_ShouldBeCorrect()
+    {
 
         // Arrange
         double val1 = 123.456;
@@ -258,7 +274,8 @@ public class DimensionTests {
     }
 
     [Fact]
-    public void SubtractionOfMillimeters_ShouldBeCorrect() {
+    public void SubtractionOfMillimeters_ShouldBeCorrect()
+    {
 
         // Arrange
         double val1 = 123.456;
@@ -285,7 +302,8 @@ public class DimensionTests {
     [InlineData(0.375, 3, 8)]
     [InlineData(0.1875, 3, 16)]
     [InlineData(0.09375, 3, 32)]
-    public void AsInchFraction_ShouldBeAccurate(double inches, int numerator, int denominator) {
+    public void AsInchFraction_ShouldBeAccurate(double inches, int numerator, int denominator)
+    {
 
         // Arrange
         var dim = Dimension.FromInches(inches);

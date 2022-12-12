@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Domain.ValueObjects;
+﻿using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Domain;
 
