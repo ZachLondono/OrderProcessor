@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Shared.Domain;
 
-public class Dimension {
+public record Dimension {
 
     private readonly double _mm;
 

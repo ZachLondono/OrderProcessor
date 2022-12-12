@@ -318,4 +318,20 @@ public class DimensionTests
 
 
     }
+
+    [Fact]
+    public void DifferentInstances_ShouldBeEqual_WhenValueIsEqual() {
+
+        // Arrange
+        var dimA = Dimension.FromInches(1);
+        var dimB = Dimension.FromMillimeters(25.4);
+
+        // Assert
+        dimA.Equals(dimB);
+        dimB.Equals(dimA);
+        Assert.True(dimA == dimB);
+		Assert.True(dimB == dimA);
+
+	}
+
 }
