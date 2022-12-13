@@ -1,7 +1,6 @@
 ﻿namespace ApplicationCore.Features.CNC.GCode.Contracts.Machining;
 
-public enum ArcDirection
-{
+public enum ArcDirection {
     Clockwise,
     CounterClockwise,
     Unknown

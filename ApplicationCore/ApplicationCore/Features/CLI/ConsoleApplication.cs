@@ -75,7 +75,7 @@ public class ConsoleApplication {
 
 		var result = await _bus.Send(new ReadTokensFromCSVFile.Command(filepath));
 
-        List<CNCBatch> batches = new();
+        List<Batch> batches = new();
 
 		result.Match(
 			result => {
@@ -104,7 +104,7 @@ public class ConsoleApplication {
 
 	}
 
-    private async Task GenerateGCodeForBatch(CNCBatch batch) {
+    private async Task GenerateGCodeForBatch(Batch batch) {
 
 		_logger.LogInformation("Generating gcode for batch {BatchName}", batch.Name);
 

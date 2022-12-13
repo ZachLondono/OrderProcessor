@@ -16,32 +16,15 @@ public static class DependencyInjection {
 
         var cadcode = config.GetRequiredSection("CADCode");
 
-        // TODO: improve how configuration is stored
-
-        //var inventory = cadcode.GetValue<string>("InventoryConfig");
-        //var jsonInventory = new JSONInventoryService(inventory);
-        //services.AddTransient<IInventoryService>(s => jsonInventory);
-
-        const string inventoryFile = @"Y:\CADCode\cfg\Inventory\Omnitech Inventory - Backup.mdb";
-        var databaseInventory = new MDBInventoryService(inventoryFile, new AccessDBConnectionFactory());
-		services.AddTransient<IInventoryService>(s => databaseInventory);
-
-
-        var cadcodeconfig = cadcode.GetValue<string>("CADCodeConfig");
-        var jsonCADCode = new JSONCADCodeConfigurationProvider(cadcodeconfig);
-        services.AddTransient<ICADCodeConfigurationProvider>(s => jsonCADCode);
-
-        var cncmachine = cadcode.GetValue<string>("CNCMachineConfig");
-        var jsonMachine = new JSONCADCodeMachineConfigurationProvider(cncmachine);
-        services.AddTransient<ICADCodeMachineConfigurationProvider>(s => jsonMachine);
+		services.AddTransient<IInventoryFileReader, MDBInventoryFileReader>();
+		services.AddTransient<IToolFileReader, MDBToolFileReader>();
 
         var pdfconfig = cadcode.GetValue<string>("ReleasePDFConfig");
+        if (pdfconfig is null) throw new InvalidOperationException("Release PDF configuration was not found");
         var jsonPDF = new JSONPDFConfigurationProvider(pdfconfig);
         services.AddTransient<IPDFConfigurationProvider>(s => jsonPDF);
 
-        services.AddTransient<ICNCConfigurationProvider, MockConfigurationProvider>(); // TODO: replace with real configuration provider
         services.AddTransient<IReleasePDFWriter, QuestPDFWriter>();
-        services.AddTransient<ICNCService, CADCodeGCodeCNCService>();
         services.AddTransient<MachineNameProvider>();
         services.AddTransient<IAvailableJobProvider, AvailableJobProvider>();
         services.AddTransient<IExistingJobProvider, CADCodeLabelDBExistingJobProvider>();

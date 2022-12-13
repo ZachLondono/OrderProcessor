@@ -14,7 +14,7 @@ public class CSVTokensParser {
 		_logger = logger;
 	}
 
-	public IEnumerable<CNCBatch> ParseTokens(CSVReadResult csv) {
+	public IEnumerable<Batch> ParseTokens(CSVReadResult csv) {
 
 		Stack<CSVPart> parts = new();
 
@@ -47,18 +47,18 @@ public class CSVTokensParser {
 		_logger.LogInformation($"Found {parts.Count} parts in {csv.Tokens.Count()} tokens");
 
 		return parts.GroupBy(p => p.BatchName)
-					.Select(group => new CNCBatch() {
+					.Select(group => new Batch() {
 						Name = group.Key,
 						Parts = group.Select(MapCSVPartToCNCPart).ToList()
 					});
 
 	}
 
-	private CNCPart MapCSVPartToCNCPart(CSVPart csvpart) {
+	private Part MapCSVPartToCNCPart(CSVPart csvpart) {
 
 		bool containsShape = csvpart.Tokens.Any(t => t.MachiningToken.ToLower() == "shape");
 
-		List<Token> tokens = new();
+		List<MachiningOperation> tokens = new();
 
 		if (containsShape) {
 
@@ -73,7 +73,7 @@ public class CSVTokensParser {
 							.Skip(idx + 1)
 							.Select(MapCSVTokenToCNCToken)
 							.Where(t => t != null)
-							.Cast<Token>()
+							.Cast<MachiningOperation>()
 				);
 
 		} else {
@@ -81,7 +81,7 @@ public class CSVTokensParser {
 			tokens = csvpart.Tokens
 						.Select(MapCSVTokenToCNCToken)
 						.Where(t => t != null)
-						.Cast<Token>()
+						.Cast<MachiningOperation>()
 						.ToList();
 
 		}
@@ -101,7 +101,7 @@ public class CSVTokensParser {
 		};
 	}
 
-	private IEnumerable<Token> OutlineTokensFromCSV(IEnumerable<CSVToken> tokens) {
+	private IEnumerable<MachiningOperation> OutlineTokensFromCSV(IEnumerable<CSVToken> tokens) {
 
 		// TODO: move shape class to CNC.Shared namespace
 		Shape shape = new();
@@ -132,7 +132,7 @@ public class CSVTokensParser {
 
 		var segments = shape.GetSegments();
 
-		List<Token> outline = new();
+		List<MachiningOperation> outline = new();
 		foreach (var segment in segments) {
 
 			if (segment is ArcSegment arc) {
@@ -174,7 +174,7 @@ public class CSVTokensParser {
 
 	}
 
-	private Token? MapCSVTokenToCNCToken(CSVToken token)
+	private MachiningOperation? MapCSVTokenToCNCToken(CSVToken token)
 		=> token.MachiningToken.ToLower() switch {
 			"shape" => null, // throw new NotImplementedException(),
 			"fillet" => null, // throw new NotImplementedException(),
@@ -231,7 +231,7 @@ public class CSVTokensParser {
 		RType = ""
 	};
 
-	private static Token CSVTokenToPocket(CSVToken token) {
+	private static MachiningOperation CSVTokenToPocket(CSVToken token) {
 
 		if (token.StartX == 0 && token.StartY == 0 && token.EndX == 0 && token.EndY == 0 && token.PocketX == 0 && token.PocketY == 0 && token.Radius != 0) {
 
@@ -296,7 +296,7 @@ public class CSVTokensParser {
 		RType = ""
 	};
 
-	private Token? UnrecognizedTokenFound(CSVToken token) {
+	private MachiningOperation? UnrecognizedTokenFound(CSVToken token) {
 
 		_logger.LogWarning("Unrecognized token found '{Token}'", token);
 

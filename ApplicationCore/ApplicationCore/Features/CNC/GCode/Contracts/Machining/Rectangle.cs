@@ -3,8 +3,7 @@ using System.Diagnostics;
 
 namespace ApplicationCore.Features.CNC.GCode.Contracts.Machining;
 
-public record Rectangle : CompositeToken
-{
+public record Rectangle : CompositeToken {
 
     public Point PositionA { get; init; } = new(0, 0);
     public Point PositionB { get; init; } = new(0, 0);
@@ -15,8 +14,7 @@ public record Rectangle : CompositeToken
     public double EndDepth { get; init; }
     public RouteOffset Offset { get; init; } = new(OffsetType.None, 0);
 
-    public override IEnumerable<Token> GetComponents()
-    {
+    public override IEnumerable<MachiningOperation> GetComponents() {
 
         Shape shape = new();
 
@@ -34,24 +32,20 @@ public record Rectangle : CompositeToken
 
         var segments = shape.GetSegments();
 
-        return segments.Select<ShapeSegment, Token>(s =>
-        {
+        return segments.Select<ShapeSegment, MachiningOperation>(s => {
             if (s is LineSegment line)
-                return new RouteLine()
-                {
+                return new RouteLine() {
                     StartPosition = line.Start,
                     EndPosition = line.End,
                     Offset = Offset,
                     StartDepth = StartDepth,
                     EndDepth = EndDepth,
                     PassCount = PassCount,
-                    RType = RType,
                     Sequence = Sequence,
-                    Tool = Tool,
+                    ToolName = ToolName,
                 };
             else if (s is ArcSegment arc)
-                return new RouteArc()
-                {
+                return new RouteArc() {
                     StartPosition = arc.Start,
                     EndPosition = arc.End,
                     Radius = arc.Radius,
@@ -61,13 +55,13 @@ public record Rectangle : CompositeToken
                     EndDepth = EndDepth,
                     Center = arc.Center,
                     PassCount = PassCount,
-                    RType = RType,
                     Sequence = Sequence,
-                    Tool = Tool,
-                };
+					ToolName = ToolName,
+				};
 
             throw new UnreachableException();
-        }).Cast<Token>();
+        }).Cast<MachiningOperation>();
 
     }
+
 }

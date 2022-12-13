@@ -1,7 +1,6 @@
 ﻿namespace ApplicationCore.Features.CNC.GCode.Contracts.Machining;
 
-public enum OffsetType
-{
+public enum OffsetType {
     None,
     Left,
     Right,

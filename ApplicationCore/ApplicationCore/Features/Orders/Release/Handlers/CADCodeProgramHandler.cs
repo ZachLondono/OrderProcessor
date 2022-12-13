@@ -37,7 +37,7 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
 
         var bottoms = notification.Order.Boxes.SelectMany(b => b.GetParts(_construction).Where(p => p.Type == DrawerBoxPartType.Bottom));
 
-        var parts = new List<CNCPart>();
+        var parts = new List<Part>();
 
         int index = 1;
         foreach (var bottom in bottoms) {
@@ -51,7 +51,7 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
                 error => { }
             );
 
-            var part = new CNCPart() {
+            var part = new Part() {
                 FileName = $"Bottom{index++}",  // TODO: encode more part informaiton in file name
                 Description = "Drawer Box Bottom",
                 Length = bottom.Width.AsMillimeters(),
@@ -59,14 +59,14 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
                 ContainsShape = false,
                 Qty = bottom.Qty,
                 Material = new() { Name = material.Name, Thickness = material.Thickness.AsMillimeters() },
-                Tokens = new List<Token>()
+                Tokens = new List<MachiningOperation>()
             };
 
             parts.Add(part);
 
         }
 
-        var batch = new CNCBatch() {
+        var batch = new Batch() {
             Name = $"{notification.Order.Number} - {notification.Order.Name}",
             Parts = parts
         };

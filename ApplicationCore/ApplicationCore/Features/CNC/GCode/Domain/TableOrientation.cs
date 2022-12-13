@@ -1,7 +1,7 @@
 ﻿namespace ApplicationCore.Features.CNC.GCode.Domain;
 
-public enum TableOrientation
-{
+// TODO: remove references to this in other features
+public enum TableOrientation {
     Standard,
     Rotated
 }

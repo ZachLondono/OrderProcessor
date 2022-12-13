@@ -4,12 +4,13 @@ using ApplicationCore.Features.CNC.GCode.Domain.CADCode;
 using ApplicationCore.Features.CNC.GCode.Domain;
 using ApplicationCore.Features.CNC.GCode.Services;
 using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
+using ApplicationCore.Features.CNC.GCode.Contracts.Results;
 
 namespace ApplicationCore.Features.CNC;
 
 public class GCodeToReleasedJobConverter {
 
-	public ReleasedJob ConvertResult(GCodeGenerationResult result, string jobName, IEnumerable<CNCPart> parts) {
+	public ReleasedJob ConvertResult(GCodeGenerationResult result, string jobName, IEnumerable<Part> parts) {
 
 		List<MachineRelease> releases = new();
 
@@ -25,7 +26,7 @@ public class GCodeToReleasedJobConverter {
 
 	}
 
-	private static MachineRelease GetMachineRelease(string pictureFileOutputDirectory, string machineName, TableOrientation tableOrientation, IEnumerable<OptimizationResult> optiResult, IEnumerable<CNCPart> allParts) {
+	private static MachineRelease GetMachineRelease(string pictureFileOutputDirectory, string machineName, TableOrientation tableOrientation, IEnumerable<OptimizationResult> optiResult, IEnumerable<Part> allParts) {
 
 		var partDict = allParts.DistinctBy(p => p.FileName).ToDictionary(p => p.FileName, p => p);
 

@@ -2,9 +2,7 @@
 
 namespace ApplicationCore.Features.CNC.GCode.Contracts.Machining;
 
-public record RouteArc : Token
-{
-
+public record RouteArc : MachiningOperation {
     public Point StartPosition { get; init; } = new(0, 0);
     public Point EndPosition { get; init; } = new(0, 0);
     public double StartDepth { get; init; }
@@ -13,5 +11,4 @@ public record RouteArc : Token
     public RouteOffset Offset { get; init; } = new(OffsetType.None, 0);
     public double Radius { get; init; }
     public ArcDirection Direction { get; init; } = ArcDirection.Unknown;
-
 }
