@@ -2,6 +2,7 @@
 using ApplicationCore.Features.CNC.GCode.Contracts;
 using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
 using ApplicationCore.Features.CNC.Shared;
+using ApplicationCore.Shared.Domain;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.CNC;
@@ -49,7 +50,8 @@ public class CSVTokensParser {
 		return parts.GroupBy(p => p.BatchName)
 					.Select(group => new Batch() {
 						Name = group.Key,
-						Parts = group.Select(MapCSVPartToCNCPart).ToList()
+						Parts = group.Select(MapCSVPartToCNCPart).ToList(),
+						LabelFields = new List<LabelField>()
 					});
 
 	}
@@ -88,16 +90,16 @@ public class CSVTokensParser {
 
 		return new() {
 			Description = csvpart.Border.Description,
-			FileName = csvpart.Border.FileName,
-			Length = csvpart.Border.Length,
-			Width = csvpart.Border.Width,
+			Length = Dimension.FromMillimeters(csvpart.Border.Length),
+			Width = Dimension.FromMillimeters(csvpart.Border.Width),
 			Qty = csvpart.Border.Qty,
 			ContainsShape = containsShape,
-			Tokens = tokens,
-			Material = new() {
-				Name = csvpart.Border.Material,
-				Thickness = csvpart.Border.Thickness
-			}
+			LabelFields = new List<LabelField>(),
+			PrimaryFace = new() {
+				FileName = csvpart.Border.FileName,
+				Operations = tokens
+			},
+			SecondaryFace = null
 		};
 	}
 
@@ -143,13 +145,11 @@ public class CSVTokensParser {
 					Center = arc.Center,
 					Direction = arc.Direction,
 					Radius = arc.Radius,
-					RType = "",
 
 					// TODO: get these values from csv token
 					Sequence = 0,
 					Offset = new RouteOffset(OffsetType.Outside, 0),
-					PassCount = 1,
-					Tool = new Tool("", 0)
+					PassCount = 1
 				});
 
 			} else if (segment is LineSegment line) {
@@ -157,13 +157,11 @@ public class CSVTokensParser {
 				outline.Add(new OutlineSegment() {
 					Start = line.Start,
 					End = line.End,
-					RType = "",
 
 					// TODO: get these values from csv token
 					Sequence = 0,
 					Offset = new RouteOffset(OffsetType.Outside, 0),
-					PassCount = 1,
-					Tool = new Tool("", 0)
+					PassCount = 1
 				});
 
 			}
@@ -198,10 +196,9 @@ public class CSVTokensParser {
 		EndDepth = token.EndZ,
 		PassCount = token.Passes,
 		Sequence = token.SequenceNumber,
-		Tool = new(token.ToolNumber, token.ToolDiameter),
 		Radius = token.Radius,
 		Offset = ParseRouteOffset(token),
-		RType = ""
+		ToolName = token.ToolNumber
 	};
 
 	private static RouteLine CSVTokenToRouteLine(CSVToken token) => new() {
@@ -211,9 +208,8 @@ public class CSVTokensParser {
 		EndDepth = token.EndZ,
 		PassCount = token.Passes,
 		Sequence = token.SequenceNumber,
-		Tool = new(token.ToolNumber, token.ToolDiameter),
-		Offset = ParseRouteOffset(token),
-		RType = ""
+		ToolName = token.ToolNumber,
+		Offset = ParseRouteOffset(token)
 	};
 
 
@@ -226,9 +222,8 @@ public class CSVTokensParser {
 		Direction = clockwise ? ArcDirection.Clockwise : ArcDirection.CounterClockwise,
 		PassCount = token.Passes,
 		Sequence = token.SequenceNumber,
-		Tool = new(token.ToolNumber, token.ToolDiameter),
-		Offset = ParseRouteOffset(token),
-		RType = ""
+		ToolName = token.ToolNumber,
+		Offset = ParseRouteOffset(token)
 	};
 
 	private static MachiningOperation CSVTokenToPocket(CSVToken token) {
@@ -240,9 +235,8 @@ public class CSVTokensParser {
 				Depth = token.StartZ,
 				PassCount = token.Passes,
 				Radius = token.Radius,
-				RType = "",
 				Sequence = token.SequenceNumber,
-				Tool = new(token.ToolNumber, token.ToolDiameter)
+				ToolName = token.ToolNumber
 			};
 
 		}
@@ -256,9 +250,8 @@ public class CSVTokensParser {
 			EndDepth = token.EndZ,
 			PassCount = token.Passes,
 			Sequence = token.SequenceNumber,
-			Tool = new(token.ToolNumber, token.ToolDiameter),
 			Climb = 0,
-			RType = ""
+			ToolName = token.ToolNumber
 		};
 
 	}
@@ -270,9 +263,8 @@ public class CSVTokensParser {
 		EndDepth = token.EndZ,
 		PassCount = token.Passes,
 		Sequence = token.SequenceNumber,
-		Tool = new(token.ToolNumber, token.ToolDiameter),
 		Offset = ParseRouteOffset(token),
-		RType = ""
+		ToolName = token.ToolNumber
 	};
 
 	private static Bore CSVTokenToBore(CSVToken token) => new() {
@@ -280,8 +272,7 @@ public class CSVTokensParser {
 		Depth = token.StartZ,
 		PassCount = token.Passes,
 		Sequence = token.SequenceNumber,
-		Tool = new(token.ToolNumber, token.ToolDiameter),
-		RType = ""
+		ToolName = token.ToolNumber
 	};
 
 	private static MultiBore CSVTokenToMuliBore(CSVToken token) => new() {
@@ -292,8 +283,7 @@ public class CSVTokensParser {
 		Depth = token.StartZ,
 		PassCount = token.Passes,
 		Sequence = token.SequenceNumber,
-		Tool = new(token.ToolNumber, token.ToolDiameter),
-		RType = ""
+		ToolName = token.ToolNumber
 	};
 
 	private MachiningOperation? UnrecognizedTokenFound(CSVToken token) {

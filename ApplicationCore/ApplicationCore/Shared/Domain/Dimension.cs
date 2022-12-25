@@ -1,4 +1,6 @@
-﻿namespace ApplicationCore.Shared.Domain;
+﻿using System.Numerics;
+
+namespace ApplicationCore.Shared.Domain;
 
 public record Dimension {
 
@@ -13,6 +15,8 @@ public record Dimension {
     public static Dimension FromInches(double inches) => new(inches * 25.4);
 
     public static Dimension FromMillimeters(double mm) => new(mm);
+
+    public static Dimension Zero => new(0);
 
     public static Dimension operator *(Dimension dim1, int mult) => FromMillimeters(dim1.AsMillimeters() * mult);
 
@@ -30,7 +34,11 @@ public record Dimension {
 
     public static Dimension operator -(Dimension dim1, Dimension dim2) => FromMillimeters(dim1.AsMillimeters() - dim2.AsMillimeters());
 
-    public override string ToString() {
+    public static bool operator >(Dimension dim1, Dimension dim2) => dim1.AsMillimeters() > dim2.AsMillimeters();
+
+	public static bool operator <(Dimension dim1, Dimension dim2) => dim1.AsMillimeters() < dim2.AsMillimeters();
+
+	public override string ToString() {
         return $"{{{AsInches()}\",  {AsMillimeters()}mm}}";
     }
 

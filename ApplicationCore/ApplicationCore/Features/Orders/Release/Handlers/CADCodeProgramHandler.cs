@@ -2,6 +2,7 @@
 using ApplicationCore.Features.CNC.GCode;
 using ApplicationCore.Features.CNC.GCode.Contracts;
 using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
+using ApplicationCore.Features.CNC.GCode.Contracts.Options;
 using ApplicationCore.Features.CNC.ReleasePDF;
 using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
@@ -52,14 +53,17 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
             );
 
             var part = new Part() {
-                FileName = $"Bottom{index++}",  // TODO: encode more part informaiton in file name
                 Description = "Drawer Box Bottom",
-                Length = bottom.Width.AsMillimeters(),
-                Width = bottom.Length.AsMillimeters(),
+                Length = bottom.Width,
+                Width = bottom.Length,
                 ContainsShape = false,
                 Qty = bottom.Qty,
-                Material = new() { Name = material.Name, Thickness = material.Thickness.AsMillimeters() },
-                Tokens = new List<MachiningOperation>()
+                LabelFields = new List<LabelField>(),
+                PrimaryFace = new() {
+                    FileName = $"Bottom{index++}",  // TODO: encode more part informaiton in file name
+                    Operations = new List<MachiningOperation>()
+                },
+                SecondaryFace = null
             };
 
             parts.Add(part);
@@ -68,11 +72,24 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
 
         var batch = new Batch() {
             Name = $"{notification.Order.Number} - {notification.Order.Name}",
-            Parts = parts
+            Parts = parts,
+            LabelFields = new List<LabelField>()
         };
 
+
+		GCodeGenerationOptions options = new() {
+			Machines = new List<MachineGCodeOptions>() {
+				new() {
+					GenerateLabels = true,
+					GenerateNestPrograms = true,
+					GenerateSinglePartPrograms = true,
+					Name = "Andi"
+				}
+			}
+		};
+
 		// TODO send emails to shop manager
-		var response = await _bus.Send(new GenerateGCode.Command(batch));
+		var response = await _bus.Send(new GenerateGCode.Command(batch, options));
 
         await response.MatchAsync(
 

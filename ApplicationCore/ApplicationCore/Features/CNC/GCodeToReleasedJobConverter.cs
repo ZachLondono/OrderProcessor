@@ -1,8 +1,5 @@
-﻿using ApplicationCore.Features.CNC.GCode.Configuration;
-using ApplicationCore.Features.CNC.GCode.Contracts;
-using ApplicationCore.Features.CNC.GCode.Domain.CADCode;
+﻿using ApplicationCore.Features.CNC.GCode.Contracts;
 using ApplicationCore.Features.CNC.GCode.Domain;
-using ApplicationCore.Features.CNC.GCode.Services;
 using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Features.CNC.GCode.Contracts.Results;
 
@@ -15,8 +12,8 @@ public class GCodeToReleasedJobConverter {
 		List<MachineRelease> releases = new();
 
 		foreach (var machine in result.MachineResults) {
-			var release = GetMachineRelease(machine.PictureFileOutputDirectory, machine.MachineName, machine.TableOrientation, machine.OptimizationResults, parts);
-			releases.Add(release);
+			var release = GetMachineRelease("Y:\\CADCode\\pix", machine.MachineName, TableOrientation.Standard, new List<OptimizationResult>() { machine.OptimizationResults }, parts);
+			releases.Add(release);			
 		}
 
 		return new ReleasedJob() {
@@ -28,7 +25,7 @@ public class GCodeToReleasedJobConverter {
 
 	private static MachineRelease GetMachineRelease(string pictureFileOutputDirectory, string machineName, TableOrientation tableOrientation, IEnumerable<OptimizationResult> optiResult, IEnumerable<Part> allParts) {
 
-		var partDict = allParts.DistinctBy(p => p.FileName).ToDictionary(p => p.FileName, p => p);
+		var partDict = allParts.DistinctBy(p => p.PrimaryFace.FileName).ToDictionary(p => p.PrimaryFace.FileName, p => p);
 
 		var programs = new List<ReleasedProgram>();
 		var toolTable = new Dictionary<int, string>();
@@ -55,11 +52,11 @@ public class GCodeToReleasedJobConverter {
 						},
 						Parts = g.Select(p => {
 							var cncpart = partDict[p.FileName];
-							var xOffset = (float)((p.IsRotated ? cncpart.Width : cncpart.Length) / 2);
-							var yOffset = (float)((p.IsRotated ? cncpart.Length : cncpart.Width) / 2);
+							var xOffset = (float)((p.IsRotated ? cncpart.Width.AsMillimeters() : cncpart.Length.AsMillimeters()) / 2);
+							var yOffset = (float)((p.IsRotated ? cncpart.Length.AsMillimeters() : cncpart.Width.AsMillimeters()) / 2);
 							return new NestedPart() {
-								Name = cncpart.FileName,
-								ImagePath = Path.Combine(pictureFileOutputDirectory, $"{cncpart.FileName}.wmf"),
+								Name = cncpart.PrimaryFace.FileName,
+								ImagePath = Path.Combine(pictureFileOutputDirectory, $"{cncpart.PrimaryFace.FileName}.wmf"),
 								Description = cncpart.Description,
 								Width = cncpart.Width,
 								Length = cncpart.Length,

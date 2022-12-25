@@ -2,6 +2,7 @@
 using ApplicationCore.Features.CNC.CSV;
 using ApplicationCore.Features.CNC.GCode;
 using ApplicationCore.Features.CNC.GCode.Contracts;
+using ApplicationCore.Features.CNC.GCode.Contracts.Options;
 using ApplicationCore.Features.CNC.ReleasePDF;
 using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Features.Orders.Loader;
@@ -110,7 +111,18 @@ public class ConsoleApplication {
 
         ReleasedJob? job = null;
 
-        var response = await _bus.Send(new GenerateGCode.Command(batch));
+        GCodeGenerationOptions options = new() {
+            Machines = new List<MachineGCodeOptions>() {
+                new() {
+                    GenerateLabels = true,
+                    GenerateNestPrograms = true,
+                    GenerateSinglePartPrograms = true,
+                    Name = "Andi"
+                }
+            }
+        };
+
+        var response = await _bus.Send(new GenerateGCode.Command(batch, options));
         response.Match(
             result => job = new GCodeToReleasedJobConverter().ConvertResult(result, batch.Name, batch.Parts),
             error => {
