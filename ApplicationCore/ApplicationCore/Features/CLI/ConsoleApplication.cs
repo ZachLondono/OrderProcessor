@@ -124,7 +124,7 @@ public class ConsoleApplication {
 
         var response = await _bus.Send(new GenerateGCode.Command(batch, options));
         response.Match(
-            result => job = new GCodeToReleasedJobConverter().ConvertResult(result, batch.Name, batch.Parts),
+            result => job = GCodeToReleasedJobConverter.ConvertResult(result.MachineResults, result.GeneratedPicturesDirectory, batch.Name, batch.Parts),
             error => {
                 _logger.LogError("Error generating GCode for batch {BatchName} {Error}", batch.Name, error);
                 _messageBoxService.OpenDialog(error.Details, error.Title);
