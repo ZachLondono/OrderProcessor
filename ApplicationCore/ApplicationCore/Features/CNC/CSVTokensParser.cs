@@ -47,9 +47,13 @@ public class CSVTokensParser {
 
 		_logger.LogInformation($"Found {parts.Count} parts in {csv.Tokens.Count()} tokens");
 
-		return parts.GroupBy(p => p.BatchName)
+		return parts.GroupBy(p => (p.BatchName, p.Border.Material, p.Border.Thickness))
 					.Select(group => new Batch() {
-						Name = group.Key,
+						Name = group.Key.BatchName,
+						Material = new() {
+							SheetStock = group.Key.Material,
+							Thickness = Dimension.FromMillimeters(group.Key.Thickness)
+						},
 						Parts = group.Select(MapCSVPartToCNCPart).ToList(),
 						LabelFields = new List<LabelField>()
 					});
