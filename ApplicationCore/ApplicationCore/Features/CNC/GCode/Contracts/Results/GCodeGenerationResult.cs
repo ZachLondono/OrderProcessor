@@ -2,5 +2,6 @@
 
 public record GCodeGenerationResult {
     public string BatchName { get; init; } = string.Empty;
+    public string GeneratedPicturesDirectory { get; init; } = string.Empty;
     public required IEnumerable<MachineGenerationResult> MachineResults { get; init; }
 }
