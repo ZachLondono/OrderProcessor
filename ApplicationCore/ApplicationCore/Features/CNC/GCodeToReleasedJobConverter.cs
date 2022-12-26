@@ -7,14 +7,14 @@ namespace ApplicationCore.Features.CNC;
 
 public class GCodeToReleasedJobConverter {
 
-	public static ReleasedJob ConvertResult(IEnumerable<MachineGenerationResult> machineGenerationResults, string jobName, IEnumerable<Part> parts) {
+	public static ReleasedJob ConvertResult(IEnumerable<MachineGenerationResult> machineGenerationResults, string pictureDirectory, string jobName, IEnumerable<Part> parts) {
 
 		List<MachineRelease> releases = new();
 
 		foreach (var machine in machineGenerationResults) {
 			if (machine.OptimizationResults is null) continue;
 			var optimizationResults = new List<OptimizationResult>() { machine.OptimizationResults };
-			var release = GetMachineRelease("Y:\\CADCode\\pix", machine.MachineName, TableOrientation.Standard, optimizationResults, parts);
+			var release = GetMachineRelease(pictureDirectory, machine.MachineName, TableOrientation.Standard, optimizationResults, parts);
 			releases.Add(release);			
 		}
 
