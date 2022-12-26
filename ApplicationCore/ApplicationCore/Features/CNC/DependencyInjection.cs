@@ -4,7 +4,6 @@ using ApplicationCore.Features.CNC.GCode.Services;
 using ApplicationCore.Features.CNC.LabelDB.Services;
 using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
 using ApplicationCore.Features.CNC.ReleasePDF.Services;
-using ApplicationCore.Shared;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +14,8 @@ public static class DependencyInjection {
     public static IServiceCollection AddCADCode(this IServiceCollection services, IConfiguration config) {
 
         var cadcode = config.GetRequiredSection("CADCode");
+
+        services.AddTransient(s => config.GetRequiredSection("GCodeGenerationConfiguration").Get<GCodeGenerationConfiguration>());
 
 		services.AddTransient<IInventoryFileReader, MDBInventoryFileReader>();
 		services.AddTransient<IToolFileReader, MDBToolFileReader>();
