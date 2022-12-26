@@ -3,6 +3,7 @@
 public class Batch {
 
     public required string Name { get; init; }
+    public required BatchMaterial Material { get; init; }
     public required IReadOnlyList<Part> Parts { get; init; }
     public required IEnumerable<LabelField> LabelFields { get; init; }
 
