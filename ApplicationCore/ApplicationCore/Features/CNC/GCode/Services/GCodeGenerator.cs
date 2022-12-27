@@ -1,25 +1,27 @@
 ﻿using ApplicationCore.Features.CNC.GCode.Configuration;
 using ApplicationCore.Features.CNC.GCode.Contracts;
+using ApplicationCore.Features.CNC.GCode.Contracts.Notifications;
 using ApplicationCore.Features.CNC.GCode.Contracts.Options;
 using ApplicationCore.Features.CNC.GCode.Contracts.Results;
 using ApplicationCore.Features.CNC.GCode.Domain.CADCode;
+using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Features.CNC.GCode.Services;
 
 public class GCodeGenerator {
 
+	private readonly IUIBus _uiBus;
 	private readonly ICADCodeFactory _cadcodeFactory;
 	private readonly IInventoryFileReader _inventoryReader;
-	private readonly IToolFileReader _toolFileReader;
 	private readonly GCodeGenerationConfiguration _configuration;
 
-	public GCodeGenerator(ICADCodeFactory cadcodeFactory,
+	public GCodeGenerator(IUIBus uiBus,
+							ICADCodeFactory cadcodeFactory,
 							IInventoryFileReader inventoryReader,
-							IToolFileReader toolFileReader,
 							GCodeGenerationConfiguration configuration) {
+		_uiBus = uiBus;
 		_cadcodeFactory = cadcodeFactory;
 		_inventoryReader = inventoryReader;
-		_toolFileReader = toolFileReader;
 		_configuration = configuration;
 	}
 
@@ -40,11 +42,10 @@ public class GCodeGenerator {
 				// publish notification about missing configuration error
 				continue;
 			}
-			var tools = await _toolFileReader.GetAvailableToolsAsync(machineConfig.ToolFilePath);
-
-			cadcode.AddBatch(batch);
+			
+			await cadcode.AddToolsAsync(machineConfig.ToolFilePath);
+			cadcode.SetBatch(batch);
 			cadcode.AddLabels(labels);
-			cadcode.AddTools(tools);
 			cadcode.AddInventory(inventory);
 
 			var machineresult = GenerateMachineGCode(cadcode,
@@ -67,13 +68,11 @@ public class GCodeGenerator {
 	}
 
 	private void OnCADCodeProgress(CADCodeProgress progress) {
-		// publish notification about progress
-		throw new NotImplementedException();
+		_uiBus.Publish(new GCodeGenerationProgress(progress.Progress / 100.0, progress.Message));
 	}
 
 	private void OnCADCodeError(CADCodeError error) {
-		// publish notification about error
-		throw new NotImplementedException();
+		_uiBus.Publish(new GCodeGenerationError(error.Message));
 	}
 
 	public static MachineGenerationResult GenerateMachineGCode(ICADCodeProxy cadcode,

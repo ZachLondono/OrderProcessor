@@ -7,13 +7,13 @@ namespace ApplicationCore.Features.CNC.GCode.Services;
 
 public interface ICADCodeProxy {
 
-	void AddBatch(Batch batch);
+	void SetBatch(Batch batch);
 
 	void AddLabels(IEnumerable<Label> labels);
 
 	void AddInventory(IEnumerable<InventorySheetStock> inventory);
 
-	void AddTools(IEnumerable<Tool> tools);
+	Task AddToolsAsync(string toolFilePath);
 
 	OptimizationResult OptimizeNestedParts(bool generateLabels, string outputDirectory);
 

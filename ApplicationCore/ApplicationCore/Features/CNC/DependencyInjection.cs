@@ -13,14 +13,17 @@ public static class DependencyInjection {
 
     public static IServiceCollection AddCADCode(this IServiceCollection services, IConfiguration config) {
 
-        var cadcode = config.GetRequiredSection("CADCode");
+		GCodeGenerationConfiguration? gcodeConfig = config.GetRequiredSection("GCodeGenerationConfiguration").Get<GCodeGenerationConfiguration>();
+        if (gcodeConfig is null) throw new InvalidOperationException("Missing GCode configuration");
+		services.AddTransient(s => gcodeConfig);
 
-        services.AddTransient(s => config.GetRequiredSection("GCodeGenerationConfiguration").Get<GCodeGenerationConfiguration>());
+        services.AddTransient<ICADCodeFactory, CADCodeFactory>();
 
 		services.AddTransient<IInventoryFileReader, MDBInventoryFileReader>();
 		services.AddTransient<IToolFileReader, MDBToolFileReader>();
 
-        var pdfconfig = cadcode.GetValue<string>("ReleasePDFConfig");
+		var cadcode = config.GetRequiredSection("CADCode");
+		var pdfconfig = cadcode.GetValue<string>("ReleasePDFConfig");
         if (pdfconfig is null) throw new InvalidOperationException("Release PDF configuration was not found");
         var jsonPDF = new JSONPDFConfigurationProvider(pdfconfig);
         services.AddTransient<IPDFConfigurationProvider>(s => jsonPDF);
