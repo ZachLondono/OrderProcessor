@@ -226,11 +226,18 @@
          --><button disabled="@(!_useInches)" @onclick="ToggleUnits" class="btn-secondary dark:disabled:bg-sky-500 disabled:bg-sky-500 px-3.5 py-1 rounded-l-none rounded-r-md w-14 transition ease-in-out duration-300">mm</button>
 		</div>
         @if (OrderState.Order.Products.Count() == 0) {
-            <span>No products boxes in order</span>
+            <span>No products in order</span>
         } else {
 
             var drawerBoxes = OrderState.Order.Products.Where(p => p is DovetailDrawerBox).Cast<DovetailDrawerBox>();
-            <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@drawerBoxes" />
+            if (drawerBoxes.Any()) {
+                <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@drawerBoxes" />
+            }
+
+            var cabinets = OrderState.Order.Products.Where(p => p is Cabinet).Cast<Cabinet>();
+            if (cabinets.Any()) {
+                <CabinetProductTable UseInches="@_useInches" Cabinets="@cabinets"/>
+            }
 
         }
     </section>

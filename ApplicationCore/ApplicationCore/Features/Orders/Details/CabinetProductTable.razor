@@ -1,0 +1,40 @@
+﻿@using ApplicationCore.Features.Orders.Domain.Products;
+@using ApplicationCore.Features.Orders.Domain;
+
+<div class="overflow-x-scroll rounded-md">
+    <table class="table-auto">
+        <thead class="border-b border-slate-300">
+            <tr class="dark:bg-slate-700 dark:text-gray-500">
+                <th class="p-5">Qty</th>
+                <th class="p-5">Height</th>
+                <th class="p-5">Width</th>
+                <th class="p-5">Depth</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cabinet in Cabinets) {
+                <tr>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.Qty</td>
+                    @if (UseInches) {
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)cabinet.Height.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)cabinet.Width.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)cabinet.Depth.GetFormatedFraction())"</td>
+                    } else {
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.Height.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.Width.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.Depth.AsMillimeters().ToString("0.00")</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+
+    [Parameter]
+    public IEnumerable<Cabinet> Cabinets { get; set; } = Enumerable.Empty<Cabinet>();
+    [Parameter]
+    public bool UseInches { get; set; }
+
+}
