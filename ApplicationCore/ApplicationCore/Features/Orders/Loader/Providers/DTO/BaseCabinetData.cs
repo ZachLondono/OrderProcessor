@@ -34,6 +34,8 @@ public class BaseCabinetData {
 
     public required int DoorQty { get; set; }
 
+    public bool HingeLeft { get; set; } = false;
+
     public required IToeType ToeType { get; set; }
 
     public required int DrawerQty { get; set; }

@@ -121,9 +121,9 @@ public class LoadOrderCommand {
         private static BaseCabinet MapDataToBaseCabinet(BaseCabinetData data) {
 
             BaseCabinetDoors doors = data.DoorQty switch {
-                1 => BaseCabinetDoors.OneDoor,
-                2 => BaseCabinetDoors.TwoDoors,
-                _ => BaseCabinetDoors.OneDoor
+                1 => new(data.HingeLeft ? HingeSide.Left : HingeSide.Right),
+                2 => new(),
+                _ => new(data.HingeLeft ? HingeSide.Left : HingeSide.Right)
             };
             CabinetMaterial boxMaterial = new(data.BoxMaterialFinish, data.BoxMaterialCore);
             CabinetMaterial finishMaterial = new(data.FinishMaterialFinish, data.FinishMaterialCore);
