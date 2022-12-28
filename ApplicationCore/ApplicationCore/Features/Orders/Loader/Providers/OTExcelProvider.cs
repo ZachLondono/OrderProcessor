@@ -8,6 +8,7 @@ using ApplicationCore.Features.Companies.Commands;
 using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Domain;
 using ApplicationCore.Features.Orders.Loader.Providers.Results;
+using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 

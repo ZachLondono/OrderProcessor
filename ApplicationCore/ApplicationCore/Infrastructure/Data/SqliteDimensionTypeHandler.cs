@@ -1,5 +1,5 @@
 ﻿using System.Data;
-using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using ApplicationCore.Shared.Domain;
 using Dapper;
 
 namespace ApplicationCore.Infrastructure.Data;

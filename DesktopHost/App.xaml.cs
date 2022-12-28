@@ -8,6 +8,7 @@ using MediatR;
 using System;
 using System.Windows;
 using ApplicationCore.Features.CLI;
+using ApplicationCore.Infrastructure;
 
 namespace DesktopHost;
 
@@ -23,8 +24,17 @@ public partial class App : Application {
 
         if (e.Args.Length > 0) {
             try {
-                var app = serviceProvider.GetRequiredService<ConsoleApplication>();
+
+				var window = new ReleasingCSVTokensWindow();
+                var bus = serviceProvider.GetRequiredService<IUIBus>();
+                bus.Register(window);
+                window.Show();
+                
+				var app = serviceProvider.GetRequiredService<ConsoleApplication>();
                 await app.Run(e.Args);
+
+                window.Close();
+
             } catch (Exception ex) {
                 MessageBox.Show($"Error loading order\n{ex}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }

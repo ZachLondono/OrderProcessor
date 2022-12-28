@@ -1,0 +1,24 @@
+﻿using ApplicationCore.Shared;
+using Dapper;
+
+namespace ApplicationCore.Features.CNC.LabelDB.Services;
+
+internal class MachineNameProvider {
+
+    private readonly IAccessDBConnectionFactory _connFactory;
+
+    public MachineNameProvider(IAccessDBConnectionFactory connFactory) {
+        _connFactory = connFactory;
+    }
+
+    public async Task<string> GetMachineNameAsync(string filePath, string jobName) {
+
+        using var connection = _connFactory.CreateConnection(filePath);
+
+        var patternBarcode = await connection.QuerySingleAsync<string>($"SELECT TOP 1 [Pattern Barcode] FROM [{jobName}] WHERE [Pattern Barcode] IS NOT NULL;");
+
+        return patternBarcode.Contains(".cnc") ? "Andi Stratos" : "Omnitech";
+
+    }
+
+}

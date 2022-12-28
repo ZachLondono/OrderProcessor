@@ -1,7 +1,11 @@
 {
   "profiles": {
-    "DesktopHost": {
+    "Desktop": {
       "commandName": "Project"
+    },
+    "Console": {
+      "commandName": "Project",
+      "commandLineArgs": "-c \"C:\\Users\\Zachary Londono\\Desktop\\ExampleConfiguration\\Simple Door.csv\""
     }
   }
 }

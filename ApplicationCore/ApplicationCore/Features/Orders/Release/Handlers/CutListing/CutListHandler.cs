@@ -7,7 +7,6 @@ using ApplicationCore.Features.Orders.Queries;
 using ApplicationCore.Features.Orders.Release.Handlers.CutListing.Models;
 using ApplicationCore.Infrastructure;
 using Microsoft.Extensions.Logging;
-using MoreLinq;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.CutListing;
 

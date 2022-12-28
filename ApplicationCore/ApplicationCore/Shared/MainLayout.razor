@@ -1,11 +1,13 @@
-﻿@using ApplicationCore.Features.CADCode.Contracts;
+﻿@using ApplicationCore.Features.CNC.CSV;
+@using ApplicationCore.Features.CNC.ReleasePDF;
 @using ApplicationCore.Features.Companies.Create
 @using ApplicationCore.Features.Orders
 @using ApplicationCore.Features.Orders.Loader
-@using ApplicationCore.Features.CADCode.ReleaseExisitngJob
+@using ApplicationCore.Features.CNC.LabelDB
 @using ApplicationCore.Infrastructure
 @using System.Diagnostics;
 @using static ApplicationCore.Shared.InformationDialog;
+@using ApplicationCore.Features.CNC.LabelDB.Contracts;
 @inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
@@ -72,14 +74,6 @@
 						<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
 					</svg>
 					<span class="h-6 align-middle">Add Company</span>
-				</div>
-				<div @onclick="CreateReleaseForExistingOrder" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 dark:hover:bg-slate-600  text-gray-500 hover:text-black dark:hover:text-white">
-					<image class="w-6 h-6 mr-2 inline-block" src="images/cadcode.png" />
-					<span class="h-6 align-middle">CADCode Release</span>
-				</div>
-				<div @onclick="ReleaseCSVTokens" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 dark:hover:bg-slate-600  text-gray-500 hover:text-black dark:hover:text-white">
-					<image class="w-6 h-6 mr-2 inline-block" src="images/cadcode.png" />
-					<span class="h-6 align-middle">CSV Token Release</span>
 				</div>
 			</section>
 
@@ -148,61 +142,6 @@
 		var dialog = Modal.Show<CreateCompanyDialog>();
 		var result = await dialog.Result;
 		if (result.Confirmed) NavigationManager.NavigateTo("/companies/details", true);
-	}
-
-	private async Task CreateReleaseForExistingOrder() {
-		string filepath = string.Empty;
-		bool wasPicked = await FilePicker.PickFileAsync("Select CADCode Label Database", "C:\\Users\\Zachary Londono\\Desktop\\ExampleConfiguration", new("Label database (*.mdb)", ".mdb"), (selected) => filepath = selected);
-		if (!wasPicked) return;
-
-		var parameters = new ModalParameters();
-		parameters.Add("LabelDatabaseFilePath", filepath);
-
-		var dialog = Modal.Show<ListAvailableJobsDialog>("Releasing Existing Job", parameters);
-		var result = await dialog.Result;
-
-		if (result.Confirmed && result.Data is IEnumerable<AvailableJob> selectedJobs) {
-
-			foreach (var availableJob in selectedJobs) {
-
-				var response = await Bus.Send(new ExistingJobFromLabelFileQuery(filepath, availableJob.Name));
-
-				response.Match(
-					async job => {
-
-						var pdfResponse = await Bus.Send(new GenerateCNCReleasePDFRequest(job, @"C:\Users\Zachary Londono\Desktop\ExampleConfiguration\cutlists"));
-						pdfResponse.Match(
-							files => {
-								foreach (var file in files) {
-									Debug.WriteLine($"File created {file}");
-								}
-							},
-							async error => {
-								_ = await Modal.OpenErrorDialog(error);
-							}
-						);
-
-					},
-					async error =>
-					{
-						_ = await Modal.OpenErrorDialog(error);
-					}
-				);
-
-
-			}
-
-		}
-
-	}
-
-	private async Task ReleaseCSVTokens() {
-		
-		string filepath = string.Empty;
-		bool wasPicked = await FilePicker.PickFileAsync("Select CADCode CSV Token File", "C:\\Users\\Zachary Londono\\Desktop\\ExampleConfiguration", new("Token File (*.csv)", ".csv"), (selected) => filepath = selected);
-		if (!wasPicked) return;
-		await Bus.Send(new ReleaseCADCodeCSVBatchCommand(filepath, @"C:\Users\Zachary Londono\Desktop\ExampleConfiguration\cutlists"));
-
 	}
 
     private async Task GoBack() {

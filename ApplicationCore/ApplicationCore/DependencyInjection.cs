@@ -8,7 +8,7 @@ using Blazored.Modal;
 using ApplicationCore.Shared;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Features.Emails;
-using ApplicationCore.Features.CADCode;
+using ApplicationCore.Features.CNC;
 using ApplicationCore.Features.Orders.Loader;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
@@ -24,10 +24,11 @@ public static class DependencyInjection {
         services.AddSingleton<OrderState>();
         services.AddSingleton<CompanyState>();
         services.AddSingleton<IServiceProvider>(sp => sp);
+		services.AddTransient<IAccessDBConnectionFactory, AccessDBConnectionFactory>();
 
-        // TODO: validate configuration data
+		// TODO: validate configuration data
 
-        services.AddOrderLoading(configuration);
+		services.AddOrderLoading(configuration);
 
         services.AddEmailing();
 

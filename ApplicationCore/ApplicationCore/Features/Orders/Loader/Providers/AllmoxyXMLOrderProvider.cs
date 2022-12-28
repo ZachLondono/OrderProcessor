@@ -8,6 +8,7 @@ using ApplicationCore.Features.Orders.Loader.Providers.DTO;
 using ApplicationCore.Features.Orders.Loader.Providers.Results;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
+using ApplicationCore.Shared.Domain;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Xml.Serialization;
