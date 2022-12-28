@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
-namespace ApplicationCore.Features.Orders.Domain.Products;
+namespace ApplicationCore.Features.Orders.Domain;
 
 public abstract class DrawerBox {
 
