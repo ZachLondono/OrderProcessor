@@ -3,11 +3,12 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Domain.Products;
 
-public abstract class Cabinet : IProduct {
+public abstract class Cabinet : IProduct, IProductPlannerProduct {
 
-    public Guid Id { get; set; }
+    public Guid Id { get; }
     public int Qty { get; }
     public decimal UnitPrice { get; }
+    public string Room { get; }
     public Dimension Height { get; }
     public Dimension Width { get; }
     public Dimension Depth { get; }
@@ -16,7 +17,7 @@ public abstract class Cabinet : IProduct {
     public CabinetSide RightSide { get; }
     public CabinetSide LeftSide { get; }
 
-    public Cabinet(Guid id, int qty, decimal unitPrice,
+    public Cabinet(Guid id, int qty, decimal unitPrice, string room,
                 Dimension height, Dimension width, Dimension depth,
                 CabinetMaterial boxMaterial, CabinetMaterial finishMaterial,
                 CabinetSide rightSide, CabinetSide leftSide) {
@@ -24,6 +25,7 @@ public abstract class Cabinet : IProduct {
         Id = id;
         Qty = qty;
         UnitPrice = unitPrice;
+        Room = room;
         Height = height;
         Width = width;
         Depth = depth;
@@ -37,4 +39,7 @@ public abstract class Cabinet : IProduct {
 
     }
 
+    public abstract string GetProductName();
+
+    public abstract Dictionary<string, string> GetParameters();
 }
