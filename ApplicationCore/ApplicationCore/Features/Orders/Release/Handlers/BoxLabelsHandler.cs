@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Labels.Contracts;
 using ApplicationCore.Features.Labels.Domain;
+using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 
@@ -28,7 +29,7 @@ internal class BoxLabelsHandler : DomainListener<TriggerOrderReleaseNotification
         var configuration = new LabelPrinterConfiguration(notification.ReleaseProfile.BoxLabelsTemplateFilePath);
 
         var labels = new List<Label>();
-        foreach (var box in order.Boxes) {
+        foreach (var box in order.Products.Where(p => p is DrawerBox).Cast<DrawerBox>()) {
 
             string sizeStr = $"{box.Height.AsInchFraction}\"Hx{box.Width.AsInchFraction}\"Wx{box.Depth.AsInchFraction}\"D";
 

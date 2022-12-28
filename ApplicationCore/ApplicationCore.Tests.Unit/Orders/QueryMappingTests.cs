@@ -36,7 +36,7 @@ public class QueryMappingTests {
         order.Number.Should().Be(model.Number);
         order.CustomerId.Should().Be(model.CustomerId);
         order.VendorId.Should().Be(model.VendorId);
-        order.Boxes.Should().BeEquivalentTo(boxes);
+        order.Products.Should().BeEquivalentTo(boxes);
         order.AdditionalItems.Should().BeEquivalentTo(items);
 
     }

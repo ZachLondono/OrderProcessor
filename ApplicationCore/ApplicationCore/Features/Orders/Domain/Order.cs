@@ -20,11 +20,11 @@ public class Order {
     public decimal PriceAdjustment { get; } = 0M;
     public bool Rush { get; }
     public IReadOnlyDictionary<string, string> Info { get; }
-    public IEnumerable<DrawerBox> Boxes { get; }
+    public IEnumerable<IProduct> Products { get; }
     public IEnumerable<AdditionalItem> AdditionalItems { get; }
 
     public decimal SubTotal {
-        get => Boxes.Sum(b => b.Qty * b.UnitPrice) + AdditionalItems.Sum(i => i.Price);
+        get => Products.Sum(b => b.Qty * b.UnitPrice) + AdditionalItems.Sum(i => i.Price);
     }
 
     public decimal AdjustedSubTotal {
@@ -37,7 +37,7 @@ public class Order {
 
     // TODO: Add related files
 
-    public Order(Guid id, string source, Status status, string number, string name, Guid customerId, Guid vendorId, string productionNote, string customerComment, DateTime orderDate, DateTime? releaseDate, DateTime? productionDate, DateTime? completeDate, decimal tax, decimal shipping, decimal priceAdjustment, bool rush, IReadOnlyDictionary<string, string> info, IEnumerable<DrawerBox> boxes, IEnumerable<AdditionalItem> additionalItems) {
+    public Order(Guid id, string source, Status status, string number, string name, Guid customerId, Guid vendorId, string productionNote, string customerComment, DateTime orderDate, DateTime? releaseDate, DateTime? productionDate, DateTime? completeDate, decimal tax, decimal shipping, decimal priceAdjustment, bool rush, IReadOnlyDictionary<string, string> info, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> additionalItems) {
         Id = id;
         Source = source;
         Status = status;
@@ -56,7 +56,7 @@ public class Order {
         PriceAdjustment = priceAdjustment;
         Rush = rush;
         Info = info;
-        Boxes = boxes;
+        Products = products;
         AdditionalItems = additionalItems;
     }
 

@@ -7,6 +7,7 @@ using ApplicationCore.Features.Orders.Queries;
 using ApplicationCore.Features.Orders.Release.Handlers.CutListing.Models;
 using ApplicationCore.Infrastructure;
 using Microsoft.Extensions.Logging;
+using MoreLinq;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.CutListing;
 
@@ -36,8 +37,10 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         var customerName = await GetCompanyName(order.CustomerId);
         var vendorName = await GetCompanyName(order.VendorId);
 
-        var materialIds = order.Boxes
-                                .SelectMany(b => new Guid[] { b.Options.BoxMaterialId, b.Options.BottomMaterialId } )
+        var materialIds = order.Products
+			                    .Where(p => p is DrawerBox)
+                                .Cast<DrawerBox>()
+								.SelectMany(b => new Guid[] { b.Options.BoxMaterialId, b.Options.BottomMaterialId } )
                                 .Distinct();
 
         var materialNames = new Dictionary<Guid, string>();
@@ -128,7 +131,9 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
     private static CutList CreateStdCutList(Order order, string customerName, string vendorName, ConstructionValues construction, Dictionary<Guid, string> materialNames) {
         int groupNum = 0;
         int lineNum = 1;
-        var cutlistItems = order.Boxes
+        var cutlistItems = order.Products
+                                .Where(p => p is DrawerBox)
+                                .Cast<DrawerBox>()
                                 .SelectMany(b => {
                                     groupNum++;
 
@@ -160,8 +165,10 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
     private static CutList CreateOptimizedCutList(Order order, string customerName, string vendorName, ConstructionValues construction, Dictionary<Guid, string> materialNames) {
         int groupNum = 0;
         int lineNum = 1;
-        var cutlistItems = order.Boxes
-                                .SelectMany(b => b.GetParts(construction).Where(p => p.Type != DrawerBoxPartType.Bottom))
+        var cutlistItems = order.Products
+								.Where(p => p is DrawerBox)
+								.Cast<DrawerBox>()
+								.SelectMany(b => b.GetParts(construction).Where(p => p.Type != DrawerBoxPartType.Bottom))
                                 .GroupBy(p => (p.MaterialId, p.Width, p.Length)) // TODO: if there are multiple scoop fronts they should be grouped together
                                 .Select(g =>
                                 {
@@ -191,8 +198,10 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         int groupNum = 0;
         int lineNum = 1;
 
-        var cutlistItems = order.Boxes
-                                .SelectMany(b =>
+        var cutlistItems = order.Products
+								.Where(p => p is DrawerBox)
+								.Cast<DrawerBox>()
+								.SelectMany(b =>
                                 {
                                     groupNum++;
 
@@ -226,39 +235,39 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
         // TODO: if a drawerbox has a different option then the most common option than it should be shown in a part comment
 
-        var clips = order.Boxes
-                        .Select(b => b.Options.Clips)
+        var boxes = order.Products
+                        .Where(p => p is DrawerBox)
+                        .Cast<DrawerBox>();
+
+
+		var clips = boxes.Select(b => b.Options.Clips)
                         .GroupBy(c => c)
                         .OrderByDescending(g => g.Count())
                         .First()
                         .First();
 
-        var notch = order.Boxes
-                        .Select(b => b.Options.Notches)
-                        .GroupBy(n => n)
+        var notch = boxes.GroupBy(n => n)
                         .OrderByDescending(g => g.Count())
                         .First()
                         .First();
 
-        var postFin = order.Boxes
-                        .Select(b => b.Options.PostFinish)
+        var postFin = boxes.Select(b => b.Options.PostFinish)
                         .GroupBy(c => c)
                         .OrderByDescending(g => g.Count())
                         .First()
                         .First();
 
-        var mountingHoles = order.Boxes
-                        .Select(b => b.Options.FaceMountingHoles)
-                        .GroupBy(c => c)
-                        .OrderByDescending(g => g.Count())
-                        .First()
-                        .First();
+        var mountingHoles = boxes.Select(b => b.Options.FaceMountingHoles)
+                                .GroupBy(c => c)
+                                .OrderByDescending(g => g.Count())
+                                .First()
+                                .First();
 
         var cutlist = new CutList() {
             Header = new Header() {
                 OrderNumber = order.Number,
                 OrderName = order.Name,
-                BoxCount = order.Boxes.Sum(b => b.Qty),
+                BoxCount = order.Products.Sum(b => b.Qty),
                 Clips = $"Clips: {clips}",
                 MountingHoles = $"Mounting Holes : {(mountingHoles ? "Yes" : "No")}", // Get the most common mounting holes option
                 Notch = $"Notch: {notch}",

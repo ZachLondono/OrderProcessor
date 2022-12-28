@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace ApplicationCore.Shared.Domain;
+﻿namespace ApplicationCore.Shared.Domain;
 
 public record Dimension {
 

@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.ExcelTemplates.Contracts;
 using ApplicationCore.Features.ExcelTemplates.Domain;
+using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Release.Handlers.PackingList.Models;
 using ApplicationCore.Infrastructure;
@@ -82,12 +83,15 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
                 Line3 = vendor.PhoneNumber
             },
             Date = order.OrderDate,
-            ItemCount = order.Boxes.Sum(b => b.Qty),
+            ItemCount = order.Products.Sum(b => b.Qty),
             OrderName = order.Name,
             OrderNumber = order.Number,
             Volume = "", // TODO calculate volume
             Weight = "", // TODO calculate weight
-            Items = order.Boxes.Select(b => new Item() {
+            Items = order.Products
+                        .Where(p => p is DrawerBox)
+                        .Cast<DrawerBox>()
+                        .Select(b => new Item() {
                 Line = b.LineInOrder,
                 Qty = b.Qty,
                 Description = "Drawer Box",

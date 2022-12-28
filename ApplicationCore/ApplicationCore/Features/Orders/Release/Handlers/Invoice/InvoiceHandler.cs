@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.ExcelTemplates.Contracts;
 using ApplicationCore.Features.ExcelTemplates.Domain;
+using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Release.Handlers.Invoice.Models;
 using ApplicationCore.Infrastructure;
@@ -86,7 +87,7 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
                 Line3 = vendor.PhoneNumber
             },
             Date = order.OrderDate,
-            ItemCount = order.Boxes.Sum(b => b.Qty),
+            ItemCount = order.Products.Sum(b => b.Qty),
             OrderName = order.Name,
             OrderNumber = order.Number,
             Total = order.Total.ToString("$0.00"), // TODO: use excel formatting instead of string formatting
@@ -94,7 +95,10 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
             NetAmount = order.AdjustedSubTotal.ToString("0.00"),
             SalesTax = order.Tax.ToString("0.00"),
             SubTotal = order.SubTotal.ToString("0.00"),
-            Items = order.Boxes.Select(b => new Item() {
+            Items = order.Products
+                        .Where(p => p is DrawerBox)
+                        .Cast<DrawerBox>()
+                        .Select(b => new Item() {
                 Line = b.LineInOrder,
                 Qty = b.Qty,
                 Description = "Drawer Box",
