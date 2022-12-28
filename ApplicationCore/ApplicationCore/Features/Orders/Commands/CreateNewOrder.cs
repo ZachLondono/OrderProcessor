@@ -10,7 +10,7 @@ namespace ApplicationCore.Features.Orders.Commands;
 
 public class CreateNewOrder {
 
-    public record Command(string Source, string Number, string Name, Guid CustomerId, Guid VendorId, string Comment, DateTime OrderDate, decimal Tax, decimal Shipping, decimal PriceAdjustment, bool Rush, IReadOnlyDictionary<string,string> Info, IEnumerable<DrawerBox> Boxes, IEnumerable<AdditionalItem> AdditionalItems, Guid? OrderId = null) : ICommand<Order>;
+    public record Command(string Source, string Number, string Name, Guid CustomerId, Guid VendorId, string Comment, DateTime OrderDate, decimal Tax, decimal Shipping, decimal PriceAdjustment, bool Rush, IReadOnlyDictionary<string,string> Info, IEnumerable<IProduct> Products, IEnumerable<AdditionalItem> AdditionalItems, Guid? OrderId = null) : ICommand<Order>;
 
     public class Handler : CommandHandler<Command, Order> {
 
@@ -22,7 +22,7 @@ public class CreateNewOrder {
         
         public override async Task<Response<Order>> Handle(Command request) {
 
-            Order order = Order.Create(request.Source, request.Number, request.Name, request.CustomerId, request.VendorId, request.Comment, request.OrderDate, request.Tax, request.Shipping, request.PriceAdjustment, request.Rush, request.Info, request.Boxes, request.AdditionalItems, request.OrderId);
+            Order order = Order.Create(request.Source, request.Number, request.Name, request.CustomerId, request.VendorId, request.Comment, request.OrderDate, request.Tax, request.Shipping, request.PriceAdjustment, request.Rush, request.Info, request.Products, request.AdditionalItems, request.OrderId);
 
             using var connection = _factory.CreateConnection();
 
@@ -55,7 +55,7 @@ public class CreateNewOrder {
                     order.Rush
                 }, trx);
 
-                foreach (var box in request.Boxes) {
+                foreach (var box in request.Products.Where(p => p is DrawerBox).Cast<DrawerBox>()) {
 
                     await CreateDrawerBox(box, order.Id, connection, trx);
 

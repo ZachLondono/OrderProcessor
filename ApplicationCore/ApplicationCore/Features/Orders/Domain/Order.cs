@@ -62,8 +62,8 @@ public class Order {
         AdditionalItems = additionalItems;
     }
 
-    public static Order Create(string source, string number, string name, Guid customerId, Guid vendorId, string comment, DateTime orderDate, decimal tax, decimal shipping, decimal priceAdjustment, bool rush, IReadOnlyDictionary<string, string> info, IEnumerable<DrawerBox> boxes, IEnumerable<AdditionalItem> additionalItems, Guid? id = null) {
-        return new Order(id ?? Guid.NewGuid(), source, Status.Pending, number, name, customerId, vendorId, "", comment, orderDate, null, null, null, tax, shipping, priceAdjustment, rush, info, boxes, additionalItems);
+    public static Order Create(string source, string number, string name, Guid customerId, Guid vendorId, string comment, DateTime orderDate, decimal tax, decimal shipping, decimal priceAdjustment, bool rush, IReadOnlyDictionary<string, string> info, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> additionalItems, Guid? id = null) {
+        return new Order(id ?? Guid.NewGuid(), source, Status.Pending, number, name, customerId, vendorId, "", comment, orderDate, null, null, null, tax, shipping, priceAdjustment, rush, info, products, additionalItems);
     }
 
     public void Release(DateTime? productionDate = null) {
