@@ -8,6 +8,8 @@
 @using ApplicationCore.Features.Orders.Domain.ValueObjects;
 @using ApplicationCore.Features.Orders.Queries
 @using ApplicationCore.Features.Orders.Release
+@using ApplicationCore.Features.ProductPlanner;
+@using ApplicationCore.Features.ProductPlanner.Contracts;
 @using ApplicationCore.Infrastructure
 @using System.Diagnostics
 @using ApplicationCore.Shared.Components
@@ -85,6 +87,11 @@
                         </Button>
                     </div>
                 }
+                <div class="mb-4">
+                    <Button Type="button" OnClickAsync="ExportForPSI" Color="ButtonColor.Secondary" Style="ButtonStyle.Text">
+                        Export for PSI
+                     </Button>
+                </div>
             </div>
             <InputTextArea placeholder="Note" Value="@_infoModel.ProductionNote" ValueChanged="@NoteChanged" ValueExpression="() => _infoModel.ProductionNote" for="note" class="w-full mt-5"></InputTextArea>
         </div>
@@ -431,6 +438,20 @@
         result.OnError(
             async error => await Modal.OpenErrorDialog(error)
         );
+
+    }
+
+    private async Task ExportForPSI() {
+
+        if (OrderState.Order is null) return;
+
+        await Task.Run(() => {
+
+            var exporter = new PSIExporter();
+
+            exporter.ExportOrder(OrderState.Order, @"C:\CP3\CPDATA");
+            
+        });
 
     }
 
