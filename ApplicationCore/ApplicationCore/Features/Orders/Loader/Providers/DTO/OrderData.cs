@@ -24,7 +24,9 @@ public record OrderData {
 
     public Dictionary<string, string> Info { get; set; } = new();
 
-    public List<DrawerBoxData> Boxes { get; set; } = new();
+    public List<DrawerBoxData> DrawerBoxes { get; set; } = new();
+
+    public List<BaseCabinetData> BaseCabinets { get; set; } = new();
 
     public List<AdditionalItemData> AdditionalItems { get; set; } = new();
 

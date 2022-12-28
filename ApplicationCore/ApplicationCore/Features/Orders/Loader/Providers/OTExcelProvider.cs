@@ -169,7 +169,7 @@ internal class OTExcelProvider : OrderProvider {
             Shipping = shipping,
             Tax = tax,
 
-            Boxes = boxes,
+            DrawerBoxes = boxes,
             AdditionalItems = new(),
             Info = new(),
         };

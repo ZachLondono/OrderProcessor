@@ -2,4 +2,4 @@
 
 namespace ApplicationCore.Features.Orders.Domain.ValueObjects;
 
-internal record MDFDoorOptions(string StyleName, Dimension Rails, Dimension Stiles);
+public record MDFDoorOptions(string StyleName, Dimension Rails, Dimension Stiles);

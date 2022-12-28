@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.Orders.Domain.ValueObjects;
 
-internal enum CabinetSideType {
+public enum CabinetSideType {
     Unfinished,
     Finished,
     IntegratedPanel,

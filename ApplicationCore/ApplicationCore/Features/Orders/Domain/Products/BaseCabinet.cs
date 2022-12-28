@@ -1,32 +1,36 @@
 ﻿using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
-using System.Security.AccessControl;
 
 namespace ApplicationCore.Features.Orders.Domain.Products;
 
 internal class BaseCabinet : Cabinet, IProduct {
 
+    public Guid Id { get; }
     public BaseCabinetDoors Doors { get; }
     public IToeType ToeType { get; }
     public HorizontalDrawerBank Drawers { get; }
     public BaseCabinetInside Inside { get; }
-    public BaseCabinetConstructionParameters Construction { get; }
 
-    public BaseCabinet(int qty, decimal unitPrice,
+    public static BaseCabinet Create(int qty, decimal unitPrice,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        BaseCabinetDoors doors, IToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside, BaseCabinetConstructionParameters construction)
+                        BaseCabinetDoors doors, IToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside) {
+        return new(Guid.NewGuid(), qty, unitPrice, height, width, depth, boxMaterial, finishMaterial, rightSide, leftSide, doors, toeType, drawers, inside);
+    }
+
+    private BaseCabinet(Guid id, int qty, decimal unitPrice,
+                        Dimension height, Dimension width, Dimension depth,
+                        CabinetMaterial boxMaterial, CabinetMaterial finishMaterial,
+                        CabinetSide rightSide, CabinetSide leftSide,
+                        BaseCabinetDoors doors, IToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside)
                         : base(qty, unitPrice, height, width, depth, boxMaterial, finishMaterial, rightSide, leftSide) {
+        Id = id;
         Doors = doors;
         ToeType = toeType;
-        Construction = construction;
-
+        
         if (drawers.Quantity > 2)
             throw new InvalidOperationException("Base cabinet cannot have more than 2 drawers");
-
-        if (drawers.GetBoxWidth(Width - 2 * Construction.MaterialThickness, Construction.MaterialThickness, Construction.GetSlideWidthAdjustment) < Dimension.Zero)
-            throw new InvalidOperationException("Cannot fit drawerboxes in cabinet");
 
         if (drawers.FaceHeight > Height)
             throw new InvalidOperationException("Invalid drawer face size");

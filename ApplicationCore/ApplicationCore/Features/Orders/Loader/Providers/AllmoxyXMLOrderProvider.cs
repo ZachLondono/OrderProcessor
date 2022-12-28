@@ -126,7 +126,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             CustomerId = customer.Id,
             VendorId = metroVendorId,
             AdditionalItems = additionalItems,
-            Boxes = boxes,
+            DrawerBoxes = boxes,
             Info = info
         };
 

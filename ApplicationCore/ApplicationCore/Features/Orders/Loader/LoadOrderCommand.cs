@@ -70,14 +70,17 @@ public class LoadOrderCommand {
 
             }
 
-            var boxes = data.Boxes.Select(d => MapDataToDrawerBox(d));
-            var additionalItems = data.AdditionalItems.Select(d => MapDataToItem(d));
+            var products = new List<IProduct>();
+            products.AddRange(data.DrawerBoxes.Select(MapDataToDrawerBox));
+            products.AddRange(data.BaseCabinets.Select(MapDataToBaseCabinet));
+
+            var additionalItems = data.AdditionalItems.Select(MapDataToItem);
 
             Response<Order> result;
             if (existingOrderId is null) {
-                result = await _bus.Send(new CreateNewOrder.Command(request.Source, data.Number, data.Name, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Tax, data.Shipping, data.PriceAdjustment, data.Rush, data.Info, boxes, additionalItems));
+                result = await _bus.Send(new CreateNewOrder.Command(request.Source, data.Number, data.Name, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Tax, data.Shipping, data.PriceAdjustment, data.Rush, data.Info, products, additionalItems));
             } else {
-                result = await _bus.Send(new OverwriteExistingOrderWithId.Command((Guid)existingOrderId, request.Source, data.Number, data.Name, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Tax, data.Shipping, data.PriceAdjustment, data.Rush, data.Info, boxes, additionalItems));
+                result = await _bus.Send(new OverwriteExistingOrderWithId.Command((Guid)existingOrderId, request.Source, data.Number, data.Name, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Tax, data.Shipping, data.PriceAdjustment, data.Rush, data.Info, products, additionalItems));
             }
 
             return result;
@@ -99,7 +102,6 @@ public class LoadOrderCommand {
                     data.Assembled,
                     data.UBox ? new(data.UBoxA, data.UBoxB, data.UBoxC) : null,
                     data.FixedDividers ? new() { WideCount = data.DividersWide, DeepCount = data.DividersDeep } : null
-
                 );
 
             return DovetailDrawerBox.Create(
@@ -113,6 +115,48 @@ public class LoadOrderCommand {
                     data.LabelFields,
                     options
                 );
+
+        }
+
+        private static BaseCabinet MapDataToBaseCabinet(BaseCabinetData data) {
+
+            BaseCabinetDoors doors = data.DoorQty switch {
+                1 => BaseCabinetDoors.OneDoor,
+                2 => BaseCabinetDoors.TwoDoors,
+                _ => BaseCabinetDoors.OneDoor
+            };
+            CabinetMaterial boxMaterial = new(data.BoxMaterialFinish, data.BoxMaterialCore);
+            CabinetMaterial finishMaterial = new(data.FinishMaterialFinish, data.FinishMaterialCore);
+            CabinetSide leftSide = new(data.LeftSideType);
+            CabinetSide rightSide = new(data.RightSideType);
+            HorizontalDrawerBank drawers = new() {
+                BoxMaterial = data.DrawerBoxMaterial,
+                FaceHeight = data.DrawerFaceHeight,
+                Quantity = data.DrawerQty,
+                SlideType = data.DrawerBoxSlideType
+            };
+
+            BaseCabinetInside inside;
+            if (data.RollOutBoxPositions.Length != 0) {
+                var rollOutOptions = new RollOutOptions(data.RollOutBoxPositions, true, data.RollOutBlocks, data.DrawerBoxSlideType, data.DrawerBoxMaterial);
+                inside = new(data.AdjustableShelfQty, rollOutOptions);
+            } else inside = new(data.AdjustableShelfQty, data.VerticalDividerQty);
+
+            return BaseCabinet.Create(
+                data.Qty,
+                data.UnitPrice,
+                data.Height,
+                data.Width,
+                data.Depth,
+                boxMaterial,
+                finishMaterial,
+                rightSide,
+                leftSide,
+                doors,
+                data.ToeType,
+                drawers,
+                inside
+            );
 
         }
 

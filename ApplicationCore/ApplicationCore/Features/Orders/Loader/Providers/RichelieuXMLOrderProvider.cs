@@ -119,7 +119,7 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
                     Accessory = options.Accessory
                 };
 
-                order.Boxes.Add(box);
+                order.DrawerBoxes.Add(box);
 
             }
 

@@ -165,7 +165,7 @@ internal class HafeleExcelProvider : OrderProvider {
 			Shipping = freight,
 			Tax = 0,
 			VendorId = vendorId,
-			Boxes = boxes,
+			DrawerBoxes = boxes,
 			Info = info,
 			AdditionalItems = items,
 			Rush = rush
