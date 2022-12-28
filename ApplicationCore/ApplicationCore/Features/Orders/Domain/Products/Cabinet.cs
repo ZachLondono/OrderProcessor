@@ -5,6 +5,7 @@ namespace ApplicationCore.Features.Orders.Domain.Products;
 
 internal abstract class Cabinet : IProduct {
 
+    public Guid Id { get; set; }
     public int Qty { get; }
     public decimal UnitPrice { get; }
     public Dimension Height { get; }
@@ -15,11 +16,12 @@ internal abstract class Cabinet : IProduct {
     public CabinetSide RightSide { get; }
     public CabinetSide LeftSide { get; }
 
-    public Cabinet(int qty, decimal unitPrice,
+    public Cabinet(Guid id, int qty, decimal unitPrice,
                 Dimension height, Dimension width, Dimension depth,
                 CabinetMaterial boxMaterial, CabinetMaterial finishMaterial,
                 CabinetSide rightSide, CabinetSide leftSide) {
 
+        Id = id;
         Qty = qty;
         UnitPrice = unitPrice;
         Height = height;

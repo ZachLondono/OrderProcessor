@@ -3,9 +3,8 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Domain.Products;
 
-internal class BaseCabinet : Cabinet, IProduct {
+internal class BaseCabinet : Cabinet {
 
-    public Guid Id { get; }
     public BaseCabinetDoors Doors { get; }
     public IToeType ToeType { get; }
     public HorizontalDrawerBank Drawers { get; }
@@ -24,8 +23,7 @@ internal class BaseCabinet : Cabinet, IProduct {
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial,
                         CabinetSide rightSide, CabinetSide leftSide,
                         BaseCabinetDoors doors, IToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside)
-                        : base(qty, unitPrice, height, width, depth, boxMaterial, finishMaterial, rightSide, leftSide) {
-        Id = id;
+                        : base(id, qty, unitPrice, height, width, depth, boxMaterial, finishMaterial, rightSide, leftSide) {
         Doors = doors;
         ToeType = toeType;
         
