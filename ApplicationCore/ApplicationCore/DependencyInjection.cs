@@ -10,6 +10,7 @@ using ApplicationCore.Infrastructure;
 using ApplicationCore.Features.Emails;
 using ApplicationCore.Features.CNC;
 using ApplicationCore.Features.Orders.Loader;
+using ApplicationCore.Features.ProductPlanner;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -33,6 +34,8 @@ public static class DependencyInjection {
         services.AddEmailing();
 
         services.AddCADCode(configuration);
+
+        services.AddProductPlanner();
 
         services.AddBlazoredModal();
 
