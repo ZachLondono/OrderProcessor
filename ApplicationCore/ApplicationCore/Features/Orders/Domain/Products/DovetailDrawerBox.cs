@@ -3,30 +3,21 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Domain.Products;
 
-public class DovetailDrawerBox : IProduct {
+public class DovetailDrawerBox : DrawerBox, IProduct {
 
     public Guid Id { get; }
     public int LineInOrder { get; }
     public decimal UnitPrice { get; }
-    public int Qty { get; }
-    public Dimension Height { get; }
-    public Dimension Width { get; }
-    public Dimension Depth { get; }
     public string Note { get; }
     public IReadOnlyDictionary<string, string> LabelFields { get; }
-    public DrawerBoxOptions Options { get; }
 
-    public DovetailDrawerBox(Guid id, int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options) {
+    public DovetailDrawerBox(Guid id, int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options)
+                            : base(qty, height, width, depth, options) {
         Id = id;
         LineInOrder = line;
         UnitPrice = unitPrice;
-        Qty = qty;
-        Height = height;
-        Width = width;
-        Depth = depth;
         Note = note;
         LabelFields = labelFields;
-        Options = options;
     }
 
     public static DovetailDrawerBox Create(int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options) {
