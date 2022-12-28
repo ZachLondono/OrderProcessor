@@ -53,16 +53,18 @@ internal class BaseCabinet : Cabinet {
             { "ProductW", Width.AsMillimeters().ToString() },
             { "ProductH", Height.AsMillimeters().ToString() },
             { "ProductD", Depth.AsMillimeters().ToString() },
-            { "FinishedLeft", "0" },
-            { "FinishedRight", "0" },
-            { "ShelfQ", "0" },
-            { "DividerQ", "0" },
-            { "Rollout1", "0" },
-            { "Rollout2", "0" },
-            { "Rollout3", "0" },
-            { "PulloutBlockType", "0" },
-            { "AppliedPanel", "0" },
+            { "FinishedLeft", GetSideOption(LeftSide.Type) },
+            { "FinishedRight", GetSideOption(RightSide.Type) },
+            { "ShelfQ", Inside.AdjustableShelves.ToString() },
+            { "DividerQ", Inside.VerticalDividers.ToString() },
+            { "PulloutBlockType", GetRollOutBlockOption() },
+            { "AppliedPanel", GetAppliedPanelOption() },
         };
+
+        int posNum = 1;
+        foreach (var pos in Inside.RollOutBoxes.Positions) {
+            parameters.Add($"Rollout{posNum++}", pos.AsMillimeters().ToString());
+        }
 
         if (Doors == BaseCabinetDoors.OneDoor) {
             parameters.Add("HingeLeft", "0");
@@ -85,4 +87,31 @@ internal class BaseCabinet : Cabinet {
         return "B2D";
 
     }
+
+    private string GetSideOption(CabinetSideType side) => side switch {
+        CabinetSideType.AppliedPanel => "0",
+        CabinetSideType.Unfinished => "0",
+        CabinetSideType.Finished => "1",
+        CabinetSideType.IntegratedPanel => "2",
+        _ => "0"
+    };
+
+    private string GetRollOutBlockOption() => Inside.RollOutBoxes.Blocks switch {
+        RollOutBlockPosition.None => "0",
+        RollOutBlockPosition.Left => "1",
+        RollOutBlockPosition.Both => "2",
+        RollOutBlockPosition.Right => "3",
+        _ => "0"
+    };
+
+    private string GetAppliedPanelOption() {
+        if (LeftSide.Type == CabinetSideType.AppliedPanel && RightSide.Type != CabinetSideType.AppliedPanel) {
+            return "1";
+        } else if (LeftSide.Type == CabinetSideType.AppliedPanel && RightSide.Type == CabinetSideType.AppliedPanel) {
+            return "2";
+        } else if (LeftSide.Type != CabinetSideType.AppliedPanel && RightSide.Type == CabinetSideType.AppliedPanel) {
+            return "3";
+        } else return "0";
+    }
+
 }
