@@ -38,8 +38,8 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         var vendorName = await GetCompanyName(order.VendorId);
 
         var materialIds = order.Products
-			                    .Where(p => p is DrawerBox)
-                                .Cast<DrawerBox>()
+			                    .Where(p => p is DovetailDrawerBox)
+                                .Cast<DovetailDrawerBox>()
 								.SelectMany(b => new Guid[] { b.Options.BoxMaterialId, b.Options.BottomMaterialId } )
                                 .Distinct();
 
@@ -132,8 +132,8 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         int groupNum = 0;
         int lineNum = 1;
         var cutlistItems = order.Products
-                                .Where(p => p is DrawerBox)
-                                .Cast<DrawerBox>()
+                                .Where(p => p is DovetailDrawerBox)
+                                .Cast<DovetailDrawerBox>()
                                 .SelectMany(b => {
                                     groupNum++;
 
@@ -166,8 +166,8 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         int groupNum = 0;
         int lineNum = 1;
         var cutlistItems = order.Products
-								.Where(p => p is DrawerBox)
-								.Cast<DrawerBox>()
+								.Where(p => p is DovetailDrawerBox)
+								.Cast<DovetailDrawerBox>()
 								.SelectMany(b => b.GetParts(construction).Where(p => p.Type != DrawerBoxPartType.Bottom))
                                 .GroupBy(p => (p.MaterialId, p.Width, p.Length)) // TODO: if there are multiple scoop fronts they should be grouped together
                                 .Select(g =>
@@ -199,8 +199,8 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         int lineNum = 1;
 
         var cutlistItems = order.Products
-								.Where(p => p is DrawerBox)
-								.Cast<DrawerBox>()
+								.Where(p => p is DovetailDrawerBox)
+								.Cast<DovetailDrawerBox>()
 								.SelectMany(b =>
                                 {
                                     groupNum++;
@@ -236,8 +236,8 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         // TODO: if a drawerbox has a different option then the most common option than it should be shown in a part comment
 
         var boxes = order.Products
-                        .Where(p => p is DrawerBox)
-                        .Cast<DrawerBox>();
+                        .Where(p => p is DovetailDrawerBox)
+                        .Cast<DovetailDrawerBox>();
 
 
 		var clips = boxes.Select(b => b.Options.Clips)

@@ -89,8 +89,8 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
             Volume = "", // TODO calculate volume
             Weight = "", // TODO calculate weight
             Items = order.Products
-                        .Where(p => p is DrawerBox)
-                        .Cast<DrawerBox>()
+                        .Where(p => p is DovetailDrawerBox)
+                        .Cast<DovetailDrawerBox>()
                         .Select(b => new Item() {
                 Line = b.LineInOrder,
                 Qty = b.Qty,

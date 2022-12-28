@@ -24,7 +24,7 @@ internal class OrderBuilder {
     private bool _rush = false;
     private Dictionary<string,string> _info = new();
     private List<AdditionalItem> _items = new();
-    private List<DrawerBox> _boxes = new();
+    private List<DovetailDrawerBox> _boxes = new();
 
     public OrderBuilder WithId(Guid id) {
         _id = id;
@@ -111,7 +111,7 @@ internal class OrderBuilder {
         return this;
     }
 
-    public OrderBuilder WithBoxes(List<DrawerBox> boxes) {
+    public OrderBuilder WithBoxes(List<DovetailDrawerBox> boxes) {
         _boxes = boxes;
         return this;
     }

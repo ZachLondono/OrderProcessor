@@ -29,7 +29,7 @@ internal class BoxLabelsHandler : DomainListener<TriggerOrderReleaseNotification
         var configuration = new LabelPrinterConfiguration(notification.ReleaseProfile.BoxLabelsTemplateFilePath);
 
         var labels = new List<Label>();
-        foreach (var box in order.Products.Where(p => p is DrawerBox).Cast<DrawerBox>()) {
+        foreach (var box in order.Products.Where(p => p is DovetailDrawerBox).Cast<DovetailDrawerBox>()) {
 
             string sizeStr = $"{box.Height.AsInchFraction}\"Hx{box.Width.AsInchFraction}\"Wx{box.Depth.AsInchFraction}\"D";
 

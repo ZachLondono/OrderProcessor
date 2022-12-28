@@ -84,7 +84,7 @@ public class LoadOrderCommand {
         
         }
 
-        private static DrawerBox MapDataToDrawerBox(DrawerBoxData data) {
+        private static DovetailDrawerBox MapDataToDrawerBox(DrawerBoxData data) {
 
             var options = new DrawerBoxOptions(
                     data.BoxMaterialOptionId,
@@ -102,7 +102,7 @@ public class LoadOrderCommand {
 
                 );
 
-            return DrawerBox.Create(
+            return DovetailDrawerBox.Create(
                     data.Line,
                     data.UnitPrice,
                     data.Qty,

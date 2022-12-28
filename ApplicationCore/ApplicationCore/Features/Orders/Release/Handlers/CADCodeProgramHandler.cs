@@ -34,8 +34,8 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
 
 		var bottoms = notification.Order
 								.Products
-								.Where(p => p is DrawerBox)
-								.Cast<DrawerBox>()
+								.Where(p => p is DovetailDrawerBox)
+								.Cast<DovetailDrawerBox>()
 								.SelectMany(b => b.GetParts(_construction).Where(p => p.Type == DrawerBoxPartType.Bottom));
 
 		string batchName = $"{notification.Order.Number} - {notification.Order.Name}";

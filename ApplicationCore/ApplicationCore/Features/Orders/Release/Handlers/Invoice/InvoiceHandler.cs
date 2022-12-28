@@ -96,8 +96,8 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
             SalesTax = order.Tax.ToString("0.00"),
             SubTotal = order.SubTotal.ToString("0.00"),
             Items = order.Products
-                        .Where(p => p is DrawerBox)
-                        .Cast<DrawerBox>()
+                        .Where(p => p is DovetailDrawerBox)
+                        .Cast<DovetailDrawerBox>()
                         .Select(b => new Item() {
                 Line = b.LineInOrder,
                 Qty = b.Qty,

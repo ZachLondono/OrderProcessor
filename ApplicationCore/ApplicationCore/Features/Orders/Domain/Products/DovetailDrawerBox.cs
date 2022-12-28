@@ -3,7 +3,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Domain.Products;
 
-public class DrawerBox : IProduct {
+public class DovetailDrawerBox : IProduct {
 
     public Guid Id { get; }
     public int LineInOrder { get; }
@@ -16,7 +16,7 @@ public class DrawerBox : IProduct {
     public IReadOnlyDictionary<string, string> LabelFields { get; }
     public DrawerBoxOptions Options { get; }
 
-    public DrawerBox(Guid id, int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options) {
+    public DovetailDrawerBox(Guid id, int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options) {
         Id = id;
         LineInOrder = line;
         UnitPrice = unitPrice;
@@ -29,7 +29,7 @@ public class DrawerBox : IProduct {
         Options = options;
     }
 
-    public static DrawerBox Create(int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options) {
+    public static DovetailDrawerBox Create(int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options) {
         return new(Guid.NewGuid(), line, unitPrice, qty, height, width, depth, note, labelFields, options);
     }
 

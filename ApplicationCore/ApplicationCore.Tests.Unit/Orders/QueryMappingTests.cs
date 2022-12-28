@@ -20,7 +20,7 @@ public class QueryMappingTests {
         };
 
         var orderId = Guid.NewGuid();
-        var boxes = new List<DrawerBox>() {
+        var boxes = new List<DovetailDrawerBox>() {
             new DrawerBoxBuilder().Build()
         };
 

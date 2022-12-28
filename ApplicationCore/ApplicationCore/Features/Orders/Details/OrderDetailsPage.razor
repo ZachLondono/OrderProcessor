@@ -263,7 +263,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var box in OrderState.Order.Products.Where(p => p is DrawerBox).Cast<DrawerBox>().OrderBy(b => b.LineInOrder)) {
+                        @foreach (var box in OrderState.Order.Products.Where(p => p is DovetailDrawerBox).Cast<DovetailDrawerBox>().OrderBy(b => b.LineInOrder)) {
                             <tr>
                                 <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.LineInOrder</td>
                                 <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Qty</td>
@@ -345,8 +345,8 @@
 
         var materialIds = OrderState.Order
                                     .Products
-                                    .Where(p => p is DrawerBox)
-                                    .Cast<DrawerBox>()
+                                    .Where(p => p is DovetailDrawerBox)
+                                    .Cast<DovetailDrawerBox>()
                                     .SelectMany(b => new Guid[] { b.Options.BoxMaterialId, b.Options.BottomMaterialId })
                                     .Distinct();
 
