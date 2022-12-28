@@ -10,6 +10,8 @@ public class BaseCabinetData {
 
     public required decimal UnitPrice { get; set; }
 
+    public string Room { get; set; } = string.Empty;
+
     public required Dimension Height { get; set; }
 
     public required Dimension Width { get; set; }

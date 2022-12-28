@@ -145,6 +145,7 @@ public class LoadOrderCommand {
             return BaseCabinet.Create(
                 data.Qty,
                 data.UnitPrice,
+                data.Room,
                 data.Height,
                 data.Width,
                 data.Depth,
