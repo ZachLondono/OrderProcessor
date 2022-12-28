@@ -3,7 +3,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Domain;
 
-public class DrawerBox {
+public class DrawerBox : IProduct {
 
     public Guid Id { get; }
     public int LineInOrder { get; }
