@@ -5,7 +5,7 @@ using ApplicationCore.Infrastructure;
 namespace ApplicationCore.Features.ProductPlanner;
 public class GenerateEXTFile {
 
-    public record Command(JobDescriptor Job, IEnumerable<VariableOverride> VariableOverrides, IEnumerable<LevelDescriptor> Levels, IEnumerable<Product> Products, string FilePath) : ICommand;
+    public record Command(PSIJob Job,string FilePath) : ICommand;
 
     public class Handler : CommandHandler<Command> {
 
@@ -17,16 +17,17 @@ public class GenerateEXTFile {
 
         public override Task<Response> Handle(Command command) {
 
-            _writer.AddRecord(command.Job);
-            foreach (var variables in command.VariableOverrides) {
+            _writer.AddRecord(command.Job.Job);
+
+            foreach (var variables in command.Job.VariableOverrides) {
                 _writer.AddRecord(variables);
             }
 
-            foreach (var level in command.Levels) {
+            foreach (var level in command.Job.Levels) {
                 _writer.AddRecord(level);
             }
 
-            foreach (var product in command.Products) {
+            foreach (var product in command.Job.Products) {
                 _writer.AddRecord(product);
             }
 
