@@ -2,24 +2,21 @@
 using ApplicationCore.Features.Orders.Domain.Products;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.ProductPlanner.Contracts;
-using ApplicationCore.Features.ProductPlanner.Services;
 
 namespace ApplicationCore.Features.Orders.Details;
 
-public class PSIExporter {
+public class PSIJobConverter {
 
-    public void ExportOrder(Order order, string exportDirectory) {
+    public PSIJob ConvertOrder(Order order) {
 
-        var extWriter = new ExtWriter();
         var rooms = order.Products.Where(p => p is Cabinet).Cast<Cabinet>() //.GroupBy(cab => cab.Room); TODO: add rooms to products
                                                             .GroupBy(c => ""); // TODO: remove this, it is just to make it work for a test
-
         // TODO: number should come from the cabinet entity
         int productIndex = 0;
 
         int jobId = 0;
         // TODO: if there are not multiple rooms or multiple different materials, all products can be put in the same top level job without any levels
-        extWriter.AddRecord(new JobDescriptor() {
+        var job = new JobDescriptor() {
             LevelId = jobId,
             Job = order.Name,
             Date = order.OrderDate,
@@ -27,7 +24,11 @@ public class PSIExporter {
             Fronts = "",
             Hardware = "",
             Materials = ""
-        });
+        };
+
+        var levels = new List<LevelDescriptor>();
+        var variables = new List<VariableOverride>();
+        var products = new List<Product>();
 
         int roomIdx = 0;
         foreach (var room in rooms) {
@@ -51,10 +52,10 @@ public class PSIExporter {
             };
 
             if (!multipleMaterials) {
-                extWriter.AddRecord(GetMaterialVariableRecord(firstMaterials.Item2, firstMaterials.Item1, firstMaterials.Item4, firstMaterials.Item3, jobId + roomIdx));
+                variables.Add(GetMaterialVariableRecord(firstMaterials.Item2, firstMaterials.Item1, firstMaterials.Item4, firstMaterials.Item3, jobId + roomIdx));
             }
 
-            extWriter.AddRecord(level);
+            levels.Add(level);
 
             int materialIdx = 0;
             foreach (var material in materialGroups) {
@@ -63,7 +64,7 @@ public class PSIExporter {
 
                 if (multipleMaterials) {
                     int lvlId = jobId + roomIdx + materialIdx;
-                    extWriter.AddRecord(new LevelDescriptor() {
+                    levels.Add(new LevelDescriptor() {
                         LevelId = lvlId,
                         ParentId = roomIdx,
                         Name = $"{materialIdx}-{(string.IsNullOrEmpty(room.Key) ? $"Lvl{roomIdx}" : room.Key)}",
@@ -73,14 +74,14 @@ public class PSIExporter {
                         Hardware = "Standard"
                     });
 
-                    extWriter.AddRecord(GetMaterialVariableRecord(material.Key.Item2, material.Key.Item1, material.Key.Item4, material.Key.Item3, lvlId));
+                    variables.Add(GetMaterialVariableRecord(material.Key.Item2, material.Key.Item1, material.Key.Item4, material.Key.Item3, lvlId));
                 }
 
                 foreach (var cab in material) {
 
                     int parentId = jobId + roomIdx + (multipleMaterials ? materialIdx : 0);
 
-                    extWriter.AddRecord(new Product() {
+                    products.Add(new Product() {
                         Name = "B1D",       // TODO: get product sku depending on product parameters
                         ParentId = parentId,
                         Pos = ++productIndex,
@@ -104,9 +105,7 @@ public class PSIExporter {
 
         }
 
-        var filePath = Path.Combine(exportDirectory, $"{order.Number} - {order.Name}.ext");
-
-        extWriter.WriteFile(filePath);
+        return new PSIJob(job, variables, levels, products);
 
     }
 

@@ -447,9 +447,13 @@
 
         await Task.Run(() => {
 
-            var exporter = new PSIExporter();
+            var exporter = new PSIJobConverter();
 
-            exporter.ExportOrder(OrderState.Order, @"C:\CP3\CPDATA");
+            var job = exporter.ConvertOrder(OrderState.Order);
+
+            var filePath = Path.Combine(@"C:\CP3\CPDATA", $"{OrderState.Order.Number} - {OrderState.Order.Name}.ext");
+
+            return Bus.Send(new GenerateEXTFile.Command(job, filePath));
             
         });
 
