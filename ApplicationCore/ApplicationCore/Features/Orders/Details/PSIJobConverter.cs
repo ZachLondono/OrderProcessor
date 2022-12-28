@@ -9,8 +9,8 @@ public class PSIJobConverter {
 
     public PSIJob ConvertOrder(Order order) {
 
-        var rooms = order.Products.Where(p => p is Cabinet).Cast<Cabinet>() //.GroupBy(cab => cab.Room); TODO: add rooms to products
-                                                            .GroupBy(c => ""); // TODO: remove this, it is just to make it work for a test
+        var rooms = order.Products.Where(p => p is Cabinet).Cast<Cabinet>().GroupBy(cab => cab.Room);
+
         // TODO: number should come from the cabinet entity
         int productIndex = 0;
 
@@ -47,7 +47,7 @@ public class PSIJobConverter {
                 Name = (string.IsNullOrEmpty(room.Key) ? $"Lvl{roomIdx}" : room.Key),
                 Catalog = "Royal2",
                 Materials = GetMaterial(firstMaterials.Item2, firstMaterials.Item4),
-                Fronts = "Buyout",//GetPSIDoorType(firstMaterials.Item5),
+                Fronts = "Buyout",//TODO: add door type parameter to cabinets that have doors GetPSIDoorType(firstMaterials.Item5),
                 Hardware = "Standard"
             };
 
@@ -82,7 +82,7 @@ public class PSIJobConverter {
                     int parentId = jobId + roomIdx + (multipleMaterials ? materialIdx : 0);
 
                     products.Add(new Product() {
-                        Name = "B1D",       // TODO: get product sku depending on product parameters
+                        Name = cab.GetProductName(),
                         ParentId = parentId,
                         Pos = ++productIndex,
                         CustomSpec = true,
@@ -90,11 +90,7 @@ public class PSIJobConverter {
                         SeqText = "",
                         Units = PSIUnits.Millimeters,
                         // TODO: get parameters from product
-                        Parameters = new() {
-                            { "ProductW", "500" },
-                            { "ProductH", "500" },
-                            { "ProductD", "500" }
-                        }
+                        Parameters = cab.GetParameters()
                     });
 
                 }
