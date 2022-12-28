@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
-namespace ApplicationCore.Features.Orders.Domain;
+namespace ApplicationCore.Features.Orders.Domain.Products;
 
 public class DrawerBox : IProduct {
 
@@ -29,7 +29,7 @@ public class DrawerBox : IProduct {
         Options = options;
     }
 
-    public static DrawerBox Create(int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields,DrawerBoxOptions options) {
+    public static DrawerBox Create(int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options) {
         return new(Guid.NewGuid(), line, unitPrice, qty, height, width, depth, note, labelFields, options);
     }
 
@@ -67,7 +67,7 @@ public class DrawerBox : IProduct {
                 front, leftBack, rightBack, centerBack, sideCenter, side, bottom
             };
 
-        } else { 
+        } else {
 
             return new List<DrawerBoxPart>() {
                 front, back, side, bottom

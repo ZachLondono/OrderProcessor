@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Domain;
+using ApplicationCore.Features.Orders.Domain.Products;
 
 namespace ApplicationCore.Tests.Unit.Orders;
 

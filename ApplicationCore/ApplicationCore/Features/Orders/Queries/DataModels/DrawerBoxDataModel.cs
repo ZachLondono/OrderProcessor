@@ -1,7 +1,6 @@
-﻿using ApplicationCore.Features.Orders.Domain;
+﻿using ApplicationCore.Features.Orders.Domain.Products;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
-using System.Text.Json;
 
 namespace ApplicationCore.Features.Orders.Queries.DataModels;
 

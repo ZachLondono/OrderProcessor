@@ -2,12 +2,12 @@
 using ApplicationCore.Features.ExcelTemplates.Contracts;
 using ApplicationCore.Features.ExcelTemplates.Domain;
 using ApplicationCore.Features.Orders.Domain;
+using ApplicationCore.Features.Orders.Domain.Products;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Queries;
 using ApplicationCore.Features.Orders.Release.Handlers.CutListing.Models;
 using ApplicationCore.Infrastructure;
 using Microsoft.Extensions.Logging;
-using MoreLinq;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.CutListing;
 

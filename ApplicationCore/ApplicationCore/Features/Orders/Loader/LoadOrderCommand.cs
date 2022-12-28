@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Commands;
 using ApplicationCore.Features.Orders.Domain;
+using ApplicationCore.Features.Orders.Domain.Products;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers;
 using ApplicationCore.Features.Orders.Loader.Providers.DTO;

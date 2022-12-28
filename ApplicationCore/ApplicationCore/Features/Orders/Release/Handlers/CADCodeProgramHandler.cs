@@ -3,12 +3,11 @@ using ApplicationCore.Features.CNC.GCode.Contracts;
 using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
 using ApplicationCore.Features.CNC.GCode.Contracts.Options;
 using ApplicationCore.Features.Orders.Domain;
+using ApplicationCore.Features.Orders.Domain.Products;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Queries;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared.Domain;
-using Microsoft.Extensions.Logging;
-using MoreLinq;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers;
 

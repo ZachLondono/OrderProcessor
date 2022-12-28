@@ -1,8 +1,9 @@
 ﻿using ApplicationCore.Shared.Domain;
 
-namespace ApplicationCore.Features.Orders.Domain;
+namespace ApplicationCore.Features.Orders.Domain.Products;
 
-public class DrawerBoxMaterial {
+public class DrawerBoxMaterial
+{
 
     public Guid Id { get; set; }
 
@@ -10,13 +11,15 @@ public class DrawerBoxMaterial {
 
     public Dimension Thickness { get; set; }
 
-    public DrawerBoxMaterial() {
+    public DrawerBoxMaterial()
+    {
         Id = Guid.Empty;
         Name = string.Empty;
         Thickness = Dimension.FromMillimeters(0);
     }
 
-    public DrawerBoxMaterial(Guid id, string name, Dimension thickness) {
+    public DrawerBoxMaterial(Guid id, string name, Dimension thickness)
+    {
         Id = id;
         Name = name;
         Thickness = thickness;

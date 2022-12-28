@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Domain;
+﻿using ApplicationCore.Features.Orders.Domain.Products;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Infrastructure.Data;
 using Dapper;

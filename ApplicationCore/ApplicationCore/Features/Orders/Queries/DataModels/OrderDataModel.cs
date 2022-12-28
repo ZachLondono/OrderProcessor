@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Domain;
+using ApplicationCore.Features.Orders.Domain.Products;
 
 namespace ApplicationCore.Features.Orders.Queries.DataModels;
 

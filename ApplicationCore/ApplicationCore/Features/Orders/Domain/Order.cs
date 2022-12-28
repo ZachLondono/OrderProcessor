@@ -1,4 +1,6 @@
-﻿namespace ApplicationCore.Features.Orders.Domain;
+﻿using ApplicationCore.Features.Orders.Domain.Products;
+
+namespace ApplicationCore.Features.Orders.Domain;
 
 public class Order {
 
