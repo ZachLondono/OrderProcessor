@@ -4,7 +4,10 @@ public record Dimension {
 
     private readonly double _mm;
 
-    private Dimension(double mm) => _mm = mm;
+    private Dimension(double mm) {
+        if (mm < 0) throw new ArgumentOutOfRangeException("Dimension cannot be negative");
+        _mm = mm;
+    }
 
     public double AsInches() => _mm / 25.4;
 
