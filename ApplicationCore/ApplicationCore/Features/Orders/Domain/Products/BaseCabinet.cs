@@ -24,7 +24,11 @@ internal class BaseCabinet : Cabinet {
                         CabinetSide rightSide, CabinetSide leftSide,
                         BaseCabinetDoors doors, IToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside)
                         : base(id, qty, unitPrice, room, height, width, depth, boxMaterial, finishMaterial, rightSide, leftSide) {
-        if (doors == BaseCabinetDoors.OneDoor && drawers.Quantity > 1)
+
+        if (doors.Quantity > 2 || doors.Quantity < 0)
+            throw new InvalidOperationException("Invalid number of doors");
+
+        if (doors.Quantity == 1 && drawers.Quantity > 1)
             throw new InvalidOperationException("Base cabinet cannot have more than 1 drawer if it only has 1 door");
 
         if (drawers.Quantity > 2)
@@ -73,8 +77,8 @@ internal class BaseCabinet : Cabinet {
             parameters.Add($"Rollout{posNum++}", pos.AsMillimeters().ToString());
         }
 
-        if (Doors == BaseCabinetDoors.OneDoor) {
-            parameters.Add("HingeLeft", "0");
+        if (Doors.HingeSide != HingeSide.NotApplicable) {
+            parameters.Add("HingeLeft", GetHingeSideOption());
         }
 
         if (Drawers.Quantity != 0) {
@@ -85,8 +89,8 @@ internal class BaseCabinet : Cabinet {
     }
 
     public override string GetProductName() {
-        
-        if (Doors == BaseCabinetDoors.OneDoor) {
+
+        if (Doors.Quantity == 1) {
 
             if (Drawers.Quantity == 1) return "B1D1D";
             return "B1D";
@@ -98,6 +102,13 @@ internal class BaseCabinet : Cabinet {
         return "B2D";
 
     }
+
+    private string GetHingeSideOption() => Doors.HingeSide switch {
+        HingeSide.NotApplicable => "0",
+        HingeSide.Left => "1",
+        HingeSide.Right => "0",
+        _ => "0"
+    };
 
     private string GetSideOption(CabinetSideType side) => side switch {
         CabinetSideType.AppliedPanel => "0",
