@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.ProductPlanner.Domain;
+﻿namespace ApplicationCore.Features.ProductPlanner.Contracts;
 
 public class PSIMaterial {
     public required string Material { get; set; }

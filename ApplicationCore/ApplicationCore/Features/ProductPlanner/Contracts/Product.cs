@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.ProductPlanner.Domain;
+﻿namespace ApplicationCore.Features.ProductPlanner.Contracts;
 
 public record Product {
     public required int ParentId { get; init; }

@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.ProductPlanner.Domain;
+﻿using ApplicationCore.Features.ProductPlanner.Contracts;
 using ApplicationCore.Features.ProductPlanner.Services;
 using ApplicationCore.Infrastructure;
 
