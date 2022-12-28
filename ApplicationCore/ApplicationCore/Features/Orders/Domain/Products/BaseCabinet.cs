@@ -24,9 +24,6 @@ internal class BaseCabinet : Cabinet {
                         CabinetSide rightSide, CabinetSide leftSide,
                         BaseCabinetDoors doors, IToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside)
                         : base(id, qty, unitPrice, room, height, width, depth, boxMaterial, finishMaterial, rightSide, leftSide) {
-        Doors = doors;
-        ToeType = toeType;
-        
         if (doors == BaseCabinetDoors.OneDoor && drawers.Quantity > 1)
             throw new InvalidOperationException("Base cabinet cannot have more than 1 drawer if it only has 1 door");
 
@@ -35,17 +32,27 @@ internal class BaseCabinet : Cabinet {
 
         if (drawers.FaceHeight > Height)
             throw new InvalidOperationException("Invalid drawer face size");
-        Drawers = drawers;
 
-        if (inside.RollOutBoxes.Positions.Length > 3)
+        if (drawers.Quantity != 0 && drawers.FaceHeight == Dimension.Zero)
+            throw new InvalidOperationException("Invalid drawer face size");
+
+        if (drawers.Quantity == 0 && inside.RollOutBoxes.Positions.Length > 3)
             throw new InvalidOperationException("Base cabinet cannot have more than 3 roll out drawer boxes");
+
+        if (drawers.Quantity > 1 && inside.RollOutBoxes.Positions.Length > 2)
+            throw new InvalidOperationException("Base cabinet with drawer face cannot have more than 2 roll out drawer boxes");
 
         foreach (var position in inside.RollOutBoxes.Positions) {
             if (position < Dimension.Zero || position > height - drawers.FaceHeight) {
                 throw new InvalidOperationException("Roll out box position {position} is invalid for cabinet size");
             }
         }
+
+        Doors = doors;
+        ToeType = toeType;
+        Drawers = drawers;
         Inside = inside;
+
     }
 
     public override Dictionary<string, string> GetParameters() {
@@ -68,6 +75,10 @@ internal class BaseCabinet : Cabinet {
 
         if (Doors == BaseCabinetDoors.OneDoor) {
             parameters.Add("HingeLeft", "0");
+        }
+
+        if (Drawers.Quantity != 0) {
+            parameters.Add("DrawerH1", Drawers.FaceHeight.AsMillimeters().ToString());
         }
 
         return parameters;
