@@ -3,7 +3,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Domain.Products;
 
-internal abstract class Cabinet : IProduct {
+public abstract class Cabinet : IProduct {
 
     public Guid Id { get; set; }
     public int Qty { get; }

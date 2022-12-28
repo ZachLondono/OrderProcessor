@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.Orders.Domain.ValueObjects;
 
-internal record CabinetSide {
+public record CabinetSide {
 
     public CabinetSideType Type { get; }
     public MDFDoorOptions? DoorOptions { get; }
