@@ -226,90 +226,12 @@
          --><button disabled="@(!_useInches)" @onclick="ToggleUnits" class="btn-secondary dark:disabled:bg-sky-500 disabled:bg-sky-500 px-3.5 py-1 rounded-l-none rounded-r-md w-14 transition ease-in-out duration-300">mm</button>
 		</div>
         @if (OrderState.Order.Products.Count() == 0) {
-            <span>No drawer boxes in order</span>
+            <span>No products boxes in order</span>
         } else {
-            <div class="overflow-x-scroll rounded-md">
-                <table class="table-auto">
-                    <thead class="border-b border-slate-300">
-                        <tr class="dark:bg-slate-700 dark:text-gray-500">
-                            <th colspan="15"></th>
-                            <th colspan="3" class="border-l border-r">U Box</th>
-                            <th colspan="2" class="border-r">Fixed Divs.</th>
-                            <th colspan="2"></th>
-                        </tr>
-                        <tr class="dark:bg-slate-700 dark:text-gray-500">
-                            <th class="p-5">#</th>
-                            <th class="p-5">Qty</th>
-                            <th class="p-5">Height</th>
-                            <th class="p-5">Width</th>
-                            <th class="p-5">Depth</th>
-                            <th class="p-5">Box Material</th>
-                            <th class="p-5">Bottom Material</th>
-                            <th class="p-5">Scoop</th>
-                            <th class="p-5">Logo</th>
-                            <th class="p-5">Post Finish</th>
-                            <th class="p-5">Mounting Holes</th>
-                            <th class="p-5">Assembled</th>
-                            <th class="p-5">Clips</th>
-                            <th class="p-5">Notches</th>
-                            <th class="p-5">Accessory</th>
-                            <th class="p-5 border-l">A</th>
-                            <th class="p-5">B</th>
-                            <th class="p-5">C</th>
-                            <th class="p-5 border-l"># Wide</th>
-                            <th class="p-5 border-r"># Deep</th>
-                            <th class="p-5">Unit $</th>
-                            <th class="p-5">Ext. $</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var box in OrderState.Order.Products.Where(p => p is DovetailDrawerBox).Cast<DovetailDrawerBox>().OrderBy(b => b.LineInOrder)) {
-                            <tr>
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.LineInOrder</td>
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Qty</td>
-                                @if (_useInches) {
-                                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Height.GetFormatedFraction())"</td>
-                                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Width.GetFormatedFraction())"</td>
-                                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Depth.GetFormatedFraction())"</td>
-                                } else {
-                                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Height.AsMillimeters().ToString("0.00")</td>
-                                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Width.AsMillimeters().ToString("0.00")</td>
-                                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Depth.AsMillimeters().ToString("0.00")</td>
-                                }
-                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@_materialNames[box.Options.BoxMaterialId]</td>
-                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@_materialNames[box.Options.BottomMaterialId]</td>
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.ScoopFront ? "Y" : "N")</td>
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.Logo == LogoPosition.None ? "N" : "Y")</td>
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.PostFinish ? "Y" : "N")</td>
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.FaceMountingHoles ? "Y" : "N")</td>
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.Assembled ? "Y" : "N")</td>
-                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.Clips</td>
-                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.Notches</td>
-                                <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.Accessory</td>
-                                @if(box.Options.UBoxDimensions is not null) {
-                                    @if (_useInches) {
-                                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Options.UBoxDimensions.A.GetFormatedFraction())"</td>
-                                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Options.UBoxDimensions.B.GetFormatedFraction())"</td>
-                                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Options.UBoxDimensions.C.GetFormatedFraction())"</td>
-                                    } else {
-                                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.UBoxDimensions.A.AsMillimeters().ToString("0.00")</td>
-                                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.UBoxDimensions.B.AsMillimeters().ToString("0.00")</td>
-                                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.UBoxDimensions.C.AsMillimeters().ToString("0.00")</td>
-                                    }
-                                } else {
-                                    <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white"></td>
-                                    <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white"></td>
-                                    <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white"></td>
-                                }
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.FixedDivdersCounts?.WideCount</td>
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.FixedDivdersCounts?.DeepCount</td>
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">$@box.UnitPrice.ToString("0.00")</td>
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">$@((box.UnitPrice * box.Qty).ToString("0.00"))</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+
+            var drawerBoxes = OrderState.Order.Products.Where(p => p is DovetailDrawerBox).Cast<DovetailDrawerBox>();
+            <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@drawerBoxes" />
+
         }
     </section>
 }
@@ -322,7 +244,6 @@
     private Company? _customer = null;
     private Company? _vendor = null;
     private ReleaseProfile? _customReleaseProfile = null;
-    private Dictionary<Guid, string> _materialNames = new();
 
     private bool _useInches = false;
 
@@ -342,19 +263,6 @@
         };
         await LoadCustomer();
         await LoadVendor();
-
-        var materialIds = OrderState.Order
-                                    .Products
-                                    .Where(p => p is DovetailDrawerBox)
-                                    .Cast<DovetailDrawerBox>()
-                                    .SelectMany(b => new Guid[] { b.Options.BoxMaterialId, b.Options.BottomMaterialId })
-                                    .Distinct();
-
-        _materialNames = new Dictionary<Guid, string>();
-        foreach (var id in materialIds) {
-            var name = await GetMaterialName(id);
-            _materialNames.Add(id, name);
-        }
 
     }
 
@@ -439,19 +347,6 @@
             await onConfirmation(result.Data);
         }
 
-    }
-
-    private async Task<string> GetMaterialName(Guid materialId) {
-        var matResponse = await Bus.Send(new GetDrawerBoxMaterialById.Query(materialId));
-        var materialName = "UNKNOWN";
-        matResponse.Match(
-            m => {
-                if (m is not null) materialName = m.Name;
-            },
-            error => { }
-        );
-
-        return materialName;
     }
 
     private void NumberChanged(string value) {
