@@ -63,7 +63,7 @@
 			</div>
 
 			<section>
-				<div @onclick="LoadOrder" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 dark:hover:bg-slate-600  text-gray-500 hover:text-black dark:hover:text-white">
+				<div @onclick="LoadExampleOrder" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 dark:hover:bg-slate-600  text-gray-500 hover:text-black dark:hover:text-white">
 					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 inline-block">
 						<path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
 					</svg>						  
@@ -130,6 +130,34 @@
 				Title = e.Message,
 				Details = e.ToString()
 			});
+
+		}
+
+	}
+
+	private async Task LoadExampleOrder() {
+
+		try {
+
+			var parameters = new ModalParameters() {
+				{ "SourceType", OrderSourceType.MockCabinet },
+				{ "Source", "" }
+			};
+
+			var options = new ModalOptions() {
+				DisableBackgroundCancel = true,
+				HideHeader = true
+			};
+
+			var dialog = Modal.Show<LoadingOrderDialog>("Loading Mock Order", parameters, options);
+			var result = await dialog.Result;
+
+		} catch (Exception e) {
+
+			_ = await Modal.OpenErrorDialog(new Error() {
+					Title = e.Message,
+					Details = e.ToString()
+				});
 
 		}
 

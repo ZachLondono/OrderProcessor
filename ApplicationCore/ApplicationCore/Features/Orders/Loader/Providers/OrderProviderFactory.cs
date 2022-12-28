@@ -17,7 +17,8 @@ public class OrderProviderFactory : IOrderProviderFactory {
         OrderSourceType.RichelieuXML => _serviceProvider.GetRequiredService<RichelieuXMLOrderProvider>(),
 		OrderSourceType.OTExcel => _serviceProvider.GetRequiredService<OTExcelProvider>(),
         OrderSourceType.HafeleExcel => _serviceProvider.GetRequiredService<HafeleExcelProvider>(),
-        _ => throw new NotImplementedException(),
+        OrderSourceType.MockCabinet => _serviceProvider.GetRequiredService<MockCabinetOrderProvider>(),
+		_ => throw new NotImplementedException(),
     };
 
 }

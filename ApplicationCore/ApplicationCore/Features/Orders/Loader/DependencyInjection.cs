@@ -15,7 +15,9 @@ internal static class DependencyInjection {
 
     public static IServiceCollection AddOrderLoading(this IServiceCollection services, IConfiguration configuration) {
 
-        services.AddTransient<IOrderProviderFactory, OrderProviderFactory>();
+		services.AddTransient<MockCabinetOrderProvider>();
+
+		services.AddTransient<IOrderProviderFactory, OrderProviderFactory>();
         var allmoxyConfig = configuration.GetRequiredSection("AllmoxyConfiguration").Get<AllmoxyConfiguration>();
         services.AddSingleton<AllmoxyConfiguration>(allmoxyConfig);
         services.AddTransient<AllmoxyXMLOrderProvider>();
