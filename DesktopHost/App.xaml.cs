@@ -50,6 +50,7 @@ public partial class App : Application {
     private static IConfiguration BuildConfiguration()
         => new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
+                .AddJsonFile("Configuration/credentials.json")
                 .Build();
 
     private static IServiceProvider BuildServiceProvider(IConfiguration configuration) {
