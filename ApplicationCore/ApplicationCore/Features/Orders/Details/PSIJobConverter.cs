@@ -100,7 +100,9 @@ public class PSIJobConverter {
 							Hardware = ""
 						});
 
-                        variables.Add(new VariableOverride() {
+						variables.Add(GetMaterialVariableRecord(material.Key.Item2, material.Key.Item1, material.Key.Item4, material.Key.Item3, material.Key.Item5, lvlId));
+
+						variables.Add(new VariableOverride() {
                             LevelId = lvlId,
                             Units = PSIUnits.Millimeters,
                             Parameters = group.Key
