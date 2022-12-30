@@ -18,12 +18,14 @@ public class LoadOrderCommand {
 
         private readonly IOrderProviderFactory _factory;
         private readonly IBus _bus;
-        private readonly IMessageBoxService _messageBoxService;
+		private readonly LoadingMessagePublisher _publisher;
+		private readonly IMessageBoxService _messageBoxService;
 
-        public Handler(IOrderProviderFactory factory, IBus bus, IMessageBoxService messageBoxService) {
+        public Handler(IOrderProviderFactory factory, IBus bus, LoadingMessagePublisher publisher, IMessageBoxService messageBoxService) {
             _factory = factory;
             _bus = bus;
-            _messageBoxService = messageBoxService;
+            _publisher = publisher;
+			_messageBoxService = messageBoxService;
         }
 
         public override async Task<Response<Order>> Handle(Command request) {
@@ -72,7 +74,16 @@ public class LoadOrderCommand {
 
             var products = new List<IProduct>();
             products.AddRange(data.DrawerBoxes.Select(MapDataToDrawerBox));
-            products.AddRange(data.BaseCabinets.Select(MapDataToBaseCabinet));
+
+            int index = 0;
+            data.BaseCabinets.ForEach(cab => {
+				index++;
+				try {
+                    products.Add(MapDataToBaseCabinet(cab));
+                } catch (Exception ex) {
+					_publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+				}
+            });
 
             var additionalItems = data.AdditionalItems.Select(MapDataToItem);
 
