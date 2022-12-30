@@ -5,32 +5,23 @@ namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 [XmlRoot("order")]
 public class OrderModel {
 
-    [XmlAttribute("id")]
-    public int Id { get; set; }
+    [XmlElement("number")]
+    public int Number { get; set; }
 
-    [XmlElement("customer")]
-    public string Customer { get; set; } = string.Empty;
+	[XmlElement("name")]
+	public string Name { get; set; } = string.Empty;
 
-    [XmlElement("customerId")]
-    public int CustomerId { get; set; }
+	[XmlElement("date")]
+	public string OrderDate { get; set; } = string.Empty;
 
-    [XmlElement("name")]
-    public string Name { get; set; } = string.Empty;
+	[XmlElement("note")]
+	public string Note { get; set; } = string.Empty;
 
-    [XmlElement("note")]
-    public string Note { get; set; } = string.Empty;
+	[XmlElement("description")]
+	public string Description { get; set; } = string.Empty;
 
-    [XmlElement("date")]
-    public string OrderDate { get; set; } = string.Empty;
-
-    [XmlElement("description")]
-    public string Description { get; set; } = string.Empty;
-
-    [XmlElement("status")]
-    public string Status { get; set; } = string.Empty;
-
-    [XmlElement("total")]
-    public decimal Total { get; set; }
+	[XmlElement("customer")]
+	public CustomerModel Customer { get; set; } = new();
 
     [XmlElement("invoice")]
     public InvoiceModel Invoice { get; set; } = new();
@@ -38,7 +29,7 @@ public class OrderModel {
     [XmlElement("shipping")]
     public ShippingModel Shipping { get; set; } = new();
 
-    [XmlElement("drawerbox")]
-    public DrawerBoxModel[] DrawerBoxes { get; set; } = Array.Empty<DrawerBoxModel>();
+	[XmlElement("products")]
+	public ProductsModel Products { get; set; } = new();
 
 }

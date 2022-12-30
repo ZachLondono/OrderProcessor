@@ -5,6 +5,5 @@ public enum OrderSourceType {
     OTExcel,
     RichelieuXML,
     HafeleExcel,
-    MockCabinet,
     Unknown
 }

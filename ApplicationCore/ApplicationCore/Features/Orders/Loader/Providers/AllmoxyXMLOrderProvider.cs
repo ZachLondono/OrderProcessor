@@ -2,46 +2,58 @@
 using ApplicationCore.Features.Companies.Domain;
 using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Queries;
+using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.Loader.Providers.DTO;
 using ApplicationCore.Features.Orders.Loader.Providers.Results;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Shared;
 using ApplicationCore.Shared.Domain;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using DrawerBoxModel = ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels.DrawerBoxModel;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 
 internal class AllmoxyXMLOrderProvider : OrderProvider {
 
-    private readonly IFileReader _fileReader;
     private readonly IBus _bus;
     private readonly LoadingMessagePublisher _publisher;
     private readonly AllmoxyConfiguration _configuration;
+    private readonly AllmoxyCredentials _credentials;
+    private string? _data = null;
 
-    public AllmoxyXMLOrderProvider(IFileReader fileReader, IBus bus, LoadingMessagePublisher publisher, AllmoxyConfiguration configuration) {
-        _fileReader = fileReader;
+    public AllmoxyXMLOrderProvider(IBus bus, LoadingMessagePublisher publisher, AllmoxyConfiguration configuration, AllmoxyCredentials credentials) {
         _bus = bus;
         _publisher = publisher;
         _configuration = configuration;
+        _credentials = credentials;
     }
 
     public override Task<ValidationResult> ValidateSource(string source) {
 
         try {
 
-			using var stream = _fileReader.OpenReadFileStream(source);
-			XDocument doc = XDocument.Load(stream);
+            if (_data is null) LoadData(source);
+            if (_data is null) {
+                return Task.FromResult(new ValidationResult() {
+                    ErrorMessage = "Could not load order data from Allmoxy",
+                    IsValid = false
+                });
+            }
+
+            using var reader = new StringReader(_data);
+            XDocument doc = XDocument.Load(reader);
 
 			var schemas = new XmlSchemaSet();
 			schemas.Add("", _configuration.Schema);
 
 			var errors = new List<string>();
 			doc.Validate(schemas, (s, e) => errors.Add(e.Message));
+
+            foreach (var error in errors) {
+				_publisher.PublishError($"[XML Schema] {error}");
+			}
 
 			return Task.FromResult(new ValidationResult() {
                 IsValid = !errors.Any(),
@@ -61,16 +73,22 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
     public override async Task<OrderData?> LoadOrderData(string source) {
 
-        using var fileStream = _fileReader.OpenReadFileStream(source);
+        if (_data is null) LoadData(source);
+        if (_data is null) {
+            _publisher.PublishError("Could not load order data from Allmoxy");
+            return null;
+        }
+        
         var serializer = new XmlSerializer(typeof(OrderModel));
-        if (serializer.Deserialize(fileStream) is not OrderModel data) {
+        using var reader = new StringReader(_data);
+        if (serializer.Deserialize(reader) is not OrderModel data) {
             _publisher.PublishError("Could not find order information in given data");
             return null;
         }
 
         bool didError = false;
         Company? customer = null;
-        var response = await _bus.Send(new GetCompanyByAllmoxyId.Query(data.CustomerId));
+        var response = await _bus.Send(new GetCompanyByAllmoxyId.Query(data.Customer.CompanyId));
 
         response.Match(
             c => {
@@ -89,20 +107,27 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             return null;
         }
 
-        int line = 1;
-        var boxes = data.DrawerBoxes
-                        .Select(b => MapToDrawerBox(b, line++))
+        var cabinets = data.Products
+                        .BaseCabinets
+                        .Select(MapToBaseCabinet)
                         .ToList();
+
+        var boxes = new List<DrawerBoxModel>();
+
+        var subTotal = cabinets.Sum(c => c.UnitPrice) + boxes.Sum(b => b.UnitPrice);
+		if (subTotal != data.Invoice.Subtotal) {
+			_publisher.PublishWarning($"Order data subtotal '${data.Invoice.Subtotal:0.00}' does not match calculated subtotal '${subTotal:0.00}'. There may be missing products.");
+		}
 
         var tax = data.Invoice.Tax;
         var shipping = data.Invoice.Shipping;
-        var priceAdjustment = 0m;
+        var priceAdjustment = 0M;
 
         var info = new Dictionary<string, string>() {
-            { "Description", data.Description },
+            { "Notes", data.Note },
             { "Shipping Attn", data.Shipping.Attn },
             { "Shipping Instructions", data.Shipping.Instructions },
-            { "Allmoxy Customer Id", data.CustomerId.ToString() }
+            { "Allmoxy Customer Id", data.Customer.CompanyId.ToString() }
         };
 
         var additionalItems = new List<AdditionalItemData>();
@@ -111,14 +136,14 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
         string orderDateStr = data.OrderDate;
         if (!DateTime.TryParse(orderDateStr, out DateTime orderDate)) {
-            _publisher.PublishWarning($"Could not parse order data '{orderDateStr}'");
+            _publisher.PublishWarning($"Could not parse order date '{(orderDateStr == "" ? "[BLANK]" : orderDateStr)}'");
             orderDate = DateTime.Now;
         }
 
         return new OrderData() {
-            Number = data.Id.ToString(),
+            Number = data.Number.ToString(),
             Name = data.Name,
-            Comment = data.Note,
+            Comment = data.Description,
             Tax = tax,
             Shipping = shipping,
             PriceAdjustment = priceAdjustment,
@@ -126,13 +151,20 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             CustomerId = customer.Id,
             VendorId = metroVendorId,
             AdditionalItems = additionalItems,
-            DrawerBoxes = boxes,
+            BaseCabinets = cabinets,
+            DrawerBoxes = new(),
+            Rush = data.Shipping.Method.Contains("Rush"),
             Info = info
         };
 
 	}
 
-    private async Task<Company?> CreateCustomer(OrderModel data) {
+	private void LoadData(string source) {
+		var client = new AllmoxyClient(_credentials.Instance, _credentials.Username, _credentials.Password);
+		_data = client.GetExport(source, 6);
+	}
+
+	private async Task<Company?> CreateCustomer(OrderModel data) {
         var adderes = new Address() {
             Line1 = data.Shipping.Address.Line1,
             Line2 = data.Shipping.Address.Line2,
@@ -144,13 +176,13 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
         };
 
         // TODO: get customer contact info from allmoxy order data
-        var createResponse = await _bus.Send(new CreateCompany.Command(data.Customer, adderes, "", "", "", ""));
+        var createResponse = await _bus.Send(new CreateCompany.Command(data.Customer.Company, adderes, "", "", "", ""));
 
         Company? customer = null;
         createResponse.Match(
             async c => {
                 customer = c;
-                await _bus.Send(new CreateAllmoxyIdCompanyIdMapping.Command(data.CustomerId, customer.Id));
+                await _bus.Send(new CreateAllmoxyIdCompanyIdMapping.Command(data.Customer.CompanyId, customer.Id));
             },
             error => {
                 _publisher.PublishError(error.Title);
@@ -162,7 +194,108 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
     }
 
-    private DrawerBoxData MapToDrawerBox(DrawerBoxModel data, int line) {
+	private BaseCabinetData MapToBaseCabinet(BaseCabinetModel data) {
+
+        CabinetMaterialCore boxCore = GetMaterialCore(data.Materials.BoxMaterial.Type);
+
+
+		return new BaseCabinetData() {
+            Qty = data.Qty,
+            UnitPrice = data.UnitPrice,
+            Room = data.Room,
+            Height = Dimension.FromMillimeters(data.Height),
+            Width = Dimension.FromMillimeters(data.Width),
+            Depth = Dimension.FromMillimeters(data.Depth),
+            BoxMaterialFinish = data.Materials.BoxMaterial.Finish,
+            BoxMaterialCore = boxCore,
+            FinishMaterialFinish = data.Materials.FinishMaterial.Finish,
+            FinishMaterialCore = GetFinishedSideMaterialCore(data.Materials.FinishMaterial.Type, boxCore),
+            SidePanelOptions = null, // TODO: get door options
+			LeftSideType = GetCabinetSideType(data.LeftSide),
+			RightSideType = GetCabinetSideType(data.RightSide),
+			DoorQty = data.DoorQty,
+			HingeLeft = (data.HingeSide == "Left"),
+			ToeType = GetToeType(data.ToeType),
+			DrawerQty = data.DrawerQty,
+			DrawerFaceHeight = Dimension.FromMillimeters(data.DrawerFaceHeight),
+			DrawerBoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
+			DrawerBoxSlideType = DrawerSlideType.UnderMount,
+			VerticalDividerQty = data.VerticalDividerQty,
+			AdjustableShelfQty = data.AdjShelfQty,
+			RollOutBoxPositions = GetRollOutPositions(data.RollOutPos1, data.RollOutPos2, data.RollOutPos3),
+			RollOutBlocks = GetRollOutBlockPositions(data.RollOutBlocks),
+			ScoopFrontRollOuts = true
+		};
+
+	}
+
+    private RollOutBlockPosition GetRollOutBlockPositions(string name) => name switch {
+        "Left" => RollOutBlockPosition.Left,
+		"Right" => RollOutBlockPosition.Right,
+		"Both" => RollOutBlockPosition.Both,
+		_ => RollOutBlockPosition.None
+    };
+
+    private Dimension[] GetRollOutPositions(string pos1, string pos2, string pos3) {
+
+        int count = 0;
+        if (pos3 == "Yes") count = 3;
+        else if (pos2 == "Yes") count = 2;
+        else if (pos1 == "Yes") count = 1;
+
+        if (count == 0) return Array.Empty<Dimension>();
+
+        var positions = new Dimension[count];
+        if (count >= 1) positions[0] = pos1 == "Yes" ? Dimension.FromMillimeters(19) : Dimension.Zero;
+        if (count >= 2) positions[1] = pos2 == "Yes" ? Dimension.FromMillimeters(300) : Dimension.Zero;
+		if (count == 3) positions[2] = pos3 == "Yes" ? Dimension.FromMillimeters(497) : Dimension.Zero;
+
+		return positions;
+
+	}
+
+    private IToeType GetToeType(string name) => name switch {
+        "Leg Levelers" => new LegLevelers(Dimension.FromMillimeters(102)),
+        "Full Height Sides" => new FurnitureBase(Dimension.FromMillimeters(102)),
+        "Noe Toe" => new NoToe(),
+        "Notched" => new Notched(Dimension.FromMillimeters(102)),
+		_ => new LegLevelers(Dimension.FromMillimeters(102))
+	};
+
+    private CabinetSideType GetCabinetSideType(string name) => name switch {
+        "Unfinished" => CabinetSideType.Unfinished,
+        "Finished" => CabinetSideType.Finished,
+        "Integrated" => CabinetSideType.IntegratedPanel,
+        "Applied" => CabinetSideType.AppliedPanel,
+        _ => CabinetSideType.Unfinished
+    };
+
+    private CabinetMaterialCore GetMaterialCore(string name) => name switch {
+        "pb" => CabinetMaterialCore.Flake,
+		"ply" => CabinetMaterialCore.Plywood,
+		_ => CabinetMaterialCore.Flake
+    };
+
+    private CabinetMaterialCore GetFinishedSideMaterialCore(string name, CabinetMaterialCore boxMaterial) {
+
+        if (boxMaterial == CabinetMaterialCore.Flake) {
+
+            return name switch {
+                "veneer" => CabinetMaterialCore.Plywood,
+                _ => CabinetMaterialCore.Flake
+            };
+
+        } else if (boxMaterial == CabinetMaterialCore.Plywood) {
+
+            return CabinetMaterialCore.Plywood;
+
+		}
+
+        return CabinetMaterialCore.Flake;
+
+    }
+
+    /*private DrawerBoxData MapToDrawerBox(DrawerBoxModel data, int line) {
 
         LogoPosition logo = LogoPosition.None;
         switch (data.Logo) {
@@ -209,15 +342,15 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             Notch = data.Notch,
             Accessory = data.Insert,
         };
-    }
+    }*/
 
-    private Guid GetMaterialId(string optionname) {
+    /*private Guid GetMaterialId(string optionname) {
         if (_configuration.MaterialMap.TryGetValue(optionname, out string? optionidstr) && optionidstr is not null) {
             var optionid = Guid.Parse(optionidstr);
             return optionid;
         }
         _publisher.PublishWarning($"Unrecognized material name '{optionname}'");
         return Guid.Empty;
-    }
+    }*/
 
 }

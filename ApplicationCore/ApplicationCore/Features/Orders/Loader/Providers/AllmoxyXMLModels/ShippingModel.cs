@@ -4,13 +4,19 @@ namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
 public class ShippingModel {
 
-    [XmlElement("instructions")]
+	[XmlElement("method")]
+	public string Method { get; set; } = string.Empty;
+
+    [XmlElement("date")]
+    public string Date { get; set; } = string.Empty;
+
+    [XmlElement("tax")]
+    public decimal Tax { get; set; }
+
+	[XmlElement("instructions")]
     public string Instructions { get; set; } = string.Empty;
 
-    [XmlElement("method")]
-    public string Method { get; set; } = string.Empty;
-
-    [XmlElement("attn")]
+    [XmlElement("attention")]
     public string Attn { get; set; } = string.Empty;
 
     [XmlElement("address")]
