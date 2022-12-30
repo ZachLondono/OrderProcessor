@@ -306,7 +306,7 @@ public class PSIJobConverter {
 
 		}
 
-        public int GetHashCode([DisallowNull] Dictionary<string, string> obj) => obj.GetHashCode();
+        public int GetHashCode(Dictionary<string, string> obj) => obj.GetHashCode();
 
 	}
 
