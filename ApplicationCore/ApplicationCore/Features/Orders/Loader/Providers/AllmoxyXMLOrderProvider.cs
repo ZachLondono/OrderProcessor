@@ -257,7 +257,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
     private IToeType GetToeType(string name) => name switch {
         "Leg Levelers" => new LegLevelers(Dimension.FromMillimeters(102)),
         "Full Height Sides" => new FurnitureBase(Dimension.FromMillimeters(102)),
-        "Noe Toe" => new NoToe(),
+        "No Toe" => new NoToe(),
         "Notched" => new Notched(Dimension.FromMillimeters(102)),
 		_ => new LegLevelers(Dimension.FromMillimeters(102))
 	};
