@@ -8,4 +8,6 @@ public interface IProductPlannerProduct {
 
     Dictionary<string, string> GetParameters();
 
+    Dictionary<string, string> GetOverrideParameters();
+
 }

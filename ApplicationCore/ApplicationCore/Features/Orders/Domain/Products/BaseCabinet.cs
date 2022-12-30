@@ -88,6 +88,17 @@ internal class BaseCabinet : Cabinet {
         return parameters;
     }
 
+    public override Dictionary<string, string> GetOverrideParameters() {
+
+        var parameters = new Dictionary<string, string>();
+        if (ToeType.PSIParameter != "2") {
+            parameters.Add("__ToeBaseType", ToeType.PSIParameter);
+        }
+
+        return parameters;
+
+    }
+
     public override string GetProductName() {
 
         if (Doors.Quantity == 1) {

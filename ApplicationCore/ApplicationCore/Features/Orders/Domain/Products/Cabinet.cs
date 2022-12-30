@@ -42,4 +42,7 @@ public abstract class Cabinet : IProduct, IProductPlannerProduct {
     public abstract string GetProductName();
 
     public abstract Dictionary<string, string> GetParameters();
+
+	public abstract Dictionary<string, string> GetOverrideParameters();
+
 }
