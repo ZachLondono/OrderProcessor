@@ -93,7 +93,7 @@ public class PSIJobConverter {
 						levels.Add(new LevelDescriptor() {
 							LevelId = lvlId,
 							ParentId = parentId,
-							Name = $"{materialIdx}.{overrideIdx}-{(string.IsNullOrEmpty(room.Key) ? $"Lvl{roomIdx}" : room.Key)}",
+							Name = $"{(multipleMaterials ? $"{materialIdx}.{overrideIdx}" : overrideIdx.ToString())}-{(string.IsNullOrEmpty(room.Key) ? $"Lvl{roomIdx}" : room.Key)}",
 							Catalog = "",
 							Materials = "",
 							Fronts = "",
