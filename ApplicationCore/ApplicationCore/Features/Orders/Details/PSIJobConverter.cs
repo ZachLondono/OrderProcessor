@@ -37,7 +37,7 @@ public class PSIJobConverter {
 
             roomIdx++;
 
-            var materialGroups = room.GroupBy(cab => (cab.BoxMaterial.Finish, cab.BoxMaterial.Core, cab.FinishMaterial.Finish, cab.FinishMaterial.Core));
+            var materialGroups = room.GroupBy(cab => (cab.BoxMaterial.Finish, cab.BoxMaterial.Core, cab.FinishMaterial.Finish, cab.FinishMaterial.Core, cab.EdgeBandingColor));
             bool multipleMaterials = (materialGroups.Count() > 1);
 
             var firstMaterials = materialGroups.First().Key;
@@ -52,7 +52,7 @@ public class PSIJobConverter {
             };
 
             if (!multipleMaterials) {
-                variables.Add(GetMaterialVariableRecord(firstMaterials.Item2, firstMaterials.Item1, firstMaterials.Item4, firstMaterials.Item3, jobId + roomIdx));
+                variables.Add(GetMaterialVariableRecord(firstMaterials.Item2, firstMaterials.Item1, firstMaterials.Item4, firstMaterials.Item3, firstMaterials.Item5, jobId + roomIdx));
             }
 
             levels.Add(level);
@@ -74,7 +74,7 @@ public class PSIJobConverter {
                         Hardware = "Standard"
                     });
 
-                    variables.Add(GetMaterialVariableRecord(material.Key.Item2, material.Key.Item1, material.Key.Item4, material.Key.Item3, lvlId));
+                    variables.Add(GetMaterialVariableRecord(material.Key.Item2, material.Key.Item1, material.Key.Item4, material.Key.Item3, material.Key.Item5, lvlId));
                 }
 
                 if (material.Any(cab => cab.GetOverrideParameters().Any())) {
@@ -161,7 +161,7 @@ public class PSIJobConverter {
         _ => "Buyout"
     };*/
 
-    private VariableOverride GetMaterialVariableRecord(CabinetMaterialCore boxMaterial, string boxColor, CabinetMaterialCore finishMaterial, string finishColor, int levelId) {
+    private VariableOverride GetMaterialVariableRecord(CabinetMaterialCore boxMaterial, string boxColor, CabinetMaterialCore finishMaterial, string finishColor, string ebColor, int levelId) {
 
         var materials = new Dictionary<string, string> {
             {
@@ -228,7 +228,7 @@ public class PSIJobConverter {
                 "EB_Case",
                 new PSIMaterial() {
                     Material = GetEBMaterialType(finishMaterial),
-                    Color = finishColor,
+                    Color = ebColor,
                     Thickness = 0,
                     Units = PSIUnits.Millimeters
                 }.ToString()
@@ -248,7 +248,7 @@ public class PSIJobConverter {
                 "EB_ShellExposed",
                 new PSIMaterial() {
                     Material = GetEBMaterialType(finishMaterial),
-                    Color = finishColor,
+                    Color = ebColor,
                     Thickness = 0,
                     Units = PSIUnits.Millimeters
                 }.ToString()
@@ -258,7 +258,7 @@ public class PSIJobConverter {
                 "EB_WallBottom",
                 new PSIMaterial() {
                     Material = GetEBMaterialType(finishMaterial),
-                    Color = finishColor,
+                    Color = ebColor,
                     Thickness = 0,
                     Units = PSIUnits.Millimeters
                 }.ToString()

@@ -198,7 +198,6 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
         CabinetMaterialCore boxCore = GetMaterialCore(data.Materials.BoxMaterial.Type);
 
-
 		return new BaseCabinetData() {
             Qty = data.Qty,
             UnitPrice = data.UnitPrice,
@@ -210,6 +209,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             BoxMaterialCore = boxCore,
             FinishMaterialFinish = data.Materials.FinishMaterial.Finish,
             FinishMaterialCore = GetFinishedSideMaterialCore(data.Materials.FinishMaterial.Type, boxCore),
+            EdgeBandingColor = (data.Materials.EdgeBandColor == "Match Finish" ? data.Materials.FinishMaterial.Finish : data.Materials.EdgeBandColor),
             SidePanelOptions = null, // TODO: get door options
 			LeftSideType = GetCabinetSideType(data.LeftSide),
 			RightSideType = GetCabinetSideType(data.RightSide),

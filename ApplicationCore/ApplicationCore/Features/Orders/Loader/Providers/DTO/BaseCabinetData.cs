@@ -26,7 +26,9 @@ public class BaseCabinetData {
 
     public required CabinetMaterialCore FinishMaterialCore { get; set; }
 
-    public required CabinetSideType LeftSideType { get; set; }
+    public required string EdgeBandingColor { get; set; }
+
+	public required CabinetSideType LeftSideType { get; set; }
     
     public required CabinetSideType RightSideType { get; set; }
 

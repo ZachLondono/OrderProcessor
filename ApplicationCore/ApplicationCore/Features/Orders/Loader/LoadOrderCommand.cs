@@ -162,6 +162,7 @@ public class LoadOrderCommand {
                 data.Depth,
                 boxMaterial,
                 finishMaterial,
+                data.EdgeBandingColor,
                 rightSide,
                 leftSide,
                 doors,
