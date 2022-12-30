@@ -77,25 +77,53 @@ public class PSIJobConverter {
                     variables.Add(GetMaterialVariableRecord(material.Key.Item2, material.Key.Item1, material.Key.Item4, material.Key.Item3, lvlId));
                 }
 
-                foreach (var cab in material) {
+                if (material.Any(cab => cab.GetOverrideParameters().Any())) {
 
-                    int parentId = jobId + roomIdx + (multipleMaterials ? materialIdx : 0);
+                    // TODO: if there are not multiple override groups, use the material level to set overrides
 
-                    products.Add(new Product() {
-                        Name = cab.GetProductName(),
-                        ParentId = parentId,
-                        Pos = ++productIndex,
-                        CustomSpec = true,
-                        Qty = 1,
-                        SeqText = "",
-                        Units = PSIUnits.Millimeters,
-                        // TODO: get parameters from product
-                        Parameters = cab.GetParameters()
-                    });
+                    var overrideGroups = material.GroupBy(cab => cab.GetOverrideParameters(), new DictionaryValueComparator());
 
-                }
+                    int overrideIdx = 0;
+                    foreach (var group in overrideGroups) {
 
-            }
+                        overrideIdx++;
+
+						int parentId = jobId + roomIdx + (multipleMaterials ? materialIdx : 0);
+						int lvlId = parentId + overrideIdx;
+						levels.Add(new LevelDescriptor() {
+							LevelId = lvlId,
+							ParentId = parentId,
+							Name = $"{materialIdx}.{overrideIdx}-{(string.IsNullOrEmpty(room.Key) ? $"Lvl{roomIdx}" : room.Key)}",
+							Catalog = "",
+							Materials = "",
+							Fronts = "",
+							Hardware = ""
+						});
+
+                        variables.Add(new VariableOverride() {
+                            LevelId = lvlId,
+                            Units = PSIUnits.Millimeters,
+                            Parameters = group.Key
+                        });
+
+						foreach (var cab in group) {
+							products.Add(MapCabinetToProduct(cab, lvlId, ++productIndex));
+						}
+
+					}
+
+                    materialIdx += overrideIdx;
+
+				} else { 
+
+                    foreach (var cab in material) {
+                        int parentId = jobId + roomIdx + (multipleMaterials ? materialIdx : 0);
+                        products.Add(MapCabinetToProduct(cab, parentId, ++productIndex));
+                    }
+
+				}
+
+			}
 
             roomIdx += materialIdx;
 
@@ -105,7 +133,19 @@ public class PSIJobConverter {
 
     }
 
-    private static string GetMaterial(CabinetMaterialCore boxMaterial, CabinetMaterialCore finishMaterial) {
+    private static Product MapCabinetToProduct(Cabinet cab, int productIndex, int parentId) => new() {
+        Name = cab.GetProductName(),
+        ParentId = productIndex,
+        Pos = parentId,
+        CustomSpec = true,
+        Qty = 1,
+        SeqText = "",
+        Units = PSIUnits.Millimeters,
+        Parameters = cab.GetParameters()
+    };
+
+
+	private static string GetMaterial(CabinetMaterialCore boxMaterial, CabinetMaterialCore finishMaterial) {
 
         if (boxMaterial == CabinetMaterialCore.Plywood) return "Sterling 18_5";
         else if (boxMaterial == CabinetMaterialCore.Flake && finishMaterial == CabinetMaterialCore.Flake) return "Crown Paint";
@@ -246,5 +286,28 @@ public class PSIJobConverter {
         CabinetMaterialCore.Plywood => "Veneer",
         _ => "PVC"
     };
+
+	class DictionaryValueComparator : IEqualityComparer<Dictionary<string, string>> {
+
+		public bool Equals(Dictionary<string, string>? x, Dictionary<string, string>? y) {
+
+            if (x is null && y is null) return true;
+            if (x.Count != y.Count) return false;
+
+            foreach (var (key, value) in x) {
+            
+                if  (!y.ContainsKey(key)) return false;
+
+                if (value != y[key]) return false;
+
+            }
+
+            return true;
+
+		}
+
+        public int GetHashCode([DisallowNull] Dictionary<string, string> obj) => obj.GetHashCode();
+
+	}
 
 }
