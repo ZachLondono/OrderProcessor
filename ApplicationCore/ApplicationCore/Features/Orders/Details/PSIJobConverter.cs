@@ -292,7 +292,8 @@ public class PSIJobConverter {
 		public bool Equals(Dictionary<string, string>? x, Dictionary<string, string>? y) {
 
             if (x is null && y is null) return true;
-            if (x.Count != y.Count) return false;
+            if ((x is null && y is not null) || (y is null && x is not null)) return false;
+            if (x!.Count != y!.Count) return false;
 
             foreach (var (key, value) in x) {
             
