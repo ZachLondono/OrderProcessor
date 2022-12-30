@@ -5,7 +5,8 @@ namespace ApplicationCore.Features.Orders.Domain;
 public class LegLevelers : IToeType {
     public Dimension ToeHeight { get; }
     public Dimension HeightAdjustment => ToeHeight;
-    public LegLevelers(Dimension toeHeight) {
+	public string PSIParameter => "2";
+	public LegLevelers(Dimension toeHeight) {
         ToeHeight = toeHeight;
     }
 }

@@ -5,7 +5,8 @@ namespace ApplicationCore.Features.Orders.Domain;
 public class FurnitureBase : IToeType {
     public Dimension ToeHeight { get; }
     public Dimension HeightAdjustment => Dimension.Zero;
-    public FurnitureBase(Dimension toeHeight) {
+	public string PSIParameter => "1";
+	public FurnitureBase(Dimension toeHeight) {
         ToeHeight = toeHeight;
     }
 }

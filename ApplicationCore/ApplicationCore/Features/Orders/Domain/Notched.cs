@@ -5,7 +5,8 @@ namespace ApplicationCore.Features.Orders.Domain;
 public class Notched : IToeType {
     public Dimension ToeHeight { get; }
     public Dimension HeightAdjustment => Dimension.Zero;
-    public Notched(Dimension toeHeight) {
+	public string PSIParameter => "0";
+	public Notched(Dimension toeHeight) {
         ToeHeight = toeHeight;
     }
 }

@@ -5,4 +5,5 @@ namespace ApplicationCore.Features.Orders.Domain;
 public interface IToeType {
     Dimension ToeHeight { get; }
     Dimension HeightAdjustment { get; }
+    string PSIParameter { get; }
 }
