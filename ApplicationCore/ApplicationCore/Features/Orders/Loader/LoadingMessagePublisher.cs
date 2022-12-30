@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Loader;
 
-internal class LoadingMessagePublisher {
+public class LoadingMessagePublisher {
 
     private readonly IUIBus _uiBus;
 
