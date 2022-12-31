@@ -12,6 +12,13 @@
                 <th class="p-5">Depth</th>
                 <th class="p-5">Box Material</th>
                 <th class="p-5">Fin Material</th>
+                <th class="p-5">EB Color</th>
+                <th class="p-5">Left</th>
+                <th class="p-5">Right</th>
+                <th class="p-5">Assembled</th>
+                <th class="p-5">Room</th>
+                <th class="p-5">Unit $</th>
+                <th class="p-5">Ext. $</th>
             </tr>
         </thead>
         <tbody>
@@ -30,6 +37,13 @@
                     }
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{cabinet.BoxMaterial.Finish}/{cabinet.BoxMaterial.Core}")</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{cabinet.FinishMaterial.Finish}/{cabinet.FinishMaterial.Core}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.EdgeBandingColor</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.LeftSide.Type.ToString()</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.RightSide.Type.ToString()</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(cabinet.Assembled ? "Yes" : "No")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.Room</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.UnitPrice.ToString("$0.00")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((cabinet.UnitPrice * cabinet.Qty).ToString("$0.00"))</td>
                 </tr>
             }
         </tbody>
