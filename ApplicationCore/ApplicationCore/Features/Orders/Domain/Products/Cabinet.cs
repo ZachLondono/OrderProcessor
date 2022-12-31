@@ -9,6 +9,7 @@ public abstract class Cabinet : IProduct, IProductPlannerProduct {
     public int Qty { get; }
     public decimal UnitPrice { get; }
     public string Room { get; }
+    public bool Assembled { get; }
     public Dimension Height { get; }
     public Dimension Width { get; }
     public Dimension Depth { get; }
@@ -18,7 +19,7 @@ public abstract class Cabinet : IProduct, IProductPlannerProduct {
     public CabinetSide RightSide { get; }
     public CabinetSide LeftSide { get; }
 
-    public Cabinet(Guid id, int qty, decimal unitPrice, string room,
+    public Cabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
                 Dimension height, Dimension width, Dimension depth,
                 CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                 CabinetSide rightSide, CabinetSide leftSide) {
@@ -27,6 +28,7 @@ public abstract class Cabinet : IProduct, IProductPlannerProduct {
         Qty = qty;
         UnitPrice = unitPrice;
         Room = room;
+        Assembled = assembled;
         Height = height;
         Width = width;
         Depth = depth;

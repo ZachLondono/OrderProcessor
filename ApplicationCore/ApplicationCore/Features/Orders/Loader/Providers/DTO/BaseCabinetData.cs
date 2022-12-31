@@ -12,6 +12,8 @@ public class BaseCabinetData {
 
     public string Room { get; set; } = string.Empty;
 
+    public bool Assembled { get; set; }
+
     public required Dimension Height { get; set; }
 
     public required Dimension Width { get; set; }

@@ -10,20 +10,20 @@ internal class BaseCabinet : Cabinet {
     public HorizontalDrawerBank Drawers { get; }
     public BaseCabinetInside Inside { get; }
 
-    public static BaseCabinet Create(int qty, decimal unitPrice, string room,
+    public static BaseCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         BaseCabinetDoors doors, IToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside) {
-        return new(Guid.NewGuid(), qty, unitPrice, room, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, toeType, drawers, inside);
+        return new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, toeType, drawers, inside);
     }
 
-    private BaseCabinet(Guid id, int qty, decimal unitPrice, string room,
+    private BaseCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
 						CabinetSide rightSide, CabinetSide leftSide,
                         BaseCabinetDoors doors, IToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside)
-                        : base(id, qty, unitPrice, room, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
+                        : base(id, qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
 
         if (doors.Quantity > 2 || doors.Quantity < 0)
             throw new InvalidOperationException("Invalid number of doors");

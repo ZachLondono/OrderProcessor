@@ -202,6 +202,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             Qty = data.Qty,
             UnitPrice = data.UnitPrice,
             Room = data.Room,
+            Assembled = (data.Assembled == "Yes"),
             Height = Dimension.FromMillimeters(data.Height),
             Width = Dimension.FromMillimeters(data.Width),
             Depth = Dimension.FromMillimeters(data.Depth),
