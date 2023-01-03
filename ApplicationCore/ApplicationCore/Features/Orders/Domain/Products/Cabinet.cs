@@ -90,4 +90,12 @@ public abstract class Cabinet : IProduct {
         _ => "PVC"
     };
 
+    protected string GetSideOption(CabinetSideType side) => side switch {
+        CabinetSideType.AppliedPanel => "0",
+        CabinetSideType.Unfinished => "0",
+        CabinetSideType.Finished => "1",
+        CabinetSideType.IntegratedPanel => "2",
+        _ => "0"
+    };
+
 }

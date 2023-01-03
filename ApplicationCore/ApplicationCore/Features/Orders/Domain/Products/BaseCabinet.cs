@@ -115,6 +115,10 @@ internal class BaseCabinet : Cabinet, IPPProductContainer {
             parameters.Add("__ToeBaseType", ToeType.PSIParameter);
         }
 
+        if (Drawers.Quantity != 0 && Drawers.SlideType == DrawerSlideType.SideMount) {
+            parameters.Add("_DrawerRunType", "4");
+        }
+
         return parameters;
 
     }
@@ -123,14 +127,6 @@ internal class BaseCabinet : Cabinet, IPPProductContainer {
         HingeSide.NotApplicable => "0",
         HingeSide.Left => "1",
         HingeSide.Right => "0",
-        _ => "0"
-    };
-
-    private string GetSideOption(CabinetSideType side) => side switch {
-        CabinetSideType.AppliedPanel => "0",
-        CabinetSideType.Unfinished => "0",
-        CabinetSideType.Finished => "1",
-        CabinetSideType.IntegratedPanel => "2",
         _ => "0"
     };
 
