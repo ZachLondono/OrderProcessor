@@ -199,7 +199,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
         CabinetMaterialCore boxCore = GetMaterialCore(data.Materials.BoxMaterial.Type);
 
         MDFDoorOptions? mdfOptions = null;
-        if (data.DoorType != "Slab") mdfOptions = new(data.DoorStyle);
+        if (data.DoorType != "Slab") mdfOptions = new(data.DoorStyle, data.Materials.DoorColor);
 
 		return new BaseCabinetData() {
             Qty = data.Qty,
