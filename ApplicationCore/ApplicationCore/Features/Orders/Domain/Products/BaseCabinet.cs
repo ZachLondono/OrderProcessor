@@ -61,7 +61,9 @@ internal class BaseCabinet : Cabinet, IPPProductContainer {
     }
 
     public IEnumerable<PPProduct> GetPPProducts() {
-        yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), "Buyout", "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters());
+        // TODO: add option for no doors
+        string doorType = (Doors.MDFOptions is null) ? "Slab" : "Buyout";
+        yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters());
     }
 
     private string GetProductName() {
