@@ -3,7 +3,7 @@
 /// <summary>
 /// An object which contains drawer boxes
 /// </summary>
-internal interface IDrawerContainer {
+internal interface IDrawerBoxContainer {
 
     IEnumerable<DrawerBox> GetDrawerBoxes();
 

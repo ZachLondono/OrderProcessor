@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.ProductPlanner.Contracts;
+﻿using ApplicationCore.Features.ProductPlanner.Domain;
 using CsvHelper;
 using System.Globalization;
 
@@ -6,12 +6,12 @@ namespace ApplicationCore.Features.ProductPlanner.Services;
 
 public class ExtWriter {
 
-    private List<Dictionary<string, string>> _records = new();
+    private readonly List<Dictionary<string, string>> _records = new();
 
     public void AddRecord(JobDescriptor job) => _records.Add(GetRecord(job));
     public void AddRecord(VariableOverride variables) => _records.Add(GetRecord(variables));
     public void AddRecord(LevelDescriptor level) => _records.Add(GetRecord(level));
-    public void AddRecord(Product product) => _records.Add(GetRecord(product));
+    public void AddRecord(ProductRecord product) => _records.Add(GetRecord(product));
 
     public void WriteFile(string filePath) {
         using var writer = new StreamWriter(filePath);
@@ -69,7 +69,7 @@ public class ExtWriter {
         return fields;
     }
 
-    private static Dictionary<string, string> GetRecord(Product product) {
+    private static Dictionary<string, string> GetRecord(ProductRecord product) {
         var values = new Dictionary<string, string> {
             { "KEY", "PR" },
             { "PARENTID", product.ParentId.ToString() },
