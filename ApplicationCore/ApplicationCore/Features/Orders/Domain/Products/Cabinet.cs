@@ -1,9 +1,10 @@
 ﻿using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using ApplicationCore.Features.ProductPlanner.Contracts;
 using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Domain.Products;
 
-public abstract class Cabinet : IProduct, IProductPlannerProduct {
+public abstract class Cabinet : IProduct {
 
     public Guid Id { get; }
     public int Qty { get; }
@@ -43,10 +44,50 @@ public abstract class Cabinet : IProduct, IProductPlannerProduct {
 
     }
 
-    public abstract string GetProductName();
+    protected string GetMaterialType() {
 
-    public abstract Dictionary<string, string> GetParameters();
+        if (BoxMaterial.Core == CabinetMaterialCore.Plywood) return "Sterling 18_5";
+        else if (BoxMaterial.Core == CabinetMaterialCore.Flake && FinishMaterial.Core == CabinetMaterialCore.Flake) return "Crown Paint";
+        else if (BoxMaterial.Core == CabinetMaterialCore.Flake && FinishMaterial.Core == CabinetMaterialCore.Plywood) return "Crown Veneer";
 
-	public abstract Dictionary<string, string> GetOverrideParameters();
+        throw new InvalidOperationException("Unexpected material combination");
+
+    }
+
+    protected Dictionary<string, PPMaterial> GetFinishMaterials() {
+        string finishMaterial = GetFinishMaterialType(FinishMaterial.Core);
+        string boxMaterial = GetFinishMaterialType(BoxMaterial.Core);
+        return new Dictionary<string, PPMaterial> {
+            { "F_Exp_SemiExp", new PPMaterial(finishMaterial, FinishMaterial.Finish) },
+            { "F_Exp_Unseen", new PPMaterial(finishMaterial,FinishMaterial.Finish) },
+            { "F_Exposed", new PPMaterial(finishMaterial, FinishMaterial.Finish) },
+            { "F_OvenSupport", new PPMaterial("PRE","Veneer") },
+            { "F_SemiExp_Unseen", new PPMaterial(boxMaterial, BoxMaterial.Finish) },
+            { "F_SemiExposed", new PPMaterial(boxMaterial, BoxMaterial.Finish) }
+        };
+    }
+
+    private string GetFinishMaterialType(CabinetMaterialCore material) => material switch {
+        CabinetMaterialCore.Flake => "Mela",
+        CabinetMaterialCore.Plywood => "Veneer",
+        _ => "Mela"
+    };
+
+    protected Dictionary<string, PPMaterial> GetEBMaterials() {
+        string finishEBMaterial = GetEBMaterialType(FinishMaterial.Core);
+        string boxEBMaterial = GetEBMaterialType(BoxMaterial.Core);
+        return new Dictionary<string, PPMaterial>() {
+            {"EB_Case", new PPMaterial(finishEBMaterial,EdgeBandingColor) },
+            {"EB_Inside", new PPMaterial(boxEBMaterial, BoxMaterial.Finish) },
+            {"EB_ShellExposed", new PPMaterial(finishEBMaterial,EdgeBandingColor) },
+            {"EB_WallBottom", new PPMaterial(finishEBMaterial,EdgeBandingColor) }
+        };
+    }
+
+    private string GetEBMaterialType(CabinetMaterialCore material) => material switch {
+        CabinetMaterialCore.Flake => "PVC",
+        CabinetMaterialCore.Plywood => "Veneer",
+        _ => "PVC"
+    };
 
 }

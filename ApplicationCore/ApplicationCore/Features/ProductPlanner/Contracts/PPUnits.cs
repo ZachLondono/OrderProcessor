@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.ProductPlanner.Contracts;
 
-public enum PSIUnits {
+public enum PPUnits {
     Inches = 1,
     Millimeters = 2
 }

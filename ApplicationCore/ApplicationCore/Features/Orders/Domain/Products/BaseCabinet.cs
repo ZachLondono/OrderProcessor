@@ -3,7 +3,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Domain.Products;
 
-internal class BaseCabinet : Cabinet {
+internal class BaseCabinet : Cabinet, IPPProductContainer {
 
     public BaseCabinetDoors Doors { get; }
     public IToeType ToeType { get; }
@@ -59,7 +59,24 @@ internal class BaseCabinet : Cabinet {
 
     }
 
-    public override Dictionary<string, string> GetParameters() {
+    public IEnumerable<PPProduct> GetPPProducts() {
+        yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), "Buyout", "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters());
+    }
+
+    private string GetProductName() {
+
+        if (Doors.Quantity == 1) {
+            if (Drawers.Quantity == 1) return "B1D1D";
+            return "B1D";
+        }
+
+        if (Drawers.Quantity == 2) return "B2D2D";
+        else if (Drawers.Quantity == 2) return "B2D2D";
+        return "B2D";
+
+    }
+
+    private Dictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {
             { "ProductW", Width.AsMillimeters().ToString() },
             { "ProductH", Height.AsMillimeters().ToString() },
@@ -88,7 +105,7 @@ internal class BaseCabinet : Cabinet {
         return parameters;
     }
 
-    public override Dictionary<string, string> GetOverrideParameters() {
+    private Dictionary<string, string> GetOverrideParameters() {
 
         var parameters = new Dictionary<string, string>();
         if (ToeType.PSIParameter != "2") {
@@ -96,21 +113,6 @@ internal class BaseCabinet : Cabinet {
         }
 
         return parameters;
-
-    }
-
-    public override string GetProductName() {
-
-        if (Doors.Quantity == 1) {
-
-            if (Drawers.Quantity == 1) return "B1D1D";
-            return "B1D";
-
-        }
-
-        if (Drawers.Quantity == 2) return "B2D2D";
-        else if (Drawers.Quantity == 2) return "B2D2D";
-        return "B2D";
 
     }
 
