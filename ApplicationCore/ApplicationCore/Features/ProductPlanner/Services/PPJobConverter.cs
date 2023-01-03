@@ -1,18 +1,16 @@
-﻿using ApplicationCore.Features.Orders.Domain;
-using ApplicationCore.Features.ProductPlanner.Contracts;
+﻿using ApplicationCore.Features.ProductPlanner.Contracts;
+using ApplicationCore.Features.ProductPlanner.Domain;
 using MoreLinq;
 
-namespace ApplicationCore.Features.Orders.Details;
+namespace ApplicationCore.Features.ProductPlanner.Services;
 
 public class PPJobConverter {
 
-    public PPJob ConvertOrder(Order order) {
+    public ExtWriter ConvertOrder(PPJob ppjob) {
 
-        var rooms = order.Products
-                        .Where(p => p is IPPProductContainer)
-                        .Cast<IPPProductContainer>()
-                        .SelectMany(c => c.GetPPProducts())
-                        .GroupBy(prod => prod.Room);
+        var writer = new ExtWriter();
+
+        var rooms = ppjob.Products.GroupBy(prod => prod.Room);
 
         // TODO: number should come from the cabinet entity
         int productIndex = 0;
@@ -21,17 +19,15 @@ public class PPJobConverter {
         // TODO: if there are not multiple rooms or multiple different materials, all products can be put in the same top level job without any levels
         var job = new JobDescriptor() {
             LevelId = jobId,
-            Job = order.Name,
-            Date = order.OrderDate,
+            Job = ppjob.Name,
+            Date = ppjob.OrderDate,
             Catalog = "",
             Fronts = "",
             Hardware = "",
             Materials = ""
         };
 
-        var levels = new List<LevelDescriptor>();
-        var variables = new List<VariableOverride>();
-        var products = new List<ProductRecord>();
+        writer.AddRecord(job);
 
         int roomIdx = 0;
         foreach (var room in rooms) {
@@ -41,13 +37,13 @@ public class PPJobConverter {
             roomIdx++;
 
             var materialGroups = room.GroupBy(prod => new MaterialGroupKey(prod.Catalog, prod.MaterialType, prod.DoorType, prod.HardwareType, prod.FinishMaterials, prod.EBMaterials), new MaterialGroupKeyComparer());
-            bool multipleMaterials = (materialGroups.Count() > 1);
+            bool multipleMaterials = materialGroups.Count() > 1;
 
             var firstMaterials = materialGroups.First().Key;
             var level = new LevelDescriptor() {
                 LevelId = jobId + roomIdx,
                 ParentId = jobId,
-                Name = (string.IsNullOrEmpty(room.Key) ? $"Lvl{roomIdx}" : room.Key),
+                Name = string.IsNullOrEmpty(room.Key) ? $"Lvl{roomIdx}" : room.Key,
                 Catalog = firstMaterials.Catalog,
                 Materials = firstMaterials.MaterialType,
                 Fronts = firstMaterials.DoorType,
@@ -55,10 +51,11 @@ public class PPJobConverter {
             };
 
             if (!multipleMaterials) {
-                variables.Add(GetMaterialVariableRecord(firstMaterials.AllMaterials, jobId + roomIdx));
+                writer.AddRecord(GetMaterialVariableRecord(firstMaterials.AllMaterials, jobId + roomIdx));
             }
 
-            levels.Add(level);
+            writer.AddRecord(level);
+
 
             int materialIdx = 0;
             foreach (var material in materialGroups) {
@@ -67,7 +64,7 @@ public class PPJobConverter {
 
                 if (multipleMaterials) {
                     int lvlId = jobId + roomIdx + materialIdx;
-                    levels.Add(new LevelDescriptor() {
+                    writer.AddRecord(new LevelDescriptor() {
                         LevelId = lvlId,
                         ParentId = roomIdx,
                         Name = $"{materialIdx}-{(string.IsNullOrEmpty(room.Key) ? $"Lvl{roomIdx}" : room.Key)}",
@@ -77,7 +74,7 @@ public class PPJobConverter {
                         Hardware = material.Key.HardwareType
                     });
 
-                    variables.Add(GetMaterialVariableRecord(material.Key.AllMaterials, lvlId));
+                    writer.AddRecord(GetMaterialVariableRecord(material.Key.AllMaterials, lvlId));
                 }
 
                 if (material.Any(cab => cab.OverrideParameters.Any())) {
@@ -91,50 +88,50 @@ public class PPJobConverter {
 
                         overrideIdx++;
 
-						int parentId = jobId + roomIdx + (multipleMaterials ? materialIdx : 0);
-						int lvlId = parentId + overrideIdx;
-						levels.Add(new LevelDescriptor() {
-							LevelId = lvlId,
-							ParentId = parentId,
-							Name = $"{(multipleMaterials ? $"{materialIdx}.{overrideIdx}" : overrideIdx.ToString())}-{(string.IsNullOrEmpty(room.Key) ? $"Lvl{roomIdx}" : room.Key)}",
-							Catalog = "",
-							Materials = "",
-							Fronts = "",
-							Hardware = ""
-						});
+                        int parentId = jobId + roomIdx + (multipleMaterials ? materialIdx : 0);
+                        int lvlId = parentId + overrideIdx;
+                        writer.AddRecord(new LevelDescriptor() {
+                            LevelId = lvlId,
+                            ParentId = parentId,
+                            Name = $"{(multipleMaterials ? $"{materialIdx}.{overrideIdx}" : overrideIdx.ToString())}-{(string.IsNullOrEmpty(room.Key) ? $"Lvl{roomIdx}" : room.Key)}",
+                            Catalog = "",
+                            Materials = "",
+                            Fronts = "",
+                            Hardware = ""
+                        });
 
-						variables.Add(GetMaterialVariableRecord(material.Key.AllMaterials, lvlId));
+                        writer.AddRecord(GetMaterialVariableRecord(material.Key.AllMaterials, lvlId));
 
-						variables.Add(new VariableOverride() {
+                        writer.AddRecord(new VariableOverride() {
                             LevelId = lvlId,
                             Units = PPUnits.Millimeters,
                             Parameters = group.Key
                         });
 
-						foreach (var prod in group) {
-							products.Add(MapProductToRecord(prod, lvlId, ++productIndex));
-						}
+                        foreach (var prod in group) {
+                            writer.AddRecord(MapProductToRecord(prod, lvlId, ++productIndex));
+                        }
 
-					}
+                    }
 
                     materialIdx += overrideIdx;
 
-				} else { 
+                } else {
 
                     foreach (var prod in material) {
                         int parentId = jobId + roomIdx + (multipleMaterials ? materialIdx : 0);
-                        products.Add(MapProductToRecord(prod, parentId, ++productIndex));
+                        writer.AddRecord(MapProductToRecord(prod, parentId, ++productIndex));
                     }
 
-				}
+                }
 
-			}
+            }
 
             roomIdx += materialIdx;
 
         }
 
-        return new PPJob(job, variables, levels, products);
+        return writer;
 
     }
 
@@ -161,7 +158,7 @@ public class PPJobConverter {
 
     public static bool AreDictionariesEquivalent(Dictionary<string, string>? x, Dictionary<string, string>? y) {
         if (x is null && y is null) return true;
-        if ((x is null && y is not null) || (y is null && x is not null)) return false;
+        if (x is null && y is not null || y is null && x is not null) return false;
         if (x!.Count != y!.Count) return false;
 
         foreach (var (key, value) in x) {
@@ -214,12 +211,12 @@ public class PPJobConverter {
 
     class DictionaryValueComparer : IEqualityComparer<Dictionary<string, string>> {
 
-		public bool Equals(Dictionary<string, string>? x, Dictionary<string, string>? y) {
+        public bool Equals(Dictionary<string, string>? x, Dictionary<string, string>? y) {
             return AreDictionariesEquivalent(x, y);
         }
 
         public int GetHashCode(Dictionary<string, string> obj) => 0;
 
-	}
+    }
 
 }

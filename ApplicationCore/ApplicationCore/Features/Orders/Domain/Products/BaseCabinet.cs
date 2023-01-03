@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using ApplicationCore.Features.ProductPlanner.Contracts;
 using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Domain.Products;

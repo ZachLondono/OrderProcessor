@@ -1,6 +1,4 @@
-﻿using ApplicationCore.Features.ProductPlanner.Contracts;
-
-namespace ApplicationCore.Features.Orders.Domain;
+﻿namespace ApplicationCore.Features.ProductPlanner.Contracts;
 
 public class PPProduct {
 

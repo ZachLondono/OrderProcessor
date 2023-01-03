@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.ProductPlanner.Contracts;
+﻿namespace ApplicationCore.Features.ProductPlanner.Domain;
 
 public record VariableOverride {
     public required int LevelId { get; set; }

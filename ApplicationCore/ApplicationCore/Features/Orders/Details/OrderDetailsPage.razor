@@ -447,9 +447,13 @@
 
         await Task.Run(() => {
 
-            var exporter = new PPJobConverter();
+            var products = OrderState.Order
+                                    .Products
+                                    .Where(p => p is IPPProductContainer)
+                                    .Cast<IPPProductContainer>()
+                                    .SelectMany(c => c.GetPPProducts());
 
-            var job = exporter.ConvertOrder(OrderState.Order);
+            var job = new PPJob(OrderState.Order.Name, OrderState.Order.OrderDate, products);
 
             var filePath = Path.Combine(@"C:\CP3\CPDATA", $"{OrderState.Order.Number} - {OrderState.Order.Name}.ext");
 

@@ -1,4 +1,6 @@
-﻿namespace ApplicationCore.Features.ProductPlanner.Contracts;
+﻿using ApplicationCore.Features.ProductPlanner.Domain;
+
+namespace ApplicationCore.Features.ProductPlanner.Contracts;
 
 public class PPMaterial {
 
