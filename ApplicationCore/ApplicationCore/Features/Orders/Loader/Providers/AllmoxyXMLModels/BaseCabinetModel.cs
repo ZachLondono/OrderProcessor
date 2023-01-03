@@ -10,7 +10,10 @@ public class BaseCabinetModel {
 	[XmlElement("doorType")]
 	public string DoorType { get; set; } = string.Empty;
 
-	[XmlElement("toeType")]
+    [XmlElement("doorStyle")]
+    public string DoorStyle { get; set; } = string.Empty;
+
+    [XmlElement("toeType")]
 	public string ToeType { get; set; } = string.Empty;
 
 	[XmlElement("assembled")]

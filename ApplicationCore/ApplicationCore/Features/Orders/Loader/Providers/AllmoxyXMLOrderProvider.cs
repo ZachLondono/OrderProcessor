@@ -198,6 +198,9 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
         CabinetMaterialCore boxCore = GetMaterialCore(data.Materials.BoxMaterial.Type);
 
+        MDFDoorOptions? mdfOptions = null;
+        if (data.DoorType != "Slab") mdfOptions = new(data.DoorStyle);
+
 		return new BaseCabinetData() {
             Qty = data.Qty,
             UnitPrice = data.UnitPrice,
@@ -211,10 +214,12 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             FinishMaterialFinish = data.Materials.FinishMaterial.Finish,
             FinishMaterialCore = GetFinishedSideMaterialCore(data.Materials.FinishMaterial.Type, boxCore),
             EdgeBandingColor = (data.Materials.EdgeBandColor == "Match Finish" ? data.Materials.FinishMaterial.Finish : data.Materials.EdgeBandColor),
-            SidePanelOptions = null, // TODO: get door options
-			LeftSideType = GetCabinetSideType(data.LeftSide),
+            SidePanelOptions = mdfOptions,
+            LeftSideType = GetCabinetSideType(data.LeftSide),
 			RightSideType = GetCabinetSideType(data.RightSide),
-			DoorQty = data.DoorQty,
+            DoorType = data.DoorType,
+            DoorStyle = mdfOptions,
+            DoorQty = data.DoorQty,
 			HingeLeft = (data.HingeSide == "Left"),
 			ToeType = GetToeType(data.ToeType),
 			DrawerQty = data.DrawerQty,

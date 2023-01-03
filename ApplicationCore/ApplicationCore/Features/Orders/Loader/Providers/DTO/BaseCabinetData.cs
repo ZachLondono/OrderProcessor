@@ -36,6 +36,10 @@ public class BaseCabinetData {
 
     public MDFDoorOptions? SidePanelOptions { get; set; } = null;
 
+    public required string DoorType { get; set; }
+
+    public MDFDoorOptions? DoorStyle { get; set; } = null;
+
     public required int DoorQty { get; set; }
 
     public bool HingeLeft { get; set; } = false;

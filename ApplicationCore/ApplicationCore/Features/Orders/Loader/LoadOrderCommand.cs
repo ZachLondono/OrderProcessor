@@ -132,14 +132,14 @@ public class LoadOrderCommand {
         private static BaseCabinet MapDataToBaseCabinet(BaseCabinetData data) {
 
             BaseCabinetDoors doors = data.DoorQty switch {
-                1 => new(data.HingeLeft ? HingeSide.Left : HingeSide.Right),
-                2 => new(),
-                _ => new(data.HingeLeft ? HingeSide.Left : HingeSide.Right)
+                1 => new(data.HingeLeft ? HingeSide.Left : HingeSide.Right, data.DoorStyle),
+                2 => new(data.DoorStyle),
+                _ => new(data.HingeLeft ? HingeSide.Left : HingeSide.Right, data.DoorStyle)
             };
             CabinetMaterial boxMaterial = new(data.BoxMaterialFinish, data.BoxMaterialCore);
             CabinetMaterial finishMaterial = new(data.FinishMaterialFinish, data.FinishMaterialCore);
-            CabinetSide leftSide = new(data.LeftSideType);
-            CabinetSide rightSide = new(data.RightSideType);
+            CabinetSide leftSide = new(data.LeftSideType, data.SidePanelOptions);
+            CabinetSide rightSide = new(data.RightSideType, data.SidePanelOptions);
             HorizontalDrawerBank drawers = new() {
                 BoxMaterial = data.DrawerBoxMaterial,
                 FaceHeight = data.DrawerFaceHeight,
