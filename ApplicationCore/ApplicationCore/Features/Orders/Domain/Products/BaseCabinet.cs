@@ -138,14 +138,4 @@ internal class BaseCabinet : Cabinet, IPPProductContainer {
         _ => "0"
     };
 
-    private string GetAppliedPanelOption() {
-        if (LeftSide.Type == CabinetSideType.AppliedPanel && RightSide.Type != CabinetSideType.AppliedPanel) {
-            return "1";
-        } else if (LeftSide.Type == CabinetSideType.AppliedPanel && RightSide.Type == CabinetSideType.AppliedPanel) {
-            return "2";
-        } else if (LeftSide.Type != CabinetSideType.AppliedPanel && RightSide.Type == CabinetSideType.AppliedPanel) {
-            return "3";
-        } else return "0";
-    }
-
 }

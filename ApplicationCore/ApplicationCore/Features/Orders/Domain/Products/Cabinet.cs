@@ -98,4 +98,15 @@ public abstract class Cabinet : IProduct {
         _ => "0"
     };
 
+
+    protected string GetAppliedPanelOption() {
+        if (LeftSide.Type == CabinetSideType.AppliedPanel && RightSide.Type != CabinetSideType.AppliedPanel) {
+            return "1";
+        } else if (LeftSide.Type == CabinetSideType.AppliedPanel && RightSide.Type == CabinetSideType.AppliedPanel) {
+            return "2";
+        } else if (LeftSide.Type != CabinetSideType.AppliedPanel && RightSide.Type == CabinetSideType.AppliedPanel) {
+            return "3";
+        } else return "0";
+    }
+
 }
