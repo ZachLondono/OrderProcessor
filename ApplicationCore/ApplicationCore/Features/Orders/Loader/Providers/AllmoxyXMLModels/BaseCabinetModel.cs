@@ -4,7 +4,13 @@ namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
 public class BaseCabinetModel {
 
-	[XmlElement("cabinet")]
+    [XmlAttribute("groupNumber")]
+    public int GroupNumber { get; set; }
+
+    [XmlAttribute("lineNumber")]
+    public int LineNumber { get; set; }
+
+    [XmlElement("cabinet")]
 	public CabinetModel Cabinet { get; set; } = new();
 
     [XmlElement("toeType")]
