@@ -138,8 +138,8 @@ public class LoadOrderCommand {
             };
             CabinetMaterial boxMaterial = new(data.BoxMaterialFinish, data.BoxMaterialCore);
             CabinetMaterial finishMaterial = new(data.FinishMaterialFinish, data.FinishMaterialCore);
-            CabinetSide leftSide = new(data.LeftSideType, data.SidePanelOptions);
-            CabinetSide rightSide = new(data.RightSideType, data.SidePanelOptions);
+            CabinetSide leftSide = new(data.LeftSideType, data.DoorStyle);
+            CabinetSide rightSide = new(data.RightSideType, data.DoorStyle);
             HorizontalDrawerBank drawers = new() {
                 BoxMaterial = data.DrawerBoxMaterial,
                 FaceHeight = data.DrawerFaceHeight,
