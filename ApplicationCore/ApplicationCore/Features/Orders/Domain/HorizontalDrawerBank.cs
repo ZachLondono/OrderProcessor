@@ -22,6 +22,7 @@ public record HorizontalDrawerBank {
 
     public Dimension GetBoxHeight(Dimension verticalClearance, IEnumerable<Dimension> availableHeights) {
 
+        // TODO: calculate box height
         return availableHeights.OrderDescending().First();
 
     }
