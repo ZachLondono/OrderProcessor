@@ -24,6 +24,9 @@ internal class WallCabinet : Cabinet, IPPProductContainer {
                         WallCabinetDoors doors, WallCabinetInside inside)
                         : base(id, qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
 
+        if (leftSide.Type == CabinetSideType.AppliedPanel || rightSide.Type == CabinetSideType.AppliedPanel)
+            throw new InvalidOperationException("Wall cabinet cannot have applied panel sides");
+
         if (doors.Quantity > 2 || doors.Quantity < 0)
             throw new InvalidOperationException("Invalid number of doors");
 
@@ -51,8 +54,7 @@ internal class WallCabinet : Cabinet, IPPProductContainer {
             { "FinishedLeft", GetSideOption(LeftSide.Type) },
             { "FinishedRight", GetSideOption(RightSide.Type) },
             { "ShelfQ", Inside.AdjustableShelves.ToString() },
-            { "DividerQ", Inside.VerticalDividers.ToString() },
-            { "AppliedPanel", GetAppliedPanelOption() },
+            { "DividerQ", Inside.VerticalDividers.ToString() }
         };
 
         if (Doors.HingeSide != HingeSide.NotApplicable) {
