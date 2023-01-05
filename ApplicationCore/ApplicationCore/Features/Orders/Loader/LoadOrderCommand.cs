@@ -85,6 +85,15 @@ public class LoadOrderCommand {
 				}
             });
 
+            data.WallCabinets.ForEach(cab => {
+                index++;
+                try {
+                    products.Add(MapDataToWallCabinet(cab));
+                } catch (Exception ex) {
+                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                }
+            });
+
             var additionalItems = data.AdditionalItems.Select(MapDataToItem);
 
             Response<Order> result;
@@ -171,6 +180,38 @@ public class LoadOrderCommand {
                 drawers,
                 inside
             );
+
+        }
+
+        private static WallCabinet MapDataToWallCabinet(WallCabinetData data) {
+
+            WallCabinetDoors doors = data.DoorQty switch {
+                1 => new(data.HingeLeft ? HingeSide.Left : HingeSide.Right, data.DoorStyle),
+                2 => new(data.DoorStyle),
+                _ => new(data.HingeLeft ? HingeSide.Left : HingeSide.Right, data.DoorStyle)
+            };
+            CabinetMaterial boxMaterial = new(data.BoxMaterialFinish, data.BoxMaterialCore);
+            CabinetMaterial finishMaterial = new(data.FinishMaterialFinish, data.FinishMaterialCore);
+            CabinetSide leftSide = new(data.LeftSideType, data.DoorStyle);
+            CabinetSide rightSide = new(data.RightSideType, data.DoorStyle);
+
+            WallCabinetInside inside = new(data.AdjustableShelfQty, data.VerticalDividerQty);
+
+            return WallCabinet.Create(
+                data.Qty,
+                data.UnitPrice,
+                data.Room,
+                data.Assembled,
+                data.Height,
+                data.Width,
+                data.Depth,
+                boxMaterial,
+                finishMaterial,
+                data.EdgeBandingColor,
+                rightSide,
+                leftSide,
+                doors,
+                inside);
 
         }
 

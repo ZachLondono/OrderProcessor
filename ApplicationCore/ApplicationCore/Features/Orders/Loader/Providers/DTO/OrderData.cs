@@ -28,6 +28,8 @@ public record OrderData {
 
     public List<BaseCabinetData> BaseCabinets { get; set; } = new();
 
+    public List<WallCabinetData> WallCabinets { get; set; } = new();
+
     public List<AdditionalItemData> AdditionalItems { get; set; } = new();
 
 }

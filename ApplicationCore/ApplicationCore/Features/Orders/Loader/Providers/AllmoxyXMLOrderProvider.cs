@@ -107,14 +107,19 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             return null;
         }
 
-        var cabinets = data.Products
-                        .BaseCabinets
-                        .Select(MapToBaseCabinet)
-                        .ToList();
+        var baseCabinets = data.Products
+                                .BaseCabinets
+                                .Select(MapToBaseCabinet)
+                                .ToList();
+
+        var wallCabinets = data.Products
+                                .WallCabinets
+                                .Select(MapToWallCabinet)
+                                .ToList();
 
         var boxes = new List<DrawerBoxModel>();
 
-        var subTotal = cabinets.Sum(c => c.UnitPrice) + boxes.Sum(b => b.UnitPrice);
+        var subTotal = baseCabinets.Sum(c => c.UnitPrice) + wallCabinets.Sum(c => c.UnitPrice) + boxes.Sum(b => b.UnitPrice);
 		if (subTotal != data.Invoice.Subtotal) {
 			_publisher.PublishWarning($"Order data subtotal '${data.Invoice.Subtotal:0.00}' does not match calculated subtotal '${subTotal:0.00}'. There may be missing products.");
 		}
@@ -151,7 +156,8 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             CustomerId = customer.Id,
             VendorId = metroVendorId,
             AdditionalItems = additionalItems,
-            BaseCabinets = cabinets,
+            BaseCabinets = baseCabinets,
+            WallCabinets = wallCabinets,
             DrawerBoxes = new(),
             Rush = data.Shipping.Method.Contains("Rush"),
             Info = info
@@ -233,6 +239,38 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 		};
 
 	}
+
+    private WallCabinetData MapToWallCabinet(WallCabinetModel data) {
+
+        CabinetMaterialCore boxCore = GetMaterialCore(data.Cabinet.BoxMaterial.Type);
+
+        MDFDoorOptions? mdfOptions = null;
+        if (data.Cabinet.Fronts.Type != "Slab") mdfOptions = new(data.Cabinet.Fronts.Style, data.Cabinet.Fronts.Color);
+
+        return new WallCabinetData() {
+            Qty = data.Cabinet.Qty,
+            UnitPrice = data.Cabinet.UnitPrice,
+            Room = data.Cabinet.Room,
+            Assembled = (data.Cabinet.Assembled == "Yes"),
+            Height = Dimension.FromMillimeters(data.Cabinet.Height),
+            Width = Dimension.FromMillimeters(data.Cabinet.Width),
+            Depth = Dimension.FromMillimeters(data.Cabinet.Depth),
+            BoxMaterialFinish = data.Cabinet.BoxMaterial.Finish,
+            BoxMaterialCore = boxCore,
+            FinishMaterialFinish = data.Cabinet.FinishMaterial.Finish,
+            FinishMaterialCore = GetFinishedSideMaterialCore(data.Cabinet.FinishMaterial.Type, boxCore),
+            EdgeBandingColor = (data.Cabinet.EdgeBandColor == "Match Finish" ? data.Cabinet.FinishMaterial.Finish : data.Cabinet.EdgeBandColor),
+            LeftSideType = GetCabinetSideType(data.Cabinet.LeftSide),
+            RightSideType = GetCabinetSideType(data.Cabinet.RightSide),
+            DoorType = data.Cabinet.Fronts.Type,
+            DoorStyle = mdfOptions,
+            DoorQty = data.DoorQty,
+            HingeLeft = (data.HingeSide == "Left"),
+            VerticalDividerQty = data.VerticalDividerQty,
+            AdjustableShelfQty = data.AdjShelfQty
+        };
+
+    }
 
     private DrawerSlideType GetDrawerSlideType(string name) => name switch {
         "Under Mount" => DrawerSlideType.UnderMount,

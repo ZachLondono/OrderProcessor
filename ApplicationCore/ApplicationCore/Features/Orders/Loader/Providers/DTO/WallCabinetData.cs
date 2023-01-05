@@ -1,10 +1,9 @@
-﻿using ApplicationCore.Features.Orders.Domain;
-using ApplicationCore.Features.Orders.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.DTO;
 
-public class BaseCabinetData {
+public class WallCabinetData {
 
     public required int Qty { get; set; }
 
@@ -30,8 +29,8 @@ public class BaseCabinetData {
 
     public required string EdgeBandingColor { get; set; }
 
-	public required CabinetSideType LeftSideType { get; set; }
-    
+    public required CabinetSideType LeftSideType { get; set; }
+
     public required CabinetSideType RightSideType { get; set; }
 
     public required string DoorType { get; set; }
@@ -42,24 +41,8 @@ public class BaseCabinetData {
 
     public bool HingeLeft { get; set; } = false;
 
-    public required IToeType ToeType { get; set; }
-
-    public required int DrawerQty { get; set; }
-
-    public required Dimension DrawerFaceHeight { get; set; }
-
-    public required CabinetDrawerBoxMaterial DrawerBoxMaterial { get; set; }
-
-    public required DrawerSlideType DrawerBoxSlideType { get; set; }
-
     public required int VerticalDividerQty { get; set; }
 
     public required int AdjustableShelfQty { get; set; }
-
-    public required Dimension[] RollOutBoxPositions { get; set; }
-
-    public required RollOutBlockPosition RollOutBlocks { get; set; }
-
-    public required bool ScoopFrontRollOuts { get; set; }
 
 }
