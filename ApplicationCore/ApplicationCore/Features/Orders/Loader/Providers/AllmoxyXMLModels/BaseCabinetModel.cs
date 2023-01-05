@@ -4,7 +4,7 @@ namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
 public class BaseCabinetModel {
 
-	[XmlElement("materials")]
+	[XmlElement("cabinet")]
 	public CabinetModel Cabinet { get; set; } = new();
 
     [XmlElement("toeType")]
