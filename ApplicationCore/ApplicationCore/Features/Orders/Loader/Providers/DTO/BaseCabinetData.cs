@@ -34,8 +34,6 @@ public class BaseCabinetData {
     
     public required CabinetSideType RightSideType { get; set; }
 
-    public MDFDoorOptions? SidePanelOptions { get; set; } = null;
-
     public required string DoorType { get; set; }
 
     public MDFDoorOptions? DoorStyle { get; set; } = null;

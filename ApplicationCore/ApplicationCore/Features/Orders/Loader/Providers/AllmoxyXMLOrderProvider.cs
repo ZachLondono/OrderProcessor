@@ -196,28 +196,27 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
 	private BaseCabinetData MapToBaseCabinet(BaseCabinetModel data) {
 
-        CabinetMaterialCore boxCore = GetMaterialCore(data.Materials.BoxMaterial.Type);
+        CabinetMaterialCore boxCore = GetMaterialCore(data.Cabinet.BoxMaterial.Type);
 
         MDFDoorOptions? mdfOptions = null;
-        if (data.DoorType != "Slab") mdfOptions = new(data.DoorStyle, data.Materials.DoorColor);
+        if (data.Cabinet.Fronts.Type != "Slab") mdfOptions = new(data.Cabinet.Fronts.Style, data.Cabinet.Fronts.Color);
 
 		return new BaseCabinetData() {
-            Qty = data.Qty,
-            UnitPrice = data.UnitPrice,
-            Room = data.Room,
-            Assembled = (data.Assembled == "Yes"),
-            Height = Dimension.FromMillimeters(data.Height),
-            Width = Dimension.FromMillimeters(data.Width),
-            Depth = Dimension.FromMillimeters(data.Depth),
-            BoxMaterialFinish = data.Materials.BoxMaterial.Finish,
+            Qty = data.Cabinet.Qty,
+            UnitPrice = data.Cabinet.UnitPrice,
+            Room = data.Cabinet.Room,
+            Assembled = (data.Cabinet.Assembled == "Yes"),
+            Height = Dimension.FromMillimeters(data.Cabinet.Height),
+            Width = Dimension.FromMillimeters(data.Cabinet.Width),
+            Depth = Dimension.FromMillimeters(data.Cabinet.Depth),
+            BoxMaterialFinish = data.Cabinet.BoxMaterial.Finish,
             BoxMaterialCore = boxCore,
-            FinishMaterialFinish = data.Materials.FinishMaterial.Finish,
-            FinishMaterialCore = GetFinishedSideMaterialCore(data.Materials.FinishMaterial.Type, boxCore),
-            EdgeBandingColor = (data.Materials.EdgeBandColor == "Match Finish" ? data.Materials.FinishMaterial.Finish : data.Materials.EdgeBandColor),
-            SidePanelOptions = mdfOptions,
-            LeftSideType = GetCabinetSideType(data.LeftSide),
-			RightSideType = GetCabinetSideType(data.RightSide),
-            DoorType = data.DoorType,
+            FinishMaterialFinish = data.Cabinet.FinishMaterial.Finish,
+            FinishMaterialCore = GetFinishedSideMaterialCore(data.Cabinet.FinishMaterial.Type, boxCore),
+            EdgeBandingColor = (data.Cabinet.EdgeBandColor == "Match Finish" ? data.Cabinet.FinishMaterial.Finish : data.Cabinet.EdgeBandColor),
+            LeftSideType = GetCabinetSideType(data.Cabinet.LeftSide),
+			RightSideType = GetCabinetSideType(data.Cabinet.RightSide),
+            DoorType = data.Cabinet.Fronts.Type,
             DoorStyle = mdfOptions,
             DoorQty = data.DoorQty,
 			HingeLeft = (data.HingeSide == "Left"),
@@ -225,15 +224,21 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 			DrawerQty = data.DrawerQty,
 			DrawerFaceHeight = Dimension.FromMillimeters(data.DrawerFaceHeight),
 			DrawerBoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
-			DrawerBoxSlideType = DrawerSlideType.UnderMount,
+			DrawerBoxSlideType = GetDrawerSlideType(data.DrawerSlide),
 			VerticalDividerQty = data.VerticalDividerQty,
 			AdjustableShelfQty = data.AdjShelfQty,
-			RollOutBoxPositions = GetRollOutPositions(data.RollOutPos1, data.RollOutPos2, data.RollOutPos3),
-			RollOutBlocks = GetRollOutBlockPositions(data.RollOutBlocks),
+			RollOutBoxPositions = GetRollOutPositions(data.RollOuts.Pos1, data.RollOuts.Pos2, data.RollOuts.Pos3),
+			RollOutBlocks = GetRollOutBlockPositions(data.RollOuts.Blocks),
 			ScoopFrontRollOuts = true
 		};
 
 	}
+
+    private DrawerSlideType GetDrawerSlideType(string name) => name switch {
+        "Under Mount" => DrawerSlideType.UnderMount,
+        "Side Mount" => DrawerSlideType.SideMount,
+        _ => DrawerSlideType.UnderMount
+    };
 
     private RollOutBlockPosition GetRollOutBlockPositions(string name) => name switch {
         "Left" => RollOutBlockPosition.Left,

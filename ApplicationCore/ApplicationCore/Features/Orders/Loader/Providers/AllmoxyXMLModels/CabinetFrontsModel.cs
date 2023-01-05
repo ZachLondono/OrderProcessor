@@ -1,0 +1,16 @@
+﻿using System.Xml.Serialization;
+
+namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
+
+public class CabinetFrontsModel {
+
+    [XmlElement("type")]
+    public string Type { get; set; } = string.Empty;
+
+    [XmlElement("style")]
+    public string Style { get; set; } = string.Empty;
+
+    [XmlElement("color")]
+    public string Color { get; set; } = string.Empty;
+
+}

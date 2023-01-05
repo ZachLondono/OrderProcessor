@@ -1,0 +1,19 @@
+﻿using System.Xml.Serialization;
+
+namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
+
+public class RollOuts {
+
+    [XmlElement("rollOutPos1")]
+    public string Pos1 { get; set; } = string.Empty;
+
+    [XmlElement("rollOutPos2")]
+    public string Pos2 { get; set; } = string.Empty;
+
+    [XmlElement("rollOutPos3")]
+    public string Pos3 { get; set; } = string.Empty;
+
+    [XmlElement("rollOutBlocks")]
+    public string Blocks { get; set; } = string.Empty;
+
+}
