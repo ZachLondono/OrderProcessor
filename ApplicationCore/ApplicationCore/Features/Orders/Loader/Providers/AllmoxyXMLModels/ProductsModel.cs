@@ -7,7 +7,13 @@ public class ProductsModel {
 	[XmlElement("baseCabinet")]
 	public BaseCabinetModel[] BaseCabinets { get; set; } = Array.Empty<BaseCabinetModel>();
 
-	/*[XmlArrayItem(typeof(DrawerBoxModel), ElementName="drawerBox")]
+    [XmlElement("drawerBaseCabinet")]
+    public DrawerBaseCabinetModel[] DrawerBaseCabinets { get; set; } = Array.Empty<DrawerBaseCabinetModel>();
+
+    [XmlElement("wallCabinet")]
+    public WallCabinetModel[] WallCabinets { get; set; } = Array.Empty<WallCabinetModel>();
+
+    /*[XmlArrayItem(typeof(DrawerBoxModel), ElementName="drawerBox")]
 	public List<DrawerBoxModel> DrawerBoxes { get; set; } = new();*/
 
 }
