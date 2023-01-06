@@ -42,7 +42,7 @@ public class TallCabinetData {
 
     public required int LowerDoorQty { get; set; }
 
-    public required double LowerDoorHeight { get; set; }
+    public required Dimension LowerDoorHeight { get; set; }
 
     public bool HingeLeft { get; set; } = false;
 

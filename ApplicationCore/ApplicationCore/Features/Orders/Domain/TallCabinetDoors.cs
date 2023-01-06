@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Domain;
 
@@ -6,7 +7,7 @@ public record TallCabinetDoors {
 
     public int UpperQuantity { get; init; }
     public int LowerQuantity { get; init; }
-    public double LowerDoorHeight { get; init; }
+    public Dimension LowerDoorHeight { get; init; }
     public HingeSide HingeSide { get; init; } = HingeSide.NotApplicable;
     public MDFDoorOptions? MDFOptions { get; init; }
 
@@ -20,12 +21,13 @@ public record TallCabinetDoors {
             LowerQuantity = 1;
         }
 
+        LowerDoorHeight = Dimension.Zero;
         HingeSide = hingeSide;
         MDFOptions = mdfOptions;
 
     }
 
-    public TallCabinetDoors(double lowerDoorHeight, HingeSide hingeSide = HingeSide.NotApplicable, MDFDoorOptions? mdfOptions = null) {
+    public TallCabinetDoors(Dimension lowerDoorHeight, HingeSide hingeSide = HingeSide.NotApplicable, MDFDoorOptions? mdfOptions = null) {
 
         if (hingeSide == HingeSide.NotApplicable) {
             UpperQuantity = 2;

@@ -359,7 +359,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             VerticalDividerUpperQty = data.UpperVerticalDividerQty,
             LowerDoorQty = data.LowerDoorQty,
             UpperDoorQty = data.UpperDoorQty,
-            LowerDoorHeight = data.LowerDoorHeight,
+            LowerDoorHeight = Dimension.FromMillimeters(data.LowerDoorHeight),
         };
 
     }
