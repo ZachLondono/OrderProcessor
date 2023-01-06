@@ -63,6 +63,7 @@ public class TallCabinet : Cabinet, IPPProductContainer {
             { "ShelfQUpSect", Inside.AdjustableShelvesUpper.ToString() },
             { "DividerQ", Inside.VerticalDividersLower.ToString() },
             { "DividerQUp", Inside.VerticalDividersLower.ToString() },
+            { "DoorHTallBot", Doors.LowerDoorHeight.AsMillimeters().ToString() },
             { "PulloutBlockType", GetRollOutBlockOption() },
             { "AppliedPanel", GetAppliedPanelOption() },
         };
