@@ -25,7 +25,7 @@ public record TallCabinetInside {
         RollOutBoxes = rollOuts;
     }
 
-    public TallCabinetInside(int adjShelvesUpper, int adjShelvesLower, int verticalDividersLower, int verticalDividersUpper) {
+    public TallCabinetInside(int adjShelvesUpper, int adjShelvesLower, int verticalDividersUpper, int verticalDividersLower) {
         AdjustableShelvesLower = adjShelvesLower;
         AdjustableShelvesUpper = adjShelvesUpper;
         VerticalDividersLower = verticalDividersLower;
