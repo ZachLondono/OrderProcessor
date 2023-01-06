@@ -32,6 +32,8 @@ public record OrderData {
     
     public List<DrawerBaseCabinetData> DrawerBaseCabinets { get; set; } = new();
 
+    public List<TallCabinetData> TallCabinets { get; set; } = new();
+
     public List<AdditionalItemData> AdditionalItems { get; set; } = new();
 
 }
