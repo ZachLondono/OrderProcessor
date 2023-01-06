@@ -129,7 +129,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
         var boxes = new List<DrawerBoxModel>();
 
-        var subTotal = baseCabinets.Sum(c => c.UnitPrice) + wallCabinets.Sum(c => c.UnitPrice) + dbCabinets.Sum(c => c.UnitPrice) + boxes.Sum(b => b.UnitPrice);
+        var subTotal = baseCabinets.Sum(c => c.UnitPrice) + wallCabinets.Sum(c => c.UnitPrice) + dbCabinets.Sum(c => c.UnitPrice) + tallCabinets.Sum(b => b.UnitPrice) + boxes.Sum(b => b.UnitPrice);
 		if (subTotal != data.Invoice.Subtotal) {
 			_publisher.PublishWarning($"Order data subtotal '${data.Invoice.Subtotal:0.00}' does not match calculated subtotal '${subTotal:0.00}'. There may be missing products.");
 		}
@@ -245,7 +245,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             DrawerBoxSlideType = GetDrawerSlideType(data.DrawerSlide),
 			VerticalDividerQty = data.VerticalDividerQty,
 			AdjustableShelfQty = data.AdjShelfQty,
-			RollOutBoxPositions = GetRollOutPositions(data.RollOuts.Pos1, data.RollOuts.Pos2, data.RollOuts.Pos3),
+			RollOutBoxPositions = GetRollOutPositions(data.RollOuts.Pos1, data.RollOuts.Pos2, data.RollOuts.Pos3, "", ""),
 			RollOutBlocks = GetRollOutBlockPositions(data.RollOuts.Blocks),
 			ScoopFrontRollOuts = true
 		};
@@ -350,7 +350,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             DrawerBoxSlideType = GetDrawerSlideType(data.DrawerSlide),
             HingeLeft = (data.HingeSide == "Left"),
             ToeType = GetToeType(data.ToeType),
-            RollOutBoxPositions = GetRollOutPositions(data.RollOuts.Pos1, data.RollOuts.Pos2, data.RollOuts.Pos3),
+            RollOutBoxPositions = GetRollOutPositions(data.RollOuts.Pos1, data.RollOuts.Pos2, data.RollOuts.Pos3, data.RollOuts.Pos4, data.RollOuts.Pos5),
             RollOutBlocks = GetRollOutBlockPositions(data.RollOuts.Blocks),
             ScoopFrontRollOuts = true,
             AdjustableShelfLowerQty = data.LowerAdjShelfQty,
@@ -383,10 +383,12 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 		_ => RollOutBlockPosition.None
     };
 
-    private Dimension[] GetRollOutPositions(string pos1, string pos2, string pos3) {
+    private Dimension[] GetRollOutPositions(string pos1, string pos2, string pos3, string pos4, string pos5) {
 
         int count = 0;
-        if (pos3 == "Yes") count = 3;
+        if (pos5 == "Yes") count = 5;
+        else if (pos4 == "Yes") count = 4;
+        else if (pos3 == "Yes") count = 3;
         else if (pos2 == "Yes") count = 2;
         else if (pos1 == "Yes") count = 1;
 
@@ -395,9 +397,11 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
         var positions = new Dimension[count];
         if (count >= 1) positions[0] = pos1 == "Yes" ? Dimension.FromMillimeters(19) : Dimension.Zero;
         if (count >= 2) positions[1] = pos2 == "Yes" ? Dimension.FromMillimeters(300) : Dimension.Zero;
-		if (count == 3) positions[2] = pos3 == "Yes" ? Dimension.FromMillimeters(497) : Dimension.Zero;
+		if (count >= 3) positions[2] = pos3 == "Yes" ? (count >= 4 ? Dimension.FromMillimeters(581) : Dimension.FromMillimeters(497)) : Dimension.Zero;
+        if (count >= 4) positions[2] = pos4 == "Yes" ? Dimension.FromMillimeters(862) : Dimension.Zero;
+        if (count >= 5) positions[2] = pos5 == "Yes" ? Dimension.FromMillimeters(1142) : Dimension.Zero;
 
-		return positions;
+        return positions;
 
 	}
 
