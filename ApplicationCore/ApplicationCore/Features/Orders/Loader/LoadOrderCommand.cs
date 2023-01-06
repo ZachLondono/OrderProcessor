@@ -103,6 +103,15 @@ public class LoadOrderCommand {
                 }
             });
 
+            data.TallCabinets.ForEach(cab => {
+                index++;
+                try {
+                    products.Add(MapDataToTallCabinet(cab));
+                } catch (Exception ex) {
+                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                }
+            });
+
             var additionalItems = data.AdditionalItems.Select(MapDataToItem);
 
             Response<Order> result;
@@ -252,6 +261,43 @@ public class LoadOrderCommand {
                 leftSide,
                 verticalDrawerBank,
                 data.DoorStyle);
+
+        }
+
+        private static TallCabinet MapDataToTallCabinet(TallCabinetData data) {
+
+            CabinetMaterial boxMaterial = new(data.BoxMaterialFinish, data.BoxMaterialCore);
+            CabinetMaterial finishMaterial = new(data.FinishMaterialFinish, data.FinishMaterialCore);
+            CabinetSide leftSide = new(data.LeftSideType, data.DoorStyle);
+            CabinetSide rightSide = new(data.RightSideType, data.DoorStyle);
+
+            TallCabinetInside inside;
+            if (data.RollOutBoxPositions.Length != 0) {
+                var rollOutOptions = new RollOutOptions(data.RollOutBoxPositions, true, data.RollOutBlocks, data.DrawerBoxSlideType, data.DrawerBoxMaterial);
+                inside = new(data.AdjustableShelfUpperQty, data.AdjustableShelfLowerQty, data.VerticalDividerUpperQty, rollOutOptions);
+            } else inside = new(data.AdjustableShelfUpperQty, data.AdjustableShelfLowerQty, data.VerticalDividerUpperQty, data.VerticalDividerLowerQty);
+
+            TallCabinetDoors doors;
+            HingeSide hingeSide = data.LowerDoorQty == 1 ? (data.HingeLeft ? HingeSide.Left : HingeSide.Right) : HingeSide.NotApplicable;
+            if (data.UpperDoorQty != 0) doors = new(data.LowerDoorHeight, hingeSide, data.DoorStyle);
+            else doors = new(hingeSide, data.DoorStyle);
+
+            return TallCabinet.Create(
+                data.Qty,
+                data.UnitPrice,
+                data.Room,
+                data.Assembled,
+                data.Height,
+                data.Width,
+                data.Depth,
+                boxMaterial,
+                finishMaterial,
+                data.EdgeBandingColor,
+                rightSide,
+                leftSide,
+                doors,
+                data.ToeType,
+                inside);
 
         }
 

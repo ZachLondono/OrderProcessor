@@ -122,6 +122,11 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
                                 .Select(MapToDrawerBaseCabinet)
                                 .ToList();
 
+        var tallCabinets = data.Products
+                                .TallCabinets
+                                .Select(MapToTallCabinet)
+                                .ToList();
+
         var boxes = new List<DrawerBoxModel>();
 
         var subTotal = baseCabinets.Sum(c => c.UnitPrice) + wallCabinets.Sum(c => c.UnitPrice) + dbCabinets.Sum(c => c.UnitPrice) + boxes.Sum(b => b.UnitPrice);
@@ -164,6 +169,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             BaseCabinets = baseCabinets,
             WallCabinets = wallCabinets,
             DrawerBaseCabinets = dbCabinets,
+            TallCabinets = tallCabinets,
             DrawerBoxes = new(),
             Rush = data.Shipping.Method.Contains("Rush"),
             Info = info
@@ -312,6 +318,48 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             DrawerBoxMaterial = GetDrawerMaterial(data.DrawerMaterial),
             DrawerBoxSlideType = GetDrawerSlideType(data.DrawerSlide),
             DrawerFaces = drawerFaces.ToArray()
+        };
+
+    }
+
+    private TallCabinetData MapToTallCabinet(TallCabinetModel data) {
+        
+        CabinetMaterialCore boxCore = GetMaterialCore(data.Cabinet.BoxMaterial.Type);
+
+        MDFDoorOptions? mdfOptions = null;
+        if (data.Cabinet.Fronts.Type != "Slab") mdfOptions = new(data.Cabinet.Fronts.Style, data.Cabinet.Fronts.Color);
+
+        return new TallCabinetData() {
+            Qty = data.Cabinet.Qty,
+            UnitPrice = data.Cabinet.UnitPrice,
+            Room = data.Cabinet.Room,
+            Assembled = (data.Cabinet.Assembled == "Yes"),
+            Height = Dimension.FromMillimeters(data.Cabinet.Height),
+            Width = Dimension.FromMillimeters(data.Cabinet.Width),
+            Depth = Dimension.FromMillimeters(data.Cabinet.Depth),
+            BoxMaterialFinish = data.Cabinet.BoxMaterial.Finish,
+            BoxMaterialCore = boxCore,
+            FinishMaterialFinish = data.Cabinet.FinishMaterial.Finish,
+            FinishMaterialCore = GetFinishedSideMaterialCore(data.Cabinet.FinishMaterial.Type, boxCore),
+            EdgeBandingColor = (data.Cabinet.EdgeBandColor == "Match Finish" ? data.Cabinet.FinishMaterial.Finish : data.Cabinet.EdgeBandColor),
+            LeftSideType = GetCabinetSideType(data.Cabinet.LeftSide),
+            RightSideType = GetCabinetSideType(data.Cabinet.RightSide),
+            DoorType = data.Cabinet.Fronts.Type,
+            DoorStyle = mdfOptions,
+            DrawerBoxMaterial = GetDrawerMaterial(data.DrawerMaterial),
+            DrawerBoxSlideType = GetDrawerSlideType(data.DrawerSlide),
+            HingeLeft = (data.HingeSide == "Left"),
+            ToeType = GetToeType(data.ToeType),
+            RollOutBoxPositions = GetRollOutPositions(data.RollOuts.Pos1, data.RollOuts.Pos2, data.RollOuts.Pos3),
+            RollOutBlocks = GetRollOutBlockPositions(data.RollOuts.Blocks),
+            ScoopFrontRollOuts = true,
+            AdjustableShelfLowerQty = data.LowerAdjShelfQty,
+            AdjustableShelfUpperQty = data.UpperAdjShelfQty,
+            VerticalDividerLowerQty = data.LowerVerticalDividerQty,
+            VerticalDividerUpperQty = data.UpperVerticalDividerQty,
+            LowerDoorQty = data.LowerDoorQty,
+            UpperDoorQty = data.UpperDoorQty,
+            LowerDoorHeight = data.LowerDoorHeight,
         };
 
     }
