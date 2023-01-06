@@ -13,6 +13,12 @@ public class DrawerBaseCabinetModel {
     [XmlElement("cabinet")]
     public CabinetModel Cabinet { get; set; } = new();
 
+    [XmlElement("drawerMaterial")]
+    public string DrawerMaterial { get; set; } = string.Empty;
+
+    [XmlElement("drawerSlide")]
+    public string DrawerSlide { get; set; } = string.Empty;
+
     [XmlElement("drawerQty")]
     public int DrawerQty { get; set; }
 

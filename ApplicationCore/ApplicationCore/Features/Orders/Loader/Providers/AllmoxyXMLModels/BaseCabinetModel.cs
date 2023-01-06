@@ -25,7 +25,10 @@ public class BaseCabinetModel {
 	[XmlElement("drawerQty")]
 	public int DrawerQty { get; set; }
 
-	[XmlElement("drawerSlide")]
+    [XmlElement("drawerMaterial")]
+    public string DrawerMaterial { get; set; } = string.Empty;
+
+    [XmlElement("drawerSlide")]
 	public string DrawerSlide { get; set; } = string.Empty;
 
 	[XmlElement("drawerFaceHeight")]

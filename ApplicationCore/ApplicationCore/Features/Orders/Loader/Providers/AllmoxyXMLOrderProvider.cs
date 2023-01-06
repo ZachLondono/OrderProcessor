@@ -117,9 +117,14 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
                                 .Select(MapToWallCabinet)
                                 .ToList();
 
+        var dbCabinets = data.Products
+                                .DrawerBaseCabinets
+                                .Select(MapToDrawerBaseCabinet)
+                                .ToList();
+
         var boxes = new List<DrawerBoxModel>();
 
-        var subTotal = baseCabinets.Sum(c => c.UnitPrice) + wallCabinets.Sum(c => c.UnitPrice) + boxes.Sum(b => b.UnitPrice);
+        var subTotal = baseCabinets.Sum(c => c.UnitPrice) + wallCabinets.Sum(c => c.UnitPrice) + dbCabinets.Sum(c => c.UnitPrice) + boxes.Sum(b => b.UnitPrice);
 		if (subTotal != data.Invoice.Subtotal) {
 			_publisher.PublishWarning($"Order data subtotal '${data.Invoice.Subtotal:0.00}' does not match calculated subtotal '${subTotal:0.00}'. There may be missing products.");
 		}
@@ -158,6 +163,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             AdditionalItems = additionalItems,
             BaseCabinets = baseCabinets,
             WallCabinets = wallCabinets,
+            DrawerBaseCabinets = dbCabinets,
             DrawerBoxes = new(),
             Rush = data.Shipping.Method.Contains("Rush"),
             Info = info
@@ -229,8 +235,8 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 			ToeType = GetToeType(data.ToeType),
 			DrawerQty = data.DrawerQty,
 			DrawerFaceHeight = Dimension.FromMillimeters(data.DrawerFaceHeight),
-			DrawerBoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
-			DrawerBoxSlideType = GetDrawerSlideType(data.DrawerSlide),
+            DrawerBoxMaterial = GetDrawerMaterial(data.DrawerMaterial),
+            DrawerBoxSlideType = GetDrawerSlideType(data.DrawerSlide),
 			VerticalDividerQty = data.VerticalDividerQty,
 			AdjustableShelfQty = data.AdjShelfQty,
 			RollOutBoxPositions = GetRollOutPositions(data.RollOuts.Pos1, data.RollOuts.Pos2, data.RollOuts.Pos3),
@@ -271,6 +277,50 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
         };
 
     }
+
+    private DrawerBaseCabinetData MapToDrawerBaseCabinet(DrawerBaseCabinetModel data) {
+
+        CabinetMaterialCore boxCore = GetMaterialCore(data.Cabinet.BoxMaterial.Type);
+
+        MDFDoorOptions? mdfOptions = null;
+        if (data.Cabinet.Fronts.Type != "Slab") mdfOptions = new(data.Cabinet.Fronts.Style, data.Cabinet.Fronts.Color);
+
+        var drawerFaces = new Dimension[data.DrawerQty];
+        if (data.DrawerQty > 1) drawerFaces[0] = Dimension.FromMillimeters(data.DrawerFace1); // For 1 drawer box cabinets, the drawer box size is calculated
+        if (data.DrawerQty >= 2) drawerFaces[1] = Dimension.FromMillimeters(data.DrawerFace2);
+        if (data.DrawerQty >= 3) drawerFaces[2] = Dimension.FromMillimeters(data.DrawerFace3);
+        if (data.DrawerQty >= 4) drawerFaces[3] = Dimension.FromMillimeters(data.DrawerFace4);
+        if (data.DrawerQty >= 5) drawerFaces[4] = Dimension.FromMillimeters(data.DrawerFace5);
+
+        return new DrawerBaseCabinetData() {
+            Qty = data.Cabinet.Qty,
+            UnitPrice = data.Cabinet.UnitPrice,
+            Room = data.Cabinet.Room,
+            Assembled = (data.Cabinet.Assembled == "Yes"),
+            Height = Dimension.FromMillimeters(data.Cabinet.Height),
+            Width = Dimension.FromMillimeters(data.Cabinet.Width),
+            Depth = Dimension.FromMillimeters(data.Cabinet.Depth),
+            BoxMaterialFinish = data.Cabinet.BoxMaterial.Finish,
+            BoxMaterialCore = boxCore,
+            FinishMaterialFinish = data.Cabinet.FinishMaterial.Finish,
+            FinishMaterialCore = GetFinishedSideMaterialCore(data.Cabinet.FinishMaterial.Type, boxCore),
+            EdgeBandingColor = (data.Cabinet.EdgeBandColor == "Match Finish" ? data.Cabinet.FinishMaterial.Finish : data.Cabinet.EdgeBandColor),
+            LeftSideType = GetCabinetSideType(data.Cabinet.LeftSide),
+            RightSideType = GetCabinetSideType(data.Cabinet.RightSide),
+            DoorType = data.Cabinet.Fronts.Type,
+            DoorStyle = mdfOptions,
+            DrawerBoxMaterial = GetDrawerMaterial(data.DrawerMaterial),
+            DrawerBoxSlideType = GetDrawerSlideType(data.DrawerSlide),
+            DrawerFaces = drawerFaces.ToArray()
+        };
+
+    }
+
+    private CabinetDrawerBoxMaterial GetDrawerMaterial(string name) => name switch {
+        "Pre-Finished Birch" => CabinetDrawerBoxMaterial.SolidBirch,
+        "Economy Birch" => CabinetDrawerBoxMaterial.FingerJointBirch,
+        _ => CabinetDrawerBoxMaterial.FingerJointBirch
+    };
 
     private DrawerSlideType GetDrawerSlideType(string name) => name switch {
         "Under Mount" => DrawerSlideType.UnderMount,
