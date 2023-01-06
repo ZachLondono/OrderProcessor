@@ -398,8 +398,8 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
         if (count >= 1) positions[0] = pos1 == "Yes" ? Dimension.FromMillimeters(19) : Dimension.Zero;
         if (count >= 2) positions[1] = pos2 == "Yes" ? Dimension.FromMillimeters(300) : Dimension.Zero;
 		if (count >= 3) positions[2] = pos3 == "Yes" ? (count >= 4 ? Dimension.FromMillimeters(581) : Dimension.FromMillimeters(497)) : Dimension.Zero;
-        if (count >= 4) positions[2] = pos4 == "Yes" ? Dimension.FromMillimeters(862) : Dimension.Zero;
-        if (count >= 5) positions[2] = pos5 == "Yes" ? Dimension.FromMillimeters(1142) : Dimension.Zero;
+        if (count >= 4) positions[3] = pos4 == "Yes" ? Dimension.FromMillimeters(862) : Dimension.Zero;
+        if (count >= 5) positions[4] = pos5 == "Yes" ? Dimension.FromMillimeters(1142) : Dimension.Zero;
 
         return positions;
 
