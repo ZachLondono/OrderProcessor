@@ -237,7 +237,8 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                         .First()
                         .First();
 
-        var notch = dovetailBoxes.GroupBy(n => n)
+        var notch = dovetailBoxes.Select(b => b.Options.Notches)
+                        .GroupBy(n => n)
                         .OrderByDescending(g => g.Count())
                         .First()
                         .First();
