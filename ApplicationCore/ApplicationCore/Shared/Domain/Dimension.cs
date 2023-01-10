@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Shared.Domain;
 
-public record Dimension {
+public record Dimension : IComparable {
 
     private readonly double _mm;
 
@@ -89,4 +89,13 @@ public record Dimension {
         return new Fraction((n * denominator + numerator) * sign, denominator);
     }
 
+    public int CompareTo(object? obj) {
+        
+        if (obj == null || obj is not Dimension dim) {
+            return 1;
+        }
+
+        return dim.AsMillimeters().CompareTo(AsMillimeters());
+
+    }
 }
