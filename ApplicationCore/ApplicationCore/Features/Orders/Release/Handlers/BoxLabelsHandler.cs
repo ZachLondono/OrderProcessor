@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Labels.Contracts;
 using ApplicationCore.Features.Labels.Domain;
+using ApplicationCore.Features.Orders.Domain;
 using ApplicationCore.Features.Orders.Domain.Products;
 using ApplicationCore.Infrastructure;
 using Microsoft.Extensions.Logging;
@@ -28,8 +29,16 @@ internal class BoxLabelsHandler : DomainListener<TriggerOrderReleaseNotification
 
         var configuration = new LabelPrinterConfiguration(notification.ReleaseProfile.BoxLabelsTemplateFilePath);
 
+        var dovetailBoxes = order.Products
+                                .Where(p => p is IDrawerBoxContainer)
+                                .Cast<IDrawerBoxContainer>()
+                                .SelectMany(c => c.GetDrawerBoxes())
+                                .Where(p => p is DovetailDrawerBox)
+                                .Cast<DovetailDrawerBox>()
+                                .ToList();
+
         var labels = new List<Label>();
-        foreach (var box in order.Products.Where(p => p is DovetailDrawerBox).Cast<DovetailDrawerBox>()) {
+        foreach (var box in dovetailBoxes) {
 
             string sizeStr = $"{box.Height.AsInchFraction}\"Hx{box.Width.AsInchFraction}\"Wx{box.Depth.AsInchFraction}\"D";
 

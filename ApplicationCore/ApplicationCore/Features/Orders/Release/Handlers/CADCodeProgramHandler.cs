@@ -32,11 +32,15 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
 
 		_uibus.Publish(new OrderReleaseInfoNotification("Starting CADCode CNC release"));
 
-		var bottoms = notification.Order
+        var bottoms = notification.Order
 								.Products
-								.Where(p => p is DovetailDrawerBox)
-								.Cast<DovetailDrawerBox>()
-								.SelectMany(b => b.GetParts(_construction).Where(p => p.Type == DrawerBoxPartType.Bottom));
+                                .Where(p => p is IDrawerBoxContainer)
+                                .Cast<IDrawerBoxContainer>()
+                                .SelectMany(c => c.GetDrawerBoxes())
+                                .Where(p => p is DovetailDrawerBox)
+                                .Cast<DovetailDrawerBox>()
+                                .SelectMany(b => b.GetParts(_construction).Where(p => p.Type == DrawerBoxPartType.Bottom))
+                                .ToList();
 
 		string batchName = $"{notification.Order.Number} - {notification.Order.Name}";
 
