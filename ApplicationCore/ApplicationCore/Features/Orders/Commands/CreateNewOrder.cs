@@ -96,13 +96,12 @@ public class CreateNewOrder {
 
         private static async Task CreateDrawerBox(DovetailDrawerBoxProduct box, Guid orderId, IDbConnection connection, IDbTransaction transaction) {
 
-            const string boxCommand = @"INSERT INTO drawerboxes (id, orderid, lineinorder, unitprice, qty, height_mm, width_mm, depth_mm, note, labelfields, postfinish, scoopfront, logo, facemountingholes, boxmaterialid, bottommaterialid, clips, notches, accessory, uboxdimensions, fixeddividers)
-                                        VALUES (@Id, @OrderId, @LineInOrder, @UnitPrice, @Qty, @Height, @Width, @Depth, @Note, @LabelFields, @PostFinish, @ScoopFront, @Logo, @FaceMountingHoles, @BoxMaterialId, @BottomMaterialId, @Clips, @Notches, @Accessory, @UBoxDimensions, @FixedDivdersCounts);";
+            const string boxCommand = @"INSERT INTO drawerboxes (id, orderid, unitprice, qty, height_mm, width_mm, depth_mm, note, labelfields, postfinish, scoopfront, logo, facemountingholes, boxmaterialid, bottommaterialid, clips, notches, accessory, uboxdimensions, fixeddividers)
+                                        VALUES (@Id, @OrderId, @UnitPrice, @Qty, @Height, @Width, @Depth, @Note, @LabelFields, @PostFinish, @ScoopFront, @Logo, @FaceMountingHoles, @BoxMaterialId, @BottomMaterialId, @Clips, @Notches, @Accessory, @UBoxDimensions, @FixedDivdersCounts);";
 
             await connection.ExecuteAsync(boxCommand, new {
                 box.Id,
                 OrderId = orderId,
-                box.LineInOrder,
                 box.UnitPrice,
                 box.Qty,
                 box.Height,

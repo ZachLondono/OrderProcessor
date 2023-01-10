@@ -40,49 +40,52 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var box in DrawerBoxes.OrderBy(b => b.LineInOrder)) {
-                <tr>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.LineInOrder</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Qty</td>
-                    @if (UseInches) {
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Height.GetFormatedFraction())"</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Width.GetFormatedFraction())"</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Depth.GetFormatedFraction())"</td>
-                    } else {
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Height.AsMillimeters().ToString("0.00")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Width.AsMillimeters().ToString("0.00")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Depth.AsMillimeters().ToString("0.00")</td>
-                    }
-                    <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@_materialNames[box.Options.BoxMaterialId]</td>
-                    <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@_materialNames[box.Options.BottomMaterialId]</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.ScoopFront ? "Y" : "N")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.Logo == LogoPosition.None ? "N" : "Y")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.PostFinish ? "Y" : "N")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.FaceMountingHoles ? "Y" : "N")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.Assembled ? "Y" : "N")</td>
-                    <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.Clips</td>
-                    <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.Notches</td>
-                    <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.Accessory</td>
-                    @if (box.Options.UBoxDimensions is not null) {
+            @{
+                int line = 1;
+                foreach (var box in DrawerBoxes) {
+                    <tr>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(line++)</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Qty</td>
                         @if (UseInches) {
-                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Options.UBoxDimensions.A.GetFormatedFraction())"</td>
-                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Options.UBoxDimensions.B.GetFormatedFraction())"</td>
-                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Options.UBoxDimensions.C.GetFormatedFraction())"</td>
+                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Height.GetFormatedFraction())"</td>
+                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Width.GetFormatedFraction())"</td>
+                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Depth.GetFormatedFraction())"</td>
                         } else {
-                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.UBoxDimensions.A.AsMillimeters().ToString("0.00")</td>
-                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.UBoxDimensions.B.AsMillimeters().ToString("0.00")</td>
-                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.UBoxDimensions.C.AsMillimeters().ToString("0.00")</td>
+                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Height.AsMillimeters().ToString("0.00")</td>
+                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Width.AsMillimeters().ToString("0.00")</td>
+                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Depth.AsMillimeters().ToString("0.00")</td>
                         }
-                    } else {
-                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white"></td>
-                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white"></td>
-                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white"></td>
-                    }
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.FixedDivdersCounts?.WideCount</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.FixedDivdersCounts?.DeepCount</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">$@box.UnitPrice.ToString("0.00")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">$@((box.UnitPrice * box.Qty).ToString("0.00"))</td>
-                </tr>
+                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@_materialNames[box.Options.BoxMaterialId]</td>
+                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@_materialNames[box.Options.BottomMaterialId]</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.ScoopFront ? "Y" : "N")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.Logo == LogoPosition.None ? "N" : "Y")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.PostFinish ? "Y" : "N")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.FaceMountingHoles ? "Y" : "N")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.Assembled ? "Y" : "N")</td>
+                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.Clips</td>
+                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.Notches</td>
+                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.Accessory</td>
+                        @if (box.Options.UBoxDimensions is not null) {
+                            @if (UseInches) {
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Options.UBoxDimensions.A.GetFormatedFraction())"</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Options.UBoxDimensions.B.GetFormatedFraction())"</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)box.Options.UBoxDimensions.C.GetFormatedFraction())"</td>
+                            } else {
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.UBoxDimensions.A.AsMillimeters().ToString("0.00")</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.UBoxDimensions.B.AsMillimeters().ToString("0.00")</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.UBoxDimensions.C.AsMillimeters().ToString("0.00")</td>
+                            }
+                        } else {
+                            <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white"></td>
+                            <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white"></td>
+                            <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white"></td>
+                        }
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.FixedDivdersCounts?.WideCount</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Options.FixedDivdersCounts?.DeepCount</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">$@box.UnitPrice.ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">$@((box.UnitPrice * box.Qty).ToString("0.00"))</td>
+                    </tr>
+                }
             }
         </tbody>
     </table>

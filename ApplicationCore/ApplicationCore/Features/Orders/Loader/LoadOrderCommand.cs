@@ -143,7 +143,6 @@ public class LoadOrderCommand {
                 );
 
             return DovetailDrawerBoxProduct.Create(
-                    data.Line,
                     data.UnitPrice,
                     data.Qty,
                     data.Height,

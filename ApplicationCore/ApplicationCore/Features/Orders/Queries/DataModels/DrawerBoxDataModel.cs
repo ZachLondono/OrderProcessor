@@ -56,7 +56,7 @@ public class DrawerBoxDataModel {
 
     public DovetailDrawerBoxProduct AsDomainModel() {
 
-        return new DovetailDrawerBoxProduct(Id, LineInOrder, UnitPrice, Qty, Height, Width, Depth, Note, LabelFields.AsReadOnly(), new(BoxMaterialId, BottomMaterialId, Clips, Notches, Accessory, Logo, PostFinish, ScoopFront, FaceMountingHoles, Assembled, UBoxDimensions, FixedDividers));
+        return new DovetailDrawerBoxProduct(Id, UnitPrice, Qty, Height, Width, Depth, Note, LabelFields.AsReadOnly(), new(BoxMaterialId, BottomMaterialId, Clips, Notches, Accessory, Logo, PostFinish, ScoopFront, FaceMountingHoles, Assembled, UBoxDimensions, FixedDividers));
 
     }
 
