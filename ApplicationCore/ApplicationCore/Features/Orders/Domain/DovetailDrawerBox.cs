@@ -1,27 +1,27 @@
 ﻿using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
-namespace ApplicationCore.Features.Orders.Domain.Products;
+namespace ApplicationCore.Features.Orders.Domain;
 
-public class DovetailDrawerBox : DrawerBox, IProduct, IDrawerBoxContainer {
+public abstract class DovetailDrawerBox {
 
-    public Guid Id { get; }
-    public int LineInOrder { get; }
-    public decimal UnitPrice { get; }
+    public int Qty { get; }
+    public Dimension Height { get; }
+    public Dimension Width { get; }
+    public Dimension Depth { get; }
     public string Note { get; }
+    public DrawerBoxOptions Options { get; }
     public IReadOnlyDictionary<string, string> LabelFields { get; }
 
-    public DovetailDrawerBox(Guid id, int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options)
-                            : base(qty, height, width, depth, options) {
-        Id = id;
-        LineInOrder = line;
-        UnitPrice = unitPrice;
+    public DovetailDrawerBox(int qty, Dimension height, Dimension width, Dimension depth,
+                            string note, DrawerBoxOptions options, IReadOnlyDictionary<string, string> labelFields) {
+        Qty = qty;
+        Height = height;
+        Width = width;
+        Depth = depth;
         Note = note;
+        Options = options;
         LabelFields = labelFields;
-    }
-
-    public static DovetailDrawerBox Create(int line, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options) {
-        return new(Guid.NewGuid(), line, unitPrice, qty, height, width, depth, note, labelFields, options);
     }
 
     public IEnumerable<DrawerBoxPart> GetParts(ConstructionValues construction) {
@@ -67,7 +67,5 @@ public class DovetailDrawerBox : DrawerBox, IProduct, IDrawerBoxContainer {
         }
 
     }
-
-    public IEnumerable<DrawerBox> GetDrawerBoxes() { yield return this; }
 
 }

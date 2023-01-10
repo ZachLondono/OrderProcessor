@@ -125,7 +125,7 @@ public class LoadOrderCommand {
         
         }
 
-        private static DovetailDrawerBox MapDataToDrawerBox(DrawerBoxData data) {
+        private static DovetailDrawerBoxProduct MapDataToDrawerBox(DrawerBoxData data) {
 
             var options = new DrawerBoxOptions(
                     data.BoxMaterialOptionId,
@@ -142,7 +142,7 @@ public class LoadOrderCommand {
                     data.FixedDividers ? new() { WideCount = data.DividersWide, DeepCount = data.DividersDeep } : null
                 );
 
-            return DovetailDrawerBox.Create(
+            return DovetailDrawerBoxProduct.Create(
                     data.Line,
                     data.UnitPrice,
                     data.Qty,

@@ -33,10 +33,9 @@ internal class BoxLabelsHandler : DomainListener<TriggerOrderReleaseNotification
                                 .Where(p => p is IDrawerBoxContainer)
                                 .Cast<IDrawerBoxContainer>()
                                 .SelectMany(c => c.GetDrawerBoxes())
-                                .Where(p => p is DovetailDrawerBox)
-                                .Cast<DovetailDrawerBox>()
                                 .ToList();
 
+        int line = 1;
         var labels = new List<Label>();
         foreach (var box in dovetailBoxes) {
 
@@ -47,7 +46,7 @@ internal class BoxLabelsHandler : DomainListener<TriggerOrderReleaseNotification
                 { "OrderName", order.Name },
                 { "Comment", order.CustomerComment },
                 { "Qty", box.Qty.ToString() },
-                { "LineNum", box.LineInOrder.ToString() },
+                { "LineNum", line++.ToString() },
                 { "Size", sizeStr },
             };
 

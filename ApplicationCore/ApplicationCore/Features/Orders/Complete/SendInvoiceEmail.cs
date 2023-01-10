@@ -222,8 +222,9 @@ public class SendInvoiceEmail : DomainListener<TriggerOrderCompleteNotification>
                             table.Cell().Row(2).Column(9).BorderLeft(1).BorderTop(1).BorderRight(1).Background("#CED5EA").PaddingVertical(3).AlignMiddle().AlignCenter().Text("Ext. Price").Bold().FontSize(11);
 
                             uint row = 3;
-                            foreach (var box in order.Products.Where(p => p is DovetailDrawerBox).Cast<DovetailDrawerBox>()) {
-                                table.Cell().Row(row).Column(1).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(box.LineInOrder).FontSize(10);
+                            uint line = 1;
+                            foreach (var box in order.Products.Where(p => p is DovetailDrawerBoxProduct).Cast<DovetailDrawerBoxProduct>()) {
+                                table.Cell().Row(row).Column(1).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(line++).FontSize(10);
                                 table.Cell().Row(row).Column(2).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(box.Qty).FontSize(10);
                                 table.Cell().Row(row).Column(3).BorderLeft(1).BorderTop(1).AlignMiddle().AlignLeft().PaddingLeft(2).Text("Dovetail Drawer Box").FontSize(10);
                                 table.Cell().Row(row).Column(4).BorderLeft(1).BorderTop(1).AlignMiddle().AlignCenter().Text(box.Options.Logo == LogoPosition.None ? "N" : "Y").FontSize(10);

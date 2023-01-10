@@ -5,6 +5,6 @@
 /// </summary>
 internal interface IDrawerBoxContainer {
 
-    IEnumerable<DrawerBox> GetDrawerBoxes();
+    IEnumerable<DovetailDrawerBox> GetDrawerBoxes();
 
 }

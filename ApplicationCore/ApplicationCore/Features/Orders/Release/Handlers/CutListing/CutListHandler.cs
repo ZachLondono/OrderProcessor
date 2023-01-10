@@ -2,7 +2,6 @@
 using ApplicationCore.Features.ExcelTemplates.Contracts;
 using ApplicationCore.Features.ExcelTemplates.Domain;
 using ApplicationCore.Features.Orders.Domain;
-using ApplicationCore.Features.Orders.Domain.Products;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Queries;
 using ApplicationCore.Features.Orders.Release.Handlers.CutListing.Models;
@@ -41,8 +40,6 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                 .Where(p => p is IDrawerBoxContainer)
                                 .Cast<IDrawerBoxContainer>()
                                 .SelectMany(c => c.GetDrawerBoxes())
-                                .Where(p => p is DovetailDrawerBox)
-                                .Cast<DovetailDrawerBox>()
                                 .ToList();
 
         var materialIds = dovetailBoxes.SelectMany(b => new Guid[] { b.Options.BoxMaterialId, b.Options.BottomMaterialId } )

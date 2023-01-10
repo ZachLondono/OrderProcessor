@@ -73,6 +73,6 @@ public class DrawerBoxBuilder {
         return this;
     }
 
-    public DovetailDrawerBox Build() => new DovetailDrawerBox(_id, _line, _unitPrice, _qty, _height, _width, _depth, _note, _labelFields, _options);
+    public DovetailDrawerBoxProduct Build() => new DovetailDrawerBoxProduct(_id, _line, _unitPrice, _qty, _height, _width, _depth, _note, _labelFields, _options);
 
 }

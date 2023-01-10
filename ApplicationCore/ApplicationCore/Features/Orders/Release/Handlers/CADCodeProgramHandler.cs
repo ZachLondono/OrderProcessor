@@ -37,8 +37,6 @@ internal class CADCodeProgramHandler : DomainListener<TriggerOrderReleaseNotific
                                 .Where(p => p is IDrawerBoxContainer)
                                 .Cast<IDrawerBoxContainer>()
                                 .SelectMany(c => c.GetDrawerBoxes())
-                                .Where(p => p is DovetailDrawerBox)
-                                .Cast<DovetailDrawerBox>()
                                 .SelectMany(b => b.GetParts(_construction).Where(p => p.Type == DrawerBoxPartType.Bottom))
                                 .ToList();
 

@@ -10,7 +10,7 @@ public class OrderTests {
     public void Total_Should_EqualAllItems() {
 
         // Arrange
-        var boxes = new List<DovetailDrawerBox>() {
+        var boxes = new List<DovetailDrawerBoxProduct>() {
             new DrawerBoxBuilder().WithUnitPrice(45.45M).WithQty(2).Build(),
             new DrawerBoxBuilder().WithUnitPrice(16.54M).WithQty(3).Build()
         };

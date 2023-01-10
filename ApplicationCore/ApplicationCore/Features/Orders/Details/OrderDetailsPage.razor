@@ -236,7 +236,7 @@
             <span>No products in order</span>
         } else {
 
-            var drawerBoxes = OrderState.Order.Products.Where(p => p is DovetailDrawerBox).Cast<DovetailDrawerBox>();
+            var drawerBoxes = OrderState.Order.Products.Where(p => p is DovetailDrawerBoxProduct).Cast<DovetailDrawerBoxProduct>();
             if (drawerBoxes.Any()) {
                 <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@drawerBoxes" />
             }

@@ -73,6 +73,22 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
         var custLine2Str = string.IsNullOrWhiteSpace(customer.Address.Country + customer.Address.State + customer.Address.Zip) ? "" : $"{customer.Address.City}, {customer.Address.State} {customer.Address.Zip}";
         var vendLine2Str = string.IsNullOrWhiteSpace(vendor.Address.Country + vendor.Address.State + vendor.Address.Zip) ? "" : $"{vendor.Address.City}, {vendor.Address.State} {vendor.Address.Zip}";
 
+        int line = 1;
+        var items = order.Products
+                        .Where(p => p is DovetailDrawerBoxProduct)
+                        .Cast<DovetailDrawerBoxProduct>()
+                        .Select(b => new Item() {
+                            Line = line++,
+                            Qty = b.Qty,
+                            Description = "Drawer Box",
+                            Logo = b.Options.Logo == LogoPosition.None ? "N" : "Y",
+                            Height = b.Height.AsInchFraction().ToString(),
+                            Width = b.Width.AsInchFraction().ToString(),
+                            Depth = b.Depth.AsInchFraction().ToString(),
+                            Price = b.UnitPrice.ToString("$0.00"),
+                            ExtPrice = (b.UnitPrice * b.Qty).ToString("$0.00")
+                        }).ToList();
+
         var packinglist = new Models.PackingList() {
             Customer = new() {
                 Name = customer.Name,
@@ -95,20 +111,7 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
             NetAmount = order.AdjustedSubTotal.ToString("0.00"),
             SalesTax = order.Tax.ToString("0.00"),
             SubTotal = order.SubTotal.ToString("0.00"),
-            Items = order.Products
-                        .Where(p => p is DovetailDrawerBox)
-                        .Cast<DovetailDrawerBox>()
-                        .Select(b => new Item() {
-                                Line = b.LineInOrder,
-                                Qty = b.Qty,
-                                Description = "Drawer Box",
-                                Logo = b.Options.Logo == LogoPosition.None ? "N" : "Y",
-                                Height = b.Height.AsInchFraction().ToString(),
-                                Width = b.Width.AsInchFraction().ToString(),
-                                Depth = b.Depth.AsInchFraction().ToString(),
-                                Price = b.UnitPrice.ToString("$0.00"),
-                                ExtPrice = (b.UnitPrice * b.Qty).ToString("$0.00")
-                            }).ToList()
+            Items = items
         };
 
         var response = await _bus.Send(new FillTemplateRequest(packinglist, outputDir, $"{order.Number} - {order.Name} INVOICE", doPrint, config));

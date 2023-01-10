@@ -69,6 +69,20 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
         var custLine2Str = string.IsNullOrWhiteSpace(customer.Address.Country + customer.Address.State + customer.Address.Zip) ? "" : $"{customer.Address.City}, {customer.Address.State} {customer.Address.Zip}";
         var vendLine2Str = string.IsNullOrWhiteSpace(vendor.Address.Country + vendor.Address.State + vendor.Address.Zip) ? "" : $"{vendor.Address.City}, {vendor.Address.State} {vendor.Address.Zip}";
 
+        int line = 1;
+        var items = order.Products
+                        .Where(p => p is DovetailDrawerBoxProduct)
+                        .Cast<DovetailDrawerBoxProduct>()
+                        .Select(b => new Item() {
+                            Line = line++,
+                            Qty = b.Qty,
+                            Description = "Drawer Box",
+                            Logo = b.Options.Logo == LogoPosition.None ? "N" : "Y",
+                            Height = b.Height.AsInchFraction().ToString(),
+                            Width = b.Width.AsInchFraction().ToString(),
+                            Depth = b.Depth.AsInchFraction().ToString()
+                        }).ToList();
+
         var packinglist = new Models.PackingList() {
             Customer = new() {
                 Name = customer.Name,
@@ -88,18 +102,7 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
             OrderNumber = order.Number,
             Volume = "", // TODO calculate volume
             Weight = "", // TODO calculate weight
-            Items = order.Products
-                        .Where(p => p is DovetailDrawerBox)
-                        .Cast<DovetailDrawerBox>()
-                        .Select(b => new Item() {
-                                Line = b.LineInOrder,
-                                Qty = b.Qty,
-                                Description = "Drawer Box",
-                                Logo = b.Options.Logo == LogoPosition.None ? "N" : "Y",
-                                Height = b.Height.AsInchFraction().ToString(),
-                                Width = b.Width.AsInchFraction().ToString(),
-                                Depth = b.Depth.AsInchFraction().ToString()
-                            }).ToList()
+            Items = items
         };
 
         var plResponse = await _bus.Send(new FillTemplateRequest(packinglist, outputDir, $"{order.Number} - {order.Name} PACKING LIST", doPrint, config));
