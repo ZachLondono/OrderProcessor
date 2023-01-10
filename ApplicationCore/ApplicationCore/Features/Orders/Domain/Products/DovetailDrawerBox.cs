@@ -3,7 +3,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Domain.Products;
 
-public class DovetailDrawerBox : DrawerBox, IProduct {
+public class DovetailDrawerBox : DrawerBox, IProduct, IDrawerBoxContainer {
 
     public Guid Id { get; }
     public int LineInOrder { get; }
@@ -67,5 +67,7 @@ public class DovetailDrawerBox : DrawerBox, IProduct {
         }
 
     }
+
+    public IEnumerable<DrawerBox> GetDrawerBoxes() { yield return this; }
 
 }
