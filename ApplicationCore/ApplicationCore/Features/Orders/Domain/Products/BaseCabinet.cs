@@ -4,7 +4,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Domain.Products;
 
-internal class BaseCabinet : Cabinet, IPPProductContainer {
+internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer {
 
     public BaseCabinetDoors Doors { get; }
     public IToeType ToeType { get; }
@@ -65,6 +65,63 @@ internal class BaseCabinet : Cabinet, IPPProductContainer {
         string doorType = (Doors.MDFOptions is null) ? "Slab" : "Buyout";
         yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters());
     }
+
+    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes() {
+
+        if (Drawers.Quantity > 0) {
+
+            var options = new DrawerBoxOptions(Guid.NewGuid(), Guid.NewGuid(), "Blum", GetNotchFromSlideType(Drawers.SlideType), "", LogoPosition.None);
+
+            var height = Drawers.GetBoxHeight(Dimension.FromMillimeters(3), new List<Dimension>() {
+                Dimension.FromMillimeters(64),
+                Dimension.FromMillimeters(86),
+                Dimension.FromMillimeters(105),
+                Dimension.FromMillimeters(137),
+                Dimension.FromMillimeters(159),
+                Dimension.FromMillimeters(181),
+                Dimension.FromMillimeters(210),
+                Dimension.FromMillimeters(260),
+            });
+
+            var width = Drawers.GetBoxWidth(Width - Dimension.FromMillimeters(19 * 2), Dimension.FromMillimeters(19), (slide) => {
+                return Dimension.FromMillimeters(0);
+            });
+
+            var depth = Depth - Dimension.FromMillimeters(13 + 9);
+
+            yield return new DovetailDrawerBox(Drawers.Quantity, height, width, depth, "", options, new Dictionary<string, string>());
+
+        }
+
+        if (Inside.RollOutBoxes.Positions.Any()) {
+
+            var options = new DrawerBoxOptions(Guid.NewGuid(), Guid.NewGuid(), "Blum", GetNotchFromSlideType(Inside.RollOutBoxes.SlideType), "", LogoPosition.None);
+
+            var width = Width - Dimension.FromMillimeters(19 * 2);
+
+            switch (Inside.RollOutBoxes.Blocks) {
+                case RollOutBlockPosition.Left:
+                case RollOutBlockPosition.Right:
+                    width -= Dimension.FromInches(1);
+                    break;
+                case RollOutBlockPosition.Both:
+                    width -= Dimension.FromInches(2);
+                    break;
+            }
+
+            var depth = Depth - Dimension.FromMillimeters(13 + 9);
+
+            yield return new DovetailDrawerBox(Inside.RollOutBoxes.Positions.Count(), Dimension.FromInches(4.125), width, depth, "", options, new Dictionary<string, string>());
+
+        }
+
+    }
+
+    private string GetNotchFromSlideType(DrawerSlideType slide) => slide switch {
+        DrawerSlideType.UnderMount => "Standard Notch",
+        DrawerSlideType.SideMount => "",
+        _ => ""
+    };
 
     private string GetProductName() {
 
