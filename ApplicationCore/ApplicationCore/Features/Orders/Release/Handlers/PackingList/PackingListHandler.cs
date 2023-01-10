@@ -92,14 +92,14 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
                         .Where(p => p is DovetailDrawerBox)
                         .Cast<DovetailDrawerBox>()
                         .Select(b => new Item() {
-                Line = b.LineInOrder,
-                Qty = b.Qty,
-                Description = "Drawer Box",
-                Logo = b.Options.Logo == LogoPosition.None ? "N" : "Y",
-                Height = b.Height.AsInchFraction().ToString(),
-                Width = b.Width.AsInchFraction().ToString(),
-                Depth = b.Depth.AsInchFraction().ToString()
-            }).ToList()
+                                Line = b.LineInOrder,
+                                Qty = b.Qty,
+                                Description = "Drawer Box",
+                                Logo = b.Options.Logo == LogoPosition.None ? "N" : "Y",
+                                Height = b.Height.AsInchFraction().ToString(),
+                                Width = b.Width.AsInchFraction().ToString(),
+                                Depth = b.Depth.AsInchFraction().ToString()
+                            }).ToList()
         };
 
         var plResponse = await _bus.Send(new FillTemplateRequest(packinglist, outputDir, $"{order.Number} - {order.Name} PACKING LIST", doPrint, config));

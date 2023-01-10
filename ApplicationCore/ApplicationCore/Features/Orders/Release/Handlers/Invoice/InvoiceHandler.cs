@@ -99,16 +99,16 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
                         .Where(p => p is DovetailDrawerBox)
                         .Cast<DovetailDrawerBox>()
                         .Select(b => new Item() {
-                Line = b.LineInOrder,
-                Qty = b.Qty,
-                Description = "Drawer Box",
-                Logo = b.Options.Logo == LogoPosition.None ? "N" : "Y",
-                Height = b.Height.AsInchFraction().ToString(),
-                Width = b.Width.AsInchFraction().ToString(),
-                Depth = b.Depth.AsInchFraction().ToString(),
-                Price = b.UnitPrice.ToString("$0.00"),
-                ExtPrice = (b.UnitPrice * b.Qty).ToString("$0.00")
-            }).ToList()
+                                Line = b.LineInOrder,
+                                Qty = b.Qty,
+                                Description = "Drawer Box",
+                                Logo = b.Options.Logo == LogoPosition.None ? "N" : "Y",
+                                Height = b.Height.AsInchFraction().ToString(),
+                                Width = b.Width.AsInchFraction().ToString(),
+                                Depth = b.Depth.AsInchFraction().ToString(),
+                                Price = b.UnitPrice.ToString("$0.00"),
+                                ExtPrice = (b.UnitPrice * b.Qty).ToString("$0.00")
+                            }).ToList()
         };
 
         var response = await _bus.Send(new FillTemplateRequest(packinglist, outputDir, $"{order.Number} - {order.Name} INVOICE", doPrint, config));
