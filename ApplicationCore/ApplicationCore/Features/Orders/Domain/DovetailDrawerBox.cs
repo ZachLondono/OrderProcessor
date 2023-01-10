@@ -3,7 +3,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Domain;
 
-public abstract class DovetailDrawerBox {
+public class DovetailDrawerBox {
 
     public int Qty { get; }
     public Dimension Height { get; }
