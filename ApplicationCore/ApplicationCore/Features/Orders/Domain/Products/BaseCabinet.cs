@@ -4,7 +4,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Domain.Products;
 
-internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer {
+internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, IDoorContainer {
 
     public BaseCabinetDoors Doors { get; }
     public IToeType ToeType { get; }
@@ -115,6 +115,10 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer {
 
         }
 
+    }
+
+    public IEnumerable<MDFDoor> GetDoors() {
+        yield return new MDFDoor();
     }
 
     private string GetNotchFromSlideType(DrawerSlideType slide) => slide switch {
