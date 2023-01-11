@@ -159,6 +159,30 @@
 
     </section>
 
+    <section class="mb-5 w-full">
+
+        <div class="mt-2">
+            <input type="checkbox" class="h-4 w-4" @bind="_profile.FillDoorOrder" />
+            <label class="ml-2 text-sm font-medium text-gray-700">Fill Door Order</label>
+        </div>
+
+        <div class="mt-2">
+            <input type="checkbox" class="h-4 w-4" @bind="_profile.GenerateDoorCNCPrograms" />
+            <label class="ml-2 text-sm font-medium text-gray-700">Generate Door CNC Programs</label>
+        </div>
+
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">Door Order Template</label>
+            <input type="text" class="mt-1 w-full" @bind="_profile.DoorOrderTemplateFilePath" />
+        </div>
+
+        <div class="mt-2">
+            <label class="block text-sm font-medium text-gray-700">Door Order Output Directory</label>
+            <input type="text" class="mt-1 w-full" @bind="_profile.DoorOrderOutputDirectory" />
+        </div>
+
+    </section>
+
     <button type="button" class="btn btn-primary" @onclick="UpdateProfile">Save</button>
 
 }

@@ -12,7 +12,7 @@
             <CheckBox @bind-IsChecked="Profile.PrintCutList">Print Cut Lists</CheckBox>
         </section>
 
-        <section class ="mb-3">
+        <section class="mb-3">
             <h3>Packing List</h3>
             <CheckBox @bind-IsChecked="Profile.GeneratePackingList">Generate Packing Lists</CheckBox>
             <CheckBox @bind-IsChecked="Profile.PrintPackingList">Print Packing Lists</CheckBox>
@@ -24,22 +24,28 @@
             <CheckBox @bind-IsChecked="Profile.PrintInvoice">Print Invoice</CheckBox>
         </section>
 
-        <section class ="mb-3">
+        <section class="mb-3">
             <h3>BOL</h3>
             <CheckBox @bind-IsChecked="Profile.GenerateBOL">Generate BOL</CheckBox>
             <CheckBox @bind-IsChecked="Profile.PrintBOL">Print BOL</CheckBox>
         </section>
 
-        <section class ="mb-3">
+        <section class="mb-3">
             <h3>Labels</h3>
             <CheckBox @bind-IsChecked="Profile.PrintOrderLabel">Print Order Label</CheckBox>
             <CheckBox @bind-IsChecked="Profile.PrintBoxLabels">Print Box Labels</CheckBox>
             <CheckBox @bind-IsChecked="Profile.PrintADuiePyleLabel">Print A Duie Pyle Labels</CheckBox>
         </section>
 
-        <section>
+        <section class="mb-3">
             <h3>CNC</h3>
             <CheckBox @bind-IsChecked="Profile.GenerateCNCPrograms">Generate CNC Programs</CheckBox>
+        </section>
+
+        <section>
+            <h3>Door CNC</h3>
+            <CheckBox @bind-IsChecked="Profile.FillDoorOrder">Fill Door Order</CheckBox>
+            <CheckBox @bind-IsChecked="Profile.GenerateDoorCNCPrograms">Generate Door CNC Programs</CheckBox>
         </section>
 
     </div>
