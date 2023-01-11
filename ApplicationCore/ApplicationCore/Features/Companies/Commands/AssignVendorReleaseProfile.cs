@@ -38,15 +38,16 @@ public class AssignVendorReleaseProfile {
                                 printboxlabels = @PrintBoxLabels, boxlabelstemplatefilepath = @BoxLabelsTemplateFilePath,
                                 printorderlabel = @PrintOrderLabel, orderlabeltemplatefilepath = @OrderLabelTemplateFilePath,
                                 printaduiepylelabel = @PrintADuiePyleLabel, aduiepylelabeltemplatefilepath = @ADuiePyleLabelTemplateFilePath,
-                                generatecncprograms = @GenerateCNCPrograms, cncreportoutputdirectory = @CNCReportOutputDirectory
+                                generatecncprograms = @GenerateCNCPrograms, cncreportoutputdirectory = @CNCReportOutputDirectory,
+                                filldoororder = @FillDoorOrder, generatedoorprograms = @GenerateDoorCNCPrograms, doororderoutputdirectory = @DoorOrderOutputDirectory, doorordertemplatefilepath = @DoorOrderTemplateFilePath
                             WHERE vendorid = @VendorId;";
 
-            } else { 
+            } else {
 
                 command = @"INSERT INTO releaseprofiles
-                                (vendorid, generatecutlist, cutlistoutputdirectory, printcutlist, cutlisttemplatepath, generatepackinglist, packinglistoutputdirectory, printpackinglist, packinglisttemplatepath, generateinvoice, invoiceoutputdirectory, printinvoice, invoicetemplatepath, generatebol, boloutputdirectory, printbol, boltemplatefilepath, printboxlabels, boxlabelstemplatefilepath, printorderlabel, orderlabeltemplatefilepath, printaduiepylelabel, aduiepylelabeltemplatefilepath, generatecncprograms, cncreportoutputdirectory)
+                                (vendorid, generatecutlist, cutlistoutputdirectory, printcutlist, cutlisttemplatepath, generatepackinglist, packinglistoutputdirectory, printpackinglist, packinglisttemplatepath, generateinvoice, invoiceoutputdirectory, printinvoice, invoicetemplatepath, generatebol, boloutputdirectory, printbol, boltemplatefilepath, printboxlabels, boxlabelstemplatefilepath, printorderlabel, orderlabeltemplatefilepath, printaduiepylelabel, aduiepylelabeltemplatefilepath, generatecncprograms, cncreportoutputdirectory, filldoororder, generatedoorprograms, doororderoutputdirectory, doorordertemplatefilepath)
                             VALUES
-                                (@VendorId, @GenerateCutList, @CutListOutputDirectory, @PrintCutList, @CutListTemplatePath, @GeneratePackingList, @PackingListOutputDirectory, @PrintPackingList, @PackingListTemplatePath, @GenerateInvoice, @InvoiceOutputDirectory, @PrintInvoice, @InvoiceTemplatePath, @GenerateBOL, @BOLOutputDirectory, @PrintBOL, @BOLTemplateFilePath, @PrintBoxLabels, @BoxLabelsTemplateFilePath, @PrintOrderLabel, @OrderLabelTemplateFilePath, @PrintADuiePyleLabel, @ADuiePyleLabelTemplateFilePath, @GenerateCNCPrograms, @CNCReportOutputDirectory);";
+                                (@VendorId, @GenerateCutList, @CutListOutputDirectory, @PrintCutList, @CutListTemplatePath, @GeneratePackingList, @PackingListOutputDirectory, @PrintPackingList, @PackingListTemplatePath, @GenerateInvoice, @InvoiceOutputDirectory, @PrintInvoice, @InvoiceTemplatePath, @GenerateBOL, @BOLOutputDirectory, @PrintBOL, @BOLTemplateFilePath, @PrintBoxLabels, @BoxLabelsTemplateFilePath, @PrintOrderLabel, @OrderLabelTemplateFilePath, @PrintADuiePyleLabel, @ADuiePyleLabelTemplateFilePath, @GenerateCNCPrograms, @CNCReportOutputDirectory, @FillDoorOrder, @GenerateDoorCNCPrograms, @DoorOrderOutputDirectory, @DoorOrderTemplateFilePath);";
 
             }
 
@@ -75,7 +76,11 @@ public class AssignVendorReleaseProfile {
                 request.Profile.PrintADuiePyleLabel,
                 request.Profile.ADuiePyleLabelTemplateFilePath,
                 request.Profile.GenerateCNCPrograms,
-                request.Profile.CNCReportOutputDirectory
+                request.Profile.CNCReportOutputDirectory,
+                request.Profile.FillDoorOrder,
+                request.Profile.GenerateDoorCNCPrograms,
+                request.Profile.DoorOrderOutputDirectory,
+                request.Profile.DoorOrderTemplateFilePath
             });
 
 

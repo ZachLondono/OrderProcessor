@@ -34,6 +34,11 @@ public class ReleaseProfile {
     public bool GenerateCNCPrograms { get; set; }
     public string CNCReportOutputDirectory { get; set; } = string.Empty;
 
+    public bool FillDoorOrder { get; set; }
+    public bool GenerateDoorCNCPrograms { get; set; }
+    public string DoorOrderOutputDirectory { get; set; } = string.Empty;
+    public string DoorOrderTemplateFilePath { get; set; } = string.Empty;
+
     //public bool WriteToGoogleSheets { get; set; }
     //public string GoogleSheetCode { get; set; } = string.Empty;
 
@@ -63,6 +68,10 @@ public class ReleaseProfile {
         PrintBOL = false,
         GenerateCNCPrograms = false,
         CNCReportOutputDirectory = string.Empty,
+        FillDoorOrder = false,
+        GenerateDoorCNCPrograms = false,
+        DoorOrderOutputDirectory = string.Empty,
+        DoorOrderTemplateFilePath = string.Empty
     };
 
 }
