@@ -7,6 +7,7 @@ using ApplicationCore.Features.Orders.Loader.Providers.DTO;
 using ApplicationCore.Features.Orders.Queries;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
+using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Loader;
 
@@ -125,6 +126,15 @@ public class LoadOrderCommand {
                 index++;
                 try {
                     products.Add(MapDataToDiagonalCabinet(cab));
+                } catch (Exception ex) {
+                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                }
+            });
+
+            data.SinkCabinets.ForEach(cab => {
+                index++;
+                try {
+                    products.Add(MapDataToSinkCabinet(cab));
                 } catch (Exception ex) {
                     _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
                 }
@@ -371,6 +381,38 @@ public class LoadOrderCommand {
                 data.AdjustableShelfQty,
                 (data.HingeLeft ? HingeSide.Left : HingeSide.Right),
                 data.DoorQty,                
+                (data.DoorType == "Slab" ? null : data.DoorStyle));
+
+        }
+
+        private static SinkCabinet MapDataToSinkCabinet(SinkCabinetData data) {
+
+            CabinetMaterial boxMaterial = new(data.BoxMaterialFinish, data.BoxMaterialCore);
+            CabinetMaterial finishMaterial = new(data.FinishMaterialFinish, data.FinishMaterialCore);
+            CabinetSide leftSide = new(data.LeftSideType, data.DoorStyle);
+            CabinetSide rightSide = new(data.RightSideType, data.DoorStyle);
+
+            var rollOutOptions = new RollOutOptions(Array.Empty<Dimension>(), true, RollOutBlockPosition.None, data.DrawerBoxSlideType, data.DrawerBoxMaterial);
+
+            return SinkCabinet.Create(data.Qty,
+                data.UnitPrice,
+                data.Room,
+                data.Assembled,
+                data.Height,
+                data.Width,
+                data.Depth,
+                boxMaterial,
+                finishMaterial,
+                data.EdgeBandingColor,
+                rightSide,
+                leftSide,
+                data.ToeType,
+                (data.HingeLeft ? HingeSide.Left : HingeSide.Right),
+                data.DoorQty,
+                data.FalseDrawerQty,
+                data.DrawerFaceHeight,
+                data.AdjustableShelfQty,
+                rollOutOptions,
                 (data.DoorType == "Slab" ? null : data.DoorStyle));
 
         }

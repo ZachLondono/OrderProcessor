@@ -38,6 +38,8 @@ public record OrderData {
 
     public List<DiagonalCornerCabinetData> DiagonalCornerCabinets { get; set; } = new();
 
+    public List<SinkCabinetData> SinkCabinets { get; set; } = new();
+
     public List<AdditionalItemData> AdditionalItems { get; set; } = new();
 
 }

@@ -138,9 +138,13 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
                                     .Select(MapToDiagonalCabinet)
                                     .ToList();
 
+        var sinkCabinets = data.Products.SinkCabinets
+                                        .Select(MapToSinkCabinet)
+                                        .ToList();
+
         var boxes = new List<DrawerBoxModel>();
 
-        var subTotal = baseCabinets.Sum(c => c.UnitPrice) + wallCabinets.Sum(c => c.UnitPrice) + dbCabinets.Sum(c => c.UnitPrice) + tallCabinets.Sum(b => b.UnitPrice) + pieCutCabinets.Sum(b => b.UnitPrice) + diagonalCabinets.Sum(b => b.UnitPrice) + boxes.Sum(b => b.UnitPrice);
+        var subTotal = baseCabinets.Sum(c => c.UnitPrice) + wallCabinets.Sum(c => c.UnitPrice) + dbCabinets.Sum(c => c.UnitPrice) + tallCabinets.Sum(b => b.UnitPrice) + pieCutCabinets.Sum(b => b.UnitPrice) + diagonalCabinets.Sum(b => b.UnitPrice) + sinkCabinets.Sum(b => b.UnitPrice) + boxes.Sum(b => b.UnitPrice);
 		if (subTotal != data.Invoice.Subtotal) {
 			_publisher.PublishWarning($"Order data subtotal '${data.Invoice.Subtotal:0.00}' does not match calculated subtotal '${subTotal:0.00}'. There may be missing products.");
 		}
@@ -183,6 +187,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             TallCabinets = tallCabinets,
             PieCutCornerCabinets = pieCutCabinets,
             DiagonalCornerCabinets = diagonalCabinets,
+            SinkCabinets = sinkCabinets,
             DrawerBoxes = new(),
             Rush = data.Shipping.Method.Contains("Rush"),
             Info = info
@@ -440,6 +445,42 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             DoorQty = data.DoorQty,
             RightDepth = Dimension.FromMillimeters(data.RightDepth),
             RightWidth = Dimension.FromMillimeters(data.RightWidth)
+        };
+
+    }
+
+    public SinkCabinetData MapToSinkCabinet(SinkCabinetModel data) {
+
+        CabinetMaterialCore boxCore = GetMaterialCore(data.Cabinet.BoxMaterial.Type);
+
+        MDFDoorOptions? mdfOptions = null;
+        if (data.Cabinet.Fronts.Type != "Slab") mdfOptions = new(data.Cabinet.Fronts.Style, data.Cabinet.Fronts.Color);
+
+        return new SinkCabinetData() {
+            Qty = data.Cabinet.Qty,
+            UnitPrice = data.Cabinet.UnitPrice,
+            Room = data.Cabinet.Room,
+            Assembled = (data.Cabinet.Assembled == "Yes"),
+            Height = Dimension.FromMillimeters(data.Cabinet.Height),
+            Width = Dimension.FromMillimeters(data.Cabinet.Width),
+            Depth = Dimension.FromMillimeters(data.Cabinet.Depth),
+            BoxMaterialFinish = data.Cabinet.BoxMaterial.Finish,
+            BoxMaterialCore = boxCore,
+            FinishMaterialFinish = data.Cabinet.FinishMaterial.Finish,
+            FinishMaterialCore = GetFinishedSideMaterialCore(data.Cabinet.FinishMaterial.Type, boxCore),
+            EdgeBandingColor = (data.Cabinet.EdgeBandColor == "Match Finish" ? data.Cabinet.FinishMaterial.Finish : data.Cabinet.EdgeBandColor),
+            LeftSideType = GetCabinetSideType(data.Cabinet.LeftSide),
+            RightSideType = GetCabinetSideType(data.Cabinet.RightSide),
+            DoorType = data.Cabinet.Fronts.Type,
+            DoorStyle = mdfOptions,
+            HingeLeft = (data.HingeSide == "Left"),
+            ToeType = GetToeType(data.ToeType),
+            AdjustableShelfQty = data.AdjShelfQty,
+            DoorQty = data.DoorQty,
+            FalseDrawerQty = data.DrawerQty,
+            DrawerFaceHeight = Dimension.FromMillimeters(data.DrawerFaceHeight),
+            DrawerBoxMaterial = GetDrawerMaterial(data.DrawerMaterial),
+            DrawerBoxSlideType = GetDrawerSlideType(data.DrawerSlide)
         };
 
     }

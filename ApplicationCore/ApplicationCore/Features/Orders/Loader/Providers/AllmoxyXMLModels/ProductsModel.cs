@@ -22,6 +22,9 @@ public class ProductsModel {
     [XmlElement("diagonalCabinet")]
     public DiagonalCornerCabinetModel[] DiagonalCornerCabinets { get; set; } = Array.Empty<DiagonalCornerCabinetModel>();
 
+    [XmlElement("sinkCabinet")]
+    public SinkCabinetModel[] SinkCabinets { get; set; } = Array.Empty<SinkCabinetModel>();
+
     /*[XmlArrayItem(typeof(DrawerBoxModel), ElementName="drawerBox")]
 	public List<DrawerBoxModel> DrawerBoxes { get; set; } = new();*/
 
