@@ -62,7 +62,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (Doors.MDFOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters());
+        yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), GetManualOverrideParameters());
     }
 
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes() {
@@ -172,6 +172,37 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
         if (Drawers.Quantity != 0 && Drawers.SlideType == DrawerSlideType.SideMount) {
             parameters.Add("_DrawerRunType", "4");
         }
+
+        return parameters;
+
+    }
+
+    public Dictionary<string, string> GetManualOverrideParameters() {
+
+        var parameters = new Dictionary<string, string>();
+
+        if (LeftSide.Type != CabinetSideType.IntegratedPanel && LeftSide.Type != CabinetSideType.IntegratedPanel) {
+
+            if (Inside.ShelfDepth == ShelfDepth.Full) {
+                
+                parameters.Add("_HalfDepthShelf", "0");
+
+            } else if (Inside.ShelfDepth == ShelfDepth.Half) {
+
+                Dimension newWidth = (Depth - Dimension.FromMillimeters(13) - Dimension.FromMillimeters(9)) / 2;
+
+                parameters.Add("_HalfDepthShelfW", newWidth.AsMillimeters().ToString());
+
+            } else if (Inside.ShelfDepth == ShelfDepth.Half) {
+
+                Dimension newWidth = (Depth - Dimension.FromMillimeters(13) - Dimension.FromMillimeters(9)) * 0.75;
+
+                parameters.Add("_HalfDepthShelfW", newWidth.AsMillimeters().ToString()); 
+
+            }
+
+        }
+
 
         return parameters;
 
