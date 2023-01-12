@@ -52,7 +52,7 @@ internal class DiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorContai
             _ => "BC1D-M"
         };
 
-        yield return new PPProduct(Room, sku, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters());
+        yield return new PPProduct(Room, sku, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new());
     }
 
     private Dictionary<string, string> GetParameters() {

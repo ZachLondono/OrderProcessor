@@ -44,7 +44,7 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters());
+        yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new());
     }
 
     private string GetProductName() => $"S{DoorQty}D{FalseDrawerQty}FD";
