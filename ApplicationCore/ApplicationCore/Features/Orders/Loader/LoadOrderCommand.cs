@@ -186,6 +186,7 @@ public class LoadOrderCommand {
         private static BaseCabinet MapDataToBaseCabinet(BaseCabinetData data) {
 
             BaseCabinetDoors doors = data.DoorQty switch {
+                0 => BaseCabinetDoors.NoDoors(),
                 1 => new(data.HingeLeft ? HingeSide.Left : HingeSide.Right, data.DoorStyle),
                 2 => new(data.DoorStyle),
                 _ => new(data.HingeLeft ? HingeSide.Left : HingeSide.Right, data.DoorStyle)
@@ -231,6 +232,7 @@ public class LoadOrderCommand {
         private static WallCabinet MapDataToWallCabinet(WallCabinetData data) {
 
             WallCabinetDoors doors = data.DoorQty switch {
+                0 => WallCabinetDoors.NoDoors(),
                 1 => new(data.HingeLeft ? HingeSide.Left : HingeSide.Right, data.ExtendDoorDown, data.DoorStyle),
                 2 => new(data.ExtendDoorDown, data.DoorStyle),
                 _ => new(data.HingeLeft ? HingeSide.Left : HingeSide.Right, data.ExtendDoorDown, data.DoorStyle)
@@ -308,8 +310,13 @@ public class LoadOrderCommand {
 
             TallCabinetDoors doors;
             HingeSide hingeSide = data.LowerDoorQty == 1 ? (data.HingeLeft ? HingeSide.Left : HingeSide.Right) : HingeSide.NotApplicable;
-            if (data.UpperDoorQty != 0) doors = new(data.LowerDoorHeight, hingeSide, data.DoorStyle);
-            else doors = new(hingeSide, data.DoorStyle);
+            if (data.LowerDoorQty  == 0) {
+                doors = TallCabinetDoors.NoDoors();
+            } else if (data.UpperDoorQty != 0) {
+                doors = new(data.LowerDoorHeight, hingeSide, data.DoorStyle);
+            } else {
+                doors = new(hingeSide, data.DoorStyle);
+            }
 
             return TallCabinet.Create(
                 data.Qty,
@@ -328,7 +335,7 @@ public class LoadOrderCommand {
                 data.ToeType,
                 inside);
 
-        }
+            }
 
         private static PieCutCornerCabinet MapDataToPieCutCabinet(PieCutCornerCabinetData data) {
             
