@@ -118,7 +118,8 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
     }
 
     public IEnumerable<MDFDoor> GetDoors() {
-        yield return new MDFDoor();
+        if (Doors.MDFOptions is not null) return Enumerable.Empty<MDFDoor>();
+        return new MDFDoor[] { new MDFDoor() };
     }
 
     private string GetNotchFromSlideType(DrawerSlideType slide) => slide switch {
