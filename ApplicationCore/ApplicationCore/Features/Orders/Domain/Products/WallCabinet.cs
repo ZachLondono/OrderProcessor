@@ -38,7 +38,6 @@ internal class WallCabinet : Cabinet, IPPProductContainer {
     }
 
     public IEnumerable<PPProduct> GetPPProducts() {
-        // TODO: add option for no doors
         string doorType = (Doors.MDFOptions is null) ? "Slab" : "Buyout";
         yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides());
     }
