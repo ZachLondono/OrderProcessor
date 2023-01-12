@@ -205,8 +205,8 @@ public class LoadOrderCommand {
             BaseCabinetInside inside;
             if (data.RollOutBoxPositions.Length != 0) {
                 var rollOutOptions = new RollOutOptions(data.RollOutBoxPositions, true, data.RollOutBlocks, data.DrawerBoxSlideType, data.DrawerBoxMaterial);
-                inside = new(data.AdjustableShelfQty, rollOutOptions);
-            } else inside = new(data.AdjustableShelfQty, data.VerticalDividerQty);
+                inside = new(data.AdjustableShelfQty, rollOutOptions, data.ShelfDepth);
+            } else inside = new(data.AdjustableShelfQty, data.VerticalDividerQty, data.ShelfDepth);
 
             return BaseCabinet.Create(
                 data.Qty,

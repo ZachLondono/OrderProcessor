@@ -40,6 +40,9 @@ public class BaseCabinetModel {
 	[XmlElement("vertDivQty")]
 	public int VerticalDividerQty { get; set; }
 
+	[XmlElement("shelfDepth")]
+	public string ShelfDepth { get; set; } = string.Empty;
+
 	[XmlElement("rollOuts")]
 	public RollOuts RollOuts { get; set; } = new();
 

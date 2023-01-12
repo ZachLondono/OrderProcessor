@@ -62,4 +62,6 @@ public class BaseCabinetData {
 
     public required bool ScoopFrontRollOuts { get; set; }
 
+    public required ShelfDepth ShelfDepth { get; set; }
+
 }

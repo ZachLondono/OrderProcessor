@@ -3,7 +3,6 @@ using ApplicationCore.Features.Companies.Domain;
 using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.Orders.Domain;
-using ApplicationCore.Features.Orders.Domain.Products;
 using ApplicationCore.Features.Orders.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.Loader.Providers.DTO;
@@ -265,7 +264,8 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 			AdjustableShelfQty = data.AdjShelfQty,
 			RollOutBoxPositions = GetRollOutPositions(data.RollOuts.Pos1, data.RollOuts.Pos2, data.RollOuts.Pos3, "", ""),
 			RollOutBlocks = GetRollOutBlockPositions(data.RollOuts.Blocks),
-			ScoopFrontRollOuts = true
+			ScoopFrontRollOuts = true,
+            ShelfDepth = GetShelfDepth(data.ShelfDepth)
 		};
 
 	}
@@ -567,8 +567,14 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 		}
 
         return CabinetMaterialCore.Flake;
-
     }
+
+    private ShelfDepth GetShelfDepth(string name) => name switch {
+        "Full" => ShelfDepth.Full,
+        "Half" => ShelfDepth.Half,
+        "3/4" => ShelfDepth.ThreeQuarters,
+        _ => ShelfDepth.Default
+    };
 
     /*private DrawerBoxData MapToDrawerBox(DrawerBoxModel data, int line) {
 
