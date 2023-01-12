@@ -44,8 +44,7 @@ internal class WallCabinet : Cabinet, IPPProductContainer {
     }
 
     private string GetProductName() {
-        if (Doors.Quantity == 1) return "W1D";
-        return "W2D";
+        return $"W{Doors.Quantity}D";
     }
 
     private Dictionary<string, string> GetParameters() {

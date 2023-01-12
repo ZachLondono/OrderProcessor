@@ -129,16 +129,9 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
     };
 
     private string GetProductName() {
-
-        if (Doors.Quantity == 1) {
-            if (Drawers.Quantity == 1) return "B1D1D";
-            return "B1D";
-        }
-
-        if (Drawers.Quantity == 2) return "B2D2D";
-        else if (Drawers.Quantity == 2) return "B2D2D";
-        return "B2D";
-
+        string name = $"B{Doors.Quantity}D";
+        if (Drawers.Quantity != 0) name += $"{Drawers.Quantity}D";
+        return name;
     }
 
     private Dictionary<string, string> GetParameters() {
