@@ -127,6 +127,11 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
                                 .Select(MapToTallCabinet)
                                 .ToList();
 
+        var pieCutCabinets = data.Products
+                                .PieCutCornerCabinets
+                                .Select(MapToPieCutCabinet)
+                                .ToList();
+
         var boxes = new List<DrawerBoxModel>();
 
         var subTotal = baseCabinets.Sum(c => c.UnitPrice) + wallCabinets.Sum(c => c.UnitPrice) + dbCabinets.Sum(c => c.UnitPrice) + tallCabinets.Sum(b => b.UnitPrice) + boxes.Sum(b => b.UnitPrice);
@@ -170,6 +175,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             WallCabinets = wallCabinets,
             DrawerBaseCabinets = dbCabinets,
             TallCabinets = tallCabinets,
+            PieCutCornerCabinets = pieCutCabinets,
             DrawerBoxes = new(),
             Rush = data.Shipping.Method.Contains("Rush"),
             Info = info
@@ -360,6 +366,39 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             LowerDoorQty = data.LowerDoorQty,
             UpperDoorQty = data.UpperDoorQty,
             LowerDoorHeight = Dimension.FromMillimeters(data.LowerDoorHeight),
+        };
+
+    }
+
+    public PieCutCornerCabinetData MapToPieCutCabinet(PieCutCornerCabinetModel data) {
+
+        CabinetMaterialCore boxCore = GetMaterialCore(data.Cabinet.BoxMaterial.Type);
+
+        MDFDoorOptions? mdfOptions = null;
+        if (data.Cabinet.Fronts.Type != "Slab") mdfOptions = new(data.Cabinet.Fronts.Style, data.Cabinet.Fronts.Color);
+
+        return new PieCutCornerCabinetData() {
+            Qty = data.Cabinet.Qty,
+            UnitPrice = data.Cabinet.UnitPrice,
+            Room = data.Cabinet.Room,
+            Assembled = (data.Cabinet.Assembled == "Yes"),
+            Height = Dimension.FromMillimeters(data.Cabinet.Height),
+            Width = Dimension.FromMillimeters(data.Cabinet.Width),
+            Depth = Dimension.FromMillimeters(data.Cabinet.Depth),
+            BoxMaterialFinish = data.Cabinet.BoxMaterial.Finish,
+            BoxMaterialCore = boxCore,
+            FinishMaterialFinish = data.Cabinet.FinishMaterial.Finish,
+            FinishMaterialCore = GetFinishedSideMaterialCore(data.Cabinet.FinishMaterial.Type, boxCore),
+            EdgeBandingColor = (data.Cabinet.EdgeBandColor == "Match Finish" ? data.Cabinet.FinishMaterial.Finish : data.Cabinet.EdgeBandColor),
+            LeftSideType = GetCabinetSideType(data.Cabinet.LeftSide),
+            RightSideType = GetCabinetSideType(data.Cabinet.RightSide),
+            DoorType = data.Cabinet.Fronts.Type,
+            DoorStyle = mdfOptions,
+            HingeLeft = (data.HingeSide == "Left"),
+            ToeType = GetToeType(data.ToeType),
+            AdjustableShelfQty = data.AdjShelfQty,
+            RightDepth = Dimension.FromMillimeters(data.RightDepth),
+            RightWidth = Dimension.FromMillimeters(data.RightWidth)
         };
 
     }

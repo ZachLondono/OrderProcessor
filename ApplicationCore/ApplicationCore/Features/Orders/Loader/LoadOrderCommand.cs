@@ -112,6 +112,15 @@ public class LoadOrderCommand {
                 }
             });
 
+            data.PieCutCornerCabinets.ForEach(cab => {
+                index++;
+                try {
+                    products.Add(MapDataToPieCutCabinet(cab));
+                } catch (Exception ex) {
+                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                }
+            });
+
             var additionalItems = data.AdditionalItems.Select(MapDataToItem);
 
             Response<Order> result;
@@ -297,6 +306,34 @@ public class LoadOrderCommand {
                 doors,
                 data.ToeType,
                 inside);
+
+        }
+
+        private static PieCutCornerCabinet MapDataToPieCutCabinet(PieCutCornerCabinetData data) {
+            
+            CabinetMaterial boxMaterial = new(data.BoxMaterialFinish, data.BoxMaterialCore);
+            CabinetMaterial finishMaterial = new(data.FinishMaterialFinish, data.FinishMaterialCore);
+            CabinetSide leftSide = new(data.LeftSideType, data.DoorStyle);
+            CabinetSide rightSide = new(data.RightSideType, data.DoorStyle);
+
+            return PieCutCornerCabinet.Create(data.Qty,
+                data.UnitPrice,
+                data.Room,
+                data.Assembled,
+                data.Height,
+                data.Width,
+                data.Depth,
+                boxMaterial,
+                finishMaterial,
+                data.EdgeBandingColor,
+                rightSide,
+                leftSide,
+                data.RightWidth,
+                data.RightDepth,
+                data.ToeType,
+                data.AdjustableShelfQty,
+                (data.HingeLeft ? HingeSide.Left : HingeSide.Right),
+                (data.DoorType == "Slab" ? null : data.DoorStyle));
 
         }
 
