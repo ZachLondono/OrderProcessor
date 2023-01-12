@@ -38,6 +38,8 @@ public class DrawerBaseCabinetData {
 
     public MDFDoorOptions? DoorStyle { get; set; } = null;
 
+    public required IToeType ToeType { get; set; }
+
     public required CabinetDrawerBoxMaterial DrawerBoxMaterial { get; set; }
 
     public required DrawerSlideType DrawerBoxSlideType { get; set; }

@@ -335,6 +335,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             RightSideType = GetCabinetSideType(data.Cabinet.RightSide),
             DoorType = data.Cabinet.Fronts.Type,
             DoorStyle = mdfOptions,
+            ToeType = GetToeType(data.ToeType),
             DrawerBoxMaterial = GetDrawerMaterial(data.DrawerMaterial),
             DrawerBoxSlideType = GetDrawerSlideType(data.DrawerSlide),
             DrawerFaces = drawerFaces.ToArray()

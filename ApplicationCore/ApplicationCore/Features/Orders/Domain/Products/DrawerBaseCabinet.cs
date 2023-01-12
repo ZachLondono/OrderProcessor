@@ -6,6 +6,7 @@ namespace ApplicationCore.Features.Orders.Domain.Products;
 
 public class DrawerBaseCabinet : Cabinet, IPPProductContainer {
 
+    public IToeType ToeType { get; }
     public MDFDoorOptions? Fronts { get; }
     public VerticalDrawerBank Drawers { get; }
 
@@ -13,15 +14,15 @@ public class DrawerBaseCabinet : Cabinet, IPPProductContainer {
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        VerticalDrawerBank drawers, MDFDoorOptions? fronts) {
-        return new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, drawers, fronts);
+                        IToeType toeType, VerticalDrawerBank drawers, MDFDoorOptions? fronts) {
+        return new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, toeType, drawers, fronts);
     }
 
     private DrawerBaseCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        VerticalDrawerBank drawers, MDFDoorOptions? fronts)
+                        IToeType toeType, VerticalDrawerBank drawers, MDFDoorOptions? fronts)
                         : base(id, qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
 
         if (drawers.FaceHeights.Count() > 5 || !drawers.FaceHeights.Any())
@@ -29,12 +30,13 @@ public class DrawerBaseCabinet : Cabinet, IPPProductContainer {
 
         Drawers = drawers;
         Fronts = fronts;
+        ToeType = toeType;
     }
 
     public IEnumerable<PPProduct> GetPPProducts() {
         // TODO: add option for no doors
         string doorType = (Fronts is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), new());
+        yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters());
     }
 
     private string GetProductName() {
@@ -54,6 +56,21 @@ public class DrawerBaseCabinet : Cabinet, IPPProductContainer {
         int index = 1;
         foreach (var height in Drawers.FaceHeights) {
             parameters.Add($"DrawerH{index++}", height.AsMillimeters().ToString());
+        }
+
+        return parameters;
+
+    }
+
+    private Dictionary<string, string> GetOverrideParameters() {
+
+        var parameters = new Dictionary<string, string>();
+        if (ToeType.PSIParameter != "2") {
+            parameters.Add("__ToeBaseType", ToeType.PSIParameter);
+        }
+
+        if (Drawers.FaceHeights.Any() && Drawers.SlideType == DrawerSlideType.SideMount) {
+            parameters.Add("_DrawerRunType", "4");
         }
 
         return parameters;

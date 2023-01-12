@@ -287,6 +287,7 @@ public class LoadOrderCommand {
                 data.EdgeBandingColor,
                 rightSide,
                 leftSide,
+                data.ToeType,
                 verticalDrawerBank,
                 data.DoorStyle);
 
