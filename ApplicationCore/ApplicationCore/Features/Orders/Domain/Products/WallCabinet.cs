@@ -8,20 +8,21 @@ internal class WallCabinet : Cabinet, IPPProductContainer {
 
     public WallCabinetDoors Doors { get; }
     public WallCabinetInside Inside { get; }
+    public bool FinishedBottom { get; }
 
     public static WallCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        WallCabinetDoors doors, WallCabinetInside inside) {
-        return new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, inside);
+                        WallCabinetDoors doors, WallCabinetInside inside, bool finishedBottom) {
+        return new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, inside, finishedBottom);
     }
 
     private WallCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        WallCabinetDoors doors, WallCabinetInside inside)
+                        WallCabinetDoors doors, WallCabinetInside inside, bool finishedBottom)
                         : base(id, qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
 
         if (leftSide.Type == CabinetSideType.AppliedPanel || rightSide.Type == CabinetSideType.AppliedPanel)
@@ -32,13 +33,14 @@ internal class WallCabinet : Cabinet, IPPProductContainer {
 
         Doors = doors;
         Inside = inside;
+        FinishedBottom = finishedBottom;
 
     }
 
     public IEnumerable<PPProduct> GetPPProducts() {
         // TODO: add option for no doors
         string doorType = (Doors.MDFOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), new());
+        yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides());
     }
 
     private string GetProductName() {
@@ -62,6 +64,22 @@ internal class WallCabinet : Cabinet, IPPProductContainer {
         }
 
         return parameters;
+    }
+
+    private Dictionary<string, string> GetParameterOverrides() {
+
+        var parameters = new Dictionary<string, string>();
+
+        if (Doors.ExtendDown != Dimension.Zero) {
+            parameters.Add("ExtendDoorD", Doors.ExtendDown.AsMillimeters().ToString());
+        }
+
+        if (FinishedBottom) {
+            parameters.Add("_FinishedWallBot", "1");
+        }
+
+        return parameters;
+
     }
 
     private string GetHingeSideOption() => Doors.HingeSide switch {

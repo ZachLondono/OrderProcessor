@@ -45,4 +45,8 @@ public class WallCabinetData {
 
     public required int AdjustableShelfQty { get; set; }
 
+    public required Dimension ExtendDoorDown { get; set; }
+
+    public required bool FinishedBottom { get; set; }
+
 }

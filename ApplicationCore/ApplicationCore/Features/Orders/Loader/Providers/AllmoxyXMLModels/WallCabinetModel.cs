@@ -25,4 +25,10 @@ public class WallCabinetModel {
     [XmlElement("vertDivQty")]
     public int VerticalDividerQty { get; set; }
 
+    [XmlElement("extendDoorDown")]
+    public double ExtendDoorDown { get; set; }
+
+    [XmlElement("finishedBottom")]
+    public string FinishedBottom { get; set; } = string.Empty
+
 }

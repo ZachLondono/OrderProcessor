@@ -297,7 +297,9 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             DoorQty = data.DoorQty,
             HingeLeft = (data.HingeSide == "Left"),
             VerticalDividerQty = data.VerticalDividerQty,
-            AdjustableShelfQty = data.AdjShelfQty
+            AdjustableShelfQty = data.AdjShelfQty,
+            ExtendDoorDown = Dimension.FromMillimeters(data.ExtendDoorDown),
+            FinishedBottom = (data.FinishedBottom == "Yes")
         };
 
     }
