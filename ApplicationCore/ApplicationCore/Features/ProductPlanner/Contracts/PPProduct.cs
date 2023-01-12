@@ -12,8 +12,9 @@ public class PPProduct {
     public Dictionary<string, PPMaterial> EBMaterials { get; }
     public Dictionary<string, string> Parameters { get; }
     public Dictionary<string, string> OverrideParameters { get; }
+    public Dictionary<string, string> ManualOverrideParameters { get; }
 
-    public PPProduct(string room, string name, string catalog, string materialType, string doorType, string hardwareType, Dictionary<string, PPMaterial> finishMaterials, Dictionary<string, PPMaterial> ebMaterials, Dictionary<string, string> parameters, Dictionary<string, string> overrideParameters) {
+    public PPProduct(string room, string name, string catalog, string materialType, string doorType, string hardwareType, Dictionary<string, PPMaterial> finishMaterials, Dictionary<string, PPMaterial> ebMaterials, Dictionary<string, string> parameters, Dictionary<string, string> overrideParameters, Dictionary<string, string> manualOverrideParameters = new()) {
         Room = room;
         Name = name;
         Catalog = catalog;
@@ -24,6 +25,7 @@ public class PPProduct {
         EBMaterials = ebMaterials;
         Parameters = parameters;
         OverrideParameters = overrideParameters;
+        ManualOverrideParameters = manualOverrideParameters;
     }
 
 }
