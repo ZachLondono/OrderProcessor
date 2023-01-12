@@ -34,6 +34,8 @@ public record OrderData {
 
     public List<TallCabinetData> TallCabinets { get; set; } = new();
 
+    public List<PieCutCornerCabinetData> PieCutCornerCabinets { get; set; } = new();
+
     public List<AdditionalItemData> AdditionalItems { get; set; } = new();
 
 }

@@ -16,6 +16,9 @@ public class ProductsModel {
     [XmlElement("tallCabinet")]
     public TallCabinetModel[] TallCabinets { get; set; } = Array.Empty<TallCabinetModel>();
 
+    [XmlElement("pieCutCabinet")]
+    public PieCutCornerCabinetModel[] PieCutCornerCabinets { get; set; } = Array.Empty<PieCutCornerCabinetModel>();
+
     /*[XmlArrayItem(typeof(DrawerBoxModel), ElementName="drawerBox")]
 	public List<DrawerBoxModel> DrawerBoxes { get; set; } = new();*/
 
