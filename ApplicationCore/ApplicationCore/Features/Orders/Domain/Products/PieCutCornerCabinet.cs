@@ -17,15 +17,22 @@ internal class PieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorContaine
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        Dimension rightWidth, Dimension rightDepth, IToeType toeType, int adjustableShelves, HingeSide hingeSide, MDFDoorOptions? mDFDoorOptions)
+                        Dimension rightWidth, Dimension rightDepth, IToeType toeType, int adjustableShelves, HingeSide hingeSide, MDFDoorOptions? mdfDoorOptions)
                         : base(id, qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
         RightWidth = rightWidth;
         RightDepth = rightDepth;
         ToeType = toeType;
         AdjustableShelves = adjustableShelves;
         HingeSide = hingeSide;
-        MDFOptions = mDFDoorOptions;
+        MDFOptions = mdfDoorOptions;
     }
+
+    public static PieCutCornerCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
+                        Dimension height, Dimension width, Dimension depth,
+                        CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
+                        CabinetSide rightSide, CabinetSide leftSide,
+                        Dimension rightWidth, Dimension rightDepth, IToeType toeType, int adjustableShelves, HingeSide hingeSide, MDFDoorOptions? mdfDoorOptions)
+    => new (Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, rightWidth, rightDepth, toeType, adjustableShelves, hingeSide, mdfDoorOptions);
 
     public IEnumerable<MDFDoor> GetDoors() {
         if (MDFOptions is null) return Enumerable.Empty<MDFDoor>();
