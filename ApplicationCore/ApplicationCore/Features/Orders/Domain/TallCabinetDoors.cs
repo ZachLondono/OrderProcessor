@@ -11,6 +11,14 @@ public record TallCabinetDoors {
     public HingeSide HingeSide { get; init; } = HingeSide.NotApplicable;
     public MDFDoorOptions? MDFOptions { get; init; }
 
+    public static TallCabinetDoors NoDoors() => new() {
+        UpperQuantity = 0,
+        LowerQuantity = 0,
+        LowerDoorHeight = Dimension.Zero,
+        HingeSide = HingeSide.NotApplicable,
+        MDFOptions = null
+    };
+
     public TallCabinetDoors(HingeSide hingeSide = HingeSide.NotApplicable, MDFDoorOptions? mdfOptions = null) {
         
         if (hingeSide == HingeSide.NotApplicable) { 

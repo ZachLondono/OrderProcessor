@@ -8,6 +8,12 @@ public record BaseCabinetDoors {
     public HingeSide HingeSide { get; init; } = HingeSide.NotApplicable;
     public MDFDoorOptions? MDFOptions { get; init; }
 
+    public static BaseCabinetDoors NoDoors() => new() {
+        Quantity = 0,
+        HingeSide = HingeSide.NotApplicable,
+        MDFOptions = null
+    };
+
     public BaseCabinetDoors(MDFDoorOptions? mdfOptions = null) {
         Quantity = 2;
         HingeSide = HingeSide.NotApplicable;

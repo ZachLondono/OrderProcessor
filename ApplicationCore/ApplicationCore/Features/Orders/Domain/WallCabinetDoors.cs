@@ -10,6 +10,13 @@ public record WallCabinetDoors {
     public MDFDoorOptions? MDFOptions { get; init; }
     public Dimension ExtendDown { get; init; }
 
+    public static WallCabinetDoors NoDoors() => new() {
+        Quantity = 0,
+        HingeSide = HingeSide.NotApplicable,
+        MDFOptions = null,
+        ExtendDown = Dimension.Zero
+    };
+
     public WallCabinetDoors(Dimension? extendDown = null, MDFDoorOptions? mdfOptions = null) {
         Quantity = 2;
         HingeSide = HingeSide.NotApplicable;
