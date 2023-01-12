@@ -29,6 +29,6 @@ public class WallCabinetModel {
     public double ExtendDoorDown { get; set; }
 
     [XmlElement("finishedBottom")]
-    public string FinishedBottom { get; set; } = string.Empty
+    public string FinishedBottom { get; set; } = string.Empty;
 
 }
