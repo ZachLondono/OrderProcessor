@@ -445,20 +445,38 @@
 
         if (OrderState.Order is null) return;
 
-        await Task.Run(() => {
+        await Task.Run(async () => {
 
             var products = OrderState.Order
                                     .Products
                                     .Where(p => p is IPPProductContainer)
                                     .Cast<IPPProductContainer>()
-                                    .SelectMany(c => c.GetPPProducts());
+                                    .SelectMany(c => c.GetPPProducts())
+                                    .ToList();
 
             var job = new PPJob(OrderState.Order.Name, OrderState.Order.OrderDate, products);
 
             var filePath = Path.Combine(@"C:\CP3\CPDATA", $"{OrderState.Order.Number} - {OrderState.Order.Name}.ext");
 
-            return Bus.Send(new GenerateEXTFile.Command(job, filePath));
-            
+            var result = await Bus.Send(new GenerateEXTFile.Command(job, filePath));
+
+            int index = 0;
+            string description = "";
+            foreach (var product in products) {
+                index++;
+                foreach (var (key, value) in product.ManualOverrideParameters) {
+
+                    description += $"[cab:{index}] {key} ==>> {value}<br>";
+
+                }
+            }
+
+            if (description != string.Empty) {
+                await Modal.OpenInformationDialog("Manual Overrides Needed:", description, InformationDialog.MessageType.Information);
+            } else {
+                await Modal.OpenInformationDialog("Completed", "EXT export completed", InformationDialog.MessageType.Information);
+            }
+
         });
 
     }
