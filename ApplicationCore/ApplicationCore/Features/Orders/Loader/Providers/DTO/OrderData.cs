@@ -36,6 +36,8 @@ public record OrderData {
 
     public List<PieCutCornerCabinetData> PieCutCornerCabinets { get; set; } = new();
 
+    public List<DiagonalCornerCabinetData> DiagonalCornerCabinets { get; set; } = new();
+
     public List<AdditionalItemData> AdditionalItems { get; set; } = new();
 
 }
