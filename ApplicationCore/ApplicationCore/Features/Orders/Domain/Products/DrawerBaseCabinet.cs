@@ -25,7 +25,7 @@ public class DrawerBaseCabinet : Cabinet, IPPProductContainer {
                         IToeType toeType, VerticalDrawerBank drawers, MDFDoorOptions? fronts)
                         : base(id, qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
 
-        if (drawers.FaceHeights.Count() > 5 || !drawers.FaceHeights.Any())
+        if (drawers.FaceHeights.Count() > 5)
             throw new InvalidOperationException("Invalid number of drawers");
 
         Drawers = drawers;
@@ -40,6 +40,7 @@ public class DrawerBaseCabinet : Cabinet, IPPProductContainer {
     }
 
     private string GetProductName() {
+        if (!Drawers.FaceHeights.Any()) return "DB1D";
         return $"DB{Drawers.FaceHeights.Count()}D";
     }
 

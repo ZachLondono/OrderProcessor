@@ -311,8 +311,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
         MDFDoorOptions? mdfOptions = null;
         if (data.Cabinet.Fronts.Type != "Slab") mdfOptions = new(data.Cabinet.Fronts.Style, data.Cabinet.Fronts.Color);
 
-        var drawerFaces = new Dimension[data.DrawerQty];
-        if (data.DrawerQty == 1) throw new NotImplementedException();
+        var drawerFaces = new Dimension[data.DrawerQty == 1 ? 0 : data.DrawerQty];
         if (data.DrawerQty > 1) drawerFaces[0] = Dimension.FromMillimeters(data.DrawerFace1); // For 1 drawer box cabinets, the drawer box size is calculated
         if (data.DrawerQty >= 2) drawerFaces[1] = Dimension.FromMillimeters(data.DrawerFace2);
         if (data.DrawerQty >= 3) drawerFaces[2] = Dimension.FromMillimeters(data.DrawerFace3);
