@@ -12,7 +12,7 @@ public class TemplatedEmailServiceTests {
     private readonly TemplatedEmailService _sut;
     private readonly IEmailService _emailService = Substitute.For<IEmailService>();
     private readonly ITemplateService _templateService = Substitute.For<ITemplateService>();
-    
+
     public TemplatedEmailServiceTests() {
         _sut = new(_emailService, _templateService);
     }
@@ -56,7 +56,7 @@ public class TemplatedEmailServiceTests {
         result.Should().Be(serverResponse);
         await _emailService.Received()
                             .SendEmailAsync(
-                                Arg.Is<Email>(m => 
+                                Arg.Is<Email>(m =>
                                     m.Body.Equals(finalBody) &&
                                     m.Subject.Equals(finalSubject) &&
                                     m.Sender.Equals(sender) &&

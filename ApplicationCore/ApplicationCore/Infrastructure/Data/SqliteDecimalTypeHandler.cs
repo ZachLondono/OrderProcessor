@@ -4,7 +4,7 @@ using Dapper;
 namespace ApplicationCore.Infrastructure.Data;
 
 public class SqliteDecimalTypeHandler : SqlMapper.TypeHandler<decimal> {
-    
+
     public override void SetValue(IDbDataParameter parameter, decimal value) {
         parameter.Value = value;
     }

@@ -2,10 +2,10 @@
 
 internal class HafeleConfiguration {
 
-	public string VendorId { get; set; } = string.Empty;
+    public string VendorId { get; set; } = string.Empty;
 
-	public string DefaultDirectory { get; init; } = string.Empty;
+    public string DefaultDirectory { get; init; } = string.Empty;
 
-	public Dictionary<string, string> MaterialMap { get; init; } = new();
+    public Dictionary<string, string> MaterialMap { get; init; } = new();
 
 }

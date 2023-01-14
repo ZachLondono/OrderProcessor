@@ -4,8 +4,8 @@ namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
 public class ShippingModel {
 
-	[XmlElement("method")]
-	public string Method { get; set; } = string.Empty;
+    [XmlElement("method")]
+    public string Method { get; set; } = string.Empty;
 
     [XmlElement("date")]
     public string Date { get; set; } = string.Empty;
@@ -13,7 +13,7 @@ public class ShippingModel {
     [XmlElement("tax")]
     public decimal Tax { get; set; }
 
-	[XmlElement("instructions")]
+    [XmlElement("instructions")]
     public string Instructions { get; set; } = string.Empty;
 
     [XmlElement("attention")]

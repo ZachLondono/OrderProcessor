@@ -7,7 +7,7 @@ using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Features.CNC.GCode;
 
-public class GenerateGCode { 
+public class GenerateGCode {
 
     public record Command(Batch Batch, GCodeGenerationOptions Options) : ICommand<GCodeGenerationResult>;
 

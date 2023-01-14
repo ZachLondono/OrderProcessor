@@ -89,8 +89,7 @@ internal class PDFBuilder {
                         if (tabledata.Content.Count == 0) {
                             c.Item().Text("no data").Italic();
                         } else {
-                            c.Item().Table(t =>
-                            {
+                            c.Item().Table(t => {
                                 BuildTable(t, tabledata, config);
                             });
                         }

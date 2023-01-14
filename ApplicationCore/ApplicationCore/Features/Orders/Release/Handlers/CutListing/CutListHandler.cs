@@ -1,10 +1,10 @@
 ﻿using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.ExcelTemplates.Contracts;
 using ApplicationCore.Features.ExcelTemplates.Domain;
-using ApplicationCore.Features.Orders.Domain;
-using ApplicationCore.Features.Orders.Domain.ValueObjects;
-using ApplicationCore.Features.Orders.Queries;
+using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Release.Handlers.CutListing.Models;
+using ApplicationCore.Features.Orders.Shared;
 using ApplicationCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 
@@ -32,7 +32,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         }
 
         var order = notification.Order;
-        
+
         var customerName = await GetCompanyName(order.CustomerId);
         var vendorName = await GetCompanyName(order.VendorId);
 
@@ -42,7 +42,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                 .SelectMany(c => c.GetDrawerBoxes())
                                 .ToList();
 
-        var materialIds = dovetailBoxes.SelectMany(b => new Guid[] { b.Options.BoxMaterialId, b.Options.BottomMaterialId } )
+        var materialIds = dovetailBoxes.SelectMany(b => new Guid[] { b.Options.BoxMaterialId, b.Options.BottomMaterialId })
                                 .Distinct();
 
         var materialNames = new Dictionary<Guid, string>();
@@ -168,12 +168,10 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         var cutlistItems = dovetailBoxes
                                 .SelectMany(b => b.GetParts(construction).Where(p => p.Type != DrawerBoxPartType.Bottom))
                                 .GroupBy(p => (p.MaterialId, p.Width, p.Length)) // TODO: if there are multiple scoop fronts they should be grouped together
-                                .Select(g =>
-                                {
+                                .Select(g => {
                                     var qty = g.Sum(b => b.Qty);
                                     groupNum++;
-                                    return new Item()
-                                    {
+                                    return new Item() {
                                         GroupNumber = groupNum,
                                         CabNumber = groupNum, // TODO: get cabnumber from part
                                         LineNumber = lineNum++,
@@ -197,15 +195,12 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         int lineNum = 1;
 
         var cutlistItems = dovetailBoxes
-								.SelectMany(b =>
-                                {
+                                .SelectMany(b => {
                                     groupNum++;
 
                                     var items = new List<Item>();
-                                    foreach (var part in b.GetParts(construction).Where(p => p.Type == DrawerBoxPartType.Bottom))
-                                    {
-                                        items.Add(new()
-                                        {
+                                    foreach (var part in b.GetParts(construction).Where(p => p.Type == DrawerBoxPartType.Bottom)) {
+                                        items.Add(new() {
                                             GroupNumber = groupNum,
                                             CabNumber = groupNum, // TODO: get cabnumber from part
                                             LineNumber = lineNum++,
@@ -231,7 +226,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
         // TODO: if a drawerbox has a different option then the most common option than it should be shown in a part comment
 
-		var clips = dovetailBoxes.Select(b => b.Options.Clips)
+        var clips = dovetailBoxes.Select(b => b.Options.Clips)
                         .GroupBy(c => c)
                         .OrderByDescending(g => g.Count())
                         .First()

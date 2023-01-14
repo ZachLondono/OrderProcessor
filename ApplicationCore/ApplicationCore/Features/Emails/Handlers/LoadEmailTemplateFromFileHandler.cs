@@ -42,8 +42,7 @@ public class LoadEmailTemplateFromFileHandler : QueryHandler<LoadEmailTemplateFr
             var sender = new EmailSender(senderData?.Name ?? "", senderData?.Email ?? "", senderData?.Password ?? "", senderData?.Host ?? "", senderData?.Port ?? 0);
             var email = new Email(sender, data.Recipients, data.Subject, data.Body);
             return email;
-        }
-        catch {
+        } catch {
             return null;
         }
     }

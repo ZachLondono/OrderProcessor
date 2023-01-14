@@ -17,7 +17,7 @@ public class GetCompanyList {
         }
 
         public override async Task<Response<IEnumerable<CompanyListItem>>> Handle(Query request) {
-            
+
             using var connection = _factory.CreateConnection();
 
             const string query = "SELECT id, name FROM companies;";

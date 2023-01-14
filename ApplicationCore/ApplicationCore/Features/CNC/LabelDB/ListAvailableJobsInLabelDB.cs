@@ -4,7 +4,7 @@ using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Features.CNC.LabelDB;
 
-public class ListAvailableJobsInLabelDB { 
+public class ListAvailableJobsInLabelDB {
 
     public record Command(string LabelFilePath) : ICommand<IEnumerable<AvailableJob>>;
 

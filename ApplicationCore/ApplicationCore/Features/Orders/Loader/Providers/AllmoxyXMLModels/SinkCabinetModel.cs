@@ -38,6 +38,6 @@ public class SinkCabinetModel {
     public int AdjShelfQty { get; set; }
 
     [XmlElement("shelfDepth")]
-    public string ShelfDepth { get; set;} = string.Empty;
+    public string ShelfDepth { get; set; } = string.Empty;
 
 }

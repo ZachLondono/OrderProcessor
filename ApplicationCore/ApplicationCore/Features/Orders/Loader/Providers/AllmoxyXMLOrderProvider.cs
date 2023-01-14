@@ -2,8 +2,8 @@
 using ApplicationCore.Features.Companies.Domain;
 using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Queries;
-using ApplicationCore.Features.Orders.Domain;
-using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.Loader.Providers.DTO;
 using ApplicationCore.Features.Orders.Loader.Providers.Results;
@@ -45,17 +45,17 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             using var reader = new StringReader(_data);
             XDocument doc = XDocument.Load(reader);
 
-			var schemas = new XmlSchemaSet();
-			schemas.Add("", _configuration.Schema);
+            var schemas = new XmlSchemaSet();
+            schemas.Add("", _configuration.Schema);
 
-			var errors = new List<string>();
-			doc.Validate(schemas, (s, e) => errors.Add(e.Message));
+            var errors = new List<string>();
+            doc.Validate(schemas, (s, e) => errors.Add(e.Message));
 
             foreach (var error in errors) {
-				_publisher.PublishError($"[XML Schema] {error}");
-			}
+                _publisher.PublishError($"[XML Schema] {error}");
+            }
 
-			return Task.FromResult(new ValidationResult() {
+            return Task.FromResult(new ValidationResult() {
                 IsValid = !errors.Any(),
                 ErrorMessage = string.Join('\n', errors)
             });
@@ -68,7 +68,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             });
 
         }
-        
+
     }
 
     public override async Task<OrderData?> LoadOrderData(string source) {
@@ -78,7 +78,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             _publisher.PublishError("Could not load order data from Allmoxy");
             return null;
         }
-        
+
         var serializer = new XmlSerializer(typeof(OrderModel));
         using var reader = new StringReader(_data);
         if (serializer.Deserialize(reader) is not OrderModel data) {
@@ -144,9 +144,9 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
         var boxes = new List<DrawerBoxModel>();
 
         var subTotal = baseCabinets.Sum(c => c.UnitPrice) + wallCabinets.Sum(c => c.UnitPrice) + dbCabinets.Sum(c => c.UnitPrice) + tallCabinets.Sum(b => b.UnitPrice) + pieCutCabinets.Sum(b => b.UnitPrice) + diagonalCabinets.Sum(b => b.UnitPrice) + sinkCabinets.Sum(b => b.UnitPrice) + boxes.Sum(b => b.UnitPrice);
-		if (subTotal != data.Invoice.Subtotal) {
-			_publisher.PublishWarning($"Order data subtotal '${data.Invoice.Subtotal:0.00}' does not match calculated subtotal '${subTotal:0.00}'. There may be missing products.");
-		}
+        if (subTotal != data.Invoice.Subtotal) {
+            _publisher.PublishWarning($"Order data subtotal '${data.Invoice.Subtotal:0.00}' does not match calculated subtotal '${subTotal:0.00}'. There may be missing products.");
+        }
 
         var tax = data.Invoice.Tax;
         var shipping = data.Invoice.Shipping;
@@ -192,14 +192,14 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             Info = info
         };
 
-	}
+    }
 
-	private void LoadData(string source) {
-		var client = new AllmoxyClient(_credentials.Instance, _credentials.Username, _credentials.Password);
-		_data = client.GetExport(source, 6);
-	}
+    private void LoadData(string source) {
+        var client = new AllmoxyClient(_credentials.Instance, _credentials.Username, _credentials.Password);
+        _data = client.GetExport(source, 6);
+    }
 
-	private async Task<Company?> CreateCustomer(OrderModel data) {
+    private async Task<Company?> CreateCustomer(OrderModel data) {
         var adderes = new Address() {
             Line1 = data.Shipping.Address.Line1,
             Line2 = data.Shipping.Address.Line2,
@@ -229,14 +229,14 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
     }
 
-	private BaseCabinetData MapToBaseCabinet(BaseCabinetModel data) {
+    private BaseCabinetData MapToBaseCabinet(BaseCabinetModel data) {
 
         CabinetMaterialCore boxCore = GetMaterialCore(data.Cabinet.BoxMaterial.Type);
 
         MDFDoorOptions? mdfOptions = null;
         if (data.Cabinet.Fronts.Type != "Slab") mdfOptions = new(data.Cabinet.Fronts.Style, data.Cabinet.Fronts.Color);
 
-		return new BaseCabinetData() {
+        return new BaseCabinetData() {
             Qty = data.Cabinet.Qty,
             UnitPrice = data.Cabinet.UnitPrice,
             Room = data.Cabinet.Room,
@@ -250,25 +250,25 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
             FinishMaterialCore = GetFinishedSideMaterialCore(data.Cabinet.FinishMaterial.Type, boxCore),
             EdgeBandingColor = (data.Cabinet.EdgeBandColor == "Match Finish" ? data.Cabinet.FinishMaterial.Finish : data.Cabinet.EdgeBandColor),
             LeftSideType = GetCabinetSideType(data.Cabinet.LeftSide),
-			RightSideType = GetCabinetSideType(data.Cabinet.RightSide),
+            RightSideType = GetCabinetSideType(data.Cabinet.RightSide),
             DoorType = data.Cabinet.Fronts.Type,
             DoorStyle = mdfOptions,
             DoorQty = data.DoorQty,
-			HingeLeft = (data.HingeSide == "Left"),
-			ToeType = GetToeType(data.ToeType),
-			DrawerQty = data.DrawerQty,
-			DrawerFaceHeight = Dimension.FromMillimeters(data.DrawerFaceHeight),
+            HingeLeft = (data.HingeSide == "Left"),
+            ToeType = GetToeType(data.ToeType),
+            DrawerQty = data.DrawerQty,
+            DrawerFaceHeight = Dimension.FromMillimeters(data.DrawerFaceHeight),
             DrawerBoxMaterial = GetDrawerMaterial(data.DrawerMaterial),
             DrawerBoxSlideType = GetDrawerSlideType(data.DrawerSlide),
-			VerticalDividerQty = data.VerticalDividerQty,
-			AdjustableShelfQty = data.AdjShelfQty,
-			RollOutBoxPositions = GetRollOutPositions(data.RollOuts.Pos1, data.RollOuts.Pos2, data.RollOuts.Pos3, "", ""),
-			RollOutBlocks = GetRollOutBlockPositions(data.RollOuts.Blocks),
-			ScoopFrontRollOuts = true,
+            VerticalDividerQty = data.VerticalDividerQty,
+            AdjustableShelfQty = data.AdjShelfQty,
+            RollOutBoxPositions = GetRollOutPositions(data.RollOuts.Pos1, data.RollOuts.Pos2, data.RollOuts.Pos3, "", ""),
+            RollOutBlocks = GetRollOutBlockPositions(data.RollOuts.Blocks),
+            ScoopFrontRollOuts = true,
             ShelfDepth = GetShelfDepth(data.ShelfDepth)
-		};
+        };
 
-	}
+    }
 
     private WallCabinetData MapToWallCabinet(WallCabinetModel data) {
 
@@ -344,7 +344,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
     }
 
     private TallCabinetData MapToTallCabinet(TallCabinetModel data) {
-        
+
         CabinetMaterialCore boxCore = GetMaterialCore(data.Cabinet.BoxMaterial.Type);
 
         MDFDoorOptions? mdfOptions = null;
@@ -502,9 +502,9 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
     private RollOutBlockPosition GetRollOutBlockPositions(string name) => name switch {
         "Left" => RollOutBlockPosition.Left,
-		"Right" => RollOutBlockPosition.Right,
-		"Both" => RollOutBlockPosition.Both,
-		_ => RollOutBlockPosition.None
+        "Right" => RollOutBlockPosition.Right,
+        "Both" => RollOutBlockPosition.Both,
+        _ => RollOutBlockPosition.None
     };
 
     private Dimension[] GetRollOutPositions(string pos1, string pos2, string pos3, string pos4, string pos5) {
@@ -521,21 +521,21 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
         var positions = new Dimension[count];
         if (count >= 1) positions[0] = pos1 == "Yes" ? Dimension.FromMillimeters(19) : Dimension.Zero;
         if (count >= 2) positions[1] = pos2 == "Yes" ? Dimension.FromMillimeters(300) : Dimension.Zero;
-		if (count >= 3) positions[2] = pos3 == "Yes" ? (count >= 4 ? Dimension.FromMillimeters(581) : Dimension.FromMillimeters(497)) : Dimension.Zero;
+        if (count >= 3) positions[2] = pos3 == "Yes" ? (count >= 4 ? Dimension.FromMillimeters(581) : Dimension.FromMillimeters(497)) : Dimension.Zero;
         if (count >= 4) positions[3] = pos4 == "Yes" ? Dimension.FromMillimeters(862) : Dimension.Zero;
         if (count >= 5) positions[4] = pos5 == "Yes" ? Dimension.FromMillimeters(1142) : Dimension.Zero;
 
         return positions;
 
-	}
+    }
 
     private IToeType GetToeType(string name) => name switch {
         "Leg Levelers" => new LegLevelers(Dimension.FromMillimeters(102)),
         "Full Height Sides" => new FurnitureBase(Dimension.FromMillimeters(102)),
         "No Toe" => new NoToe(),
         "Notched" => new Notched(Dimension.FromMillimeters(102)),
-		_ => new LegLevelers(Dimension.FromMillimeters(102))
-	};
+        _ => new LegLevelers(Dimension.FromMillimeters(102))
+    };
 
     private CabinetSideType GetCabinetSideType(string name) => name switch {
         "Unfinished" => CabinetSideType.Unfinished,
@@ -547,8 +547,8 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
     private CabinetMaterialCore GetMaterialCore(string name) => name switch {
         "pb" => CabinetMaterialCore.Flake,
-		"ply" => CabinetMaterialCore.Plywood,
-		_ => CabinetMaterialCore.Flake
+        "ply" => CabinetMaterialCore.Plywood,
+        _ => CabinetMaterialCore.Flake
     };
 
     private CabinetMaterialCore GetFinishedSideMaterialCore(string name, CabinetMaterialCore boxMaterial) {
@@ -564,7 +564,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
             return CabinetMaterialCore.Plywood;
 
-		}
+        }
 
         return CabinetMaterialCore.Flake;
     }

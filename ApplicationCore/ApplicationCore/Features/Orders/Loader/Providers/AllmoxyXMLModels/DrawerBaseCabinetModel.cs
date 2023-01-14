@@ -25,10 +25,10 @@ public class DrawerBaseCabinetModel {
     [XmlElement("drawerQty")]
     public int DrawerQty { get; set; }
 
-	[XmlElement("drawerFace1")]
-	public double DrawerFace1 { get; set; }
-    
-	[XmlElement("drawerFace2")]
+    [XmlElement("drawerFace1")]
+    public double DrawerFace1 { get; set; }
+
+    [XmlElement("drawerFace2")]
     public double DrawerFace2 { get; set; }
 
     [XmlElement("drawerFace3")]

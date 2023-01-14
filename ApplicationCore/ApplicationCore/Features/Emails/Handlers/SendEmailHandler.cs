@@ -20,7 +20,7 @@ public class SendEmailHandler : CommandHandler<SendEmailRequest, SendEmailRespon
 
         var result = new SendEmailResponse(response);
 
-        await _bus.Publish(new EmailSentNotification(request.Email.Recipients.Aggregate((a,b) => $"{a},{b}")));
+        await _bus.Publish(new EmailSentNotification(request.Email.Recipients.Aggregate((a, b) => $"{a},{b}")));
 
         return new(result);
 

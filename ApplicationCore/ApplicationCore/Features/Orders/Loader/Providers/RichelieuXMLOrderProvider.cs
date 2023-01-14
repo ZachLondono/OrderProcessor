@@ -2,7 +2,7 @@
 using ApplicationCore.Features.Companies.Domain;
 using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Queries;
-using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers.DTO;
 using ApplicationCore.Features.Orders.Loader.Providers.Results;
 using ApplicationCore.Features.Orders.Loader.Providers.RichelieuXMLModels;
@@ -31,7 +31,7 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
     }
 
     public override async Task<OrderData?> LoadOrderData(string source) {
-        
+
         // TODO: get order data from http api
         using var fileStream = _fileReader.OpenReadFileStream(source);
         var serializer = new XmlSerializer(typeof(ResponseModel));
@@ -129,7 +129,7 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
 
         return order;
 
-	}
+    }
 
     private Dimension ParseComplexNumber(string value) {
         Dimension dimension = Dimension.FromMillimeters(0);
@@ -200,13 +200,13 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
         string pullOutCode = sku.Substring(14, 1);
         string rushCode = sku.Substring(15, 2);
 
-		return new SkuValues() {
+        return new SkuValues() {
             BoxMaterialId = GetMaterialId(specie),
             BottomMaterialId = GetMaterialId(botCode),
             Notches = GetOptionName(notchCode),
             Clips = GetOptionName(fastenerCode),
-			Accessory = GetOptionName(frontCode),
-			ScoopFront = pullOutCode.Equals("1") || pullOutCode.Equals("2") || pullOutCode.Equals("3"),
+            Accessory = GetOptionName(frontCode),
+            ScoopFront = pullOutCode.Equals("1") || pullOutCode.Equals("2") || pullOutCode.Equals("3"),
             Rush = rushCode.Equals("R3"),
 
             Logo = false,
@@ -219,7 +219,7 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
     private string GetOptionName(string optionkey) {
         if (_configuration.OptionMap.TryGetValue(optionkey, out string? optionstr) && optionstr is not null) {
             return optionstr;
-		}
+        }
         _publisher.PublishWarning($"Unrecognized option code '{optionkey}'");
         return string.Empty;
     }
@@ -340,10 +340,10 @@ internal partial class RichelieuXMLOrderProvider : OrderProvider {
         public bool PostFinish { get; set; }
         public bool ScoopFront { get; set; }
         public bool FaceMountingHoles { get; set; }
-        public Guid BoxMaterialId { get; set;}
-        public Guid BottomMaterialId { get; set;}
+        public Guid BoxMaterialId { get; set; }
+        public Guid BottomMaterialId { get; set; }
         public string Clips { get; set; } = string.Empty;
-        public string Notches { get; set;} = string.Empty;
+        public string Notches { get; set; } = string.Empty;
         public string Accessory { get; set; } = string.Empty;
 
     }

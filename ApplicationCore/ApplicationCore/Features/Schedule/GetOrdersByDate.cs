@@ -16,13 +16,13 @@ public class GetOrdersByDate {
 
         public Handler(ILogger<Handler> logger, IDbConnectionFactory factory) {
             _logger = logger;
-           _factory = factory;
+            _factory = factory;
         }
 
         public override async Task<Response<IEnumerable<ScheduledOrder>>> Handle(Query query) {
 
-            try { 
-                
+            try {
+
                 using var connection = _factory.CreateConnection();
 
                 const string sql = @"SELECT

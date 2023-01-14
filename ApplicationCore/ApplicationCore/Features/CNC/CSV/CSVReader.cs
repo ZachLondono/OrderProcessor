@@ -34,9 +34,9 @@ internal class CSVReader : ICSVReader {
         await csv.ReadAsync();
         csv.ReadHeader();
 
-		while (await csv.ReadAsync()) {
+        while (await csv.ReadAsync()) {
 
-            try { 
+            try {
 
                 var token = csv.GetRecord<CSVToken>();
 
@@ -45,14 +45,14 @@ internal class CSVReader : ICSVReader {
                     continue;
                 }
 
-			    tokens.Add(token);
+                tokens.Add(token);
 
-			} catch (Exception ex) {
-				_logger.LogError("Exception thrown while reading token from CSV file: {Exception}", ex);
-			}
+            } catch (Exception ex) {
+                _logger.LogError("Exception thrown while reading token from CSV file: {Exception}", ex);
+            }
 
 
-		}
+        }
 
         _logger.LogInformation("CSV records read: {Count}", tokens.Count);
 

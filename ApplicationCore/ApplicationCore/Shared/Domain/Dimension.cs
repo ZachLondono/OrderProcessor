@@ -37,9 +37,9 @@ public record Dimension : IComparable {
 
     public static bool operator >(Dimension dim1, Dimension dim2) => dim1.AsMillimeters() > dim2.AsMillimeters();
 
-	public static bool operator <(Dimension dim1, Dimension dim2) => dim1.AsMillimeters() < dim2.AsMillimeters();
+    public static bool operator <(Dimension dim1, Dimension dim2) => dim1.AsMillimeters() < dim2.AsMillimeters();
 
-	public override string ToString() {
+    public override string ToString() {
         return $"{{{AsInches()}\",  {AsMillimeters()}mm}}";
     }
 
@@ -62,7 +62,7 @@ public record Dimension : IComparable {
         // Accuracy is the maximum relative error; convert to absolute maxError
         double maxError = sign == 0 ? accuracy : value * accuracy;
 
-        int n = (int) Math.Floor(value);
+        int n = (int)Math.Floor(value);
         value -= n;
 
         if (value < maxError) {
@@ -90,7 +90,7 @@ public record Dimension : IComparable {
     }
 
     public int CompareTo(object? obj) {
-        
+
         if (obj == null || obj is not Dimension dim) {
             return 1;
         }

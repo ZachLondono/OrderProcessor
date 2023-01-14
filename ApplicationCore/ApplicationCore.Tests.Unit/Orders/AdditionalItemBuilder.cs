@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Domain;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
 
 namespace ApplicationCore.Tests.Unit.Orders;
 
@@ -23,6 +23,6 @@ public class AdditionalItemBuilder {
         return this;
     }
 
-    public AdditionalItem Build() => new (_id, _description, _price);
+    public AdditionalItem Build() => new(_id, _description, _price);
 
 }

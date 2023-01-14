@@ -38,8 +38,8 @@ internal class CADCodeLabelDBExistingJobProvider : IExistingJobProvider {
 
         return new ExistingJob(
             Name: jobName,
-			MachineName: machineName,
-			Inventory: inventory,
+            MachineName: machineName,
+            Inventory: inventory,
             Patterns: patterns,
             Parts: parts
         );

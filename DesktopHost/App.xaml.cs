@@ -25,12 +25,12 @@ public partial class App : Application {
         if (e.Args.Length > 0) {
             try {
 
-				var window = new ReleasingCSVTokensWindow();
+                var window = new ReleasingCSVTokensWindow();
                 var bus = serviceProvider.GetRequiredService<IUIBus>();
                 bus.Register(window);
                 window.Show();
-                
-				var app = serviceProvider.GetRequiredService<ConsoleApplication>();
+
+                var app = serviceProvider.GetRequiredService<ConsoleApplication>();
                 await app.Run(e.Args);
 
                 window.Close();

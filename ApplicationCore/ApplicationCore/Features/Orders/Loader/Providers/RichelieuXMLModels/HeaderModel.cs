@@ -62,7 +62,7 @@ public class HeaderModel {
     public required string Note { get; set; }
 
     [XmlAttribute("tsConfirmeXML")]
-    public required string TsConfirmeXML {  get; set; }
+    public required string TsConfirmeXML { get; set; }
 
 
 }

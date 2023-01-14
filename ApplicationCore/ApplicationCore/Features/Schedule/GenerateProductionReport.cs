@@ -28,12 +28,12 @@ public class GenerateProductionReport {
             object model = new {
                 command.Orders
             };
-            
+
             var config = new ClosedXMLTemplateConfiguration() {
                 TemplateFilePath = command.TemplatePath
             };
 
-            try { 
+            try {
 
                 var result = await _bus.Send(new FillTemplateRequest(model, command.OutputDirectory, command.ReportTitle, command.DoPrint, config));
 
@@ -49,7 +49,7 @@ public class GenerateProductionReport {
                 return response!;
 
             } catch (Exception e) {
-                
+
                 return new Response(new Error() {
                     Title = "",
                     Details = $"Error generating production report {e.Message}",

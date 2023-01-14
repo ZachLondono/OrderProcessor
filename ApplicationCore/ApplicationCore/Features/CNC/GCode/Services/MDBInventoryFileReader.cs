@@ -12,11 +12,11 @@ internal class MDBInventoryFileReader : IInventoryFileReader {
 
     public MDBInventoryFileReader(IAccessDBConnectionFactory factory) {
         _factory = factory;
-	}
+    }
 
-	public async Task<IEnumerable<InventorySheetStock>> GetAvailableInventoryAsync(string filePath) {
+    public async Task<IEnumerable<InventorySheetStock>> GetAvailableInventoryAsync(string filePath) {
 
-		using var connection = _factory.CreateConnection(filePath);
+        using var connection = _factory.CreateConnection(filePath);
 
         const string query = @"SELECT
 								[SheetStock], [Thickness], [Units], [Graining], [Length], [Width], [Priority]
@@ -44,9 +44,9 @@ internal class MDBInventoryFileReader : IInventoryFileReader {
 
             });
 
-	}
+    }
 
-	class InventoryItemModel {
+    class InventoryItemModel {
         public string SheetStock { get; set; } = string.Empty;
         public double Thickness { get; set; }
         public int Units { get; set; }

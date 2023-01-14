@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Domain;
-using ApplicationCore.Features.Orders.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.DTO;
@@ -47,7 +47,7 @@ public class SinkCabinetData {
     public required int DoorQty { get; set; }
 
     public required int FalseDrawerQty { get; set; }
-    
+
     public required Dimension DrawerFaceHeight { get; set; }
 
     public required CabinetDrawerBoxMaterial DrawerBoxMaterial { get; set; }

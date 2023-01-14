@@ -3,5 +3,5 @@
 namespace ApplicationCore.Features.CNC.GCode.Services;
 
 public interface IToolFileReader {
-	Task<IEnumerable<Tool>> GetAvailableToolsAsync(string filePath);
+    Task<IEnumerable<Tool>> GetAvailableToolsAsync(string filePath);
 }

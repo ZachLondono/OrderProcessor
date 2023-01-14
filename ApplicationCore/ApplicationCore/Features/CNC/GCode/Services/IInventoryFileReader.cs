@@ -3,5 +3,5 @@
 namespace ApplicationCore.Features.CNC.GCode.Services;
 
 public interface IInventoryFileReader {
-	Task<IEnumerable<InventorySheetStock>> GetAvailableInventoryAsync(string filePath);
+    Task<IEnumerable<InventorySheetStock>> GetAvailableInventoryAsync(string filePath);
 }

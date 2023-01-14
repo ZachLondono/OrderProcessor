@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using System.Text.Json;
-using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 using Dapper;
 
@@ -23,7 +23,7 @@ public class SqliteUBoxDimensionTypeHandler : SqlMapper.TypeHandler<UBoxDimensio
         if (value is null) {
             parameter.Value = null;
         } else {
-            parameter.Value = JsonSerializer.Serialize(new UBoxDimensionsModel() { 
+            parameter.Value = JsonSerializer.Serialize(new UBoxDimensionsModel() {
                 A = value.A.AsMillimeters(),
                 B = value.B.AsMillimeters(),
                 C = value.C.AsMillimeters(),

@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.ExcelTemplates.Domain;
 using ApplicationCore.Features.Labels.Services;
 using ApplicationCore.Features.Orders.Complete;
-using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.Loader.Providers.RichelieuXMLModels;
 using ApplicationCore.Features.Orders.Loader.Providers;
@@ -15,7 +15,7 @@ internal static class DependencyInjection {
 
     public static IServiceCollection AddOrderLoading(this IServiceCollection services, IConfiguration configuration) {
 
-		services.AddTransient<IOrderProviderFactory, OrderProviderFactory>();
+        services.AddTransient<IOrderProviderFactory, OrderProviderFactory>();
 
         var allmoxyCreds = configuration.GetRequiredSection("AllmoxyCredentials").Get<AllmoxyCredentials>();
         services.AddSingleton<AllmoxyCredentials>(allmoxyCreds);

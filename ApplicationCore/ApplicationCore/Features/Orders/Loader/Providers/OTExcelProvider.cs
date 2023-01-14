@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Companies.Queries;
-using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers.DTO;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
@@ -144,7 +144,7 @@ internal class OTExcelProvider : OrderProvider {
 
             var wasRead = TryReadBox(columns, offset, out DrawerBoxData box, options);
 
-            if (wasRead) { 
+            if (wasRead) {
                 boxes.Add(box);
             } else {
                 _publisher.PublishWarning($"Could not read box on row '{qtyCell.WorksheetRow().RowNumber()}'");
@@ -178,11 +178,11 @@ internal class OTExcelProvider : OrderProvider {
 
     public override Task<ValidationResult> ValidateSource(string source) {
 
-        if (!File.Exists(source)) 
+        if (!File.Exists(source))
             return Task.FromResult(new ValidationResult() {
-                    IsValid = false,
-                    ErrorMessage = $"Given file does not exist\n'{source}'"
-                });
+                IsValid = false,
+                ErrorMessage = $"Given file does not exist\n'{source}'"
+            });
 
         var extension = Path.GetExtension(source);
         if (extension != ".xlsm")
@@ -196,10 +196,10 @@ internal class OTExcelProvider : OrderProvider {
     }
 
     private bool TryReadBox(DataColumns data, int offset, out DrawerBoxData box, GlobalOptions options) {
-        
+
         box = new() {
             BoxMaterialOptionId = options.BoxMaterialId,
-            BottomMaterialOptionId= options.BottomMaterialId,
+            BottomMaterialOptionId = options.BottomMaterialId,
             Notch = options.Notch,
             PostFinish = options.PostFinish,
             Clips = options.Clips,
@@ -236,7 +236,7 @@ internal class OTExcelProvider : OrderProvider {
                 box.Logo = LogoPosition.Inside;
             } else if (logo.Equals("No") || logo.Equals(string.Empty)) {
                 box.Logo = LogoPosition.None;
-            } else { 
+            } else {
                 box.Logo = LogoPosition.None;
                 _publisher.PublishWarning($"Unrecognized logo value '{logo}' in cell {data.PullOut.Address}");
             }

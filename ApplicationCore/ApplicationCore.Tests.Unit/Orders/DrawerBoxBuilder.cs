@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Domain.Products;
-using ApplicationCore.Features.Orders.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Tests.Unit.Orders;
@@ -15,7 +15,7 @@ public class DrawerBoxBuilder {
     private Dimension _depth = Dimension.FromMillimeters(0);
     private string _note = string.Empty;
     private Dictionary<string, string> _labelFields = new();
-	private DrawerBoxOptions _options = new(
+    private DrawerBoxOptions _options = new(
         Guid.NewGuid(),
         Guid.NewGuid(),
         "",

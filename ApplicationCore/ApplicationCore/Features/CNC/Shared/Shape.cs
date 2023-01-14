@@ -9,31 +9,26 @@ public record ArcSegment(Point Start, Point End, Point Center, double Radius, Ar
 
 public record LineSegment(Point Start, Point End) : ShapeSegment;
 
-public class Shape
-{
+public class Shape {
 
     public bool IsClosed { get; private set; }
 
     private readonly LinkedList<IShapeComponent> _list;
 
-    public Shape()
-    {
+    public Shape() {
         _list = new();
         IsClosed = false;
     }
 
-    public void AddLine(Point start, Point end)
-    {
+    public void AddLine(Point start, Point end) {
 
         if (start == end) throw new InvalidOperationException("Zero length route operation");
 
-        if (_list.Last is not null)
-        {
+        if (_list.Last is not null) {
 
             var last = _list.Last;
 
-            if (last.Value is Fillet fillet)
-            {
+            if (last.Value is Fillet fillet) {
 
                 var vector = new Vector(end.X - start.X, end.Y - start.Y);
                 var normal = vector.GetNormal();
@@ -45,11 +40,9 @@ public class Shape
                 // Adjust start position of this new line, and end position of previous fillet
                 fillet.End = newStart;
 
-                if (last.Previous is not null && last.Previous.Value is Line prevline)
-                {
+                if (last.Previous is not null && last.Previous.Value is Line prevline) {
 
-                    fillet.Direction = IsLeftOfLine(prevline, end) switch
-                    {
+                    fillet.Direction = IsLeftOfLine(prevline, end) switch {
                         true => ArcDirection.CounterClockwise,
                         false => ArcDirection.Clockwise,
                     };
@@ -69,33 +62,26 @@ public class Shape
 
                 start = newStart;
 
-            }
-            else if (last.ValueRef is Line line && line.End != start)
-            {
+            } else if (last.ValueRef is Line line && line.End != start) {
                 throw new InvalidOperationException("Non-continuous route");
             }
 
         }
 
-        if (_list.First is not null)
-        {
-            if (_list.First.Value is Line firstLine)
-            {
+        if (_list.First is not null) {
+            if (_list.First.Value is Line firstLine) {
                 if (firstLine.Start == end) IsClosed = true;
-            }
-            else throw new UnreachableException("Cannot start a route sequence with a fillet"); ;
+            } else throw new UnreachableException("Cannot start a route sequence with a fillet"); ;
         }
 
-        AddComponent(new Line()
-        {
+        AddComponent(new Line() {
             Start = start,
             End = end
         });
 
     }
 
-    public void AddFillet(double radius)
-    {
+    public void AddFillet(double radius) {
 
         // TODO: check that fillet radius is valid and not too large, given the lengths of the connecting lines
 
@@ -113,8 +99,7 @@ public class Shape
             line.End.Y + normal.Y * radius
         );
 
-        AddComponent(new Fillet()
-        {
+        AddComponent(new Fillet() {
             Start = line.End,
             Radius = radius,
             End = new(0, 0),                 // To be set when next line is given
@@ -124,13 +109,11 @@ public class Shape
 
     }
 
-    public IEnumerable<ShapeSegment> GetSegments()
-    {
+    public IEnumerable<ShapeSegment> GetSegments() {
 
         if (!IsClosed) throw new InvalidOperationException("Shape is not closed");
 
-        return _list.Select<IShapeComponent, ShapeSegment>(c =>
-        {
+        return _list.Select<IShapeComponent, ShapeSegment>(c => {
             if (c is Line line) return new LineSegment(line.Start, line.End);
             else if (c is Fillet fillet) return new ArcSegment(fillet.Start, fillet.End, fillet.Center, fillet.Radius, fillet.Direction);
             throw new UnreachableException("Unknown segment type");
@@ -138,8 +121,7 @@ public class Shape
 
     }
 
-    private void AddComponent(IShapeComponent component)
-    {
+    private void AddComponent(IShapeComponent component) {
         var node = new LinkedListNode<IShapeComponent>(component);
         _list.AddLast(node);
     }
@@ -147,21 +129,18 @@ public class Shape
     /// <summary>
     /// Returns true if the point is to the left of the line
     /// </summary>
-    private static bool IsLeftOfLine(Line line, Point point)
-    {
+    private static bool IsLeftOfLine(Line line, Point point) {
         return (line.End.X - line.Start.X) * (point.Y - line.Start.Y) - (line.End.Y - line.Start.Y) * (point.X - line.Start.X) > 0;
     }
 
     private interface IShapeComponent { }
 
-    private class Line : IShapeComponent
-    {
+    private class Line : IShapeComponent {
         public required Point Start { get; set; }
         public required Point End { get; set; }
     }
 
-    private class Fillet : IShapeComponent
-    {
+    private class Fillet : IShapeComponent {
         public required Point Start { get; set; }
         public required Point Center { get; set; }
         public required Point End { get; set; }
@@ -169,28 +148,24 @@ public class Shape
         public required double Radius { get; set; }
     }
 
-    struct Vector
-    {
+    struct Vector {
 
         public double X { get; set; }
         public double Y { get; set; }
 
         public double Magnitude => Math.Sqrt(X * X + Y * Y);
 
-        public Vector GetNormal()
-        {
+        public Vector GetNormal() {
             var magnitude = Magnitude;
             return new(X / magnitude, Y / magnitude);
         }
 
-        public Vector(double x, double y)
-        {
+        public Vector(double x, double y) {
             X = x;
             Y = y;
         }
 
-        public static Vector operator +(Vector left, Vector right) => new()
-        {
+        public static Vector operator +(Vector left, Vector right) => new() {
             X = left.X + right.X,
             Y = left.Y + right.Y
         };

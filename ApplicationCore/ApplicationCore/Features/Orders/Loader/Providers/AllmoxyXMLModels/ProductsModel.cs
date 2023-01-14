@@ -4,8 +4,8 @@ namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
 public class ProductsModel {
 
-	[XmlElement("baseCabinet")]
-	public BaseCabinetModel[] BaseCabinets { get; set; } = Array.Empty<BaseCabinetModel>();
+    [XmlElement("baseCabinet")]
+    public BaseCabinetModel[] BaseCabinets { get; set; } = Array.Empty<BaseCabinetModel>();
 
     [XmlElement("drawerBaseCabinet")]
     public DrawerBaseCabinetModel[] DrawerBaseCabinets { get; set; } = Array.Empty<DrawerBaseCabinetModel>();

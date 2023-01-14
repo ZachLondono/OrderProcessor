@@ -1,13 +1,11 @@
 ﻿using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Queries;
-using ApplicationCore.Features.Orders;
-using ApplicationCore.Features.Orders.Commands;
-using ApplicationCore.Features.Orders.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Release;
-using ApplicationCore.Features.Orders.Queries;
 using ApplicationCore.Infrastructure;
 using FluentAssertions;
 using NSubstitute;
+using ApplicationCore.Features.Orders.Shared.State;
 
 namespace ApplicationCore.Tests.Unit.Orders;
 
@@ -199,7 +197,7 @@ public class OrderStateTests {
         _sut.ReplaceOrder(order);
         Guid vendorId = Guid.NewGuid();
         _sut.UpdateVendor(vendorId);
-        _bus.Send(new UpdateOrder.Command(order)).ReturnsForAnyArgs(new Response(new Error() { Title = "Error", Details = "Error details" })) ;
+        _bus.Send(new UpdateOrder.Command(order)).ReturnsForAnyArgs(new Response(new Error() { Title = "Error", Details = "Error details" }));
 
         // Act
         var result = _sut.SaveChanges().Result;

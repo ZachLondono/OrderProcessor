@@ -21,8 +21,7 @@ public class QuestPDFWriter : IReleasePDFWriter {
         // TODO: validate configuration
         var config = _configProvider.GetConfiguration();
 
-        foreach (var release in job.Releases)
-        {
+        foreach (var release in job.Releases) {
 
             CoverModel cover = CreateCover(job, release);
             List<PageModel> pages = CreatePages(job, release);
@@ -32,8 +31,7 @@ public class QuestPDFWriter : IReleasePDFWriter {
                 Cover = cover
             };
 
-            try
-            {
+            try {
                 var document = pdfmanager.BuildDocument();
                 // TODO: get path from configuration
                 var filepath = GetFileName(outputDirectory, $"{job.JobName} - {release.MachineName} CUTLIST");
@@ -53,9 +51,7 @@ public class QuestPDFWriter : IReleasePDFWriter {
                 //    printer.Print("Microsoft Print to PDF");
                 //}
 
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 // TODO: warn about failed pdf generation
                 Console.WriteLine("Failed to create pdf");
                 Console.WriteLine(ex.ToString());

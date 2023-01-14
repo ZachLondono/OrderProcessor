@@ -85,9 +85,9 @@ public static class DependencyInjection {
                let y = x.BaseType
                where
                ((y != null && y.IsGenericType &&
-               (openGenericType1.IsAssignableFrom(y.GetGenericTypeDefinition()) || openGenericType2.IsAssignableFrom(y.GetGenericTypeDefinition())) ) ||
+               (openGenericType1.IsAssignableFrom(y.GetGenericTypeDefinition()) || openGenericType2.IsAssignableFrom(y.GetGenericTypeDefinition()))) ||
                (z.IsGenericType &&
-               (openGenericType1.IsAssignableFrom(z.GetGenericTypeDefinition()) || openGenericType2.IsAssignableFrom(z.GetGenericTypeDefinition()) ))) && y.IsClass && !y.IsAbstract
+               (openGenericType1.IsAssignableFrom(z.GetGenericTypeDefinition()) || openGenericType2.IsAssignableFrom(z.GetGenericTypeDefinition())))) && y.IsClass && !y.IsAbstract
                select x;
     }
 

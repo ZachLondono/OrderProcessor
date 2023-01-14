@@ -5,7 +5,7 @@ using ApplicationCore.Infrastructure;
 namespace ApplicationCore.Features.ProductPlanner;
 public class GenerateEXTFile {
 
-    public record Command(PPJob Job,string FilePath) : ICommand;
+    public record Command(PPJob Job, string FilePath) : ICommand;
 
     public class Handler : CommandHandler<Command> {
 

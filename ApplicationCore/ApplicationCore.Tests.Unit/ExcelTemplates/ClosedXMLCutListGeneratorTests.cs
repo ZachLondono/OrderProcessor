@@ -15,7 +15,7 @@ public class ClosedXMLTemplateGeneratorTests {
     private readonly IExcelTemplateFactory _factory = Substitute.For<IExcelTemplateFactory>();
     private readonly IExcelPrinter _printer = Substitute.For<IExcelPrinter>();
     private readonly IExcelTemplate _template = Substitute.For<IExcelTemplate>();
-    
+
 
     public ClosedXMLTemplateGeneratorTests() {
         _sut = new(_configuration, _fileReader, _factory, _printer);
@@ -57,7 +57,7 @@ public class ClosedXMLTemplateGeneratorTests {
 
         string existingFile = Path.Combine(outputDirectory, $"{filename}.xlsx");
         string expectedFile = Path.Combine(outputDirectory, $"{filename} (1).xlsx");
-        
+
         var stream = new MemoryStream();
         _factory.CreateTemplate(stream).Returns(_template);
         _fileReader.OpenReadFileStream(_configuration.TemplateFilePath).Returns(stream);

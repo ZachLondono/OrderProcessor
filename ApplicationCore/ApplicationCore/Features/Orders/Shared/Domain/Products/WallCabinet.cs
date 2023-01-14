@@ -1,0 +1,91 @@
+﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.ProductPlanner.Contracts;
+using ApplicationCore.Shared.Domain;
+
+namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
+
+internal class WallCabinet : Cabinet, IPPProductContainer {
+
+    public WallCabinetDoors Doors { get; }
+    public WallCabinetInside Inside { get; }
+    public bool FinishedBottom { get; }
+
+    public static WallCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
+                        Dimension height, Dimension width, Dimension depth,
+                        CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
+                        CabinetSide rightSide, CabinetSide leftSide,
+                        WallCabinetDoors doors, WallCabinetInside inside, bool finishedBottom) {
+        return new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, inside, finishedBottom);
+    }
+
+    private WallCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
+                        Dimension height, Dimension width, Dimension depth,
+                        CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
+                        CabinetSide rightSide, CabinetSide leftSide,
+                        WallCabinetDoors doors, WallCabinetInside inside, bool finishedBottom)
+                        : base(id, qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
+
+        if (leftSide.Type == CabinetSideType.AppliedPanel || rightSide.Type == CabinetSideType.AppliedPanel)
+            throw new InvalidOperationException("Wall cabinet cannot have applied panel sides");
+
+        if (doors.Quantity > 2 || doors.Quantity < 0)
+            throw new InvalidOperationException("Invalid number of doors");
+
+        Doors = doors;
+        Inside = inside;
+        FinishedBottom = finishedBottom;
+
+    }
+
+    public IEnumerable<PPProduct> GetPPProducts() {
+        string doorType = (Doors.MDFOptions is null) ? "Slab" : "Buyout";
+        yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), new());
+    }
+
+    private string GetProductName() {
+        return $"W{Doors.Quantity}D";
+    }
+
+    private Dictionary<string, string> GetParameters() {
+        var parameters = new Dictionary<string, string>() {
+            { "ProductW", Width.AsMillimeters().ToString() },
+            { "ProductH", Height.AsMillimeters().ToString() },
+            { "ProductD", Depth.AsMillimeters().ToString() },
+            { "FinishedLeft", GetSideOption(LeftSide.Type) },
+            { "FinishedRight", GetSideOption(RightSide.Type) },
+            { "ShelfQ", Inside.AdjustableShelves.ToString() },
+            { "DividerQ", Inside.VerticalDividers.ToString() }
+        };
+
+        if (Doors.HingeSide != HingeSide.NotApplicable) {
+            parameters.Add("HingeLeft", GetHingeSideOption());
+        }
+
+        return parameters;
+    }
+
+    private Dictionary<string, string> GetParameterOverrides() {
+
+        var parameters = new Dictionary<string, string>();
+
+        if (Doors.ExtendDown != Dimension.Zero) {
+            parameters.Add("ExtendDoorD", Doors.ExtendDown.AsMillimeters().ToString());
+        }
+
+        if (FinishedBottom) {
+            parameters.Add("_FinishedWallBot", "1");
+        }
+
+        return parameters;
+
+    }
+
+    private string GetHingeSideOption() => Doors.HingeSide switch {
+        HingeSide.NotApplicable => "0",
+        HingeSide.Left => "1",
+        HingeSide.Right => "0",
+        _ => "0"
+    };
+
+}

@@ -24,7 +24,7 @@ internal class CachedBusDecorator : IBus {
         if (typeof(TResponse) == typeof(Unit)) return await _bus.Send(request, cancellationToken);
 
         if (_cachedResponses.ContainsKey(request)) {
-            
+
             var cachedResponse = _cachedResponses[request];
 
             if (DateTime.Now - cachedResponse.RecievedTimestamp < TimeSpan.FromSeconds(_configuration.TimeAlive)) {
@@ -36,9 +36,9 @@ internal class CachedBusDecorator : IBus {
             }
 
         }
-        
+
         var response = await _bus.Send(request, cancellationToken);
-        
+
         if (_configuration.MaxCacheSize != 0 && _cachedResponses.Count > _configuration.MaxCacheSize) {
             var oldestRequest = _cachedResponses.OrderBy(kv => kv.Value.RecievedTimestamp).First();
             _cachedResponses.Remove(oldestRequest.Key);

@@ -2,7 +2,7 @@
 
 public interface ICADCodeFactory {
 
-	// Loads configuration to initlize cadcode
-	ICADCodeProxy CreateCADCode();
+    // Loads configuration to initlize cadcode
+    ICADCodeProxy CreateCADCode();
 
 }

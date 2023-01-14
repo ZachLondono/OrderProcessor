@@ -16,7 +16,7 @@ public class PrintLabelsHandler : CommandHandler<PrintLabelsRequest> {
     }
 
     public override async Task<Response> Handle(PrintLabelsRequest request) {
-        
+
         _logger.LogInformation("Printing {Count} labels", request.Labels.Count);
         var printTasks = new List<Task>();
         foreach (var label in request.Labels) {

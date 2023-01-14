@@ -4,17 +4,17 @@ namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
 public class CabinetModel {
 
-	[XmlElement("boxMaterial")]
-	public CabinetMaterialModel BoxMaterial { get; set; } = new();
+    [XmlElement("boxMaterial")]
+    public CabinetMaterialModel BoxMaterial { get; set; } = new();
 
-	[XmlElement("finishMaterial")]
-	public CabinetMaterialModel FinishMaterial { get; set; } = new();
+    [XmlElement("finishMaterial")]
+    public CabinetMaterialModel FinishMaterial { get; set; } = new();
 
     [XmlElement("fronts")]
     public CabinetFrontsModel Fronts { get; set; } = new();
 
-	[XmlElement("edgeBandColor")]
-	public string EdgeBandColor { get; set; } = string.Empty;
+    [XmlElement("edgeBandColor")]
+    public string EdgeBandColor { get; set; } = string.Empty;
 
     [XmlElement("qty")]
     public int Qty { get; set; }

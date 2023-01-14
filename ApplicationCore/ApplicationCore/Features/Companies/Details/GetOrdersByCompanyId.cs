@@ -17,7 +17,7 @@ public class GetOrdersByCompanyId {
         }
 
         public override async Task<Response<IEnumerable<CompanyOrderListItem>>> Handle(Query request) {
-            
+
             using var connection = _factory.CreateConnection();
 
             const string query = "SELECT id, number, name FROM orders WHERE customerid = @CompanyId OR vendorid = @CompanyId;";

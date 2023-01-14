@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Domain;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
 
 namespace ApplicationCore.Features.Schedule;
 

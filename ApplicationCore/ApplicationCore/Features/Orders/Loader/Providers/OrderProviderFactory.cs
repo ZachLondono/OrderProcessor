@@ -15,9 +15,9 @@ public class OrderProviderFactory : IOrderProviderFactory {
     public OrderProvider GetOrderProvider(OrderSourceType source) => source switch {
         OrderSourceType.AllmoxyXML => _serviceProvider.GetRequiredService<AllmoxyXMLOrderProvider>(),
         OrderSourceType.RichelieuXML => _serviceProvider.GetRequiredService<RichelieuXMLOrderProvider>(),
-		OrderSourceType.OTExcel => _serviceProvider.GetRequiredService<OTExcelProvider>(),
+        OrderSourceType.OTExcel => _serviceProvider.GetRequiredService<OTExcelProvider>(),
         OrderSourceType.HafeleExcel => _serviceProvider.GetRequiredService<HafeleExcelProvider>(),
-		_ => throw new NotImplementedException(),
+        _ => throw new NotImplementedException(),
     };
 
 }
