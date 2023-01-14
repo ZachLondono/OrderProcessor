@@ -8,6 +8,4 @@ public class AllmoxyConfiguration {
 
     public string Schema { get; init; } = string.Empty;
 
-    public Dictionary<string, string> MaterialMap { get; init; } = new();
-
 }
