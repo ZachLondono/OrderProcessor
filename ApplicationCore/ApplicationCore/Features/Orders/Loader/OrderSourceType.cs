@@ -2,8 +2,5 @@
 
 public enum OrderSourceType {
     AllmoxyXML,
-    OTExcel,
-    RichelieuXML,
-    HafeleExcel,
     Unknown
 }

@@ -55,12 +55,6 @@ public class CreateNewOrder {
                     order.Rush
                 }, trx);
 
-                foreach (var box in request.Products.Where(p => p is DovetailDrawerBoxProduct).Cast<DovetailDrawerBoxProduct>()) {
-
-                    await CreateDrawerBox(box, order.Id, connection, trx);
-
-                }
-
                 foreach (var item in request.AdditionalItems) {
 
                     await CreateItem(item, order.Id, connection, trx);
@@ -90,36 +84,6 @@ public class CreateNewOrder {
                 OrderId = orderId,
                 item.Description,
                 item.Price
-            }, transaction);
-
-        }
-
-        private static async Task CreateDrawerBox(DovetailDrawerBoxProduct box, Guid orderId, IDbConnection connection, IDbTransaction transaction) {
-
-            const string boxCommand = @"INSERT INTO drawerboxes (id, orderid, unitprice, qty, height_mm, width_mm, depth_mm, note, labelfields, postfinish, scoopfront, logo, facemountingholes, boxmaterialid, bottommaterialid, clips, notches, accessory, uboxdimensions, fixeddividers)
-                                        VALUES (@Id, @OrderId, @UnitPrice, @Qty, @Height, @Width, @Depth, @Note, @LabelFields, @PostFinish, @ScoopFront, @Logo, @FaceMountingHoles, @BoxMaterialId, @BottomMaterialId, @Clips, @Notches, @Accessory, @UBoxDimensions, @FixedDivdersCounts);";
-
-            await connection.ExecuteAsync(boxCommand, new {
-                box.Id,
-                OrderId = orderId,
-                box.UnitPrice,
-                box.Qty,
-                box.Height,
-                box.Width,
-                box.Depth,
-                box.Note,
-                LabelFields = (IDictionary<string, string>)box.LabelFields,
-                box.Options.PostFinish,
-                box.Options.ScoopFront,
-                Logo = box.Options.Logo.ToString(),
-                box.Options.FaceMountingHoles,
-                box.Options.BoxMaterialId,
-                box.Options.BottomMaterialId,
-                box.Options.Clips,
-                box.Options.Notches,
-                box.Options.Accessory,
-                box.Options.UBoxDimensions,
-                box.Options.FixedDivdersCounts
             }, transaction);
 
         }

@@ -24,8 +24,7 @@ public class OverwriteExistingOrderWithId {
 
             const string deleteOrderCommand = "DELETE FROM orders WHERE id = @ExistingId;";
             const string deleteBoxesCommand = "DELETE FROM additionalitems WHERE orderid = @ExistingId;";
-            const string deleteAdditionalItemCommand = "DELETE FROM drawerboxes WHERE orderid = @ExistingId;";
-
+            
             using var connection = _factory.CreateConnection();
 
             connection.Open();
@@ -34,7 +33,6 @@ public class OverwriteExistingOrderWithId {
             try {
                 await connection.ExecuteAsync(deleteOrderCommand, request, trx);
                 await connection.ExecuteAsync(deleteBoxesCommand, request, trx);
-                await connection.ExecuteAsync(deleteAdditionalItemCommand, request, trx);
                 trx.Commit();
                 connection.Close();
             } catch (Exception ex) {

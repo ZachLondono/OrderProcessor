@@ -7,7 +7,6 @@ namespace ApplicationCore.Tests.Unit.Orders;
 public class DrawerBoxBuilder {
 
     private Guid _id = Guid.NewGuid();
-    private int _line = 0;
     private decimal _unitPrice = decimal.Zero;
     private int _qty = 0;
     private Dimension _height = Dimension.FromMillimeters(0);
@@ -16,8 +15,10 @@ public class DrawerBoxBuilder {
     private string _note = string.Empty;
     private Dictionary<string, string> _labelFields = new();
     private DrawerBoxOptions _options = new(
-        Guid.NewGuid(),
-        Guid.NewGuid(),
+        "",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -25,11 +26,6 @@ public class DrawerBoxBuilder {
 
     public DrawerBoxBuilder WithId(Guid id) {
         _id = id;
-        return this;
-    }
-
-    public DrawerBoxBuilder WithLine(int line) {
-        _line = line;
         return this;
     }
 
@@ -73,6 +69,6 @@ public class DrawerBoxBuilder {
         return this;
     }
 
-    public DovetailDrawerBoxProduct Build() => new DovetailDrawerBoxProduct(_id, _line, _unitPrice, _qty, _height, _width, _depth, _note, _labelFields, _options);
+    public DovetailDrawerBoxProduct Build() => new DovetailDrawerBoxProduct(_id, _unitPrice, _qty, _height, _width, _depth, _note, _labelFields, _options);
 
 }

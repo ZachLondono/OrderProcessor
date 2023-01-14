@@ -20,7 +20,9 @@
                 <th class="p-5">Height</th>
                 <th class="p-5">Width</th>
                 <th class="p-5">Depth</th>
-                <th class="p-5">Box Material</th>
+                <th class="p-5">Front Material</th>
+                <th class="p-5">Side Material</th>
+                <th class="p-5">Back Material</th>
                 <th class="p-5">Bottom Material</th>
                 <th class="p-5">Scoop</th>
                 <th class="p-5">Logo</th>
@@ -55,8 +57,10 @@
                             <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Width.AsMillimeters().ToString("0.00")</td>
                             <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@box.Depth.AsMillimeters().ToString("0.00")</td>
                         }
-                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@_materialNames[box.Options.BoxMaterialId]</td>
-                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@_materialNames[box.Options.BottomMaterialId]</td>
+                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.FrontMaterial</td>
+                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.SideMaterial</td>
+                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.BackMaterial</td>
+                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@box.Options.BottomMaterial</td>
                         <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.ScoopFront ? "Y" : "N")</td>
                         <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.Logo == LogoPosition.None ? "N" : "Y")</td>
                         <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(box.Options.PostFinish ? "Y" : "N")</td>
@@ -97,33 +101,5 @@
     public IEnumerable<DovetailDrawerBoxProduct> DrawerBoxes { get; set; } = Enumerable.Empty<DovetailDrawerBoxProduct>();
     [Parameter]
     public bool UseInches { get; set; } = false;
-
-    private Dictionary<Guid, string> _materialNames = new();
-
-    protected override async Task OnInitializedAsync() {
-        
-        var materialIds = DrawerBoxes.SelectMany(b => new Guid[] { b.Options.BoxMaterialId, b.Options.BottomMaterialId })
-                                    .Distinct();
-
-        _materialNames = new Dictionary<Guid, string>();
-        foreach (var id in materialIds) {
-            var name = await GetMaterialName(id);
-            _materialNames.Add(id, name);
-        }
-
-    }
-
-    private async Task<string> GetMaterialName(Guid materialId) {
-        var matResponse = await Bus.Send(new GetDrawerBoxMaterialById.Query(materialId));
-        var materialName = "UNKNOWN";
-        matResponse.Match(
-            m => {
-                if (m is not null) materialName = m.Name;
-            },
-            error => { }
-        );
-
-        return materialName;
-    }
 
 }

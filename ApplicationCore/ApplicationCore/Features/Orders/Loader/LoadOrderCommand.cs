@@ -156,8 +156,10 @@ public class LoadOrderCommand {
         private static DovetailDrawerBoxProduct MapDataToDrawerBox(DrawerBoxData data) {
 
             var options = new DrawerBoxOptions(
-                    data.BoxMaterialOptionId,
-                    data.BottomMaterialOptionId,
+                    data.FrontMaterialOption,
+                    data.BackMaterialOption,
+                    data.SideMaterialOption,
+                    data.BottomMaterialOption,
                     data.Clips,
                     data.Notch,
                     data.Accessory,

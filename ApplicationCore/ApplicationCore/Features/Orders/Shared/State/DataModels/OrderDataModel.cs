@@ -39,9 +39,9 @@ public class OrderDataModel {
 
     public IDictionary<string, string> Info { get; set; } = new Dictionary<string, string>();
 
-    public Order AsDomainModel(Guid orderId, IEnumerable<DovetailDrawerBoxProduct> boxes, IEnumerable<AdditionalItem> items) {
+    public Order AsDomainModel(Guid orderId, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> items) {
 
-        return new Order(orderId, Source, Status, Number, Name, CustomerId, VendorId, ProductionNote, CustomerComment, OrderDate, ReleaseDate, ProductionDate, CompleteDate, Tax, Shipping, PriceAdjustment, Rush, Info.AsReadOnly(), boxes, items);
+        return new Order(orderId, Source, Status, Number, Name, CustomerId, VendorId, ProductionNote, CustomerComment, OrderDate, ReleaseDate, ProductionDate, CompleteDate, Tax, Shipping, PriceAdjustment, Rush, Info.AsReadOnly(), products, items);
 
     }
 

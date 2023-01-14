@@ -161,9 +161,6 @@ public class ConsoleApplication {
 
     private static OrderSourceType ParseProviderType(string provider) => provider switch {
         "allmoxy" => OrderSourceType.AllmoxyXML,
-        "hafele" => OrderSourceType.HafeleExcel,
-        "richelieu" => OrderSourceType.RichelieuXML,
-        "ot" => OrderSourceType.OTExcel,
         _ => OrderSourceType.Unknown
     };
 

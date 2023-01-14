@@ -30,7 +30,7 @@ public class GetOrderList {
                                     (SELECT name FROM companies WHERE customerid = companies.id) as customername,
                                     vendorid,
                                     (SELECT name FROM companies WHERE vendorid = companies.id) as vendorname,
-                                    (SELECT SUM(qty) FROM drawerboxes WHERE orderid = orders.id) as itemcount
+                                    0 as itemcount
                                 FROM orders;";
 
             var items = await connection.QueryAsync<OrderListItem>(query);

@@ -69,7 +69,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
         if (Drawers.Quantity > 0) {
 
-            var options = new DrawerBoxOptions(Guid.NewGuid(), Guid.NewGuid(), "Blum", GetNotchFromSlideType(Drawers.SlideType), "", LogoPosition.None);
+            var options = new DrawerBoxOptions("", "", "", "", "Blum", GetNotchFromSlideType(Drawers.SlideType), "", LogoPosition.None);
 
             var height = Drawers.GetBoxHeight(Dimension.FromMillimeters(3), new List<Dimension>() {
                 Dimension.FromMillimeters(64),
@@ -94,7 +94,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
         if (Inside.RollOutBoxes.Positions.Any()) {
 
-            var options = new DrawerBoxOptions(Guid.NewGuid(), Guid.NewGuid(), "Blum", GetNotchFromSlideType(Inside.RollOutBoxes.SlideType), "", LogoPosition.None);
+            var options = new DrawerBoxOptions("", "", "", "", "Blum", GetNotchFromSlideType(Inside.RollOutBoxes.SlideType), "", LogoPosition.None);
 
             var width = Width - Dimension.FromMillimeters(19 * 2);
 
