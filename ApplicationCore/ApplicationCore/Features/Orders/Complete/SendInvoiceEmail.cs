@@ -6,7 +6,7 @@ using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Shared;
+using ApplicationCore.Features.Shared;
 using Microsoft.Extensions.Logging;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;

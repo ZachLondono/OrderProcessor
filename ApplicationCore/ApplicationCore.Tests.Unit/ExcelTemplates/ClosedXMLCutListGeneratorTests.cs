@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.ExcelTemplates.Contracts;
 using ApplicationCore.Features.ExcelTemplates.Domain;
 using ApplicationCore.Features.Orders.Release.Handlers.CutListing.Models;
-using ApplicationCore.Shared;
+using ApplicationCore.Features.Shared;
 using FluentAssertions;
 using NSubstitute;
 

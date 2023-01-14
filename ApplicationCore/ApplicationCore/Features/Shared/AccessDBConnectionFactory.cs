@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Data.OleDb;
 
-namespace ApplicationCore.Shared;
+namespace ApplicationCore.Features.Shared;
 
 internal class AccessDBConnectionFactory : IAccessDBConnectionFactory {
 

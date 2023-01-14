@@ -4,7 +4,7 @@ using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
 using ApplicationCore.Features.CNC.GCode.Contracts.Results;
 using ApplicationCore.Features.CNC.GCode.Domain;
 using ApplicationCore.Features.CNC.GCode.Domain.CADCode;
-using ApplicationCore.Shared.Domain;
+using ApplicationCore.Features.Shared.Domain;
 using CADCode;
 using MoreLinq;
 

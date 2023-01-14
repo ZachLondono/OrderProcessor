@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.ExcelTemplates.Contracts;
 using ApplicationCore.Features.ExcelTemplates.Domain;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Shared;
+using ApplicationCore.Features.Shared;
 
 namespace ApplicationCore.Features.ExcelTemplates.Handlers;
 

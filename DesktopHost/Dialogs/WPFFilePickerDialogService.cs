@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Shared;
+﻿using ApplicationCore.Features.Shared;
 using Microsoft.Win32;
 using System;
 using System.Threading.Tasks;

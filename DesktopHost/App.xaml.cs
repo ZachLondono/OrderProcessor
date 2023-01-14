@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Shared;
+﻿using ApplicationCore.Features.Shared;
 using DesktopHost.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,7 +1,7 @@
 ﻿using RazorEngineCore;
 using RazorEngine = RazorEngineCore.RazorEngine;
 
-namespace ApplicationCore.Shared;
+namespace ApplicationCore.Features.Shared;
 
 internal class TemplateService : ITemplateService {
 

@@ -5,7 +5,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Release.Handlers.Invoice.Models;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Shared;
+using ApplicationCore.Features.Shared;
 using ClosedXML.Excel;
 using Microsoft.Extensions.Logging;
 using Company = ApplicationCore.Features.Companies.Domain.Company;

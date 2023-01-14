@@ -1,9 +1,9 @@
 ﻿using ApplicationCore.Infrastructure;
 using Blazored.Modal;
 using Blazored.Modal.Services;
-using static ApplicationCore.Shared.InformationDialog;
+using static ApplicationCore.Features.Shared.InformationDialog;
 
-namespace ApplicationCore.Shared;
+namespace ApplicationCore.Features.Shared;
 
 internal static class ModalExtensions {
 

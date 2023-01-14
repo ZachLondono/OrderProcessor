@@ -2,7 +2,7 @@
 using ApplicationCore.Features.CNC.GCode.Contracts;
 using ApplicationCore.Features.CNC.GCode.Contracts.Machining;
 using ApplicationCore.Features.CNC.Shared;
-using ApplicationCore.Shared.Domain;
+using ApplicationCore.Features.Shared.Domain;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.CNC;

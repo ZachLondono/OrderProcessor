@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Shared;
+﻿namespace ApplicationCore.Features.Shared;
 
 public record FilePickerFilter(string Description, string Extension) {
 

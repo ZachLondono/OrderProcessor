@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Shared.Domain;
+using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain;
 

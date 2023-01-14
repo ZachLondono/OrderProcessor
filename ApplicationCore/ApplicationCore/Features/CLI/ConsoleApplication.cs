@@ -7,7 +7,7 @@ using ApplicationCore.Features.CNC.ReleasePDF;
 using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Features.Orders.Loader;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Shared;
+using ApplicationCore.Features.Shared;
 using CommandLine;
 using Microsoft.Extensions.Logging;
 

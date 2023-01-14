@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.CNC.CSV.Contracts;
-using ApplicationCore.Shared;
+using ApplicationCore.Features.Shared;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.Extensions.Logging;

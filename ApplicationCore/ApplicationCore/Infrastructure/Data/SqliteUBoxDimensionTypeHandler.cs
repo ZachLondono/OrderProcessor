@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Text.Json;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Shared.Domain;
+using ApplicationCore.Features.Shared.Domain;
 using Dapper;
 
 namespace ApplicationCore.Infrastructure.Data;

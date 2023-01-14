@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.CompilerServices;
 using ApplicationCore.Features.Companies;
 using Blazored.Modal;
-using ApplicationCore.Shared;
+using ApplicationCore.Features.Shared;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Features.Emails;
 using ApplicationCore.Features.CNC;

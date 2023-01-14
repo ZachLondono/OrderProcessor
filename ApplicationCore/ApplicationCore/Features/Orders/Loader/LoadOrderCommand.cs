@@ -6,8 +6,8 @@ using ApplicationCore.Features.Orders.Loader.Providers;
 using ApplicationCore.Features.Orders.Loader.Providers.DTO;
 using ApplicationCore.Features.Orders.Loader.Queries;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Shared;
-using ApplicationCore.Shared.Domain;
+using ApplicationCore.Features.Shared;
+using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Loader;
 

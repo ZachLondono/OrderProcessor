@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Emails.Contracts;
 using ApplicationCore.Features.Emails.Domain;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Shared;
+using ApplicationCore.Features.Shared;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
