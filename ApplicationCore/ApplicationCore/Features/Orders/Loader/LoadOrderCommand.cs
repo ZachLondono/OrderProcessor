@@ -5,7 +5,6 @@ using ApplicationCore.Features.Orders.Loader.Commands;
 using ApplicationCore.Features.Orders.Loader.Providers;
 using ApplicationCore.Features.Orders.Loader.Providers.DTO;
 using ApplicationCore.Features.Orders.Loader.Queries;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Shared;
 using ApplicationCore.Shared.Domain;

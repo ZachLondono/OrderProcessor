@@ -1,14 +1,15 @@
-﻿@    using ApplicationCore.Features.CNC.CSV;
-@    using ApplicationCore.Features.CNC.ReleasePDF;
-@    using ApplicationCore.Features.Companies.Create
-@    using ApplicationCore.Features.Orders
-@    using ApplicationCore.Features.Orders.Loader
-@    using ApplicationCore.Features.CNC.LabelDB
-@    using ApplicationCore.Infrastructure
-@    using System.Diagnostics;
-@    using static ApplicationCore.Shared.InformationDialog;
-@    using ApplicationCore.Features.CNC.LabelDB.Contracts;
-    using ApplicationCore.Features.Orders.Shared;
+﻿@using ApplicationCore.Features.CNC.CSV;
+@using ApplicationCore.Features.CNC.ReleasePDF;
+@using ApplicationCore.Features.Companies.Create
+@using ApplicationCore.Features.Orders
+@using ApplicationCore.Features.Orders.Loader
+@using ApplicationCore.Features.CNC.LabelDB
+@using ApplicationCore.Features.Orders.Shared.State;
+@using ApplicationCore.Infrastructure
+@using System.Diagnostics;
+@using static ApplicationCore.Shared.InformationDialog;
+@using ApplicationCore.Features.CNC.LabelDB.Contracts;
+@using ApplicationCore.Features.Orders.Shared;
 @inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
