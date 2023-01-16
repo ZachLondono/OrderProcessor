@@ -3,6 +3,7 @@ using ApplicationCore.Infrastructure;
 using ApplicationCore.Features.Shared;
 using Microsoft.Extensions.Logging;
 using Microsoft.Office.Interop.Excel;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers;
 
@@ -11,11 +12,13 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
     private readonly IUIBus _uibus;
     private readonly ILogger<DoorOrderHandler> _logger;
     private readonly IFileReader _fileReader;
+    private readonly ProductBuilderFactory _factory;
 
-    public DoorOrderHandler(IUIBus uibus, ILogger<DoorOrderHandler> logger, IFileReader fileReader) {
+    public DoorOrderHandler(IUIBus uibus, ILogger<DoorOrderHandler> logger, IFileReader fileReader, ProductBuilderFactory factory) {
         _uibus = uibus;
         _logger = logger;
         _fileReader = fileReader;
+        _factory = factory;
     }
 
     public override Task Handle(TriggerOrderReleaseNotification notification) {
@@ -29,7 +32,8 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
                             .Products
                             .Where(p => p is IDoorContainer)
                             .Cast<IDoorContainer>()
-                            .SelectMany(c => c.GetDoors());
+                            .SelectMany(c => c.GetDoors(_factory.CreateMDFDoorBuilder))
+                            .ToList();
 
         if (!doors.Any()) {
             _uibus.Publish(new OrderReleaseInfoNotification("Door order not created because there are no doors in order"));

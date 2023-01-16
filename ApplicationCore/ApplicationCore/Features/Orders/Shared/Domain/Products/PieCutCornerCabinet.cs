@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.ProductPlanner.Contracts;
 using ApplicationCore.Features.Shared.Domain;
 
@@ -34,7 +35,7 @@ internal class PieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorContaine
                         Dimension rightWidth, Dimension rightDepth, IToeType toeType, int adjustableShelves, HingeSide hingeSide, MDFDoorOptions? mdfDoorOptions)
     => new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, rightWidth, rightDepth, toeType, adjustableShelves, hingeSide, mdfDoorOptions);
 
-    public IEnumerable<MDFDoor> GetDoors() {
+    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
         if (MDFOptions is null) return Enumerable.Empty<MDFDoor>();
         throw new NotImplementedException();
     }

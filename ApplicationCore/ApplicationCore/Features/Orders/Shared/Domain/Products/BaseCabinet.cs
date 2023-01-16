@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.ProductPlanner.Contracts;
 using ApplicationCore.Features.Shared.Domain;
 
@@ -116,9 +117,13 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
     }
 
-    public IEnumerable<MDFDoor> GetDoors() {
+    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
         if (Doors.MDFOptions is not null) return Enumerable.Empty<MDFDoor>();
-        return new MDFDoor[] { new MDFDoor() };
+
+        var builder = getBuilder();
+        var door = builder.Build(Dimension.FromInches(15), Dimension.FromInches(12));
+
+        return new MDFDoor[] { door };
     }
 
     private string GetNotchFromSlideType(DrawerSlideType slide) => slide switch {
