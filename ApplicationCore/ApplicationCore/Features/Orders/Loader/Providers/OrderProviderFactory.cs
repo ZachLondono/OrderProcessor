@@ -14,7 +14,7 @@ public class OrderProviderFactory : IOrderProviderFactory {
 
     public OrderProvider GetOrderProvider(OrderSourceType source) => source switch {
         OrderSourceType.AllmoxyXML => _serviceProvider.GetRequiredService<AllmoxyXMLOrderProvider>(),
-        _ => throw new NotImplementedException(),
+        _ => throw new KeyNotFoundException("No valid order provider for given order source type"),
     };
 
 }

@@ -51,15 +51,20 @@ public class ConsoleApplication {
 
                         } else {
 
-                            var provider = ParseProviderType(option.Provider);
-                            if (provider is not OrderSourceType.Unknown) {
+                            try {
+
+                                var provider = ParseProviderType(option.Provider);
+
                                 var result = await _bus.Send(new LoadOrderCommand.Command(provider, option.Source));
                                 result.Match(
-                                order => _messageBoxService.OpenDialog($"New order loaded\n{order.Name}\n{order.Id}", "New Order"),
-                                error => _messageBoxService.OpenDialog($"Error loading order\n{error.Details}", "Error")
+                                    order => _messageBoxService.OpenDialog($"New order loaded\n{order.Name}\n{order.Id}", "New Order"),
+                                    error => _messageBoxService.OpenDialog($"Error loading order\n{error.Details}", "Error")
                                 );
-                            } else {
+
+                            } catch (KeyNotFoundException) {
+
                                 _messageBoxService.OpenDialog($"Unknown order provider '{option.Provider}'", "Unknown provider");
+
                             }
 
                         }
@@ -161,7 +166,7 @@ public class ConsoleApplication {
 
     private static OrderSourceType ParseProviderType(string provider) => provider switch {
         "allmoxy" => OrderSourceType.AllmoxyXML,
-        _ => OrderSourceType.Unknown
+        _ => throw new KeyNotFoundException($"Unknown order provider '{provider}'")
     };
 
 }
