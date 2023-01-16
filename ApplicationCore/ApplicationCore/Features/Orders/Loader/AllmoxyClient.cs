@@ -6,7 +6,6 @@ namespace ApplicationCore.Features.Orders.Loader;
 internal class AllmoxyClient : IAllmoxyClient {
 
     private readonly IRestClient _client;
-    private readonly string _instanceName;
     private readonly string _username;
     private readonly string _password;
 
@@ -15,8 +14,7 @@ internal class AllmoxyClient : IAllmoxyClient {
     private const string LOG_IN_FORM_CONTENT_TYPE = "application/x-www-form-urlencoded";
     private const int MAX_RETRIES = 3;
 
-    public AllmoxyClient(string instanceName, string username, string password, IRestClient client) {
-        _instanceName = instanceName;
+    public AllmoxyClient(string username, string password, IRestClient client) {
         _username = username;
         _password = password;
 
