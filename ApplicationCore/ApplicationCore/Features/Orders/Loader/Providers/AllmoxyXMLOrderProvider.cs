@@ -46,7 +46,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             XDocument doc = XDocument.Load(reader);
 
             var schemas = new XmlSchemaSet();
-            schemas.Add("", _configuration.Schema);
+            schemas.Add("", _configuration.SchemaFilePath);
 
             var errors = new List<string>();
             doc.Validate(schemas, (s, e) => errors.Add(e.Message));
