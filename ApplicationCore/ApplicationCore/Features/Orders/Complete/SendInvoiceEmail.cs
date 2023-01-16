@@ -2,11 +2,11 @@
 using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.Emails.Contracts;
 using ApplicationCore.Features.Emails.Domain;
-using ApplicationCore.Features.Orders.Domain;
-using ApplicationCore.Features.Orders.Domain.Products;
-using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Shared;
+using ApplicationCore.Features.Shared;
 using Microsoft.Extensions.Logging;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -61,7 +61,7 @@ public class SendInvoiceEmail : DomainListener<TriggerOrderCompleteNotification>
         var email = new Email(sender, recipients, subject, body, new string[] { pdfPath });
 
         var response = await _bus.Send(new SendEmailRequest(email));
-        
+
         response.Match(
             serverResponse => {
                 _logger.LogInformation("Email server response {Response}", serverResponse.ServerResponse);
@@ -74,7 +74,7 @@ public class SendInvoiceEmail : DomainListener<TriggerOrderCompleteNotification>
 
     }
 
-    private async Task<Company?> GetCompany(Guid companyId) { 
+    private async Task<Company?> GetCompany(Guid companyId) {
         Company? company = null;
         var custQuery = await _bus.Send(new GetCompanyById.Query(companyId));
         custQuery.Match(
@@ -164,7 +164,7 @@ public class SendInvoiceEmail : DomainListener<TriggerOrderCompleteNotification>
                             AddInfo(table, "", ""); // blank row
 
                             AddInfo(table, "Subtotal:", $"${order.SubTotal}");
-                            if (order.PriceAdjustment != 0) { 
+                            if (order.PriceAdjustment != 0) {
                                 AddInfo(table, "Discount:", $"${order.PriceAdjustment}");
                                 AddInfo(table, "Net Amt.:", $"${order.AdjustedSubTotal}");
                             }

@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Domain;
-using ApplicationCore.Features.Orders.Domain.Products;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
 
 namespace ApplicationCore.Tests.Unit.Orders;
 
@@ -22,7 +22,7 @@ internal class OrderBuilder {
     private decimal _shipping = decimal.Zero;
     private decimal _priceAdjustment = decimal.Zero;
     private bool _rush = false;
-    private Dictionary<string,string> _info = new();
+    private Dictionary<string, string> _info = new();
     private List<AdditionalItem> _items = new();
     private List<DovetailDrawerBoxProduct> _boxes = new();
 
@@ -30,12 +30,12 @@ internal class OrderBuilder {
         _id = id;
         return this;
     }
-    
+
     public OrderBuilder WithSource(string source) {
         _source = source;
         return this;
     }
-    
+
     public OrderBuilder WithStatus(Status status) {
         _status = status;
         return this;

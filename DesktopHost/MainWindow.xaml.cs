@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Components.WebView;
 namespace DesktopHost;
 
 public partial class MainWindow : Window {
-    
+
     public MainWindow(IServiceProvider serviceProvider) {
         InitializeComponent();
 

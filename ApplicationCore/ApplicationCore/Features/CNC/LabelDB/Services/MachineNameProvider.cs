@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Shared;
+﻿using ApplicationCore.Features.Shared;
 using Dapper;
 
 namespace ApplicationCore.Features.CNC.LabelDB.Services;

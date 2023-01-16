@@ -56,8 +56,8 @@ public record Rectangle : CompositeToken {
                     Center = arc.Center,
                     PassCount = PassCount,
                     Sequence = Sequence,
-					ToolName = ToolName,
-				};
+                    ToolName = ToolName,
+                };
 
             throw new UnreachableException();
         }).Cast<MachiningOperation>();

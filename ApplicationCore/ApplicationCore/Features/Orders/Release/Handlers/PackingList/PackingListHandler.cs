@@ -1,8 +1,8 @@
 ﻿using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.ExcelTemplates.Contracts;
 using ApplicationCore.Features.ExcelTemplates.Domain;
-using ApplicationCore.Features.Orders.Domain.Products;
-using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Release.Handlers.PackingList.Models;
 using ApplicationCore.Infrastructure;
 using Microsoft.Extensions.Logging;
@@ -23,7 +23,7 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
     }
 
     public override async Task Handle(TriggerOrderReleaseNotification notification) {
-        
+
         if (!notification.ReleaseProfile.GeneratePackingList) {
             _uibus.Publish(new OrderReleaseInfoNotification("Not creating packing list, because option was disabled"));
             return;
@@ -59,7 +59,7 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
 
         if (didError || customer is null || vendor is null) {
             _uibus.Publish(new OrderReleaseErrorNotification("Could not load customer or vendor information for order"));
-            return; 
+            return;
         }
 
         var config = new ClosedXMLTemplateConfiguration() { TemplateFilePath = notification.ReleaseProfile.PackingListTemplatePath };

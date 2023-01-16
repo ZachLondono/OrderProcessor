@@ -5,35 +5,35 @@ namespace ApplicationCore.Features.CNC.CSV;
 
 public class ReadTokensFromCSVFile {
 
-	public record Command(string FilePath) : ICommand<CSVReadResult>;
+    public record Command(string FilePath) : ICommand<CSVReadResult>;
 
-	public class Handler : CommandHandler<Command, CSVReadResult> {
+    public class Handler : CommandHandler<Command, CSVReadResult> {
 
-		private readonly ICSVReader _reader;
+        private readonly ICSVReader _reader;
 
-		public Handler(ICSVReader reader) {
-			_reader = reader;
-		}
+        public Handler(ICSVReader reader) {
+            _reader = reader;
+        }
 
-		public override async Task<Response<CSVReadResult>> Handle(Command command) {
-			
-			try {
+        public override async Task<Response<CSVReadResult>> Handle(Command command) {
 
-				var readResult = await _reader.ReadTokensFromFilesAsync(command.FilePath);
+            try {
 
-				return new(readResult);
+                var readResult = await _reader.ReadTokensFromFilesAsync(command.FilePath);
 
-			} catch (Exception ex) {
+                return new(readResult);
 
-				return new(new Error() {
-					Title = "Exception thrown while reading CSV tokens",
-					Details = ex.ToString()
-				});
+            } catch (Exception ex) {
 
-			}
+                return new(new Error() {
+                    Title = "Exception thrown while reading CSV tokens",
+                    Details = ex.ToString()
+                });
 
-		}
+            }
 
-	}
+        }
+
+    }
 
 }

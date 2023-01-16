@@ -10,7 +10,7 @@ internal class ADuiePyleLabelHandler : DomainListener<TriggerOrderReleaseNotific
     private readonly ILogger<ADuiePyleLabelHandler> _logger;
     private readonly IBus _bus;
     private readonly IUIBus _uibus;
-    
+
     public ADuiePyleLabelHandler(ILogger<ADuiePyleLabelHandler> logger, IBus bus, IUIBus uibus) {
         _bus = bus;
         _uibus = uibus;

@@ -6,8 +6,6 @@ public class AllmoxyConfiguration {
 
     public string DefaultDirectory { get; init; } = string.Empty;
 
-    public string Schema { get; init; } = string.Empty;
-
-    public Dictionary<string, string> MaterialMap { get; init; } = new();
+    public string SchemaFilePath { get; init; } = string.Empty;
 
 }

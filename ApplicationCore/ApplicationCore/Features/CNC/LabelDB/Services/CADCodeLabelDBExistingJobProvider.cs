@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.CNC.LabelDB.Contracts;
-using ApplicationCore.Shared;
+using ApplicationCore.Features.Shared;
 using Dapper;
 
 namespace ApplicationCore.Features.CNC.LabelDB.Services;
@@ -38,8 +38,8 @@ internal class CADCodeLabelDBExistingJobProvider : IExistingJobProvider {
 
         return new ExistingJob(
             Name: jobName,
-			MachineName: machineName,
-			Inventory: inventory,
+            MachineName: machineName,
+            Inventory: inventory,
             Patterns: patterns,
             Parts: parts
         );

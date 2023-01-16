@@ -8,13 +8,13 @@ namespace DesktopHost;
 /// Interaction logic for ReleasingCSVTokensWindow.xaml
 /// </summary>
 public partial class ReleasingCSVTokensWindow : Window, IUIListener, IUIListener<CSVTokenProgressNotification> {
-	
-	public ReleasingCSVTokensWindow() {
-		InitializeComponent();
-	}
 
-	public void Handle(CSVTokenProgressNotification notification) {
-		Dispatcher.Invoke(() => ProgressMessageBox.AppendText(notification.Message + '\n'));
-	}
+    public ReleasingCSVTokensWindow() {
+        InitializeComponent();
+    }
+
+    public void Handle(CSVTokenProgressNotification notification) {
+        Dispatcher.Invoke(() => ProgressMessageBox.AppendText(notification.Message + '\n'));
+    }
 
 }

@@ -55,8 +55,8 @@ public class CompanyStateTests {
         string confirmationEmail = "abc@email.com";
         string contactName = "Bob";
 
-		// Act
-		_sut.UpdateCompany(name, addr, phoneNumber, invoiceEmail, confirmationEmail, contactName);
+        // Act
+        _sut.UpdateCompany(name, addr, phoneNumber, invoiceEmail, confirmationEmail, contactName);
 
         // Assert
         _sut.Company.Should().BeNull();
@@ -78,13 +78,13 @@ public class CompanyStateTests {
         string phoneNumber = "123-456-7890";
         string invoiceEmail = "abc@email.com";
         string confirmationEmail = "abc@email.com";
-		string contactName = "Bob";
+        string contactName = "Bob";
 
-		// Act
-		_sut.UpdateCompany(name, addr, phoneNumber, invoiceEmail, confirmationEmail, contactName);
+        // Act
+        _sut.UpdateCompany(name, addr, phoneNumber, invoiceEmail, confirmationEmail, contactName);
 
-		// Assert
-		_sut.Company.Should().NotBe(company);
+        // Assert
+        _sut.Company.Should().NotBe(company);
         _sut.Company.Should().NotBeNull();
         _sut.Company!.Address.Should().Be(addr);
         _sut.Company.Name.Should().Be(name);

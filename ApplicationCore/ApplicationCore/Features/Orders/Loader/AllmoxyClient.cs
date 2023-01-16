@@ -1,39 +1,59 @@
-﻿using RestSharp;
+﻿using ApplicationCore.Features.Orders.Loader.Rest;
+using RestSharp;
 
 namespace ApplicationCore.Features.Orders.Loader;
 
-internal class AllmoxyClient {
+internal class AllmoxyClient : IAllmoxyClient {
 
-    private readonly RestClient _client;
-    private readonly string _instanceName;
+    private readonly IRestClient _client;
     private readonly string _username;
     private readonly string _password;
 
-    private string BaseUrl => $"https://{_instanceName}.allmoxy.com/";
+    public const string NOT_LOGGED_IN_CONTENT_TYPE = "text/html";
+    public const string EXPORT_CONTENT_TYPE = "application/xml";
+    public const string LOG_IN_FORM_CONTENT_TYPE = "application/x-www-form-urlencoded";
+    public const string EXPORT_NOT_FOUND_CONTENT = "Find: No matching Exporter";
+    public const string ORDER_NOT_FOUND_CONTENT = "Find: No matching Order records found";
+    private const int MAX_RETRIES = 3;
 
-    public AllmoxyClient(string instanceName, string username, string password) {
-        _instanceName = instanceName;
+
+    public AllmoxyClient(string username, string password, IRestClient client) {
         _username = username;
         _password = password;
 
-        _client = new RestClient(new RestClientOptions(BaseUrl) {
-            FollowRedirects = true // Following redirects is required to successfully log in
-        });
-
+        _client = client;
     }
 
-    public string GetExport(string orderNumber, int index) {
+    public string GetExport(string orderNumber, int index) => GetExport(orderNumber, index, 0);
+
+    private string GetExport(string orderNumber, int index, int tries) {
+
+        if (tries > MAX_RETRIES) {
+            throw new InvalidOperationException("Could not log in to Allmoxy");
+        }
 
         var request = new RestRequest($"orders/export_partlist/{orderNumber}/{index}/", Method.Get);
-        var response = _client.Execute(request);
+        RestResponse response = _client.Execute(request);
 
         switch (response.ContentType) {
-            case "text/html":
-                LogIn();
-                return GetExport(orderNumber, index);
+            case NOT_LOGGED_IN_CONTENT_TYPE:
+                
+                if (response.Content is not null) {
+                    if (response.Content.Contains(EXPORT_NOT_FOUND_CONTENT)) {
+                        throw new InvalidOperationException("Export could not be found");
+                    } else if (response.Content.Contains(ORDER_NOT_FOUND_CONTENT)) {
+                        throw new InvalidOperationException("Order could not be found");
+                    }
+                }
 
-            case "application/xml":
-                return response.Content ?? "empty";
+                LogIn();
+                return GetExport(orderNumber, index, ++tries);
+
+            case EXPORT_CONTENT_TYPE:
+                if (response.Content is null) {
+                    throw new InvalidOperationException("No data returned");
+                }
+                return response.Content;
 
             default:
                 throw new InvalidOperationException($"Unexpected response from server {response.StatusCode}");
@@ -46,7 +66,7 @@ internal class AllmoxyClient {
         _ = _client.Execute(new RestRequest("/", Method.Get));
 
         var request = new RestRequest("public/login/", Method.Post);
-        request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+        request.AddHeader("Content-Type", LOG_IN_FORM_CONTENT_TYPE);
         request.AddParameter("username", _username);
         request.AddParameter("password", _password);
         _ = _client.Execute(request);
@@ -55,7 +75,6 @@ internal class AllmoxyClient {
 
     public void Dispose() {
         _client.Dispose();
-        //GC.SuppressFinalize(this);
     }
 
 }

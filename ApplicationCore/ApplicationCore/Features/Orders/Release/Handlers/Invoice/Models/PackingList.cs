@@ -11,9 +11,9 @@ internal class PackingList {
     public string OrderNumber { get; set; } = string.Empty;
 
     public string SubTotal { get; set; } = string.Empty;
-    
+
     public string Discount { get; set; } = string.Empty;
-    
+
     public string NetAmount { get; set; } = string.Empty;
 
     public string SalesTax { get; set; } = string.Empty;

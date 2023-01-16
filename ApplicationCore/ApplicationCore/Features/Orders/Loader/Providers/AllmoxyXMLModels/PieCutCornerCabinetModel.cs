@@ -12,7 +12,7 @@ public class PieCutCornerCabinetModel {
 
     [XmlElement("cabinet")]
     public CabinetModel Cabinet { get; set; } = new();
-    
+
     [XmlElement("rightWidth")]
     public double RightWidth { get; set; }
 

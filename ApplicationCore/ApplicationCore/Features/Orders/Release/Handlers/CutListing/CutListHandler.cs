@@ -1,9 +1,8 @@
 ﻿using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.ExcelTemplates.Contracts;
 using ApplicationCore.Features.ExcelTemplates.Domain;
-using ApplicationCore.Features.Orders.Domain;
-using ApplicationCore.Features.Orders.Domain.ValueObjects;
-using ApplicationCore.Features.Orders.Queries;
+using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Release.Handlers.CutListing.Models;
 using ApplicationCore.Infrastructure;
 using Microsoft.Extensions.Logging;
@@ -32,7 +31,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         }
 
         var order = notification.Order;
-        
+
         var customerName = await GetCompanyName(order.CustomerId);
         var vendorName = await GetCompanyName(order.VendorId);
 
@@ -42,18 +41,9 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                 .SelectMany(c => c.GetDrawerBoxes())
                                 .ToList();
 
-        var materialIds = dovetailBoxes.SelectMany(b => new Guid[] { b.Options.BoxMaterialId, b.Options.BottomMaterialId } )
-                                .Distinct();
-
-        var materialNames = new Dictionary<Guid, string>();
-        foreach (var id in materialIds) {
-            var name = await GetMaterialName(id);
-            materialNames.Add(id, name);
-        }
-
-        CutList cutList = CreateStdCutList(order, dovetailBoxes, customerName, vendorName, _construction, materialNames);
-        CutList optimizedCutList = CreateOptimizedCutList(order, dovetailBoxes, customerName, vendorName, _construction, materialNames);
-        CutList bottomCutList = CreateBottomCutList(order, dovetailBoxes, customerName, vendorName, _construction, materialNames);
+        CutList cutList = CreateStdCutList(order, dovetailBoxes, customerName, vendorName, _construction);
+        CutList optimizedCutList = CreateOptimizedCutList(order, dovetailBoxes, customerName, vendorName, _construction);
+        CutList bottomCutList = CreateBottomCutList(order, dovetailBoxes, customerName, vendorName, _construction);
 
         var config = new ClosedXMLTemplateConfiguration() { TemplateFilePath = notification.ReleaseProfile.CutListTemplatePath };
         string outputDir = notification.ReleaseProfile.CutListOutputDirectory;
@@ -101,19 +91,6 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
     }
 
-    private async Task<string> GetMaterialName(Guid materialId) {
-        var matResponse = await _bus.Send(new GetDrawerBoxMaterialById.Query(materialId));
-        var materialName = "UNKNOWN";
-        matResponse.Match(
-            m => {
-                if (m is not null) materialName = m.Name;
-            },
-            error => { }
-        );
-
-        return materialName;
-    }
-
     private async Task<string> GetCompanyName(Guid companyId) {
         var response = await _bus.Send(new GetCompanyById.Query(companyId));
 
@@ -130,7 +107,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         return name;
     }
 
-    private static CutList CreateStdCutList(Order order, IEnumerable<DovetailDrawerBox> dovetailBoxes, string customerName, string vendorName, ConstructionValues construction, Dictionary<Guid, string> materialNames) {
+    private static CutList CreateStdCutList(Order order, IEnumerable<DovetailDrawerBox> dovetailBoxes, string customerName, string vendorName, ConstructionValues construction) {
         int groupNum = 0;
         int lineNum = 1;
         var cutlistItems = dovetailBoxes
@@ -149,7 +126,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                             Width = part.Width.AsMillimeters(),
                                             Length = part.Length.AsMillimeters(),
                                             Comment = part.Comment,
-                                            Material = materialNames[part.MaterialId],
+                                            Material = part.Material,
                                             Size = $"{part.Width.AsInchFraction()}\"W x {part.Length.AsInchFraction()}\"L",
                                         });
                                     }
@@ -162,18 +139,16 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
     }
 
-    private static CutList CreateOptimizedCutList(Order order, IEnumerable<DovetailDrawerBox> dovetailBoxes, string customerName, string vendorName, ConstructionValues construction, Dictionary<Guid, string> materialNames) {
+    private static CutList CreateOptimizedCutList(Order order, IEnumerable<DovetailDrawerBox> dovetailBoxes, string customerName, string vendorName, ConstructionValues construction) {
         int groupNum = 0;
         int lineNum = 1;
         var cutlistItems = dovetailBoxes
                                 .SelectMany(b => b.GetParts(construction).Where(p => p.Type != DrawerBoxPartType.Bottom))
-                                .GroupBy(p => (p.MaterialId, p.Width, p.Length)) // TODO: if there are multiple scoop fronts they should be grouped together
-                                .Select(g =>
-                                {
+                                .GroupBy(p => (p.Material, p.Width, p.Length)) // TODO: if there are multiple scoop fronts they should be grouped together
+                                .Select(g => {
                                     var qty = g.Sum(b => b.Qty);
                                     groupNum++;
-                                    return new Item()
-                                    {
+                                    return new Item() {
                                         GroupNumber = groupNum,
                                         CabNumber = groupNum, // TODO: get cabnumber from part
                                         LineNumber = lineNum++,
@@ -182,7 +157,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                         Width = g.Key.Width.AsMillimeters(),
                                         Length = g.Key.Length.AsMillimeters(),
                                         Comment = "",
-                                        Material = materialNames[g.Key.MaterialId],
+                                        Material = g.Key.Material,
                                         Size = $"{g.Key.Width.AsInchFraction()}\"W x {g.Key.Length.AsInchFraction()}\"L",
                                     };
                                 })
@@ -192,20 +167,17 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
     }
 
-    private static CutList CreateBottomCutList(Order order, IEnumerable<DovetailDrawerBox> dovetailBoxes, string customerName, string vendorName, ConstructionValues construction, Dictionary<Guid, string> materialNames) {
+    private static CutList CreateBottomCutList(Order order, IEnumerable<DovetailDrawerBox> dovetailBoxes, string customerName, string vendorName, ConstructionValues construction) {
         int groupNum = 0;
         int lineNum = 1;
 
         var cutlistItems = dovetailBoxes
-								.SelectMany(b =>
-                                {
+                                .SelectMany(b => {
                                     groupNum++;
 
                                     var items = new List<Item>();
-                                    foreach (var part in b.GetParts(construction).Where(p => p.Type == DrawerBoxPartType.Bottom))
-                                    {
-                                        items.Add(new()
-                                        {
+                                    foreach (var part in b.GetParts(construction).Where(p => p.Type == DrawerBoxPartType.Bottom)) {
+                                        items.Add(new() {
                                             GroupNumber = groupNum,
                                             CabNumber = groupNum, // TODO: get cabnumber from part
                                             LineNumber = lineNum++,
@@ -214,7 +186,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                             Width = Math.Round(part.Width.AsMillimeters(), 2),
                                             Length = Math.Round(part.Length.AsMillimeters(), 2),
                                             Comment = part.Comment,
-                                            Material = materialNames[part.MaterialId],
+                                            Material = part.Material,
                                             Size = $"{part.Width.AsInchFraction()}\"W x {part.Length.AsInchFraction()}\"L",
                                         });
                                     }
@@ -231,7 +203,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
         // TODO: if a drawerbox has a different option then the most common option than it should be shown in a part comment
 
-		var clips = dovetailBoxes.Select(b => b.Options.Clips)
+        var clips = dovetailBoxes.Select(b => b.Options.Clips)
                         .GroupBy(c => c)
                         .OrderByDescending(g => g.Count())
                         .First()

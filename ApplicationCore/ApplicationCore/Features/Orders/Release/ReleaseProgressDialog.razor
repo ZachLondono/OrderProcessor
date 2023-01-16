@@ -1,8 +1,10 @@
 ﻿@using ApplicationCore.Features.Companies.Domain.ValueObjects
+@using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Infrastructure
 @using System.Diagnostics
-@using ApplicationCore.Shared.Components
-@using static ApplicationCore.Shared.Components.Button;
+@using ApplicationCore.Features.Shared.Components
+@using static ApplicationCore.Features.Shared.Components.Button;
+@using ApplicationCore.Features.Orders.Shared;
 @inject OrderState OrderState
 @inject IJSRuntime JSRuntime
 @inherits BaseListenerComponent

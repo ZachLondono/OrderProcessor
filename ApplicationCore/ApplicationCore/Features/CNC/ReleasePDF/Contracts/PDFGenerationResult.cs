@@ -2,6 +2,6 @@
 
 public class PDFGenerationResult {
 
-	public IEnumerable<string> FilePaths { get; set; } = Enumerable.Empty<string>();
+    public IEnumerable<string> FilePaths { get; set; } = Enumerable.Empty<string>();
 
 }

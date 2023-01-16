@@ -1,13 +1,13 @@
-﻿using ApplicationCore.Features.Orders.Commands;
-using ApplicationCore.Features.Orders.Domain;
-using ApplicationCore.Features.Orders.Domain.Products;
-using ApplicationCore.Features.Orders.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Loader.Commands;
 using ApplicationCore.Features.Orders.Loader.Providers;
 using ApplicationCore.Features.Orders.Loader.Providers.DTO;
-using ApplicationCore.Features.Orders.Queries;
+using ApplicationCore.Features.Orders.Loader.Queries;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Shared;
-using ApplicationCore.Shared.Domain;
+using ApplicationCore.Features.Shared;
+using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Loader;
 
@@ -19,14 +19,14 @@ public class LoadOrderCommand {
 
         private readonly IOrderProviderFactory _factory;
         private readonly IBus _bus;
-		private readonly LoadingMessagePublisher _publisher;
-		private readonly IMessageBoxService _messageBoxService;
+        private readonly IUIBus _uiBus;
+        private readonly IMessageBoxService _messageBoxService;
 
-        public Handler(IOrderProviderFactory factory, IBus bus, LoadingMessagePublisher publisher, IMessageBoxService messageBoxService) {
+        public Handler(IOrderProviderFactory factory, IBus bus, IUIBus uiBus, IMessageBoxService messageBoxService) {
             _factory = factory;
             _bus = bus;
-            _publisher = publisher;
-			_messageBoxService = messageBoxService;
+            _uiBus = uiBus;
+            _messageBoxService = messageBoxService;
         }
 
         public override async Task<Response<Order>> Handle(Command request) {
@@ -38,9 +38,9 @@ public class LoadOrderCommand {
             if (!validation.IsValid) {
 
                 return new(new Error() {
-					Title = "The order source is invalid",
+                    Title = "The order source is invalid",
                     Details = validation.ErrorMessage
-				});
+                });
 
             }
 
@@ -66,10 +66,10 @@ public class LoadOrderCommand {
 
                 string details = "No data could read from the provided order source.";
 
-				return new(new Error() {
-					Title = "No order was read",
+                return new(new Error() {
+                    Title = "No order was read",
                     Details = details
-				});
+                });
 
             }
 
@@ -78,12 +78,12 @@ public class LoadOrderCommand {
 
             int index = 0;
             data.BaseCabinets.ForEach(cab => {
-				index++;
-				try {
+                index++;
+                try {
                     products.Add(MapDataToBaseCabinet(cab));
                 } catch (Exception ex) {
-					_publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
-				}
+                    _uiBus.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                }
             });
 
             data.WallCabinets.ForEach(cab => {
@@ -91,7 +91,7 @@ public class LoadOrderCommand {
                 try {
                     products.Add(MapDataToWallCabinet(cab));
                 } catch (Exception ex) {
-                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                    _uiBus.PublishError($"Could not load cabinet {index} : {ex.Message}");
                 }
             });
 
@@ -100,7 +100,7 @@ public class LoadOrderCommand {
                 try {
                     products.Add(MapDataToDrawerBaseCabinet(cab));
                 } catch (Exception ex) {
-                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                    _uiBus.PublishError($"Could not load cabinet {index} : {ex.Message}");
                 }
             });
 
@@ -109,7 +109,7 @@ public class LoadOrderCommand {
                 try {
                     products.Add(MapDataToTallCabinet(cab));
                 } catch (Exception ex) {
-                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                    _uiBus.PublishError($"Could not load cabinet {index} : {ex.Message}");
                 }
             });
 
@@ -118,7 +118,7 @@ public class LoadOrderCommand {
                 try {
                     products.Add(MapDataToPieCutCabinet(cab));
                 } catch (Exception ex) {
-                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                    _uiBus.PublishError($"Could not load cabinet {index} : {ex.Message}");
                 }
             });
 
@@ -127,7 +127,7 @@ public class LoadOrderCommand {
                 try {
                     products.Add(MapDataToDiagonalCabinet(cab));
                 } catch (Exception ex) {
-                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                    _uiBus.PublishError($"Could not load cabinet {index} : {ex.Message}");
                 }
             });
 
@@ -136,7 +136,7 @@ public class LoadOrderCommand {
                 try {
                     products.Add(MapDataToSinkCabinet(cab));
                 } catch (Exception ex) {
-                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                    _uiBus.PublishError($"Could not load cabinet {index} : {ex.Message}");
                 }
             });
 
@@ -150,14 +150,16 @@ public class LoadOrderCommand {
             }
 
             return result;
-        
+
         }
 
         private static DovetailDrawerBoxProduct MapDataToDrawerBox(DrawerBoxData data) {
 
             var options = new DrawerBoxOptions(
-                    data.BoxMaterialOptionId,
-                    data.BottomMaterialOptionId,
+                    data.FrontMaterialOption,
+                    data.BackMaterialOption,
+                    data.SideMaterialOption,
+                    data.BottomMaterialOption,
                     data.Clips,
                     data.Notch,
                     data.Accessory,
@@ -212,8 +214,8 @@ public class LoadOrderCommand {
                 data.Qty,
                 data.UnitPrice,
                 data.Room,
-				data.Assembled,
-				data.Height,
+                data.Assembled,
+                data.Height,
                 data.Width,
                 data.Depth,
                 boxMaterial,
@@ -310,7 +312,7 @@ public class LoadOrderCommand {
 
             TallCabinetDoors doors;
             HingeSide hingeSide = data.LowerDoorQty == 1 ? (data.HingeLeft ? HingeSide.Left : HingeSide.Right) : HingeSide.NotApplicable;
-            if (data.LowerDoorQty  == 0) {
+            if (data.LowerDoorQty == 0) {
                 doors = TallCabinetDoors.NoDoors();
             } else if (data.UpperDoorQty != 0) {
                 doors = new(data.LowerDoorHeight, hingeSide, data.DoorStyle);
@@ -335,10 +337,10 @@ public class LoadOrderCommand {
                 data.ToeType,
                 inside);
 
-            }
+        }
 
         private static PieCutCornerCabinet MapDataToPieCutCabinet(PieCutCornerCabinetData data) {
-            
+
             CabinetMaterial boxMaterial = new(data.BoxMaterialFinish, data.BoxMaterialCore);
             CabinetMaterial finishMaterial = new(data.FinishMaterialFinish, data.FinishMaterialCore);
             CabinetSide leftSide = new(data.LeftSideType, data.DoorStyle);
@@ -389,7 +391,7 @@ public class LoadOrderCommand {
                 data.ToeType,
                 data.AdjustableShelfQty,
                 (data.HingeLeft ? HingeSide.Left : HingeSide.Right),
-                data.DoorQty,                
+                data.DoorQty,
                 (data.DoorType == "Slab" ? null : data.DoorStyle));
 
         }

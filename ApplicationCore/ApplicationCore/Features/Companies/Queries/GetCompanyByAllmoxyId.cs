@@ -9,12 +9,12 @@ public class GetCompanyByAllmoxyId {
 
     public record Query(int AllmoxyCompanyId) : IQuery<Company?>;
 
-	public class Handler : AbstractCompanyQueryHandler<Query> {
+    public class Handler : AbstractCompanyQueryHandler<Query> {
 
-		public Handler(IDbConnectionFactory factory) : base(factory) { }
+        public Handler(IDbConnectionFactory factory) : base(factory) { }
 
-		protected override string GetQueryString() {
-			return @"SELECT
+        protected override string GetQueryString() {
+            return @"SELECT
                         id, name, phonenumber, invoiceemail, confirmationemail, contactname, line1, line2, line3, city, state, zip, country
                     FROM
                         companies
@@ -22,8 +22,8 @@ public class GetCompanyByAllmoxyId {
                     WHERE id = (
                         SELECT companyid FROM allmoxycompanies_companies WHERE allmoxyid = @AllmoxyCompanyId
                     );";
-		}
+        }
 
-	}
+    }
 
 }

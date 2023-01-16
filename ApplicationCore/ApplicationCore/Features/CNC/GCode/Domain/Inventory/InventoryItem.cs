@@ -1,7 +1,6 @@
 ﻿namespace ApplicationCore.Features.CNC.GCode.Domain.Inventory;
 
-public class InventoryItem
-{
+public class InventoryItem {
 
     public string Name { get; init; } = string.Empty;
     public double Thickness { get; init; }

@@ -12,7 +12,7 @@ internal class ProgramRunnerService : IProgramRunnerService {
     }
 
     public async Task<int> RunProgramAsync(string executablePath, string args) {
-        
+
         _logger.LogInformation("Running program");
 
         var start = new ProcessStartInfo {

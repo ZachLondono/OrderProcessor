@@ -4,26 +4,26 @@ namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
 public class ProductsModel {
 
-	[XmlElement("baseCabinet")]
-	public BaseCabinetModel[] BaseCabinets { get; set; } = Array.Empty<BaseCabinetModel>();
+    [XmlElement("baseCabinet")]
+    public List<BaseCabinetModel> BaseCabinets { get; set; } = new();
 
     [XmlElement("drawerBaseCabinet")]
-    public DrawerBaseCabinetModel[] DrawerBaseCabinets { get; set; } = Array.Empty<DrawerBaseCabinetModel>();
+    public List<DrawerBaseCabinetModel> DrawerBaseCabinets { get; set; } = new();
 
     [XmlElement("wallCabinet")]
-    public WallCabinetModel[] WallCabinets { get; set; } = Array.Empty<WallCabinetModel>();
+    public List<WallCabinetModel> WallCabinets { get; set; } = new();
 
     [XmlElement("tallCabinet")]
-    public TallCabinetModel[] TallCabinets { get; set; } = Array.Empty<TallCabinetModel>();
+    public List<TallCabinetModel> TallCabinets { get; set; } = new();
 
     [XmlElement("pieCutCabinet")]
-    public PieCutCornerCabinetModel[] PieCutCornerCabinets { get; set; } = Array.Empty<PieCutCornerCabinetModel>();
+    public List<PieCutCornerCabinetModel> PieCutCornerCabinets { get; set; } = new();
 
     [XmlElement("diagonalCabinet")]
-    public DiagonalCornerCabinetModel[] DiagonalCornerCabinets { get; set; } = Array.Empty<DiagonalCornerCabinetModel>();
+    public List<DiagonalCornerCabinetModel> DiagonalCornerCabinets { get; set; } = new();
 
     [XmlElement("sinkCabinet")]
-    public SinkCabinetModel[] SinkCabinets { get; set; } = Array.Empty<SinkCabinetModel>();
+    public List<SinkCabinetModel> SinkCabinets { get; set; } = new();
 
     /*[XmlArrayItem(typeof(DrawerBoxModel), ElementName="drawerBox")]
 	public List<DrawerBoxModel> DrawerBoxes { get; set; } = new();*/

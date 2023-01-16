@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.ExcelTemplates.Contracts;
-using ApplicationCore.Shared;
+using ApplicationCore.Features.Shared;
 
 namespace ApplicationCore.Features.ExcelTemplates.Domain;
 

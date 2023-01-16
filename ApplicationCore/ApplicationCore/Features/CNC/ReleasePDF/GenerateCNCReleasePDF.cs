@@ -4,7 +4,7 @@ using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF;
 
-public class GenerateCNCReleasePDF { 
+public class GenerateCNCReleasePDF {
 
     public record Command(ReleasedJob Job, string ReportOutputDirectory) : ICommand<PDFGenerationResult>;
 
@@ -19,16 +19,16 @@ public class GenerateCNCReleasePDF {
         public override Task<Response<PDFGenerationResult>> Handle(Command command) {
 
             try {
-                
+
                 var filePaths = _pdfService.GeneratePDFs(command.Job, command.ReportOutputDirectory);
-                
+
                 return Task.FromResult(
                     new Response<PDFGenerationResult>(new PDFGenerationResult() {
                         FilePaths = filePaths
-					})
+                    })
                 );
 
-			} catch (Exception e) {
+            } catch (Exception e) {
 
                 return Task.FromResult(
                     new Response<PDFGenerationResult>(new Error() {
@@ -40,7 +40,7 @@ public class GenerateCNCReleasePDF {
             }
 
 
-		}
+        }
 
     }
 

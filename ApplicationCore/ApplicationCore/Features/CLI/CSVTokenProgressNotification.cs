@@ -4,10 +4,10 @@ namespace ApplicationCore.Features.CLI;
 
 public class CSVTokenProgressNotification : IUINotification {
 
-	public string Message { get; init; }
+    public string Message { get; init; }
 
-	public CSVTokenProgressNotification(string message) {
-		Message = message;
-	}
+    public CSVTokenProgressNotification(string message) {
+        Message = message;
+    }
 
 }

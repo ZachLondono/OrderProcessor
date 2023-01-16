@@ -5,89 +5,89 @@ namespace ApplicationCore.Tests.Unit.CADCode.Domain;
 
 public class ShapeTests {
 
-	private Shape _sut = new();
+    private Shape _sut = new();
 
-	[Fact]
-	public void AddFillet_ShouldThrow_WhenStartingWithFillet() {
-		
-		Action execute = () => _sut.AddFillet(2);
+    [Fact]
+    public void AddFillet_ShouldThrow_WhenStartingWithFillet() {
 
-		execute.Should().Throw<InvalidOperationException>();
+        Action execute = () => _sut.AddFillet(2);
 
-	}
+        execute.Should().Throw<InvalidOperationException>();
 
-	[Fact]
-	public void AddFillet_ShouldNotThrow_WhenPrecededByLine() {
+    }
 
-		var sut = new Shape();
-		sut.AddLine(new(0, 0), new(0, 50));
+    [Fact]
+    public void AddFillet_ShouldNotThrow_WhenPrecededByLine() {
 
-		Action execute = () => sut.AddFillet(2);
+        var sut = new Shape();
+        sut.AddLine(new(0, 0), new(0, 50));
 
-		execute.Should().NotThrow<InvalidOperationException>();
+        Action execute = () => sut.AddFillet(2);
 
-	}
+        execute.Should().NotThrow<InvalidOperationException>();
 
-	[Fact]
-	public void AddLine_ShouldNotThrow_WhenSegmentIsValid() {
-		var sut = new Shape();
+    }
 
-		Action execute = () => sut.AddLine(new(1, 50), new(50, 50));
+    [Fact]
+    public void AddLine_ShouldNotThrow_WhenSegmentIsValid() {
+        var sut = new Shape();
 
-		execute.Should().NotThrow<InvalidOperationException>();
-	}
+        Action execute = () => sut.AddLine(new(1, 50), new(50, 50));
 
-	[Fact]
-	public void AddLine_ShouldThrow_WhenSegmentsDontConnect() {
+        execute.Should().NotThrow<InvalidOperationException>();
+    }
 
-		var sut = new Shape();
-		sut.AddLine(new(0, 0), new(0, 50));
+    [Fact]
+    public void AddLine_ShouldThrow_WhenSegmentsDontConnect() {
 
-		Action execute = () => sut.AddLine(new(1, 50), new(50, 50));
+        var sut = new Shape();
+        sut.AddLine(new(0, 0), new(0, 50));
 
-		execute.Should().Throw<InvalidOperationException>();
+        Action execute = () => sut.AddLine(new(1, 50), new(50, 50));
 
-	}
+        execute.Should().Throw<InvalidOperationException>();
 
-	[Fact]
-	public void AddLine_ShouldThrow_WhenSegmentLengthIsZero() {
+    }
 
-		var sut = new Shape();
+    [Fact]
+    public void AddLine_ShouldThrow_WhenSegmentLengthIsZero() {
 
-		Action execute = () => sut.AddLine(new(50, 50), new(50, 50));
+        var sut = new Shape();
 
-		execute.Should().Throw<InvalidOperationException>();
-	}
+        Action execute = () => sut.AddLine(new(50, 50), new(50, 50));
 
-	[Fact]
-	public void GetSegments_ShouldThrow_WhenShapeIsNotClosed() {
+        execute.Should().Throw<InvalidOperationException>();
+    }
 
-		var sut = new Shape();
-		sut.AddLine(new(0, 0), new(0, 50));
-		sut.AddLine(new(0, 50), new(50, 50));
+    [Fact]
+    public void GetSegments_ShouldThrow_WhenShapeIsNotClosed() {
 
-		Action execute = () => sut.GetSegments();
+        var sut = new Shape();
+        sut.AddLine(new(0, 0), new(0, 50));
+        sut.AddLine(new(0, 50), new(50, 50));
 
-		sut.IsClosed.Should().BeFalse();
-		execute.Should().Throw<InvalidOperationException>();
+        Action execute = () => sut.GetSegments();
 
-	}
+        sut.IsClosed.Should().BeFalse();
+        execute.Should().Throw<InvalidOperationException>();
 
-	[Fact]
-	public void GetSegments_ShouldThrow_WhenShapeEndsInFillet() {
+    }
 
-		var sut = new Shape();
-		sut.AddLine(new(0, 0), new(0, 50));
-		sut.AddLine(new(0, 50), new(50, 50));
-		sut.AddLine(new(50, 50), new(50, 0));
-		sut.AddLine(new(50, 0), new(0, 0));
-		sut.AddFillet(2);
+    [Fact]
+    public void GetSegments_ShouldThrow_WhenShapeEndsInFillet() {
 
-		Action execute = () => sut.GetSegments();
+        var sut = new Shape();
+        sut.AddLine(new(0, 0), new(0, 50));
+        sut.AddLine(new(0, 50), new(50, 50));
+        sut.AddLine(new(50, 50), new(50, 0));
+        sut.AddLine(new(50, 0), new(0, 0));
+        sut.AddFillet(2);
 
-		sut.IsClosed.Should().BeFalse();
-		execute.Should().Throw<InvalidOperationException>();
+        Action execute = () => sut.GetSegments();
 
-	}
+        sut.IsClosed.Should().BeFalse();
+        execute.Should().Throw<InvalidOperationException>();
+
+    }
 
 }

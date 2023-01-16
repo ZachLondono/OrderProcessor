@@ -1,7 +1,8 @@
 ﻿@page "/orders/list"
 @using ApplicationCore.Features.Companies
 @using ApplicationCore.Features.List
-@using ApplicationCore.Features.Orders.Domain
+@using ApplicationCore.Features.Orders.Shared.Domain
+@using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Infrastructure
 @inject IBus Bus
 @inject OrderState OrderState

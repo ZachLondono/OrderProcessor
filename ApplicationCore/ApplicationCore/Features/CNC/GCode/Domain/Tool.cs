@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.CNC.Shared;
-using ApplicationCore.Shared.Domain;
+using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.CNC.GCode.Domain;
 

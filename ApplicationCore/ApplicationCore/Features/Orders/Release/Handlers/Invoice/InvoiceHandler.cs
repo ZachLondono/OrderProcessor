@@ -1,11 +1,11 @@
 ﻿using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.ExcelTemplates.Contracts;
 using ApplicationCore.Features.ExcelTemplates.Domain;
-using ApplicationCore.Features.Orders.Domain.Products;
-using ApplicationCore.Features.Orders.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Release.Handlers.Invoice.Models;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Shared;
+using ApplicationCore.Features.Shared;
 using ClosedXML.Excel;
 using Microsoft.Extensions.Logging;
 using Company = ApplicationCore.Features.Companies.Domain.Company;
@@ -131,7 +131,7 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
 
         // TODO: check if order has a discount
         if (order.PriceAdjustment != 0M) {
-            
+
             using var stream = _reader.OpenReadFileStream(invResponse.FilePath, FileAccess.ReadWrite);
             using var workbook = new XLWorkbook(stream);
             var sheet = workbook.Worksheet("Invoice");

@@ -12,12 +12,9 @@ public class OrderProviderFactory : IOrderProviderFactory {
         _serviceProvider = serviceProvider;
     }
 
-    public OrderProvider GetOrderProvider(OrderSourceType source) => source switch {
+    public IOrderProvider GetOrderProvider(OrderSourceType source) => source switch {
         OrderSourceType.AllmoxyXML => _serviceProvider.GetRequiredService<AllmoxyXMLOrderProvider>(),
-        OrderSourceType.RichelieuXML => _serviceProvider.GetRequiredService<RichelieuXMLOrderProvider>(),
-		OrderSourceType.OTExcel => _serviceProvider.GetRequiredService<OTExcelProvider>(),
-        OrderSourceType.HafeleExcel => _serviceProvider.GetRequiredService<HafeleExcelProvider>(),
-		_ => throw new NotImplementedException(),
+        _ => throw new KeyNotFoundException("No valid order provider for given order source type"),
     };
 
 }

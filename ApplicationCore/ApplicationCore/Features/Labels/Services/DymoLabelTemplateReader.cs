@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Labels.Domain;
-using ApplicationCore.Shared;
+using ApplicationCore.Features.Shared;
 using System.Xml;
 
 namespace ApplicationCore.Features.Labels.Services;

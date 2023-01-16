@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Emails.Domain;
-using ApplicationCore.Shared;
+using ApplicationCore.Features.Shared;
 
 namespace ApplicationCore.Features.Emails.Services;
 

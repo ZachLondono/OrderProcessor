@@ -12,7 +12,7 @@ internal class BOLHandler : DomainListener<TriggerOrderReleaseNotification> {
     private readonly ILogger<BOLHandler> _logger;
     private readonly IBus _bus;
     private readonly IUIBus _uibus;
-    
+
     public BOLHandler(ILogger<BOLHandler> logger, IBus bus, IUIBus uibus) {
         _bus = bus;
         _uibus = uibus;
@@ -27,7 +27,7 @@ internal class BOLHandler : DomainListener<TriggerOrderReleaseNotification> {
         }
 
         var order = notification.Order;
-        
+
         bool didError = false;
         Company? customer = null;
         var custQuery = await GetCompany(order.CustomerId);

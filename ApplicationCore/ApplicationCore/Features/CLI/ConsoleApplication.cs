@@ -7,7 +7,7 @@ using ApplicationCore.Features.CNC.ReleasePDF;
 using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Features.Orders.Loader;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Shared;
+using ApplicationCore.Features.Shared;
 using CommandLine;
 using Microsoft.Extensions.Logging;
 
@@ -26,15 +26,15 @@ public class ConsoleApplication {
         _uiBus = uiBus;
         _messageBoxService = messageBoxService;
         _logger = logger;
-		_loggerFactory = loggerFactory;
-	}
+        _loggerFactory = loggerFactory;
+    }
 
     public async Task Run(string[] args) {
 
-		await Parser.Default
+        await Parser.Default
                     .ParseArguments<ConsoleApplicationOption>(args)
                     .WithNotParsed(errors => {
-                        
+
                         string errorMessage = "";
                         foreach (var error in errors) {
                             errorMessage += error + "\n";
@@ -42,72 +42,77 @@ public class ConsoleApplication {
                         _messageBoxService.OpenDialog(errorMessage, "Error");
 
                     }).WithParsedAsync(async option => {
-                        
+
                         if (!string.IsNullOrWhiteSpace(option.CSVTokenFilePath)) {
 
                             _logger.LogInformation("Generating release for tokens at {FilePath}", option.CSVTokenFilePath);
 
-							await GenerateReleaseFromTokenCSV(option.CSVTokenFilePath);
+                            await GenerateReleaseFromTokenCSV(option.CSVTokenFilePath);
 
-						} else { 
+                        } else {
 
-                            var provider = ParseProviderType(option.Provider);
-                            if (provider is not OrderSourceType.Unknown) {
+                            try {
+
+                                var provider = ParseProviderType(option.Provider);
+
                                 var result = await _bus.Send(new LoadOrderCommand.Command(provider, option.Source));
                                 result.Match(
-                                order => _messageBoxService.OpenDialog($"New order loaded\n{order.Name}\n{order.Id}", "New Order"),
-                                error => _messageBoxService.OpenDialog($"Error loading order\n{error.Details}", "Error")
+                                    order => _messageBoxService.OpenDialog($"New order loaded\n{order.Name}\n{order.Id}", "New Order"),
+                                    error => _messageBoxService.OpenDialog($"Error loading order\n{error.Details}", "Error")
                                 );
-                            } else {
+
+                            } catch (KeyNotFoundException) {
+
                                 _messageBoxService.OpenDialog($"Unknown order provider '{option.Provider}'", "Unknown provider");
+
                             }
 
-						}
+                        }
 
-					});
+                    });
 
-	}
+    }
 
     private async Task GenerateReleaseFromTokenCSV(string filepath) {
 
-		_uiBus.Publish(new CSVTokenProgressNotification($"Reading tokens from file: '{filepath}'"));
+        _uiBus.Publish(new CSVTokenProgressNotification($"Reading tokens from file: '{filepath}'"));
 
-		_logger.LogInformation("Reading tokens from csv file");
+        _logger.LogInformation("Reading tokens from csv file");
 
-		var result = await _bus.Send(new ReadTokensFromCSVFile.Command(filepath));
+        var result = await _bus.Send(new ReadTokensFromCSVFile.Command(filepath));
 
         List<Batch> batches = new();
 
-		result.Match(
-			result => {
+        result.Match(
+            result => {
 
                 _logger.LogInformation("Converting csv tokens to CNC operations");
-				_uiBus.Publish(new CSVTokenProgressNotification("Converting csv tokens to CNC operations"));
+                _uiBus.Publish(new CSVTokenProgressNotification("Converting csv tokens to CNC operations"));
 
-				var parser = new CSVTokensParser(_loggerFactory.CreateLogger<CSVTokensParser>());
+                var parser = new CSVTokensParser(_loggerFactory.CreateLogger<CSVTokensParser>());
                 var parsedBatches = parser.ParseTokens(result).ToList();
                 batches.AddRange(parsedBatches);
 
-			},
+            },
             error => {
-				_logger.LogError("Error reading batches from csv tokens {Error}", error);
+                _logger.LogError("Error reading batches from csv tokens {Error}", error);
                 _messageBoxService.OpenDialog(error.Details, error.Title);
             }
-		);
+        );
 
 
-		_logger.LogInformation("Found {BatchCount} batches in csv tokens", batches.Count);
-		_uiBus.Publish(new CSVTokenProgressNotification($"Found {batches.Count} batches in csv tokens"));
+        _logger.LogInformation("Found {BatchCount} batches in csv tokens", batches.Count);
+        _uiBus.Publish(new CSVTokenProgressNotification($"Found {batches.Count} batches in csv tokens"));
 
-		foreach (var batch in batches) {
-			await GenerateGCodeForBatch(batch);
-		}
+        foreach (var batch in batches) {
+            await GenerateGCodeForBatch(batch);
+        }
 
-	}
+    }
 
     private async Task GenerateGCodeForBatch(Batch batch) {
 
-		_logger.LogInformation("Generating gcode for batch {BatchName}", batch.Name);
+        _logger.LogInformation("Generating gcode for batch {BatchName}", batch.Name);
 
         ReleasedJob? job = null;
 
@@ -141,30 +146,27 @@ public class ConsoleApplication {
 
     private async Task GeneratePDFRelease(ReleasedJob job) {
 
-		_uiBus.Publish(new CSVTokenProgressNotification($"Generating PDF for job '{job.JobName}'"));
-		_logger.LogInformation("Generating PDF for job {JobName}", job.JobName);
+        _uiBus.Publish(new CSVTokenProgressNotification($"Generating PDF for job '{job.JobName}'"));
+        _logger.LogInformation("Generating PDF for job {JobName}", job.JobName);
 
-		var pdfResponse = await _bus.Send(new GenerateCNCReleasePDF.Command(job, @"C:\Users\Zachary Londono\Desktop\ExampleConfiguration\cutlists"));
-		pdfResponse.Match(
-			pdfResult => {
-				string message = "";
-				foreach (var file in pdfResult.FilePaths) {
-					message += file + "\n";
-				}
-				_messageBoxService.OpenDialog(message, "Generated Files");
-			},
-			error => _messageBoxService.OpenDialog(error.Details, error.Title)
-		);
+        var pdfResponse = await _bus.Send(new GenerateCNCReleasePDF.Command(job, @"C:\Users\Zachary Londono\Desktop\ExampleConfiguration\cutlists"));
+        pdfResponse.Match(
+            pdfResult => {
+                string message = "";
+                foreach (var file in pdfResult.FilePaths) {
+                    message += file + "\n";
+                }
+                _messageBoxService.OpenDialog(message, "Generated Files");
+            },
+            error => _messageBoxService.OpenDialog(error.Details, error.Title)
+        );
 
-	}
+    }
 
 
     private static OrderSourceType ParseProviderType(string provider) => provider switch {
         "allmoxy" => OrderSourceType.AllmoxyXML,
-        "hafele" => OrderSourceType.HafeleExcel,
-        "richelieu" => OrderSourceType.RichelieuXML,
-        "ot" => OrderSourceType.OTExcel,
-        _ => OrderSourceType.Unknown
+        _ => throw new KeyNotFoundException($"Unknown order provider '{provider}'")
     };
 
 }

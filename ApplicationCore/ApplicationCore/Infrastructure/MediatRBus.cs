@@ -5,7 +5,7 @@ namespace ApplicationCore.Infrastructure;
 internal class MediatRBus : IBus {
 
     private readonly IMediator _mediator;
-    
+
     public MediatRBus(IMediator mediator) {
         _mediator = mediator;
     }
