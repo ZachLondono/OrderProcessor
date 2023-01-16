@@ -41,8 +41,6 @@ internal static class DependencyInjection {
         var invoiceEmailConfig = configuration.GetRequiredSection("Email").Get<EmailConfiguration>();
         services.AddSingleton<EmailConfiguration>(invoiceEmailConfig);
 
-        services.AddTransient<LoadingMessagePublisher>();
-
         return services;
 
     }

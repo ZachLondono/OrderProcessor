@@ -19,13 +19,13 @@ public class LoadOrderCommand {
 
         private readonly IOrderProviderFactory _factory;
         private readonly IBus _bus;
-        private readonly LoadingMessagePublisher _publisher;
+        private readonly IUIBus _uiBus;
         private readonly IMessageBoxService _messageBoxService;
 
-        public Handler(IOrderProviderFactory factory, IBus bus, LoadingMessagePublisher publisher, IMessageBoxService messageBoxService) {
+        public Handler(IOrderProviderFactory factory, IBus bus, IUIBus uiBus, IMessageBoxService messageBoxService) {
             _factory = factory;
             _bus = bus;
-            _publisher = publisher;
+            _uiBus = uiBus;
             _messageBoxService = messageBoxService;
         }
 
@@ -82,7 +82,7 @@ public class LoadOrderCommand {
                 try {
                     products.Add(MapDataToBaseCabinet(cab));
                 } catch (Exception ex) {
-                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                    _uiBus.PublishError($"Could not load cabinet {index} : {ex.Message}");
                 }
             });
 
@@ -91,7 +91,7 @@ public class LoadOrderCommand {
                 try {
                     products.Add(MapDataToWallCabinet(cab));
                 } catch (Exception ex) {
-                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                    _uiBus.PublishError($"Could not load cabinet {index} : {ex.Message}");
                 }
             });
 
@@ -100,7 +100,7 @@ public class LoadOrderCommand {
                 try {
                     products.Add(MapDataToDrawerBaseCabinet(cab));
                 } catch (Exception ex) {
-                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                    _uiBus.PublishError($"Could not load cabinet {index} : {ex.Message}");
                 }
             });
 
@@ -109,7 +109,7 @@ public class LoadOrderCommand {
                 try {
                     products.Add(MapDataToTallCabinet(cab));
                 } catch (Exception ex) {
-                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                    _uiBus.PublishError($"Could not load cabinet {index} : {ex.Message}");
                 }
             });
 
@@ -118,7 +118,7 @@ public class LoadOrderCommand {
                 try {
                     products.Add(MapDataToPieCutCabinet(cab));
                 } catch (Exception ex) {
-                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                    _uiBus.PublishError($"Could not load cabinet {index} : {ex.Message}");
                 }
             });
 
@@ -127,7 +127,7 @@ public class LoadOrderCommand {
                 try {
                     products.Add(MapDataToDiagonalCabinet(cab));
                 } catch (Exception ex) {
-                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                    _uiBus.PublishError($"Could not load cabinet {index} : {ex.Message}");
                 }
             });
 
@@ -136,7 +136,7 @@ public class LoadOrderCommand {
                 try {
                     products.Add(MapDataToSinkCabinet(cab));
                 } catch (Exception ex) {
-                    _publisher.PublishError($"Could not load cabinet {index} : {ex.Message}");
+                    _uiBus.PublishError($"Could not load cabinet {index} : {ex.Message}");
                 }
             });
 

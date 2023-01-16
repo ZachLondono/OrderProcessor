@@ -18,15 +18,15 @@ namespace ApplicationCore.Features.Orders.Loader.Providers;
 internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     private readonly IBus _bus;
-    private readonly LoadingMessagePublisher _publisher;
+    private readonly IUIBus _uiBus;
     private readonly AllmoxyConfiguration _configuration;
     private readonly AllmoxyClientFactory _clientfactory;
     private readonly IXMLValidator _validator;
     private string? _data = null;
 
-    public AllmoxyXMLOrderProvider(IBus bus, LoadingMessagePublisher publisher, AllmoxyConfiguration configuration, AllmoxyClientFactory clientfactory, IXMLValidator validator) {
+    public AllmoxyXMLOrderProvider(IBus bus, IUIBus uiBus, AllmoxyConfiguration configuration, AllmoxyClientFactory clientfactory, IXMLValidator validator) {
         _bus = bus;
-        _publisher = publisher;
+        _uiBus = uiBus;
         _configuration = configuration;
         _clientfactory = clientfactory;
         _validator = validator;
@@ -48,7 +48,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             var errors = _validator.ValidateXML(stream, _configuration.SchemaFilePath);
 
             foreach (var error in errors) {
-                _publisher.PublishError($"[XML Error] [{error.Severity}] {error.Exception.Message}");
+                _uiBus.PublishError($"[XML Error] [{error.Severity}] {error.Exception.Message}");
             }
 
             return Task.FromResult(new ValidationResult() {
@@ -71,14 +71,14 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
         if (_data is null) LoadData(source);
         if (_data is null) {
-            _publisher.PublishError("Could not load order data from Allmoxy");
+            _uiBus.PublishError("Could not load order data from Allmoxy");
             return null;
         }
 
         var serializer = new XmlSerializer(typeof(OrderModel));
         using var reader = new StringReader(_data);
         if (serializer.Deserialize(reader) is not OrderModel data) {
-            _publisher.PublishError("Could not find order information in given data");
+            _uiBus.PublishError("Could not find order information in given data");
             return null;
         }
 
@@ -91,7 +91,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
                 customer = c;
             },
             error => {
-                _publisher.PublishError(error.Title);
+                _uiBus.PublishError(error.Title);
                 didError = true;
             }
         );
@@ -99,7 +99,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         customer ??= await CreateCustomer(data);
 
         if (customer is null || didError) {
-            _publisher.PublishError("Could not find/save customer information");
+            _uiBus.PublishError("Could not find/save customer information");
             return null;
         }
 
@@ -141,7 +141,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
         var subTotal = baseCabinets.Sum(c => c.UnitPrice) + wallCabinets.Sum(c => c.UnitPrice) + dbCabinets.Sum(c => c.UnitPrice) + tallCabinets.Sum(b => b.UnitPrice) + pieCutCabinets.Sum(b => b.UnitPrice) + diagonalCabinets.Sum(b => b.UnitPrice) + sinkCabinets.Sum(b => b.UnitPrice) + boxes.Sum(b => b.UnitPrice);
         if (subTotal != data.Invoice.Subtotal) {
-            _publisher.PublishWarning($"Order data subtotal '${data.Invoice.Subtotal:0.00}' does not match calculated subtotal '${subTotal:0.00}'. There may be missing products.");
+            _uiBus.PublishWarning($"Order data subtotal '${data.Invoice.Subtotal:0.00}' does not match calculated subtotal '${subTotal:0.00}'. There may be missing products.");
         }
 
         var tax = data.Invoice.Tax;
@@ -161,7 +161,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
         string orderDateStr = data.OrderDate;
         if (!DateTime.TryParse(orderDateStr, out DateTime orderDate)) {
-            _publisher.PublishWarning($"Could not parse order date '{(orderDateStr == "" ? "[BLANK]" : orderDateStr)}'");
+            _uiBus.PublishWarning($"Could not parse order date '{(orderDateStr == "" ? "[BLANK]" : orderDateStr)}'");
             orderDate = DateTime.Now;
         }
 
@@ -216,7 +216,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
                 await _bus.Send(new CreateAllmoxyIdCompanyIdMapping.Command(data.Customer.CompanyId, customer.Id));
             },
             error => {
-                _publisher.PublishError(error.Title);
+                _uiBus.PublishError(error.Title);
                 customer = null;
             }
         );
