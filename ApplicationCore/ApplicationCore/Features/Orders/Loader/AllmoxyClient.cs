@@ -15,14 +15,12 @@ internal class AllmoxyClient : IAllmoxyClient {
     private const string LOG_IN_FORM_CONTENT_TYPE = "application/x-www-form-urlencoded";
     private const int MAX_RETRIES = 3;
 
-    private string BaseUrl => $"https://{_instanceName}.allmoxy.com/";
-
-    public AllmoxyClient(string instanceName, string username, string password, RestClientFactory factory) {
+    public AllmoxyClient(string instanceName, string username, string password, IRestClient client) {
         _instanceName = instanceName;
         _username = username;
         _password = password;
 
-        _client = factory.CreateClient(BaseUrl);
+        _client = client;
 
     }
 
@@ -30,17 +28,17 @@ internal class AllmoxyClient : IAllmoxyClient {
 
     private string GetExport(string orderNumber, int index, int tries) {
 
-        if (MAX_RETRIES > 3) {
+        if (tries > MAX_RETRIES) {
             throw new InvalidOperationException("Could not log in to Allmoxy");
         }
 
         var request = new RestRequest($"orders/export_partlist/{orderNumber}/{index}/", Method.Get);
-        var response = _client.Execute(request);
+        RestResponse response = _client.Execute(request);
 
         switch (response.ContentType) {
             case NOT_LOGGED_IN_CONTENT_TYPE:
                 LogIn();
-                return GetExport(orderNumber, index, tries++);
+                return GetExport(orderNumber, index, ++tries);
 
             case EXPORT_CONTENT_TYPE:
                 if (response.Content is null) {
