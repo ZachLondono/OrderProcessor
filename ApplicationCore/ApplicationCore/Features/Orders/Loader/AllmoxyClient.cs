@@ -1,10 +1,11 @@
-﻿using RestSharp;
+﻿using ApplicationCore.Features.Orders.Loader.Rest;
+using RestSharp;
 
 namespace ApplicationCore.Features.Orders.Loader;
 
 internal class AllmoxyClient : IAllmoxyClient {
 
-    private readonly RestClient _client;
+    private readonly IRestClient _client;
     private readonly string _instanceName;
     private readonly string _username;
     private readonly string _password;
@@ -12,21 +13,26 @@ internal class AllmoxyClient : IAllmoxyClient {
     private const string NOT_LOGGED_IN_CONTENT_TYPE = "text/html";
     private const string EXPORT_CONTENT_TYPE = "application/xml";
     private const string LOG_IN_FORM_CONTENT_TYPE = "application/x-www-form-urlencoded";
+    private const int MAX_RETRIES = 3;
 
     private string BaseUrl => $"https://{_instanceName}.allmoxy.com/";
 
-    public AllmoxyClient(string instanceName, string username, string password) {
+    public AllmoxyClient(string instanceName, string username, string password, RestClientFactory factory) {
         _instanceName = instanceName;
         _username = username;
         _password = password;
 
-        _client = new RestClient(new RestClientOptions(BaseUrl) {
-            FollowRedirects = true // Following redirects is required to successfully log in
-        });
+        _client = factory.CreateClient(BaseUrl);
 
     }
 
-    public string GetExport(string orderNumber, int index) {
+    public string GetExport(string orderNumber, int index) => GetExport(orderNumber, index, 0);
+
+    private string GetExport(string orderNumber, int index, int tries) {
+
+        if (MAX_RETRIES > 3) {
+            throw new InvalidOperationException("Could not log in to Allmoxy");
+        }
 
         var request = new RestRequest($"orders/export_partlist/{orderNumber}/{index}/", Method.Get);
         var response = _client.Execute(request);
@@ -34,7 +40,7 @@ internal class AllmoxyClient : IAllmoxyClient {
         switch (response.ContentType) {
             case NOT_LOGGED_IN_CONTENT_TYPE:
                 LogIn();
-                return GetExport(orderNumber, index);
+                return GetExport(orderNumber, index, tries++);
 
             case EXPORT_CONTENT_TYPE:
                 if (response.Content is null) {
@@ -62,7 +68,6 @@ internal class AllmoxyClient : IAllmoxyClient {
 
     public void Dispose() {
         _client.Dispose();
-        //GC.SuppressFinalize(this);
     }
 
 }

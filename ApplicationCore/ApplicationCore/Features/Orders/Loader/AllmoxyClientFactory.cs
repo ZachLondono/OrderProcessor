@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
+using ApplicationCore.Features.Orders.Loader.Rest;
 
 namespace ApplicationCore.Features.Orders.Loader;
 
@@ -11,7 +12,8 @@ public class AllmoxyClientFactory {
     }
 
     public IAllmoxyClient CreateClient() {
-        return new AllmoxyClient(_credentials.Instance, _credentials.Username, _credentials.Password);
+        var restFactory = new RestClientFactory();
+        return new AllmoxyClient(_credentials.Instance, _credentials.Username, _credentials.Password, restFactory);
     }
 
 }
