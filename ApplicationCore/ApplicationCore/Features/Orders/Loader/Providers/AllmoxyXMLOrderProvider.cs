@@ -15,7 +15,7 @@ using System.Xml.Serialization;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 
-internal class AllmoxyXMLOrderProvider : OrderProvider {
+internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     private readonly IBus _bus;
     private readonly LoadingMessagePublisher _publisher;
@@ -30,7 +30,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
         _credentials = credentials;
     }
 
-    public override Task<ValidationResult> ValidateSource(string source) {
+    public Task<ValidationResult> ValidateSource(string source) {
 
         try {
 
@@ -71,7 +71,7 @@ internal class AllmoxyXMLOrderProvider : OrderProvider {
 
     }
 
-    public override async Task<OrderData?> LoadOrderData(string source) {
+    public async Task<OrderData?> LoadOrderData(string source) {
 
         if (_data is null) LoadData(source);
         if (_data is null) {

@@ -2,6 +2,6 @@
 
 public interface IOrderProviderFactory {
 
-    public OrderProvider GetOrderProvider(OrderSourceType type);
+    public IOrderProvider GetOrderProvider(OrderSourceType type);
 
 }

@@ -20,7 +20,7 @@ public class OrderProviderFactoryTest {
     [Fact]
     public void Should_NotThrowException_ForAnySourceType() {
 
-        var provider = Substitute.For<OrderProvider>();
+        var provider = Substitute.For<IOrderProvider>();
 
         foreach (var sourceType in Enum.GetValues(typeof(OrderSourceType))) {
 
