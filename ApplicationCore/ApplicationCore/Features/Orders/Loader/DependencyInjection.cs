@@ -7,6 +7,7 @@ using ApplicationCore.Features.Orders.Loader.Providers;
 using ApplicationCore.Features.Orders.Providers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ApplicationCore.Features.Orders.Loader.XMLValidation;
 
 namespace ApplicationCore.Features.Orders.Loader;
 
@@ -22,6 +23,9 @@ internal static class DependencyInjection {
         var allmoxyConfig = configuration.GetRequiredSection("AllmoxyConfiguration").Get<AllmoxyConfiguration>();
         services.AddSingleton<AllmoxyConfiguration>(allmoxyConfig);
         services.AddTransient<AllmoxyXMLOrderProvider>();
+        services.AddTransient<AllmoxyClientFactory>();
+
+        services.AddTransient<IXMLValidator, XMLValidator>();
 
         services.AddTransient<ITemplateFiller, ClosedXMLTemplateFiller>();
         services.AddTransient<IExcelTemplate, ClosedXMLTemplate>();
