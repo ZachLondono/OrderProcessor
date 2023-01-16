@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Loader;
 
-internal class AllmoxyClient {
+internal class AllmoxyClient : IAllmoxyClient {
 
     private readonly RestClient _client;
     private readonly string _instanceName;

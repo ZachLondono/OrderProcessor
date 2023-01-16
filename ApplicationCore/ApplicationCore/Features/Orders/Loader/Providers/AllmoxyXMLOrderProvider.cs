@@ -20,14 +20,14 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
     private readonly IBus _bus;
     private readonly LoadingMessagePublisher _publisher;
     private readonly AllmoxyConfiguration _configuration;
-    private readonly AllmoxyCredentials _credentials;
+    private readonly AllmoxyLoaderFactory _clientfactory;
     private string? _data = null;
 
-    public AllmoxyXMLOrderProvider(IBus bus, LoadingMessagePublisher publisher, AllmoxyConfiguration configuration, AllmoxyCredentials credentials) {
+    public AllmoxyXMLOrderProvider(IBus bus, LoadingMessagePublisher publisher, AllmoxyConfiguration configuration, AllmoxyLoaderFactory clientfactory) {
         _bus = bus;
         _publisher = publisher;
         _configuration = configuration;
-        _credentials = credentials;
+        _clientfactory = clientfactory;
     }
 
     public Task<ValidationResult> ValidateSource(string source) {
@@ -195,7 +195,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
     }
 
     private void LoadData(string source) {
-        var client = new AllmoxyClient(_credentials.Instance, _credentials.Username, _credentials.Password);
+        var client = _clientfactory.CreateClient();
         _data = client.GetExport(source, 6);
     }
 
