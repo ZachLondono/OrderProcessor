@@ -249,11 +249,11 @@ public class DimensionTests {
         var dim2 = Dimension.FromInches(val2);
 
         // Act
-        var result = dim1 - dim2;
+        var result = dim2 - dim1;
 
 
         // Assert
-        result.AsInches().Should().Be(val1 - val2);
+        result.AsInches().Should().Be(val2 - val1);
 
     }
 
@@ -267,11 +267,26 @@ public class DimensionTests {
         var dim2 = Dimension.FromMillimeters(val2);
 
         // Act
-        var result = dim1 - dim2;
+        var result = dim2 - dim1;
 
 
         // Assert
-        result.AsMillimeters().Should().Be(val1 - val2);
+        result.AsMillimeters().Should().Be(val2 - val1);
+
+    }
+
+    [Fact]
+    public void Dimensions_ShouldThrowException_WhenValueIsNegative() {
+
+        // Arrange
+        double val1 = -123.456;
+
+        // Act
+        var action = () => Dimension.FromMillimeters(val1);
+
+
+        // Assert
+        action.Should().Throw<ArgumentOutOfRangeException>();
 
     }
 
