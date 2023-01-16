@@ -22,7 +22,6 @@ internal class AllmoxyClient : IAllmoxyClient {
         _password = password;
 
         _client = client;
-
     }
 
     public string GetExport(string orderNumber, int index) => GetExport(orderNumber, index, 0);
