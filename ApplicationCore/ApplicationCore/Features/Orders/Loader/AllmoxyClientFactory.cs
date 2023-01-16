@@ -2,11 +2,11 @@
 
 namespace ApplicationCore.Features.Orders.Loader;
 
-public class AllmoxyLoaderFactory {
+public class AllmoxyClientFactory {
 
     private readonly AllmoxyCredentials _credentials;
 
-    public AllmoxyLoaderFactory(AllmoxyCredentials credentials) {
+    public AllmoxyClientFactory(AllmoxyCredentials credentials) {
         _credentials = credentials;
     }
 
