@@ -9,6 +9,10 @@ internal class AllmoxyClient : IAllmoxyClient {
     private readonly string _username;
     private readonly string _password;
 
+    private const string NOT_LOGGED_IN_CONTENT_TYPE = "text/html";
+    private const string EXPORT_CONTENT_TYPE = "application/xml";
+    private const string LOG_IN_FORM_CONTENT_TYPE = "application/x-www-form-urlencoded";
+
     private string BaseUrl => $"https://{_instanceName}.allmoxy.com/";
 
     public AllmoxyClient(string instanceName, string username, string password) {
@@ -28,12 +32,15 @@ internal class AllmoxyClient : IAllmoxyClient {
         var response = _client.Execute(request);
 
         switch (response.ContentType) {
-            case "text/html":
+            case NOT_LOGGED_IN_CONTENT_TYPE:
                 LogIn();
                 return GetExport(orderNumber, index);
 
-            case "application/xml":
-                return response.Content ?? "empty";
+            case EXPORT_CONTENT_TYPE:
+                if (response.Content is null) {
+                    throw new InvalidOperationException("No data returned");
+                }
+                return response.Content;
 
             default:
                 throw new InvalidOperationException($"Unexpected response from server {response.StatusCode}");
@@ -46,7 +53,7 @@ internal class AllmoxyClient : IAllmoxyClient {
         _ = _client.Execute(new RestRequest("/", Method.Get));
 
         var request = new RestRequest("public/login/", Method.Post);
-        request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+        request.AddHeader("Content-Type", LOG_IN_FORM_CONTENT_TYPE);
         request.AddParameter("username", _username);
         request.AddParameter("password", _password);
         _ = _client.Execute(request);
