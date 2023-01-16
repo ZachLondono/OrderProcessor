@@ -9,10 +9,13 @@ internal class AllmoxyClient : IAllmoxyClient {
     private readonly string _username;
     private readonly string _password;
 
-    private const string NOT_LOGGED_IN_CONTENT_TYPE = "text/html";
-    private const string EXPORT_CONTENT_TYPE = "application/xml";
-    private const string LOG_IN_FORM_CONTENT_TYPE = "application/x-www-form-urlencoded";
+    public const string NOT_LOGGED_IN_CONTENT_TYPE = "text/html";
+    public const string EXPORT_CONTENT_TYPE = "application/xml";
+    public const string LOG_IN_FORM_CONTENT_TYPE = "application/x-www-form-urlencoded";
+    public const string EXPORT_NOT_FOUND_CONTENT = "Find: No matching Exporter";
+    public const string ORDER_NOT_FOUND_CONTENT = "Find: No matching Order records found";
     private const int MAX_RETRIES = 3;
+
 
     public AllmoxyClient(string username, string password, IRestClient client) {
         _username = username;
@@ -35,6 +38,15 @@ internal class AllmoxyClient : IAllmoxyClient {
 
         switch (response.ContentType) {
             case NOT_LOGGED_IN_CONTENT_TYPE:
+                
+                if (response.Content is not null) {
+                    if (response.Content.Contains(EXPORT_NOT_FOUND_CONTENT)) {
+                        throw new InvalidOperationException("Export could not be found");
+                    } else if (response.Content.Contains(ORDER_NOT_FOUND_CONTENT)) {
+                        throw new InvalidOperationException("Order could not be found");
+                    }
+                }
+
                 LogIn();
                 return GetExport(orderNumber, index, ++tries);
 
