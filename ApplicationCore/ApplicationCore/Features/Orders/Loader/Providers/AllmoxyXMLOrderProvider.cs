@@ -9,9 +9,9 @@ using ApplicationCore.Features.Orders.Loader.Providers.DTO;
 using ApplicationCore.Features.Orders.Loader.Providers.Results;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Features.Shared.Domain;
-using System.Xml.Linq;
-using System.Xml.Schema;
 using System.Xml.Serialization;
+using ApplicationCore.Features.Orders.Loader.XMLValidation;
+using System.Text;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 
@@ -20,14 +20,16 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
     private readonly IBus _bus;
     private readonly LoadingMessagePublisher _publisher;
     private readonly AllmoxyConfiguration _configuration;
-    private readonly AllmoxyLoaderFactory _clientfactory;
+    private readonly AllmoxyClientFactory _clientfactory;
+    private readonly IXMLValidator _validator;
     private string? _data = null;
 
-    public AllmoxyXMLOrderProvider(IBus bus, LoadingMessagePublisher publisher, AllmoxyConfiguration configuration, AllmoxyLoaderFactory clientfactory) {
+    public AllmoxyXMLOrderProvider(IBus bus, LoadingMessagePublisher publisher, AllmoxyConfiguration configuration, AllmoxyClientFactory clientfactory, IXMLValidator validator) {
         _bus = bus;
         _publisher = publisher;
         _configuration = configuration;
         _clientfactory = clientfactory;
+        _validator = validator;
     }
 
     public Task<ValidationResult> ValidateSource(string source) {
@@ -42,17 +44,11 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
                 });
             }
 
-            using var reader = new StringReader(_data);
-            XDocument doc = XDocument.Load(reader);
-
-            var schemas = new XmlSchemaSet();
-            schemas.Add("", _configuration.SchemaFilePath);
-
-            var errors = new List<string>();
-            doc.Validate(schemas, (s, e) => errors.Add(e.Message));
+            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(_data));
+            var errors = _validator.ValidateXML(stream, _configuration.SchemaFilePath);
 
             foreach (var error in errors) {
-                _publisher.PublishError($"[XML Schema] {error}");
+                _publisher.PublishError($"[XML Error] [{error.Severity}] {error.Exception.Message}");
             }
 
             return Task.FromResult(new ValidationResult() {
