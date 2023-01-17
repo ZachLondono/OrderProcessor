@@ -67,6 +67,7 @@ internal class DiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorContai
             { "FinishedRight", GetSideOption(RightSide.Type) },
             { "ShelfQ", AdjustableShelves.ToString() },
             { "AppliedPanel", GetAppliedPanelOption() },
+            { "LazySusan", "N" },
         };
 
         if (HingeSide != HingeSide.NotApplicable) {
