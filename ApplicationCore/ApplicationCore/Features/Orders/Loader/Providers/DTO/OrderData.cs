@@ -1,45 +1,34 @@
-﻿namespace ApplicationCore.Features.Orders.Loader.Providers.DTO;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
+
+namespace ApplicationCore.Features.Orders.Loader.Providers.DTO;
 
 public record OrderData {
 
-    public string Number { get; set; } = string.Empty;
+    public required string Number { get; init; } = string.Empty;
 
-    public string Name { get; set; } = string.Empty;
+    public required string Name { get; init; } = string.Empty;
 
-    public string Comment { get; set; } = string.Empty;
+    public required string Comment { get; init; } = string.Empty;
 
-    public decimal Tax { get; set; }
+    public required decimal Tax { get; init; }
 
-    public decimal Shipping { get; set; }
+    public required decimal Shipping { get; init; }
 
-    public decimal PriceAdjustment { get; set; }
+    public required decimal PriceAdjustment { get; init; }
 
-    public DateTime OrderDate { get; set; }
+    public required DateTime OrderDate { get; init; }
 
-    public Guid CustomerId { get; set; }
+    public required Guid CustomerId { get; init; }
 
-    public Guid VendorId { get; set; }
+    public required Guid VendorId { get; init; }
 
-    public bool Rush { get; set; }
+    public required bool Rush { get; init; }
 
-    public Dictionary<string, string> Info { get; set; } = new();
+    public required Dictionary<string, string> Info { get; init; } = new();
 
-    public List<DrawerBoxData> DrawerBoxes { get; set; } = new();
+    public required List<IProduct> Products { get; init; } = new();
 
-    public List<BaseCabinetData> BaseCabinets { get; set; } = new();
-
-    public List<WallCabinetData> WallCabinets { get; set; } = new();
-
-    public List<DrawerBaseCabinetData> DrawerBaseCabinets { get; set; } = new();
-
-    public List<TallCabinetData> TallCabinets { get; set; } = new();
-
-    public List<PieCutCornerCabinetData> PieCutCornerCabinets { get; set; } = new();
-
-    public List<DiagonalCornerCabinetData> DiagonalCornerCabinets { get; set; } = new();
-
-    public List<SinkCabinetData> SinkCabinets { get; set; } = new();
-
-    public List<AdditionalItemData> AdditionalItems { get; set; } = new();
+    public required List<AdditionalItem> AdditionalItems { get; init; } = new();
 
 }
