@@ -7,7 +7,7 @@ namespace ApplicationCore.Features.Orders.Loader;
 
 public class LoadOrderCommand {
 
-    public record Command(OrderSourceType SourceType, string Source) : ICommand<Order>;
+    public record Command(OrderSourceType SourceType, string Source, IOrderLoadingViewModel? OrderLoadingViewModel = null) : ICommand<Order>;
 
     public class Handler : CommandHandler<Command, Order> {
 
@@ -22,6 +22,7 @@ public class LoadOrderCommand {
         public override async Task<Response<Order>> Handle(Command request) {
 
             var provider = _factory.GetOrderProvider(request.SourceType);
+            provider.OrderLoadingViewModel = request.OrderLoadingViewModel;
 
             var data = await provider.LoadOrderData(request.Source);
 

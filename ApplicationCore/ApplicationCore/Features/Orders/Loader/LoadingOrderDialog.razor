@@ -101,7 +101,7 @@
 
         if (!firstRender) return;
 
-        var data = await Bus.Send(new LoadOrderCommand.Command(SourceType, Source));
+        var data = await Bus.Send(new LoadOrderCommand.Command(SourceType, Source, this));
 
         data.Match(
             order => {
