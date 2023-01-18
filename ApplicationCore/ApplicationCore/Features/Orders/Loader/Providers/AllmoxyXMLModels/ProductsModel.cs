@@ -16,8 +16,8 @@ public class ProductsModel {
     [XmlElement("tallCabinet")]
     public List<TallCabinetModel> TallCabinets { get; set; } = new();
 
-    [XmlElement("pieCutCabinet")]
-    public List<PieCutCornerCabinetModel> PieCutCornerCabinets { get; set; } = new();
+    [XmlElement("basePieCutCabinet")]
+    public List<BasePieCutCornerCabinetModel> PieCutCornerCabinets { get; set; } = new();
 
     [XmlElement("baseDiagonalCabinet")]
     public List<BaseDiagonalCornerCabinetModel> BaseDiagonalCornerCabinets { get; set; } = new();

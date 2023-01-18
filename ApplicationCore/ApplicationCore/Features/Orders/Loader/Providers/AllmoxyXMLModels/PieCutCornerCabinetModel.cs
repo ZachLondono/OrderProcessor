@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
-public class PieCutCornerCabinetModel {
+public class BasePieCutCornerCabinetModel {
 
     [XmlAttribute("groupNumber")]
     public int GroupNumber { get; set; }

@@ -5,7 +5,7 @@ using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class PieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorContainer {
+internal class BasePieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     public Dimension RightWidth { get; }
     public Dimension RightDepth { get; }
@@ -14,7 +14,7 @@ internal class PieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorContaine
     public HingeSide HingeSide { get; }
     public MDFDoorOptions? MDFOptions { get; }
 
-    public PieCutCornerCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
+    public BasePieCutCornerCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
@@ -28,7 +28,7 @@ internal class PieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorContaine
         MDFOptions = mdfDoorOptions;
     }
 
-    public static PieCutCornerCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
+    public static BasePieCutCornerCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,

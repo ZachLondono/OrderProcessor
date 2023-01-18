@@ -513,7 +513,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     }
 
-    public PieCutCornerCabinet MapToPieCutCabinet(PieCutCornerCabinetModel model) {
+    public BasePieCutCornerCabinet MapToPieCutCabinet(BasePieCutCornerCabinetModel model) {
 
         CabinetMaterialCore boxCore = GetMaterialCore(model.Cabinet.BoxMaterial.Type);
 
@@ -549,7 +549,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         CabinetSide leftSide = new(data.LeftSideType, data.DoorStyle);
         CabinetSide rightSide = new(data.RightSideType, data.DoorStyle);
 
-        return PieCutCornerCabinet.Create(data.Qty,
+        return BasePieCutCornerCabinet.Create(data.Qty,
             data.UnitPrice,
             data.Room,
             data.Assembled,
