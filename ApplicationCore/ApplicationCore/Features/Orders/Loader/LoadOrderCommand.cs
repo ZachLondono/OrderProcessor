@@ -23,26 +23,13 @@ public class LoadOrderCommand {
 
             var provider = _factory.GetOrderProvider(request.SourceType);
 
-            var validation = await provider.ValidateSource(request.Source);
-
-            if (!validation.IsValid) {
-
-                return new(new Error() {
-                    Title = "The order source is invalid",
-                    Details = validation.ErrorMessage
-                });
-
-            }
-
             var data = await provider.LoadOrderData(request.Source);
 
             if (data is null) {
 
-                string details = "No data could read from the provided order source.";
-
                 return new(new Error() {
                     Title = "No order was read",
-                    Details = details
+                    Details = "No data could read from the provided order source."
                 });
 
             }

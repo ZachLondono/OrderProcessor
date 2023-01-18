@@ -6,7 +6,6 @@ using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.Loader.Providers.DTO;
-using ApplicationCore.Features.Orders.Loader.Providers.Results;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Features.Shared.Domain;
 using System.Xml.Serialization;
@@ -23,7 +22,6 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
     private readonly AllmoxyConfiguration _configuration;
     private readonly AllmoxyClientFactory _clientfactory;
     private readonly IXMLValidator _validator;
-    private string? _data = null;
 
     public IOrderLoadingViewModel? OrderLoadingViewModel { get; set; }
 
@@ -34,50 +32,19 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         _validator = validator;
     }
 
-    public Task<ValidationResult> ValidateSource(string source) {
-
-        try {
-
-            if (_data is null) LoadData(source);
-            if (_data is null) {
-                return Task.FromResult(new ValidationResult() {
-                    ErrorMessage = "Could not load order data from Allmoxy",
-                    IsValid = false
-                });
-            }
-
-            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(_data));
-            var errors = _validator.ValidateXML(stream, _configuration.SchemaFilePath);
-
-            errors.ForEach(error => OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Error] [{error.Severity}] {error.Exception.Message}"));
-
-            return Task.FromResult(new ValidationResult() {
-                IsValid = !errors.Any(),
-                ErrorMessage = string.Join('\n', errors)
-            });
-
-        } catch {
-
-            return Task.FromResult(new ValidationResult() {
-                IsValid = false,
-                ErrorMessage = "Could not validate order data"
-            });
-
-        }
-
-    }
-
     public async Task<OrderData?> LoadOrderData(string source) {
 
         // Load order to a string
-        if (_data is null) LoadData(source);
-        if (_data is null) {
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not load order data from Allmoxy");
+        string exportXML = _clientfactory.CreateClient().GetExport(source, 6);
+
+        // Validate data
+        if (!ValidateData(exportXML)) {
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Order data was not valid");
             return null;
         }
 
         // Deserialize data
-        OrderModel? data = SerializeData(_data);
+        OrderModel? data = DeserializeData(exportXML);
         if (data is null) {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find order information in given data");
             return null;
@@ -117,9 +84,23 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     }
 
-    private void LoadData(string source) {
-        var client = _clientfactory.CreateClient();
-        _data = client.GetExport(source, 6);
+    public bool ValidateData(string data) {
+
+        try {
+
+            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
+            var errors = _validator.ValidateXML(stream, _configuration.SchemaFilePath);
+
+            errors.ForEach(error => OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Error] [{error.Severity}] {error.Exception.Message}"));
+
+            return !errors.Any();
+
+        } catch {
+
+            return false;
+
+        }
+
     }
 
     private DateTime ParseOrderDate(string orderDateStr) {
@@ -712,7 +693,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     }
 
-    private static OrderModel? SerializeData(string xmlString) {
+    private static OrderModel? DeserializeData(string xmlString) {
         var serializer = new XmlSerializer(typeof(OrderModel));
         using var reader = new StringReader(xmlString);
         if (serializer.Deserialize(reader) is OrderModel data) {
