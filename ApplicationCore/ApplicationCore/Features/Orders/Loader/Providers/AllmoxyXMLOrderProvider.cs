@@ -70,8 +70,8 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             Number = data.Number.ToString(),
             Name = data.Name,
             Comment = data.Description,
-            Tax = data.Invoice.Tax,
-            Shipping = data.Invoice.Shipping,
+            Tax = StringToMoney(data.Invoice.Tax),
+            Shipping = StringToMoney(data.Invoice.Shipping),
             PriceAdjustment = 0M,
             OrderDate = orderDate,
             CustomerId = (Guid)customerId,
@@ -102,6 +102,8 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         }
 
     }
+
+    private static decimal StringToMoney(string str) => Decimal.Parse(str.Replace("$", "").Replace(",", ""));
 
     private DateTime ParseOrderDate(string orderDateStr) {
         
@@ -228,7 +230,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
         var data = new BaseCabinetData() {
             Qty = model.Cabinet.Qty,
-            UnitPrice = model.Cabinet.UnitPrice,
+            UnitPrice = StringToMoney(model.Cabinet.UnitPrice),
             Room = model.Cabinet.Room,
             Assembled = (model.Cabinet.Assembled == "Yes"),
             Height = Dimension.FromMillimeters(model.Cabinet.Height),
@@ -311,7 +313,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
         var data = new WallCabinetData() {
             Qty = model.Cabinet.Qty,
-            UnitPrice = model.Cabinet.UnitPrice,
+            UnitPrice = StringToMoney(model.Cabinet.UnitPrice),
             Room = model.Cabinet.Room,
             Assembled = (model.Cabinet.Assembled == "Yes"),
             Height = Dimension.FromMillimeters(model.Cabinet.Height),
@@ -382,7 +384,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
         var data = new DrawerBaseCabinetData() {
             Qty = model.Cabinet.Qty,
-            UnitPrice = model.Cabinet.UnitPrice,
+            UnitPrice = StringToMoney(model.Cabinet.UnitPrice),
             Room = model.Cabinet.Room,
             Assembled = (model.Cabinet.Assembled == "Yes"),
             Height = Dimension.FromMillimeters(model.Cabinet.Height),
@@ -442,7 +444,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
         var data = new TallCabinetData() {
             Qty = model.Cabinet.Qty,
-            UnitPrice = model.Cabinet.UnitPrice,
+            UnitPrice = StringToMoney(model.Cabinet.UnitPrice),
             Room = model.Cabinet.Room,
             Assembled = (model.Cabinet.Assembled == "Yes"),
             Height = Dimension.FromMillimeters(model.Cabinet.Height),
@@ -522,7 +524,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
         var data = new PieCutCornerCabinetData() {
             Qty = model.Cabinet.Qty,
-            UnitPrice = model.Cabinet.UnitPrice,
+            UnitPrice = StringToMoney(model.Cabinet.UnitPrice),
             Room = model.Cabinet.Room,
             Assembled = (model.Cabinet.Assembled == "Yes"),
             Height = Dimension.FromMillimeters(model.Cabinet.Height),
@@ -579,7 +581,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
         var data = new DiagonalCornerCabinetData() {
             Qty = model.Cabinet.Qty,
-            UnitPrice = model.Cabinet.UnitPrice,
+            UnitPrice = StringToMoney(model.Cabinet.UnitPrice),
             Room = model.Cabinet.Room,
             Assembled = (model.Cabinet.Assembled == "Yes"),
             Height = Dimension.FromMillimeters(model.Cabinet.Height),
@@ -638,7 +640,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
         var data = new SinkCabinetData() {
             Qty = model.Cabinet.Qty,
-            UnitPrice = model.Cabinet.UnitPrice,
+            UnitPrice = StringToMoney(model.Cabinet.UnitPrice),
             Room = model.Cabinet.Room,
             Assembled = (model.Cabinet.Assembled == "Yes"),
             Height = Dimension.FromMillimeters(model.Cabinet.Height),

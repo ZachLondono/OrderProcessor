@@ -20,7 +20,7 @@ public class CabinetModel {
     public int Qty { get; set; }
 
     [XmlElement("unitPrice")]
-    public decimal UnitPrice { get; set; }
+    public string UnitPrice { get; set; } = string.Empty;
 
     [XmlElement("room")]
     public string Room { get; set; } = string.Empty;

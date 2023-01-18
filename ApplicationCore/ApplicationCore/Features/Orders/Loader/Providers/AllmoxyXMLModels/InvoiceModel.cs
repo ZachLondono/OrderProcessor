@@ -5,21 +5,21 @@ namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 public class InvoiceModel {
 
     [XmlElement("preadjustment")]
-    public decimal PreAdjustment { get; set; }
+    public string PreAdjustment { get; set; } = string.Empty;
 
     [XmlElement("adjustment")]
-    public decimal PriceAdjustment { get; set; }
+    public string PriceAdjustment { get; set; } = string.Empty;
 
     [XmlElement("subtotal")]
-    public decimal Subtotal { get; set; }
+    public string Subtotal { get; set; } = string.Empty;
 
     [XmlElement("tax")]
-    public decimal Tax { get; set; }
+    public string Tax { get; set; } = string.Empty;
 
     [XmlElement("shipping")]
-    public decimal Shipping { get; set; }
+    public string Shipping { get; set; } = string.Empty;
 
     [XmlElement("total")]
-    public decimal Total { get; set; }
+    public string Total { get; set; } = string.Empty;
 
 }
