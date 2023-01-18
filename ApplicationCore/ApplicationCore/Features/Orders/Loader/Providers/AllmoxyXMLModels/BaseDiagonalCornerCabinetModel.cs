@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
-public class DiagonalCornerCabinetModel {
+public class BaseDiagonalCornerCabinetModel {
 
     [XmlAttribute("groupNumber")]
     public int GroupNumber { get; set; }

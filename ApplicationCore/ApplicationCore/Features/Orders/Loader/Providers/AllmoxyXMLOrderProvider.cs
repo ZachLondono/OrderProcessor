@@ -139,7 +139,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             .ForEach(c => MapAndAddProduct(c, MapToPieCutCabinet, products));
 
         data.Products
-            .DiagonalCornerCabinets
+            .BaseDiagonalCornerCabinets
             .ForEach(c => MapAndAddProduct(c, MapToDiagonalCabinet, products));
 
         data.Products
@@ -570,7 +570,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     }
 
-    public DiagonalCornerCabinet MapToDiagonalCabinet(DiagonalCornerCabinetModel model) {
+    public BaseDiagonalCornerCabinet MapToDiagonalCabinet(BaseDiagonalCornerCabinetModel model) {
 
         CabinetMaterialCore boxCore = GetMaterialCore(model.Cabinet.BoxMaterial.Type);
 
@@ -607,7 +607,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         CabinetSide leftSide = new(data.LeftSideType, data.DoorStyle);
         CabinetSide rightSide = new(data.RightSideType, data.DoorStyle);
 
-        return DiagonalCornerCabinet.Create(data.Qty,
+        return BaseDiagonalCornerCabinet.Create(data.Qty,
             data.UnitPrice,
             data.Room,
             data.Assembled,

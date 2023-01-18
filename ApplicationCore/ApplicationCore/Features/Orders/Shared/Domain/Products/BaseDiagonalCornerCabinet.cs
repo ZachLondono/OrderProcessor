@@ -5,7 +5,7 @@ using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class DiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorContainer {
+internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     public Dimension RightWidth { get; }
     public Dimension RightDepth { get; }
@@ -15,7 +15,7 @@ internal class DiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorContai
     public MDFDoorOptions? MDFOptions { get; }
     public int AdjustableShelves { get; }
 
-    public DiagonalCornerCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
+    public BaseDiagonalCornerCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
@@ -33,7 +33,7 @@ internal class DiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorContai
 
     }
 
-    public static DiagonalCornerCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
+    public static BaseDiagonalCornerCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
