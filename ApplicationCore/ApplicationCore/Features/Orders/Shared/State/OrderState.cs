@@ -87,15 +87,15 @@ public class OrderState {
             Details = "There is no order set that can be completed"
         });
 
-        var response = await _bus.Send(new GetCompleteProfileByVendorId.Query(Order.VendorId));
+        var response = await _bus.Send(new GetCompanyById.Query(Order.VendorId));
 
         Error? error = null;
         response.Match(
-            async profile => {
+            async company => {
 
                 try {
 
-                    await _bus.Publish(new TriggerOrderCompleteNotification(Order, profile));
+                    await _bus.Publish(new TriggerOrderCompleteNotification(Order, company.CompleteProfile));
                     Order.Complete();
                     IsDirty = true;
 
@@ -125,9 +125,9 @@ public class OrderState {
         ReleaseProfile? releaseProfile = profile;
 
         if (releaseProfile is null) {
-            var response = await _bus.Send(new GetReleaseProfileByVendorId.Query(Order.VendorId));
+            var response = await _bus.Send(new GetCompanyById.Query(Order.VendorId));
             response.Match(
-                p => releaseProfile = p,
+                c => releaseProfile = c?.ReleapseProfile ?? null,
                 error => {
                     // TODO: notify and log error
                 }

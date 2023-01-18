@@ -2,16 +2,18 @@
 
 public class CompleteProfile {
 
-    public bool EmailInvoice { get; set; }
+    public required bool EmailInvoice { get; set; }
+    public required string InvoicePDFDirectory { get; set; }
+    public required string EmailSenderName { get; set; }
+    public required string EmailSenderEmail { get; set; }
+    public required string EmailSenderPassword { get; set; }
 
-    public string InvoicePDFDirectory { get; set; } = string.Empty;
-
-    public string EmailSenderName { get; set; } = string.Empty;
-
-    public string EmailSenderEmail { get; set; } = string.Empty;
-
-    public string EmailSenderPassword { get; set; } = string.Empty;
-
-    // TODO: invoice email template
+    public static CompleteProfile Default => new() {
+        EmailInvoice = false,
+        InvoicePDFDirectory = string.Empty,
+        EmailSenderEmail = string.Empty,
+        EmailSenderPassword = string.Empty,
+        EmailSenderName = string.Empty,
+    };
 
 }

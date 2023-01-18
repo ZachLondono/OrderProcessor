@@ -6,6 +6,7 @@ using ApplicationCore.Infrastructure;
 using FluentAssertions;
 using NSubstitute;
 using ApplicationCore.Features.Orders.Shared.State;
+using ApplicationCore.Features.Companies.Domain;
 
 namespace ApplicationCore.Tests.Unit.Orders;
 
@@ -231,9 +232,10 @@ public class OrderStateTests {
         var order = new OrderBuilder().Buid();
         _sut.ReplaceOrder(order);
 
-        var profile = new ReleaseProfile();
-        var query = new GetReleaseProfileByVendorId.Query(order.VendorId);
-        var response = new Response<ReleaseProfile>(profile);
+        var profile = ReleaseProfile.Default;
+        var company = new Company(Guid.Empty, "", new(), "", "", "", "", profile, CompleteProfile.Default);
+        var query = new GetCompanyById.Query(order.VendorId);
+        var response = new Response<Company?>(company);
         _bus.Send(query).Returns(response);
 
         // Act

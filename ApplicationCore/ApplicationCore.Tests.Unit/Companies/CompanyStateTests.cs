@@ -31,7 +31,7 @@ public class CompanyStateTests {
     public void ReplaceCompany_ShouldSetCopmany_AndResetIsDirty() {
 
         // Arrange
-        var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "", "");
+        var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "", "", ReleaseProfile.Default, CompleteProfile.Default);
 
         // Act
         _sut.ReplaceCompany(company);
@@ -68,7 +68,7 @@ public class CompanyStateTests {
     public void UpdateCompany_ShouldReplaceCopmany_AndSetIsDirty_WhenCompanyIsSet() {
 
         // Arrange
-        var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "", "");
+        var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "", "", ReleaseProfile.Default, CompleteProfile.Default);
         _sut.ReplaceCompany(company);
 
         string name = "NewName";
@@ -114,7 +114,7 @@ public class CompanyStateTests {
     public void UpdateCompany_ShouldCallUpdate_AndResetIsDirty_WhenCompanyIsSet() {
 
         // Arrange
-        var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "", "");
+        var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "", "", ReleaseProfile.Default, CompleteProfile.Default);
         _sut.ReplaceCompany(company);
 
         string name = "NewName";
@@ -141,8 +141,8 @@ public class CompanyStateTests {
     public void LoadCompany_ShouldCallQuery_AndSetCompany() {
 
         // Arrange
-        var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "", "");
-        var response = new Response<Company>(company);
+        var company = new Company(Guid.NewGuid(), "Company", new(), "", "", "", "", ReleaseProfile.Default, CompleteProfile.Default);
+        var response = new Response<Company?>(company);
         _bus.Send(new GetCompanyById.Query(company.Id)).Returns(response);
 
         // Act

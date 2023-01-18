@@ -284,10 +284,10 @@
     private async Task LoadReleaseProfile() {
         if (OrderState.Order is null || _customReleaseProfile is not null) return;
         var vendorId = OrderState.Order.VendorId;
-        var response = await Bus.Send(new GetReleaseProfileByVendorId.Query(vendorId));
+        var response = await Bus.Send(new GetCompanyById.Query(vendorId));
         response.Match(
-            p => {
-                _customReleaseProfile = p;
+            c => {
+                _customReleaseProfile = c?.ReleapseProfile ?? null;
                 StateHasChanged();
             },
             async error => {

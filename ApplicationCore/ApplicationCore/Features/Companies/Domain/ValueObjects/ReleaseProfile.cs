@@ -2,45 +2,34 @@
 
 public class ReleaseProfile {
 
-    public bool GenerateCutList { get; set; }
-    public string CutListOutputDirectory { get; set; } = string.Empty;
-    public bool PrintCutList { get; set; }
-    public string CutListTemplatePath { get; set; } = string.Empty;// TODO rename to ...FilePath
-
-    public bool GeneratePackingList { get; set; }
-    public string PackingListOutputDirectory { get; set; } = string.Empty;
-    public bool PrintPackingList { get; set; }
-    public string PackingListTemplatePath { get; set; } = string.Empty; // TODO rename to ...FilePath
-
-    public bool GenerateInvoice { get; set; }
-    public string InvoiceOutputDirectory { get; set; } = string.Empty;
-    public bool PrintInvoice { get; set; }
-    public string InvoiceTemplatePath { get; set; } = string.Empty;// TODO rename to ...FilePath
-
-    public bool GenerateBOL { get; set; }
-    public string BOLOutputDirectory { get; set; } = string.Empty;
-    public bool PrintBOL { get; set; }
-    public string BOLTemplateFilePath { get; set; } = string.Empty;
-
-    public bool PrintBoxLabels { get; set; }
-    public string BoxLabelsTemplateFilePath { get; set; } = string.Empty;
-
-    public bool PrintOrderLabel { get; set; }
-    public string OrderLabelTemplateFilePath { get; set; } = string.Empty;
-
-    public bool PrintADuiePyleLabel { get; set; }
-    public string ADuiePyleLabelTemplateFilePath { get; set; } = string.Empty;
-
-    public bool GenerateCNCPrograms { get; set; }
-    public string CNCReportOutputDirectory { get; set; } = string.Empty;
-
-    public bool FillDoorOrder { get; set; }
-    public bool GenerateDoorCNCPrograms { get; set; }
-    public string DoorOrderOutputDirectory { get; set; } = string.Empty;
-    public string DoorOrderTemplateFilePath { get; set; } = string.Empty;
-
-    //public bool WriteToGoogleSheets { get; set; }
-    //public string GoogleSheetCode { get; set; } = string.Empty;
+    public required bool GenerateCutList { get; set; }
+    public required string CutListOutputDirectory { get; set; }
+    public required bool PrintCutList { get; set; }
+    public required string CutListTemplatePath { get; set; }
+    public required bool GeneratePackingList { get; set; }
+    public required string PackingListOutputDirectory { get; set; }
+    public required bool PrintPackingList { get; set; }
+    public required string PackingListTemplatePath { get; set; }
+    public required bool GenerateInvoice { get; set; }
+    public required string InvoiceOutputDirectory { get; set; }
+    public required bool PrintInvoice { get; set; }
+    public required string InvoiceTemplatePath { get; set; }
+    public required bool GenerateBOL { get; set; }
+    public required string BOLOutputDirectory { get; set; }
+    public required bool PrintBOL { get; set; }
+    public required string BOLTemplateFilePath { get; set; }
+    public required bool PrintBoxLabels { get; set; }
+    public required string BoxLabelsTemplateFilePath { get; set; }
+    public required bool PrintOrderLabel { get; set; }
+    public required string OrderLabelTemplateFilePath { get; set; }
+    public required bool PrintADuiePyleLabel { get; set; }
+    public required string ADuiePyleLabelTemplateFilePath { get; set; }
+    public required bool GenerateCNCPrograms { get; set; }
+    public required string CNCReportOutputDirectory { get; set; }
+    public required bool FillDoorOrder { get; set; }
+    public required bool GenerateDoorCNCPrograms { get; set; }
+    public required string DoorOrderOutputDirectory { get; set; }
+    public required string DoorOrderTemplateFilePath { get; set; }
 
     // TODO: By default, the file paths will be set to directories in the installation folder
     public static ReleaseProfile Default => new() {

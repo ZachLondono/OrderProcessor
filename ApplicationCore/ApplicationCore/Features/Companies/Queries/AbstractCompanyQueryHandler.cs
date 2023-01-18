@@ -1,8 +1,10 @@
 ﻿using ApplicationCore.Features.Companies.Domain;
+using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Queries.DataModels;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Infrastructure.Data;
 using Dapper;
+using System.Data;
 
 namespace ApplicationCore.Features.Companies.Queries;
 
@@ -24,6 +26,9 @@ public abstract class AbstractCompanyQueryHandler<TQuery> : QueryHandler<TQuery,
 
         if (data is null) return new((Company?)null);
 
+        ReleaseProfile release = await GetReleaseProfile(connection, data.Id);
+        CompleteProfile complete = await GetCompleteProfile(connection, data.Id);
+
         var company = new Company(data.Id, data.Name, new() {
             Line1 = data.Line1,
             Line2 = data.Line2,
@@ -32,10 +37,53 @@ public abstract class AbstractCompanyQueryHandler<TQuery> : QueryHandler<TQuery,
             State = data.State,
             Zip = data.Zip,
             Country = data.Country
-        }, data.PhoneNumber, data.InvoiceEmail, data.ConfirmationEmail, data.ContactName);
+        }, data.PhoneNumber, data.InvoiceEmail, data.ConfirmationEmail, data.ContactName, release, complete);
 
         return new(company);
 
     }
+
+    private async Task<ReleaseProfile> GetReleaseProfile(IDbConnection connection, Guid companyId) {
+
+        const string query = @"SELECT
+                                    generatecutlist, cutlistoutputdirectory, printcutlist, cutlisttemplatepath,
+                                    generatepackinglist, packinglistoutputdirectory, printpackinglist, packinglisttemplatepath,
+                                    generateinvoice, invoiceoutputdirectory, printinvoice, invoicetemplatepath,
+                                    generatebol, boloutputdirectory, printbol, boltemplatefilepath,
+                                    printboxlabels, boxlabelstemplatefilepath,
+                                    printorderlabel, orderlabeltemplatefilepath,
+                                    printaduiepylelabel, aduiepylelabeltemplatefilepath,
+                                    generatecncprograms, cncreportoutputdirectory,
+                                    filldoororder, generatedoorprograms, doororderoutputdirectory, doorordertemplatefilepath
+                                FROM releaseprofiles
+                                WHERE vendorid = @VendorId;";
+
+        var profile = await connection.QuerySingleOrDefaultAsync<ReleaseProfile>(query, new {
+            VendorId = companyId
+        });
+
+        return profile ?? ReleaseProfile.Default;
+
+    }
+
+    private async Task<CompleteProfile> GetCompleteProfile(IDbConnection connection, Guid companyId) {
+        
+        const string query = @"SELECT
+                                    emailinvoice,
+                                    invoicepdfdirectory,
+                                    emailsenderemail,
+                                    emailsendername,
+                                    emailsenderpassword
+                                FROM completeprofiles
+                                WHERE vendorid = @VendorId;";
+
+        var profile = await connection.QuerySingleOrDefaultAsync<CompleteProfile>(query, new {
+            VendorId = companyId
+        });
+    
+        return profile ?? CompleteProfile.Default;
+    
+    }
+
 
 }

@@ -22,11 +22,7 @@
 @if (CompanyState.Company is null) {
     <span>No company selected.</span>
 } else if (_profile is null) {
-    @if (_isLoading) {
-        <span>Loading...</span>
-    } else {
-        <span>No release profile data.</span>
-    }
+    <span>No release profile data.</span>
 } else {
 
     <section class="mb-5 w-full">
@@ -65,26 +61,16 @@
 
 @code {
 
-    private bool _isLoading = true;
     private CompleteProfile? _profile = null;
 
     private bool _hasError = false;
     private string _errorMessage = "";
 
-    protected override async Task OnInitializedAsync() {
-        if (CompanyState.Company is null) return;
-        var result = await Bus.Send(new GetCompleteProfileByVendorId.Query(CompanyState.Company.Id));
-        result.Match(
-            profile => {
-                _profile = profile;
-                _hasError = false;
-            },
-            error => {
-                _hasError = true;
-                _errorMessage = error.Details;
-            }
-        );
-        _isLoading = false;
+    protected override void OnInitialized() {
+        if (CompanyState.Company is null) {
+            return;
+        }
+        _profile = CompanyState.Company.CompleteProfile;
     }
 
     private async Task UpdateProfile() {

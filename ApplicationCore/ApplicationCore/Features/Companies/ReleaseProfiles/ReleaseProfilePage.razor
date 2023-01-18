@@ -13,11 +13,7 @@
 @if (CompanyState.Company is null) {
     <span>No company selected.</span>
 } else if (_profile is null) {
-    @if (_isLoading) {
-        <span>Loading...</span>
-    } else {
-        <span>No release profile data.</span>
-    }
+    <span>No release profile data.</span>
 } else {
 
     <section class="mb-5 w-full">
@@ -189,19 +185,11 @@
 
 @code {
 
-    private bool _isLoading = true;
     private ReleaseProfile? _profile = null;
 
-    protected override async Task OnInitializedAsync() {
+    protected override void OnInitialized() {
         if (CompanyState.Company is null) return;
-        var result = await Bus.Send(new GetReleaseProfileByVendorId.Query(CompanyState.Company.Id));
-        result.Match(
-            profile => _profile = profile,
-            error => {
-                // TODO: display error
-            }
-        );
-        _isLoading = false;
+        _profile = CompanyState.Company.ReleapseProfile;
     }
 
     private async Task UpdateProfile() {

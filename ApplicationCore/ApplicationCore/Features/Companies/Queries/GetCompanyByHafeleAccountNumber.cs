@@ -16,7 +16,6 @@ public class GetCompanyByHafeleAccountNumber {
             return @"SELECT
 						id, name, phonenumber, invoiceemail, confirmationemail, contactname, line1, line2, line3, city, state, zip, country
 					FROM
-
 						companies
 					LEFT JOIN addresses ON companies.id = addresses.companyid
 					WHERE id = (

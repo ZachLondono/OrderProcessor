@@ -30,7 +30,7 @@ internal class CompanyState {
 
     public void UpdateCompany(string name, Address address, string phoneNumber, string invoiceEmail, string confirmationEmail, string contactName) {
         if (Company is null) return;
-        Company = new Company(Company.Id, name, address, phoneNumber, invoiceEmail, confirmationEmail, contactName);
+        Company = new Company(Company.Id, name, address, phoneNumber, invoiceEmail, confirmationEmail, contactName, Company.ReleapseProfile, Company.CompleteProfile);
         IsDirty = true;
     }
 
