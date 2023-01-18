@@ -8,8 +8,7 @@
 @inject IOrderProviderFactory Factory
 @inject IBus Bus
 @inject IJSRuntime JSRuntime
-@inherits BaseListenerComponent
-@implements IUIListener<OrderLoadMessage>
+@implements IOrderLoadingViewModel
 
 @switch (_state) {
     case State.Loading:
@@ -127,8 +126,11 @@
     }
 
 
-    public void Handle(OrderLoadMessage message) {
-        _messages.Add(message);
+    public void AddLoadingMessage(MessageSeverity severity, string message) {
+        _messages.Add(new() {
+            Severity = severity,
+            Message = message
+        });
         InvokeAsync(StateHasChanged);
         JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
     }

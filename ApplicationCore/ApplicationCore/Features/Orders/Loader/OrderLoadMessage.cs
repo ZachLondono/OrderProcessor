@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Loader;
 
-public record OrderLoadMessage : IUINotification {
+public record OrderLoadMessage {
 
     public required string Message { get; init; }
 

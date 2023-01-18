@@ -20,15 +20,15 @@ namespace ApplicationCore.Features.Orders.Loader.Providers;
 internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     private readonly IBus _bus;
-    private readonly IUIBus _uiBus;
     private readonly AllmoxyConfiguration _configuration;
     private readonly AllmoxyClientFactory _clientfactory;
     private readonly IXMLValidator _validator;
     private string? _data = null;
 
-    public AllmoxyXMLOrderProvider(IBus bus, IUIBus uiBus, AllmoxyConfiguration configuration, AllmoxyClientFactory clientfactory, IXMLValidator validator) {
+    public IOrderLoadingViewModel? OrderLoadingViewModel { get; set; }
+
+    public AllmoxyXMLOrderProvider(IBus bus, AllmoxyConfiguration configuration, AllmoxyClientFactory clientfactory, IXMLValidator validator) {
         _bus = bus;
-        _uiBus = uiBus;
         _configuration = configuration;
         _clientfactory = clientfactory;
         _validator = validator;
@@ -49,7 +49,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(_data));
             var errors = _validator.ValidateXML(stream, _configuration.SchemaFilePath);
 
-            errors.ForEach(error => _uiBus.PublishError($"[XML Error] [{error.Severity}] {error.Exception.Message}"));
+            errors.ForEach(error => OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Error] [{error.Severity}] {error.Exception.Message}"));
 
             return Task.FromResult(new ValidationResult() {
                 IsValid = !errors.Any(),
@@ -72,21 +72,21 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         // Load order to a string
         if (_data is null) LoadData(source);
         if (_data is null) {
-            _uiBus.PublishError("Could not load order data from Allmoxy");
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not load order data from Allmoxy");
             return null;
         }
 
         // Deserialize data
         OrderModel? data = SerializeData(_data);
         if (data is null) {
-            _uiBus.PublishError("Could not find order information in given data");
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find order information in given data");
             return null;
         }
 
         // Get customer company id
         Guid? customerId = await GetCustomerId(data);
         if (customerId is null) {
-            _uiBus.PublishError("Could not find/save customer information");
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find/save customer information");
             return null;
         }
 
@@ -127,8 +127,8 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         if (DateTime.TryParse(orderDateStr, out DateTime orderDate)) {
             return orderDate;
         }
-        
-        _uiBus.PublishWarning($"Could not parse order date '{(orderDateStr == "" ? "[BLANK]" : orderDateStr)}'");
+
+        OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not parse order date '{(orderDateStr == "" ? "[BLANK]" : orderDateStr)}'");
         
         return DateTime.Now;
 
@@ -177,7 +177,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
         } catch (Exception ex) {
 
-            _uiBus.PublishError($"Could not load product {ex.Message}");
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not load product {ex.Message}");
 
         }
 
@@ -193,7 +193,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
                 customer = c;
             },
             error => {
-                _uiBus.PublishError(error.Title);
+                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, error.Title);
                 didError = true;
             }
         );
@@ -229,7 +229,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
                 await _bus.Send(new CreateAllmoxyIdCompanyIdMapping.Command(data.Customer.CompanyId, customer.Id));
             },
             error => {
-                _uiBus.PublishError(error.Title);
+                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, error.Title);
                 customer = null;
             }
         );
