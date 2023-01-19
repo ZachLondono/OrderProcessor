@@ -40,7 +40,7 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer {
     }
 
     private string GetProductName() {
-        return $"WB{Doors.Quantity}D{GetBlindSideLetter}";
+        return $"WB{Doors.Quantity}D{GetBlindSideLetter()}";
     }
 
     private Dictionary<string, string> GetParameters() {
