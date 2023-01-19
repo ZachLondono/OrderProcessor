@@ -1,7 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
-using ApplicationCore.Features.Orders.Loader.Providers.DTO;
 using ApplicationCore.Features.Shared.Domain;
 using System.Xml.Serialization;
 using ApplicationCore.Features.Orders.Loader.XMLValidation;
@@ -9,6 +8,9 @@ using System.Text;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using MoreLinq;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Wordprocessing;
+using System.Reflection;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 
@@ -185,80 +187,52 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
     private BaseCabinet MapToBaseCabinet(BaseCabinetModel model) {
 
         CabinetMaterialCore boxCore = GetMaterialCore(model.Cabinet.BoxMaterial.Type);
+        CabinetMaterialCore finishCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore);
 
         MDFDoorOptions? mdfOptions = null;
         if (model.Cabinet.Fronts.Type != "Slab") mdfOptions = new(model.Cabinet.Fronts.Style, model.Cabinet.Fronts.Color);
 
-        var data = new BaseCabinetData() {
-            Qty = model.Cabinet.Qty,
-            UnitPrice = StringToMoney(model.Cabinet.UnitPrice),
-            Room = model.Cabinet.Room,
-            Assembled = (model.Cabinet.Assembled == "Yes"),
-            Height = Dimension.FromMillimeters(model.Cabinet.Height),
-            Width = Dimension.FromMillimeters(model.Cabinet.Width),
-            Depth = Dimension.FromMillimeters(model.Cabinet.Depth),
-            BoxMaterialFinish = model.Cabinet.BoxMaterial.Finish,
-            BoxMaterialCore = boxCore,
-            FinishMaterialFinish = model.Cabinet.FinishMaterial.Finish,
-            FinishMaterialCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore),
-            EdgeBandingColor = (model.Cabinet.EdgeBandColor == "Match Finish" ? model.Cabinet.FinishMaterial.Finish : model.Cabinet.EdgeBandColor),
-            LeftSideType = GetCabinetSideType(model.Cabinet.LeftSide),
-            RightSideType = GetCabinetSideType(model.Cabinet.RightSide),
-            DoorType = model.Cabinet.Fronts.Type,
-            DoorStyle = mdfOptions,
-            DoorQty = model.DoorQty,
-            HingeLeft = (model.HingeSide == "Left"),
-            ToeType = GetToeType(model.ToeType),
-            DrawerQty = model.DrawerQty,
-            DrawerFaceHeight = Dimension.FromMillimeters(model.DrawerFaceHeight),
-            DrawerBoxMaterial = GetDrawerMaterial(model.DrawerMaterial),
-            DrawerBoxSlideType = GetDrawerSlideType(model.DrawerSlide),
-            VerticalDividerQty = model.VerticalDividerQty,
-            AdjustableShelfQty = model.AdjShelfQty,
-            RollOutBoxPositions = GetRollOutPositions(model.RollOuts.Pos1, model.RollOuts.Pos2, model.RollOuts.Pos3, "", ""),
-            RollOutBlocks = GetRollOutBlockPositions(model.RollOuts.Blocks),
-            ScoopFrontRollOuts = true,
-            ShelfDepth = GetShelfDepth(model.ShelfDepth)
-        };
-
-        BaseCabinetDoors doors = data.DoorQty switch {
+        bool hingeLeft = (model.HingeSide == "Left");
+        BaseCabinetDoors doors = model.DoorQty switch {
             0 => BaseCabinetDoors.NoDoors(),
-            1 => new(data.HingeLeft ? HingeSide.Left : HingeSide.Right, data.DoorStyle),
-            2 => new(data.DoorStyle),
-            _ => new(data.HingeLeft ? HingeSide.Left : HingeSide.Right, data.DoorStyle)
+            1 => new(hingeLeft ? HingeSide.Left : HingeSide.Right, mdfOptions),
+            2 => new(mdfOptions),
+            _ => new(hingeLeft ? HingeSide.Left : HingeSide.Right, mdfOptions)
         };
-        CabinetMaterial boxMaterial = new(data.BoxMaterialFinish, data.BoxMaterialCore);
-        CabinetMaterial finishMaterial = new(data.FinishMaterialFinish, data.FinishMaterialCore);
-        CabinetSide leftSide = new(data.LeftSideType, data.DoorStyle);
-        CabinetSide rightSide = new(data.RightSideType, data.DoorStyle);
+        CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
+        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
+        CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
         HorizontalDrawerBank drawers = new() {
-            BoxMaterial = data.DrawerBoxMaterial,
-            FaceHeight = data.DrawerFaceHeight,
-            Quantity = data.DrawerQty,
-            SlideType = data.DrawerBoxSlideType
+            BoxMaterial = GetDrawerMaterial(model.DrawerMaterial),
+            FaceHeight = Dimension.FromMillimeters(model.DrawerFaceHeight),
+            Quantity = model.DrawerQty,
+            SlideType = GetDrawerSlideType(model.DrawerSlide)
         };
 
         BaseCabinetInside inside;
-        if (data.RollOutBoxPositions.Length != 0) {
-            var rollOutOptions = new RollOutOptions(data.RollOutBoxPositions, true, data.RollOutBlocks, data.DrawerBoxSlideType, data.DrawerBoxMaterial);
-            inside = new(data.AdjustableShelfQty, rollOutOptions, data.ShelfDepth);
-        } else inside = new(data.AdjustableShelfQty, data.VerticalDividerQty, data.ShelfDepth);
+        Dimension[] rollOutBoxPositions = GetRollOutPositions(model.RollOuts.Pos1, model.RollOuts.Pos2, model.RollOuts.Pos3, model.RollOuts.Pos4, model.RollOuts.Pos5);
+        RollOutBlockPosition rollOutBlocks = GetRollOutBlockPositions(model.RollOuts.Blocks);
+        if (rollOutBoxPositions.Length != 0) {
+            var rollOutOptions = new RollOutOptions(rollOutBoxPositions, true, rollOutBlocks, drawers.SlideType, drawers.BoxMaterial);
+            inside = new(model.AdjShelfQty, rollOutOptions, GetShelfDepth(model.ShelfDepth));
+        } else inside = new(model.AdjShelfQty, model.VerticalDividerQty, GetShelfDepth(model.ShelfDepth));
 
         return BaseCabinet.Create(
-            data.Qty,
-            data.UnitPrice,
-            data.Room,
-            data.Assembled,
-            data.Height,
-            data.Width,
-            data.Depth,
+            model.Cabinet.Qty,
+            StringToMoney(model.Cabinet.UnitPrice),
+            model.Cabinet.Room,
+            (model.Cabinet.Assembled == "Yes"),
+            Dimension.FromMillimeters(model.Cabinet.Height),
+            Dimension.FromMillimeters(model.Cabinet.Width),
+            Dimension.FromMillimeters(model.Cabinet.Depth),
             boxMaterial,
             finishMaterial,
-            data.EdgeBandingColor,
+            (model.Cabinet.EdgeBandColor == "Match Finish" ? model.Cabinet.FinishMaterial.Finish : model.Cabinet.EdgeBandColor),
             rightSide,
             leftSide,
             doors,
-            data.ToeType,
+            GetToeType(model.ToeType),
             drawers,
             inside
         );
@@ -310,11 +284,6 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     private DrawerBaseCabinet MapToDrawerBaseCabinet(DrawerBaseCabinetModel model) {
 
-        CabinetMaterialCore boxCore = GetMaterialCore(model.Cabinet.BoxMaterial.Type);
-
-        MDFDoorOptions? mdfOptions = null;
-        if (model.Cabinet.Fronts.Type != "Slab") mdfOptions = new(model.Cabinet.Fronts.Style, model.Cabinet.Fronts.Color);
-
         var drawerFaces = new Dimension[model.DrawerQty == 1 ? 0 : model.DrawerQty];
         if (model.DrawerQty > 1) drawerFaces[0] = Dimension.FromMillimeters(model.DrawerFace1); // For 1 drawer box cabinets, the drawer box size is calculated
         if (model.DrawerQty >= 2) drawerFaces[1] = Dimension.FromMillimeters(model.DrawerFace2);
@@ -322,136 +291,88 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         if (model.DrawerQty >= 4) drawerFaces[3] = Dimension.FromMillimeters(model.DrawerFace4);
         if (model.DrawerQty >= 5) drawerFaces[4] = Dimension.FromMillimeters(model.DrawerFace5);
 
-        var data = new DrawerBaseCabinetData() {
-            Qty = model.Cabinet.Qty,
-            UnitPrice = StringToMoney(model.Cabinet.UnitPrice),
-            Room = model.Cabinet.Room,
-            Assembled = (model.Cabinet.Assembled == "Yes"),
-            Height = Dimension.FromMillimeters(model.Cabinet.Height),
-            Width = Dimension.FromMillimeters(model.Cabinet.Width),
-            Depth = Dimension.FromMillimeters(model.Cabinet.Depth),
-            BoxMaterialFinish = model.Cabinet.BoxMaterial.Finish,
-            BoxMaterialCore = boxCore,
-            FinishMaterialFinish = model.Cabinet.FinishMaterial.Finish,
-            FinishMaterialCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore),
-            EdgeBandingColor = (model.Cabinet.EdgeBandColor == "Match Finish" ? model.Cabinet.FinishMaterial.Finish : model.Cabinet.EdgeBandColor),
-            LeftSideType = GetCabinetSideType(model.Cabinet.LeftSide),
-            RightSideType = GetCabinetSideType(model.Cabinet.RightSide),
-            DoorType = model.Cabinet.Fronts.Type,
-            DoorStyle = mdfOptions,
-            ToeType = GetToeType(model.ToeType),
-            DrawerBoxMaterial = GetDrawerMaterial(model.DrawerMaterial),
-            DrawerBoxSlideType = GetDrawerSlideType(model.DrawerSlide),
-            DrawerFaces = drawerFaces.ToArray()
-        };
+        CabinetMaterialCore boxCore = GetMaterialCore(model.Cabinet.BoxMaterial.Type);
+        CabinetMaterialCore finishCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore);
 
-        CabinetMaterial boxMaterial = new(data.BoxMaterialFinish, data.BoxMaterialCore);
-        CabinetMaterial finishMaterial = new(data.FinishMaterialFinish, data.FinishMaterialCore);
-        CabinetSide leftSide = new(data.LeftSideType, data.DoorStyle);
-        CabinetSide rightSide = new(data.RightSideType, data.DoorStyle);
+        MDFDoorOptions? mdfOptions = null;
+        if (model.Cabinet.Fronts.Type != "Slab") mdfOptions = new(model.Cabinet.Fronts.Style, model.Cabinet.Fronts.Color);
+
+        CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
+        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
+        CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
 
         VerticalDrawerBank verticalDrawerBank = new() {
-            BoxMaterial = data.DrawerBoxMaterial,
-            FaceHeights = data.DrawerFaces,
-            SlideType = data.DrawerBoxSlideType
+            BoxMaterial = GetDrawerMaterial(model.DrawerMaterial),
+            FaceHeights = drawerFaces,
+            SlideType = GetDrawerSlideType(model.DrawerSlide)
         };
 
         return DrawerBaseCabinet.Create(
-            data.Qty,
-            data.UnitPrice,
-            data.Room,
-            data.Assembled,
-            data.Height,
-            data.Width,
-            data.Depth,
-
+            model.Cabinet.Qty,
+            StringToMoney(model.Cabinet.UnitPrice),
+            model.Cabinet.Room,
+            (model.Cabinet.Assembled == "Yes"),
+            Dimension.FromMillimeters(model.Cabinet.Height),
+            Dimension.FromMillimeters(model.Cabinet.Width),
+            Dimension.FromMillimeters(model.Cabinet.Depth),
             boxMaterial,
             finishMaterial,
-            data.EdgeBandingColor,
+            (model.Cabinet.EdgeBandColor == "Match Finish" ? model.Cabinet.FinishMaterial.Finish : model.Cabinet.EdgeBandColor),
             rightSide,
             leftSide,
-            data.ToeType,
+            GetToeType(model.ToeType),
             verticalDrawerBank,
-            data.DoorStyle);
+            mdfOptions);
 
     }
 
     private TallCabinet MapToTallCabinet(TallCabinetModel model) {
 
         CabinetMaterialCore boxCore = GetMaterialCore(model.Cabinet.BoxMaterial.Type);
+        CabinetMaterialCore finishCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore);
 
         MDFDoorOptions? mdfOptions = null;
         if (model.Cabinet.Fronts.Type != "Slab") mdfOptions = new(model.Cabinet.Fronts.Style, model.Cabinet.Fronts.Color);
 
-        var data = new TallCabinetData() {
-            Qty = model.Cabinet.Qty,
-            UnitPrice = StringToMoney(model.Cabinet.UnitPrice),
-            Room = model.Cabinet.Room,
-            Assembled = (model.Cabinet.Assembled == "Yes"),
-            Height = Dimension.FromMillimeters(model.Cabinet.Height),
-            Width = Dimension.FromMillimeters(model.Cabinet.Width),
-            Depth = Dimension.FromMillimeters(model.Cabinet.Depth),
-            BoxMaterialFinish = model.Cabinet.BoxMaterial.Finish,
-            BoxMaterialCore = boxCore,
-            FinishMaterialFinish = model.Cabinet.FinishMaterial.Finish,
-            FinishMaterialCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore),
-            EdgeBandingColor = (model.Cabinet.EdgeBandColor == "Match Finish" ? model.Cabinet.FinishMaterial.Finish : model.Cabinet.EdgeBandColor),
-            LeftSideType = GetCabinetSideType(model.Cabinet.LeftSide),
-            RightSideType = GetCabinetSideType(model.Cabinet.RightSide),
-            DoorType = model.Cabinet.Fronts.Type,
-            DoorStyle = mdfOptions,
-            DrawerBoxMaterial = GetDrawerMaterial(model.DrawerMaterial),
-            DrawerBoxSlideType = GetDrawerSlideType(model.DrawerSlide),
-            HingeLeft = (model.HingeSide == "Left"),
-            ToeType = GetToeType(model.ToeType),
-            RollOutBoxPositions = GetRollOutPositions(model.RollOuts.Pos1, model.RollOuts.Pos2, model.RollOuts.Pos3, model.RollOuts.Pos4, model.RollOuts.Pos5),
-            RollOutBlocks = GetRollOutBlockPositions(model.RollOuts.Blocks),
-            ScoopFrontRollOuts = true,
-            AdjustableShelfLowerQty = model.LowerAdjShelfQty,
-            AdjustableShelfUpperQty = model.UpperAdjShelfQty,
-            VerticalDividerLowerQty = model.LowerVerticalDividerQty,
-            VerticalDividerUpperQty = model.UpperVerticalDividerQty,
-            LowerDoorQty = model.LowerDoorQty,
-            UpperDoorQty = model.UpperDoorQty,
-            LowerDoorHeight = Dimension.FromMillimeters(model.LowerDoorHeight),
-        };
-
-        CabinetMaterial boxMaterial = new(data.BoxMaterialFinish, data.BoxMaterialCore);
-        CabinetMaterial finishMaterial = new(data.FinishMaterialFinish, data.FinishMaterialCore);
-        CabinetSide leftSide = new(data.LeftSideType, data.DoorStyle);
-        CabinetSide rightSide = new(data.RightSideType, data.DoorStyle);
+        CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
+        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
+        CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
 
         TallCabinetInside inside;
-        if (data.RollOutBoxPositions.Length != 0) {
-            var rollOutOptions = new RollOutOptions(data.RollOutBoxPositions, true, data.RollOutBlocks, data.DrawerBoxSlideType, data.DrawerBoxMaterial);
-            inside = new(data.AdjustableShelfUpperQty, data.AdjustableShelfLowerQty, data.VerticalDividerUpperQty, rollOutOptions);
-        } else inside = new(data.AdjustableShelfUpperQty, data.AdjustableShelfLowerQty, data.VerticalDividerUpperQty, data.VerticalDividerLowerQty);
+        Dimension[] rollOutBoxPositions = GetRollOutPositions(model.RollOuts.Pos1, model.RollOuts.Pos2, model.RollOuts.Pos3, model.RollOuts.Pos4, model.RollOuts.Pos5);
+        RollOutBlockPosition rollOutBlocks = GetRollOutBlockPositions(model.RollOuts.Blocks);
+        if (rollOutBoxPositions.Length != 0) {
+            var rollOutOptions = new RollOutOptions(rollOutBoxPositions, true, rollOutBlocks, GetDrawerSlideType(model.DrawerSlide), GetDrawerMaterial(model.DrawerMaterial));
+            inside = new(model.UpperAdjShelfQty, model.LowerAdjShelfQty, model.UpperVerticalDividerQty, rollOutOptions);
+        } else inside = new(model.UpperAdjShelfQty, model.LowerAdjShelfQty, model.UpperVerticalDividerQty, model.LowerVerticalDividerQty);
 
         TallCabinetDoors doors;
-        HingeSide hingeSide = data.LowerDoorQty == 1 ? (data.HingeLeft ? HingeSide.Left : HingeSide.Right) : HingeSide.NotApplicable;
-        if (data.LowerDoorQty == 0) {
+        HingeSide hingeSide = model.LowerDoorQty == 1 ? ((model.HingeSide == "Left") ? HingeSide.Left : HingeSide.Right) : HingeSide.NotApplicable;
+        if (model.LowerDoorQty == 0) {
             doors = TallCabinetDoors.NoDoors();
-        } else if (data.UpperDoorQty != 0) {
-            doors = new(data.LowerDoorHeight, hingeSide, data.DoorStyle);
+        } else if (model.UpperDoorQty != 0) {
+            doors = new(Dimension.FromMillimeters(model.LowerDoorHeight), hingeSide, mdfOptions);
         } else {
-            doors = new(hingeSide, data.DoorStyle);
+            doors = new(hingeSide, mdfOptions);
         }
 
         return TallCabinet.Create(
-            data.Qty,
-            data.UnitPrice,
-            data.Room,
-            data.Assembled,
-            data.Height,
-            data.Width,
-            data.Depth,
+            model.Cabinet.Qty,
+            StringToMoney(model.Cabinet.UnitPrice),
+            model.Cabinet.Room,
+            (model.Cabinet.Assembled == "Yes"),
+            Dimension.FromMillimeters(model.Cabinet.Height),
+            Dimension.FromMillimeters(model.Cabinet.Width),
+            Dimension.FromMillimeters(model.Cabinet.Depth),
             boxMaterial,
             finishMaterial,
-            data.EdgeBandingColor,
+            (model.Cabinet.EdgeBandColor == "Match Finish" ? model.Cabinet.FinishMaterial.Finish : model.Cabinet.EdgeBandColor),
             rightSide,
             leftSide,
             doors,
-            data.ToeType,
+            GetToeType(model.ToeType),
             inside);
 
     }
@@ -459,181 +380,112 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
     public BasePieCutCornerCabinet MapToPieCutCabinet(BasePieCutCornerCabinetModel model) {
 
         CabinetMaterialCore boxCore = GetMaterialCore(model.Cabinet.BoxMaterial.Type);
+        CabinetMaterialCore finishCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore);
 
         MDFDoorOptions? mdfOptions = null;
         if (model.Cabinet.Fronts.Type != "Slab") mdfOptions = new(model.Cabinet.Fronts.Style, model.Cabinet.Fronts.Color);
 
-        var data = new PieCutCornerCabinetData() {
-            Qty = model.Cabinet.Qty,
-            UnitPrice = StringToMoney(model.Cabinet.UnitPrice),
-            Room = model.Cabinet.Room,
-            Assembled = (model.Cabinet.Assembled == "Yes"),
-            Height = Dimension.FromMillimeters(model.Cabinet.Height),
-            Width = Dimension.FromMillimeters(model.Cabinet.Width),
-            Depth = Dimension.FromMillimeters(model.Cabinet.Depth),
-            BoxMaterialFinish = model.Cabinet.BoxMaterial.Finish,
-            BoxMaterialCore = boxCore,
-            FinishMaterialFinish = model.Cabinet.FinishMaterial.Finish,
-            FinishMaterialCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore),
-            EdgeBandingColor = (model.Cabinet.EdgeBandColor == "Match Finish" ? model.Cabinet.FinishMaterial.Finish : model.Cabinet.EdgeBandColor),
-            LeftSideType = GetCabinetSideType(model.Cabinet.LeftSide),
-            RightSideType = GetCabinetSideType(model.Cabinet.RightSide),
-            DoorType = model.Cabinet.Fronts.Type,
-            DoorStyle = mdfOptions,
-            HingeLeft = (model.HingeSide == "Left"),
-            ToeType = GetToeType(model.ToeType),
-            AdjustableShelfQty = model.AdjShelfQty,
-            RightDepth = Dimension.FromMillimeters(model.RightDepth),
-            RightWidth = Dimension.FromMillimeters(model.RightWidth)
-        };
+        CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
+        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
+        CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
 
-        CabinetMaterial boxMaterial = new(data.BoxMaterialFinish, data.BoxMaterialCore);
-        CabinetMaterial finishMaterial = new(data.FinishMaterialFinish, data.FinishMaterialCore);
-        CabinetSide leftSide = new(data.LeftSideType, data.DoorStyle);
-        CabinetSide rightSide = new(data.RightSideType, data.DoorStyle);
-
-        return BasePieCutCornerCabinet.Create(data.Qty,
-            data.UnitPrice,
-            data.Room,
-            data.Assembled,
-            data.Height,
-            data.Width,
-            data.Depth,
+        return BasePieCutCornerCabinet.Create(
+            model.Cabinet.Qty,
+            StringToMoney(model.Cabinet.UnitPrice),
+            model.Cabinet.Room,
+            (model.Cabinet.Assembled == "Yes"),
+            Dimension.FromMillimeters(model.Cabinet.Height),
+            Dimension.FromMillimeters(model.Cabinet.Width),
+            Dimension.FromMillimeters(model.Cabinet.Depth),
             boxMaterial,
             finishMaterial,
-            data.EdgeBandingColor,
+            (model.Cabinet.EdgeBandColor == "Match Finish" ? model.Cabinet.FinishMaterial.Finish : model.Cabinet.EdgeBandColor),
             rightSide,
             leftSide,
-            data.RightWidth,
-            data.RightDepth,
-            data.ToeType,
-            data.AdjustableShelfQty,
-            (data.HingeLeft ? HingeSide.Left : HingeSide.Right),
-            (data.DoorType == "Slab" ? null : data.DoorStyle));
-
+            Dimension.FromMillimeters(model.RightDepth),
+            Dimension.FromMillimeters(model.RightWidth),
+            GetToeType(model.ToeType),
+            model.AdjShelfQty,
+            ((model.HingeSide == "Left") ? HingeSide.Left : HingeSide.Right),
+            (model.Cabinet.Fronts.Type == "Slab" ? null : mdfOptions)
+        );
     }
 
     public BaseDiagonalCornerCabinet MapToDiagonalCabinet(BaseDiagonalCornerCabinetModel model) {
 
         CabinetMaterialCore boxCore = GetMaterialCore(model.Cabinet.BoxMaterial.Type);
+        CabinetMaterialCore finishCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore);
 
         MDFDoorOptions? mdfOptions = null;
         if (model.Cabinet.Fronts.Type != "Slab") mdfOptions = new(model.Cabinet.Fronts.Style, model.Cabinet.Fronts.Color);
 
-        var data = new DiagonalCornerCabinetData() {
-            Qty = model.Cabinet.Qty,
-            UnitPrice = StringToMoney(model.Cabinet.UnitPrice),
-            Room = model.Cabinet.Room,
-            Assembled = (model.Cabinet.Assembled == "Yes"),
-            Height = Dimension.FromMillimeters(model.Cabinet.Height),
-            Width = Dimension.FromMillimeters(model.Cabinet.Width),
-            Depth = Dimension.FromMillimeters(model.Cabinet.Depth),
-            BoxMaterialFinish = model.Cabinet.BoxMaterial.Finish,
-            BoxMaterialCore = boxCore,
-            FinishMaterialFinish = model.Cabinet.FinishMaterial.Finish,
-            FinishMaterialCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore),
-            EdgeBandingColor = (model.Cabinet.EdgeBandColor == "Match Finish" ? model.Cabinet.FinishMaterial.Finish : model.Cabinet.EdgeBandColor),
-            LeftSideType = GetCabinetSideType(model.Cabinet.LeftSide),
-            RightSideType = GetCabinetSideType(model.Cabinet.RightSide),
-            DoorType = model.Cabinet.Fronts.Type,
-            DoorStyle = mdfOptions,
-            HingeLeft = (model.HingeSide == "Left"),
-            ToeType = GetToeType(model.ToeType),
-            AdjustableShelfQty = model.AdjShelfQty,
-            DoorQty = model.DoorQty,
-            RightDepth = Dimension.FromMillimeters(model.RightDepth),
-            RightWidth = Dimension.FromMillimeters(model.RightWidth)
-        };
+        CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
+        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
+        CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
 
-        CabinetMaterial boxMaterial = new(data.BoxMaterialFinish, data.BoxMaterialCore);
-        CabinetMaterial finishMaterial = new(data.FinishMaterialFinish, data.FinishMaterialCore);
-        CabinetSide leftSide = new(data.LeftSideType, data.DoorStyle);
-        CabinetSide rightSide = new(data.RightSideType, data.DoorStyle);
-
-        return BaseDiagonalCornerCabinet.Create(data.Qty,
-            data.UnitPrice,
-            data.Room,
-            data.Assembled,
-            data.Height,
-            data.Width,
-            data.Depth,
+        return BaseDiagonalCornerCabinet.Create(
+            model.Cabinet.Qty,
+            StringToMoney(model.Cabinet.UnitPrice),
+            model.Cabinet.Room,
+            (model.Cabinet.Assembled == "Yes"),
+            Dimension.FromMillimeters(model.Cabinet.Height),
+            Dimension.FromMillimeters(model.Cabinet.Width),
+            Dimension.FromMillimeters(model.Cabinet.Depth),
             boxMaterial,
             finishMaterial,
-            data.EdgeBandingColor,
+            (model.Cabinet.EdgeBandColor == "Match Finish" ? model.Cabinet.FinishMaterial.Finish : model.Cabinet.EdgeBandColor),
             rightSide,
             leftSide,
-            data.RightWidth,
-            data.RightDepth,
-            data.ToeType,
-            data.AdjustableShelfQty,
-            (data.HingeLeft ? HingeSide.Left : HingeSide.Right),
-            data.DoorQty,
-            (data.DoorType == "Slab" ? null : data.DoorStyle));
+            Dimension.FromMillimeters(model.RightDepth),
+            Dimension.FromMillimeters(model.RightWidth),
+            GetToeType(model.ToeType),
+            model.AdjShelfQty,
+            ((model.HingeSide == "Left") ? HingeSide.Left : HingeSide.Right),
+            model.DoorQty,
+            (model.Cabinet.Fronts.Type == "Slab" ? null : mdfOptions)
+        );
 
     }
 
     public SinkCabinet MapToSinkCabinet(SinkCabinetModel model) {
 
         CabinetMaterialCore boxCore = GetMaterialCore(model.Cabinet.BoxMaterial.Type);
+        CabinetMaterialCore finishCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore);
 
         MDFDoorOptions? mdfOptions = null;
         if (model.Cabinet.Fronts.Type != "Slab") mdfOptions = new(model.Cabinet.Fronts.Style, model.Cabinet.Fronts.Color);
 
-        var data = new SinkCabinetData() {
-            Qty = model.Cabinet.Qty,
-            UnitPrice = StringToMoney(model.Cabinet.UnitPrice),
-            Room = model.Cabinet.Room,
-            Assembled = (model.Cabinet.Assembled == "Yes"),
-            Height = Dimension.FromMillimeters(model.Cabinet.Height),
-            Width = Dimension.FromMillimeters(model.Cabinet.Width),
-            Depth = Dimension.FromMillimeters(model.Cabinet.Depth),
-            BoxMaterialFinish = model.Cabinet.BoxMaterial.Finish,
-            BoxMaterialCore = boxCore,
-            FinishMaterialFinish = model.Cabinet.FinishMaterial.Finish,
-            FinishMaterialCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore),
-            EdgeBandingColor = (model.Cabinet.EdgeBandColor == "Match Finish" ? model.Cabinet.FinishMaterial.Finish : model.Cabinet.EdgeBandColor),
-            LeftSideType = GetCabinetSideType(model.Cabinet.LeftSide),
-            RightSideType = GetCabinetSideType(model.Cabinet.RightSide),
-            DoorType = model.Cabinet.Fronts.Type,
-            DoorStyle = mdfOptions,
-            HingeLeft = (model.HingeSide == "Left"),
-            ToeType = GetToeType(model.ToeType),
-            AdjustableShelfQty = model.AdjShelfQty,
-            DoorQty = model.DoorQty,
-            FalseDrawerQty = model.DrawerQty,
-            DrawerFaceHeight = Dimension.FromMillimeters(model.DrawerFaceHeight),
-            DrawerBoxMaterial = GetDrawerMaterial(model.DrawerMaterial),
-            DrawerBoxSlideType = GetDrawerSlideType(model.DrawerSlide)
-        };
+        CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
+        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
+        CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
 
-        CabinetMaterial boxMaterial = new(data.BoxMaterialFinish, data.BoxMaterialCore);
-        CabinetMaterial finishMaterial = new(data.FinishMaterialFinish, data.FinishMaterialCore);
-        CabinetSide leftSide = new(data.LeftSideType, data.DoorStyle);
-        CabinetSide rightSide = new(data.RightSideType, data.DoorStyle);
-
-        var rollOutOptions = new RollOutOptions(Array.Empty<Dimension>(), true, RollOutBlockPosition.None, data.DrawerBoxSlideType, data.DrawerBoxMaterial);
+        var rollOutOptions = new RollOutOptions(Array.Empty<Dimension>(), true, RollOutBlockPosition.None, GetDrawerSlideType(model.DrawerSlide), GetDrawerMaterial(model.DrawerMaterial));
 
         return SinkCabinet.Create(
-            data.Qty,
-            data.UnitPrice,
-            data.Room,
-            data.Assembled,
-            data.Height,
-            data.Width,
-            data.Depth,
+            model.Cabinet.Qty,
+            StringToMoney(model.Cabinet.UnitPrice),
+            model.Cabinet.Room,
+            (model.Cabinet.Assembled == "Yes"),
+            Dimension.FromMillimeters(model.Cabinet.Height),
+            Dimension.FromMillimeters(model.Cabinet.Width),
+            Dimension.FromMillimeters(model.Cabinet.Depth),
             boxMaterial,
             finishMaterial,
-            data.EdgeBandingColor,
+            (model.Cabinet.EdgeBandColor == "Match Finish" ? model.Cabinet.FinishMaterial.Finish : model.Cabinet.EdgeBandColor),
             rightSide,
             leftSide,
-            data.ToeType,
-            (data.HingeLeft ? HingeSide.Left : HingeSide.Right),
-            data.DoorQty,
-            data.FalseDrawerQty,
-            data.DrawerFaceHeight,
-            data.AdjustableShelfQty,
+            GetToeType(model.ToeType),
+            ((model.HingeSide == "Left") ? HingeSide.Left : HingeSide.Right),
+            model.DoorQty,
+            model.DrawerQty,
+            Dimension.FromMillimeters(model.DrawerFaceHeight),
+            model.AdjShelfQty,
             rollOutOptions,
-            (data.DoorType == "Slab" ? null : data.DoorStyle));
+            (model.Cabinet.Fronts.Type == "Slab" ? null : mdfOptions)
+        );
 
     }
 

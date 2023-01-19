@@ -1,6 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Loader.Providers.DTO;
-
-namespace ApplicationCore.Features.Orders.Loader.Providers;
+﻿namespace ApplicationCore.Features.Orders.Loader.Providers;
 
 public interface IOrderProvider {
 

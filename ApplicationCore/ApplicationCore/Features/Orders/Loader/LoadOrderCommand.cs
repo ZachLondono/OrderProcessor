@@ -1,7 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Loader.Commands;
 using ApplicationCore.Features.Orders.Loader.Providers;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Features.Orders.Loader.Providers.DTO;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
 namespace ApplicationCore.Features.Orders.Loader;
