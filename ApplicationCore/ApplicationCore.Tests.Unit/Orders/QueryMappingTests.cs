@@ -26,8 +26,11 @@ public class QueryMappingTests {
             new AdditionalItem(Guid.NewGuid(), "Description", 123)
         };
 
+        Address shippingAddress = new();
+        Address billingAddress = new();
+
         // Act
-        var order = model.AsDomainModel(orderId, boxes, items);
+        var order = model.AsDomainModel(orderId, shippingAddress, billingAddress, boxes, items);
 
         // Assert
         order.Id.Should().Be(orderId);
