@@ -14,15 +14,13 @@ namespace ApplicationCore.Features.Orders.Loader.Providers;
 
 internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
-    private readonly IBus _bus;
     private readonly AllmoxyConfiguration _configuration;
     private readonly AllmoxyClientFactory _clientfactory;
     private readonly IXMLValidator _validator;
 
     public IOrderLoadingViewModel? OrderLoadingViewModel { get; set; }
 
-    public AllmoxyXMLOrderProvider(IBus bus, AllmoxyConfiguration configuration, AllmoxyClientFactory clientfactory, IXMLValidator validator) {
-        _bus = bus;
+    public AllmoxyXMLOrderProvider(AllmoxyConfiguration configuration, AllmoxyClientFactory clientfactory, IXMLValidator validator) {
         _configuration = configuration;
         _clientfactory = clientfactory;
         _validator = validator;
