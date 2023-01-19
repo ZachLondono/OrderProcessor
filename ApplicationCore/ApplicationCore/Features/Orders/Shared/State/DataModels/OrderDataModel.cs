@@ -13,7 +13,7 @@ public class OrderDataModel {
 
     public Status Status { get; set; } = Status.UNKNOWN;
 
-    public Guid CustomerId { get; set; }
+    public string CustomerName { get; set; } = string.Empty;
 
     public Guid VendorId { get; set; }
 
@@ -31,32 +31,62 @@ public class OrderDataModel {
 
     public decimal Tax { get; set; }
 
-    public decimal Shipping { get; set; }
-
     public decimal PriceAdjustment { get; set; }
 
     public bool Rush { get; set; }
 
     public IDictionary<string, string> Info { get; set; } = new Dictionary<string, string>();
 
-    public Order AsDomainModel(Guid orderId, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> items) {
+    public string ShippingMethod { get; set; } = string.Empty;
+
+    public decimal ShippingPrice { get; set; }
+
+    public string ShippingContact { get; set; } = string.Empty;
+
+    public string ShippingPhoneNumber { get; set; } = string.Empty;
+
+    public Guid ShippingAddressId { get; set; }
+
+    public string? InvoiceEmail { get; set; } = null;
+
+    public string BillingPhoneNumber { get; set; } = string.Empty;
+
+    public Guid BillingAddressId { get; set; }
+
+    public Order AsDomainModel(Guid orderId, Address shippingAddress, Address billingAddress, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> items) {
 
         ShippingInfo shippingInfo = new() {
-            Contact = "",
-            Method = "",
-            PhoneNumber = "",
-            Price = Shipping,
-            Address = new()
+            Contact = ShippingContact,
+            Method = ShippingMethod,
+            PhoneNumber = ShippingPhoneNumber,
+            Price = ShippingPrice,
+            Address = new() {
+                Line1 = shippingAddress.Line1,
+                Line2 = shippingAddress.Line2,
+                Line3 = shippingAddress.Line3,
+                City = shippingAddress.City,
+                State = shippingAddress.State,
+                Zip = shippingAddress.Zip,
+                Country = shippingAddress.Country,
+            }
         };
 
         Customer customer = new() {
-            Name = "",
+            Name = CustomerName,
         };
 
         BillingInfo billing = new() {
-            InvoiceEmail = null,
-            PhoneNumber = "",
-            Address = new()
+            InvoiceEmail = InvoiceEmail,
+            PhoneNumber = BillingPhoneNumber,
+            Address = new() {
+                Line1 = billingAddress.Line1,
+                Line2 = billingAddress.Line2,
+                Line3 = billingAddress.Line3,
+                City = billingAddress.City,
+                State = billingAddress.State,
+                Zip = billingAddress.Zip,
+                Country = billingAddress.Country,
+            }
         };
 
         return new Order(orderId, Source, Status, Number, Name, customer, VendorId, ProductionNote, CustomerComment, OrderDate, ReleaseDate, ProductionDate, CompleteDate, shippingInfo, billing, Tax, PriceAdjustment, Rush, Info.AsReadOnly(), products, items);

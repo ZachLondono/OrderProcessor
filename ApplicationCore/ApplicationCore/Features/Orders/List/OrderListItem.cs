@@ -14,8 +14,6 @@ public class OrderListItem {
 
     public DateTime OrderDate { get; init; }
 
-    public Guid CustomerId { get; init; }
-
     public string CustomerName { get; init; } = string.Empty;
 
     public Guid VendorId { get; init; }

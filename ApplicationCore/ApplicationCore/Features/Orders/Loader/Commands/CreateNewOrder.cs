@@ -33,8 +33,37 @@ public class CreateNewOrder {
 
             try {
 
-                const string command = @"INSERT INTO orders (id, source, status, number, name, vendorid, productionnote, customercomment, orderdate, releasedate, productiondate, completedate, info, tax, shipping, priceadjustment, rush)
-                                        VALUES (@Id, @Source, @Status, @Number, @Name, @VendorId, @ProductionNote, @CustomerComment, @OrderDate, @ReleaseDate, @ProductionDate, @CompleteDate, @Info, @Tax, @Shipping, @PriceAdjustment, @Rush);";
+
+                Guid shippingAddressId = Guid.NewGuid();
+                const string shippingAddressCommand = @"INSERT INTO shippingaddresses (id, line1, line2, line3, city, state, zip, country)
+                                                        VALUES (@Id, @Line1, @Line2, @Line3, @City, @State, @Zip, @Country);";
+                await connection.ExecuteAsync(shippingAddressCommand, new {
+                    Id = shippingAddressId,
+                    order.Shipping.Address.Line1,
+                    order.Shipping.Address.Line2,
+                    order.Shipping.Address.Line3,
+                    order.Shipping.Address.City,
+                    order.Shipping.Address.State,
+                    order.Shipping.Address.Zip,
+                    order.Shipping.Address.Country,
+                });
+
+                Guid billingAddressId = Guid.NewGuid();
+                const string billingAddressCommand = @"INSERT INTO billingaddresses (id, line1, line2, line3, city, state, zip, country)
+                                                        VALUES (@Id, @Line1, @Line2, @Line3, @City, @State, @Zip, @Country);";
+                await connection.ExecuteAsync(billingAddressCommand, new {
+                    Id = billingAddressId,
+                    order.Billing.Address.Line1,
+                    order.Billing.Address.Line2,
+                    order.Billing.Address.Line3,
+                    order.Billing.Address.City,
+                    order.Billing.Address.State,
+                    order.Billing.Address.Zip,
+                    order.Billing.Address.Country,
+                });
+
+                const string command = @"INSERT INTO orders (id, source, status, number, name, vendorid, customername, productionnote, customercomment, orderdate, releasedate, productiondate, completedate, info, tax, priceadjustment, rush, shippingmethod, shippingprice, shippingcontact, shippingphonenumber, shippingaddressid, invoiceemail, billingphonenumber, billingaddressid)
+                                        VALUES (@Id, @Source, @Status, @Number, @Name, @VendorId, @CustomerName, @ProductionNote, @CustomerComment, @OrderDate, @ReleaseDate, @ProductionDate, @CompleteDate, @Info, @Tax, @PriceAdjustment, @Rush, @ShippingMethod, @ShippingPrice, @ShippingContact, @ShippingPhoneNumber, @ShippingAddressId, @InvoiceEmail, @BillingPhoneNumber, @BillingAddressId);";
 
                 await connection.ExecuteAsync(command, new {
                     order.Id,
@@ -43,6 +72,7 @@ public class CreateNewOrder {
                     order.Name,
                     order.Number,
                     order.VendorId,
+                    CustomerName = order.Customer.Name,
                     order.ProductionNote,
                     order.CustomerComment,
                     order.OrderDate,
@@ -51,9 +81,16 @@ public class CreateNewOrder {
                     order.CompleteDate,
                     Info = (IDictionary<string, string>)order.Info,
                     order.Tax,
-                    order.Shipping,
                     order.PriceAdjustment,
-                    order.Rush
+                    order.Rush,
+                    ShippingMethod = order.Shipping.Method,
+                    ShippingPrice = order.Shipping.Price,
+                    ShippingContact = order.Shipping.Contact,
+                    ShippingPhoneNumber = order.Shipping.PhoneNumber,
+                    ShippingAddressId = shippingAddressId,
+                    order.Billing.InvoiceEmail,
+                    BillingPhoneNumber = order.Billing.PhoneNumber,
+                    BillingAddressId = billingAddressId
                 }, trx);
 
                 foreach (var item in request.AdditionalItems) {
