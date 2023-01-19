@@ -55,7 +55,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer {
             { "FinishedLeft", GetSideOption(LeftSide.Type) },
             { "FinishedRight", GetSideOption(RightSide.Type) },
             { "ShelfQ", AdjustableShelves.ToString() },
-            { "BlindW", BlidWidth.AsMillimeters().ToString() }
+            { "BlindW", BlindWidth.AsMillimeters().ToString() }
         };
 
         if (Doors.HingeSide != HingeSide.NotApplicable) {
