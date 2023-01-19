@@ -13,9 +13,9 @@ public record OrderData {
 
     public required decimal Tax { get; init; }
 
-    public required decimal Shipping { get; init; }
-
     public required decimal PriceAdjustment { get; init; }
+
+    public required ShippingInfo Shipping { get; init; }
 
     public required DateTime OrderDate { get; init; }
 

@@ -2,7 +2,6 @@
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.Loader.Providers.DTO;
-using ApplicationCore.Infrastructure;
 using ApplicationCore.Features.Shared.Domain;
 using System.Xml.Serialization;
 using ApplicationCore.Features.Orders.Loader.XMLValidation;
@@ -44,7 +43,22 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             return Task.FromResult<OrderData?>(null);
         }
 
-        // Get customer company id
+        ShippingInfo shipping = new() {
+            Contact = data.Shipping.Attn,
+            Method = data.Shipping.Method,
+            PhoneNumber = "",
+            Price = StringToMoney(data.Invoice.Shipping),
+            Address = new Address() {
+                Line1 = data.Shipping.Address.Line1,
+                Line2 = data.Shipping.Address.Line2,
+                Line3 = data.Shipping.Address.Line3,
+                City = data.Shipping.Address.City,
+                State = data.Shipping.Address.State,
+                Zip = data.Shipping.Address.Zip,
+                Country = data.Shipping.Address.Country
+            }
+        };
+
         Customer customer = new() {
             Name = data.Customer.Company
         };
@@ -62,8 +76,8 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             Number = data.Number.ToString(),
             Name = data.Name,
             Comment = data.Description,
+            Shipping = shipping,
             Tax = StringToMoney(data.Invoice.Tax),
-            Shipping = StringToMoney(data.Invoice.Shipping),
             PriceAdjustment = 0M,
             OrderDate = orderDate,
             Customer = customer,

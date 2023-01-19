@@ -2,6 +2,7 @@
 using ApplicationCore.Features.Orders.Loader.Commands;
 using ApplicationCore.Features.Orders.Loader.Providers;
 using ApplicationCore.Infrastructure;
+using ApplicationCore.Features.Orders.Loader.Providers.DTO;
 
 namespace ApplicationCore.Features.Orders.Loader;
 
@@ -24,7 +25,7 @@ public class LoadOrderCommand {
             var provider = _factory.GetOrderProvider(request.SourceType);
             provider.OrderLoadingViewModel = request.OrderLoadingViewModel;
 
-            var data = await provider.LoadOrderData(request.Source);
+            OrderData? data = await provider.LoadOrderData(request.Source);
 
             if (data is null) {
 
@@ -37,15 +38,7 @@ public class LoadOrderCommand {
 
             // TODO: publish order created notification
 
-            ShippingInfo shipping = new() {
-                Method = "",
-                Contact = "",
-                PhoneNumber = "",
-                Price = data.Shipping,
-                Address = new()
-            };
-
-            Response<Order> result = await _bus.Send(new CreateNewOrder.Command(request.Source, data.Number, data.Name, data.Customer, data.VendorId, data.Comment, data.OrderDate, shipping, data.Tax, data.PriceAdjustment, data.Rush, data.Info, data.Products, data.AdditionalItems));
+            Response<Order> result = await _bus.Send(new CreateNewOrder.Command(request.Source, data.Number, data.Name, data.Customer, data.VendorId, data.Comment, data.OrderDate, data.Shipping, data.Tax, data.PriceAdjustment, data.Rush, data.Info, data.Products, data.AdditionalItems));
 
             return result;
 
