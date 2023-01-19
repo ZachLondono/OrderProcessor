@@ -1,7 +1,4 @@
-﻿using ApplicationCore.Features.Companies.Commands;
-using ApplicationCore.Features.Companies.Domain;
-using ApplicationCore.Features.Companies.Queries;
-using ApplicationCore.Features.Orders.Shared.Domain;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.Loader.Providers.DTO;
@@ -31,7 +28,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         _validator = validator;
     }
 
-    public async Task<OrderData?> LoadOrderData(string source) {
+    public Task<OrderData?> LoadOrderData(string source) {
 
         // Load order to a string
         string exportXML = _clientfactory.CreateClient().GetExport(source, 6);
@@ -50,11 +47,9 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         }
 
         // Get customer company id
-        Guid? customerId = await GetCustomerId(data);
-        if (customerId is null) {
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find/save customer information");
-            return null;
-        }
+        Customer customer = new() {
+            Name = data.Customer.Company
+        };
 
         var info = new Dictionary<string, string>() {
             { "Notes", data.Note },
@@ -65,7 +60,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
         DateTime orderDate = ParseOrderDate(data.OrderDate);
 
-        return new OrderData() {
+        OrderData? order = new() {
             Number = data.Number.ToString(),
             Name = data.Name,
             Comment = data.Description,
@@ -73,13 +68,15 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             Shipping = StringToMoney(data.Invoice.Shipping),
             PriceAdjustment = 0M,
             OrderDate = orderDate,
-            CustomerId = (Guid)customerId,
+            Customer = customer,
             VendorId = Guid.Parse(_configuration.VendorId),
             AdditionalItems = new(),
             Products = MapProductsFromData(data),
             Rush = data.Shipping.Method.Contains("Rush"),
             Info = info
         };
+
+        return Task.FromResult<OrderData?>(order);
 
     }
 
@@ -162,61 +159,6 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not load product {ex.Message}");
 
         }
-
-    }
-
-    private async Task<Guid?> GetCustomerId(OrderModel data) {
-        bool didError = false;
-        Company? customer = null;
-        var response = await _bus.Send(new GetCompanyByAllmoxyId.Query(data.Customer.CompanyId));
-
-        response.Match(
-            c => {
-                customer = c;
-            },
-            error => {
-                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, error.Title);
-                didError = true;
-            }
-        );
-
-        customer ??= await CreateCustomer(data);
-
-        if (customer is null || didError) {
-            return null;
-        }
-
-        return customer.Id;
-    }
-
-    private async Task<Company?> CreateCustomer(OrderModel data) {
-        
-        var adderes = new ApplicationCore.Features.Companies.Domain.ValueObjects.Address() {
-            Line1 = data.Shipping.Address.Line1,
-            Line2 = data.Shipping.Address.Line2,
-            Line3 = data.Shipping.Address.Line3,
-            City = data.Shipping.Address.City,
-            State = data.Shipping.Address.State,
-            Zip = data.Shipping.Address.Zip,
-            Country = data.Shipping.Address.Country
-        };
-
-        // TODO: get customer contact info from allmoxy order data
-        var createResponse = await _bus.Send(new CreateCompany.Command(data.Customer.Company, adderes, "", "", "", ""));
-
-        Company? customer = null;
-        createResponse.Match(
-            async c => {
-                customer = c;
-                await _bus.Send(new CreateAllmoxyIdCompanyIdMapping.Command(data.Customer.CompanyId, customer.Id));
-            },
-            error => {
-                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, error.Title);
-                customer = null;
-            }
-        );
-
-        return customer;
 
     }
 
