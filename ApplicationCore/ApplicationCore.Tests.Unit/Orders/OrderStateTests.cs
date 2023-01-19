@@ -1,12 +1,12 @@
 ﻿using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Queries;
-using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Release;
 using ApplicationCore.Infrastructure;
 using FluentAssertions;
 using NSubstitute;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Features.Companies.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
 namespace ApplicationCore.Tests.Unit.Orders;
 

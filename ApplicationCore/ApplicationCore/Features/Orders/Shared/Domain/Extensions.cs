@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Shared.Domain;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Shared.Domain;
 namespace ApplicationCore.Features.Orders.Shared.Domain;
 
 public static class Extensions {

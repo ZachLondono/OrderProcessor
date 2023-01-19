@@ -20,7 +20,7 @@ public class AllmoxyClientTests {
 
     [Fact]
     public void ShouldReturnExportData_WhenOrderAndIndexAreValid() {
-        
+
         string orderNumber = "";
         int index = 0;
 
@@ -41,7 +41,7 @@ public class AllmoxyClientTests {
 
     [Fact]
     public void ShouldThrowException_WhenOrderIsNotValid() {
-        
+
         string orderNumber = "";
         int index = 0;
 
@@ -61,10 +61,10 @@ public class AllmoxyClientTests {
             .WithMessage("Order could not be found");
 
     }
-    
+
     [Fact]
     public void ShouldThrowException_WhenIndexIsNotValid() {
-    
+
         string orderNumber = "";
         int index = 0;
 
@@ -102,12 +102,12 @@ public class AllmoxyClientTests {
         action.Should()
             .Throw<InvalidOperationException>()
             .WithMessage("Could not log in to Allmoxy");
-        
+
     }
 
     [Fact]
     public void ShouldThrowException_WhenUnexpectedResponseReturned() {
-        
+
         string orderNumber = "";
         int index = 0;
 

@@ -1,6 +1,7 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Notifications;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Infrastructure.Data;
 using Dapper;

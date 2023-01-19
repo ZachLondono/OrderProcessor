@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.Shared.Domain;
 
-namespace ApplicationCore.Features.Orders.Shared.Domain;
+namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
 public class Notched : IToeType {
     public Dimension ToeHeight { get; }

@@ -1,6 +1,7 @@
-﻿using ApplicationCore.Features.Shared.Domain;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Shared.Domain;
 
-namespace ApplicationCore.Features.Orders.Shared.Domain;
+namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
 public record HorizontalDrawerBank {
 
@@ -14,9 +15,9 @@ public record HorizontalDrawerBank {
         // Between each drawer box there are 2 dividers
         int dividerCount = (Quantity - 1) * 2;
 
-        Dimension availableWidth = innerCabWidth - (dividerCount * dividerThickness);
+        Dimension availableWidth = innerCabWidth - dividerCount * dividerThickness;
 
-        return (availableWidth / Quantity) - getSlideWidthAdjustment(SlideType);
+        return availableWidth / Quantity - getSlideWidthAdjustment(SlideType);
 
     }
 

@@ -1,5 +1,6 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.DTO;
 

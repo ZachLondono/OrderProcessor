@@ -37,7 +37,7 @@ internal class AllmoxyClient : IAllmoxyClient {
 
         switch (response.ContentType) {
             case NOT_LOGGED_IN_CONTENT_TYPE:
-                
+
                 if (response.Content is not null) {
                     if (response.Content.Contains(EXPORT_NOT_FOUND_CONTENT)) {
                         throw new InvalidOperationException("Export could not be found");

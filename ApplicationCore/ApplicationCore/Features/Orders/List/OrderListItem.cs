@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 
 namespace ApplicationCore.Features.List;
 

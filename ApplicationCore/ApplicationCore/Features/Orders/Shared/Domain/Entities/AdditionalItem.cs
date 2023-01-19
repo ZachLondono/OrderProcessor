@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Orders.Shared.Domain;
+﻿namespace ApplicationCore.Features.Orders.Shared.Domain.Entities;
 
 public class AdditionalItem {
 

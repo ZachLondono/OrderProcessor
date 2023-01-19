@@ -2,7 +2,6 @@
 using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.Emails.Contracts;
 using ApplicationCore.Features.Emails.Domain;
-using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Infrastructure;
