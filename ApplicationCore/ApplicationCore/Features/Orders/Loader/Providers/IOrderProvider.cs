@@ -1,4 +1,6 @@
-﻿namespace ApplicationCore.Features.Orders.Loader.Providers;
+﻿using ApplicationCore.Features.Orders.Loader.Dialog;
+
+namespace ApplicationCore.Features.Orders.Loader.Providers;
 
 public interface IOrderProvider {
 

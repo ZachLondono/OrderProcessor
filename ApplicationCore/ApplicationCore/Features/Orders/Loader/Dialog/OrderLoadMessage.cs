@@ -1,6 +1,4 @@
-﻿using ApplicationCore.Infrastructure;
-
-namespace ApplicationCore.Features.Orders.Loader;
+﻿namespace ApplicationCore.Features.Orders.Loader.Dialog;
 
 public record OrderLoadMessage {
 

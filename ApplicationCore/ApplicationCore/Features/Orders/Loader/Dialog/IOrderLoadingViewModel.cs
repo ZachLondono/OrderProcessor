@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Orders.Loader;
+﻿namespace ApplicationCore.Features.Orders.Loader.Dialog;
 
 public interface IOrderLoadingViewModel {
 
