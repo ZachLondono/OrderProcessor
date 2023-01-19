@@ -119,6 +119,66 @@
             </div>
         </section>
 
+        <section class="mt-10" id="shipping">
+
+            <div>
+                <label id="shippingmethod" class="text-md w-24 inline-block dark:text-gray-400">Method</label>
+                <span class="text-lg dark:text-white">@OrderState.Order.Shipping.Method</span>
+            </div>
+
+            <div>
+                <label id="shippingcontact" class="text-md w-24 inline-block dark:text-gray-400">Contact</label>
+                <span class="text-lg dark:text-white">@OrderState.Order.Shipping.Contact</span>
+            </div>
+
+            <div>
+                <label id="shippingphone" class="text-md w-24 inline-block dark:text-gray-400">Phone</label>
+                <span class="text-lg dark:text-white">@OrderState.Order.Shipping.PhoneNumber</span>
+            </div>
+
+
+            <div>
+                <h3 class="text-md w-24 inline-block dark:text-gray-400">Address</h3>
+                <div class="ml-5">
+                    <div>
+                        <label id="shippingline1" class="text-sm w-24 inline-block dark:text-gray-400">Line 1</label>
+                        <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Line1</span>
+                    </div>
+
+                    <div>
+                        <label id="shippingline2" class="text-sm w-24 inline-block dark:text-gray-400">Line 2</label>
+                        <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Line2</span>
+                    </div>
+
+                    <div>
+                        <label id="shippingline3" class="text-sm w-24 inline-block dark:text-gray-400">Line 3</label>
+                        <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Line3</span>
+                    </div>
+
+                    <div>
+                        <label id="shippingcity" class="text-sm w-24 inline-block dark:text-gray-400">City</label>
+                        <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.City</span>
+                    </div>
+
+                    <div>
+                        <label id="shippingstate" class="text-sm w-24 inline-block dark:text-gray-400">State</label>
+                        <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.State</span>
+                    </div>
+
+                    <div>
+                        <label id="shippingzip" class="text-sm w-24 inline-block dark:text-gray-400">Zip</label>
+                        <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Zip</span>
+                    </div>
+
+                    <div>
+                        <label id="shippingcountry" class="text-sm w-24 inline-block dark:text-gray-400">Country</label>
+                        <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Country</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
         <section class="mt-10" id="dates">
             <div>
                 <label id="orderdate" class="text-md w-24 inline-block dark:text-gray-400">Order Date</label>
