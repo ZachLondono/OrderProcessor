@@ -72,11 +72,18 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
         DateTime orderDate = ParseOrderDate(data.OrderDate);
 
+        var billing = new BillingInfo() {
+            InvoiceEmail = null,
+            PhoneNumber = null,
+            Address = new()
+        };
+
         OrderData? order = new() {
             Number = data.Number.ToString(),
             Name = data.Name,
             Comment = data.Description,
             Shipping = shipping,
+            Billing = billing,
             Tax = StringToMoney(data.Invoice.Tax),
             PriceAdjustment = 0M,
             OrderDate = orderDate,

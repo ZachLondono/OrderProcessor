@@ -17,6 +17,8 @@ public record OrderData {
 
     public required ShippingInfo Shipping { get; init; }
 
+    public required BillingInfo Billing { get; init; }
+
     public required DateTime OrderDate { get; init; }
 
     public required Customer Customer { get; init; }
