@@ -8,9 +8,6 @@ using System.Text;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using MoreLinq;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Wordprocessing;
-using System.Reflection;
 using ApplicationCore.Features.Orders.Loader.Dialog;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
@@ -122,7 +119,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     }
 
-    private static decimal StringToMoney(string str) => Decimal.Parse(str.Replace("$", "").Replace(",", ""));
+    private static decimal StringToMoney(string str) => decimal.Parse(str.Replace("$", "").Replace(",", ""));
 
     private DateTime ParseOrderDate(string orderDateStr) {
 
@@ -185,7 +182,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     }
 
-    private BaseCabinet MapToBaseCabinet(BaseCabinetModel model) {
+    public static BaseCabinet MapToBaseCabinet(BaseCabinetModel model) {
 
         CabinetMaterialCore boxCore = GetMaterialCore(model.Cabinet.BoxMaterial.Type);
         CabinetMaterialCore finishCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore);
@@ -240,7 +237,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     }
 
-    private WallCabinet MapToWallCabinet(WallCabinetModel model) {
+    public static WallCabinet MapToWallCabinet(WallCabinetModel model) {
 
         CabinetMaterialCore boxCore = GetMaterialCore(model.Cabinet.BoxMaterial.Type);
         CabinetMaterialCore finishCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore);
@@ -283,7 +280,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     }
 
-    private DrawerBaseCabinet MapToDrawerBaseCabinet(DrawerBaseCabinetModel model) {
+    public static DrawerBaseCabinet MapToDrawerBaseCabinet(DrawerBaseCabinetModel model) {
 
         var drawerFaces = new Dimension[model.DrawerQty == 1 ? 0 : model.DrawerQty];
         if (model.DrawerQty > 1) drawerFaces[0] = Dimension.FromMillimeters(model.DrawerFace1); // For 1 drawer box cabinets, the drawer box size is calculated
@@ -328,7 +325,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     }
 
-    private TallCabinet MapToTallCabinet(TallCabinetModel model) {
+    public static TallCabinet MapToTallCabinet(TallCabinetModel model) {
 
         CabinetMaterialCore boxCore = GetMaterialCore(model.Cabinet.BoxMaterial.Type);
         CabinetMaterialCore finishCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore);
@@ -378,7 +375,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     }
 
-    public BasePieCutCornerCabinet MapToPieCutCabinet(BasePieCutCornerCabinetModel model) {
+    public static BasePieCutCornerCabinet MapToPieCutCabinet(BasePieCutCornerCabinetModel model) {
 
         CabinetMaterialCore boxCore = GetMaterialCore(model.Cabinet.BoxMaterial.Type);
         CabinetMaterialCore finishCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore);
@@ -413,7 +410,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         );
     }
 
-    public BaseDiagonalCornerCabinet MapToDiagonalCabinet(BaseDiagonalCornerCabinetModel model) {
+    public static BaseDiagonalCornerCabinet MapToDiagonalCabinet(BaseDiagonalCornerCabinetModel model) {
 
         CabinetMaterialCore boxCore = GetMaterialCore(model.Cabinet.BoxMaterial.Type);
         CabinetMaterialCore finishCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore);
@@ -450,7 +447,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     }
 
-    public SinkCabinet MapToSinkCabinet(SinkCabinetModel model) {
+    public static SinkCabinet MapToSinkCabinet(SinkCabinetModel model) {
 
         CabinetMaterialCore boxCore = GetMaterialCore(model.Cabinet.BoxMaterial.Type);
         CabinetMaterialCore finishCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore);
@@ -499,26 +496,26 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         return null;
     }
 
-    private static CabinetDrawerBoxMaterial GetDrawerMaterial(string name) => name switch {
+    public static CabinetDrawerBoxMaterial GetDrawerMaterial(string name) => name switch {
         "Pre-Finished Birch" => CabinetDrawerBoxMaterial.SolidBirch,
         "Economy Birch" => CabinetDrawerBoxMaterial.FingerJointBirch,
         _ => CabinetDrawerBoxMaterial.FingerJointBirch
     };
 
-    private static DrawerSlideType GetDrawerSlideType(string name) => name switch {
+    public static DrawerSlideType GetDrawerSlideType(string name) => name switch {
         "Under Mount" => DrawerSlideType.UnderMount,
         "Side Mount" => DrawerSlideType.SideMount,
         _ => DrawerSlideType.UnderMount
     };
 
-    private static RollOutBlockPosition GetRollOutBlockPositions(string name) => name switch {
+    public static RollOutBlockPosition GetRollOutBlockPositions(string name) => name switch {
         "Left" => RollOutBlockPosition.Left,
         "Right" => RollOutBlockPosition.Right,
         "Both" => RollOutBlockPosition.Both,
         _ => RollOutBlockPosition.None
     };
 
-    private static IToeType GetToeType(string name) => name switch {
+    public static IToeType GetToeType(string name) => name switch {
         "Leg Levelers" => new LegLevelers(Dimension.FromMillimeters(102)),
         "Full Height Sides" => new FurnitureBase(Dimension.FromMillimeters(102)),
         "No Toe" => new NoToe(),
@@ -526,7 +523,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         _ => new LegLevelers(Dimension.FromMillimeters(102))
     };
 
-    private static CabinetSideType GetCabinetSideType(string name) => name switch {
+    public static CabinetSideType GetCabinetSideType(string name) => name switch {
         "Unfinished" => CabinetSideType.Unfinished,
         "Finished" => CabinetSideType.Finished,
         "Integrated" => CabinetSideType.IntegratedPanel,
@@ -534,20 +531,20 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         _ => CabinetSideType.Unfinished
     };
 
-    private static CabinetMaterialCore GetMaterialCore(string name) => name switch {
+    public static CabinetMaterialCore GetMaterialCore(string name) => name switch {
         "pb" => CabinetMaterialCore.Flake,
         "ply" => CabinetMaterialCore.Plywood,
         _ => CabinetMaterialCore.Flake
     };
 
-    private static ShelfDepth GetShelfDepth(string name) => name switch {
+    public static ShelfDepth GetShelfDepth(string name) => name switch {
         "Full" => ShelfDepth.Full,
         "Half" => ShelfDepth.Half,
         "3/4" => ShelfDepth.ThreeQuarters,
         _ => ShelfDepth.Default
     };
 
-    private static Dimension[] GetRollOutPositions(string pos1, string pos2, string pos3, string pos4, string pos5) {
+    public static Dimension[] GetRollOutPositions(string pos1, string pos2, string pos3, string pos4, string pos5) {
 
         int count = 0;
         if (pos5 == "Yes") count = 5;
@@ -569,7 +566,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     }
 
-    private static CabinetMaterialCore GetFinishedSideMaterialCore(string name, CabinetMaterialCore boxMaterial) {
+    public static CabinetMaterialCore GetFinishedSideMaterialCore(string name, CabinetMaterialCore boxMaterial) {
 
         if (boxMaterial == CabinetMaterialCore.Flake) {
 
