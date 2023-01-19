@@ -28,7 +28,6 @@ public class GetOrderList {
                                     orderdate,
                                     customername,
                                     vendorid,
-                                    (SELECT name FROM companies WHERE vendorid = companies.id) as vendorname,
                                     0 as itemcount
                                 FROM orders;";
 

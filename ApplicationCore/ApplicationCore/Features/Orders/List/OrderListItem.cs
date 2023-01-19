@@ -16,9 +16,9 @@ public class OrderListItem {
 
     public string CustomerName { get; init; } = string.Empty;
 
-    public Guid VendorId { get; init; }
+    public string VendorName { get; set; } = string.Empty;
 
-    public string VendorName { get; init; } = string.Empty;
+    public Guid VendorId { get; init; }
 
     public int ItemCount { get; init; }
 

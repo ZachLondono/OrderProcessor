@@ -55,6 +55,7 @@
                     <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.Number</td>
                     <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.Name</td>
                     <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.CustomerName</td>
+                    <td class="p-5 whitespace-nowrap border-b hover:text-underline dark:border-slate-500 dark:text-white" @onclick="async () => await OpenCompanyPage(order.VendorId)">@order.VendorName</td>
                     <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.ItemCount</td>
                     <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.OrderDate.ToShortDateString()</td>
                 </tr>
@@ -67,6 +68,9 @@
 
 
 @code {
+
+    [Parameter]
+    public IOrderListViewModel? ViewModel { get; set; }
 
     private bool _isLoading = true;
     private bool _hasError = false;
@@ -95,9 +99,25 @@
             }
         );
         _isLoading = false;
-        _hasError = true;
-        _errorMessage = "This is an example error";
         StateHasChanged();
+
+        if (_orders is not null) {
+            foreach (var order in _orders) {
+                order.VendorName = await GetCompanyName(order.VendorId);
+            }
+            StateHasChanged();
+        }
+
+    }
+
+    public async Task<string> GetCompanyName(Guid companyId) {
+        if (ViewModel is null) return "";
+        return await ViewModel.GetCompanyName(companyId);
+    }
+
+    public async Task OpenCompanyPage(Guid companyId) {
+        if (ViewModel is null) return;
+        await ViewModel.OpenCompanyPage(companyId);
     }
 
 }
