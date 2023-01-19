@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Notifications;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Infrastructure.Data;
@@ -14,9 +15,11 @@ public class CreateNewOrder {
     public class Handler : CommandHandler<Command, Order> {
 
         private readonly IDbConnectionFactory _factory;
+        private readonly IBus _bus;
 
-        public Handler(IDbConnectionFactory factory) {
+        public Handler(IDbConnectionFactory factory, IBus bus) {
             _factory = factory;
+            _bus = bus;
         }
 
         public override async Task<Response<Order>> Handle(Command request) {
@@ -67,6 +70,10 @@ public class CreateNewOrder {
             } finally {
                 connection.Close();
             }
+
+            await _bus.Publish(new OrderCreatedNotification() {
+                Order = order
+            });
 
             return new(order);
 
