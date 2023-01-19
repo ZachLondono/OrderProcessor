@@ -32,7 +32,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
         var order = notification.Order;
 
-        var customerName = await GetCompanyName(order.CustomerId);
+        var customerName = order.Customer.Name;
         var vendorName = await GetCompanyName(order.VendorId);
 
         var dovetailBoxes = order.Products

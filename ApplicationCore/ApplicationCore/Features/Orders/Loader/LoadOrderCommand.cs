@@ -35,6 +35,10 @@ public class LoadOrderCommand {
 
             }
 
+            Customer customer = new() {
+                Name = ""
+            };
+
             ShippingInfo shipping = new() {
                 Method = "",
                 Contact = "",
@@ -43,7 +47,7 @@ public class LoadOrderCommand {
                 Address = new()
             };
 
-            Response<Order> result = await _bus.Send(new CreateNewOrder.Command(request.Source, data.Number, data.Name, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, shipping, data.Tax, data.PriceAdjustment, data.Rush, data.Info, data.Products, data.AdditionalItems));
+            Response<Order> result = await _bus.Send(new CreateNewOrder.Command(request.Source, data.Number, data.Name, customer, data.VendorId, data.Comment, data.OrderDate, shipping, data.Tax, data.PriceAdjustment, data.Rush, data.Info, data.Products, data.AdditionalItems));
 
             return result;
 

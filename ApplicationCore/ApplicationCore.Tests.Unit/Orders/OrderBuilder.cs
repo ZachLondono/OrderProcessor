@@ -10,7 +10,7 @@ internal class OrderBuilder {
     private Status _status = Status.UNKNOWN;
     private string _number = string.Empty;
     private string _name = string.Empty;
-    private Guid _customerId = Guid.NewGuid();
+    private Customer _customer;
     private Guid _vendorId = Guid.NewGuid();
     private string _note = string.Empty;
     private string _comment = string.Empty;
@@ -27,6 +27,12 @@ internal class OrderBuilder {
     private List<DovetailDrawerBoxProduct> _boxes = new();
 
     public OrderBuilder() {
+
+        _customer = new() {
+            Name = "",
+            InvoiceEmail = null
+        };
+
         _shipping = new() {
             Contact = "",
             Method = "",
@@ -34,6 +40,7 @@ internal class OrderBuilder {
             Price = 0M,
             Address = new()
         };
+
     }
 
     public OrderBuilder WithId(Guid id) {
@@ -61,8 +68,8 @@ internal class OrderBuilder {
         return this;
     }
 
-    public OrderBuilder WithCustomerId(Guid customerId) {
-        _customerId = customerId;
+    public OrderBuilder WithCustomerId(Customer customer) {
+        _customer = customer;
         return this;
     }
 
@@ -136,6 +143,6 @@ internal class OrderBuilder {
         return this;
     }
 
-    public Order Buid() => new(_id, _source, _status, _number, _name, _customerId, _vendorId, _note, _comment, _orderDate, _releaseDate, _productionDate, _completeDate, _shipping, _tax, _priceAdjustment, _rush, _info, _boxes, _items);
+    public Order Buid() => new(_id, _source, _status, _number, _name, _customer, _vendorId, _note, _comment, _orderDate, _releaseDate, _productionDate, _completeDate, _shipping, _tax, _priceAdjustment, _rush, _info, _boxes, _items);
 
 }

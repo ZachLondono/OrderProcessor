@@ -35,20 +35,19 @@ public class SendInvoiceEmail : DomainListener<TriggerOrderCompleteNotification>
         var order = notification.Order;
         var profile = notification.CompleteProfile;
 
-        Company? customer = await GetCompany(order.CustomerId);
         Company? vendor = await GetCompany(order.VendorId);
-        if (customer is null || vendor is null) {
+        if (order.Customer.InvoiceEmail is null || vendor is null) {
             // TODO: send error ui notification
             return;
         }
 
-        var doc = GenerateInvoicePDF(order, customer, vendor);
+        var doc = GenerateInvoicePDF(order, vendor);
         string pdfPath = GetAvailableFileName(profile.InvoicePDFDirectory, $"{order.Number} - INVOICE");
         doc.GeneratePdf(pdfPath);
 
 
         var sender = new EmailSender(profile.EmailSenderName, profile.EmailSenderEmail, profile.EmailSenderPassword, _configuration.Host, _configuration.Port);
-        var recipients = new string[] { customer.InvoiceEmail, vendor.InvoiceEmail }.Where(r => !string.IsNullOrWhiteSpace(r));
+        var recipients = new string[] { order.Customer.InvoiceEmail, vendor.InvoiceEmail }.Where(r => !string.IsNullOrWhiteSpace(r));
         if (!recipients.Any()) {
             // TODO: show no recipients warning
             return;
@@ -104,7 +103,7 @@ public class SendInvoiceEmail : DomainListener<TriggerOrderCompleteNotification>
 
     }
 
-    private static Document GenerateInvoicePDF(Order order, Company customer, Company vendor) {
+    private static Document GenerateInvoicePDF(Order order, Company vendor) {
 
         return Document.Create(container => {
 
@@ -139,10 +138,10 @@ public class SendInvoiceEmail : DomainListener<TriggerOrderCompleteNotification>
 
                             table.Cell().Row(companyRow++).Text("");
                             table.Cell().Row(companyRow).Column(1).AlignMiddle().AlignRight().Text("To").Italic().FontSize(12);
-                            CompanyInfoCell(table, customer.Name, 16).Bold();
-                            CompanyInfoCell(table, customer.Address.Line1, 12);
-                            CompanyInfoCell(table, $"{customer.Address.City}, {customer.Address.State} {customer.Address.Zip}", 12);
-                            CompanyInfoCell(table, customer.PhoneNumber, 12);
+                            CompanyInfoCell(table, order.Customer.Name, 16).Bold();
+                            CompanyInfoCell(table, order.Shipping.Address.Line1, 12);
+                            CompanyInfoCell(table, $"{order.Shipping.Address.City}, {order.Shipping.Address.State} {order.Shipping.Address.Zip}", 12);
+                            CompanyInfoCell(table, order.Shipping.PhoneNumber, 12);
 
                             int maxCharCount = 0;
                             float fontSize = 12;
@@ -172,7 +171,7 @@ public class SendInvoiceEmail : DomainListener<TriggerOrderCompleteNotification>
                             AddInfo(table, "Total:", $"${order.Total}", true);
 
                             float col1Width = 60f;
-                            float companyNameWidth = (vendor.Name.Length > customer.Name.Length ? vendor.Name.Length : customer.Name.Length) * 16 * 0.6f;
+                            float companyNameWidth = (vendor.Name.Length > order.Customer.Name.Length ? vendor.Name.Length : order.Customer.Name.Length) * 16 * 0.6f;
                             float tableHeaderWidth = 60f;
                             float tableValueWidth = maxCharCount * fontSize * 0.6f;
 

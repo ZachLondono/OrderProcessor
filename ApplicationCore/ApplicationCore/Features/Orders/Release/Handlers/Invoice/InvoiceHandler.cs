@@ -37,21 +37,9 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
 
         bool didError = false;
 
-        Company? customer = null;
-        var custQuery = await GetCompany(order.CustomerId);
-        custQuery.Match(
-            (company) => {
-                customer = company;
-            },
-            (error) => {
-                didError = true;
-                _logger.LogError("Error loading customer {Error}", error);
-            }
-        );
-
         Company? vendor = null;
         var vendorQuery = await GetCompany(order.VendorId);
-        custQuery.Match(
+        vendorQuery.Match(
             (company) => {
                 vendor = company;
             },
@@ -61,7 +49,7 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
             }
         );
 
-        if (didError || customer is null || vendor is null) {
+        if (didError || vendor is null) {
             _uibus.Publish(new OrderReleaseErrorNotification("Could not load customer or vendor information for order"));
             return;
         }
@@ -70,7 +58,7 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
         var outputDir = notification.ReleaseProfile.InvoiceOutputDirectory;
         var doPrint = notification.ReleaseProfile.PrintInvoice;
 
-        var custLine2Str = string.IsNullOrWhiteSpace(customer.Address.Country + customer.Address.State + customer.Address.Zip) ? "" : $"{customer.Address.City}, {customer.Address.State} {customer.Address.Zip}";
+        var custLine2Str = string.IsNullOrWhiteSpace(order.Shipping.Address.Country + order.Shipping.Address.State + order.Shipping.Address.Zip) ? "" : $"{order.Shipping.Address.City}, {order.Shipping.Address.State} {order.Shipping.Address.Zip}";
         var vendLine2Str = string.IsNullOrWhiteSpace(vendor.Address.Country + vendor.Address.State + vendor.Address.Zip) ? "" : $"{vendor.Address.City}, {vendor.Address.State} {vendor.Address.Zip}";
 
         int line = 1;
@@ -91,10 +79,10 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
 
         var packinglist = new Models.PackingList() {
             Customer = new() {
-                Name = customer.Name,
-                Line1 = customer.Address.Line1,
+                Name = order.Customer.Name,
+                Line1 = order.Shipping.Address.Line1,
                 Line2 = custLine2Str,
-                Line3 = customer.PhoneNumber
+                Line3 = order.Shipping.PhoneNumber
             },
             Vendor = new() {
                 Name = vendor.Name,
@@ -150,7 +138,7 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
 
     }
 
-    private async Task<Response<Company>> GetCompany(Guid companyId) {
+    private async Task<Response<Company?>> GetCompany(Guid companyId) {
         return await _bus.Send(new GetCompanyById.Query(companyId));
     }
 

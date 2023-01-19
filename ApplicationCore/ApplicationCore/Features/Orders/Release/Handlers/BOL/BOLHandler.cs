@@ -28,35 +28,17 @@ internal class BOLHandler : DomainListener<TriggerOrderReleaseNotification> {
 
         var order = notification.Order;
 
-        bool didError = false;
-        Company? customer = null;
-        var custQuery = await GetCompany(order.CustomerId);
-        custQuery.Match(
-            (cust) => {
-                customer = cust;
-            },
-            (error) => {
-                didError = true;
-                _logger.LogError("Error loading customer {Error}", error);
-            }
-        );
-
-        if (didError || customer is null) {
-            _uibus.Publish(new OrderReleaseInfoNotification($"Error creating BOL, could not find customer details"));
-            return;
-        }
-
         var config = new ClosedXMLTemplateConfiguration() { TemplateFilePath = notification.ReleaseProfile.BOLTemplateFilePath };
         var outputDir = notification.ReleaseProfile.BOLOutputDirectory;
         var doPrint = notification.ReleaseProfile.PrintBOL;
 
         var model = new Model() {
-            CustomerName = customer.Name,
-            CustomerStreet1 = customer.Address.Line1,
-            CustomerStreet2 = customer.Address.Line2,
-            CustomerCityState = $"{customer.Address.City} {customer.Address.State}",
-            CustomerZip = customer.Address.Zip,
-            CustomerPhone = customer.PhoneNumber
+            CustomerName = order.Customer.Name,
+            CustomerStreet1 = order.Shipping.Address.Line1,
+            CustomerStreet2 = order.Shipping.Address.Line2,
+            CustomerCityState = $"{order.Shipping.Address.City} {order.Shipping.Address.State}",
+            CustomerZip = order.Shipping.Address.Zip,
+            CustomerPhone = order.Shipping.PhoneNumber
         };
 
         var bolResponse = await _bus.Send(new FillTemplateRequest(model, outputDir, $"{order.Number} - {order.Name} BOL", doPrint, config));
@@ -72,10 +54,6 @@ internal class BOLHandler : DomainListener<TriggerOrderReleaseNotification> {
             }
         );
 
-    }
-
-    private async Task<Response<Company>> GetCompany(Guid companyId) {
-        return await _bus.Send(new GetCompanyById.Query(companyId));
     }
 
 }

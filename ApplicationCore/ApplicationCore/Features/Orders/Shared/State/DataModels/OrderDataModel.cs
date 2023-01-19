@@ -49,7 +49,12 @@ public class OrderDataModel {
             Address = new()
         };
 
-        return new Order(orderId, Source, Status, Number, Name, CustomerId, VendorId, ProductionNote, CustomerComment, OrderDate, ReleaseDate, ProductionDate, CompleteDate, ShippingInfo, Tax, PriceAdjustment, Rush, Info.AsReadOnly(), products, items);
+        Customer customer = new() {
+            Name = "",
+            InvoiceEmail = null
+        };
+
+        return new Order(orderId, Source, Status, Number, Name, customer, VendorId, ProductionNote, CustomerComment, OrderDate, ReleaseDate, ProductionDate, CompleteDate, ShippingInfo, Tax, PriceAdjustment, Rush, Info.AsReadOnly(), products, items);
 
     }
 

@@ -87,10 +87,12 @@ public class OrderStateTests {
     public void UpdateCustomer_ShouldDoNothing_WhenOrderIsNull() {
 
         // Arrange
-        Guid customerId = Guid.NewGuid();
+        Customer customer = new() {
+            Name = ""
+        };
 
         // Act
-        _sut.UpdateCustomer(customerId);
+        _sut.UpdateCustomer(customer);
 
         // Assert
         _sut.IsDirty.Should().BeFalse();
@@ -104,17 +106,20 @@ public class OrderStateTests {
         // Arrange
         var order = new OrderBuilder().Buid();
         _sut.ReplaceOrder(order);
-        Guid customerId = Guid.NewGuid();
+        Customer customer = new() {
+            Name = "ABC",
+            InvoiceEmail = "CBA"
+        };
 
         // Act
-        _sut.UpdateCustomer(customerId);
+        _sut.UpdateCustomer(customer);
 
 
         // Assert
         _sut.IsDirty.Should().BeTrue();
         _sut.Order.Should().NotBe(order);
         _sut.Order.Should().NotBeNull();
-        _sut.Order!.CustomerId.Should().Be(customerId);
+        _sut.Order!.Customer.Should().Be(customer);
 
     }
 

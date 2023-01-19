@@ -14,7 +14,6 @@ public class QueryMappingTests {
         var model = new OrderDataModel() {
             Name = "Name",
             Number = "Number",
-            CustomerId = Guid.NewGuid(),
             VendorId = Guid.NewGuid(),
         };
 
@@ -34,7 +33,6 @@ public class QueryMappingTests {
         order.Id.Should().Be(orderId);
         order.Name.Should().Be(model.Name);
         order.Number.Should().Be(model.Number);
-        order.CustomerId.Should().Be(model.CustomerId);
         order.VendorId.Should().Be(model.VendorId);
         order.Products.Should().BeEquivalentTo(boxes);
         order.AdditionalItems.Should().BeEquivalentTo(items);

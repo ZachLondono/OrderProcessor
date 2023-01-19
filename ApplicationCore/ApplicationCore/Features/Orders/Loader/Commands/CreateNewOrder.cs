@@ -7,10 +7,9 @@ using System.Data;
 using System.Diagnostics;
 
 namespace ApplicationCore.Features.Orders.Loader.Commands;
-
 public class CreateNewOrder {
 
-    public record Command(string Source, string Number, string Name, Guid CustomerId, Guid VendorId, string Comment, DateTime OrderDate, ShippingInfo Shipping, decimal Tax, decimal PriceAdjustment, bool Rush, IReadOnlyDictionary<string, string> Info, IEnumerable<IProduct> Products, IEnumerable<AdditionalItem> AdditionalItems, Guid? OrderId = null) : ICommand<Order>;
+    public record Command(string Source, string Number, string Name, Customer Customer, Guid VendorId, string Comment, DateTime OrderDate, ShippingInfo Shipping, decimal Tax, decimal PriceAdjustment, bool Rush, IReadOnlyDictionary<string, string> Info, IEnumerable<IProduct> Products, IEnumerable<AdditionalItem> AdditionalItems, Guid? OrderId = null) : ICommand<Order>;
 
     public class Handler : CommandHandler<Command, Order> {
 
@@ -22,7 +21,7 @@ public class CreateNewOrder {
 
         public override async Task<Response<Order>> Handle(Command request) {
 
-            Order order = Order.Create(request.Source, request.Number, request.Name, request.CustomerId, request.VendorId, request.Comment, request.OrderDate, request.Shipping, request.Tax, request.PriceAdjustment, request.Rush, request.Info, request.Products, request.AdditionalItems, request.OrderId);
+            Order order = Order.Create(request.Source, request.Number, request.Name, request.Customer, request.VendorId, request.Comment, request.OrderDate, request.Shipping, request.Tax, request.PriceAdjustment, request.Rush, request.Info, request.Products, request.AdditionalItems, request.OrderId);
 
             using var connection = _factory.CreateConnection();
 
@@ -31,8 +30,8 @@ public class CreateNewOrder {
 
             try {
 
-                const string command = @"INSERT INTO orders (id, source, status, number, name, customerid, vendorid, productionnote, customercomment, orderdate, releasedate, productiondate, completedate, info, tax, shipping, priceadjustment, rush)
-                                        VALUES (@Id, @Source, @Status, @Number, @Name, @CustomerId, @VendorId, @ProductionNote, @CustomerComment, @OrderDate, @ReleaseDate, @ProductionDate, @CompleteDate, @Info, @Tax, @Shipping, @PriceAdjustment, @Rush);";
+                const string command = @"INSERT INTO orders (id, source, status, number, name, vendorid, productionnote, customercomment, orderdate, releasedate, productiondate, completedate, info, tax, shipping, priceadjustment, rush)
+                                        VALUES (@Id, @Source, @Status, @Number, @Name, @VendorId, @ProductionNote, @CustomerComment, @OrderDate, @ReleaseDate, @ProductionDate, @CompleteDate, @Info, @Tax, @Shipping, @PriceAdjustment, @Rush);";
 
                 await connection.ExecuteAsync(command, new {
                     order.Id,
@@ -40,7 +39,6 @@ public class CreateNewOrder {
                     Status = order.Status.ToString(),
                     order.Name,
                     order.Number,
-                    order.CustomerId,
                     order.VendorId,
                     order.ProductionNote,
                     order.CustomerComment,
