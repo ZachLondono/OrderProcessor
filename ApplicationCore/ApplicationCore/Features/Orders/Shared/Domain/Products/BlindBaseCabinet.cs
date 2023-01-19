@@ -44,7 +44,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer {
     }
 
     private string GetProductName() {
-        return $"WB{Doors.Quantity}D{GetDrawerCountSkuPart()}{GetBlindSideLetter()}";
+        return $"BB{Doors.Quantity}D{GetDrawerCountSkuPart()}{GetBlindSideLetter()}";
     }
 
     private Dictionary<string, string> GetParameters() {
