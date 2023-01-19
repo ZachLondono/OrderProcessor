@@ -40,7 +40,7 @@
                     </td>
                     <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.Number</td>
                     <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.Name</td>
-                    <td class="p-5 whitespace-nowrap hover:underline border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenCompany(order.CustomerId)">@order.CustomerName</td>
+                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.CustomerName</td>
                     <td class="p-5 whitespace-nowrap hover:underline border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenCompany(order.VendorId)" >@order.VendorName</td>
                     <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.ItemCount</td>
                     <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.OrderDate.ToShortDateString()</td>

@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Infrastructure;
 using ApplicationCore.Infrastructure.Data;
-using Dapper;
 
 namespace ApplicationCore.Features.Companies.Details;
 
@@ -16,16 +15,12 @@ public class GetOrdersByCompanyId {
             _factory = factory;
         }
 
-        public override async Task<Response<IEnumerable<CompanyOrderListItem>>> Handle(Query request) {
+        public override Task<Response<IEnumerable<CompanyOrderListItem>>> Handle(Query request) {
 
-            using var connection = _factory.CreateConnection();
-
-            const string query = "SELECT id, number, name FROM orders WHERE customerid = @CompanyId OR vendorid = @CompanyId;";
-
-            var orders = await connection.QueryAsync<CompanyOrderListItem>(query, request);
-
-            return new(orders);
-
+            return Task.FromResult<Response<IEnumerable<CompanyOrderListItem>>>(new(new Error() {
+                Title = "No Workey",
+                Details = "This no workey no more"
+            }));
 
         }
 
