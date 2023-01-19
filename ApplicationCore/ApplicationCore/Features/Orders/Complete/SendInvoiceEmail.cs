@@ -36,7 +36,7 @@ public class SendInvoiceEmail : DomainListener<TriggerOrderCompleteNotification>
         var profile = notification.CompleteProfile;
 
         Company? vendor = await GetCompany(order.VendorId);
-        if (order.Customer.InvoiceEmail is null || vendor is null) {
+        if (order.Billing.InvoiceEmail is null || vendor is null) {
             // TODO: send error ui notification
             return;
         }
@@ -47,7 +47,7 @@ public class SendInvoiceEmail : DomainListener<TriggerOrderCompleteNotification>
 
 
         var sender = new EmailSender(profile.EmailSenderName, profile.EmailSenderEmail, profile.EmailSenderPassword, _configuration.Host, _configuration.Port);
-        var recipients = new string[] { order.Customer.InvoiceEmail, vendor.InvoiceEmail }.Where(r => !string.IsNullOrWhiteSpace(r));
+        var recipients = new string[] { order.Billing.InvoiceEmail, vendor.InvoiceEmail }.Where(r => !string.IsNullOrWhiteSpace(r));
         if (!recipients.Any()) {
             // TODO: show no recipients warning
             return;
@@ -139,9 +139,9 @@ public class SendInvoiceEmail : DomainListener<TriggerOrderCompleteNotification>
                             table.Cell().Row(companyRow++).Text("");
                             table.Cell().Row(companyRow).Column(1).AlignMiddle().AlignRight().Text("To").Italic().FontSize(12);
                             CompanyInfoCell(table, order.Customer.Name, 16).Bold();
-                            CompanyInfoCell(table, order.Shipping.Address.Line1, 12);
-                            CompanyInfoCell(table, $"{order.Shipping.Address.City}, {order.Shipping.Address.State} {order.Shipping.Address.Zip}", 12);
-                            CompanyInfoCell(table, order.Shipping.PhoneNumber, 12);
+                            CompanyInfoCell(table, order.Billing.Address.Line1, 12);
+                            CompanyInfoCell(table, $"{order.Billing.Address.City}, {order.Billing.Address.State} {order.Billing.Address.Zip}", 12);
+                            CompanyInfoCell(table, order.Billing.PhoneNumber ?? "", 12);
 
                             int maxCharCount = 0;
                             float fontSize = 12;

@@ -107,8 +107,7 @@ public class OrderStateTests {
         var order = new OrderBuilder().Buid();
         _sut.ReplaceOrder(order);
         Customer customer = new() {
-            Name = "ABC",
-            InvoiceEmail = "CBA"
+            Name = "ABC"
         };
 
         // Act

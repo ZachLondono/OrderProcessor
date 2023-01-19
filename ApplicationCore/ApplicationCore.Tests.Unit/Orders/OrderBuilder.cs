@@ -20,6 +20,7 @@ internal class OrderBuilder {
     private DateTime? _productionDate = null;
     private decimal _tax = decimal.Zero;
     private ShippingInfo _shipping;
+    private BillingInfo _billing;
     private decimal _priceAdjustment = decimal.Zero;
     private bool _rush = false;
     private Dictionary<string, string> _info = new();
@@ -29,8 +30,7 @@ internal class OrderBuilder {
     public OrderBuilder() {
 
         _customer = new() {
-            Name = "",
-            InvoiceEmail = null
+            Name = ""
         };
 
         _shipping = new() {
@@ -39,6 +39,12 @@ internal class OrderBuilder {
             PhoneNumber = "",
             Price = 0M,
             Address = new()
+        };
+
+        _billing = new() {
+            InvoiceEmail = null,
+            PhoneNumber = null,
+            Address = new(),
         };
 
     }
@@ -143,6 +149,6 @@ internal class OrderBuilder {
         return this;
     }
 
-    public Order Buid() => new(_id, _source, _status, _number, _name, _customer, _vendorId, _note, _comment, _orderDate, _releaseDate, _productionDate, _completeDate, _shipping, _tax, _priceAdjustment, _rush, _info, _boxes, _items);
+    public Order Buid() => new(_id, _source, _status, _number, _name, _customer, _vendorId, _note, _comment, _orderDate, _releaseDate, _productionDate, _completeDate, _shipping, _billing, _tax, _priceAdjustment, _rush, _info, _boxes, _items);
 
 }
