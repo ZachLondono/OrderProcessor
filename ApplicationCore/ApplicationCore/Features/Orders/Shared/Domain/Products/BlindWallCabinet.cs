@@ -10,25 +10,27 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer {
     public BlindCabinetDoors Doors { get; }
     public int AdjustableShelves { get; }
     public BlindSide BlindSide { get; }
+    public Dimension BlidWidth { get; }
 
     public static BlindWallCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        BlindCabinetDoors doors, BlindSide blindSide, int adjustableShelves) {
-        return new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, blindSide, adjustableShelves);
+                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves) {
+        return new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, blindSide, blindWidth, adjustableShelves);
     }
 
     private BlindWallCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        BlindCabinetDoors doors, BlindSide blindSide, int adjustableShelves)
+                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves)
                         : base(id, qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
 
         Doors = doors;
         AdjustableShelves = adjustableShelves;
         BlindSide = blindSide;
+        BlidWidth = blindWidth;
 
     }
 
