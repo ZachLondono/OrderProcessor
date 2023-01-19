@@ -74,7 +74,7 @@ internal class OrderBuilder {
         return this;
     }
 
-    public OrderBuilder WithCustomerId(Customer customer) {
+    public OrderBuilder WithCustomer(Customer customer) {
         _customer = customer;
         return this;
     }
