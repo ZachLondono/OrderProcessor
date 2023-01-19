@@ -501,7 +501,7 @@
             if (description != string.Empty) {
                 await Modal.OpenInformationDialog("Manual Overrides Needed:", description, InformationDialog.MessageType.Information);
             } else {
-                await Modal.OpenInformationDialog("Completed", "EXT export completed", InformationDialog.MessageType.Information);
+                await Modal.OpenInformationDialog("Completed", $"EXT export completed for {products.Count} products", InformationDialog.MessageType.Information);
             }
 
         });
