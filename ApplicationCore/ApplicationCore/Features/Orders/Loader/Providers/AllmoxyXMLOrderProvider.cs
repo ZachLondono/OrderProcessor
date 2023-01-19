@@ -213,8 +213,9 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             2 => new(mdfOptions),
             _ => new(hingeLeft ? HingeSide.Left : HingeSide.Right, mdfOptions)
         };
+        string finishColor = (model.Cabinet.FinishMaterial.Type == "paint" ? model.Cabinet.BoxMaterial.Finish : model.Cabinet.FinishMaterial.Finish);
         CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
-        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetMaterial finishMaterial = new(finishColor, finishCore);
         CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
         CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
         HorizontalDrawerBank drawers = new() {
@@ -269,8 +270,9 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             2 => new(doorExtendDown, mdfOptions),
             _ => new(hingeLeft ? HingeSide.Left : HingeSide.Right, doorExtendDown, mdfOptions)
         };
+        string finishColor = (model.Cabinet.FinishMaterial.Type == "paint" ? model.Cabinet.BoxMaterial.Finish : model.Cabinet.FinishMaterial.Finish);
         CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
-        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetMaterial finishMaterial = new(finishColor, finishCore);
         CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
         CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
 
@@ -311,8 +313,9 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         MDFDoorOptions? mdfOptions = null;
         if (model.Cabinet.Fronts.Type != "Slab") mdfOptions = new(model.Cabinet.Fronts.Style, model.Cabinet.Fronts.Color);
 
+        string finishColor = (model.Cabinet.FinishMaterial.Type == "paint" ? model.Cabinet.BoxMaterial.Finish : model.Cabinet.FinishMaterial.Finish);
         CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
-        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetMaterial finishMaterial = new(finishColor, finishCore);
         CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
         CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
 
@@ -349,8 +352,9 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         MDFDoorOptions? mdfOptions = null;
         if (model.Cabinet.Fronts.Type != "Slab") mdfOptions = new(model.Cabinet.Fronts.Style, model.Cabinet.Fronts.Color);
 
+        string finishColor = (model.Cabinet.FinishMaterial.Type == "paint" ? model.Cabinet.BoxMaterial.Finish : model.Cabinet.FinishMaterial.Finish);
         CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
-        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetMaterial finishMaterial = new(finishColor, finishCore);
         CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
         CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
 
@@ -399,8 +403,9 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         MDFDoorOptions? mdfOptions = null;
         if (model.Cabinet.Fronts.Type != "Slab") mdfOptions = new(model.Cabinet.Fronts.Style, model.Cabinet.Fronts.Color);
 
+        string finishColor = (model.Cabinet.FinishMaterial.Type == "paint" ? model.Cabinet.BoxMaterial.Finish : model.Cabinet.FinishMaterial.Finish);
         CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
-        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetMaterial finishMaterial = new(finishColor, finishCore);
         CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
         CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
 
@@ -434,8 +439,9 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         MDFDoorOptions? mdfOptions = null;
         if (model.Cabinet.Fronts.Type != "Slab") mdfOptions = new(model.Cabinet.Fronts.Style, model.Cabinet.Fronts.Color);
 
+        string finishColor = (model.Cabinet.FinishMaterial.Type == "paint" ? model.Cabinet.BoxMaterial.Finish : model.Cabinet.FinishMaterial.Finish);
         CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
-        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetMaterial finishMaterial = new(finishColor, finishCore);
         CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
         CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
 
@@ -468,8 +474,9 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         MDFDoorOptions? mdfOptions = null;
         if (model.Cabinet.Fronts.Type != "Slab") mdfOptions = new(model.Cabinet.Fronts.Style, model.Cabinet.Fronts.Color);
 
+        string finishColor = (model.Cabinet.FinishMaterial.Type == "paint" ? model.Cabinet.BoxMaterial.Finish : model.Cabinet.FinishMaterial.Finish);
         CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
-        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetMaterial finishMaterial = new(finishColor, finishCore);
         CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
         CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
 
@@ -505,8 +512,9 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         MDFDoorOptions? mdfOptions = null;
         if (model.Cabinet.Fronts.Type != "Slab") mdfOptions = new(model.Cabinet.Fronts.Style, model.Cabinet.Fronts.Color);
 
+        string finishColor = (model.Cabinet.FinishMaterial.Type == "paint" ? model.Cabinet.BoxMaterial.Finish : model.Cabinet.FinishMaterial.Finish);
         CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
-        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetMaterial finishMaterial = new(finishColor, finishCore);
         CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
         CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
 
@@ -541,8 +549,9 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         MDFDoorOptions? mdfOptions = null;
         if (model.Cabinet.Fronts.Type != "Slab") mdfOptions = new(model.Cabinet.Fronts.Style, model.Cabinet.Fronts.Color);
 
+        string finishColor = (model.Cabinet.FinishMaterial.Type == "paint" ? model.Cabinet.BoxMaterial.Finish : model.Cabinet.FinishMaterial.Finish);
         CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
-        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetMaterial finishMaterial = new(finishColor, finishCore);
         CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
         CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
 
@@ -587,8 +596,9 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             2 => new(mdfOptions),
             _ => new(hingeLeft ? HingeSide.Left : HingeSide.Right, mdfOptions)
         };
+        string finishColor = (model.Cabinet.FinishMaterial.Type == "paint" ? model.Cabinet.BoxMaterial.Finish : model.Cabinet.FinishMaterial.Finish);
         CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
-        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetMaterial finishMaterial = new(finishColor, finishCore);
         CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
         CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
         HorizontalDrawerBank drawers = new() {
@@ -635,8 +645,9 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             2 => new(mdfOptions),
             _ => new(hingeLeft ? HingeSide.Left : HingeSide.Right, mdfOptions)
         };
+        string finishColor = (model.Cabinet.FinishMaterial.Type == "paint" ? model.Cabinet.BoxMaterial.Finish : model.Cabinet.FinishMaterial.Finish);
         CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
-        CabinetMaterial finishMaterial = new(model.Cabinet.FinishMaterial.Finish, finishCore);
+        CabinetMaterial finishMaterial = new(finishColor, finishCore);
         CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
         CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
 
