@@ -1,10 +1,13 @@
 ﻿@page "/orders/list"
+@inject IBus Bus
 @inject OrderState OrderState
 @inject CompanyState CompanyState
 @inject NavigationManager NavigationManager
 @using ApplicationCore.Features.Companies;
+@using ApplicationCore.Features.Companies.Queries;
 @using ApplicationCore.Features.Orders.List
 @using ApplicationCore.Features.Orders.Shared.State
+@using ApplicationCore.Infrastructure;
 @implements IOrderListViewModel
 
 <h1 class="text-3xl mb-2 dark:text-white">Orders</h1>
@@ -14,8 +17,18 @@
 
 @code {
 
-    public Task<string> GetCompanyName(Guid companyId) {
-        return Task.FromResult("Placeholder");
+    public async Task<string> GetCompanyName(Guid companyId) {
+
+        Response<string?> response = await Bus.Send<string?>(new GetCompanyNameById.Query(companyId));
+
+        string name = string.Empty;
+
+        response.OnSuccess(
+            companyName => name = companyName ?? string.Empty
+        );
+
+        return name;
+
     }
 
     public async Task OpenCompanyPage(Guid companyId) {
