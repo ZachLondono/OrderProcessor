@@ -57,6 +57,7 @@ public class DrawerBaseCabinet : Cabinet, IPPProductContainer {
 
         int index = 1;
         foreach (var height in Drawers.FaceHeights) {
+            if (index == 5) break; // in 5 drawer cabinets, the fifth drawer must be calculated by PSI
             parameters.Add($"DrawerH{index++}", height.AsMillimeters().ToString());
         }
 
