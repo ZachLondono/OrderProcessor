@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.State.DataModels;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Infrastructure.Data;

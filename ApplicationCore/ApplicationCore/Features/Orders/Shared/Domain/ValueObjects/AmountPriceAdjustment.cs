@@ -1,6 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain;
-
-namespace ApplicationCore.Features.Orders.Shared.Domain;
+﻿namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
 public class AmountPriceAdjustment : IPriceAdjustment {
 

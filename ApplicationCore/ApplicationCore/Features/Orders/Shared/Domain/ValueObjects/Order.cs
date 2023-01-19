@@ -1,6 +1,8 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-namespace ApplicationCore.Features.Orders.Shared.Domain;
+namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
 public class Order {
 

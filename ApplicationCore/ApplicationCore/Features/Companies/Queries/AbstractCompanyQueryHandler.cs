@@ -67,7 +67,7 @@ public abstract class AbstractCompanyQueryHandler<TQuery> : QueryHandler<TQuery,
     }
 
     private async Task<CompleteProfile> GetCompleteProfile(IDbConnection connection, Guid companyId) {
-        
+
         const string query = @"SELECT
                                     emailinvoice,
                                     invoicepdfdirectory,
@@ -80,9 +80,9 @@ public abstract class AbstractCompanyQueryHandler<TQuery> : QueryHandler<TQuery,
         var profile = await connection.QuerySingleOrDefaultAsync<CompleteProfile>(query, new {
             VendorId = companyId
         });
-    
+
         return profile ?? CompleteProfile.Default;
-    
+
     }
 
 

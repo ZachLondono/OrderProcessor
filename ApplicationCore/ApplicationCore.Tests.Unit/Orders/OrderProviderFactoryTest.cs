@@ -25,7 +25,7 @@ public class OrderProviderFactoryTest {
         foreach (var sourceType in Enum.GetValues(typeof(OrderSourceType))) {
 
             // Act
-            var action = () => _sut.GetOrderProvider((OrderSourceType) sourceType);
+            var action = () => _sut.GetOrderProvider((OrderSourceType)sourceType);
 
             // Assert
             action.Should().NotThrow<KeyNotFoundException>();

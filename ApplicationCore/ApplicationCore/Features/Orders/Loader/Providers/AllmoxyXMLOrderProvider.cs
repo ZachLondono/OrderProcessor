@@ -8,6 +8,7 @@ using ApplicationCore.Features.Orders.Loader.XMLValidation;
 using System.Text;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using MoreLinq;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 
@@ -121,13 +122,13 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
     private static decimal StringToMoney(string str) => Decimal.Parse(str.Replace("$", "").Replace(",", ""));
 
     private DateTime ParseOrderDate(string orderDateStr) {
-        
+
         if (DateTime.TryParse(orderDateStr, out DateTime orderDate)) {
             return orderDate;
         }
 
         OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not parse order date '{(orderDateStr == "" ? "[BLANK]" : orderDateStr)}'");
-        
+
         return DateTime.Now;
 
     }
@@ -167,7 +168,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
     }
 
     private void MapAndAddProduct<T>(T data, Func<T, IProduct> mapper, List<IProduct> products) {
-        
+
         try {
 
             var product = mapper(data);

@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 
 namespace ApplicationCore.Tests.Unit.Orders;
 

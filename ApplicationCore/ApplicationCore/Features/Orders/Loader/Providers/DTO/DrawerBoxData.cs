@@ -40,10 +40,10 @@ public record DrawerBoxData {
     public int DividersWide { get; set; }
     public int DividersDeep { get; set; }
 
-    public string FrontMaterialOption { get; set; } = string.Empty; 
-    public string SideMaterialOption { get; set; } = string.Empty;  
+    public string FrontMaterialOption { get; set; } = string.Empty;
+    public string SideMaterialOption { get; set; } = string.Empty;
     public string BackMaterialOption { get; set; } = string.Empty;
-    public string BottomMaterialOption { get; set; } = string.Empty;    
+    public string BottomMaterialOption { get; set; } = string.Empty;
 
     public string Clips { get; set; } = string.Empty;
     public string Notch { get; set; } = string.Empty;
