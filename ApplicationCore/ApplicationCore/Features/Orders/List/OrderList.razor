@@ -1,38 +1,52 @@
-﻿@page "/orders/list"
-@using ApplicationCore.Features.Companies
-@using ApplicationCore.Features.List
+﻿@using ApplicationCore.Features.List
 @using ApplicationCore.Features.Orders.Shared.Domain
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Infrastructure
 @inject IBus Bus
 @inject OrderState OrderState
-@inject CompanyState CompanyState
 @inject NavigationManager NavigationManager
 
-<h1 class="text-3xl mb-2 dark:text-white">Orders</h1>
+<table class="w-full table-auto">
 
-@if (_isLoading) {
-    <span>Loading...</span>
-} else if (_orders is null) {
-    <span>Could not load orders</span>
-    <button type="button" class="text-white bg-blue-700 rounded-md text-xs px-2.5 py-1 mr-2 mb-2 hover:bg-blue-800" @onclick="LoadOrders">Refresh</button>
-} else {
+    <thead class="border-b border-slate-300">
+        <tr>
+            <th class="p-5 dark:text-gray-500">Status</th>
+            <th class="p-5 dark:text-gray-500">Number</th>
+            <th class="p-5 dark:text-gray-500">Name</th>
+            <th class="p-5 dark:text-gray-500">Customer</th>
+            <th class="p-5 dark:text-gray-500">Items</th>
+            <th class="p-5 dark:text-gray-500">Order Date</th>
+        </tr>
+    </thead>
 
-    <h2 class="text-lg  mb-2 dark:text-gray-300">All orders</h2>
-    <table class="w-full table-auto">
-        <thead class="border-b border-slate-300">
-            <tr>
-                <th class="p-5 dark:text-gray-500">Status</th>
-                <th class="p-5 dark:text-gray-500">Number</th>
-                <th class="p-5 dark:text-gray-500">Name</th>
-                <th class="p-5 dark:text-gray-500">Customer</th>
-                <th class="p-5 dark:text-gray-500">Vendor</th>
-                <th class="p-5 dark:text-gray-500">Items</th>
-                <th class="p-5 dark:text-gray-500">Order Date</th>
-            </tr>
-        </thead>
+    @if (_isLoading) {
+
+        <tr>
+            <td colspan="6">
+                <span>Loading...</span>
+            </td>
+        </tr>
+
+    } else if (_hasError) {
+
+        <tr>
+            <td colspan="6">
+                <span class="text-red-600">Error loading orders [@_errorMessage]</span>
+            </td>
+        </tr>
+
+    } else if (_orders is null) {
+
+        <tr>
+            <td colspan="6">
+                <span>Could not load orders</span>
+                <button type="button" class="text-white bg-blue-700 rounded-md text-xs px-2.5 py-1 mr-2 mb-2 hover:bg-blue-800" @onclick="LoadOrders">Refresh</button>
+            </td>
+        </tr>
+
+    } else {
+
         <tbody>
-
             @foreach(var order in _orders) {
                 <tr class="justify-center hover:bg-slate-200 dark:hover:bg-slate-500 cursor-pointer">
                     <td class="p-5 text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">
@@ -41,20 +55,22 @@
                     <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.Number</td>
                     <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.Name</td>
                     <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.CustomerName</td>
-                    <td class="p-5 whitespace-nowrap hover:underline border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenCompany(order.VendorId)" >@order.VendorName</td>
                     <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.ItemCount</td>
                     <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.OrderDate.ToShortDateString()</td>
                 </tr>
             }
-
         </tbody>
-    </table>
 
-}
+    }
+
+</table>
 
 
 @code {
+
     private bool _isLoading = true;
+    private bool _hasError = false;
+    private string _errorMessage = "";
     private IEnumerable<OrderListItem>? _orders = null; 
 
     protected override async Task OnInitializedAsync() {
@@ -74,16 +90,14 @@
                 _orders = orders;
             },
             errors => {
-                // TODO: disblay error
+                _hasError = true;
+                _errorMessage = errors.Title;
             }
         );
         _isLoading = false;
+        _hasError = true;
+        _errorMessage = "This is an example error";
         StateHasChanged();
-    }
-
-    private async Task OpenCompany(Guid companyId) {
-        await CompanyState.LoadCompany(companyId);
-        NavigationManager.NavigateTo("/companies/details", true);
     }
 
 }
