@@ -36,14 +36,14 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         // Validate data
         if (!ValidateData(exportXML)) {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Order data was not valid");
-            return null;
+            return Task.FromResult<OrderData?>(null);
         }
 
         // Deserialize data
         OrderModel? data = DeserializeData(exportXML);
         if (data is null) {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find order information in given data");
-            return null;
+            return Task.FromResult<OrderData?>(null);
         }
 
         // Get customer company id
