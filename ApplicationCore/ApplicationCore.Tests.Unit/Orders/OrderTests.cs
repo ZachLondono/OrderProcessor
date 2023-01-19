@@ -20,8 +20,15 @@ public class OrderTests {
             new AdditionalItemBuilder().WithPrice(32.1M).Build()
         };
 
+        ShippingInfo shipping = new() {
+            Price = 123.45M,
+            Contact = "",
+            Method = "",
+            PhoneNumber = "",
+            Address = new()
+        };
+
         decimal tax = 54.321M;
-        decimal shipping = 123.45M;
         decimal priceAdjustment = 29.29M;
         var order = new OrderBuilder()
                             .WithTax(tax)
@@ -38,7 +45,7 @@ public class OrderTests {
 
         // Assert
         subtotal.Should().Be(boxes.Sum(b => b.UnitPrice * b.Qty) + items.Sum(i => i.Price));
-        total.Should().Be(boxes.Sum(b => b.UnitPrice * b.Qty) + items.Sum(i => i.Price) + tax + shipping);
+        total.Should().Be(boxes.Sum(b => b.UnitPrice * b.Qty) + items.Sum(i => i.Price) + tax + shipping.Price);
         adjSubTotal.Should().Be(subtotal + priceAdjustment);
 
     }

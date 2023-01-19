@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Features.Companies.Commands;
 using ApplicationCore.Features.Companies.Domain;
-using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
@@ -192,7 +191,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     private async Task<Company?> CreateCustomer(OrderModel data) {
         
-        var adderes = new Address() {
+        var adderes = new ApplicationCore.Features.Companies.Domain.ValueObjects.Address() {
             Line1 = data.Shipping.Address.Line1,
             Line2 = data.Shipping.Address.Line2,
             Line3 = data.Shipping.Address.Line3,

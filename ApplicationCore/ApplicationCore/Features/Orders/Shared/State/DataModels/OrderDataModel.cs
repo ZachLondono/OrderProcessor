@@ -41,7 +41,15 @@ public class OrderDataModel {
 
     public Order AsDomainModel(Guid orderId, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> items) {
 
-        return new Order(orderId, Source, Status, Number, Name, CustomerId, VendorId, ProductionNote, CustomerComment, OrderDate, ReleaseDate, ProductionDate, CompleteDate, Tax, Shipping, PriceAdjustment, Rush, Info.AsReadOnly(), products, items);
+        ShippingInfo ShippingInfo = new() {
+            Contact = "",
+            Method = "",
+            PhoneNumber = "",
+            Price = Shipping,
+            Address = new()
+        };
+
+        return new Order(orderId, Source, Status, Number, Name, CustomerId, VendorId, ProductionNote, CustomerComment, OrderDate, ReleaseDate, ProductionDate, CompleteDate, ShippingInfo, Tax, PriceAdjustment, Rush, Info.AsReadOnly(), products, items);
 
     }
 

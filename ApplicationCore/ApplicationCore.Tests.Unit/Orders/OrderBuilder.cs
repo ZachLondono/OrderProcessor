@@ -19,12 +19,22 @@ internal class OrderBuilder {
     private DateTime? _completeDate = null;
     private DateTime? _productionDate = null;
     private decimal _tax = decimal.Zero;
-    private decimal _shipping = decimal.Zero;
+    private ShippingInfo _shipping;
     private decimal _priceAdjustment = decimal.Zero;
     private bool _rush = false;
     private Dictionary<string, string> _info = new();
     private List<AdditionalItem> _items = new();
     private List<DovetailDrawerBoxProduct> _boxes = new();
+
+    public OrderBuilder() {
+        _shipping = new() {
+            Contact = "",
+            Method = "",
+            PhoneNumber = "",
+            Price = 0M,
+            Address = new()
+        };
+    }
 
     public OrderBuilder WithId(Guid id) {
         _id = id;
@@ -96,7 +106,7 @@ internal class OrderBuilder {
         return this;
     }
 
-    public OrderBuilder WithShipping(decimal shipping) {
+    public OrderBuilder WithShipping(ShippingInfo shipping) {
         _shipping = shipping;
         return this;
     }
@@ -126,6 +136,6 @@ internal class OrderBuilder {
         return this;
     }
 
-    public Order Buid() => new(_id, _source, _status, _number, _name, _customerId, _vendorId, _note, _comment, _orderDate, _releaseDate, _productionDate, _completeDate, _tax, _shipping, _priceAdjustment, _rush, _info, _boxes, _items);
+    public Order Buid() => new(_id, _source, _status, _number, _name, _customerId, _vendorId, _note, _comment, _orderDate, _releaseDate, _productionDate, _completeDate, _shipping, _tax, _priceAdjustment, _rush, _info, _boxes, _items);
 
 }

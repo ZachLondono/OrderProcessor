@@ -17,9 +17,9 @@ public class Order {
     public DateTime? ReleaseDate { get; private set; }
     public DateTime? ProductionDate { get; private set; }
     public DateTime? CompleteDate { get; private set; }
-    public decimal Tax { get; } = 0M;
-    public decimal Shipping { get; } = 0M;
-    public decimal PriceAdjustment { get; } = 0M;
+    public ShippingInfo Shipping { get; }
+    public decimal Tax { get; }
+    public decimal PriceAdjustment { get; }
     public bool Rush { get; }
     public IReadOnlyDictionary<string, string> Info { get; }
     public IEnumerable<IProduct> Products { get; }
@@ -34,12 +34,10 @@ public class Order {
     }
 
     public decimal Total {
-        get => SubTotal + Tax + Shipping;
+        get => SubTotal + Tax + Shipping.Price;
     }
 
-    // TODO: Add related files
-
-    public Order(Guid id, string source, Status status, string number, string name, Guid customerId, Guid vendorId, string productionNote, string customerComment, DateTime orderDate, DateTime? releaseDate, DateTime? productionDate, DateTime? completeDate, decimal tax, decimal shipping, decimal priceAdjustment, bool rush, IReadOnlyDictionary<string, string> info, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> additionalItems) {
+    public Order(Guid id, string source, Status status, string number, string name, Guid customerId, Guid vendorId, string productionNote, string customerComment, DateTime orderDate, DateTime? releaseDate, DateTime? productionDate, DateTime? completeDate, ShippingInfo shipping, decimal tax, decimal priceAdjustment, bool rush, IReadOnlyDictionary<string, string> info, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> additionalItems) {
         Id = id;
         Source = source;
         Status = status;
@@ -53,8 +51,8 @@ public class Order {
         ReleaseDate = releaseDate;
         ProductionDate = productionDate;
         CompleteDate = completeDate;
-        Tax = tax;
         Shipping = shipping;
+        Tax = tax;
         PriceAdjustment = priceAdjustment;
         Rush = rush;
         Info = info;
@@ -62,8 +60,8 @@ public class Order {
         AdditionalItems = additionalItems;
     }
 
-    public static Order Create(string source, string number, string name, Guid customerId, Guid vendorId, string comment, DateTime orderDate, decimal tax, decimal shipping, decimal priceAdjustment, bool rush, IReadOnlyDictionary<string, string> info, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> additionalItems, Guid? id = null) {
-        return new Order(id ?? Guid.NewGuid(), source, Status.Pending, number, name, customerId, vendorId, "", comment, orderDate, null, null, null, tax, shipping, priceAdjustment, rush, info, products, additionalItems);
+    public static Order Create(string source, string number, string name, Guid customerId, Guid vendorId, string comment, DateTime orderDate, ShippingInfo shipping, decimal tax, decimal priceAdjustment, bool rush, IReadOnlyDictionary<string, string> info, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> additionalItems, Guid? id = null) {
+        return new Order(id ?? Guid.NewGuid(), source, Status.Pending, number, name, customerId, vendorId, "", comment, orderDate, null, null, null, shipping, tax, priceAdjustment, rush, info, products, additionalItems);
     }
 
     public void Release(DateTime? productionDate = null) {
