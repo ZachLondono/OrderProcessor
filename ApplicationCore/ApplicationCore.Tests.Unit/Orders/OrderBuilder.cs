@@ -43,7 +43,7 @@ internal class OrderBuilder {
 
         _billing = new() {
             InvoiceEmail = null,
-            PhoneNumber = null,
+            PhoneNumber = "",
             Address = new(),
         };
 

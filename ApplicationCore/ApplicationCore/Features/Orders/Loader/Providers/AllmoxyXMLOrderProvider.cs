@@ -74,7 +74,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
         var billing = new BillingInfo() {
             InvoiceEmail = null,
-            PhoneNumber = null,
+            PhoneNumber = "",
             Address = new()
         };
 

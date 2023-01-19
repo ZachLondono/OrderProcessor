@@ -55,7 +55,7 @@ public class OrderDataModel {
 
         BillingInfo billing = new() {
             InvoiceEmail = null,
-            PhoneNumber = null,
+            PhoneNumber = "",
             Address = new()
         };
 
