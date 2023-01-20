@@ -33,7 +33,7 @@
 
     public async Task OpenCompanyPage(Guid companyId) {
         await CompanyState.LoadCompany(companyId);
-        NavigationManager.NavigateTo("/orders/details", true);
+        NavigationManager.NavigateTo("/companies/details", true);
     }
 
 }
