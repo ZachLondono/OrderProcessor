@@ -1,9 +1,5 @@
-﻿@page "/orders/details"
-@using ApplicationCore.Features.Companies
-@using ApplicationCore.Features.Companies.Domain.ValueObjects
-@using ApplicationCore.Features.Companies.ReleaseProfiles
-@using ApplicationCore.Features.Companies.Domain
-@using ApplicationCore.Features.Companies.Queries
+﻿@using ApplicationCore.Features.Companies.Domain.ValueObjects
+@using ApplicationCore.Features.Orders.Details;
 @using ApplicationCore.Features.Orders.Shared.Domain
 @using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 @using ApplicationCore.Features.Orders.Release
@@ -18,10 +14,9 @@
 @using ApplicationCore.Features.Orders.Shared.Domain.Products;
 @using ApplicationCore.Features.Orders.Shared;
 @using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+@using ApplicationCore.Pages.OrderDetails;
 @inject IBus Bus
 @inject OrderState OrderState
-@inject NavigationManager NavigationManager
-@inject CompanyState CompanyState
 
 @if (OrderState.Order is null) {
     <span>No order selected</span>
@@ -104,9 +99,9 @@
                 <span class="text-lg dark:text-white h-5 align-middle">@OrderState.Order.Customer.Name</span>
             </div>
             <div>
-                @if(_vendor is not null) {
+                @if(_vendorName is not null) {
                     <label id="vendor" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Vendor</label>
-                    <span class="text-lg hover:underline cursor-pointer dark:text-white h-5 align-middle" @onclick="() => ViewCompany(_vendor)">@_vendor.Name</span>
+                    <span class="text-lg hover:underline cursor-pointer dark:text-white h-5 align-middle" @onclick="() => OpenCompanyPage(OrderState.Order.VendorId)">@_vendorName</span>
                     <svg @onclick="SelectVendor" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-4 inline-block text-black dark:text-white cursor-pointer">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                     </svg>
@@ -310,7 +305,10 @@
     [CascadingParameter]
     public IModalService Modal { get; set; } = default!;
 
-    private Company? _vendor = null;
+    [Parameter]
+    public IOrderDetailsViewModel? ViewModel { get; set; }
+
+    private string? _vendorName = null;
     private ReleaseProfile? _customReleaseProfile = null;
 
     private bool _useInches = false;
@@ -322,46 +320,39 @@
     private bool _isDirty = false;
 
     protected override async Task OnInitializedAsync() {
+
         if (OrderState.Order is null) return;
+
         _infoModel = new() {
                 Name = OrderState.Order.Name,
                 Number = OrderState.Order.Number,
                 ProductionNote = OrderState.Order.ProductionNote,
                 ProductionDate = (OrderState.Order.ProductionDate is null ? DateTime.Now : (DateTime) OrderState.Order.ProductionDate)
         };
-        await LoadVendor();
+
+        if (ViewModel is not null) {
+            _vendorName = await ViewModel.GetCompanyName(OrderState.Order.VendorId);
+        }
 
     }
 
     private async Task LoadReleaseProfile() {
+
         if (OrderState.Order is null || _customReleaseProfile is not null) return;
-        var vendorId = OrderState.Order.VendorId;
-        var response = await Bus.Send(new GetCompanyById.Query(vendorId));
-        response.Match(
-            c => {
-                _customReleaseProfile = c?.ReleapseProfile ?? null;
-                StateHasChanged();
-            },
-            async error => {
-                _ = await Modal.OpenInformationDialog("Could not Load Release Settings", error.Title + " " + error.Details, InformationDialog.MessageType.Warning);
-            }
-        );
+
+        if (ViewModel is not null) {
+            _customReleaseProfile = await ViewModel.GetVendorReleaseProfile(OrderState.Order.VendorId);
+        }
+
+        if (_customReleaseProfile is null) {
+            _ = await Modal.OpenInformationDialog("Could not Load Release Settings", "", InformationDialog.MessageType.Warning);
+        }
+
     }
 
-    private void ViewCompany(Company company) {
-        CompanyState.ReplaceCompany(company);
-        NavigationManager.NavigateTo("/companies/details", true);
-    }
-
-    private async Task LoadVendor() {
-        if (OrderState.Order is null) return;
-        var result = await Bus.Send(new GetCompanyById.Query(OrderState.Order.VendorId));
-        result.Match(
-            vendor => _vendor = vendor,
-            async error => {
-                _ = await Modal.OpenInformationDialog("Could not Load Vendor Information", error.Title + " " + error.Details, InformationDialog.MessageType.Warning);
-            }
-        );
+    public async Task OpenCompanyPage(Guid companyId) {
+        if (ViewModel is null) return;
+        await ViewModel.OpenCompanyPage(companyId);
     }
 
     private async Task SelectVendor() {
@@ -370,8 +361,15 @@
 
         async Task SetVendor(object? result) {
             if (OrderState.Order is null) return;
-            if (result is Guid vendorId) OrderState.UpdateVendor(vendorId);
-            await LoadVendor();
+
+            if (result is Guid vendorId) {
+                OrderState.UpdateVendor(vendorId);
+            }
+
+            if (ViewModel is not null) {
+                _vendorName = await ViewModel.GetCompanyName(OrderState.Order.VendorId);
+            }
+
             _isDirty = true;
         }
 
@@ -470,41 +468,15 @@
 
     private async Task ExportForPSI() {
 
-        if (OrderState.Order is null) return;
+        if (OrderState.Order is null || ViewModel is null) return;
 
-        await Task.Run(async () => {
+        string errors = await ViewModel.ExportOrderForPSI(OrderState.Order);
 
-            var products = OrderState.Order
-                                    .Products
-                                    .Where(p => p is IPPProductContainer)
-                                    .Cast<IPPProductContainer>()
-                                    .SelectMany(c => c.GetPPProducts())
-                                    .ToList();
-
-            var job = new PPJob(OrderState.Order.Name, OrderState.Order.OrderDate, products);
-
-            var filePath = Path.Combine(@"C:\CP3\CPDATA", $"{OrderState.Order.Number} - {OrderState.Order.Name}.ext");
-
-            var result = await Bus.Send(new GenerateEXTFile.Command(job, filePath));
-
-            int index = 0;
-            string description = "";
-            foreach (var product in products) {
-                index++;
-                foreach (var (key, value) in product.ManualOverrideParameters) {
-
-                    description += $"[cab:{index}] {key} ==>> {value}<br>";
-
-                }
-            }
-
-            if (description != string.Empty) {
-                await Modal.OpenInformationDialog("Manual Overrides Needed:", description, InformationDialog.MessageType.Information);
-            } else {
-                await Modal.OpenInformationDialog("Completed", $"EXT export completed for {products.Count} products", InformationDialog.MessageType.Information);
-            }
-
-        });
+        if (errors != string.Empty) {
+            await Modal.OpenInformationDialog("Manual Overrides Needed:", errors, InformationDialog.MessageType.Information);
+        } else {
+            await Modal.OpenInformationDialog("Completed", $"EXT export completed", InformationDialog.MessageType.Information);
+        }
 
     }
 
