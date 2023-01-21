@@ -10,7 +10,7 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer {
     public BlindCabinetDoors Doors { get; }
     public int AdjustableShelves { get; }
     public BlindSide BlindSide { get; }
-    public Dimension Blind { get; }
+    public Dimension BlindWidth { get; }
 
     public static BlindWallCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
@@ -30,7 +30,7 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer {
         Doors = doors;
         AdjustableShelves = adjustableShelves;
         BlindSide = blindSide;
-        Blind = blindWidth;
+        BlindWidth = blindWidth;
 
     }
 
@@ -51,7 +51,7 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer {
             { "FinishedLeft", GetSideOption(LeftSide.Type) },
             { "FinishedRight", GetSideOption(RightSide.Type) },
             { "ShelfQ", AdjustableShelves.ToString() },
-            { "BlindWWall", Blind.AsMillimeters().ToString() }
+            { "BlindWWall", BlindWidth.AsMillimeters().ToString() }
         };
 
         if (Doors.HingeSide != HingeSide.NotApplicable) {
