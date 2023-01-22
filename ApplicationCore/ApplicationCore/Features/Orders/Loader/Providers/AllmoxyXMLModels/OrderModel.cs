@@ -29,7 +29,18 @@ public class OrderModel {
     [XmlElement("shipping")]
     public ShippingModel Shipping { get; set; } = new();
 
-    [XmlElement("products")]
-    public ProductsModel Products { get; set; } = new();
+    [XmlArray("products")]
+    [XmlArrayItem("baseCabinet", typeof(BaseCabinetModel))]
+    [XmlArrayItem("drawerBaseCabinet", typeof(DrawerBaseCabinetModel))]
+    [XmlArrayItem("wallCabinet", typeof(WallCabinetModel))]
+    [XmlArrayItem("tallCabinet", typeof(TallCabinetModel))]
+    [XmlArrayItem("basePieCutCabinet", typeof(BasePieCutCornerCabinetModel))]
+    [XmlArrayItem("wallPieCutCabinet", typeof(WallPieCutCornerCabinetModel))]
+    [XmlArrayItem("baseDiagonalCabinet", typeof(BaseDiagonalCornerCabinetModel))]
+    [XmlArrayItem("wallDiagonalCabinet", typeof(WallDiagonalCornerCabinetModel))]
+    [XmlArrayItem("sinkCabinet", typeof(SinkCabinetModel))]
+    [XmlArrayItem("blindBaseCabinet", typeof(BlindBaseCabinetModel))]
+    [XmlArrayItem("blindWallCabinet", typeof(BlindWallCabinetModel))]
+    public List<CabinetModelBase> Products { get; set; } = new();
 
 }

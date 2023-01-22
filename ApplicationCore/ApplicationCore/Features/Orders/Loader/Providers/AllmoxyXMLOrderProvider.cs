@@ -138,48 +138,57 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         List<IProduct> products = new();
 
         data.Products
-            .BaseCabinets
-            .ForEach(c => MapAndAddProduct(c, MapToBaseCabinet, products));
+            .ForEach(c => {
 
-        data.Products
-            .WallCabinets
-            .ForEach(c => MapAndAddProduct(c, MapToWallCabinet, products));
+                switch (c) {
 
-        data.Products
-            .DrawerBaseCabinets
-            .ForEach(c => MapAndAddProduct(c, MapToDrawerBaseCabinet, products));
+                    case BaseCabinetModel model:
+                        MapAndAddProduct(model, MapToBaseCabinet, products);
+                        break;
 
-        data.Products
-            .TallCabinets
-            .ForEach(c => MapAndAddProduct(c, MapToTallCabinet, products));
+                    case WallCabinetModel model:
+                        MapAndAddProduct(model, MapToWallCabinet, products);
+                        break;
 
-        data.Products
-            .BasePieCutCornerCabinets
-            .ForEach(c => MapAndAddProduct(c, MapToBasePieCutCabinet, products));
+                    case DrawerBaseCabinetModel model:
+                        MapAndAddProduct(model, MapToDrawerBaseCabinet, products);
+                        break;
 
-        data.Products
-            .WallPieCutCornerCabinets
-            .ForEach(c => MapAndAddProduct(c, MapToWallPieCutCabinet, products));
+                    case TallCabinetModel model:
+                        MapAndAddProduct(model, MapToTallCabinet, products);
+                        break;
 
-        data.Products
-            .BaseDiagonalCornerCabinets
-            .ForEach(c => MapAndAddProduct(c, MapToBaseDiagonalCabinet, products));
+                    case BasePieCutCornerCabinetModel model:
+                        MapAndAddProduct(model, MapToBasePieCutCabinet, products);
+                        break;
 
-        data.Products
-            .WallDiagonalCornerCabinets
-            .ForEach(c => MapAndAddProduct(c, MapToWallDiagonalCabinet, products));
+                    case WallPieCutCornerCabinetModel model:
+                        MapAndAddProduct(model, MapToWallPieCutCabinet, products);
+                        break;
 
-        data.Products
-            .SinkCabinets
-            .ForEach(c => MapAndAddProduct(c, MapToSinkCabinet, products));
+                    case BaseDiagonalCornerCabinetModel model:
+                        MapAndAddProduct(model, MapToBaseDiagonalCabinet, products);
+                        break;
 
-        data.Products
-            .BlindBaseCabinets
-            .ForEach(c => MapAndAddProduct(c, MapToBlindBaseCabinet, products));
+                    case WallDiagonalCornerCabinetModel model:
+                        MapAndAddProduct(model, MapToWallDiagonalCabinet, products);
+                        break;
 
-        data.Products
-            .BlindWallCabinets
-            .ForEach(c => MapAndAddProduct(c, MapToBlindWallCabinet, products));
+                    case SinkCabinetModel model:
+                        MapAndAddProduct(model, MapToSinkCabinet, products);
+                        break;
+
+                    case BlindBaseCabinetModel model:
+                        MapAndAddProduct(model, MapToBlindBaseCabinet, products);
+                        break;
+
+                    case BlindWallCabinetModel model:
+                        MapAndAddProduct(model, MapToBlindWallCabinet, products);
+                        break;
+
+                }
+
+            });
 
         return products;
     }
