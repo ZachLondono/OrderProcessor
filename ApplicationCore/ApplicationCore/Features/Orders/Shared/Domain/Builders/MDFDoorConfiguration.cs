@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Builders;
 
-internal class MDFDoorConfiguration {
+public class MDFDoorConfiguration {
 
     public required string Material { get; init; }
     public required string FramingBead { get; init; }

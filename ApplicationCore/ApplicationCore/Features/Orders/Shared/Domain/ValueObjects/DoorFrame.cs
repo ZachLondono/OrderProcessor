@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
-internal class DoorFrame {
+public class DoorFrame {
 
     public required Dimension TopRail { get; init; }
     public required Dimension BottomRail { get; init; }

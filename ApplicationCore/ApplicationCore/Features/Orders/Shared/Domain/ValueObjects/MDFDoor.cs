@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
-internal class MDFDoor {
+public class MDFDoor {
 
     public Dimension Height { get; }
     public Dimension Width { get; }

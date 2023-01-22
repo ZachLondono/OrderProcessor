@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Builders;
 
-internal class ProductBuilderFactory {
+public class ProductBuilderFactory {
 
     public MDFDoorBuilder CreateMDFDoorBuilder() {
 

@@ -3,7 +3,7 @@ using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Builders;
 
-internal class MDFDoorBuilder {
+public class MDFDoorBuilder {
 
     private string _material;
     private string _framingBead;
