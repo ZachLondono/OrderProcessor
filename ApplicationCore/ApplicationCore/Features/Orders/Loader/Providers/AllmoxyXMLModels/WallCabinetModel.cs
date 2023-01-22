@@ -45,7 +45,7 @@ public class WallCabinetModel : CabinetModelBase {
 
         var builder = builderFactory.CreateWallCabinetBuilder();
 
-        return AllmoxyXMLOrderProviderHelpers.InitilizeBuilder<WallCabinetBuilder, WallCabinet>(builder, this)
+        return InitilizeBuilder<WallCabinetBuilder, WallCabinet>(builder)
                     .WithDoors(doors)
                     .WithInside(inside)
                     .WithFinishBottom(finishBottom)

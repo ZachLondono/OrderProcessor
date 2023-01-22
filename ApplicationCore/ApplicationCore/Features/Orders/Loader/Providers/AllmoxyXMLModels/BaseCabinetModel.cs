@@ -73,7 +73,7 @@ public class BaseCabinetModel : CabinetModelBase {
 
         var builder = builderFactory.CreateBaseCabinetBuilder();
 
-        return AllmoxyXMLOrderProviderHelpers.InitilizeBuilder<BaseCabinetBuilder, BaseCabinet>(builder, this)
+        return InitilizeBuilder<BaseCabinetBuilder, BaseCabinet>(builder)
                     .WithInside(inside)
                     .WithToeType(toeType)
                     .WithDoors(doors)

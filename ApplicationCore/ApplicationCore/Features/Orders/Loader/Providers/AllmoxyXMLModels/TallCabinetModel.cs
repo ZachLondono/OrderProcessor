@@ -70,7 +70,7 @@ public class TallCabinetModel : CabinetModelBase {
 
         var builder = builderFactory.CreateTallCabinetBuilder();
 
-        return AllmoxyXMLOrderProviderHelpers.InitilizeBuilder<TallCabinetBuilder, TallCabinet>(builder, this)
+        return InitilizeBuilder<TallCabinetBuilder, TallCabinet>(builder)
                     .WithDoors(doors)
                     .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
                     .WithInside(inside)

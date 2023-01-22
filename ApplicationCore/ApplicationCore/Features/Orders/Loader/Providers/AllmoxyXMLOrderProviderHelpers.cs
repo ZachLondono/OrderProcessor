@@ -98,36 +98,4 @@ internal static class AllmoxyXMLOrderProviderHelpers {
 
     public static decimal StringToMoney(string str) => decimal.Parse(str.Replace("$", "").Replace(",", ""));
 
-    public static TBuilder InitilizeBuilder<TBuilder, TCabinet>(TBuilder builder, CabinetModelBase model) where TBuilder : CabinetBuilder<TCabinet> where TCabinet : Cabinet {
-
-        CabinetMaterialCore boxCore = GetMaterialCore(model.Cabinet.BoxMaterial.Type);
-        CabinetMaterialCore finishCore = GetFinishedSideMaterialCore(model.Cabinet.FinishMaterial.Type, boxCore);
-
-        MDFDoorOptions? mdfOptions = null;
-        if (model.Cabinet.Fronts.Type != "Slab") mdfOptions = new(model.Cabinet.Fronts.Style, model.Cabinet.Fronts.Color);
-
-        string finishColor = (model.Cabinet.FinishMaterial.Type == "paint" ? model.Cabinet.BoxMaterial.Finish : model.Cabinet.FinishMaterial.Finish);
-        CabinetMaterial boxMaterial = new(model.Cabinet.BoxMaterial.Finish, boxCore);
-        CabinetMaterial finishMaterial = new(finishColor, finishCore);
-        CabinetSide leftSide = new(GetCabinetSideType(model.Cabinet.LeftSide), mdfOptions);
-        CabinetSide rightSide = new(GetCabinetSideType(model.Cabinet.RightSide), mdfOptions);
-
-        string edgeBandingColor = (model.Cabinet.EdgeBandColor == "Match Finish" ? model.Cabinet.FinishMaterial.Finish : model.Cabinet.EdgeBandColor);
-
-
-        return (TBuilder)builder.WithQty(model.Cabinet.Qty)
-                                    .WithUnitPrice(StringToMoney(model.Cabinet.UnitPrice))
-                                    .WithBoxMaterial(boxMaterial)
-                                    .WithFinishMaterial(finishMaterial)
-                                    .WithLeftSide(leftSide)
-                                    .WithRightSide(rightSide)
-                                    .WithEdgeBandingColor(edgeBandingColor)
-                                    .WithWidth(Dimension.FromMillimeters(model.Cabinet.Width))
-                                    .WithHeight(Dimension.FromMillimeters(model.Cabinet.Height))
-                                    .WithDepth(Dimension.FromMillimeters(model.Cabinet.Depth))
-                                    .WithRoom(model.Cabinet.Room)
-                                    .WithAssembled(model.Cabinet.Assembled == "Yes");
-
-    }
-
 }

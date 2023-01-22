@@ -45,7 +45,7 @@ public class SinkCabinetModel : CabinetModelBase {
 
         var builder = builderFactory.CreateSinkCabinetBuilder();
 
-        return AllmoxyXMLOrderProviderHelpers.InitilizeBuilder<SinkCabinetBuilder, SinkCabinet>(builder, this)
+        return InitilizeBuilder<SinkCabinetBuilder, SinkCabinet>(builder)
                     .WithRollOutBoxes(rollOutOptions)
                     .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
                     .WithHingeSide((HingeSide == "Left") ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right)

@@ -30,7 +30,7 @@ public class WallDiagonalCornerCabinetModel : CabinetModelBase {
 
         var builder = builderFactory.CreateWallDiagonalCornerCabinetBuilder();
 
-        return AllmoxyXMLOrderProviderHelpers.InitilizeBuilder<WallDiagonalCornerCabinetBuilder, WallDiagonalCornerCabinet>(builder, this)
+        return InitilizeBuilder<WallDiagonalCornerCabinetBuilder, WallDiagonalCornerCabinet>(builder)
                     .WithRightWidth(Dimension.FromMillimeters(RightWidth))
                     .WithRightDepth(Dimension.FromMillimeters(RightDepth))
                     .WithAdjustableShelves(AdjShelfQty)

@@ -55,7 +55,7 @@ public class DrawerBaseCabinetModel : CabinetModelBase {
 
         var builder = builderFactory.CreateDrawerBaseCabinetBuilder();
 
-        return AllmoxyXMLOrderProviderHelpers.InitilizeBuilder<DrawerBaseCabinetBuilder, DrawerBaseCabinet>(builder, this)
+        return InitilizeBuilder<DrawerBaseCabinetBuilder, DrawerBaseCabinet>(builder)
                     .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
                     .WithDrawers(verticalDrawerBank)
                     .WithFronts(mdfOptions)

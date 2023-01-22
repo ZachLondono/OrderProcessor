@@ -37,7 +37,7 @@ public class BlindWallCabinetModel : CabinetModelBase {
 
         var builder = builderFactory.CreateBlindWallCabinetBuilder();
 
-        return AllmoxyXMLOrderProviderHelpers.InitilizeBuilder<BlindWallCabinetBuilder, BlindWallCabinet>(builder, this)
+        return InitilizeBuilder<BlindWallCabinetBuilder, BlindWallCabinet>(builder)
                     .WithDoors(doors)
                     .WithAdjustableShelves(AdjShelfQty)
                     .WithBlindSide(BlindSide == "Left" ? Shared.Domain.Enums.BlindSide.Left : Shared.Domain.Enums.BlindSide.Right)

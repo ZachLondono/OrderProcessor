@@ -30,7 +30,7 @@ public class BasePieCutCornerCabinetModel : CabinetModelBase {
 
         var builder = builderFactory.CreateBasePieCutCornerCabinetBuilder();
 
-        return AllmoxyXMLOrderProviderHelpers.InitilizeBuilder<BasePieCutCornerCabinetBuilder, BasePieCutCornerCabinet>(builder, this)
+        return InitilizeBuilder<BasePieCutCornerCabinetBuilder, BasePieCutCornerCabinet>(builder)
                     .WithRightWidth(Dimension.FromMillimeters(RightWidth))
                     .WithRightDepth(Dimension.FromMillimeters(RightDepth))
                     .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
