@@ -36,7 +36,7 @@ public class DrawerBaseCabinetModel : CabinetModelBase {
     public double DrawerFace5 { get; set; }
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
-        
+
         var drawerFaces = new Dimension[DrawerQty == 1 ? 0 : DrawerQty];
         if (DrawerQty > 1) drawerFaces[0] = Dimension.FromMillimeters(DrawerFace1); // For 1 drawer box cabinets, the drawer box size is calculated
         if (DrawerQty >= 2) drawerFaces[1] = Dimension.FromMillimeters(DrawerFace2);

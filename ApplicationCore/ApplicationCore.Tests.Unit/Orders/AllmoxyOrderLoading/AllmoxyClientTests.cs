@@ -5,7 +5,7 @@ using NSubstitute;
 using NSubstitute.ReceivedExtensions;
 using RestSharp;
 
-namespace ApplicationCore.Tests.Unit.Orders;
+namespace ApplicationCore.Tests.Unit.Orders.AllmoxyOrderLoading;
 
 public class AllmoxyClientTests {
 

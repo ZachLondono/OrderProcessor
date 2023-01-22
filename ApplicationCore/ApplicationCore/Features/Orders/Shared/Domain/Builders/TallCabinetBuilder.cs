@@ -20,12 +20,12 @@ internal class TallCabinetBuilder : CabinetBuilder<TallCabinet> {
         return this;
     }
 
-    public TallCabinetBuilder WithToeType(IToeType toeType) { 
+    public TallCabinetBuilder WithToeType(IToeType toeType) {
         ToeType = toeType;
         return this;
     }
 
-    public TallCabinetBuilder WithInside(TallCabinetInside inside) { 
+    public TallCabinetBuilder WithInside(TallCabinetInside inside) {
         Inside = inside;
         return this;
     }

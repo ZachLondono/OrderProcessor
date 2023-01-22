@@ -27,7 +27,7 @@ public class WallCabinetModel : CabinetModelBase {
     public string FinishedBottom { get; set; } = string.Empty;
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
-        
+
         MDFDoorOptions? mdfOptions = null;
         if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
 

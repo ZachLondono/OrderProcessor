@@ -46,7 +46,7 @@ public class TallCabinetModel : CabinetModelBase {
     public RollOuts RollOuts { get; set; } = new();
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
-        
+
         MDFDoorOptions? mdfOptions = null;
         if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
 

@@ -39,7 +39,7 @@ public class BlindBaseCabinetModel : CabinetModelBase {
     public double DrawerFaceHeight { get; set; }
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
-        
+
         MDFDoorOptions? mdfOptions = null;
         if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
 

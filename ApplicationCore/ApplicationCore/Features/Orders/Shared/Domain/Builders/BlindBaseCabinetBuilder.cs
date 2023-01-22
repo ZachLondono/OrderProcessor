@@ -10,7 +10,7 @@ internal class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
     public BlindCabinetDoors Doors { get; private set; }
     public HorizontalDrawerBank Drawers { get; private set; }
     public int AdjustableShelves { get; private set; }
-    public BlindSide BlindSide { get; private set;  }
+    public BlindSide BlindSide { get; private set; }
     public Dimension BlindWidth { get; private set; }
     public IToeType ToeType { get; private set; }
 
@@ -33,27 +33,27 @@ internal class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
         return this;
     }
 
-    public BlindBaseCabinetBuilder WithDrawers (HorizontalDrawerBank drawers) {
+    public BlindBaseCabinetBuilder WithDrawers(HorizontalDrawerBank drawers) {
         Drawers = drawers;
         return this;
     }
 
-    public BlindBaseCabinetBuilder WithAdjustableShelves (int adjustableShelves) {
+    public BlindBaseCabinetBuilder WithAdjustableShelves(int adjustableShelves) {
         AdjustableShelves = adjustableShelves;
         return this;
     }
 
-    public BlindBaseCabinetBuilder WithBlindSide (BlindSide blindSide) {
+    public BlindBaseCabinetBuilder WithBlindSide(BlindSide blindSide) {
         BlindSide = blindSide;
         return this;
     }
 
-    public BlindBaseCabinetBuilder WithBlindWidth (Dimension blindWidth) {
+    public BlindBaseCabinetBuilder WithBlindWidth(Dimension blindWidth) {
         BlindWidth = blindWidth;
         return this;
     }
 
-    public BlindBaseCabinetBuilder WithToeType (IToeType toeType) {
+    public BlindBaseCabinetBuilder WithToeType(IToeType toeType) {
         ToeType = toeType;
         return this;
     }

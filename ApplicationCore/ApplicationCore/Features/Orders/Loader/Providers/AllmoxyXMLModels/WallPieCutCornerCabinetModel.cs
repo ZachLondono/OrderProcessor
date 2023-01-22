@@ -21,7 +21,7 @@ public class WallPieCutCornerCabinetModel : CabinetModelBase {
     public int AdjShelfQty { get; set; }
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
-        
+
         MDFDoorOptions? mdfOptions = null;
         if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
 
