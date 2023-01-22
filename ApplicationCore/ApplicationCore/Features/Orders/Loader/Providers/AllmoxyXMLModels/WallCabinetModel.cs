@@ -2,16 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
-public class WallCabinetModel {
-
-    [XmlAttribute("groupNumber")]
-    public int GroupNumber { get; set; }
-
-    [XmlAttribute("lineNumber")]
-    public int LineNumber { get; set; }
-
-    [XmlElement("cabinet")]
-    public CabinetModel Cabinet { get; set; } = new();
+public class WallCabinetModel : CabinetModelBase {
 
     [XmlElement("hingeSide")]
     public string HingeSide { get; set; } = string.Empty;

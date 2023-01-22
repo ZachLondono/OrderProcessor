@@ -2,16 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
-public class WallPieCutCornerCabinetModel {
-
-    [XmlAttribute("groupNumber")]
-    public int GroupNumber { get; set; }
-
-    [XmlAttribute("lineNumber")]
-    public int LineNumber { get; set; }
-
-    [XmlElement("cabinet")]
-    public CabinetModel Cabinet { get; set; } = new();
+public class WallPieCutCornerCabinetModel : CabinetModelBase {
 
     [XmlElement("rightWidth")]
     public double RightWidth { get; set; }

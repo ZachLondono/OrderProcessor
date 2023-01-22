@@ -1,0 +1,75 @@
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.Shared.Domain;
+
+namespace ApplicationCore.Features.Orders.Shared.Domain.Builders;
+
+internal class SinkCabinetBuilder : CabinetBuilder<SinkCabinet> {
+
+    public IToeType ToeType { get; private set; }
+    public HingeSide HingeSide { get; private set; }
+    public int DoorQty { get; private set; }
+    public int FalseDrawerQty { get; private set; }
+    public Dimension DrawerFaceHeight { get; private set; }
+    public int AdjustableShelves { get; private set; }
+    public RollOutOptions RollOutBoxes { get; private set; }
+    public MDFDoorOptions? MDFOptions { get; private set; }
+
+    public SinkCabinetBuilder() {
+        ToeType = new NoToe();
+        HingeSide = HingeSide.Left;
+        DoorQty = 0;
+        FalseDrawerQty = 0;
+        DrawerFaceHeight = Dimension.Zero;
+        AdjustableShelves = 0;
+        MDFOptions = null;
+        RollOutBoxes = new(Array.Empty<Dimension>(), false, RollOutBlockPosition.Both, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.FingerJointBirch);
+    }
+
+    public SinkCabinetBuilder WithToeType(IToeType toeType) {
+        ToeType = toeType;
+        return this;
+    }
+
+    public SinkCabinetBuilder WithHingeSide(HingeSide hingeSide) {
+        HingeSide = hingeSide;
+        return this;
+    }
+
+    public SinkCabinetBuilder WithDoorQty(int doorQty) {
+        DoorQty = doorQty;
+        return this;
+    }
+
+    public SinkCabinetBuilder WithFalseDrawerQty(int falseDrawerQty) {
+        FalseDrawerQty = falseDrawerQty;
+        return this;
+    }
+
+    public SinkCabinetBuilder WithDrawerFaceHeight(Dimension drawerFaceHeight) {
+        DrawerFaceHeight = drawerFaceHeight;
+        return this;
+    }
+
+    public SinkCabinetBuilder WithAdjustableShelves(int adjustableShelves) {
+        AdjustableShelves = adjustableShelves;
+        return this;
+    }
+
+    public SinkCabinetBuilder WithRollOutBoxes(RollOutOptions rollOutBoxes) {
+        RollOutBoxes = rollOutBoxes;
+        return this;
+    }
+
+    public SinkCabinetBuilder WithMDFOptions(MDFDoorOptions? mdfOptions) {
+        MDFOptions = mdfOptions;
+        return this;
+    }
+
+
+    public override SinkCabinet Build() {
+        return SinkCabinet.Create(Qty, UnitPrice, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, ToeType, HingeSide, DoorQty, FalseDrawerQty, DrawerFaceHeight, AdjustableShelves, RollOutBoxes, MDFOptions);
+    }
+
+}

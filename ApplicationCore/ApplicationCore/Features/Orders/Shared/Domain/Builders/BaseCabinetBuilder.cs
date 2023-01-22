@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 
@@ -17,9 +18,9 @@ internal class BaseCabinetBuilder : CabinetBuilder<BaseCabinet> {
         ToeType = new NoToe();
         Drawers = new() {
             Quantity = 0,
-            BoxMaterial = Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
+            BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
             FaceHeight = Dimension.Zero,
-            SlideType = Enums.DrawerSlideType.UnderMount
+            SlideType = DrawerSlideType.UnderMount
         };
     }
 

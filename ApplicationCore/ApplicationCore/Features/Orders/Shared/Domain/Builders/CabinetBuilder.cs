@@ -4,7 +4,7 @@ using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Builders;
 
-public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
+internal abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
 
     public int Qty { get; private set; }
     public decimal UnitPrice { get; private set; }
