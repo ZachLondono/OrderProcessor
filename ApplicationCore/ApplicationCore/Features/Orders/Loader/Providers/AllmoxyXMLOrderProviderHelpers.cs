@@ -96,6 +96,14 @@ internal static class AllmoxyXMLOrderProviderHelpers {
         _ => new LegLevelers(Dimension.FromMillimeters(102))
     };
 
-    public static decimal StringToMoney(string str) => decimal.Parse(str.Replace("$", "").Replace(",", ""));
+    public static decimal StringToMoney(string str) {
+
+        if (string.IsNullOrWhiteSpace(str)) {
+            return 0;
+        }
+
+        return decimal.Parse(str.Replace("$", "").Replace(",", ""));
+
+    }
 
 }
