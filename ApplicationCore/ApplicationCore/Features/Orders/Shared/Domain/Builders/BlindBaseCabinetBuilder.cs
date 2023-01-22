@@ -59,7 +59,7 @@ internal class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
     }
 
     public override BlindBaseCabinet Build() {
-        return BlindBaseCabinet.Create(Qty, UnitPrice, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, Doors, Drawers, AdjustableShelves, BlindSide, BlindWidth, ToeType);
+        return BlindBaseCabinet.Create(Qty, UnitPrice, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, Doors, BlindSide, BlindWidth, AdjustableShelves, Drawers, ToeType);
     }
 
 }
