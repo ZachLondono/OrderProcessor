@@ -11,6 +11,7 @@ using ApplicationCore.Features.CNC;
 using ApplicationCore.Features.Orders.Loader;
 using ApplicationCore.Features.ProductPlanner;
 using ApplicationCore.Features.Orders.Shared.State;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -22,6 +23,7 @@ public static class DependencyInjection {
 
         services.AddMediatR(typeof(DependencyInjection));
 
+        services.AddSingleton<ProductBuilderFactory>();
         services.AddSingleton<OrderState>();
         services.AddSingleton<CompanyState>();
         services.AddSingleton<IServiceProvider>(sp => sp);
