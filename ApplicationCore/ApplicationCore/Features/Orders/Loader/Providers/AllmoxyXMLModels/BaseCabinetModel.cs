@@ -1,4 +1,9 @@
-﻿using System.Xml.Serialization;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.Shared.Domain;
+using System.Xml.Serialization;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
@@ -37,4 +42,43 @@ public class BaseCabinetModel : CabinetModelBase {
     [XmlElement("rollOuts")]
     public RollOuts RollOuts { get; set; } = new();
 
+    public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
+
+        MDFDoorOptions? mdfOptions = null;
+        if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
+
+        bool hingeLeft = (HingeSide == "Left");
+        BaseCabinetDoors doors = DoorQty switch {
+            0 => BaseCabinetDoors.NoDoors(),
+            1 => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right, mdfOptions),
+            2 => new(mdfOptions),
+            _ => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right, mdfOptions)
+        };
+        HorizontalDrawerBank drawers = new() {
+            BoxMaterial = AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial),
+            FaceHeight = Dimension.FromMillimeters(DrawerFaceHeight),
+            Quantity = DrawerQty,
+            SlideType = AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide)
+        };
+
+        BaseCabinetInside inside;
+        Dimension[] rollOutBoxPositions = AllmoxyXMLOrderProviderHelpers.GetRollOutPositions(RollOuts.Pos1, RollOuts.Pos2, RollOuts.Pos3, RollOuts.Pos4, RollOuts.Pos5);
+        RollOutBlockPosition rollOutBlocks = AllmoxyXMLOrderProviderHelpers.GetRollOutBlockPositions(RollOuts.Blocks);
+        if (rollOutBoxPositions.Length != 0) {
+            var rollOutOptions = new RollOutOptions(rollOutBoxPositions, true, rollOutBlocks, drawers.SlideType, drawers.BoxMaterial);
+            inside = new(AdjShelfQty, rollOutOptions, AllmoxyXMLOrderProviderHelpers.GetShelfDepth(ShelfDepth));
+        } else inside = new(AdjShelfQty, VerticalDividerQty, AllmoxyXMLOrderProviderHelpers.GetShelfDepth(ShelfDepth));
+
+        var toeType = AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType);
+
+        var builder = builderFactory.CreateBaseCabinetBuilder();
+
+        return AllmoxyXMLOrderProviderHelpers.InitilizeBuilder<BaseCabinetBuilder, BaseCabinet>(builder, this)
+                    .WithInside(inside)
+                    .WithToeType(toeType)
+                    .WithDoors(doors)
+                    .WithDrawers(drawers)
+                    .Build();
+
+    }
 }

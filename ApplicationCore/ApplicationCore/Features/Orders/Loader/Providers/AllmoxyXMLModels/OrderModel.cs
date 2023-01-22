@@ -41,6 +41,6 @@ public class OrderModel {
     [XmlArrayItem("sinkCabinet", typeof(SinkCabinetModel))]
     [XmlArrayItem("blindBaseCabinet", typeof(BlindBaseCabinetModel))]
     [XmlArrayItem("blindWallCabinet", typeof(BlindWallCabinetModel))]
-    public List<CabinetModelBase> Products { get; set; } = new();
+    public List<ProductModel> Products { get; set; } = new();
 
 }

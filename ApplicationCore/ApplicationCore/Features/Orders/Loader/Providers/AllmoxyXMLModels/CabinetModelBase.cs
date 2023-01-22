@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
-public abstract class CabinetModelBase {
+public abstract class CabinetModelBase : ProductModel {
 
     [XmlAttribute("groupNumber")]
     public int GroupNumber { get; set; }

@@ -1,4 +1,8 @@
-﻿using System.Xml.Serialization;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.Shared.Domain;
+using System.Xml.Serialization;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
@@ -33,5 +37,39 @@ public class BlindBaseCabinetModel : CabinetModelBase {
 
     [XmlElement("drawerFaceHeight")]
     public double DrawerFaceHeight { get; set; }
+
+    public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
+        
+        MDFDoorOptions? mdfOptions = null;
+        if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
+
+        bool hingeLeft = (HingeSide == "Left");
+        BlindCabinetDoors doors = DoorQty switch {
+            1 => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right, mdfOptions),
+            2 => new(mdfOptions),
+            _ => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right, mdfOptions)
+        };
+
+        HorizontalDrawerBank drawers = new() {
+            BoxMaterial = AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial),
+            FaceHeight = Dimension.FromMillimeters(DrawerFaceHeight),
+            Quantity = DrawerQty,
+            SlideType = AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide)
+        };
+
+        var blindSide = (BlindSide == "Left" ? Shared.Domain.Enums.BlindSide.Left : Shared.Domain.Enums.BlindSide.Right);
+
+        var builder = builderFactory.CreateBlindBaseCabinetBuilder();
+
+        return AllmoxyXMLOrderProviderHelpers.InitilizeBuilder<BlindBaseCabinetBuilder, BlindBaseCabinet>(builder, this)
+                .WithBlindSide(blindSide)
+                .WithBlindWidth(Dimension.FromMillimeters(BlindWidth))
+                .WithAdjustableShelves(AdjShelfQty)
+                .WithDrawers(drawers)
+                .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
+                .WithDoors(doors)
+                .Build();
+
+    }
 
 }

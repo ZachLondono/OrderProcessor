@@ -1,4 +1,8 @@
-﻿using System.Xml.Serialization;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.Shared.Domain;
+using System.Xml.Serialization;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
@@ -30,5 +34,32 @@ public class DrawerBaseCabinetModel : CabinetModelBase {
 
     [XmlElement("drawerFace5")]
     public double DrawerFace5 { get; set; }
+
+    public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
+        
+        var drawerFaces = new Dimension[DrawerQty == 1 ? 0 : DrawerQty];
+        if (DrawerQty > 1) drawerFaces[0] = Dimension.FromMillimeters(DrawerFace1); // For 1 drawer box cabinets, the drawer box size is calculated
+        if (DrawerQty >= 2) drawerFaces[1] = Dimension.FromMillimeters(DrawerFace2);
+        if (DrawerQty >= 3) drawerFaces[2] = Dimension.FromMillimeters(DrawerFace3);
+        if (DrawerQty >= 4) drawerFaces[3] = Dimension.FromMillimeters(DrawerFace4);
+        if (DrawerQty >= 5) drawerFaces[4] = Dimension.FromMillimeters(DrawerFace5);
+
+        MDFDoorOptions? mdfOptions = null;
+        if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
+
+        VerticalDrawerBank verticalDrawerBank = new() {
+            BoxMaterial = AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial),
+            FaceHeights = drawerFaces,
+            SlideType = AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide)
+        };
+
+        var builder = builderFactory.CreateDrawerBaseCabinetBuilder();
+
+        return AllmoxyXMLOrderProviderHelpers.InitilizeBuilder<DrawerBaseCabinetBuilder, DrawerBaseCabinet>(builder, this)
+                    .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
+                    .WithDrawers(verticalDrawerBank)
+                    .WithFronts(mdfOptions)
+                    .Build();
+    }
 
 }

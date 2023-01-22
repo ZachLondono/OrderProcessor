@@ -1,4 +1,9 @@
-﻿using System.Xml.Serialization;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.Shared.Domain;
+using System.Xml.Serialization;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
@@ -30,5 +35,26 @@ public class SinkCabinetModel : CabinetModelBase {
 
     [XmlElement("shelfDepth")]
     public string ShelfDepth { get; set; } = string.Empty;
+
+    public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
+        
+        MDFDoorOptions? mdfOptions = null;
+        if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
+
+        var rollOutOptions = new RollOutOptions(Array.Empty<Dimension>(), true, RollOutBlockPosition.None, AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide), AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial));
+
+        var builder = builderFactory.CreateSinkCabinetBuilder();
+
+        return AllmoxyXMLOrderProviderHelpers.InitilizeBuilder<SinkCabinetBuilder, SinkCabinet>(builder, this)
+                    .WithRollOutBoxes(rollOutOptions)
+                    .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
+                    .WithHingeSide((HingeSide == "Left") ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right)
+                    .WithDoorQty(DoorQty)
+                    .WithFalseDrawerQty(DrawerQty)
+                    .WithDrawerFaceHeight(Dimension.FromMillimeters(DrawerFaceHeight))
+                    .WithAdjustableShelves(AdjShelfQty)
+                    .WithMDFOptions(Cabinet.Fronts.Type == "Slab" ? null : mdfOptions)
+                    .Build();
+    }
 
 }
