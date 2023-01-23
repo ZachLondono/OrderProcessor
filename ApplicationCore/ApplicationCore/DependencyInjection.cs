@@ -65,7 +65,6 @@ public static class DependencyInjection {
     }
 
     private static IServiceCollection AddViewModels(this IServiceCollection services) {
-        services.AddTransient<OrderListPageViewModel>();
         services.AddTransient<OrderListViewModel>();
         return services;
 
