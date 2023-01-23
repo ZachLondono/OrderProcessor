@@ -267,13 +267,13 @@ public class AllmoxyCabinetMappingTests {
     }
 
     [Fact]
-    public void EdgeBandingColor_ShouldMatchFinish_WhenEdgeBandingColorIsMatchFinish() {
+    public void EdgeBandingColor_ShouldMatchFinish_WhenEdgeBandingColorIsMatchFinishAndFinishTypeIsNotPaint() {
 
         // Arrange
         _sut.Cabinet.EdgeBandColor = "Match Finish";
         _sut.Cabinet.FinishMaterial = new() {
             Finish = "Finish",
-            Type = "paint"
+            Type = "not paint"
         };
 
         // Act
@@ -281,6 +281,28 @@ public class AllmoxyCabinetMappingTests {
 
         // Assert
         builder.EdgeBandingColor.Should().Be(_sut.Cabinet.FinishMaterial.Finish);
+
+    }
+
+    [Fact]
+    public void EdgeBandingColor_ShouldMatchBox_WhenEdgeBandingColorIsMatchFinishAndFinishTypeIsPaint() {
+
+        // Arrange
+        _sut.Cabinet.EdgeBandColor = "Match Finish";
+        _sut.Cabinet.BoxMaterial = new() {
+            Finish = "Finish1",
+            Type = "pb"
+        };
+        _sut.Cabinet.FinishMaterial = new() {
+            Finish = "Finish2",
+            Type = "paint"
+        };
+
+        // Act
+        var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
+
+        // Assert
+        builder.EdgeBandingColor.Should().Be(_sut.Cabinet.BoxMaterial.Finish);
 
     }
 
