@@ -75,7 +75,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer {
             parameters.Add("__ToeBaseType", ToeType.PSIParameter);
         }
 
-        if (LeftSide.Type != CabinetSideType.IntegratedPanel && LeftSide.Type != CabinetSideType.IntegratedPanel && Inside.ShelfDepth == ShelfDepth.Full) {
+        if (LeftSide.Type != CabinetSideType.IntegratedPanel && RightSide.Type != CabinetSideType.IntegratedPanel && ShelfDepth == ShelfDepth.Full) {
 
             Dimension backThickness = Dimension.FromMillimeters(13);
             Dimension backInset = Dimension.FromMillimeters(9);
@@ -93,7 +93,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer {
 
         var parameters = new Dictionary<string, string>();
 
-        if (LeftSide.Type != CabinetSideType.IntegratedPanel && LeftSide.Type != CabinetSideType.IntegratedPanel) {
+        if (LeftSide.Type != CabinetSideType.IntegratedPanel && RightSide.Type != CabinetSideType.IntegratedPanel) {
 
             if (ShelfDepth == ShelfDepth.Half) {
 
