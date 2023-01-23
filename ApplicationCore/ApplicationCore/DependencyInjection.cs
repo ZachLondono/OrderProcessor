@@ -12,6 +12,7 @@ using ApplicationCore.Features.Orders.Loader;
 using ApplicationCore.Features.ProductPlanner;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Pages.OrderList;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -28,6 +29,8 @@ public static class DependencyInjection {
         services.AddSingleton<CompanyState>();
         services.AddSingleton<IServiceProvider>(sp => sp);
         services.AddTransient<IAccessDBConnectionFactory, AccessDBConnectionFactory>();
+
+        services.AddTransient<OrderListPageViewModel>();
 
         // TODO: validate configuration data
 
