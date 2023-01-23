@@ -43,6 +43,8 @@ public class SinkCabinetModel : CabinetModelBase {
 
         var rollOutOptions = new RollOutOptions(Array.Empty<Dimension>(), true, RollOutBlockPosition.None, AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide), AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial));
 
+        var shelfDepth = AllmoxyXMLOrderProviderHelpers.GetShelfDepth(ShelfDepth);
+
         var builder = builderFactory.CreateSinkCabinetBuilder();
 
         return InitilizeBuilder<SinkCabinetBuilder, SinkCabinet>(builder)

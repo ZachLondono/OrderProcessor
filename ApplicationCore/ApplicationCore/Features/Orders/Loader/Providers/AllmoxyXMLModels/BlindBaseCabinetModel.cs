@@ -26,6 +26,9 @@ public class BlindBaseCabinetModel : CabinetModelBase {
     [XmlElement("adjShelfQty")]
     public int AdjShelfQty { get; set; }
 
+    [XmlElement("shelfDepth")]
+    public string ShelfDepth { get; set; } = string.Empty;
+
     [XmlElement("drawerQty")]
     public int DrawerQty { get; set; }
 
@@ -58,6 +61,8 @@ public class BlindBaseCabinetModel : CabinetModelBase {
         };
 
         var blindSide = (BlindSide == "Left" ? Shared.Domain.Enums.BlindSide.Left : Shared.Domain.Enums.BlindSide.Right);
+
+        var shelfDepth = AllmoxyXMLOrderProviderHelpers.GetShelfDepth(ShelfDepth);
 
         var builder = builderFactory.CreateBlindBaseCabinetBuilder();
 

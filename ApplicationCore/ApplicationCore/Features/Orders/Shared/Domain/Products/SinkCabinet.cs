@@ -14,6 +14,7 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     public int FalseDrawerQty { get; }
     public Dimension DrawerFaceHeight { get; }
     public int AdjustableShelves { get; }
+    public ShelfDepth ShelfDepth { get; }
     public RollOutOptions RollOutBoxes { get; }
     public MDFDoorOptions? MDFOptions { get; }
 
@@ -21,7 +22,7 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer {
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        IToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, RollOutOptions rollOutBoxes, MDFDoorOptions? mdfOptions)
+                        IToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes, MDFDoorOptions? mdfOptions)
                         : base(id, qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
         ToeType = toeType;
         HingeSide = hingeSide;
@@ -29,6 +30,7 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         FalseDrawerQty = falseDrawerQty;
         DrawerFaceHeight = drawerFaceHeight;
         AdjustableShelves = adjustableShelves;
+        ShelfDepth = shelfDepth;
         RollOutBoxes = rollOutBoxes;
         MDFOptions = mdfOptions;
     }
@@ -37,8 +39,8 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer {
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        IToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, RollOutOptions rollOutBoxes, MDFDoorOptions? mdfOptions)
-                        => new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, toeType, hingeSide, doorQty, falseDrawerQty, drawerFaceHeight, adjustableShelves, rollOutBoxes, mdfOptions);
+                        IToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes, MDFDoorOptions? mdfOptions)
+                        => new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, toeType, hingeSide, doorQty, falseDrawerQty, drawerFaceHeight, adjustableShelves, shelfDepth, rollOutBoxes, mdfOptions);
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
         throw new NotImplementedException();

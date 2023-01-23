@@ -10,6 +10,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer {
     public BlindCabinetDoors Doors { get; }
     public HorizontalDrawerBank Drawers { get; }
     public int AdjustableShelves { get; }
+    public ShelfDepth ShelfDepth { get; }
     public BlindSide BlindSide { get; }
     public Dimension BlindWidth { get; }
     public IToeType ToeType { get; }
@@ -18,20 +19,21 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer {
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, HorizontalDrawerBank drawers, IToeType toeType) {
-        return new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, blindSide, blindWidth, adjustableShelves, drawers, toeType);
+                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, ShelfDepth shelfDepth, HorizontalDrawerBank drawers, IToeType toeType) {
+        return new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, blindSide, blindWidth, adjustableShelves, shelfDepth, drawers, toeType);
     }
 
     private BlindBaseCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, HorizontalDrawerBank drawers, IToeType toeType)
+                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, ShelfDepth shelfDepth, HorizontalDrawerBank drawers, IToeType toeType)
                         : base(id, qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
 
         Doors = doors;
         BlindSide = blindSide;
         AdjustableShelves = adjustableShelves;
+        ShelfDepth = shelfDepth;
         Drawers = drawers;
         ToeType = toeType;
         BlindWidth = blindWidth;
