@@ -1,13 +1,10 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
-using ApplicationCore.Features.Shared.Domain;
 using System.Xml.Serialization;
 using ApplicationCore.Features.Orders.Loader.XMLValidation;
 using System.Text;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using MoreLinq;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Loader.Dialog;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 
