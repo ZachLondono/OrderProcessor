@@ -6,7 +6,7 @@ using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Features.Companies;
 
-internal class CompanyState {
+public class CompanyState {
 
     public Company? Company { get; private set; }
     public bool IsDirty { get; private set; }
