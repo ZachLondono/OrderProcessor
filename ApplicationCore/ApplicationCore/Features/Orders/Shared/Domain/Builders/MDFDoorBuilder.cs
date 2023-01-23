@@ -5,6 +5,7 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Builders;
 
 public class MDFDoorBuilder {
 
+    private int _qty;
     private string _material;
     private string _framingBead;
     private string _edgeDetail;
@@ -22,6 +23,11 @@ public class MDFDoorBuilder {
             RightStile = configuration.RightStile,
         };
 
+    }
+
+    public MDFDoorBuilder WithQty(int qty) {
+        _qty = qty;
+        return this;
     }
 
     public MDFDoorBuilder WithMaterial(string material) {
@@ -46,7 +52,7 @@ public class MDFDoorBuilder {
 
     public MDFDoor Build(Dimension height, Dimension width) {
 
-        return new MDFDoor(height, width, _material, _framingBead, _edgeDetail, _frameSize, Dimension.Zero);
+        return new MDFDoor(_qty, height, width, _material, _framingBead, _edgeDetail, _frameSize, Dimension.Zero);
 
     }
 
