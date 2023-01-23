@@ -2,9 +2,7 @@
 @using ApplicationCore.Features.Orders.Shared.Domain
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Infrastructure
-@inject IBus Bus
-@inject OrderState OrderState
-@inject NavigationManager NavigationManager
+@inject OrderListViewModel ViewModel
 
 <table class="w-full table-auto">
 
@@ -14,12 +12,13 @@
             <th class="p-5 dark:text-gray-500">Number</th>
             <th class="p-5 dark:text-gray-500">Name</th>
             <th class="p-5 dark:text-gray-500">Customer</th>
+            <th class="p-5 dark:text-gray-500">Vendor</th>
             <th class="p-5 dark:text-gray-500">Items</th>
             <th class="p-5 dark:text-gray-500">Order Date</th>
         </tr>
     </thead>
 
-    @if (_isLoading) {
+    @if (ViewModel is null || ViewModel.IsLoading) {
 
         <tr>
             <td colspan="6">
@@ -27,37 +26,37 @@
             </td>
         </tr>
 
-    } else if (_hasError) {
+    } else if (ViewModel.HasError) {
 
         <tr>
             <td colspan="6">
-                <span class="text-red-600">Error loading orders [@_errorMessage]</span>
+                <span class="text-red-600">Error loading orders [@ViewModel.ErrorMessage]</span>
             </td>
         </tr>
 
-    } else if (_orders is null) {
+    } else if (ViewModel.Orders is null) {
 
         <tr>
             <td colspan="6">
                 <span>Could not load orders</span>
-                <button type="button" class="text-white bg-blue-700 rounded-md text-xs px-2.5 py-1 mr-2 mb-2 hover:bg-blue-800" @onclick="LoadOrders">Refresh</button>
+                <button type="button" class="text-white bg-blue-700 rounded-md text-xs px-2.5 py-1 mr-2 mb-2 hover:bg-blue-800" @onclick="ViewModel.LoadOrders">Refresh</button>
             </td>
         </tr>
 
     } else {
 
         <tbody>
-            @foreach(var order in _orders) {
+            @foreach(var order in ViewModel.Orders) {
                 <tr class="justify-center hover:bg-slate-200 dark:hover:bg-slate-500 cursor-pointer">
-                    <td class="p-5 text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">
+                    <td class="p-5 text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenOrder(order.Id)">
                         <span class=@($"rounded-full px-3 py-1 mb-3 text-white text-xs font-semibold lowercase {order.Status.GetColor()}")>@order.Status</span>
                     </td>
-                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.Number</td>
-                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.Name</td>
-                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.CustomerName</td>
-                    <td class="p-5 whitespace-nowrap border-b hover:text-underline dark:border-slate-500 dark:text-white" @onclick="async () => await OpenCompanyPage(order.VendorId)">@order.VendorName</td>
-                    <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.ItemCount</td>
-                    <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await OpenOrder(order.Id)">@order.OrderDate.ToShortDateString()</td>
+                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenOrder(order.Id)">@order.Number</td>
+                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenOrder(order.Id)">@order.Name</td>
+                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenOrder(order.Id)">@order.CustomerName</td>
+                    <td class="p-5 whitespace-nowrap border-b hover:text-underline dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenCompanyPage(order.VendorId)">@order.VendorName</td>
+                    <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenOrder(order.Id)">@order.ItemCount</td>
+                    <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenOrder(order.Id)">@order.OrderDate.ToShortDateString()</td>
                 </tr>
             }
         </tbody>
@@ -69,50 +68,16 @@
 
 @code {
 
-    [Parameter]
-    public IOrderListViewModel? ViewModel { get; set; }
-
-    private bool _isLoading = true;
-    private bool _hasError = false;
-    private string _errorMessage = "";
-    private IEnumerable<OrderListItem>? _orders = null; 
-
     protected override async Task OnInitializedAsync() {
-        await LoadOrders();
-    }
 
-    private async Task OpenOrder(Guid orderId) {
-        await OrderState.LoadOrder(orderId);
-        NavigationManager.NavigateTo("/orders/details", true);
-    }
-
-    private async Task LoadOrders() {
-        _isLoading = true;
-        var response = await Bus.Send(new GetOrderList.Query());
-        response.Match(
-            orders => {
-                _orders = orders;
-            },
-            errors => {
-                _hasError = true;
-                _errorMessage = errors.Title;
-            }
-        );
-        _isLoading = false;
-        StateHasChanged();
-
-        if (_orders is not null && ViewModel is not null) {
-            foreach (var order in _orders) {
-                order.VendorName = await ViewModel.GetCompanyName(order.VendorId);
-            }
-            StateHasChanged();
+        if (ViewModel is null) {
+            return;
         }
 
-    }
+        ViewModel.OnPropertyChanged += () => StateHasChanged();
 
-    public async Task OpenCompanyPage(Guid companyId) {
-        if (ViewModel is null) return;
-        await ViewModel.OpenCompanyPage(companyId);
+        await ViewModel.LoadOrders();
+
     }
 
 }

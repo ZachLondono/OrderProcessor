@@ -13,6 +13,8 @@ using ApplicationCore.Features.ProductPlanner;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Pages.OrderList;
+using ApplicationCore.Features.Orders.List;
+using ApplicationCore.Features.Companies.Queries;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -30,7 +32,18 @@ public static class DependencyInjection {
         services.AddSingleton<IServiceProvider>(sp => sp);
         services.AddTransient<IAccessDBConnectionFactory, AccessDBConnectionFactory>();
 
-        services.AddTransient<OrderListPageViewModel>();
+        services.AddTransient<NavigationService>();
+        services.AddTransient<CompanyInfo.GetCompanyNameById>((sp) => {
+            var bus = sp.GetRequiredService<IBus>();
+            return async (id) => {
+                var response = await bus.Send(new GetCompanyNameById.Query(id));
+                string? name = null;
+                response.OnSuccess(result => name = result);
+                return name;
+            };
+        });
+
+        services.AddViewModels();
 
         // TODO: validate configuration data
 
@@ -49,6 +62,13 @@ public static class DependencyInjection {
         services.AddApplicationInfrastructure(configuration);
 
         return services;
+    }
+
+    private static IServiceCollection AddViewModels(this IServiceCollection services) {
+        services.AddTransient<OrderListPageViewModel>();
+        services.AddTransient<OrderListViewModel>();
+        return services;
+
     }
 
 }
