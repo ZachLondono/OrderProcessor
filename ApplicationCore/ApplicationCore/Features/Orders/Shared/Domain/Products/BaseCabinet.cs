@@ -13,6 +13,8 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
     public HorizontalDrawerBank Drawers { get; }
     public BaseCabinetInside Inside { get; }
 
+    public CabinetDoorGaps DoorGaps { get; set; } = new();
+
     public static BaseCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
@@ -119,12 +121,26 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
-        if (Doors.MDFOptions is not null) return Enumerable.Empty<MDFDoor>();
 
-        var builder = getBuilder();
-        var door = builder.Build(Dimension.FromInches(15), Dimension.FromInches(12));
+        if (Doors.MDFOptions is not null) {
+            return Enumerable.Empty<MDFDoor>();
+        }
 
-        return new MDFDoor[] { door };
+        List<MDFDoor> doors = new();
+
+        Dimension width = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Doors.Quantity - 1)) / Doors.Quantity;
+        Dimension height = Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
+        var door = getBuilder().WithQty(Doors.Quantity).Build(height, width);
+        doors.Add(door);
+
+        if (Drawers.Quantity > 0) {
+            Dimension drwWidth = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Drawers.Quantity - 1)) / Drawers.Quantity;
+            var drawers = getBuilder().WithQty(Drawers.Quantity).Build(Drawers.FaceHeight, drwWidth);
+            doors.Add(drawers);
+        }
+
+        return doors.ToArray();
+
     }
 
     private string GetNotchFromSlideType(DrawerSlideType slide) => slide switch {
