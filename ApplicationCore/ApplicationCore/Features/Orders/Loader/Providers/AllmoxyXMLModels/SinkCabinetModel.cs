@@ -56,6 +56,7 @@ public class SinkCabinetModel : CabinetModelBase {
                     .WithDrawerFaceHeight(Dimension.FromMillimeters(DrawerFaceHeight))
                     .WithAdjustableShelves(AdjShelfQty)
                     .WithMDFOptions(Cabinet.Fronts.Type == "Slab" ? null : mdfOptions)
+                    .WithShelfDepth(shelfDepth)
                     .Build();
     }
 

@@ -73,6 +73,7 @@ public class BlindBaseCabinetModel : CabinetModelBase {
                 .WithDrawers(drawers)
                 .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
                 .WithDoors(doors)
+                .WithShelfDepth(shelfDepth)
                 .Build();
 
     }
