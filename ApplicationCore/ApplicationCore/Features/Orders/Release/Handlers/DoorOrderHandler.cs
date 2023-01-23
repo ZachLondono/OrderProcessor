@@ -33,7 +33,14 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
                             .Products
                             .Where(p => p is IDoorContainer)
                             .Cast<IDoorContainer>()
-                            .SelectMany(c => c.GetDoors(_factory.CreateMDFDoorBuilder))
+                            .SelectMany(c => {
+                                try {
+                                    return c.GetDoors(_factory.CreateMDFDoorBuilder);
+                                } catch (Exception ex) {
+                                    _uibus.Publish(new OrderReleaseErrorNotification($"Error getting doors from product '{ex.Message}'"));
+                                    return Enumerable.Empty<MDFDoor>();
+                                }
+                            })
                             .ToList();
 
         if (!doors.Any()) {
