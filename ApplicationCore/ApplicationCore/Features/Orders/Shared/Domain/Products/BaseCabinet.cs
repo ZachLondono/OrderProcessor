@@ -215,7 +215,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
                 parameters.Add("_HalfDepthShelfW", newWidth.AsMillimeters().ToString());
 
-            } else if (Inside.ShelfDepth == ShelfDepth.Half) {
+            } else if (Inside.ShelfDepth == ShelfDepth.ThreeQuarters) {
 
                 Dimension newWidth = (Depth - Dimension.FromMillimeters(13) - Dimension.FromMillimeters(9)) * 0.75;
 
