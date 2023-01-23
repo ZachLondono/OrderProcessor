@@ -101,18 +101,13 @@
         _isLoading = false;
         StateHasChanged();
 
-        if (_orders is not null) {
+        if (_orders is not null && ViewModel is not null) {
             foreach (var order in _orders) {
-                order.VendorName = await GetCompanyName(order.VendorId);
+                order.VendorName = await ViewModel.GetCompanyName(order.VendorId);
             }
             StateHasChanged();
         }
 
-    }
-
-    public async Task<string> GetCompanyName(Guid companyId) {
-        if (ViewModel is null) return "";
-        return await ViewModel.GetCompanyName(companyId);
     }
 
     public async Task OpenCompanyPage(Guid companyId) {
