@@ -195,6 +195,16 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
             parameters.Add("_DrawerRunType", "4");
         }
 
+        if (LeftSide.Type != CabinetSideType.IntegratedPanel && LeftSide.Type != CabinetSideType.IntegratedPanel && Inside.ShelfDepth == ShelfDepth.Full) {
+
+            Dimension backThickness = Dimension.FromMillimeters(13);
+            Dimension backInset = Dimension.FromMillimeters(9);
+            Dimension shelfFrontClearance = Dimension.FromMillimeters(8);
+
+            parameters.Add("_HalfDepthShelfW", (Depth - backThickness - backInset - shelfFrontClearance).AsMillimeters().ToString());
+
+        }
+
         return parameters;
 
     }
@@ -205,11 +215,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
         if (LeftSide.Type != CabinetSideType.IntegratedPanel && LeftSide.Type != CabinetSideType.IntegratedPanel) {
 
-            if (Inside.ShelfDepth == ShelfDepth.Full) {
-
-                parameters.Add("_HalfDepthShelf", "0");
-
-            } else if (Inside.ShelfDepth == ShelfDepth.Half) {
+            if (Inside.ShelfDepth == ShelfDepth.Half) {
 
                 Dimension newWidth = (Depth - Dimension.FromMillimeters(13) - Dimension.FromMillimeters(9)) / 2;
 
