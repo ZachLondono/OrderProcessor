@@ -48,7 +48,7 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new());
+        yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), GetManualOverrideParameters());
     }
 
     private string GetProductName() => $"S{DoorQty}D{FalseDrawerQty}FD";
@@ -91,6 +91,43 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         if (RollOutBoxes.Positions.Any() && RollOutBoxes.SlideType == DrawerSlideType.SideMount) {
             parameters.Add("_DrawerRunType", "4");
         }
+
+        if (LeftSide.Type != CabinetSideType.IntegratedPanel && LeftSide.Type != CabinetSideType.IntegratedPanel && Inside.ShelfDepth == ShelfDepth.Full) {
+
+            Dimension backThickness = Dimension.FromMillimeters(13);
+            Dimension backInset = Dimension.FromMillimeters(9);
+            Dimension shelfFrontClearance = Dimension.FromMillimeters(8);
+
+            parameters.Add("_HalfDepthShelfW", (Depth - backThickness - backInset - shelfFrontClearance).AsMillimeters().ToString());
+
+        }
+
+        return parameters;
+
+    }
+
+    public Dictionary<string, string> GetManualOverrideParameters() {
+
+        var parameters = new Dictionary<string, string>();
+
+        if (LeftSide.Type != CabinetSideType.IntegratedPanel && LeftSide.Type != CabinetSideType.IntegratedPanel) {
+
+            if (ShelfDepth == ShelfDepth.Half) {
+
+                Dimension newWidth = (Depth - Dimension.FromMillimeters(13) - Dimension.FromMillimeters(9)) / 2;
+
+                parameters.Add("_HalfDepthShelfW", newWidth.AsMillimeters().ToString());
+
+            } else if (ShelfDepth == ShelfDepth.ThreeQuarters) {
+
+                Dimension newWidth = (Depth - Dimension.FromMillimeters(13) - Dimension.FromMillimeters(9)) * 0.75;
+
+                parameters.Add("_HalfDepthShelfW", newWidth.AsMillimeters().ToString());
+
+            }
+
+        }
+
 
         return parameters;
 
