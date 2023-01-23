@@ -73,6 +73,9 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer {
 
         if (ToeType.PSIParameter != "2") {
             parameters.Add("__ToeBaseType", ToeType.PSIParameter);
+            if (ToeType.PSIParameter == "3") {
+                parameters.Add("__ToeBaseHeight", "0");
+            }
         }
 
         if (LeftSide.Type != CabinetSideType.IntegratedPanel && RightSide.Type != CabinetSideType.IntegratedPanel && ShelfDepth == ShelfDepth.Full) {

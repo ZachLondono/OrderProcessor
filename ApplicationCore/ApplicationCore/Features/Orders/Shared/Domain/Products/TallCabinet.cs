@@ -85,6 +85,9 @@ public class TallCabinet : Cabinet, IPPProductContainer {
         var parameters = new Dictionary<string, string>();
         if (ToeType.PSIParameter != "2") {
             parameters.Add("__ToeBaseType", ToeType.PSIParameter);
+            if (ToeType.PSIParameter == "3") {
+                parameters.Add("__ToeBaseHeight", "0");
+            }
         }
 
         if (!Inside.RollOutBoxes.Positions.Any() && Inside.RollOutBoxes.SlideType == DrawerSlideType.SideMount) {
