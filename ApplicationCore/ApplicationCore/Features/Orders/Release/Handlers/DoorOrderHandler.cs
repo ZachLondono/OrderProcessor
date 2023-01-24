@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Office.Interop.Excel;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers;
 
@@ -104,14 +105,25 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
             var qtyRng = ws.Range["QtyStart"];
             var widthRng = ws.Range["WidthStart"];
             var heightRng = ws.Range["HeightStart"];
-            var typeRng = ws.Range["DoorTypeStart"];
+            var noteRng = ws.Range["NoteStart"];
 
             int offset = 1;
-            descRng.Offset[offset].Value2 = "Door";
-            qtyRng.Offset[offset].Value2 = "1";
-            widthRng.Offset[offset].Value2 = "12";
-            heightRng.Offset[offset].Value2 = "15";
-            typeRng.Offset[offset].Value2 = "Door";
+
+            foreach (var door in doors) { 
+
+                descRng.Offset[offset].Value2 = door.Type switch {
+                    DoorType.Door => "Door",
+                    DoorType.DrawerFront => "Drawer Front",
+                    _ => "Door"
+                };
+                qtyRng.Offset[offset].Value2 = door.Qty;
+                widthRng.Offset[offset].Value2 = door.Width.AsInches();
+                heightRng.Offset[offset].Value2 = door.Height.AsInches();
+                noteRng.Offset[offset].Value2 = door.Note;
+
+                offset++;
+
+            }
 
             workbook.SaveAs2(finalPath);
 

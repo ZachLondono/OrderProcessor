@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Builders;
@@ -6,6 +7,8 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Builders;
 public class MDFDoorBuilder {
 
     private int _qty;
+    private DoorType _type;
+    private string _note;
     private string _material;
     private string _framingBead;
     private string _edgeDetail;
@@ -13,6 +16,8 @@ public class MDFDoorBuilder {
 
     public MDFDoorBuilder(MDFDoorConfiguration configuration) {
 
+        _type = DoorType.Door;
+        _note = string.Empty;
         _material = configuration.Material;
         _framingBead = configuration.FramingBead;
         _edgeDetail = configuration.EdgeDetail;
@@ -50,9 +55,19 @@ public class MDFDoorBuilder {
         return this;
     }
 
+    public MDFDoorBuilder WithType(DoorType type) {
+        _type = type;
+        return this;
+    }
+
+    public MDFDoorBuilder WithNote(string note) {
+        _note = note;
+        return this;
+    }
+
     public MDFDoor Build(Dimension height, Dimension width) {
 
-        return new MDFDoor(_qty, height, width, _material, _framingBead, _edgeDetail, _frameSize, Dimension.Zero);
+        return new MDFDoor(_qty, _type, height, width, _note, _material, _framingBead, _edgeDetail, _frameSize, Dimension.Zero);
 
     }
 
