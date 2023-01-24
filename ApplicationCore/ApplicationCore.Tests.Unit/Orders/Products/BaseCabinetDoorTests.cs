@@ -5,12 +5,12 @@ using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products;
 
-public class BaseCabinetTests {
+public class BaseCabinetDoorTests {
 
     private readonly Func<MDFDoorBuilder> _doorBuilderFactory;
     private readonly CabinetDoorGaps _doorGaps;
 
-    public BaseCabinetTests() {
+    public BaseCabinetDoorTests() {
 
         var doorConfiguration = new MDFDoorConfiguration() {
             TopRail = Dimension.Zero,
