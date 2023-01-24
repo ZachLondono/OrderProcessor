@@ -29,7 +29,13 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
     public Task<OrderData?> LoadOrderData(string source) {
 
         // Load order to a string
-        string exportXML = _clientfactory.CreateClient().GetExport(source, 6);
+        string exportXML;
+        try {
+            exportXML = _clientfactory.CreateClient().GetExport(source, 6);
+        } catch (Exception ex) {
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not load order data from Allmoxy: {ex.Message}");
+            return Task.FromResult<OrderData?>(null); ;
+        }
 
         // Validate data
         if (!ValidateData(exportXML)) {
