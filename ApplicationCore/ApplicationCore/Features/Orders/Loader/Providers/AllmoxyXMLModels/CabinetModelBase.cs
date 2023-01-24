@@ -32,8 +32,14 @@ public abstract class CabinetModelBase : ProductModel {
         CabinetSide rightSide = new(AllmoxyXMLOrderProviderHelpers.GetCabinetSideType(Cabinet.RightSide), mdfOptions);
 
         string edgeBandingColor;
-        if (Cabinet.EdgeBandColor == "Match Finish" && Cabinet.FinishMaterial.Type != "paint") {
-            edgeBandingColor = Cabinet.FinishMaterial.Finish;
+        if (Cabinet.EdgeBandColor == "Match Finish") {
+            
+            if (Cabinet.FinishMaterial.Type == "paint")
+                edgeBandingColor = Cabinet.BoxMaterial.Finish;
+            else {
+                edgeBandingColor = Cabinet.FinishMaterial.Finish;
+            }
+
         } else {
             edgeBandingColor = Cabinet.EdgeBandColor;
         }
