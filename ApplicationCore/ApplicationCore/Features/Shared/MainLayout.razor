@@ -109,9 +109,20 @@
 
 		try {
 
+			var sourcePrompt = Modal.Show<GetAllmoxyOrderNumberDialog>("Enter Order Number");
+			var promptResult = await sourcePrompt.Result;
+			
+			if (promptResult.Cancelled) {
+				return;
+			}
+
+			if (promptResult.Data is not string orderNumber || string.IsNullOrWhiteSpace(orderNumber)) {
+				return;
+			}
+
 			var parameters = new ModalParameters() {
 				{ "SourceType", OrderSourceType.AllmoxyXML },
-				{ "Source", "2950" }
+				{ "Source", orderNumber.Trim() }
 			};
 
 			var options = new ModalOptions() {
