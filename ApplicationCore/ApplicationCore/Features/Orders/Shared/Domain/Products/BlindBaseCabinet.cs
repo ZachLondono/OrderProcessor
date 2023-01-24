@@ -1,11 +1,12 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.ProductPlanner.Contracts;
 using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class BlindBaseCabinet : Cabinet, IPPProductContainer {
+internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     public BlindCabinetDoors Doors { get; }
     public HorizontalDrawerBank Drawers { get; }
@@ -139,4 +140,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer {
         _ => "0"
     };
 
+    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
+        throw new NotImplementedException();
+    }
 }
