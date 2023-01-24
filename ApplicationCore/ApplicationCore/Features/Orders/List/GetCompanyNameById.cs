@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.Orders.List;
 
-public class CompanyInfo {
+public static class CompanyInfo {
 
     public delegate Task<string?> GetCompanyNameById(Guid id);
 
