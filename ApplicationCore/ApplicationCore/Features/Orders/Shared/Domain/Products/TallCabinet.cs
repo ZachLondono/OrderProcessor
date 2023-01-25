@@ -6,11 +6,13 @@ using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-public class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
+internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     public TallCabinetDoors Doors { get; }
     public IToeType ToeType { get; }
     public TallCabinetInside Inside { get; }
+
+    public CabinetDoorGaps DoorGaps { get; set; } = new();
 
     public static TallCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
@@ -45,6 +47,42 @@ public class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (Doors.MDFOptions is null) ? "Slab" : "Buyout";
         yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new());
+    }
+
+    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
+
+        if (Doors.MDFOptions is null) {
+            return Enumerable.Empty<MDFDoor>();
+        }
+
+        List<MDFDoor> doors = new();
+
+        if (Doors.UpperQuantity > 0) {
+
+            var builder = getBuilder();
+
+            Dimension width = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Doors.UpperQuantity - 1)) / Doors.UpperQuantity;
+            Dimension height = Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - Doors.LowerDoorHeight - DoorGaps.VerticalGap;
+
+            doors.Add(builder.WithQty(Doors.UpperQuantity)
+                            .Build(height, width));
+
+        }
+
+        if (Doors.LowerQuantity > 0) {
+
+            var builder = getBuilder();
+
+            Dimension height = Doors.UpperQuantity > 0 ? Doors.LowerDoorHeight : Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap;
+            Dimension width = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Doors.LowerQuantity - 1)) / Doors.LowerQuantity;
+
+            doors.Add(builder.WithQty(Doors.LowerQuantity)
+                            .Build(height, width));
+
+        }
+
+        return doors;
+
     }
 
     private string GetProductName() {
@@ -114,7 +152,4 @@ public class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         _ => "0"
     };
 
-    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
-        throw new NotImplementedException();
-    }
 }
