@@ -16,6 +16,8 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     public Dimension BlindWidth { get; }
     public IToeType ToeType { get; }
 
+    public CabinetDoorGaps DoorGaps { get; set; } = new();
+
     public static BlindBaseCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
@@ -48,6 +50,35 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     private string GetProductName() {
         return $"BB{Doors.Quantity}D{GetDrawerCountSkuPart()}{GetBlindSideLetter()}";
+    }
+
+    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
+
+        if (Doors.MDFOptions is null) {
+            return Enumerable.Empty<MDFDoor>();
+        }
+
+        List<MDFDoor> doors = new();
+
+        if (Doors.Quantity > 0) {
+            Dimension width = (Width - BlindWidth - DoorGaps.EdgeReveal - DoorGaps.HorizontalGap / 2 - DoorGaps.HorizontalGap * (Doors.Quantity - 1)) / Doors.Quantity;
+            Dimension height = Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
+            var door = getBuilder().WithQty(Doors.Quantity)
+                                    .WithType(DoorType.Door)
+                                    .Build(height, width);
+            doors.Add(door);
+        }
+
+        if (Drawers.Quantity > 0) {
+            Dimension drwWidth = (Width - BlindWidth - DoorGaps.EdgeReveal - DoorGaps.HorizontalGap / 2 - DoorGaps.HorizontalGap * (Drawers.Quantity - 1)) / Drawers.Quantity;
+            var drawers = getBuilder().WithQty(Drawers.Quantity)
+                                        .WithType(DoorType.DrawerFront)
+                                        .Build(Drawers.FaceHeight, drwWidth);
+            doors.Add(drawers);
+        }
+
+        return doors.ToArray();
+
     }
 
     private Dictionary<string, string> GetParameters() {
@@ -115,7 +146,6 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
         }
 
-
         return parameters;
 
     }
@@ -140,7 +170,4 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         _ => "0"
     };
 
-    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
-        throw new NotImplementedException();
-    }
 }
