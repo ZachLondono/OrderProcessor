@@ -18,6 +18,8 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     public RollOutOptions RollOutBoxes { get; }
     public MDFDoorOptions? MDFOptions { get; }
 
+    public CabinetDoorGaps DoorGaps { get; set; } = new();
+
     public SinkCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
@@ -42,13 +44,38 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer {
                         IToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes, MDFDoorOptions? mdfOptions)
                         => new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, toeType, hingeSide, doorQty, falseDrawerQty, drawerFaceHeight, adjustableShelves, shelfDepth, rollOutBoxes, mdfOptions);
 
-    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
-        throw new NotImplementedException();
-    }
-
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFOptions is null) ? "Slab" : "Buyout";
         yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), GetManualOverrideParameters());
+    }
+
+    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
+
+        if (MDFOptions is null) {
+            return Enumerable.Empty<MDFDoor>();
+        }
+
+        List<MDFDoor> doors = new();
+
+        if (DoorQty > 0) {
+            Dimension width = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (DoorQty - 1)) / DoorQty;
+            Dimension height = Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (FalseDrawerQty > 0 ? DrawerFaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
+            var door = getBuilder().WithQty(DoorQty)
+                                    .WithType(DoorType.Door)
+                                    .Build(height, width);
+            doors.Add(door);
+        }
+
+        if (FalseDrawerQty > 0) {
+            Dimension drwWidth = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (FalseDrawerQty - 1)) / FalseDrawerQty;
+            var drawers = getBuilder().WithQty(FalseDrawerQty)
+                                        .WithType(DoorType.DrawerFront)
+                                        .Build(DrawerFaceHeight, drwWidth);
+            doors.Add(drawers);
+        }
+
+        return doors.ToArray();
+
     }
 
     private string GetProductName() => $"S{DoorQty}D{FalseDrawerQty}FD";
