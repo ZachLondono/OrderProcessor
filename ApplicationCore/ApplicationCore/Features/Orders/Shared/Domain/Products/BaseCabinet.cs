@@ -122,7 +122,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
-        if (Doors.MDFOptions is not null) {
+        if (Doors.MDFOptions is null) {
             return Enumerable.Empty<MDFDoor>();
         }
 
