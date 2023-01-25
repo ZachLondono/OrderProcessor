@@ -114,7 +114,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
             var depth = Depth - Dimension.FromMillimeters(13 + 9);
 
-            yield return new DovetailDrawerBox(Inside.RollOutBoxes.Positions.Count(), Dimension.FromInches(4.125), width, depth, "", options, new Dictionary<string, string>());
+            yield return new DovetailDrawerBox(Inside.RollOutBoxes.Positions.Length, Dimension.FromInches(4.125), width, depth, "", options, new Dictionary<string, string>());
 
         }
 
@@ -149,7 +149,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
     }
 
-    private string GetNotchFromSlideType(DrawerSlideType slide) => slide switch {
+    private static string GetNotchFromSlideType(DrawerSlideType slide) => slide switch {
         DrawerSlideType.UnderMount => "Standard Notch",
         DrawerSlideType.SideMount => "",
         _ => ""
