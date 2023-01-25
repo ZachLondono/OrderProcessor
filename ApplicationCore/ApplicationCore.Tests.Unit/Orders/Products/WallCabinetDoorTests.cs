@@ -9,6 +9,7 @@ public class WallCabinetDoorTests {
 
     private readonly Func<MDFDoorBuilder> _doorBuilderFactory;
     private readonly CabinetDoorGaps _doorGaps;
+    private readonly MDFDoorOptions _mdfOptions;
 
     public WallCabinetDoorTests() {
 
@@ -32,6 +33,8 @@ public class WallCabinetDoorTests {
             VerticalGap = Dimension.FromMillimeters(3),
         };
 
+        _mdfOptions = new("Style", "Color");
+
     }
 
     [Theory]
@@ -41,7 +44,7 @@ public class WallCabinetDoorTests {
 
         // Arrange
         var cabinet = new WallCabinetBuilder()
-                            .WithDoors(new() { Quantity = 1 })
+                            .WithDoors(new() { Quantity = 1, MDFOptions = _mdfOptions })
                             .WithWidth(Dimension.FromMillimeters(456))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
@@ -67,7 +70,7 @@ public class WallCabinetDoorTests {
 
         // Arrange
         var cabinet = new WallCabinetBuilder()
-                            .WithDoors(new() { Quantity = doorQty })
+                            .WithDoors(new() { Quantity = doorQty, MDFOptions = _mdfOptions })
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(914))
                             .WithDepth(Dimension.FromMillimeters(610))

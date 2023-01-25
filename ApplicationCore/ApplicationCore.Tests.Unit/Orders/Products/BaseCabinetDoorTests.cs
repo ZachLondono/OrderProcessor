@@ -9,6 +9,7 @@ public class BaseCabinetDoorTests {
 
     private readonly Func<MDFDoorBuilder> _doorBuilderFactory;
     private readonly CabinetDoorGaps _doorGaps;
+    private readonly MDFDoorOptions _mdfOptions;
 
     public BaseCabinetDoorTests() {
 
@@ -32,6 +33,8 @@ public class BaseCabinetDoorTests {
             VerticalGap = Dimension.FromMillimeters(3),
         };
 
+        _mdfOptions = new("Style", "Color");
+
     }
 
     [Theory]
@@ -41,7 +44,7 @@ public class BaseCabinetDoorTests {
 
         // Arrange
         var cabinet = new BaseCabinetBuilder()
-                            .WithDoors(new() { Quantity = doorQty })
+                            .WithDoors(new() { Quantity = doorQty, MDFOptions = _mdfOptions })
                             .WithDrawers(new() {
                                 BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
@@ -71,7 +74,7 @@ public class BaseCabinetDoorTests {
 
         // Arrange
         var cabinet = new BaseCabinetBuilder()
-                            .WithDoors(new() { Quantity = 2 })
+                            .WithDoors(new() { Quantity = 2, MDFOptions = _mdfOptions })
                             .WithDrawers(new() {
                                 BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = drawerQty,
@@ -102,7 +105,7 @@ public class BaseCabinetDoorTests {
         // Arrange
         var cabinet = new BaseCabinetBuilder()
                             .WithToeType(new LegLevelers(Dimension.FromMillimeters(toeHeight)))
-                            .WithDoors(new() { Quantity = 1 })
+                            .WithDoors(new() { Quantity = 1, MDFOptions = _mdfOptions })
                             .WithWidth(Dimension.FromMillimeters(456))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
@@ -127,7 +130,7 @@ public class BaseCabinetDoorTests {
         // Arrange
         var cabinet = new BaseCabinetBuilder()
                             .WithToeType(new LegLevelers(Dimension.FromMillimeters(toeHeight)))
-                            .WithDoors(new() { Quantity = 1 })
+                            .WithDoors(new() { Quantity = 1, MDFOptions = _mdfOptions })
                             .WithDrawers(new() {
                                 BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
