@@ -11,6 +11,7 @@ internal class BaseCabinetBuilder : CabinetBuilder<BaseCabinet> {
     public IToeType ToeType { get; private set; }
     public HorizontalDrawerBank Drawers { get; private set; }
     public BaseCabinetInside Inside { get; private set; }
+    public CabinetDoorGaps DoorGaps { get; private set; }
 
     public BaseCabinetBuilder() {
         Inside = new();
@@ -21,6 +22,13 @@ internal class BaseCabinetBuilder : CabinetBuilder<BaseCabinet> {
             BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
             FaceHeight = Dimension.Zero,
             SlideType = DrawerSlideType.UnderMount
+        };
+        DoorGaps = new() {
+            TopGap = Dimension.FromMillimeters(7),
+            BottomGap = Dimension.Zero,
+            EdgeReveal = Dimension.FromMillimeters(2),
+            HorizontalGap = Dimension.FromMillimeters(3),
+            VerticalGap = Dimension.FromMillimeters(3),
         };
     }
 
@@ -42,7 +50,9 @@ internal class BaseCabinetBuilder : CabinetBuilder<BaseCabinet> {
     }
 
     public override BaseCabinet Build() {
-        return BaseCabinet.Create(Qty, UnitPrice, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, Doors, ToeType, Drawers, Inside);
+        var cabinet = BaseCabinet.Create(Qty, UnitPrice, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, Doors, ToeType, Drawers, Inside);
+        cabinet.DoorGaps = DoorGaps;
+        return cabinet;
     }
 
 }

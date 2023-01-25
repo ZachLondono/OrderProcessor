@@ -11,12 +11,20 @@ internal class BlindWallCabinetBuilder : CabinetBuilder<BlindWallCabinet> {
     public int AdjustableShelves { get; private set; }
     public BlindSide BlindSide { get; private set; }
     public Dimension BlindWidth { get; private set; }
+    public CabinetDoorGaps DoorGaps { get; private set; }
 
     public BlindWallCabinetBuilder() {
         Doors = new();
         AdjustableShelves = 0;
         BlindSide = BlindSide.Left;
         BlindWidth = Dimension.Zero;
+        DoorGaps = new() {
+            TopGap = Dimension.FromMillimeters(3),
+            BottomGap = Dimension.Zero,
+            EdgeReveal = Dimension.FromMillimeters(2),
+            HorizontalGap = Dimension.FromMillimeters(3),
+            VerticalGap = Dimension.FromMillimeters(3),
+        };
     }
 
     public BlindWallCabinetBuilder WithDoors(BlindCabinetDoors doors) {
@@ -40,7 +48,9 @@ internal class BlindWallCabinetBuilder : CabinetBuilder<BlindWallCabinet> {
     }
 
     public override BlindWallCabinet Build() {
-        return BlindWallCabinet.Create(Qty, UnitPrice, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, Doors, BlindSide, BlindWidth, AdjustableShelves);
+        var cabinet = BlindWallCabinet.Create(Qty, UnitPrice, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, Doors, BlindSide, BlindWidth, AdjustableShelves);
+        cabinet.DoorGaps = DoorGaps;
+        return cabinet;
     }
 
 }

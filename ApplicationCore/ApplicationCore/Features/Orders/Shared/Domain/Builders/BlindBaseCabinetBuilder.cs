@@ -14,6 +14,7 @@ internal class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
     public BlindSide BlindSide { get; private set; }
     public Dimension BlindWidth { get; private set; }
     public IToeType ToeType { get; private set; }
+    public CabinetDoorGaps DoorGaps { get; private set; }
 
     public BlindBaseCabinetBuilder() {
         Doors = new();
@@ -27,6 +28,13 @@ internal class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
             FaceHeight = Dimension.Zero,
             Quantity = 0,
             SlideType = DrawerSlideType.UnderMount
+        };
+        DoorGaps = new() {
+            TopGap = Dimension.FromMillimeters(7),
+            BottomGap = Dimension.Zero,
+            EdgeReveal = Dimension.FromMillimeters(2),
+            HorizontalGap = Dimension.FromMillimeters(3),
+            VerticalGap = Dimension.FromMillimeters(3),
         };
     }
 
@@ -66,7 +74,9 @@ internal class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
     }
 
     public override BlindBaseCabinet Build() {
-        return BlindBaseCabinet.Create(Qty, UnitPrice, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, Doors, BlindSide, BlindWidth, AdjustableShelves, ShelfDepth, Drawers, ToeType);
+        var cabinet = BlindBaseCabinet.Create(Qty, UnitPrice, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, Doors, BlindSide, BlindWidth, AdjustableShelves, ShelfDepth, Drawers, ToeType);
+        cabinet.DoorGaps = DoorGaps;
+        return cabinet;
     }
 
 }
