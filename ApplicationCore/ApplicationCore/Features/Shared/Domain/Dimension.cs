@@ -19,6 +19,8 @@ public record Dimension : IComparable {
 
     public static Dimension Zero => new(0);
 
+    public static Dimension operator *(Dimension dim1, Dimension dim2) => FromMillimeters(dim1.AsMillimeters() * dim2.AsMillimeters());
+
     public static Dimension operator *(Dimension dim1, int mult) => FromMillimeters(dim1.AsMillimeters() * mult);
 
     public static Dimension operator *(int mult, Dimension dim1) => FromMillimeters(mult * dim1.AsMillimeters());
@@ -26,6 +28,8 @@ public record Dimension : IComparable {
     public static Dimension operator *(Dimension dim1, double mult) => FromMillimeters(dim1.AsMillimeters() * mult);
 
     public static Dimension operator *(double mult, Dimension dim1) => FromMillimeters(mult * dim1.AsMillimeters());
+
+    public static Dimension operator /(Dimension dim1, Dimension dim2) => FromMillimeters(dim1.AsMillimeters() / dim2.AsMillimeters());
 
     public static Dimension operator /(Dimension dim1, int divosor) => FromMillimeters(dim1.AsMillimeters() / divosor);
 
