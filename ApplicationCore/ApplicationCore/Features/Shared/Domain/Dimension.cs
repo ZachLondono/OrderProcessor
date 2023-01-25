@@ -43,6 +43,10 @@ public record Dimension : IComparable {
 
     public static bool operator <(Dimension dim1, Dimension dim2) => dim1.AsMillimeters() < dim2.AsMillimeters();
 
+    public static Dimension Sqrt(Dimension dim) => FromMillimeters(Math.Sqrt(dim.AsMillimeters()));
+
+    public static Dimension Pow(Dimension dim1, Dimension dim2) => FromMillimeters(Math.Pow(dim1.AsMillimeters(), dim2.AsMillimeters()));
+
     public override string ToString() {
         return $"{{{AsInches()}\",  {AsMillimeters()}mm}}";
     }
