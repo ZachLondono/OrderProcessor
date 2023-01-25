@@ -13,6 +13,8 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     public BlindSide BlindSide { get; }
     public Dimension BlindWidth { get; }
 
+    public CabinetDoorGaps DoorGaps { get; set; } = new();
+
     public static BlindWallCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
@@ -38,6 +40,27 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (Doors.MDFOptions is null) ? "Slab" : "Buyout";
         yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), new(), new());
+    }
+
+    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
+        
+        if (Doors.MDFOptions is null) {
+            return Enumerable.Empty<MDFDoor>();
+        }
+
+        if (Doors.Quantity < 0) {
+            return Enumerable.Empty<MDFDoor>();
+        }
+
+        Dimension width = (Width - BlindWidth - DoorGaps.EdgeReveal - DoorGaps.HorizontalGap / 2 - DoorGaps.HorizontalGap * (Doors.Quantity - 1)) / Doors.Quantity;
+        Dimension height = Height - DoorGaps.TopGap - DoorGaps.BottomGap;
+        var door = getBuilder().WithQty(Doors.Quantity)
+                                .WithType(DoorType.Door)
+                                .Build(height, width);
+            
+
+        return new MDFDoor[] { door };
+
     }
 
     private string GetProductName() {
@@ -75,7 +98,4 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         _ => "0"
     };
 
-    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
-        throw new NotImplementedException();
-    }
 }

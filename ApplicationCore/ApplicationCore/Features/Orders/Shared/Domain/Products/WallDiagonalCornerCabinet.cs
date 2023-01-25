@@ -3,6 +3,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.ProductPlanner.Contracts;
 using ApplicationCore.Features.Shared.Domain;
+using System.Security.AccessControl;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
@@ -14,6 +15,8 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
     public int DoorQty { get; }
     public MDFDoorOptions? MDFOptions { get; }
     public int AdjustableShelves { get; }
+    
+    public CabinetDoorGaps DoorGaps { get; set; } = new();
 
     public WallDiagonalCornerCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
@@ -43,10 +46,6 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
                         Dimension rightWidth, Dimension rightDepth, int adjShelfQty, HingeSide hingeSide, int doorQty, MDFDoorOptions? mdfOptions)
                         => new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, rightWidth, rightDepth, adjShelfQty, hingeSide, doorQty, mdfOptions);
 
-    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
-        throw new NotImplementedException();
-    }
-
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFOptions is null) ? "Slab" : "Buyout";
 
@@ -57,6 +56,38 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
         };
 
         yield return new PPProduct(Room, sku, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), new(), new());
+    }
+
+    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
+
+        if (MDFOptions is null) {
+            return Enumerable.Empty<MDFDoor>();
+        }
+
+        Dimension a = Width - RightDepth - Dimension.FromMillimeters(19);
+        Dimension b = RightWidth - Depth - Dimension.FromMillimeters(19);
+
+        Dimension diagOpening = Dimension.Sqrt(a * a + b * b);
+
+        Dimension width = RoundToHalfMM(diagOpening - 2 * DoorGaps.EdgeReveal);
+        if (DoorQty == 2) {
+            width = RoundToHalfMM((width - DoorGaps.HorizontalGap) / 2);
+        }
+
+        Dimension height = Height - DoorGaps.TopGap - DoorGaps.BottomGap;
+        
+        var door = getBuilder().WithQty(DoorQty * Qty).Build(height, width);
+
+        return new List<MDFDoor>() { door };
+
+    }
+
+    public static Dimension RoundToHalfMM(Dimension dim) {
+
+        var value = Math.Round(dim.AsMillimeters() * 2, MidpointRounding.AwayFromZero) / 2;
+
+        return Dimension.FromMillimeters(value);
+
     }
 
     private Dictionary<string, string> GetParameters() {

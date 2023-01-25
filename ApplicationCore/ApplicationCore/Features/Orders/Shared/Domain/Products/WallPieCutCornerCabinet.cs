@@ -14,6 +14,8 @@ internal class WallPieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
     public HingeSide HingeSide { get; }
     public MDFDoorOptions? MDFOptions { get; }
 
+    public CabinetDoorGaps DoorGaps { get; set; } = new();
+
     public WallPieCutCornerCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
@@ -38,14 +40,30 @@ internal class WallPieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
                         Dimension rightWidth, Dimension rightDepth, int adjustableShelves, HingeSide hingeSide, MDFDoorOptions? mdfDoorOptions)
     => new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, rightWidth, rightDepth, adjustableShelves, hingeSide, mdfDoorOptions);
 
-    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
-        if (MDFOptions is null) return Enumerable.Empty<MDFDoor>();
-        throw new NotImplementedException();
-    }
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFOptions is null) ? "Slab" : "Buyout";
         yield return new PPProduct(Room, "WCPC", "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), new(), new());
+    }
+
+    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
+
+        if (MDFOptions is null) {
+            return Enumerable.Empty<MDFDoor>();
+        }
+
+        Dimension height = Height - DoorGaps.TopGap;
+        Dimension doorThickness = Dimension.FromMillimeters(19);
+        Dimension bumperWidth = Dimension.FromMillimeters(3);
+
+        Dimension leftWidth = Width - RightDepth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
+        MDFDoor leftDoor = getBuilder().WithQty(Qty).Build(height, leftWidth);
+
+        Dimension rightWidth = RightWidth - Depth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
+        MDFDoor rightDoor = getBuilder().WithQty(Qty).Build(height, rightWidth);
+
+        return new List<MDFDoor>() { leftDoor, rightDoor };
+
     }
 
     private Dictionary<string, string> GetParameters() {

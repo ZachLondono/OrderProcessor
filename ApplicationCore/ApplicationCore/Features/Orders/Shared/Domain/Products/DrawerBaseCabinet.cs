@@ -1,15 +1,18 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.ProductPlanner.Contracts;
 using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-public class DrawerBaseCabinet : Cabinet, IPPProductContainer {
+internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     public IToeType ToeType { get; }
     public MDFDoorOptions? Fronts { get; }
     public VerticalDrawerBank Drawers { get; }
+
+    public CabinetDoorGaps DoorGaps { get; set; } = new();
 
     public static DrawerBaseCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
@@ -38,6 +41,31 @@ public class DrawerBaseCabinet : Cabinet, IPPProductContainer {
         // TODO: add option for no doors
         string doorType = (Fronts is null) ? "Slab" : "Buyout";
         yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new());
+    }
+
+
+    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
+
+        if (Fronts is null) {
+            return Enumerable.Empty<MDFDoor>();
+        }
+
+        List<MDFDoor> doors = new();
+
+        Dimension width = Width - 2 * DoorGaps.EdgeReveal;
+
+        foreach (var height in Drawers.FaceHeights) {
+
+            var door = getBuilder().WithQty(1)
+                                    .WithType(DoorType.Door)
+                                    .Build(height, width);
+
+            doors.Add(door);
+
+        }
+
+        return doors;
+
     }
 
     private string GetProductName() {
@@ -82,6 +110,5 @@ public class DrawerBaseCabinet : Cabinet, IPPProductContainer {
         return parameters;
 
     }
-
 
 }
