@@ -5,10 +5,15 @@
     <TargetFramework>net7.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Royal Logo - Crown Only.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Royal Logo - Crown Only.ico" />
   </ItemGroup>
 
   <ItemGroup>
