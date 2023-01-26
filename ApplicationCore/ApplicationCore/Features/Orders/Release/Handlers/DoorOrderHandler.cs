@@ -109,7 +109,7 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
 
             int offset = 1;
 
-            foreach (var door in doors) { 
+            foreach (var door in doors) {
 
                 descRng.Offset[offset].Value2 = door.Type switch {
                     DoorType.Door => "Door",

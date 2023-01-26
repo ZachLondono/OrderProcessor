@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using FluentAssertions;
 using NSubstitute;
 
@@ -252,7 +252,7 @@ public class AllmoxyCabinetMappingTests {
             Type = "pb"
         };
         _sut.Cabinet.FinishMaterial = new() {
-            Finish = "2hsiniF", 
+            Finish = "2hsiniF",
             Type = "paint"
         };
 

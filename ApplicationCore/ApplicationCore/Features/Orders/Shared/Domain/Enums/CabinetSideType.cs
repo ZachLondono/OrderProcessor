@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿namespace ApplicationCore.Features.Orders.Shared.Domain.Enums;
 
 public enum CabinetSideType {
     Unfinished,

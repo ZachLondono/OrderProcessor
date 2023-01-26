@@ -8,7 +8,7 @@ internal class CabinetDrawerBoxClearances {
     /// Clearance on each side of a drawer box
     /// </summary>
     public Dimension WidthClearance { get; init; } = Dimension.Zero;
-    
+
     /// <summary>
     /// Total vertical clearance for drawerbox
     /// </summary>

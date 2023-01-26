@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using Unit = QuestPDF.Infrastructure.Unit;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 
 namespace ApplicationCore.Features.Orders.Complete;
 
