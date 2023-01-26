@@ -54,7 +54,8 @@ public abstract class AbstractCompanyQueryHandler<TQuery> : QueryHandler<TQuery,
                                     printorderlabel, orderlabeltemplatefilepath,
                                     printaduiepylelabel, aduiepylelabeltemplatefilepath,
                                     generatecncprograms, cncreportoutputdirectory,
-                                    filldoororder, generatedoorprograms, doororderoutputdirectory, doorordertemplatefilepath
+                                    filldoororder, generatedoorprograms, doororderoutputdirectory, doorordertemplatefilepath,
+                                    generatecabinetjobsummary, cabinetjobsummarytemplatefilepath, cabinetjobsummaryoutputdirectory
                                 FROM releaseprofiles
                                 WHERE vendorid = @VendorId;";
 

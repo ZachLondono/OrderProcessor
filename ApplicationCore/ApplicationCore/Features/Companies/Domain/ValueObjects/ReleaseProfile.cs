@@ -30,6 +30,9 @@ public class ReleaseProfile {
     public required bool GenerateDoorCNCPrograms { get; set; }
     public required string DoorOrderOutputDirectory { get; set; }
     public required string DoorOrderTemplateFilePath { get; set; }
+    public required bool GenerateCabinetJobSummary { get; set; }
+    public required string CabinetJobSummaryTemplateFilePath { get; set; }
+    public required string CabinetJobSummaryOutputDirectory { get; set; }
 
     // TODO: By default, the file paths will be set to directories in the installation folder
     public static ReleaseProfile Default => new() {
@@ -60,7 +63,10 @@ public class ReleaseProfile {
         FillDoorOrder = false,
         GenerateDoorCNCPrograms = false,
         DoorOrderOutputDirectory = string.Empty,
-        DoorOrderTemplateFilePath = string.Empty
+        DoorOrderTemplateFilePath = string.Empty,
+        GenerateCabinetJobSummary = false,
+        CabinetJobSummaryTemplateFilePath = string.Empty,
+        CabinetJobSummaryOutputDirectory = string.Empty
     };
 
 }
