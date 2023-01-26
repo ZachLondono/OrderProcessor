@@ -3,7 +3,6 @@ using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.Emails.Contracts;
 using ApplicationCore.Features.Emails.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Features.Shared;
 using Microsoft.Extensions.Logging;
@@ -11,6 +10,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using Unit = QuestPDF.Infrastructure.Unit;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 
 namespace ApplicationCore.Features.Orders.Complete;
 

@@ -6,6 +6,7 @@ using Microsoft.Office.Interop.Excel;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers;
 

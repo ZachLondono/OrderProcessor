@@ -7,6 +7,7 @@ using ApplicationCore.Features.Orders.Release.Handlers.CutListing.Models;
 using ApplicationCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.CutListing;
 

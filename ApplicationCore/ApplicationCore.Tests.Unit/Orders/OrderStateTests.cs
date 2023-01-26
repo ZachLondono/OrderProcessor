@@ -7,6 +7,7 @@ using NSubstitute;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Features.Companies.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 
 namespace ApplicationCore.Tests.Unit.Orders;
 

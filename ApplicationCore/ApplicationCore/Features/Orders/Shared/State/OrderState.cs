@@ -4,6 +4,7 @@ using ApplicationCore.Infrastructure;
 using ApplicationCore.Features.Orders.Complete;
 using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 
 namespace ApplicationCore.Features.Orders.Shared.State;
 

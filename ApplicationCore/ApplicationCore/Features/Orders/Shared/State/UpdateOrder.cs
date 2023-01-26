@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Infrastructure.Data;
 using Dapper;
