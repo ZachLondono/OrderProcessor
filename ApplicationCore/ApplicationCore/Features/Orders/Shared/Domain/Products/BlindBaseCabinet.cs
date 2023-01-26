@@ -63,7 +63,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         if (Doors.Quantity > 0) {
             Dimension width = (Width - BlindWidth - DoorGaps.EdgeReveal - DoorGaps.HorizontalGap / 2 - DoorGaps.HorizontalGap * (Doors.Quantity - 1)) / Doors.Quantity;
             Dimension height = Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
-            var door = getBuilder().WithQty(Doors.Quantity)
+            var door = getBuilder().WithQty(Doors.Quantity * Qty)
                                     .WithType(DoorType.Door)
                                     .Build(height, width);
             doors.Add(door);
@@ -71,7 +71,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
         if (Drawers.Quantity > 0) {
             Dimension drwWidth = (Width - BlindWidth - DoorGaps.EdgeReveal - DoorGaps.HorizontalGap / 2 - DoorGaps.HorizontalGap * (Drawers.Quantity - 1)) / Drawers.Quantity;
-            var drawers = getBuilder().WithQty(Drawers.Quantity)
+            var drawers = getBuilder().WithQty(Drawers.Quantity * Qty)
                                         .WithType(DoorType.DrawerFront)
                                         .Build(Drawers.FaceHeight, drwWidth);
             doors.Add(drawers);

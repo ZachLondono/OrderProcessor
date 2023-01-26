@@ -58,7 +58,7 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
         Dimension width = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Doors.Quantity - 1)) / Doors.Quantity;
         Dimension height = Height - DoorGaps.TopGap - DoorGaps.BottomGap;
-        var door = getBuilder().WithQty(Doors.Quantity)
+        var door = getBuilder().WithQty(Doors.Quantity * Qty)
                                 .WithType(DoorType.Door)
                                 .Build(height, width);
         

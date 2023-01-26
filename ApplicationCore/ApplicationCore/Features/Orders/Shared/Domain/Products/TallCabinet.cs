@@ -64,7 +64,7 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
             Dimension width = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Doors.UpperQuantity - 1)) / Doors.UpperQuantity;
             Dimension height = Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - Doors.LowerDoorHeight - DoorGaps.VerticalGap;
 
-            doors.Add(builder.WithQty(Doors.UpperQuantity)
+            doors.Add(builder.WithQty(Doors.UpperQuantity * Qty)
                             .Build(height, width));
 
         }
@@ -76,7 +76,7 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
             Dimension height = Doors.UpperQuantity > 0 ? Doors.LowerDoorHeight : Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap;
             Dimension width = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Doors.LowerQuantity - 1)) / Doors.LowerQuantity;
 
-            doors.Add(builder.WithQty(Doors.LowerQuantity)
+            doors.Add(builder.WithQty(Doors.LowerQuantity * Qty)
                             .Build(height, width));
 
         }

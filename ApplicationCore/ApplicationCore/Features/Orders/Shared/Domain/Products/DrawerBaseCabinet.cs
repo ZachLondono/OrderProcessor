@@ -56,7 +56,7 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer 
 
         foreach (var height in Drawers.FaceHeights) {
 
-            var door = getBuilder().WithQty(1)
+            var door = getBuilder().WithQty(1 * Qty)
                                     .WithType(DoorType.Door)
                                     .Build(height, width);
 
