@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.ProductPlanner.Contracts;
 using ApplicationCore.Features.Shared.Domain;
 
@@ -15,14 +16,14 @@ public abstract class Cabinet : IProduct {
     public Dimension Width { get; }
     public Dimension Depth { get; }
     public CabinetMaterial BoxMaterial { get; }
-    public CabinetMaterial FinishMaterial { get; }
+    public CabinetFinishMaterial FinishMaterial { get; }
     public string EdgeBandingColor { get; }
     public CabinetSide RightSide { get; }
     public CabinetSide LeftSide { get; }
 
     public Cabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
                 Dimension height, Dimension width, Dimension depth,
-                CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
+                CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
                 CabinetSide rightSide, CabinetSide leftSide) {
 
         Id = id;

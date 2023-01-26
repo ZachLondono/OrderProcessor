@@ -16,7 +16,7 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     public static WallCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         WallCabinetDoors doors, WallCabinetInside inside, bool finishedBottom) {
         return new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, inside, finishedBottom);
@@ -24,7 +24,7 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     private WallCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         WallCabinetDoors doors, WallCabinetInside inside, bool finishedBottom)
                         : base(id, qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
@@ -47,7 +47,7 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
-        
+
         if (Doors.MDFOptions is null) {
             return Enumerable.Empty<MDFDoor>();
         }
@@ -61,7 +61,7 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         var door = getBuilder().WithQty(Doors.Quantity * Qty)
                                 .WithType(DoorType.Door)
                                 .Build(height, width);
-        
+
         return new MDFDoor[] { door };
 
     }

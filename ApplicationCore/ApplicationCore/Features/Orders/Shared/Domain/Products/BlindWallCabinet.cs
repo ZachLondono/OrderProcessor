@@ -17,7 +17,7 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     public static BlindWallCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves) {
         return new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, blindSide, blindWidth, adjustableShelves);
@@ -25,7 +25,7 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     private BlindWallCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves)
                         : base(id, qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
@@ -43,7 +43,7 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
-        
+
         if (Doors.MDFOptions is null) {
             return Enumerable.Empty<MDFDoor>();
         }
@@ -57,7 +57,7 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         var door = getBuilder().WithQty(Doors.Quantity * Qty)
                                 .WithType(DoorType.Door)
                                 .Build(height, width);
-            
+
 
         return new MDFDoor[] { door };
 

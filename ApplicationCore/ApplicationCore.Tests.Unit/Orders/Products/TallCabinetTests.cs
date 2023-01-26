@@ -159,7 +159,7 @@ public class TallCabinetDoorTests {
         doors.Should().HaveCount(2);
         doors.First().Height.Should().Be(Dimension.FromMillimeters(expectedCabinetHeight));
         doors.Skip(1).First().Height.Should().Be(Dimension.FromMillimeters(lowerDoorHeight));
-        
+
     }
 
 }

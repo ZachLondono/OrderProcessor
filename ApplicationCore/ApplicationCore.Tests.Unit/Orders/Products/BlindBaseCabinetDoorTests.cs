@@ -125,7 +125,7 @@ public class BlindBaseCabinetDoorTests {
         doors.First().Width.Should().Be(Dimension.FromMillimeters(expectedDoorWidth));
 
     }
-    
+
     [Theory]
     [InlineData(1067, 1, 635, 428.5)]
     [InlineData(1369, 2, 635, 363.75)]

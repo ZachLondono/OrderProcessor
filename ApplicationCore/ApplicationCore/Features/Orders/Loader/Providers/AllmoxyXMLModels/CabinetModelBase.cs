@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
@@ -27,13 +28,13 @@ public abstract class CabinetModelBase : ProductModel {
 
         string finishColor = (Cabinet.FinishMaterial.Type == "paint" ? Cabinet.BoxMaterial.Finish : Cabinet.FinishMaterial.Finish);
         CabinetMaterial boxMaterial = new(Cabinet.BoxMaterial.Finish, boxCore);
-        CabinetMaterial finishMaterial = new(finishColor, finishCore);
+        CabinetFinishMaterial finishMaterial = new(finishColor, finishCore);
         CabinetSide leftSide = new(AllmoxyXMLOrderProviderHelpers.GetCabinetSideType(Cabinet.LeftSide), mdfOptions);
         CabinetSide rightSide = new(AllmoxyXMLOrderProviderHelpers.GetCabinetSideType(Cabinet.RightSide), mdfOptions);
 
         string edgeBandingColor;
         if (Cabinet.EdgeBandColor == "Match Finish") {
-            
+
             if (Cabinet.FinishMaterial.Type == "paint")
                 edgeBandingColor = Cabinet.BoxMaterial.Finish;
             else {

@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 
@@ -14,7 +15,7 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
     public Dimension Height { get; private set; }
     public Dimension Depth { get; private set; }
     public CabinetMaterial BoxMaterial { get; private set; }
-    public CabinetMaterial FinishMaterial { get; private set; }
+    public CabinetFinishMaterial finishMaterial { get; private set; }
     public string EdgeBandingColor { get; private set; }
     public CabinetSide LeftSide { get; set; }
     public CabinetSide RightSide { get; set; }
@@ -74,7 +75,7 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
         return this;
     }
 
-    public CabinetBuilder<TCabinet> WithFinishMaterial(CabinetMaterial finishMaterial) {
+    public CabinetBuilder<TCabinet> WithFinishMaterial(CabinetFinishMaterial finishMaterial) {
         FinishMaterial = finishMaterial;
         return this;
     }
