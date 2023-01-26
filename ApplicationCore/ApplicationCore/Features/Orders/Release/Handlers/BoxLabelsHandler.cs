@@ -2,6 +2,7 @@
 using ApplicationCore.Features.Labels.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 
@@ -32,7 +33,14 @@ internal class BoxLabelsHandler : DomainListener<TriggerOrderReleaseNotification
         var dovetailBoxes = order.Products
                                 .Where(p => p is IDrawerBoxContainer)
                                 .Cast<IDrawerBoxContainer>()
-                                .SelectMany(c => c.GetDrawerBoxes())
+                                .SelectMany(c => {
+                                    try {
+                                        return c.GetDrawerBoxes();
+                                    } catch (Exception ex) {
+                                        _uibus.Publish(new OrderReleaseErrorNotification($"Error getting drawer boxes from product '{ex.Message}'"));
+                                        return Enumerable.Empty<DovetailDrawerBox>();
+                                    }
+                                })
                                 .ToList();
 
         int line = 1;

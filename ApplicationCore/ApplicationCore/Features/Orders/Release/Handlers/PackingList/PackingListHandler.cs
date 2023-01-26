@@ -1,12 +1,13 @@
 ﻿using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.ExcelTemplates.Contracts;
 using ApplicationCore.Features.ExcelTemplates.Domain;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Release.Handlers.PackingList.Models;
 using ApplicationCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Company = ApplicationCore.Features.Companies.Domain.Company;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.PackingList;
 
@@ -59,8 +60,16 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
 
         int line = 1;
         var items = order.Products
-                        .Where(p => p is DovetailDrawerBoxProduct)
-                        .Cast<DovetailDrawerBoxProduct>()
+                        .Where(p => p is IDrawerBoxContainer)
+                        .Cast<IDrawerBoxContainer>()
+                        .SelectMany(c => {
+                            try {
+                                return c.GetDrawerBoxes();
+                            } catch (Exception ex) {
+                                _uibus.Publish(new OrderReleaseErrorNotification($"Error getting drawer boxes from product '{ex.Message}'"));
+                                return Enumerable.Empty<DovetailDrawerBox>();
+                            }
+                        })
                         .Select(b => new Item() {
                             Line = line++,
                             Qty = b.Qty,

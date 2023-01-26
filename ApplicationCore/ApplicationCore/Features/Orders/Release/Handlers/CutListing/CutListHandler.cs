@@ -40,7 +40,14 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         var dovetailBoxes = order.Products
                                 .Where(p => p is IDrawerBoxContainer)
                                 .Cast<IDrawerBoxContainer>()
-                                .SelectMany(c => c.GetDrawerBoxes())
+                                .SelectMany(c => {
+                                    try { 
+                                        return c.GetDrawerBoxes();
+                                    } catch (Exception ex) {
+                                        _uibus.Publish(new OrderReleaseErrorNotification($"Error getting drawer boxes from product '{ex.Message}'"));
+                                        return Enumerable.Empty<DovetailDrawerBox>();
+                                    }
+                                })
                                 .ToList();
 
         CutList cutList = CreateStdCutList(order, dovetailBoxes, customerName, vendorName, _construction);
