@@ -69,6 +69,35 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
         yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), GetManualOverrideParameters());
     }
 
+    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
+
+        if (Doors.MDFOptions is null) {
+            return Enumerable.Empty<MDFDoor>();
+        }
+
+        List<MDFDoor> doors = new();
+
+        if (Doors.Quantity > 0) { 
+            Dimension width = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Doors.Quantity - 1)) / Doors.Quantity;
+            Dimension height = Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
+            var door = getBuilder().WithQty(Doors.Quantity * Qty)
+                                    .WithType(DoorType.Door)
+                                    .Build(height, width);
+            doors.Add(door);
+        }
+
+        if (Drawers.Quantity > 0) {
+            Dimension drwWidth = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Drawers.Quantity - 1)) / Drawers.Quantity;
+            var drawers = getBuilder().WithQty(Drawers.Quantity * Qty)
+                                        .WithType(DoorType.DrawerFront)
+                                        .Build(Drawers.FaceHeight, drwWidth);
+            doors.Add(drawers);
+        }
+
+        return doors.ToArray();
+
+    }
+
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes() {
 
         if (Drawers.Quantity > 0) {
@@ -117,35 +146,6 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
             yield return new DovetailDrawerBox(Inside.RollOutBoxes.Positions.Length, Dimension.FromInches(4.125), width, depth, "", options, new Dictionary<string, string>());
 
         }
-
-    }
-
-    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
-
-        if (Doors.MDFOptions is null) {
-            return Enumerable.Empty<MDFDoor>();
-        }
-
-        List<MDFDoor> doors = new();
-
-        if (Doors.Quantity > 0) { 
-            Dimension width = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Doors.Quantity - 1)) / Doors.Quantity;
-            Dimension height = Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
-            var door = getBuilder().WithQty(Doors.Quantity * Qty)
-                                    .WithType(DoorType.Door)
-                                    .Build(height, width);
-            doors.Add(door);
-        }
-
-        if (Drawers.Quantity > 0) {
-            Dimension drwWidth = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Drawers.Quantity - 1)) / Drawers.Quantity;
-            var drawers = getBuilder().WithQty(Drawers.Quantity * Qty)
-                                        .WithType(DoorType.DrawerFront)
-                                        .Build(Drawers.FaceHeight, drwWidth);
-            doors.Add(drawers);
-        }
-
-        return doors.ToArray();
 
     }
 

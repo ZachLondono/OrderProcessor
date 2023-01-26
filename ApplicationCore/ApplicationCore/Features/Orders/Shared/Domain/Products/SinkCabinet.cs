@@ -6,7 +6,7 @@ using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer {
+internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDrawerBoxContainer {
 
     public IToeType ToeType { get; }
     public HingeSide HingeSide { get; }
@@ -76,6 +76,10 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
         return doors.ToArray();
 
+    }
+
+    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes() {
+        throw new NotImplementedException();
     }
 
     private string GetProductName() => $"S{DoorQty}D{FalseDrawerQty}FD";

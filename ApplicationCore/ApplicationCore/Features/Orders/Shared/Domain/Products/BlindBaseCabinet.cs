@@ -81,6 +81,10 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     }
 
+    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes() {
+        throw new NotImplementedException();
+    }
+
     private Dictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {
             { "ProductW", Width.AsMillimeters().ToString() },

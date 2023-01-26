@@ -6,7 +6,7 @@ using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
+internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDrawerBoxContainer {
 
     public IToeType ToeType { get; }
     public MDFDoorOptions? Fronts { get; }
@@ -43,7 +43,6 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer 
         yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new());
     }
 
-
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
         if (Fronts is null) {
@@ -66,6 +65,10 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer 
 
         return doors;
 
+    }
+
+    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes() {
+        throw new NotImplementedException();
     }
 
     private string GetProductName() {
