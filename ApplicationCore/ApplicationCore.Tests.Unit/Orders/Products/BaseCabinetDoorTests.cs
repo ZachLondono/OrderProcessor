@@ -37,6 +37,63 @@ public class BaseCabinetDoorTests {
 
     }
 
+    [Fact]
+    public void GetDoors_ShouldReturnCorrectQty_WhenCabinetQtyIsGreatorThan1() {
+
+        int cabinetQty = 2;
+        int doorQty = 2;
+        int drawerQty = 2;
+
+        // Arrange
+        var cabinet = new BaseCabinetBuilder()
+                            .WithDoors(new() { Quantity = doorQty, MDFOptions = _mdfOptions })
+                            .WithDrawers(new() {
+                                BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
+                                Quantity = drawerQty,
+                                SlideType = Features.Orders.Shared.Domain.Enums.DrawerSlideType.UnderMount,
+                                FaceHeight = Dimension.FromMillimeters(157)
+                            })
+                            .WithWidth(Dimension.FromMillimeters(457))
+                            .WithHeight(Dimension.FromMillimeters(876))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .WithQty(cabinetQty)
+                            .Build();
+        cabinet.DoorGaps = _doorGaps;
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Sum(d => d.Qty).Should().Be(cabinetQty * (doorQty + drawerQty));
+
+    }
+
+    [Fact]
+    public void GetDoors_ShouldReturnEmpty_WhenMDFDoorOptionsIsNull() {
+
+        // Arrange
+        var cabinet = new BaseCabinetBuilder()
+                            .WithDoors(new() { Quantity = 1, MDFOptions = null })
+                            .WithDrawers(new() {
+                                BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
+                                Quantity = 1,
+                                SlideType = Features.Orders.Shared.Domain.Enums.DrawerSlideType.UnderMount,
+                                FaceHeight = Dimension.FromMillimeters(157)
+                            })
+                            .WithWidth(Dimension.FromMillimeters(457))
+                            .WithHeight(Dimension.FromMillimeters(876))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .Build();
+        cabinet.DoorGaps = _doorGaps;
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Should().BeEmpty();
+
+    }
+
     [Theory]
     [InlineData(457, 1, 453)]
     [InlineData(762, 2, 377.5)]
@@ -54,6 +111,7 @@ public class BaseCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithQty(2)
                             .Build();
         cabinet.DoorGaps = _doorGaps;
 
@@ -62,7 +120,6 @@ public class BaseCabinetDoorTests {
 
         // Assert
         doors.Should().HaveCount(2);
-        doors.First().Qty.Should().Be(doorQty);
         doors.First().Width.Should().Be(Dimension.FromMillimeters(expectedDoorWidth));
 
     }
@@ -92,7 +149,6 @@ public class BaseCabinetDoorTests {
 
         // Assert
         doors.Should().HaveCount(2);
-        doors.Skip(1).First().Qty.Should().Be(drawerQty);
         doors.Skip(1).First().Width.Should().Be(Dimension.FromMillimeters(expectedDrwWidth));
 
     }

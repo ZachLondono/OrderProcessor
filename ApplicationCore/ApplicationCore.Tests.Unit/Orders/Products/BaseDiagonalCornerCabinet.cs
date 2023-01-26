@@ -1,0 +1,145 @@
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.Shared.Domain;
+using FluentAssertions;
+
+namespace ApplicationCore.Tests.Unit.Orders.Products;
+
+public class BaseDiagonalCornerCabinet {
+
+    private readonly Func<MDFDoorBuilder> _doorBuilderFactory;
+    private readonly CabinetDoorGaps _doorGaps;
+    private readonly MDFDoorOptions _mdfOptions;
+
+    public BaseDiagonalCornerCabinet() {
+
+        var doorConfiguration = new MDFDoorConfiguration() {
+            TopRail = Dimension.Zero,
+            BottomRail = Dimension.Zero,
+            LeftStile = Dimension.Zero,
+            RightStile = Dimension.Zero,
+            EdgeDetail = "",
+            FramingBead = "",
+            Material = ""
+        };
+
+        _doorBuilderFactory = () => new(doorConfiguration);
+
+        _doorGaps = new() {
+            TopGap = Dimension.FromMillimeters(7),
+            BottomGap = Dimension.Zero,
+            EdgeReveal = Dimension.FromMillimeters(3),
+            HorizontalGap = Dimension.FromMillimeters(3),
+            VerticalGap = Dimension.FromMillimeters(3),
+        };
+
+        _mdfOptions = new("Style", "Color");
+
+    }
+
+    [Fact]
+    public void GetDoors_ShouldReturnCorrectQty_WhenCabinetQtyIsGreatorThan1() {
+
+        int cabinetQty = 2;
+        int doorQty = 1;
+
+        // Arrange
+        var cabinet = new BaseDiagonalCornerCabinetBuilder()
+                            .WithDoorQty(doorQty)
+                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(102)))
+                            .WithMDFOptions(_mdfOptions)
+                            .WithRightWidth(Dimension.FromMillimeters(610))
+                            .WithRightDepth(Dimension.FromMillimeters(305))
+                            .WithWidth(Dimension.FromMillimeters(610))
+                            .WithDepth(Dimension.FromMillimeters(305))
+                            .WithHeight(Dimension.FromMillimeters(876))
+                            .WithQty(cabinetQty)
+                            .Build();
+        cabinet.DoorGaps = _doorGaps;
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Sum(d => d.Qty).Should().Be(cabinetQty * doorQty);
+
+    }
+
+    [Fact]
+    public void GetDoors_ShouldReturnEmpty_WhenMDFDoorOptionsIsNull() {
+
+        // Arrange
+        var cabinet = new BaseDiagonalCornerCabinetBuilder()
+                            .WithDoorQty(1)
+                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(102)))
+                            .WithMDFOptions(null)
+                            .WithRightWidth(Dimension.FromMillimeters(610))
+                            .WithRightDepth(Dimension.FromMillimeters(305))
+                            .WithWidth(Dimension.FromMillimeters(610))
+                            .WithDepth(Dimension.FromMillimeters(305))
+                            .WithHeight(Dimension.FromMillimeters(876))
+                            .Build();
+        cabinet.DoorGaps = _doorGaps;
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Should().BeEmpty();
+
+    }
+
+    [Theory]
+    [InlineData(610, 610, 305, 305, 1, 398.5)]
+    [InlineData(610, 610, 305, 305, 2, 197.5)]
+    [InlineData(610, 710, 400, 305, 2, 199.5)]
+    public void DoorWidthTest(double cabWidth, double rightWidth, double cabDepth, double rightDepth, int doorQty, double expectedDoorWidth) {
+
+        // Arrange
+        var cabinet = new BaseDiagonalCornerCabinetBuilder()
+                            .WithDoorQty(doorQty)
+                            .WithMDFOptions(_mdfOptions)
+                            .WithRightWidth(Dimension.FromMillimeters(rightWidth))
+                            .WithRightDepth(Dimension.FromMillimeters(rightDepth))
+                            .WithWidth(Dimension.FromMillimeters(cabWidth))
+                            .WithDepth(Dimension.FromMillimeters(cabDepth))
+                            .WithHeight(Dimension.FromMillimeters(876))
+                            .Build();
+        cabinet.DoorGaps = _doorGaps;
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Should().HaveCount(1);
+        doors.First().Qty.Should().Be(doorQty * cabinet.Qty);
+        doors.First().Width.AsMillimeters().Should().BeInRange(expectedDoorWidth - 0.5, expectedDoorWidth + 0.5);
+
+    }
+
+    [Theory]
+    [InlineData(876, 102, 767)]
+    public void DoorHeightTest(double cabHeight, double toeHeight, double expectedDoorHeight) {
+
+        // Arrange
+        var cabinet = new BaseDiagonalCornerCabinetBuilder()
+                            .WithDoorQty(1)
+                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(toeHeight)))
+                            .WithMDFOptions(_mdfOptions)
+                            .WithRightWidth(Dimension.FromMillimeters(610))
+                            .WithRightDepth(Dimension.FromMillimeters(305))
+                            .WithWidth(Dimension.FromMillimeters(610))
+                            .WithDepth(Dimension.FromMillimeters(305))
+                            .WithHeight(Dimension.FromMillimeters(cabHeight))
+                            .Build();
+        cabinet.DoorGaps = _doorGaps;
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.First().Height.Should().Be(Dimension.FromMillimeters(expectedDoorHeight));
+
+    }
+
+}

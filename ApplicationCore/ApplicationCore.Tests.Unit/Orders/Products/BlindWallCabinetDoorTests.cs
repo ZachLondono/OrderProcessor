@@ -5,13 +5,13 @@ using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products;
 
-public class WallCabinetDoorTests {
+public class BlindWallCabinetDoorTests {
 
     private readonly Func<MDFDoorBuilder> _doorBuilderFactory;
     private readonly CabinetDoorGaps _doorGaps;
     private readonly MDFDoorOptions _mdfOptions;
 
-    public WallCabinetDoorTests() {
+    public BlindWallCabinetDoorTests() {
 
         var doorConfiguration = new MDFDoorConfiguration() {
             TopRail = Dimension.Zero,
@@ -41,13 +41,14 @@ public class WallCabinetDoorTests {
     public void GetDoors_ShouldReturnCorrectQty_WhenCabinetQtyIsGreatorThan1() {
 
         int cabinetQty = 2;
-        int doorQty = 1;
+        int doorQty = 2;
 
         // Arrange
-        var cabinet = new WallCabinetBuilder()
+        var cabinet = new BlindWallCabinetBuilder()
                             .WithDoors(new() { Quantity = doorQty, MDFOptions = _mdfOptions })
-                            .WithWidth(Dimension.FromMillimeters(456))
-                            .WithHeight(Dimension.FromMillimeters(914))
+                            .WithBlindWidth(Dimension.FromMillimeters(339))
+                            .WithWidth(Dimension.FromMillimeters(685))
+                            .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(cabinetQty)
                             .Build();
@@ -65,10 +66,11 @@ public class WallCabinetDoorTests {
     public void GetDoors_ShouldReturnEmpty_WhenMDFDoorOptionsIsNull() {
 
         // Arrange
-        var cabinet = new WallCabinetBuilder()
+        var cabinet = new BlindWallCabinetBuilder()
                             .WithDoors(new() { Quantity = 1, MDFOptions = null })
-                            .WithWidth(Dimension.FromMillimeters(456))
-                            .WithHeight(Dimension.FromMillimeters(914))
+                            .WithBlindWidth(Dimension.FromMillimeters(339))
+                            .WithWidth(Dimension.FromMillimeters(685))
+                            .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .Build();
         cabinet.DoorGaps = _doorGaps;
@@ -82,45 +84,19 @@ public class WallCabinetDoorTests {
     }
 
     [Theory]
-    [InlineData(914, 911)]
-    [InlineData(756, 753)]
-    public void DoorHeightTests(double cabHeight, double expectedDoorHeight) {
+    [InlineData(685, 1, 339, 342.5)]
+    [InlineData(993, 2, 339, 323.75)]
+    public void DoorWidth_ShouldBeCorrect(double cabWidth, int doorQty, double blindWidth, double expectedDoorWidth) {
 
         // Arrange
-        var cabinet = new WallCabinetBuilder()
-                            .WithDoors(new() { Quantity = 1, MDFOptions = _mdfOptions })
-                            .WithWidth(Dimension.FromMillimeters(456))
-                            .WithHeight(Dimension.FromMillimeters(cabHeight))
-                            .WithDepth(Dimension.FromMillimeters(610))
-                            .Build();
-        cabinet.DoorGaps = _doorGaps;
-
-
-        // Act
-        var doors = cabinet.GetDoors(_doorBuilderFactory);
-
-        // Assert
-        doors.Should().HaveCount(1);
-        doors.First().Height.Should().Be(Dimension.FromMillimeters(expectedDoorHeight));
-
-    }
-
-
-
-    [Theory]
-    [InlineData(406, 1, 402)]
-    [InlineData(610, 2, 301.5)]
-    public void DoorWidthTests(double cabWidth, int doorQty, double expectedDoorWidth) {
-
-        // Arrange
-        var cabinet = new WallCabinetBuilder()
+        var cabinet = new BlindWallCabinetBuilder()
                             .WithDoors(new() { Quantity = doorQty, MDFOptions = _mdfOptions })
+                            .WithBlindWidth(Dimension.FromMillimeters(blindWidth))
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
-                            .WithHeight(Dimension.FromMillimeters(914))
+                            .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .Build();
         cabinet.DoorGaps = _doorGaps;
-
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
@@ -128,6 +104,29 @@ public class WallCabinetDoorTests {
         // Assert
         doors.Should().HaveCount(1);
         doors.First().Width.Should().Be(Dimension.FromMillimeters(expectedDoorWidth));
+
+    }
+
+    [Theory]
+    [InlineData(914, 911)]
+    [InlineData(876, 873)]
+    public void DoorHeight_ShouldBeCorrect(double cabHeight, double expectedDoorHeight) {
+
+        // Arrange
+        var cabinet = new BlindWallCabinetBuilder()
+                            .WithDoors(new() { Quantity = 1, MDFOptions = _mdfOptions })
+                            .WithWidth(Dimension.FromMillimeters(456))
+                            .WithHeight(Dimension.FromMillimeters(cabHeight))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .Build();
+        cabinet.DoorGaps = _doorGaps;
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Should().HaveCount(1);
+        doors.First().Height.Should().Be(Dimension.FromMillimeters(expectedDoorHeight));
 
     }
 

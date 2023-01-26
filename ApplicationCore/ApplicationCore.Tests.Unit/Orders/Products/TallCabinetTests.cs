@@ -38,6 +38,52 @@ public class TallCabinetDoorTests {
 
     }
 
+    [Fact]
+    public void GetDoors_ShouldReturnCorrectQty_WhenCabinetQtyIsGreatorThan1() {
+
+        int cabinetQty = 2;
+        int doorQty = 1;
+
+        // Arrange
+        var cabinet = new TallCabinetBuilder()
+                            .WithDoors(new(HingeSide.Left, _mdfOptions))
+                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(102)))
+                            .WithWidth(Dimension.FromMillimeters(457))
+                            .WithHeight(Dimension.FromMillimeters(2134))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .WithQty(cabinetQty)
+                            .Build();
+        cabinet.DoorGaps = _doorGaps;
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Sum(d => d.Qty).Should().Be(cabinetQty * doorQty);
+
+    }
+
+    [Fact]
+    public void GetDoors_ShouldReturnEmpty_WhenMDFDoorOptionsIsNull() {
+
+        // Arrange
+        var cabinet = new TallCabinetBuilder()
+                            .WithDoors(new(HingeSide.Left, null))
+                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(102)))
+                            .WithWidth(Dimension.FromMillimeters(457))
+                            .WithHeight(Dimension.FromMillimeters(2134))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .Build();
+        cabinet.DoorGaps = _doorGaps;
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Should().BeEmpty();
+
+    }
+
     [Theory]
     [InlineData(2134, HingeSide.Left, 1, 2029)]
     [InlineData(2134, HingeSide.Right, 1, 2029)]
@@ -60,7 +106,6 @@ public class TallCabinetDoorTests {
 
         // Assert
         doors.Should().HaveCount(1);
-        doors.First().Qty.Should().Be(expectedDoorQty);
         doors.First().Height.Should().Be(Dimension.FromMillimeters(expectedCabinetHeight));
 
     }
@@ -86,7 +131,6 @@ public class TallCabinetDoorTests {
 
         // Assert
         doors.Should().HaveCount(1);
-        doors.First().Qty.Should().Be(expectedDoorQty);
         doors.First().Width.Should().Be(Dimension.FromMillimeters(expectedCabinetWidth));
 
     }
@@ -115,8 +159,7 @@ public class TallCabinetDoorTests {
         doors.Should().HaveCount(2);
         doors.First().Height.Should().Be(Dimension.FromMillimeters(expectedCabinetHeight));
         doors.Skip(1).First().Height.Should().Be(Dimension.FromMillimeters(lowerDoorHeight));
-        doors.Sum(d => d.Qty).Should().Be(expectedDoorQty);
-
+        
     }
 
 }

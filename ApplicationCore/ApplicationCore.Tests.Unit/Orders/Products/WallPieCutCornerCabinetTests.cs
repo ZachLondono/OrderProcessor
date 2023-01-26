@@ -1,0 +1,137 @@
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.Shared.Domain;
+using FluentAssertions;
+
+namespace ApplicationCore.Tests.Unit.Orders.Products;
+
+public class WallPieCutCornerCabinetTests {
+
+    private readonly Func<MDFDoorBuilder> _doorBuilderFactory;
+    private readonly CabinetDoorGaps _doorGaps;
+    private readonly MDFDoorOptions _mdfOptions;
+
+    public WallPieCutCornerCabinetTests() {
+
+        var doorConfiguration = new MDFDoorConfiguration() {
+            TopRail = Dimension.Zero,
+            BottomRail = Dimension.Zero,
+            LeftStile = Dimension.Zero,
+            RightStile = Dimension.Zero,
+            EdgeDetail = "",
+            FramingBead = "",
+            Material = ""
+        };
+
+        _doorBuilderFactory = () => new(doorConfiguration);
+
+        _doorGaps = new() {
+            TopGap = Dimension.FromMillimeters(3),
+            BottomGap = Dimension.Zero,
+            EdgeReveal = Dimension.FromMillimeters(2),
+            HorizontalGap = Dimension.FromMillimeters(3),
+            VerticalGap = Dimension.FromMillimeters(3),
+        };
+
+        _mdfOptions = new("Style", "Color");
+
+    }
+
+    [Fact]
+    public void GetDoors_ShouldReturnCorrectQty_WhenCabinetQtyIsGreatorThan1() {
+
+        int cabinetQty = 2;
+        int doorQty = 2;
+
+        // Arrange
+        var cabinet = new WallPieCutCornerCabinetBuilder()
+                            .WithMDFOptions(_mdfOptions)
+                            .WithRightWidth(Dimension.FromMillimeters(610))
+                            .WithRightDepth(Dimension.FromMillimeters(305))
+                            .WithWidth(Dimension.FromMillimeters(610))
+                            .WithDepth(Dimension.FromMillimeters(305))
+                            .WithHeight(Dimension.FromMillimeters(914))
+                            .WithQty(cabinetQty)
+                            .Build();
+        cabinet.DoorGaps = _doorGaps;
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Sum(d => d.Qty).Should().Be(cabinetQty * doorQty);
+
+    }
+
+    [Fact]
+    public void GetDoors_ShouldReturnEmpty_WhenMDFDoorOptionsIsNull() {
+
+        // Arrange
+        var cabinet = new WallPieCutCornerCabinetBuilder()
+                            .WithMDFOptions(null)
+                            .WithRightWidth(Dimension.FromMillimeters(610))
+                            .WithRightDepth(Dimension.FromMillimeters(305))
+                            .WithWidth(Dimension.FromMillimeters(610))
+                            .WithDepth(Dimension.FromMillimeters(305))
+                            .WithHeight(Dimension.FromMillimeters(914))
+                            .Build();
+        cabinet.DoorGaps = _doorGaps;
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Should().BeEmpty();
+
+    }
+
+    [Theory]
+    [InlineData(610, 610, 305, 305, 281, 281)]
+    [InlineData(610, 710, 400, 305, 286, 281)]
+    public void DoorWidthTest(double cabWidth, double rightWidth, double cabDepth, double rightDepth, double expectedDoorWidthA, double expectedDoorWidthB) {
+
+        // Arrange
+        var cabinet = new WallPieCutCornerCabinetBuilder()
+                            .WithMDFOptions(_mdfOptions)
+                            .WithRightWidth(Dimension.FromMillimeters(rightWidth))
+                            .WithRightDepth(Dimension.FromMillimeters(rightDepth))
+                            .WithWidth(Dimension.FromMillimeters(cabWidth))
+                            .WithDepth(Dimension.FromMillimeters(cabDepth))
+                            .WithHeight(Dimension.FromMillimeters(876))
+                            .Build();
+        cabinet.DoorGaps = _doorGaps;
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Should().HaveCount(2);
+        doors.Should().Contain(d => d.Width == Dimension.FromMillimeters(expectedDoorWidthA));
+        doors.Should().Contain(d => d.Width == Dimension.FromMillimeters(expectedDoorWidthB));
+
+    }
+
+    [Theory]
+    [InlineData(914, 911)]
+    public void DoorHeightTest(double cabHeight, double expectedDoorHeight) {
+
+        // Arrange
+        var cabinet = new WallPieCutCornerCabinetBuilder()
+                            .WithMDFOptions(_mdfOptions)
+                            .WithRightWidth(Dimension.FromMillimeters(610))
+                            .WithRightDepth(Dimension.FromMillimeters(305))
+                            .WithWidth(Dimension.FromMillimeters(610))
+                            .WithDepth(Dimension.FromMillimeters(305))
+                            .WithHeight(Dimension.FromMillimeters(cabHeight))
+                            .Build();
+        cabinet.DoorGaps = _doorGaps;
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.First().Height.Should().Be(Dimension.FromMillimeters(expectedDoorHeight));
+
+    }
+
+}

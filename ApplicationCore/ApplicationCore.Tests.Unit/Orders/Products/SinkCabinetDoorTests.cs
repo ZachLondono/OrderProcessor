@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using FluentAssertions;
@@ -37,6 +38,52 @@ public class SinkCabinetDoorTests {
 
     }
 
+    [Fact]
+    public void GetDoors_ShouldReturnCorrectQty_WhenCabinetQtyIsGreatorThan1() {
+
+        int cabinetQty = 2;
+        int doorQty = 1;
+
+        // Arrange
+        var cabinet = new SinkCabinetBuilder()
+                            .WithMDFOptions(_mdfOptions)
+                            .WithDoorQty(doorQty)
+                            .WithWidth(Dimension.FromMillimeters(457))
+                            .WithHeight(Dimension.FromMillimeters(876))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .WithQty(cabinetQty)
+                            .Build();
+        cabinet.DoorGaps = _doorGaps;
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Sum(d => d.Qty).Should().Be(cabinetQty * doorQty);
+
+    }
+
+    [Fact]
+    public void GetDoors_ShouldReturnEmpty_WhenMDFDoorOptionsIsNull() {
+
+        // Arrange
+        var cabinet = new SinkCabinetBuilder()
+                            .WithMDFOptions(null)
+                            .WithDoorQty(1)
+                            .WithWidth(Dimension.FromMillimeters(457))
+                            .WithHeight(Dimension.FromMillimeters(876))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .Build();
+        cabinet.DoorGaps = _doorGaps;
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Should().BeEmpty();
+
+    }
+
     [Theory]
     [InlineData(457, 1, 453)]
     [InlineData(762, 2, 377.5)]
@@ -57,7 +104,6 @@ public class SinkCabinetDoorTests {
 
         // Assert
         doors.Should().HaveCount(1);
-        doors.First().Qty.Should().Be(doorQty);
         doors.First().Width.Should().Be(Dimension.FromMillimeters(expectedDoorWidth));
 
     }
@@ -83,7 +129,6 @@ public class SinkCabinetDoorTests {
 
         // Assert
         doors.Should().HaveCount(2);
-        doors.Skip(1).First().Qty.Should().Be(drawerQty);
         doors.Skip(1).First().Width.Should().Be(Dimension.FromMillimeters(expectedDrwWidth));
 
     }
