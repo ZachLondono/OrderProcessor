@@ -18,6 +18,8 @@ public abstract class CabinetModelBase : ProductModel {
     [XmlElement("cabinet")]
     public CabinetModel Cabinet { get; set; } = new();
 
+    public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
+
     public TBuilder InitilizeBuilder<TBuilder, TCabinet>(TBuilder builder) where TBuilder : CabinetBuilder<TCabinet> where TCabinet : Cabinet {
 
         CabinetMaterialCore boxCore = AllmoxyXMLOrderProviderHelpers.GetMaterialCore(Cabinet.BoxMaterial.Type);
@@ -48,7 +50,7 @@ public abstract class CabinetModelBase : ProductModel {
 
         return (TBuilder)builder.WithQty(Cabinet.Qty)
                                     .WithUnitPrice(AllmoxyXMLOrderProviderHelpers.StringToMoney(Cabinet.UnitPrice))
-                                    .WithProductNumber(int.Parse($"{GroupNumber}{LineNumber}"))
+                                    .WithProductNumber(GetProductNumber())
                                     .WithBoxMaterial(boxMaterial)
                                     .WithFinishMaterial(finishMaterial)
                                     .WithLeftSide(leftSide)

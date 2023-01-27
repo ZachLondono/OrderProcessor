@@ -58,7 +58,6 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
         var custLine2Str = string.IsNullOrWhiteSpace(order.Shipping.Address.Country + order.Shipping.Address.State + order.Shipping.Address.Zip) ? "" : $"{order.Shipping.Address.City}, {order.Shipping.Address.State} {order.Shipping.Address.Zip}";
         var vendLine2Str = string.IsNullOrWhiteSpace(vendor.Address.Country + vendor.Address.State + vendor.Address.Zip) ? "" : $"{vendor.Address.City}, {vendor.Address.State} {vendor.Address.Zip}";
 
-        int line = 1;
         var items = order.Products
                         .Where(p => p is IDrawerBoxContainer)
                         .Cast<IDrawerBoxContainer>()
@@ -71,7 +70,7 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
                             }
                         })
                         .Select(b => new Item() {
-                            Line = line++,
+                            Line = b.ProductNumber,
                             Qty = b.Qty,
                             Description = "Drawer Box",
                             Logo = b.Options.Logo == LogoPosition.None ? "N" : "Y",

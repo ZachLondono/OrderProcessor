@@ -43,7 +43,6 @@ internal class BoxLabelsHandler : DomainListener<TriggerOrderReleaseNotification
                                 })
                                 .ToList();
 
-        int line = 1;
         var labels = new List<Label>();
         foreach (var box in dovetailBoxes) {
 
@@ -54,7 +53,7 @@ internal class BoxLabelsHandler : DomainListener<TriggerOrderReleaseNotification
                 { "OrderName", order.Name },
                 { "Comment", order.CustomerComment },
                 { "Qty", box.Qty.ToString() },
-                { "LineNum", line++.ToString() },
+                { "LineNum", box.ProductNumber.ToString() },
                 { "Size", sizeStr },
             };
 

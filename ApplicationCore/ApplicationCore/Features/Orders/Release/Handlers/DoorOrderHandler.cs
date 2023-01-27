@@ -102,6 +102,7 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
             ws.Range["EdgeDetail"].Value2 = "Eased";
             ws.Range["PanelDetail"].Value2 = "Flat";
 
+            var partNumRng = ws.Range["A15"];
             var descRng = ws.Range["DescriptionStart"];
             var qtyRng = ws.Range["QtyStart"];
             var widthRng = ws.Range["WidthStart"];
@@ -112,6 +113,7 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
 
             foreach (var door in doors) {
 
+                partNumRng.Offset[offset].Value2 = door.ProductNumber;
                 descRng.Offset[offset].Value2 = door.Type switch {
                     DoorType.Door => "Door",
                     DoorType.DrawerFront => "Drawer Front",
