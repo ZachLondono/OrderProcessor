@@ -21,14 +21,14 @@ public record WallCabinetDoors {
         Quantity = 2;
         HingeSide = HingeSide.NotApplicable;
         MDFOptions = mdfOptions;
-        ExtendDown = extendDown is null ? Dimension.Zero : extendDown;
+        ExtendDown = extendDown is null ? Dimension.Zero : (Dimension) extendDown;
     }
 
     public WallCabinetDoors(HingeSide hingeSide, Dimension? extendDown = null, MDFDoorOptions? mdfOptions = null) {
         Quantity = 1;
         HingeSide = hingeSide;
         MDFOptions = mdfOptions;
-        ExtendDown = extendDown is null ? Dimension.Zero : extendDown;
+        ExtendDown = extendDown is null ? Dimension.Zero : (Dimension) extendDown;
     }
 
 }
