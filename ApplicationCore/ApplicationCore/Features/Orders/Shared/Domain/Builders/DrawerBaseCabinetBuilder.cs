@@ -10,7 +10,6 @@ internal class DrawerBaseCabinetBuilder : CabinetBuilder<DrawerBaseCabinet> {
     public IToeType ToeType { get; private set; }
     public MDFDoorOptions? Fronts { get; private set; }
     public VerticalDrawerBank Drawers { get; private set; }
-    public CabinetDoorGaps DoorGaps { get; private set; }
 
     public DrawerBaseCabinetBuilder() {
         ToeType = new NoToe();
@@ -19,13 +18,6 @@ internal class DrawerBaseCabinetBuilder : CabinetBuilder<DrawerBaseCabinet> {
             BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
             FaceHeights = Enumerable.Empty<Dimension>(),
             SlideType = DrawerSlideType.UnderMount
-        };
-        DoorGaps = new() {
-            TopGap = Dimension.FromMillimeters(7),
-            BottomGap = Dimension.Zero,
-            EdgeReveal = Dimension.FromMillimeters(2),
-            HorizontalGap = Dimension.FromMillimeters(3),
-            VerticalGap = Dimension.FromMillimeters(3),
         };
     }
 
@@ -46,7 +38,6 @@ internal class DrawerBaseCabinetBuilder : CabinetBuilder<DrawerBaseCabinet> {
 
     public override DrawerBaseCabinet Build() {
         var cabinet = DrawerBaseCabinet.Create(Qty, UnitPrice, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, ToeType, Drawers, Fronts);
-        cabinet.DoorGaps = DoorGaps;
         return cabinet;
     }
 }

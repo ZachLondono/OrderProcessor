@@ -16,7 +16,13 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
     public MDFDoorOptions? MDFOptions { get; }
     public int AdjustableShelves { get; }
 
-    public CabinetDoorGaps DoorGaps { get; set; } = new();
+    public static CabinetDoorGaps DoorGaps { get; set; } = new() {
+        TopGap = Dimension.FromMillimeters(7),
+        BottomGap = Dimension.Zero,
+        EdgeReveal = Dimension.FromMillimeters(3),
+        HorizontalGap = Dimension.FromMillimeters(3),
+        VerticalGap = Dimension.FromMillimeters(3),
+    };
 
     public BaseDiagonalCornerCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,

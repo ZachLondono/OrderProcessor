@@ -14,7 +14,13 @@ internal class WallPieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
     public HingeSide HingeSide { get; }
     public MDFDoorOptions? MDFOptions { get; }
 
-    public CabinetDoorGaps DoorGaps { get; set; } = new();
+    public static CabinetDoorGaps DoorGaps { get; set; } = new() {
+        TopGap = Dimension.FromMillimeters(3),
+        BottomGap = Dimension.Zero,
+        EdgeReveal = Dimension.FromMillimeters(2),
+        HorizontalGap = Dimension.FromMillimeters(3),
+        VerticalGap = Dimension.FromMillimeters(3),
+    };
 
     public WallPieCutCornerCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,

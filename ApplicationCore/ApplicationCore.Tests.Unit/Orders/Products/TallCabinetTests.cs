@@ -9,7 +9,6 @@ namespace ApplicationCore.Tests.Unit.Orders.Products;
 public class TallCabinetDoorTests {
 
     private readonly Func<MDFDoorBuilder> _doorBuilderFactory;
-    private readonly CabinetDoorGaps _doorGaps;
     private readonly MDFDoorOptions _mdfOptions;
 
     public TallCabinetDoorTests() {
@@ -25,14 +24,6 @@ public class TallCabinetDoorTests {
         };
 
         _doorBuilderFactory = () => new(doorConfiguration);
-
-        _doorGaps = new() {
-            TopGap = Dimension.FromMillimeters(3),
-            BottomGap = Dimension.Zero,
-            EdgeReveal = Dimension.FromMillimeters(2),
-            HorizontalGap = Dimension.FromMillimeters(3),
-            VerticalGap = Dimension.FromMillimeters(3),
-        };
 
         _mdfOptions = new("Style", "Color");
 
@@ -53,7 +44,7 @@ public class TallCabinetDoorTests {
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(cabinetQty)
                             .Build();
-        cabinet.DoorGaps = _doorGaps;
+        
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
@@ -74,7 +65,7 @@ public class TallCabinetDoorTests {
                             .WithHeight(Dimension.FromMillimeters(2134))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .Build();
-        cabinet.DoorGaps = _doorGaps;
+        
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
@@ -98,14 +89,16 @@ public class TallCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithQty(1)
                             .Build();
-        cabinet.DoorGaps = _doorGaps;
+        
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
 
         // Assert
         doors.Should().HaveCount(1);
+        doors.Sum(d => d.Qty).Should().Be(expectedDoorQty);
         doors.First().Height.Should().Be(Dimension.FromMillimeters(expectedCabinetHeight));
 
     }
@@ -123,14 +116,16 @@ public class TallCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(2134))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithQty(1)
                             .Build();
-        cabinet.DoorGaps = _doorGaps;
+        
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
 
         // Assert
         doors.Should().HaveCount(1);
+        doors.Sum(d => d.Qty).Should().Be(expectedDoorQty);
         doors.First().Width.Should().Be(Dimension.FromMillimeters(expectedCabinetWidth));
 
     }
@@ -149,14 +144,16 @@ public class TallCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithQty(1)
                             .Build();
-        cabinet.DoorGaps = _doorGaps;
+        
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
 
         // Assert
         doors.Should().HaveCount(2);
+        doors.Sum(d => d.Qty).Should().Be(expectedDoorQty);
         doors.First().Height.Should().Be(Dimension.FromMillimeters(expectedCabinetHeight));
         doors.Skip(1).First().Height.Should().Be(Dimension.FromMillimeters(lowerDoorHeight));
 

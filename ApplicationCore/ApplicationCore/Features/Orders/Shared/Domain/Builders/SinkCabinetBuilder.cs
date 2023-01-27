@@ -16,7 +16,6 @@ internal class SinkCabinetBuilder : CabinetBuilder<SinkCabinet> {
     public ShelfDepth ShelfDepth { get; private set; }
     public RollOutOptions RollOutBoxes { get; private set; }
     public MDFDoorOptions? MDFOptions { get; private set; }
-    public CabinetDoorGaps DoorGaps { get; private set; }
 
     public SinkCabinetBuilder() {
         ToeType = new NoToe();
@@ -28,13 +27,6 @@ internal class SinkCabinetBuilder : CabinetBuilder<SinkCabinet> {
         ShelfDepth = ShelfDepth.Default;
         MDFOptions = null;
         RollOutBoxes = new(Array.Empty<Dimension>(), false, RollOutBlockPosition.Both, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.FingerJointBirch);
-        DoorGaps = new() {
-            TopGap = Dimension.FromMillimeters(7),
-            BottomGap = Dimension.Zero,
-            EdgeReveal = Dimension.FromMillimeters(2),
-            HorizontalGap = Dimension.FromMillimeters(3),
-            VerticalGap = Dimension.FromMillimeters(3),
-        };
     }
 
     public SinkCabinetBuilder WithToeType(IToeType toeType) {
@@ -85,7 +77,6 @@ internal class SinkCabinetBuilder : CabinetBuilder<SinkCabinet> {
 
     public override SinkCabinet Build() {
         var cabinet = SinkCabinet.Create(Qty, UnitPrice, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, ToeType, HingeSide, DoorQty, FalseDrawerQty, DrawerFaceHeight, AdjustableShelves, ShelfDepth, RollOutBoxes, MDFOptions);
-        cabinet.DoorGaps = DoorGaps;
         return cabinet;
     }
 

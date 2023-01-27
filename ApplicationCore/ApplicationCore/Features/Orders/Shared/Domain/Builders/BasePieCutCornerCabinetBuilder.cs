@@ -22,13 +22,6 @@ internal class BasePieCutCornerCabinetBuilder : CabinetBuilder<BasePieCutCornerC
         AdjustableShelves = 0;
         HingeSide = HingeSide.Left;
         MDFOptions = null;
-        DoorGaps = new() {
-            TopGap = Dimension.FromMillimeters(7),
-            BottomGap = Dimension.Zero,
-            EdgeReveal = Dimension.FromMillimeters(2),
-            HorizontalGap = Dimension.FromMillimeters(3),
-            VerticalGap = Dimension.FromMillimeters(3),
-        };
     }
 
     public BasePieCutCornerCabinetBuilder WithRightWidth(Dimension rightWidth) {
@@ -63,7 +56,6 @@ internal class BasePieCutCornerCabinetBuilder : CabinetBuilder<BasePieCutCornerC
 
     public override BasePieCutCornerCabinet Build() {
         var cabinet = BasePieCutCornerCabinet.Create(Qty, UnitPrice, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, RightWidth, RightDepth, ToeType, AdjustableShelves, HingeSide, MDFOptions);
-        cabinet.DoorGaps = DoorGaps;
         return cabinet;
     }
 

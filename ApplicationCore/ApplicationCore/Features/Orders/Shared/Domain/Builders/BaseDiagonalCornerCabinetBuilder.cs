@@ -14,7 +14,6 @@ internal class BaseDiagonalCornerCabinetBuilder : CabinetBuilder<BaseDiagonalCor
     public int DoorQty { get; private set; }
     public MDFDoorOptions? MDFOptions { get; private set; }
     public int AdjustableShelves { get; private set; }
-    public CabinetDoorGaps DoorGaps { get; private set; }
 
     public BaseDiagonalCornerCabinetBuilder() {
         RightWidth = Dimension.Zero;
@@ -24,13 +23,6 @@ internal class BaseDiagonalCornerCabinetBuilder : CabinetBuilder<BaseDiagonalCor
         DoorQty = 0;
         MDFOptions = null;
         AdjustableShelves = 0;
-        DoorGaps = new() {
-            TopGap = Dimension.FromMillimeters(7),
-            BottomGap = Dimension.Zero,
-            EdgeReveal = Dimension.FromMillimeters(3),
-            HorizontalGap = Dimension.FromMillimeters(3),
-            VerticalGap = Dimension.FromMillimeters(3),
-        };
     }
 
     public BaseDiagonalCornerCabinetBuilder WithRightWidth(Dimension rightWidth) {
@@ -70,7 +62,6 @@ internal class BaseDiagonalCornerCabinetBuilder : CabinetBuilder<BaseDiagonalCor
 
     public override BaseDiagonalCornerCabinet Build() {
         var cabinet = BaseDiagonalCornerCabinet.Create(Qty, UnitPrice, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, RightWidth, RightDepth, ToeType, AdjustableShelves, HingeSide, DoorQty, MDFOptions);
-        cabinet.DoorGaps = DoorGaps;
         return cabinet;
     }
 

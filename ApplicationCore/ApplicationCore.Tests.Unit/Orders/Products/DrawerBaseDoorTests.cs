@@ -8,7 +8,6 @@ namespace ApplicationCore.Tests.Unit.Orders.Products;
 public class DrawerBaseDoorTests {
 
     private readonly Func<MDFDoorBuilder> _doorBuilderFactory;
-    private readonly CabinetDoorGaps _doorGaps;
     private readonly MDFDoorOptions _mdfOptions;
 
     public DrawerBaseDoorTests() {
@@ -24,14 +23,6 @@ public class DrawerBaseDoorTests {
         };
 
         _doorBuilderFactory = () => new(doorConfiguration);
-
-        _doorGaps = new() {
-            TopGap = Dimension.FromMillimeters(7),
-            BottomGap = Dimension.Zero,
-            EdgeReveal = Dimension.FromMillimeters(2),
-            HorizontalGap = Dimension.FromMillimeters(3),
-            VerticalGap = Dimension.FromMillimeters(3),
-        };
 
         _mdfOptions = new("Style", "Color");
 
@@ -59,7 +50,7 @@ public class DrawerBaseDoorTests {
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(cabinetQty)
                             .Build();
-        cabinet.DoorGaps = _doorGaps;
+        
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
@@ -86,7 +77,7 @@ public class DrawerBaseDoorTests {
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .Build();
-        cabinet.DoorGaps = _doorGaps;
+        
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
@@ -114,7 +105,7 @@ public class DrawerBaseDoorTests {
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .Build();
-        cabinet.DoorGaps = _doorGaps;
+        
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
@@ -146,7 +137,7 @@ public class DrawerBaseDoorTests {
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .Build();
-        cabinet.DoorGaps = _doorGaps;
+        
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
