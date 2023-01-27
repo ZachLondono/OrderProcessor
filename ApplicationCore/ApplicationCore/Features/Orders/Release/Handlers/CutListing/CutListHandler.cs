@@ -128,7 +128,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
                                         items.Add(new() {
                                             GroupNumber = groupNum,
-                                            CabNumber = groupNum, // TODO: get cabnumber from part
+                                            CabNumber = part.ProductNumber.ToString(),
                                             LineNumber = lineNum++,
                                             PartName = part.Type.ToString(),
                                             Qty = part.Qty,
@@ -156,10 +156,11 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                 .GroupBy(p => (p.Material, p.Width, p.Length)) // TODO: if there are multiple scoop fronts they should be grouped together
                                 .Select(g => {
                                     var qty = g.Sum(b => b.Qty);
+                                    string cabNumbers = string.Join(',', g.Select(p => p.ProductNumber).Distinct());
                                     groupNum++;
                                     return new Item() {
                                         GroupNumber = groupNum,
-                                        CabNumber = groupNum, // TODO: get cabnumber from part
+                                        CabNumber = cabNumbers,
                                         LineNumber = lineNum++,
                                         PartName = DrawerBoxPartType.Unknown.ToString(),
                                         Qty = qty,
@@ -188,7 +189,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                     foreach (var part in b.GetParts(construction).Where(p => p.Type == DrawerBoxPartType.Bottom)) {
                                         items.Add(new() {
                                             GroupNumber = groupNum,
-                                            CabNumber = groupNum, // TODO: get cabnumber from part
+                                            CabNumber = part.ProductNumber.ToString(),
                                             LineNumber = lineNum++,
                                             PartName = part.Type.ToString(),
                                             Qty = part.Qty,

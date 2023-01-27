@@ -4,7 +4,7 @@ public class Item {
 
     public int GroupNumber { get; set; }
 
-    public int CabNumber { get; set; }
+    public string CabNumber { get; set; } = string.Empty;
 
     public string PartName { get; set; } = string.Empty;
 
