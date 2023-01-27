@@ -7,6 +7,7 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Builders;
 public class MDFDoorBuilder {
 
     private int _qty;
+    private int _productNumber;
     private DoorType _type;
     private string _note;
     private string _material;
@@ -65,9 +66,14 @@ public class MDFDoorBuilder {
         return this;
     }
 
+    public MDFDoorBuilder WithProductNumber(int productNumber) {
+        _productNumber = productNumber;
+        return this;
+    }
+
     public MDFDoor Build(Dimension height, Dimension width) {
 
-        return new MDFDoor(_qty, _type, height, width, _note, _material, _framingBead, _edgeDetail, _frameSize, Dimension.Zero);
+        return new MDFDoor(_qty, _productNumber, _type, height, width, _note, _material, _framingBead, _edgeDetail, _frameSize, Dimension.Zero);
 
     }
 

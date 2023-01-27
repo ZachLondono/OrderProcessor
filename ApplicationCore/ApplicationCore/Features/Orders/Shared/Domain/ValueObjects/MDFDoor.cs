@@ -6,6 +6,7 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 public class MDFDoor {
 
     public int Qty { get; }
+    public int ProductNumber { get; }
     public DoorType Type { get; }
     public Dimension Height { get; }
     public Dimension Width { get; }
@@ -16,8 +17,9 @@ public class MDFDoor {
     public DoorFrame FrameSize { get; }
     public Dimension PanelDrop { get; }
 
-    public MDFDoor(int qty, DoorType type, Dimension height, Dimension width, string note, string material, string framingBead, string edgeDetail, DoorFrame frameSize, Dimension panelDrop) {
+    public MDFDoor(int qty, int productNumber, DoorType type, Dimension height, Dimension width, string note, string material, string framingBead, string edgeDetail, DoorFrame frameSize, Dimension panelDrop) {
         Qty = qty;
+        ProductNumber = productNumber;
         Type = type;
         Height = height;
         Width = width;

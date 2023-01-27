@@ -48,6 +48,7 @@ public abstract class CabinetModelBase : ProductModel {
 
         return (TBuilder)builder.WithQty(Cabinet.Qty)
                                     .WithUnitPrice(AllmoxyXMLOrderProviderHelpers.StringToMoney(Cabinet.UnitPrice))
+                                    .WithProductNumber(int.Parse($"{GroupNumber}{LineNumber}"))
                                     .WithBoxMaterial(boxMaterial)
                                     .WithFinishMaterial(finishMaterial)
                                     .WithLeftSide(leftSide)

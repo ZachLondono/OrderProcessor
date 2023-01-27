@@ -21,20 +21,20 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
         VerticalGap = Dimension.FromMillimeters(3),
     };
 
-    public static BaseCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
+    public static BaseCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         BaseCabinetDoors doors, IToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside) {
-        return new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, toeType, drawers, inside);
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, toeType, drawers, inside);
     }
 
-    private BaseCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
+    private BaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         BaseCabinetDoors doors, IToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside)
-                        : base(id, qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
 
         if (doors.Quantity > 2 || doors.Quantity < 0)
             throw new InvalidOperationException("Invalid number of doors");
@@ -127,7 +127,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
             var depth = Depth - Dimension.FromMillimeters(13 + 9);
 
-            yield return new DovetailDrawerBox(Drawers.Quantity, height, width, depth, "", options, new Dictionary<string, string>());
+            yield return new DovetailDrawerBox(Drawers.Quantity, ProductNumber, height, width, depth, "", options, new Dictionary<string, string>());
 
         }
 
@@ -149,7 +149,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
             var depth = Depth - Dimension.FromMillimeters(13 + 9);
 
-            yield return new DovetailDrawerBox(Inside.RollOutBoxes.Positions.Length, Dimension.FromInches(4.125), width, depth, "", options, new Dictionary<string, string>());
+            yield return new DovetailDrawerBox(Inside.RollOutBoxes.Positions.Length, ProductNumber, Dimension.FromInches(4.125), width, depth, "", options, new Dictionary<string, string>());
 
         }
 

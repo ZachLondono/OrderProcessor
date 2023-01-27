@@ -47,7 +47,7 @@ internal class WallPieCutCornerCabinetBuilder : CabinetBuilder<WallPieCutCornerC
     }
 
     public override WallPieCutCornerCabinet Build() {
-        var cabinet = WallPieCutCornerCabinet.Create(Qty, UnitPrice, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, RightWidth, RightDepth, AdjustableShelves, HingeSide, MDFOptions);
+        var cabinet = WallPieCutCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, RightWidth, RightDepth, AdjustableShelves, HingeSide, MDFOptions);
         return cabinet;
     }
 

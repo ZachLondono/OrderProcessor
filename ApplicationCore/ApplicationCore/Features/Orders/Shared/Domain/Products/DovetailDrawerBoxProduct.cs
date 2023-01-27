@@ -8,14 +8,14 @@ public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDrawerBoxC
     public Guid Id { get; }
     public decimal UnitPrice { get; }
 
-    public DovetailDrawerBoxProduct(Guid id, decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options)
-                            : base(qty, height, width, depth, note, options, labelFields) {
+    public DovetailDrawerBoxProduct(Guid id, decimal unitPrice, int qty, int productNumber, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options)
+                            : base(qty, productNumber, height, width, depth, note, options, labelFields) {
         Id = id;
         UnitPrice = unitPrice;
     }
 
-    public static DovetailDrawerBoxProduct Create(decimal unitPrice, int qty, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options) {
-        return new(Guid.NewGuid(), unitPrice, qty, height, width, depth, note, labelFields, options);
+    public static DovetailDrawerBoxProduct Create(decimal unitPrice, int qty, int productNumber, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options) {
+        return new(Guid.NewGuid(), unitPrice, qty, productNumber, height, width, depth, note, labelFields, options);
     }
 
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes() { yield return this; }

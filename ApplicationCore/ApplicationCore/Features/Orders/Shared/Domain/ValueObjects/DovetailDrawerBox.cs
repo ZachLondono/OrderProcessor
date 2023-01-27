@@ -6,6 +6,7 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 public class DovetailDrawerBox {
 
     public int Qty { get; }
+    public int ProductNumber { get; }
     public Dimension Height { get; }
     public Dimension Width { get; }
     public Dimension Depth { get; }
@@ -13,9 +14,10 @@ public class DovetailDrawerBox {
     public DrawerBoxOptions Options { get; }
     public IReadOnlyDictionary<string, string> LabelFields { get; }
 
-    public DovetailDrawerBox(int qty, Dimension height, Dimension width, Dimension depth,
+    public DovetailDrawerBox(int qty, int productNumber, Dimension height, Dimension width, Dimension depth,
                             string note, DrawerBoxOptions options, IReadOnlyDictionary<string, string> labelFields) {
         Qty = qty;
+        ProductNumber = productNumber;
         Height = height;
         Width = width;
         Depth = depth;

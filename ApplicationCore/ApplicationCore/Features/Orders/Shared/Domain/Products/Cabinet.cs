@@ -10,6 +10,7 @@ public abstract class Cabinet : IProduct {
     public Guid Id { get; }
     public int Qty { get; }
     public decimal UnitPrice { get; }
+    public int ProductNumber { get; }
     public string Room { get; }
     public bool Assembled { get; }
     public Dimension Height { get; }
@@ -21,7 +22,7 @@ public abstract class Cabinet : IProduct {
     public CabinetSide RightSide { get; }
     public CabinetSide LeftSide { get; }
 
-    public Cabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
+    public Cabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                 Dimension height, Dimension width, Dimension depth,
                 CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
                 CabinetSide rightSide, CabinetSide leftSide) {
@@ -29,6 +30,7 @@ public abstract class Cabinet : IProduct {
         Id = id;
         Qty = qty;
         UnitPrice = unitPrice;
+        ProductNumber = productNumber;
         Room = room;
         Assembled = assembled;
         Height = height;

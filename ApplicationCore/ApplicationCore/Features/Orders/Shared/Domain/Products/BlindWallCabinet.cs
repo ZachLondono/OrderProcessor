@@ -21,20 +21,20 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         VerticalGap = Dimension.FromMillimeters(3),
     };
 
-    public static BlindWallCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
+    public static BlindWallCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves) {
-        return new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, blindSide, blindWidth, adjustableShelves);
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, blindSide, blindWidth, adjustableShelves);
     }
 
-    private BlindWallCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
+    private BlindWallCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves)
-                        : base(id, qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
 
         Doors = doors;
         AdjustableShelves = adjustableShelves;

@@ -10,6 +10,7 @@ public class DrawerBoxBuilder {
     private Guid _id = Guid.NewGuid();
     private decimal _unitPrice = decimal.Zero;
     private int _qty = 0;
+    private int _productNumber = 0;
     private Dimension _height = Dimension.FromMillimeters(0);
     private Dimension _width = Dimension.FromMillimeters(0);
     private Dimension _depth = Dimension.FromMillimeters(0);
@@ -70,6 +71,11 @@ public class DrawerBoxBuilder {
         return this;
     }
 
-    public DovetailDrawerBoxProduct Build() => new DovetailDrawerBoxProduct(_id, _unitPrice, _qty, _height, _width, _depth, _note, _labelFields, _options);
+    public DrawerBoxBuilder WithProductNumber(int productNumber) {
+        _productNumber = productNumber;
+        return this;
+    }
+
+    public DovetailDrawerBoxProduct Build() => new DovetailDrawerBoxProduct(_id, _unitPrice, _qty, _productNumber, _height, _width, _depth, _note, _labelFields, _options);
 
 }

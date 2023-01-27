@@ -22,12 +22,12 @@ internal class WallPieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
         VerticalGap = Dimension.FromMillimeters(3),
     };
 
-    public WallPieCutCornerCabinet(Guid id, int qty, decimal unitPrice, string room, bool assembled,
+    public WallPieCutCornerCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         Dimension rightWidth, Dimension rightDepth, int adjustableShelves, HingeSide hingeSide, MDFDoorOptions? mdfDoorOptions)
-                        : base(id, qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
 
         if (leftSide.Type == CabinetSideType.AppliedPanel || rightSide.Type == CabinetSideType.AppliedPanel)
             throw new InvalidOperationException("Wall cabinet cannot have applied panel sides");
@@ -39,12 +39,12 @@ internal class WallPieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
         MDFOptions = mdfDoorOptions;
     }
 
-    public static WallPieCutCornerCabinet Create(int qty, decimal unitPrice, string room, bool assembled,
+    public static WallPieCutCornerCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         Dimension rightWidth, Dimension rightDepth, int adjustableShelves, HingeSide hingeSide, MDFDoorOptions? mdfDoorOptions)
-    => new(Guid.NewGuid(), qty, unitPrice, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, rightWidth, rightDepth, adjustableShelves, hingeSide, mdfDoorOptions);
+    => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, rightWidth, rightDepth, adjustableShelves, hingeSide, mdfDoorOptions);
 
 
     public IEnumerable<PPProduct> GetPPProducts() {
