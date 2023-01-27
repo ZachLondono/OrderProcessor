@@ -51,7 +51,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (Doors.MDFOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), GetManualOverrideParameters());
+        yield return new PPProduct(Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), GetManualOverrideParameters());
     }
 
     private string GetProductName() {

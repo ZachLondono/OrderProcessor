@@ -46,7 +46,7 @@ internal class BasePieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Room, "BCPC", "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new());
+        yield return new PPProduct(Room, "BCPC", ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {

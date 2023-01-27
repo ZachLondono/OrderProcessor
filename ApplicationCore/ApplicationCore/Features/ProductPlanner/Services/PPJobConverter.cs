@@ -12,9 +12,6 @@ public class PPJobConverter {
 
         var rooms = ppjob.Products.GroupBy(prod => prod.Room);
 
-        // TODO: number should come from the cabinet entity
-        int productIndex = 0;
-
         int jobId = 0;
         // TODO: if there are not multiple rooms or multiple different materials, all products can be put in the same top level job without any levels
         var job = new JobDescriptor() {
@@ -109,7 +106,7 @@ public class PPJobConverter {
                         });
 
                         foreach (var prod in group) {
-                            writer.AddRecord(MapProductToRecord(prod, lvlId, ++productIndex));
+                            writer.AddRecord(MapProductToRecord(prod, lvlId));
                         }
 
                     }
@@ -120,7 +117,7 @@ public class PPJobConverter {
 
                     foreach (var prod in material) {
                         int parentId = jobId + roomIdx + (multipleMaterials ? materialIdx : 0);
-                        writer.AddRecord(MapProductToRecord(prod, parentId, ++productIndex));
+                        writer.AddRecord(MapProductToRecord(prod, parentId));
                     }
 
                 }
@@ -145,10 +142,10 @@ public class PPJobConverter {
         return variables;
     }
 
-    private static ProductRecord MapProductToRecord(PPProduct product, int productIndex, int parentId) => new() {
+    private static ProductRecord MapProductToRecord(PPProduct product, int parentId) => new() {
         Name = product.Name,
-        ParentId = productIndex,
-        Pos = parentId,
+        ParentId = parentId,
+        Pos = product.SequenceNum,
         CustomSpec = true,
         Qty = 1,
         SeqText = "",

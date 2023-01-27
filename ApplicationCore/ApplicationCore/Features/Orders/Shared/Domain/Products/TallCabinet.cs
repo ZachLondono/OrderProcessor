@@ -52,7 +52,7 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (Doors.MDFOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Room, GetProductName(), "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new());
+        yield return new PPProduct(Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
