@@ -68,6 +68,7 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
             Dimension height = Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (FalseDrawerQty > 0 ? DrawerFaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
             var door = getBuilder().WithQty(DoorQty * Qty)
                                     .WithType(DoorType.Door)
+                                    .WithProductNumber(ProductNumber)
                                     .Build(height, width);
             doors.Add(door);
         }
@@ -76,6 +77,7 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
             Dimension drwWidth = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (FalseDrawerQty - 1)) / FalseDrawerQty;
             var drawers = getBuilder().WithQty(FalseDrawerQty * Qty)
                                         .WithType(DoorType.DrawerFront)
+                                        .WithProductNumber(ProductNumber)
                                         .Build(DrawerFaceHeight, drwWidth);
             doors.Add(drawers);
         }

@@ -63,6 +63,7 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
 
             var door = getBuilder().WithQty(1 * Qty)
                                     .WithType(DoorType.Door)
+                                    .WithProductNumber(ProductNumber)
                                     .Build(height, width);
 
             doors.Add(door);

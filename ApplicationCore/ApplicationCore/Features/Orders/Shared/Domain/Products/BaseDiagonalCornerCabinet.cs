@@ -79,7 +79,7 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
 
         Dimension height = Height - ToeType.HeightAdjustment - DoorGaps.TopGap - DoorGaps.BottomGap;
 
-        var door = getBuilder().WithQty(DoorQty * Qty).Build(height, width);
+        var door = getBuilder().WithQty(DoorQty * Qty).WithProductNumber(ProductNumber).Build(height, width);
 
         return new List<MDFDoor>() { door };
 

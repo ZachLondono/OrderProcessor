@@ -61,6 +61,7 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         Dimension width = (Width - BlindWidth - DoorGaps.EdgeReveal - DoorGaps.HorizontalGap / 2 - DoorGaps.HorizontalGap * (Doors.Quantity - 1)) / Doors.Quantity;
         Dimension height = Height - DoorGaps.TopGap - DoorGaps.BottomGap;
         var door = getBuilder().WithQty(Doors.Quantity * Qty)
+                                .WithProductNumber(ProductNumber)
                                 .WithType(DoorType.Door)
                                 .Build(height, width);
 

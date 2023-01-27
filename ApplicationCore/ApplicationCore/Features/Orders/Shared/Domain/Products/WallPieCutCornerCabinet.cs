@@ -63,10 +63,10 @@ internal class WallPieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
         Dimension bumperWidth = Dimension.FromMillimeters(3);
 
         Dimension leftWidth = Width - RightDepth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
-        MDFDoor leftDoor = getBuilder().WithQty(Qty).Build(height, leftWidth);
+        MDFDoor leftDoor = getBuilder().WithQty(Qty).WithProductNumber(ProductNumber).Build(height, leftWidth);
 
         Dimension rightWidth = RightWidth - Depth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
-        MDFDoor rightDoor = getBuilder().WithQty(Qty).Build(height, rightWidth);
+        MDFDoor rightDoor = getBuilder().WithQty(Qty).WithProductNumber(ProductNumber).Build(height, rightWidth);
 
         return new List<MDFDoor>() { leftDoor, rightDoor };
 

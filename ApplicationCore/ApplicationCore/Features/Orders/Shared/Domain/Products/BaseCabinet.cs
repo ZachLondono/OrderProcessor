@@ -87,6 +87,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
             Dimension width = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Doors.Quantity - 1)) / Doors.Quantity;
             Dimension height = Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
             var door = getBuilder().WithQty(Doors.Quantity * Qty)
+                                    .WithProductNumber(ProductNumber)
                                     .WithType(DoorType.Door)
                                     .Build(height, width);
             doors.Add(door);
@@ -95,6 +96,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
         if (Drawers.Quantity > 0) {
             Dimension drwWidth = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Drawers.Quantity - 1)) / Drawers.Quantity;
             var drawers = getBuilder().WithQty(Drawers.Quantity * Qty)
+                                        .WithProductNumber(ProductNumber)
                                         .WithType(DoorType.DrawerFront)
                                         .Build(Drawers.FaceHeight, drwWidth);
             doors.Add(drawers);
