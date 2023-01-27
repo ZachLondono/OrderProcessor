@@ -5,7 +5,9 @@ public readonly struct  Dimension : IComparable {
     private readonly double _mm;
 
     private Dimension(double mm) {
-        if (mm < 0) throw new ArgumentOutOfRangeException("Dimension cannot be negative");
+        if (mm < 0) {
+            throw new ArgumentOutOfRangeException(nameof(mm), "Dimension cannot be negative");
+        }
         _mm = mm;
     }
 
@@ -79,6 +81,10 @@ public readonly struct  Dimension : IComparable {
 
     public static Dimension Zero => new(0);
 
+    public static bool operator ==(Dimension dim1, Dimension dim2) => dim1.AsMillimeters() == dim2.AsMillimeters();
+
+    public static bool operator !=(Dimension dim1, Dimension dim2) => dim1.AsMillimeters() != dim2.AsMillimeters();
+
     public static Dimension operator *(Dimension dim1, Dimension dim2) => FromMillimeters(dim1.AsMillimeters() * dim2.AsMillimeters());
 
     public static Dimension operator *(Dimension dim1, int mult) => FromMillimeters(dim1.AsMillimeters() * mult);
@@ -107,4 +113,29 @@ public readonly struct  Dimension : IComparable {
 
     public static Dimension Pow(Dimension dim1, Dimension dim2) => FromMillimeters(Math.Pow(dim1.AsMillimeters(), dim2.AsMillimeters()));
 
+    public override bool Equals(object? obj) {
+
+        if (obj is not Dimension dim) {
+            return false;
+        }
+
+        if (dim == this) {
+            return true;
+        }
+
+        return false;
+
+    }
+
+    public override int GetHashCode() {
+        return _mm.GetHashCode();
+    }
+
+    public static bool operator <=(Dimension left, Dimension right) {
+        return left.CompareTo(right) <= 0;
+    }
+
+    public static bool operator >=(Dimension left, Dimension right) {
+        return left.CompareTo(right) >= 0;
+    }
 }
