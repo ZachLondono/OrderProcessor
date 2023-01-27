@@ -154,7 +154,7 @@ public class BlindBaseCabinetDoorTests {
 
         // Arrange
         var cabinet = new BlindBaseCabinetBuilder()
-                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(toeHeight)))
+                            .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
                             .WithDoors(new() { Quantity = 1, MDFOptions = _mdfOptions })
                             .WithWidth(Dimension.FromMillimeters(456))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
@@ -179,7 +179,7 @@ public class BlindBaseCabinetDoorTests {
 
         // Arrange
         var cabinet = new BlindBaseCabinetBuilder()
-                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(toeHeight)))
+                            .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
                             .WithDoors(new() { Quantity = 1, MDFOptions = _mdfOptions })
                             .WithDrawers(new() {
                                 BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,

@@ -3,10 +3,7 @@
 namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
 public class LegLevelers : IToeType {
-    public Dimension ToeHeight { get; }
+    public Dimension ToeHeight => Dimension.FromMillimeters(102);
     public Dimension HeightAdjustment => ToeHeight;
     public string PSIParameter => "2";
-    public LegLevelers(Dimension toeHeight) {
-        ToeHeight = toeHeight;
-    }
 }

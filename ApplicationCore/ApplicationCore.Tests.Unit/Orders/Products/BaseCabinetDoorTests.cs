@@ -147,7 +147,7 @@ public class BaseCabinetDoorTests {
 
         // Arrange
         var cabinet = new BaseCabinetBuilder()
-                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(toeHeight)))
+                            .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
                             .WithDoors(new() { Quantity = 1, MDFOptions = _mdfOptions })
                             .WithWidth(Dimension.FromMillimeters(456))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
@@ -171,7 +171,7 @@ public class BaseCabinetDoorTests {
 
         // Arrange
         var cabinet = new BaseCabinetBuilder()
-                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(toeHeight)))
+                            .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
                             .WithDoors(new() { Quantity = 1, MDFOptions = _mdfOptions })
                             .WithDrawers(new() {
                                 BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,

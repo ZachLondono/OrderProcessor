@@ -3,10 +3,7 @@
 namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
 public class FurnitureBase : IToeType {
-    public Dimension ToeHeight { get; }
+    public Dimension ToeHeight => Dimension.FromMillimeters(102);
     public Dimension HeightAdjustment => Dimension.Zero;
     public string PSIParameter => "1";
-    public FurnitureBase(Dimension toeHeight) {
-        ToeHeight = toeHeight;
-    }
 }

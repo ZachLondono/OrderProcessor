@@ -108,7 +108,7 @@ public class BasePieCutCornerCabinetTests {
 
         // Arrange
         var cabinet = new BasePieCutCornerCabinetBuilder()
-                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(toeHeight)))
+                            .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
                             .WithMDFOptions(_mdfOptions)
                             .WithRightWidth(Dimension.FromMillimeters(610))
                             .WithRightDepth(Dimension.FromMillimeters(305))

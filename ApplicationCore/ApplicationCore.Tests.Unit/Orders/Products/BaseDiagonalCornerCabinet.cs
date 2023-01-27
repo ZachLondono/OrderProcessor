@@ -37,7 +37,7 @@ public class BaseDiagonalCornerCabinet {
         // Arrange
         var cabinet = new BaseDiagonalCornerCabinetBuilder()
                             .WithDoorQty(doorQty)
-                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(102)))
+                            .WithToeType(new LegLevelers())
                             .WithMDFOptions(_mdfOptions)
                             .WithRightWidth(Dimension.FromMillimeters(610))
                             .WithRightDepth(Dimension.FromMillimeters(305))
@@ -62,7 +62,7 @@ public class BaseDiagonalCornerCabinet {
         // Arrange
         var cabinet = new BaseDiagonalCornerCabinetBuilder()
                             .WithDoorQty(1)
-                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(102)))
+                            .WithToeType(new LegLevelers())
                             .WithMDFOptions(null)
                             .WithRightWidth(Dimension.FromMillimeters(610))
                             .WithRightDepth(Dimension.FromMillimeters(305))
@@ -115,7 +115,7 @@ public class BaseDiagonalCornerCabinet {
         // Arrange
         var cabinet = new BaseDiagonalCornerCabinetBuilder()
                             .WithDoorQty(1)
-                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(toeHeight)))
+                            .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
                             .WithMDFOptions(_mdfOptions)
                             .WithRightWidth(Dimension.FromMillimeters(610))
                             .WithRightDepth(Dimension.FromMillimeters(305))

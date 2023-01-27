@@ -3,10 +3,7 @@
 namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
 public class Notched : IToeType {
-    public Dimension ToeHeight { get; }
+    public Dimension ToeHeight => Dimension.FromMillimeters(102);
     public Dimension HeightAdjustment => Dimension.Zero;
     public string PSIParameter => "0";
-    public Notched(Dimension toeHeight) {
-        ToeHeight = toeHeight;
-    }
 }

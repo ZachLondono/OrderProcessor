@@ -131,7 +131,7 @@ public class SinkCabinetDoorTests {
 
         // Arrange
         var cabinet = new SinkCabinetBuilder()
-                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(toeHeight)))
+                            .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
                             .WithMDFOptions(_mdfOptions)
                             .WithDoorQty(1)
                             .WithWidth(Dimension.FromMillimeters(456))
@@ -157,7 +157,7 @@ public class SinkCabinetDoorTests {
 
         // Arrange
         var cabinet = new SinkCabinetBuilder()
-                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(toeHeight)))
+                            .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
                             .WithMDFOptions(_mdfOptions)
                             .WithDoorQty(1)
                             .WithFalseDrawerQty(1)

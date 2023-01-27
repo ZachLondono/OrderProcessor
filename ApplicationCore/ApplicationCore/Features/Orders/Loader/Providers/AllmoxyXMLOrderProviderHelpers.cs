@@ -89,11 +89,11 @@ internal static class AllmoxyXMLOrderProviderHelpers {
     };
 
     public static IToeType GetToeType(string name) => name switch {
-        "Leg Levelers" => new LegLevelers(Dimension.FromMillimeters(102)),
-        "Full Height Sides" => new FurnitureBase(Dimension.FromMillimeters(102)),
+        "Leg Levelers" => new LegLevelers(),
+        "Full Height Sides" => new FurnitureBase(),
         "No Toe" => new NoToe(),
-        "Notched" => new Notched(Dimension.FromMillimeters(102)),
-        _ => new LegLevelers(Dimension.FromMillimeters(102))
+        "Notched" => new Notched(),
+        _ => new LegLevelers()
     };
 
     public static decimal StringToMoney(string str) {

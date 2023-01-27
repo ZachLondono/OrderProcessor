@@ -38,7 +38,7 @@ public class TallCabinetDoorTests {
         // Arrange
         var cabinet = new TallCabinetBuilder()
                             .WithDoors(new(HingeSide.Left, _mdfOptions))
-                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(102)))
+                            .WithToeType(new LegLevelers())
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(2134))
                             .WithDepth(Dimension.FromMillimeters(610))
@@ -60,7 +60,7 @@ public class TallCabinetDoorTests {
         // Arrange
         var cabinet = new TallCabinetBuilder()
                             .WithDoors(new(HingeSide.Left, null))
-                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(102)))
+                            .WithToeType(new LegLevelers())
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(2134))
                             .WithDepth(Dimension.FromMillimeters(610))
@@ -85,7 +85,7 @@ public class TallCabinetDoorTests {
         // Arrange
         var cabinet = new TallCabinetBuilder()
                             .WithDoors(new(hingeSide, _mdfOptions))
-                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(102)))
+                            .WithToeType(new LegLevelers())
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
@@ -140,7 +140,7 @@ public class TallCabinetDoorTests {
         // Arrange
         var cabinet = new TallCabinetBuilder()
                             .WithDoors(new(Dimension.FromMillimeters(lowerDoorHeight), hingeSide, _mdfOptions))
-                            .WithToeType(new LegLevelers(Dimension.FromMillimeters(102)))
+                            .WithToeType(new LegLevelers())
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
