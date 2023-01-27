@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.Shared.Domain;
 
-public record Dimension : IComparable {
+public readonly struct  Dimension : IComparable {
 
     private readonly double _mm;
 
@@ -12,40 +12,6 @@ public record Dimension : IComparable {
     public double AsInches() => _mm / 25.4;
 
     public double AsMillimeters() => _mm;
-
-    public static Dimension FromInches(double inches) => new(inches * 25.4);
-
-    public static Dimension FromMillimeters(double mm) => new(mm);
-
-    public static Dimension Zero => new(0);
-
-    public static Dimension operator *(Dimension dim1, Dimension dim2) => FromMillimeters(dim1.AsMillimeters() * dim2.AsMillimeters());
-
-    public static Dimension operator *(Dimension dim1, int mult) => FromMillimeters(dim1.AsMillimeters() * mult);
-
-    public static Dimension operator *(int mult, Dimension dim1) => FromMillimeters(mult * dim1.AsMillimeters());
-
-    public static Dimension operator *(Dimension dim1, double mult) => FromMillimeters(dim1.AsMillimeters() * mult);
-
-    public static Dimension operator *(double mult, Dimension dim1) => FromMillimeters(mult * dim1.AsMillimeters());
-
-    public static Dimension operator /(Dimension dim1, Dimension dim2) => FromMillimeters(dim1.AsMillimeters() / dim2.AsMillimeters());
-
-    public static Dimension operator /(Dimension dim1, int divosor) => FromMillimeters(dim1.AsMillimeters() / divosor);
-
-    public static Dimension operator /(Dimension dim1, double divosor) => FromMillimeters(dim1.AsMillimeters() / divosor);
-
-    public static Dimension operator +(Dimension dim1, Dimension dim2) => FromMillimeters(dim1.AsMillimeters() + dim2.AsMillimeters());
-
-    public static Dimension operator -(Dimension dim1, Dimension dim2) => FromMillimeters(dim1.AsMillimeters() - dim2.AsMillimeters());
-
-    public static bool operator >(Dimension dim1, Dimension dim2) => dim1.AsMillimeters() > dim2.AsMillimeters();
-
-    public static bool operator <(Dimension dim1, Dimension dim2) => dim1.AsMillimeters() < dim2.AsMillimeters();
-
-    public static Dimension Sqrt(Dimension dim) => FromMillimeters(Math.Sqrt(dim.AsMillimeters()));
-
-    public static Dimension Pow(Dimension dim1, Dimension dim2) => FromMillimeters(Math.Pow(dim1.AsMillimeters(), dim2.AsMillimeters()));
 
     public override string ToString() {
         return $"{{{AsInches()}\",  {AsMillimeters()}mm}}";
@@ -106,4 +72,39 @@ public record Dimension : IComparable {
         return dim.AsMillimeters().CompareTo(AsMillimeters());
 
     }
+
+    public static Dimension FromInches(double inches) => new(inches * 25.4);
+
+    public static Dimension FromMillimeters(double mm) => new(mm);
+
+    public static Dimension Zero => new(0);
+
+    public static Dimension operator *(Dimension dim1, Dimension dim2) => FromMillimeters(dim1.AsMillimeters() * dim2.AsMillimeters());
+
+    public static Dimension operator *(Dimension dim1, int mult) => FromMillimeters(dim1.AsMillimeters() * mult);
+
+    public static Dimension operator *(int mult, Dimension dim1) => FromMillimeters(mult * dim1.AsMillimeters());
+
+    public static Dimension operator *(Dimension dim1, double mult) => FromMillimeters(dim1.AsMillimeters() * mult);
+
+    public static Dimension operator *(double mult, Dimension dim1) => FromMillimeters(mult * dim1.AsMillimeters());
+
+    public static Dimension operator /(Dimension dim1, Dimension dim2) => FromMillimeters(dim1.AsMillimeters() / dim2.AsMillimeters());
+
+    public static Dimension operator /(Dimension dim1, int divosor) => FromMillimeters(dim1.AsMillimeters() / divosor);
+
+    public static Dimension operator /(Dimension dim1, double divosor) => FromMillimeters(dim1.AsMillimeters() / divosor);
+
+    public static Dimension operator +(Dimension dim1, Dimension dim2) => FromMillimeters(dim1.AsMillimeters() + dim2.AsMillimeters());
+
+    public static Dimension operator -(Dimension dim1, Dimension dim2) => FromMillimeters(dim1.AsMillimeters() - dim2.AsMillimeters());
+
+    public static bool operator >(Dimension dim1, Dimension dim2) => dim1.AsMillimeters() > dim2.AsMillimeters();
+
+    public static bool operator <(Dimension dim1, Dimension dim2) => dim1.AsMillimeters() < dim2.AsMillimeters();
+
+    public static Dimension Sqrt(Dimension dim) => FromMillimeters(Math.Sqrt(dim.AsMillimeters()));
+
+    public static Dimension Pow(Dimension dim1, Dimension dim2) => FromMillimeters(Math.Pow(dim1.AsMillimeters(), dim2.AsMillimeters()));
+
 }
