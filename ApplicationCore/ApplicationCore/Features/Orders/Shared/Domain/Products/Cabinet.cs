@@ -22,6 +22,14 @@ public abstract class Cabinet : IProduct {
     public CabinetSide RightSide { get; }
     public CabinetSide LeftSide { get; }
 
+    public static CabinetConstruction Construction { get; set; } = new() {
+        TopThickness = Dimension.FromMillimeters(19),
+        BottomThickness = Dimension.FromMillimeters(19),
+        SideThickness = Dimension.FromMillimeters(19),
+        BackThickness = Dimension.FromMillimeters(13),
+        BackInset = Dimension.FromMillimeters(9)
+    };
+
     public Cabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                 Dimension height, Dimension width, Dimension depth,
                 CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
