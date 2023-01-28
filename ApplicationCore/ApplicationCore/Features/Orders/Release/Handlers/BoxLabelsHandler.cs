@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.Labels.Contracts;
 using ApplicationCore.Features.Labels.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Infrastructure;
@@ -13,11 +14,13 @@ internal class BoxLabelsHandler : DomainListener<TriggerOrderReleaseNotification
     private readonly ILogger<BoxLabelsHandler> _logger;
     private readonly IBus _bus;
     private readonly IUIBus _uibus;
+    private readonly ProductBuilderFactory _productBuilderFactory;
 
-    public BoxLabelsHandler(ILogger<BoxLabelsHandler> logger, IBus bus, IUIBus uibus) {
+    public BoxLabelsHandler(ILogger<BoxLabelsHandler> logger, IBus bus, IUIBus uibus, ProductBuilderFactory productBuilderFactory) {
         _bus = bus;
         _uibus = uibus;
         _logger = logger;
+        _productBuilderFactory = productBuilderFactory;
     }
 
     public override async Task Handle(TriggerOrderReleaseNotification notification) {
@@ -35,7 +38,7 @@ internal class BoxLabelsHandler : DomainListener<TriggerOrderReleaseNotification
                                 .Cast<IDrawerBoxContainer>()
                                 .SelectMany(c => {
                                     try {
-                                        return c.GetDrawerBoxes();
+                                        return c.GetDrawerBoxes(_productBuilderFactory.CreateDovetailDrawerBoxBuilder);
                                     } catch (Exception ex) {
                                         _uibus.Publish(new OrderReleaseErrorNotification($"Error getting drawer boxes from product '{ex.Message}'"));
                                         return Enumerable.Empty<DovetailDrawerBox>();

@@ -20,6 +20,8 @@ public class ProductBuilderFactory {
 
     }
 
+    public DovetailDrawerBoxBuilder CreateDovetailDrawerBoxBuilder() => new();
+
     internal BaseCabinetBuilder CreateBaseCabinetBuilder() => new();
 
     internal WallCabinetBuilder CreateWallCabinetBuilder() => new();
