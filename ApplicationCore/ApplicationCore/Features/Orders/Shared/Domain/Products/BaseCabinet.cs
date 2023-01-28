@@ -106,30 +106,28 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
     }
 
-    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes() {
+    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
+
+        var insideWidth = Width - Construction.SideThickness * 2;
+        var insideDepth = Depth - (Construction.BackThickness + Construction.BackInset);
+
+        List<DovetailDrawerBox> boxes = new();
 
         if (Drawers.Quantity > 0) {
 
             var options = new DrawerBoxOptions("", "", "", "", "Blum", GetNotchFromSlideType(Drawers.SlideType), "", LogoPosition.None);
 
-            var height = Drawers.GetBoxHeight(Dimension.FromMillimeters(3), new List<Dimension>() {
-                Dimension.FromMillimeters(64),
-                Dimension.FromMillimeters(86),
-                Dimension.FromMillimeters(105),
-                Dimension.FromMillimeters(137),
-                Dimension.FromMillimeters(159),
-                Dimension.FromMillimeters(181),
-                Dimension.FromMillimeters(210),
-                Dimension.FromMillimeters(260),
-            });
+            int drawerQty = Drawers.Quantity * Qty;
 
-            var width = Drawers.GetBoxWidth(Width - Dimension.FromMillimeters(19 * 2), Dimension.FromMillimeters(19), (slide) => {
-                return Dimension.FromMillimeters(0);
-            });
+            var box =  getBuilder().WithInnerCabinetDepth(insideDepth, Drawers.SlideType)
+                                    .WithInnerCabinetWidth(insideWidth, Drawers.Quantity, Drawers.SlideType)
+                                    .WithDrawerFaceHeight(Drawers.FaceHeight)
+                                    .WithQty(drawerQty)
+                                    .WithOptions(options)
+                                    .WithProductNumber(ProductNumber)
+                                    .Build();
 
-            var depth = Depth - Dimension.FromMillimeters(13 + 9);
-
-            yield return new DovetailDrawerBox(Drawers.Quantity, ProductNumber, height, width, depth, "", options, new Dictionary<string, string>());
+            boxes.Add(box);
 
         }
 
@@ -137,23 +135,22 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
             var options = new DrawerBoxOptions("", "", "", "", "Blum", GetNotchFromSlideType(Inside.RollOutBoxes.SlideType), "", LogoPosition.None);
 
-            var width = Width - Dimension.FromMillimeters(19 * 2);
+            int rollOutQty = Inside.RollOutBoxes.Positions.Length * Qty;
+            var boxHeight = Dimension.FromMillimeters(104);
 
-            switch (Inside.RollOutBoxes.Blocks) {
-                case RollOutBlockPosition.Left:
-                case RollOutBlockPosition.Right:
-                    width -= Dimension.FromInches(1);
-                    break;
-                case RollOutBlockPosition.Both:
-                    width -= Dimension.FromInches(2);
-                    break;
-            }
+            var box = getBuilder().WithInnerCabinetDepth(insideDepth, Inside.RollOutBoxes.SlideType, true)
+                                    .WithInnerCabinetWidth(insideWidth, Inside.RollOutBoxes.Blocks, Inside.RollOutBoxes.SlideType)
+                                    .WithBoxHeight(boxHeight)
+                                    .WithQty(rollOutQty)
+                                    .WithOptions(options)
+                                    .WithProductNumber(ProductNumber)
+                                    .Build();
 
-            var depth = Depth - Dimension.FromMillimeters(13 + 9);
-
-            yield return new DovetailDrawerBox(Inside.RollOutBoxes.Positions.Length, ProductNumber, Dimension.FromInches(4.125), width, depth, "", options, new Dictionary<string, string>());
+            boxes.Add(box);
 
         }
+
+        return boxes;
 
     }
 

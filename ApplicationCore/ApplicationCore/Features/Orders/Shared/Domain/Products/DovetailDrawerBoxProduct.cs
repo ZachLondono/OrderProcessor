@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
@@ -18,6 +19,6 @@ public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDrawerBoxC
         return new(Guid.NewGuid(), unitPrice, qty, productNumber, height, width, depth, note, labelFields, options);
     }
 
-    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes() { yield return this; }
+    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) { yield return this; }
 
 }

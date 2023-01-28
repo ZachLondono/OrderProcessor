@@ -85,13 +85,42 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
             doors.Add(drawers);
         }
 
-        return doors.ToArray();
+        return doors;
 
     }
 
-    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes() {
-        throw new NotImplementedException();
+    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
+
+
+        if (Drawers.Quantity == 0) {
+            return Enumerable.Empty<DovetailDrawerBox>();
+        }
+
+
+        var insideWidth = Width - Construction.SideThickness * 2 - BlindWidth;
+        var insideDepth = Depth - (Construction.BackThickness + Construction.BackInset);
+
+        var options = new DrawerBoxOptions("", "", "", "", "Blum", GetNotchFromSlideType(Drawers.SlideType), "", LogoPosition.None);
+
+        int drawerQty = Drawers.Quantity * Qty;
+
+        var box = getBuilder().WithInnerCabinetDepth(insideDepth, Drawers.SlideType)
+                                .WithInnerCabinetWidth(insideWidth, Drawers.Quantity, Drawers.SlideType)
+                                .WithDrawerFaceHeight(Drawers.FaceHeight)
+                                .WithQty(drawerQty)
+                                .WithOptions(options)
+                                .WithProductNumber(ProductNumber)
+                                .Build();
+
+        return new List<DovetailDrawerBox>() { box };
+
     }
+
+    private static string GetNotchFromSlideType(DrawerSlideType slide) => slide switch {
+        DrawerSlideType.UnderMount => "Standard Notch",
+        DrawerSlideType.SideMount => "",
+        _ => ""
+    };
 
     private Dictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {

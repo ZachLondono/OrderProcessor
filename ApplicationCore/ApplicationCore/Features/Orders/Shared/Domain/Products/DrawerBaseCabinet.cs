@@ -74,9 +74,42 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
 
     }
 
-    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes() {
-        throw new NotImplementedException();
+    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
+
+        if (!Drawers.FaceHeights.Any()) {
+            return Enumerable.Empty<DovetailDrawerBox>();
+        }
+
+        var insideWidth = Width - Construction.SideThickness * 2;
+        var insideDepth = Depth - (Construction.BackThickness + Construction.BackInset);
+
+        var options = new DrawerBoxOptions("", "", "", "", "Blum", GetNotchFromSlideType(Drawers.SlideType), "", LogoPosition.None);
+
+        var boxes = new List<DovetailDrawerBox>();
+
+        foreach (var height in Drawers.FaceHeights) { 
+
+            var box = getBuilder().WithInnerCabinetDepth(insideDepth, Drawers.SlideType)
+                                    .WithInnerCabinetWidth(insideWidth, 1, Drawers.SlideType)
+                                    .WithDrawerFaceHeight(height)
+                                    .WithQty(Qty)
+                                    .WithOptions(options)
+                                    .WithProductNumber(ProductNumber)
+                                    .Build();
+
+            boxes.Add(box);
+
+        }
+
+        return boxes;
+
     }
+
+    private static string GetNotchFromSlideType(DrawerSlideType slide) => slide switch {
+        DrawerSlideType.UnderMount => "Standard Notch",
+        DrawerSlideType.SideMount => "",
+        _ => ""
+    };
 
     private string GetProductName() {
         if (!Drawers.FaceHeights.Any()) return "DB1D";
