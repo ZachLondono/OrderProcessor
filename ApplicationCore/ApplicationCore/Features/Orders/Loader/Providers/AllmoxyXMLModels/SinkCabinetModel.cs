@@ -36,12 +36,21 @@ public class SinkCabinetModel : CabinetModelBase {
     [XmlElement("shelfDepth")]
     public string ShelfDepth { get; set; } = string.Empty;
 
+    [XmlElement("rollOuts")]
+    public RollOuts RollOuts { get; set; } = new();
+
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
         MDFDoorOptions? mdfOptions = null;
         if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
 
-        var rollOutOptions = new RollOutOptions(Array.Empty<Dimension>(), true, RollOutBlockPosition.None, AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide), AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial));
+        Dimension[] rollOutBoxPositions = AllmoxyXMLOrderProviderHelpers.GetRollOutPositions(RollOuts.Pos1, RollOuts.Pos2, RollOuts.Pos3, RollOuts.Pos4, RollOuts.Pos5);
+        bool scoopFront = true;
+        RollOutBlockPosition rollOutBlocks = AllmoxyXMLOrderProviderHelpers.GetRollOutBlockPositions(RollOuts.Blocks);
+        var slideType = AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide);
+        var material = AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial);
+
+        var rollOutOptions = new RollOutOptions(rollOutBoxPositions, scoopFront, rollOutBlocks, slideType, material);
 
         var shelfDepth = AllmoxyXMLOrderProviderHelpers.GetShelfDepth(ShelfDepth);
 
