@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain;
 
@@ -7,6 +8,6 @@ namespace ApplicationCore.Features.Orders.Shared.Domain;
 /// </summary>
 internal interface IDrawerBoxContainer {
 
-    IEnumerable<DovetailDrawerBox> GetDrawerBoxes();
+    IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder);
 
 }

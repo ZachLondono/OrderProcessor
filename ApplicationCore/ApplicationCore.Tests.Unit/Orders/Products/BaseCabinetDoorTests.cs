@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using FluentAssertions;
@@ -39,9 +40,9 @@ public class BaseCabinetDoorTests {
         var cabinet = new BaseCabinetBuilder()
                             .WithDoors(new() { Quantity = doorQty, MDFOptions = _mdfOptions })
                             .WithDrawers(new() {
-                                BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
+                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = drawerQty,
-                                SlideType = Features.Orders.Shared.Domain.Enums.DrawerSlideType.UnderMount,
+                                SlideType = DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
                             .WithWidth(Dimension.FromMillimeters(457))
@@ -65,9 +66,9 @@ public class BaseCabinetDoorTests {
         var cabinet = new BaseCabinetBuilder()
                             .WithDoors(new() { Quantity = 1, MDFOptions = null })
                             .WithDrawers(new() {
-                                BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
+                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
-                                SlideType = Features.Orders.Shared.Domain.Enums.DrawerSlideType.UnderMount,
+                                SlideType = DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
                             .WithWidth(Dimension.FromMillimeters(457))
@@ -92,9 +93,9 @@ public class BaseCabinetDoorTests {
         var cabinet = new BaseCabinetBuilder()
                             .WithDoors(new() { Quantity = doorQty, MDFOptions = _mdfOptions })
                             .WithDrawers(new() {
-                                BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
+                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
-                                SlideType = Features.Orders.Shared.Domain.Enums.DrawerSlideType.UnderMount,
+                                SlideType = DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
@@ -121,9 +122,9 @@ public class BaseCabinetDoorTests {
         var cabinet = new BaseCabinetBuilder()
                             .WithDoors(new() { Quantity = 2, MDFOptions = _mdfOptions })
                             .WithDrawers(new() {
-                                BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
+                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = drawerQty,
-                                SlideType = Features.Orders.Shared.Domain.Enums.DrawerSlideType.UnderMount,
+                                SlideType = DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
@@ -174,9 +175,9 @@ public class BaseCabinetDoorTests {
                             .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
                             .WithDoors(new() { Quantity = 1, MDFOptions = _mdfOptions })
                             .WithDrawers(new() {
-                                BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
+                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
-                                SlideType = Features.Orders.Shared.Domain.Enums.DrawerSlideType.UnderMount,
+                                SlideType = DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(drawerFaceHeight)
                             })
                             .WithWidth(Dimension.FromMillimeters(456))
