@@ -12,150 +12,190 @@ public class PPJobConverter {
         _writer = writer;
     }
 
-    public void ConvertOrder(PPJob ppjob) {
+    public void ConvertOrder(PPJob job) {
 
         _writer.Clear();
 
-        var rooms = ppjob.Products.GroupBy(prod => prod.Room);
+        var rooms = job.Products
+                        .GroupBy(prod => prod.Room)
+                        .Select(group =>
+                            new Room() {
+                                Name = group.Key,
+                                Groups = group.GroupBy(prod => new MaterialGroupKey(prod.Catalog, prod.MaterialType, prod.DoorType, prod.HardwareType, prod.FinishMaterials, prod.EBMaterials), new MaterialGroupKeyComparer())
+                                                .Select(group => new MaterialGroup() {
+                                                    Key = group.Key,
+                                                    Products = group.ToList()
+                                                })
+                                                .ToList()
+                        });
+
 
         int jobId = 0;
-        // TODO: if there are not multiple rooms or multiple different materials, all products can be put in the same top level job without any levels
-        var job = new JobDescriptor() {
+        int roomIdx = 0;
+
+        var jobDesc = new JobDescriptor() {
             LevelId = jobId,
-            Job = ppjob.Name,
-            Date = ppjob.OrderDate,
+            Job = job.Name,
+            Date = job.OrderDate,
             Catalog = "",
             Fronts = "",
             Hardware = "",
             Materials = ""
         };
 
-        _writer.AddRecord(job);
+        if (rooms.Count() == 1 && string.IsNullOrWhiteSpace(rooms.First().Name)) {
 
-        int roomIdx = 0;
+            var room = rooms.First();
+
+            if (room.Groups.Count() == 1) { 
+                
+                var group = room.Groups.First();
+
+                jobDesc.Catalog = group.Key.Catalog;
+                jobDesc.Fronts = group.Key.DoorType;
+                jobDesc.Hardware = group.Key.HardwareType;
+                jobDesc.Materials = group.Key.MaterialType;
+
+                _writer.AddRecord(jobDesc);
+
+                AddMaterialVariablesToWriter(group.Key, jobDesc.LevelId);
+
+                foreach (var product in group.Products) {
+                    AddProductToWriter(product, jobId);
+                }
+
+                return;
+
+            }
+
+            _writer.AddRecord(jobDesc);
+
+            int groupIdx = 0;
+            foreach (var group in room.Groups) {
+
+                groupIdx++;
+                AddGroupToWriter(group, jobId, roomIdx, groupIdx, $"Lvl{groupIdx}");
+
+            }
+
+            return;
+
+        }
+
+        _writer.AddRecord(jobDesc);
+
         foreach (var room in rooms) {
-
-            if (!room.Any()) continue;
 
             roomIdx++;
 
-            var materialGroups = room.GroupBy(prod => new MaterialGroupKey(prod.Catalog, prod.MaterialType, prod.DoorType, prod.HardwareType, prod.FinishMaterials, prod.EBMaterials), new MaterialGroupKeyComparer());
-            bool multipleMaterials = materialGroups.Count() > 1;
-
-            var firstMaterials = materialGroups.First().Key;
             var level = new LevelDescriptor() {
                 LevelId = jobId + roomIdx,
                 ParentId = jobId,
-                Name = string.IsNullOrEmpty(room.Key) ? $"Lvl{roomIdx}" : room.Key,
-                Catalog = firstMaterials.Catalog,
-                Materials = firstMaterials.MaterialType,
-                Fronts = firstMaterials.DoorType,
-                Hardware = firstMaterials.HardwareType
+                Name = string.IsNullOrEmpty(room.Name) ? $"Lvl{roomIdx}" : room.Name,
+                Catalog = "",
+                Materials = "",
+                Fronts = "",
+                Hardware = ""
             };
 
-            if (!multipleMaterials) {
-                _writer.AddRecord(GetMaterialVariableRecord(firstMaterials.AllMaterials, jobId + roomIdx));
+            if (room.Groups.Count() == 1) { 
+                
+                var group = room.Groups.First();
+
+                level.Catalog = group.Key.Catalog;
+                level.Materials = group.Key.MaterialType;
+                level.Fronts = group.Key.DoorType;
+                level.Hardware = group.Key.HardwareType;
+
+                _writer.AddRecord(level);
+
+                AddMaterialVariablesToWriter(group.Key, level.LevelId);
+
+                foreach (var product in group.Products) {
+                    AddProductToWriter(product, jobId + roomIdx);
+                }
+
+                continue;
+
             }
 
             _writer.AddRecord(level);
 
+            int groupIdx = 0;
+            foreach (var group in room.Groups) {
 
-            int materialIdx = 0;
-            foreach (var material in materialGroups) {
+                groupIdx++;
 
-                materialIdx++;
-
-                if (multipleMaterials) {
-                    int lvlId = jobId + roomIdx + materialIdx;
-                    _writer.AddRecord(new LevelDescriptor() {
-                        LevelId = lvlId,
-                        ParentId = roomIdx,
-                        Name = $"{materialIdx}-{(string.IsNullOrEmpty(room.Key) ? $"Lvl{roomIdx}" : room.Key)}",
-                        Catalog = material.Key.Catalog,
-                        Materials = material.Key.MaterialType,
-                        Fronts = material.Key.DoorType,
-                        Hardware = material.Key.HardwareType
-                    });
-
-                    _writer.AddRecord(GetMaterialVariableRecord(material.Key.AllMaterials, lvlId));
-                }
-
-                if (material.Any(cab => cab.OverrideParameters.Any())) {
-
-                    // TODO: if there are not multiple override groups, use the material level to set overrides
-
-                    var overrideGroups = material.GroupBy(prod => prod.OverrideParameters, new DictionaryValueComparer());
-
-                    int overrideIdx = 0;
-                    foreach (var group in overrideGroups) {
-
-                        overrideIdx++;
-
-                        int parentId = jobId + roomIdx + (multipleMaterials ? materialIdx : 0);
-                        int lvlId = parentId + overrideIdx;
-                        _writer.AddRecord(new LevelDescriptor() {
-                            LevelId = lvlId,
-                            ParentId = parentId,
-                            Name = $"{(multipleMaterials ? $"{materialIdx}.{overrideIdx}" : overrideIdx.ToString())}-{(string.IsNullOrEmpty(room.Key) ? $"Lvl{roomIdx}" : room.Key)}",
-                            Catalog = "",
-                            Materials = "",
-                            Fronts = "",
-                            Hardware = ""
-                        });
-
-                        _writer.AddRecord(GetMaterialVariableRecord(material.Key.AllMaterials, lvlId));
-
-                        _writer.AddRecord(new VariableOverride() {
-                            LevelId = lvlId,
-                            Units = PPUnits.Millimeters,
-                            Parameters = group.Key
-                        });
-
-                        foreach (var prod in group) {
-                            _writer.AddRecord(MapProductToRecord(prod, lvlId));
-                        }
-
-                    }
-
-                    materialIdx += overrideIdx;
-
-                } else {
-
-                    foreach (var prod in material) {
-                        int parentId = jobId + roomIdx + (multipleMaterials ? materialIdx : 0);
-                        _writer.AddRecord(MapProductToRecord(prod, parentId));
-                    }
-
-                }
+                AddGroupToWriter(group, jobId, roomIdx, groupIdx, $"{groupIdx}-{level.Name}");
 
             }
-
-            roomIdx += materialIdx;
 
         }
 
     }
 
-    private static VariableOverride GetMaterialVariableRecord(Dictionary<string, string> materials, int levelId) {
-        var variables = new VariableOverride {
-            Units = PPUnits.Millimeters,
-            Parameters = materials,
-            LevelId = levelId
+    private void AddGroupToWriter(MaterialGroup group, int jobId, int roomIdx, int groupIdx, string name) {
+
+        var subLevel = new LevelDescriptor() {
+            LevelId = jobId + roomIdx + groupIdx,
+            ParentId = jobId + roomIdx,
+            Name = name,
+            Catalog = group.Key.Catalog,
+            Materials = group.Key.MaterialType,
+            Fronts = group.Key.DoorType,
+            Hardware = group.Key.HardwareType
         };
 
-        return variables;
+        _writer.AddRecord(subLevel);
+
+        AddMaterialVariablesToWriter(group.Key, subLevel.LevelId);
+
+        foreach (var product in group.Products) {
+            AddProductToWriter(product, subLevel.LevelId);
+        }
+
     }
 
-    private static ProductRecord MapProductToRecord(PPProduct product, int parentId) => new() {
-        Name = product.Name,
-        ParentId = parentId,
-        Pos = product.SequenceNum,
-        CustomSpec = true,
-        Qty = 1,
-        SeqText = "",
-        Units = PPUnits.Millimeters,
-        Parameters = product.Parameters
-    };
+    private void AddMaterialVariablesToWriter(MaterialGroupKey materials, int levelId) {
+        
+        var overrides = new VariableOverride() {
+            LevelId = levelId,
+            Units = PPUnits.Millimeters,
+            Parameters = materials.AllMaterials
+        };
+
+        _writer.AddRecord(overrides);
+
+    }
+
+    private void AddProductToWriter(PPProduct product, int parentLevelId) {
+
+        if (product.OverrideParameters.Any()) {
+
+            var overrides = new VariableOverride() {
+                LevelId = parentLevelId,
+                Units = PPUnits.Millimeters,
+                Parameters = product.OverrideParameters
+            };
+
+            _writer.AddRecord(overrides);
+
+        }
+
+        var prodRec = new ProductRecord() {
+            Name = product.Name,
+            ParentId = parentLevelId,
+            Pos = product.SequenceNum,
+            CustomSpec = true,
+            Qty = 1,
+            SeqText = "",
+            Units = PPUnits.Millimeters,
+            Parameters = product.Parameters
+        };
+
+        _writer.AddRecord(prodRec);
+
+    }
 
     public static bool AreDictionariesEquivalent(Dictionary<string, string>? x, Dictionary<string, string>? y) {
         if (x is null && y is null) return true;
@@ -171,6 +211,16 @@ public class PPJobConverter {
         }
 
         return true;
+    }
+
+    class Room {
+        public required string Name { get; set; }
+        public required IEnumerable<MaterialGroup> Groups { get; set; }
+    }
+
+    class MaterialGroup {
+        public required MaterialGroupKey Key { get; set; }
+        public required IEnumerable<PPProduct> Products { get; set; }
     }
 
     class MaterialGroupKey {
