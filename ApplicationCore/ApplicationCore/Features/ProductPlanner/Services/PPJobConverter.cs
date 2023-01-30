@@ -6,9 +6,15 @@ namespace ApplicationCore.Features.ProductPlanner.Services;
 
 public class PPJobConverter {
 
-    public ExtWriter ConvertOrder(PPJob ppjob) {
+    private readonly IExtWriter _writer;
 
-        var writer = new ExtWriter();
+    public PPJobConverter(IExtWriter writer) {
+        _writer = writer;
+    }
+
+    public void ConvertOrder(PPJob ppjob) {
+
+        _writer.Clear();
 
         var rooms = ppjob.Products.GroupBy(prod => prod.Room);
 
@@ -24,7 +30,7 @@ public class PPJobConverter {
             Materials = ""
         };
 
-        writer.AddRecord(job);
+        _writer.AddRecord(job);
 
         int roomIdx = 0;
         foreach (var room in rooms) {
@@ -48,10 +54,10 @@ public class PPJobConverter {
             };
 
             if (!multipleMaterials) {
-                writer.AddRecord(GetMaterialVariableRecord(firstMaterials.AllMaterials, jobId + roomIdx));
+                _writer.AddRecord(GetMaterialVariableRecord(firstMaterials.AllMaterials, jobId + roomIdx));
             }
 
-            writer.AddRecord(level);
+            _writer.AddRecord(level);
 
 
             int materialIdx = 0;
@@ -61,7 +67,7 @@ public class PPJobConverter {
 
                 if (multipleMaterials) {
                     int lvlId = jobId + roomIdx + materialIdx;
-                    writer.AddRecord(new LevelDescriptor() {
+                    _writer.AddRecord(new LevelDescriptor() {
                         LevelId = lvlId,
                         ParentId = roomIdx,
                         Name = $"{materialIdx}-{(string.IsNullOrEmpty(room.Key) ? $"Lvl{roomIdx}" : room.Key)}",
@@ -71,7 +77,7 @@ public class PPJobConverter {
                         Hardware = material.Key.HardwareType
                     });
 
-                    writer.AddRecord(GetMaterialVariableRecord(material.Key.AllMaterials, lvlId));
+                    _writer.AddRecord(GetMaterialVariableRecord(material.Key.AllMaterials, lvlId));
                 }
 
                 if (material.Any(cab => cab.OverrideParameters.Any())) {
@@ -87,7 +93,7 @@ public class PPJobConverter {
 
                         int parentId = jobId + roomIdx + (multipleMaterials ? materialIdx : 0);
                         int lvlId = parentId + overrideIdx;
-                        writer.AddRecord(new LevelDescriptor() {
+                        _writer.AddRecord(new LevelDescriptor() {
                             LevelId = lvlId,
                             ParentId = parentId,
                             Name = $"{(multipleMaterials ? $"{materialIdx}.{overrideIdx}" : overrideIdx.ToString())}-{(string.IsNullOrEmpty(room.Key) ? $"Lvl{roomIdx}" : room.Key)}",
@@ -97,16 +103,16 @@ public class PPJobConverter {
                             Hardware = ""
                         });
 
-                        writer.AddRecord(GetMaterialVariableRecord(material.Key.AllMaterials, lvlId));
+                        _writer.AddRecord(GetMaterialVariableRecord(material.Key.AllMaterials, lvlId));
 
-                        writer.AddRecord(new VariableOverride() {
+                        _writer.AddRecord(new VariableOverride() {
                             LevelId = lvlId,
                             Units = PPUnits.Millimeters,
                             Parameters = group.Key
                         });
 
                         foreach (var prod in group) {
-                            writer.AddRecord(MapProductToRecord(prod, lvlId));
+                            _writer.AddRecord(MapProductToRecord(prod, lvlId));
                         }
 
                     }
@@ -117,7 +123,7 @@ public class PPJobConverter {
 
                     foreach (var prod in material) {
                         int parentId = jobId + roomIdx + (multipleMaterials ? materialIdx : 0);
-                        writer.AddRecord(MapProductToRecord(prod, parentId));
+                        _writer.AddRecord(MapProductToRecord(prod, parentId));
                     }
 
                 }
@@ -128,11 +134,9 @@ public class PPJobConverter {
 
         }
 
-        return writer;
-
     }
 
-    private VariableOverride GetMaterialVariableRecord(Dictionary<string, string> materials, int levelId) {
+    private static VariableOverride GetMaterialVariableRecord(Dictionary<string, string> materials, int levelId) {
         var variables = new VariableOverride {
             Units = PPUnits.Millimeters,
             Parameters = materials,

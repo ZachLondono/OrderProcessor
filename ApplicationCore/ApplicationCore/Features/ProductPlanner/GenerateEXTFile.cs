@@ -11,7 +11,9 @@ public class GenerateEXTFile {
 
         public override Task<Response> Handle(Command command) {
 
-            var writer = new PPJobConverter().ConvertOrder(command.Job);
+            var writer = new ExtWriter();
+
+            new PPJobConverter(writer).ConvertOrder(command.Job);
 
             writer.WriteFile(command.FilePath);
 

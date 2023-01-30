@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace ApplicationCore.Features.ProductPlanner.Services;
 
-public class ExtWriter {
+public class ExtWriter : IExtWriter {
 
     private readonly List<Dictionary<string, string>> _records = new();
 
@@ -12,6 +12,10 @@ public class ExtWriter {
     public void AddRecord(VariableOverride variables) => _records.Add(GetRecord(variables));
     public void AddRecord(LevelDescriptor level) => _records.Add(GetRecord(level));
     public void AddRecord(ProductRecord product) => _records.Add(GetRecord(product));
+
+    public void Clear() {
+        _records.Clear();
+    }
 
     public void WriteFile(string filePath) {
         using var writer = new StreamWriter(filePath);
