@@ -12,9 +12,9 @@ using ApplicationCore.Features.Orders.Loader;
 using ApplicationCore.Features.ProductPlanner;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Pages.OrderList;
 using ApplicationCore.Features.Orders.List;
 using ApplicationCore.Features.Companies.Queries;
+using static ApplicationCore.Features.Orders.Release.Handlers.GenerateCabinetPackingList;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -40,6 +40,38 @@ public static class DependencyInjection {
                 string? name = null;
                 response.OnSuccess(result => name = result);
                 return name;
+            };
+        });
+
+        services.AddTransient<VendorInfo.GetVendorInfoById>((sp) => {
+            var bus = sp.GetRequiredService<IBus>();
+            return async (id) => {
+
+                var response = await bus.Send(new GetCompanyById.Query(id));
+                Vendor? vendor = null;
+                response.OnSuccess(result => {
+                    
+                    if (result is null) {
+                        return;
+                    }
+
+                    vendor = new() {
+                        Name = result.Name,
+                        Address = new() {
+                            Line1 = result.Address.Line1,
+                            Line2 = result.Address.Line2,
+                            Line3 = result.Address.Line3,
+                            City = result.Address.City,
+                            State = result.Address.State,
+                            Zip = result.Address.Zip,
+                            Country = result.Address.Country
+                        }
+                    };
+
+                });
+
+                return vendor;
+
             };
         });
 
