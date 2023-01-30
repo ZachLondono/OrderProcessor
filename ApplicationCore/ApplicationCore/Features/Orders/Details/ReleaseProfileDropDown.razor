@@ -7,13 +7,13 @@
     <div>
 
         <section class="mb-3">
-            <h3>Cut Lists</h3>
+            <h3> Drawer Box Cut Lists</h3>
             <CheckBox @bind-IsChecked="Profile.GenerateCutList">Generate Cut Lists</CheckBox>
             <CheckBox @bind-IsChecked="Profile.PrintCutList">Print Cut Lists</CheckBox>
         </section>
 
         <section class="mb-3">
-            <h3>Packing List</h3>
+            <h3>Drawer Box Packing List</h3>
             <CheckBox @bind-IsChecked="Profile.GeneratePackingList">Generate Packing Lists</CheckBox>
             <CheckBox @bind-IsChecked="Profile.PrintPackingList">Print Packing Lists</CheckBox>
         </section>
@@ -25,7 +25,7 @@
         </section>
 
         <section class="mb-3">
-            <h3>BOL</h3>
+            <h3>A Duie Pyle BOL</h3>
             <CheckBox @bind-IsChecked="Profile.GenerateBOL">Generate BOL</CheckBox>
             <CheckBox @bind-IsChecked="Profile.PrintBOL">Print BOL</CheckBox>
         </section>
@@ -51,6 +51,11 @@
         <section class="mb-3">
             <h3>Job Summary</h3>
             <CheckBox @bind-IsChecked="Profile.GenerateCabinetJobSummary">Generate Cabinet Job Summary</CheckBox>
+        </section>
+
+        <section class="mb-3">
+            <h3>Cabinet Packing List</h3>
+            <CheckBox @bind-IsChecked="Profile.GenerateCabinetPackingList">Generate Packing List</CheckBox>
         </section>
 
     </div>
