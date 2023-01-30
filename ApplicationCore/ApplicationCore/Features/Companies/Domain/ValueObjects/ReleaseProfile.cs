@@ -33,6 +33,9 @@ public class ReleaseProfile {
     public required bool GenerateCabinetJobSummary { get; set; }
     public required string CabinetJobSummaryTemplateFilePath { get; set; }
     public required string CabinetJobSummaryOutputDirectory { get; set; }
+    public required bool GenerateCabinetPackingList { get; set; }
+    public required string CabinetPackingListTemplateFilePath { get; set; }
+    public required string CabinetPackingListOutputDirectory { get; set; }
 
     // TODO: By default, the file paths will be set to directories in the installation folder
     public static ReleaseProfile Default => new() {
@@ -66,7 +69,10 @@ public class ReleaseProfile {
         DoorOrderTemplateFilePath = string.Empty,
         GenerateCabinetJobSummary = false,
         CabinetJobSummaryTemplateFilePath = string.Empty,
-        CabinetJobSummaryOutputDirectory = string.Empty
+        CabinetJobSummaryOutputDirectory = string.Empty,
+        GenerateCabinetPackingList = false,
+        CabinetPackingListTemplateFilePath = string.Empty,
+        CabinetPackingListOutputDirectory = string.Empty
     };
 
 }
