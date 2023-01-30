@@ -17,7 +17,7 @@ public class PPJobConverterTests {
     }
 
     [Fact]
-    public void ConvertOrder_ShouldNotCreateLevels_WhenAllProductsAreSimilar() {
+    public void ConvertOrder_ShouldCreateLevel_WhenAllProductsAreSimilar() {
 
         // Arrange
         var products = new List<PPProduct>() {
@@ -31,9 +31,9 @@ public class PPJobConverterTests {
         _sut.ConvertOrder(job);
 
         // Assert
-        _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name" && j.Catalog == "catalog" && j.Materials == "material" && j.Fronts == "door" && j.Hardware == "hardware"));
+        _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
         _writer.ReceivedWithAnyArgs(1).AddRecord(Arg.Any<VariableOverride>());
-        _writer.ReceivedWithAnyArgs(0).AddRecord(Arg.Any<LevelDescriptor>());
+        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "Lvl1"));
         _writer.ReceivedWithAnyArgs(products.Count).AddRecord(Arg.Any<ProductRecord>());
 
     }
@@ -201,7 +201,7 @@ public class PPJobConverterTests {
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
         _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<VariableOverride>());
         _writer.Received(1).AddRecord(Arg.Is<VariableOverride>(v => v.Parameters["Key1"] == "Value1"));
-        _writer.ReceivedWithAnyArgs(0).AddRecord(Arg.Any<LevelDescriptor>());
+        _writer.ReceivedWithAnyArgs(1).AddRecord(Arg.Any<LevelDescriptor>());
         _writer.ReceivedWithAnyArgs(products.Count).AddRecord(Arg.Any<ProductRecord>());
 
     }

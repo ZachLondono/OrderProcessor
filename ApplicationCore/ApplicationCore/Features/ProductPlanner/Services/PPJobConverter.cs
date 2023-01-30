@@ -47,27 +47,6 @@ public class PPJobConverter {
 
             var room = rooms.First();
 
-            if (room.Groups.Count() == 1) { 
-                
-                var group = room.Groups.First();
-
-                jobDesc.Catalog = group.Key.Catalog;
-                jobDesc.Fronts = group.Key.DoorType;
-                jobDesc.Hardware = group.Key.HardwareType;
-                jobDesc.Materials = group.Key.MaterialType;
-
-                _writer.AddRecord(jobDesc);
-
-                AddMaterialVariablesToWriter(group.Key, jobDesc.LevelId);
-
-                foreach (var product in group.Products) {
-                    AddProductToWriter(product, jobId);
-                }
-
-                return;
-
-            }
-
             _writer.AddRecord(jobDesc);
 
             int groupIdx = 0;
@@ -86,40 +65,38 @@ public class PPJobConverter {
 
         foreach (var room in rooms) {
 
+            if (!room.Groups.Any()) {
+                continue;
+            }
+
             roomIdx++;
 
+            var firstGroup = room.Groups.First();
+
+            // Every level must have catalog, material, fronts & hardware defined, even if there are no products directly within it
             var level = new LevelDescriptor() {
                 LevelId = jobId + roomIdx,
                 ParentId = jobId,
                 Name = string.IsNullOrEmpty(room.Name) ? $"Lvl{roomIdx}" : room.Name,
-                Catalog = "",
-                Materials = "",
-                Fronts = "",
-                Hardware = ""
+                Catalog = firstGroup.Key.Catalog,
+                Materials = firstGroup.Key.MaterialType,
+                Fronts = firstGroup.Key.DoorType,
+                Hardware = firstGroup.Key.HardwareType,
             };
 
-            if (room.Groups.Count() == 1) { 
-                
-                var group = room.Groups.First();
+            _writer.AddRecord(level);
 
-                level.Catalog = group.Key.Catalog;
-                level.Materials = group.Key.MaterialType;
-                level.Fronts = group.Key.DoorType;
-                level.Hardware = group.Key.HardwareType;
+            if (room.Groups.Count() == 1) {
 
-                _writer.AddRecord(level);
+                AddMaterialVariablesToWriter(firstGroup.Key, level.LevelId);
 
-                AddMaterialVariablesToWriter(group.Key, level.LevelId);
-
-                foreach (var product in group.Products) {
+                foreach (var product in firstGroup.Products) {
                     AddProductToWriter(product, jobId + roomIdx);
                 }
 
                 continue;
 
             }
-
-            _writer.AddRecord(level);
 
             int groupIdx = 0;
             foreach (var group in room.Groups) {
