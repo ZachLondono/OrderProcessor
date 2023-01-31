@@ -65,13 +65,20 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
 
         try {
 
-            var path = FillOrderForm(notification.Order, doors, template, outputDirectory, notification.ReleaseProfile.GenerateDoorCNCPrograms);
-            _uibus.Publish(new OrderReleaseFileCreatedNotification("Door order created", path));
+            GenerateOrderForms(notification.Order, doors, template, outputDirectory, notification.ReleaseProfile.GenerateDoorCNCPrograms);
 
         } catch (Exception ex) {
 
             _logger.LogError("Exception thrown while filling door order {Exception}", ex);
             _uibus.Publish(new OrderReleaseErrorNotification($"Error occurred while trying to fill door order"));
+
+        } finally {
+
+            // Clean up COM objects, calling these twice ensures it is fully cleaned up.
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
 
         }
 
@@ -80,73 +87,161 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
 
     }
 
-    private string FillOrderForm(Order order, IEnumerable<MDFDoor> doors, string template, string outputDirectory, bool runCC) {
+    private void GenerateOrderForms(Order order, IEnumerable<MDFDoor> doors, string template, string outputDirectory, bool generateTokens) {
+
+
+        var groups = doors.GroupBy(d => new DoorStyleGroupKey() {
+            Material = d.Material,
+            FramingBead = d.FramingBead,
+            EdgeDetail = d.EdgeDetail,
+            PanelDrop = d.PanelDrop.AsMillimeters(),
+            PanelDetail = "Flat",
+            FinishType = "None",
+            FinishColor = ""
+        });
 
         Application app = new() {
             DisplayAlerts = false,
             Visible = false
         };
 
-        Workbook workbook = app.Workbooks.Open(template, ReadOnly: true);
-        string fileName = $"{order.Number} - {order.Name} MDF DOORS.xlsm";
-        string finalPath = Path.Combine(outputDirectory, fileName);
+        int index = 0;
+        foreach (var group in groups) {
 
-        try {
+            Workbook? workbook = null;
 
-            Worksheet ws = workbook.Worksheets["MDF"];
-            ws.Range["Company"].Value2 = "Test123";
-            ws.Range["JobNumber"].Value2 = order.Number;
-            ws.Range["JobName"].Value2 = order.Name;
-            ws.Range["Material"].Value2 = "MDF-3/4\"";
-            ws.Range["FramingBead"].Value2 = "Shaker";
-            ws.Range["EdgeDetail"].Value2 = "Eased";
-            ws.Range["PanelDetail"].Value2 = "Flat";
+            try {
 
-            var partNumRng = ws.Range["A15"];
-            var descRng = ws.Range["DescriptionStart"];
-            var qtyRng = ws.Range["QtyStart"];
-            var widthRng = ws.Range["WidthStart"];
-            var heightRng = ws.Range["HeightStart"];
-            var noteRng = ws.Range["NoteStart"];
+                workbook = app.Workbooks.Open(template, ReadOnly: true);
 
-            int offset = 1;
+                string orderNumber = $"{order.Number}{(groups.Count() == 1 ? "" : $"-{++index}")}";
 
-            foreach (var door in doors) {
+                FillOrderSheet(order, group, workbook, orderNumber);
 
-                partNumRng.Offset[offset].Value2 = door.ProductNumber;
-                descRng.Offset[offset].Value2 = door.Type switch {
-                    DoorType.Door => "Door",
-                    DoorType.DrawerFront => "Drawer Front",
-                    _ => "Door"
-                };
-                qtyRng.Offset[offset].Value2 = door.Qty;
-                widthRng.Offset[offset].Value2 = door.Width.AsInches();
-                heightRng.Offset[offset].Value2 = door.Height.AsInches();
-                noteRng.Offset[offset].Value2 = door.Note;
+                string fileName = GetAvailableFileName(outputDirectory, $"{orderNumber} - {order.Name} MDF DOORS");
+                string finalPath = Path.Combine(outputDirectory, fileName);
 
-                offset++;
+                workbook.SaveAs2(finalPath);
+                _uibus.Publish(new OrderReleaseFileCreatedNotification("Door order created", finalPath));
+
+                if (generateTokens) {
+                    
+                    _uibus.Publish(new OrderReleaseInfoNotification("Generating mdf door CADCode tokens"));
+                    
+                    app.Run($"'{finalPath}'!DoorProcessing");
+                    //app.Run($"'{fileName}'!ReleaseOrder");
+                    workbook.Save();
+
+                    _uibus.Publish(new OrderReleaseSuccessNotification($"CADCode tokens generated for {orderNumber}"));
+
+                }
+
+            } catch (Exception ex) {
+
+                _uibus.Publish(new OrderReleaseErrorNotification($"Error generating MDF door order '{ex.Message}'"));
+
+            } finally {
+                
+                workbook?.Close(SaveChanges: false);
 
             }
-
-            workbook.SaveAs2(finalPath);
-
-            if (runCC) {
-                app.Run($"'{fileName}'!DoorProcessing");
-                app.Run($"'{fileName}'!ReleaseOrder");
-            }
-
-        } catch {
-
-            throw;
-
-        } finally {
-
-            workbook.Close(SaveChanges: false);
-            app.Quit();
 
         }
 
-        return finalPath;
+        app.Quit();
+
+    }
+
+    private static void FillOrderSheet(Order order, IGrouping<DoorStyleGroupKey, MDFDoor> doors, Workbook workbook, string orderNumber) {
+
+        Worksheet ws = workbook.Worksheets["MDF"];
+        ws.Range["OrderDate"].Value2 = order.OrderDate.ToString("ddd, MM/dd/yyyy");
+        ws.Range["Company"].Value2 = order.Customer.Name;
+        ws.Range["JobNumber"].Value2 = orderNumber;
+        ws.Range["JobName"].Value2 = order.Name;
+
+        ws.Range["Material"].Value2 = doors.Key.Material;
+        ws.Range["FramingBead"].Value2 = doors.Key.FramingBead;
+        ws.Range["EdgeDetail"].Value2 = doors.Key.EdgeDetail;
+        ws.Range["PanelDetail"].Value2 = doors.Key.PanelDetail;
+        ws.Range["PanelDrop"].Value2 = doors.Key.PanelDrop;
+        ws.Range["FinishOption"].Value2 = doors.Key.FinishType;
+        ws.Range["FinishColor"].Value2 = doors.Key.FinishColor;
+
+        ws.Range["units"].Value2 = "Metric (mm)";
+
+        int offset = 1;
+
+        var data = doors.Select(d => new dynamic[] {
+                            d.ProductNumber,
+                            d.Type switch {
+                                DoorType.Door => "Door",
+                                DoorType.DrawerFront => "Drawer Front",
+                                _ => "Door"
+                            },
+                            offset++,
+                            d.Qty,
+                            d.Width.AsMillimeters(),
+                            d.Height.AsMillimeters(),
+                            d.Note
+                        })
+                        .ToArray();
+
+        var rows = CreateRectangularArray(data);
+
+        var outputRng = ws.Range[$"A16:G{15 + rows.GetLength(0)}"];
+        outputRng.Value2 = rows;
+
+    }
+
+    private static dynamic[,] CreateRectangularArray(IList<dynamic>[] arrays) {
+
+        int minorLength = arrays[0].Count;
+        dynamic[,] ret = new dynamic[arrays.Length, minorLength];
+        
+        for (int i = 0; i < arrays.Length; i++) {
+            var array = arrays[i];
+            
+            if (array.Count != minorLength) {
+                throw new ArgumentException("All arrays must be the same length");
+            }
+
+            for (int j = 0; j < minorLength; j++) {
+                ret[i, j] = array[j];
+            }
+        }
+
+        return ret;
+
+    }
+
+    private string GetAvailableFileName(string direcotry, string filename, string fileExtension = "xlsm") {
+
+        int index = 1;
+
+        string filepath = Path.Combine(direcotry, $"{filename}.{fileExtension}");
+
+        while (_fileReader.DoesFileExist(filepath)) {
+
+            filename = $"{filename} ({index++}).{fileExtension}";
+
+            filepath = Path.Combine(direcotry, filename);
+
+        }
+
+        return filename;
+
+    }
+
+    public record DoorStyleGroupKey {
+
+        public required string FramingBead { get; init; }
+        public required string EdgeDetail { get; init; }
+        public required string PanelDetail { get; init; }
+        public required string Material { get; init; }
+        public required double PanelDrop { get; init; }
+        public required string FinishType { get; init; }
+        public required string FinishColor { get; init; }
 
     }
 
