@@ -23,18 +23,18 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     public static BlindWallCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves) {
-        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, blindSide, blindWidth, adjustableShelves);
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, doors, blindSide, blindWidth, adjustableShelves);
     }
 
     private BlindWallCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide) {
 
         Doors = doors;
         AdjustableShelves = adjustableShelves;
@@ -44,13 +44,13 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     }
 
     public IEnumerable<PPProduct> GetPPProducts() {
-        string doorType = (Doors.MDFOptions is null) ? "Slab" : "Buyout";
+        string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
         yield return new PPProduct(Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), new(), new());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
-        if (Doors.MDFOptions is null) {
+        if (MDFDoorOptions is null) {
             return Enumerable.Empty<MDFDoor>();
         }
 
@@ -63,6 +63,8 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         var door = getBuilder().WithQty(Doors.Quantity * Qty)
                                 .WithProductNumber(ProductNumber)
                                 .WithType(DoorType.Door)
+                                .WithFramingBead(MDFDoorOptions.StyleName)
+                                .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
                                 .Build(height, width);
 
 

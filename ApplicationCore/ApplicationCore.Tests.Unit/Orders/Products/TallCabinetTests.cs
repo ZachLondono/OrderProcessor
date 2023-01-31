@@ -37,12 +37,13 @@ public class TallCabinetDoorTests {
 
         // Arrange
         var cabinet = new TallCabinetBuilder()
-                            .WithDoors(new(HingeSide.Left, _mdfOptions))
+                            .WithDoors(new(HingeSide.Left))
                             .WithToeType(new LegLevelers())
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(2134))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(cabinetQty)
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -59,11 +60,12 @@ public class TallCabinetDoorTests {
 
         // Arrange
         var cabinet = new TallCabinetBuilder()
-                            .WithDoors(new(HingeSide.Left, null))
+                            .WithDoors(new(HingeSide.Left))
                             .WithToeType(new LegLevelers())
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(2134))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithMDFDoorOptions(null)
                             .Build();
         
 
@@ -84,12 +86,13 @@ public class TallCabinetDoorTests {
 
         // Arrange
         var cabinet = new TallCabinetBuilder()
-                            .WithDoors(new(hingeSide, _mdfOptions))
+                            .WithDoors(new(hingeSide))
                             .WithToeType(new LegLevelers())
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(1)
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -112,11 +115,12 @@ public class TallCabinetDoorTests {
 
         // Arrange
         var cabinet = new TallCabinetBuilder()
-                            .WithDoors(new(hingeSide, _mdfOptions))
+                            .WithDoors(new(hingeSide))
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(2134))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(1)
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -139,12 +143,13 @@ public class TallCabinetDoorTests {
 
         // Arrange
         var cabinet = new TallCabinetBuilder()
-                            .WithDoors(new(Dimension.FromMillimeters(lowerDoorHeight), hingeSide, _mdfOptions))
+                            .WithDoors(new(Dimension.FromMillimeters(lowerDoorHeight), hingeSide))
                             .WithToeType(new LegLevelers())
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(1)
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 

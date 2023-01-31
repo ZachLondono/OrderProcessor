@@ -16,6 +16,7 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
     public Dimension Depth { get; private set; }
     public CabinetMaterial BoxMaterial { get; private set; }
     public CabinetFinishMaterial FinishMaterial { get; private set; }
+    public MDFDoorOptions? MDFDoorOptions { get; private set; }
     public string EdgeBandingColor { get; private set; }
     public CabinetSide LeftSide { get; set; }
     public CabinetSide RightSide { get; set; }
@@ -31,6 +32,7 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
         Depth = Dimension.Zero;
         BoxMaterial = new(string.Empty, CabinetMaterialCore.Flake);
         FinishMaterial = new(string.Empty, CabinetMaterialCore.Flake, null);
+        MDFDoorOptions = null;
         EdgeBandingColor = string.Empty;
         LeftSide = new(CabinetSideType.Unfinished);
         RightSide = new(CabinetSideType.Unfinished);
@@ -78,6 +80,11 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
 
     public CabinetBuilder<TCabinet> WithFinishMaterial(CabinetFinishMaterial finishMaterial) {
         FinishMaterial = finishMaterial;
+        return this;
+    }
+
+    public CabinetBuilder<TCabinet> WithMDFDoorOptions(MDFDoorOptions? mdfDoorOptions) {
+        MDFDoorOptions = mdfDoorOptions;
         return this;
     }
 

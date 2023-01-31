@@ -43,14 +43,11 @@ public class BlindBaseCabinetModel : CabinetModelBase {
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
-        MDFDoorOptions? mdfOptions = null;
-        if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
-
         bool hingeLeft = (HingeSide == "Left");
         BlindCabinetDoors doors = DoorQty switch {
-            1 => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right, mdfOptions),
-            2 => new(mdfOptions),
-            _ => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right, mdfOptions)
+            1 => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right),
+            2 => new(Shared.Domain.Enums.HingeSide.NotApplicable),
+            _ => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right)
         };
 
         HorizontalDrawerBank drawers = new() {

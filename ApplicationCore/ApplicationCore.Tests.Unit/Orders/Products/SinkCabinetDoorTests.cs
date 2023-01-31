@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using FluentAssertions;
@@ -37,12 +36,12 @@ public class SinkCabinetDoorTests {
 
         // Arrange
         var cabinet = new SinkCabinetBuilder()
-                            .WithMDFOptions(_mdfOptions)
                             .WithDoorQty(doorQty)
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(cabinetQty)
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -59,11 +58,11 @@ public class SinkCabinetDoorTests {
 
         // Arrange
         var cabinet = new SinkCabinetBuilder()
-                            .WithMDFOptions(null)
                             .WithDoorQty(1)
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithMDFDoorOptions(null)
                             .Build();
         
 
@@ -82,11 +81,11 @@ public class SinkCabinetDoorTests {
 
         // Arrange
         var cabinet = new SinkCabinetBuilder()
-                            .WithMDFOptions(_mdfOptions)
                             .WithDoorQty(doorQty)
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -106,12 +105,12 @@ public class SinkCabinetDoorTests {
 
         // Arrange
         var cabinet = new SinkCabinetBuilder()
-                            .WithMDFOptions(_mdfOptions)
                             .WithDoorQty(1)
                             .WithFalseDrawerQty(drawerQty)
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -132,11 +131,11 @@ public class SinkCabinetDoorTests {
         // Arrange
         var cabinet = new SinkCabinetBuilder()
                             .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
-                            .WithMDFOptions(_mdfOptions)
                             .WithDoorQty(1)
                             .WithWidth(Dimension.FromMillimeters(456))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -158,13 +157,13 @@ public class SinkCabinetDoorTests {
         // Arrange
         var cabinet = new SinkCabinetBuilder()
                             .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
-                            .WithMDFOptions(_mdfOptions)
                             .WithDoorQty(1)
                             .WithFalseDrawerQty(1)
                             .WithDrawerFaceHeight(Dimension.FromMillimeters(drawerFaceHeight))
                             .WithWidth(Dimension.FromMillimeters(456))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 

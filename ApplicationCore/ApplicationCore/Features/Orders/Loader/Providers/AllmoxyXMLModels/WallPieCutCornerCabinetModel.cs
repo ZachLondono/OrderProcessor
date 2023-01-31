@@ -22,9 +22,6 @@ public class WallPieCutCornerCabinetModel : CabinetModelBase {
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
-        MDFDoorOptions? mdfOptions = null;
-        if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
-
         var builder = builderFactory.CreateWallPieCutCornerCabinetBuilder();
 
         return InitilizeBuilder<WallPieCutCornerCabinetBuilder, WallPieCutCornerCabinet>(builder)
@@ -32,7 +29,6 @@ public class WallPieCutCornerCabinetModel : CabinetModelBase {
                     .WithRightDepth(Dimension.FromMillimeters(RightDepth))
                     .WithAdjustableShelves(AdjShelfQty)
                     .WithHingeSide((HingeSide == "Left") ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right)
-                    .WithMDFOptions(Cabinet.Fronts.Type == "Slab" ? null : mdfOptions)
                     .Build();
 
     }

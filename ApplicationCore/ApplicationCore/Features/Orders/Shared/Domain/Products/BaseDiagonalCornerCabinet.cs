@@ -13,7 +13,6 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
     public IToeType ToeType { get; }
     public HingeSide HingeSide { get; }
     public int DoorQty { get; }
-    public MDFDoorOptions? MDFOptions { get; }
     public int AdjustableShelves { get; }
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
@@ -26,17 +25,16 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
 
     public BaseDiagonalCornerCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        Dimension rightWidth, Dimension rightDepth, IToeType toeType, int adjShelfQty, HingeSide hingeSide, int doorQty, MDFDoorOptions? mdfOptions)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
+                        Dimension rightWidth, Dimension rightDepth, IToeType toeType, int adjShelfQty, HingeSide hingeSide, int doorQty)
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide) {
         RightWidth = rightWidth;
         RightDepth = rightDepth;
         ToeType = toeType;
         AdjustableShelves = adjShelfQty;
         HingeSide = hingeSide;
         DoorQty = doorQty;
-        MDFOptions = mdfOptions;
 
         if (DoorQty > 2 || DoorQty < 1) throw new InvalidOperationException("Invalid number of doors");
 
@@ -44,13 +42,13 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
 
     public static BaseDiagonalCornerCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        Dimension rightWidth, Dimension rightDepth, IToeType toeType, int adjShelfQty, HingeSide hingeSide, int doorQty, MDFDoorOptions? mdfOptions)
-                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, rightWidth, rightDepth, toeType, adjShelfQty, hingeSide, doorQty, mdfOptions);
+                        Dimension rightWidth, Dimension rightDepth, IToeType toeType, int adjShelfQty, HingeSide hingeSide, int doorQty)
+                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, rightWidth, rightDepth, toeType, adjShelfQty, hingeSide, doorQty);
 
     public IEnumerable<PPProduct> GetPPProducts() {
-        string doorType = (MDFOptions is null) ? "Slab" : "Buyout";
+        string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
 
         string sku = DoorQty switch {
             1 => "BC1D-M",
@@ -63,7 +61,7 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
-        if (MDFOptions is null) {
+        if (MDFDoorOptions is null) {
             return Enumerable.Empty<MDFDoor>();
         }
 
@@ -79,7 +77,11 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
 
         Dimension height = Height - ToeType.HeightAdjustment - DoorGaps.TopGap - DoorGaps.BottomGap;
 
-        var door = getBuilder().WithQty(DoorQty * Qty).WithProductNumber(ProductNumber).Build(height, width);
+        var door = getBuilder().WithQty(DoorQty * Qty)
+                                .WithProductNumber(ProductNumber)
+                                .WithFramingBead(MDFDoorOptions.StyleName)
+                                .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                                .Build(height, width);
 
         return new List<MDFDoor>() { door };
 

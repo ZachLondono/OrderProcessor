@@ -16,8 +16,9 @@ public class MDFDoor {
     public string EdgeDetail { get; }
     public DoorFrame FrameSize { get; }
     public Dimension PanelDrop { get; }
+    public string? PaintColor { get; set; }
 
-    public MDFDoor(int qty, int productNumber, DoorType type, Dimension height, Dimension width, string note, string material, string framingBead, string edgeDetail, DoorFrame frameSize, Dimension panelDrop) {
+    public MDFDoor(int qty, int productNumber, DoorType type, Dimension height, Dimension width, string note, string material, string framingBead, string edgeDetail, DoorFrame frameSize, Dimension panelDrop, string? paintColor) {
         Qty = qty;
         ProductNumber = productNumber;
         Type = type;
@@ -29,6 +30,7 @@ public class MDFDoor {
         EdgeDetail = edgeDetail;
         FrameSize = frameSize;
         PanelDrop = panelDrop;
+        PaintColor = paintColor;
     }
 
 }

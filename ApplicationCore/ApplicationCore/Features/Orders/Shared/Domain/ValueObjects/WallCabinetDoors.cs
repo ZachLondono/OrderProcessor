@@ -7,27 +7,21 @@ public record WallCabinetDoors {
 
     public int Quantity { get; init; }
     public HingeSide HingeSide { get; init; } = HingeSide.NotApplicable;
-    public MDFDoorOptions? MDFOptions { get; init; }
     public Dimension ExtendDown { get; init; }
 
     public static WallCabinetDoors NoDoors() => new() {
         Quantity = 0,
         HingeSide = HingeSide.NotApplicable,
-        MDFOptions = null,
         ExtendDown = Dimension.Zero
     };
 
-    public WallCabinetDoors(Dimension? extendDown = null, MDFDoorOptions? mdfOptions = null) {
-        Quantity = 2;
-        HingeSide = HingeSide.NotApplicable;
-        MDFOptions = mdfOptions;
-        ExtendDown = extendDown is null ? Dimension.Zero : (Dimension) extendDown;
-    }
-
-    public WallCabinetDoors(HingeSide hingeSide, Dimension? extendDown = null, MDFDoorOptions? mdfOptions = null) {
-        Quantity = 1;
+    public WallCabinetDoors(HingeSide hingeSide = HingeSide.NotApplicable, Dimension? extendDown = null) {
+        if (hingeSide == HingeSide.NotApplicable) {
+            Quantity = 2;
+        } else {
+            Quantity = 1;
+        }
         HingeSide = hingeSide;
-        MDFOptions = mdfOptions;
         ExtendDown = extendDown is null ? Dimension.Zero : (Dimension) extendDown;
     }
 

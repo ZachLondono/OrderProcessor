@@ -12,7 +12,6 @@ internal class BaseDiagonalCornerCabinetBuilder : CabinetBuilder<BaseDiagonalCor
     public IToeType ToeType { get; private set; }
     public HingeSide HingeSide { get; private set; }
     public int DoorQty { get; private set; }
-    public MDFDoorOptions? MDFOptions { get; private set; }
     public int AdjustableShelves { get; private set; }
 
     public BaseDiagonalCornerCabinetBuilder() {
@@ -21,7 +20,6 @@ internal class BaseDiagonalCornerCabinetBuilder : CabinetBuilder<BaseDiagonalCor
         ToeType = new NoToe();
         HingeSide = HingeSide.Left;
         DoorQty = 0;
-        MDFOptions = null;
         AdjustableShelves = 0;
     }
 
@@ -50,18 +48,13 @@ internal class BaseDiagonalCornerCabinetBuilder : CabinetBuilder<BaseDiagonalCor
         return this;
     }
 
-    public BaseDiagonalCornerCabinetBuilder WithMDFOptions(MDFDoorOptions? mdfOptions) {
-        MDFOptions = mdfOptions;
-        return this;
-    }
-
     public BaseDiagonalCornerCabinetBuilder WithAdjustableShelves(int adjustableShelves) {
         AdjustableShelves = adjustableShelves;
         return this;
     }
 
     public override BaseDiagonalCornerCabinet Build() {
-        var cabinet = BaseDiagonalCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, RightWidth, RightDepth, ToeType, AdjustableShelves, HingeSide, DoorQty, MDFOptions);
+        var cabinet = BaseDiagonalCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, RightWidth, RightDepth, ToeType, AdjustableShelves, HingeSide, DoorQty);
         return cabinet;
     }
 

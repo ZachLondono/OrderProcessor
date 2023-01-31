@@ -14,6 +14,7 @@ public class MDFDoorBuilder {
     private string _framingBead;
     private string _edgeDetail;
     private DoorFrame _frameSize;
+    private string? _paintColor;
 
     public MDFDoorBuilder(MDFDoorConfiguration configuration) {
 
@@ -71,9 +72,14 @@ public class MDFDoorBuilder {
         return this;
     }
 
+    public MDFDoorBuilder WithPaintColor(string? paintColor) {
+        _paintColor = paintColor;
+        return this;
+    }
+
     public MDFDoor Build(Dimension height, Dimension width) {
 
-        return new MDFDoor(_qty, _productNumber, _type, height, width, _note, _material, _framingBead, _edgeDetail, _frameSize, Dimension.Zero);
+        return new MDFDoor(_qty, _productNumber, _type, height, width, _note, _material, _framingBead, _edgeDetail, _frameSize, Dimension.Zero, _paintColor);
 
     }
 

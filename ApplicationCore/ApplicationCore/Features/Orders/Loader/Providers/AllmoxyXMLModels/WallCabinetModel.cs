@@ -35,9 +35,9 @@ public class WallCabinetModel : CabinetModelBase {
         Dimension doorExtendDown = Dimension.FromMillimeters(ExtendDoorDown);
         WallCabinetDoors doors = DoorQty switch {
             0 => WallCabinetDoors.NoDoors(),
-            1 => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right, doorExtendDown, mdfOptions),
-            2 => new(doorExtendDown, mdfOptions),
-            _ => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right, doorExtendDown, mdfOptions)
+            1 => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right, doorExtendDown),
+            2 => new(Shared.Domain.Enums.HingeSide.NotApplicable, doorExtendDown),
+            _ => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right, doorExtendDown)
         };
 
         WallCabinetInside inside = new(AdjShelfQty, VerticalDividerQty);

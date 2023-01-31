@@ -44,9 +44,6 @@ public class DrawerBaseCabinetModel : CabinetModelBase {
         if (DrawerQty >= 4) drawerFaces[3] = Dimension.FromMillimeters(DrawerFace4);
         if (DrawerQty >= 5) drawerFaces[4] = Dimension.FromMillimeters(DrawerFace5);
 
-        MDFDoorOptions? mdfOptions = null;
-        if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
-
         VerticalDrawerBank verticalDrawerBank = new() {
             BoxMaterial = AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial),
             FaceHeights = drawerFaces,
@@ -58,7 +55,6 @@ public class DrawerBaseCabinetModel : CabinetModelBase {
         return InitilizeBuilder<DrawerBaseCabinetBuilder, DrawerBaseCabinet>(builder)
                     .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
                     .WithDrawers(verticalDrawerBank)
-                    .WithFronts(mdfOptions)
                     .Build();
     }
 

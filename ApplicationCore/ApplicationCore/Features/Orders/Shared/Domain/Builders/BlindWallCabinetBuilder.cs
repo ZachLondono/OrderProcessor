@@ -40,7 +40,7 @@ internal class BlindWallCabinetBuilder : CabinetBuilder<BlindWallCabinet> {
     }
 
     public override BlindWallCabinet Build() {
-        var cabinet = BlindWallCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, Doors, BlindSide, BlindWidth, AdjustableShelves);
+        var cabinet = BlindWallCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, Doors, BlindSide, BlindWidth, AdjustableShelves);
         return cabinet;
     }
 

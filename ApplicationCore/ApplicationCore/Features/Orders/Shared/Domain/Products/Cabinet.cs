@@ -18,6 +18,7 @@ public abstract class Cabinet : IProduct {
     public Dimension Depth { get; }
     public CabinetMaterial BoxMaterial { get; }
     public CabinetFinishMaterial FinishMaterial { get; }
+    public MDFDoorOptions? MDFDoorOptions { get; init; }
     public string EdgeBandingColor { get; }
     public CabinetSide RightSide { get; }
     public CabinetSide LeftSide { get; }
@@ -32,7 +33,7 @@ public abstract class Cabinet : IProduct {
 
     public Cabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                 Dimension height, Dimension width, Dimension depth,
-                CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
+                CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                 CabinetSide rightSide, CabinetSide leftSide) {
 
         Id = id;
@@ -46,6 +47,7 @@ public abstract class Cabinet : IProduct {
         Depth = depth;
         BoxMaterial = boxMaterial;
         FinishMaterial = finishMaterial;
+        MDFDoorOptions = mdfDoorOptions;
         EdgeBandingColor = edgeBandingColor;
         RightSide = rightSide;
         LeftSide = leftSide;

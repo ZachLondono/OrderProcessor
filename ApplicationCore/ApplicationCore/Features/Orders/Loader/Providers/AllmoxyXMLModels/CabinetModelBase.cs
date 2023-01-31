@@ -60,6 +60,7 @@ public abstract class CabinetModelBase : ProductModel {
                                     .WithHeight(Dimension.FromMillimeters(Cabinet.Height))
                                     .WithDepth(Dimension.FromMillimeters(Cabinet.Depth))
                                     .WithRoom(Cabinet.Room)
+                                    .WithMDFDoorOptions(mdfOptions)
                                     .WithAssembled(Cabinet.Assembled == "Yes");
 
     }

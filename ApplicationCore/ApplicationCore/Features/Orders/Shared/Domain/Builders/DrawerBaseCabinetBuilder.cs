@@ -8,12 +8,10 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Builders;
 internal class DrawerBaseCabinetBuilder : CabinetBuilder<DrawerBaseCabinet> {
 
     public IToeType ToeType { get; private set; }
-    public MDFDoorOptions? Fronts { get; private set; }
     public VerticalDrawerBank Drawers { get; private set; }
 
     public DrawerBaseCabinetBuilder() {
         ToeType = new NoToe();
-        Fronts = null;
         Drawers = new() {
             BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
             FaceHeights = Enumerable.Empty<Dimension>(),
@@ -26,18 +24,13 @@ internal class DrawerBaseCabinetBuilder : CabinetBuilder<DrawerBaseCabinet> {
         return this;
     }
 
-    public DrawerBaseCabinetBuilder WithFronts(MDFDoorOptions? fronts) {
-        Fronts = fronts;
-        return this;
-    }
-
     public DrawerBaseCabinetBuilder WithDrawers(VerticalDrawerBank drawers) {
         Drawers = drawers;
         return this;
     }
 
     public override DrawerBaseCabinet Build() {
-        var cabinet = DrawerBaseCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, ToeType, Drawers, Fronts);
+        var cabinet = DrawerBaseCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, ToeType, Drawers);
         return cabinet;
     }
 }

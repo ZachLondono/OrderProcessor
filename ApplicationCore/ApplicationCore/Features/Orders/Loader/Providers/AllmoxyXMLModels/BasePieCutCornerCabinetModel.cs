@@ -25,9 +25,6 @@ public class BasePieCutCornerCabinetModel : CabinetModelBase {
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
-        MDFDoorOptions? mdfOptions = null;
-        if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
-
         var builder = builderFactory.CreateBasePieCutCornerCabinetBuilder();
 
         return InitilizeBuilder<BasePieCutCornerCabinetBuilder, BasePieCutCornerCabinet>(builder)
@@ -36,7 +33,6 @@ public class BasePieCutCornerCabinetModel : CabinetModelBase {
                     .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
                     .WithAdjustableShelves(AdjShelfQty)
                     .WithHingeSide((HingeSide == "Left") ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right)
-                    .WithMDFOptions(Cabinet.Fronts.Type == "Slab" ? null : mdfOptions)
                     .Build();
 
     }

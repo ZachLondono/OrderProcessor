@@ -22,18 +22,18 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
     public static TallCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         TallCabinetDoors doors, IToeType toeType, TallCabinetInside inside) {
-        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, toeType, inside);
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, doors, toeType, inside);
     }
 
     private TallCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         TallCabinetDoors doors, IToeType toeType, TallCabinetInside inside)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide) {
 
         if (doors.UpperQuantity > 2 || doors.UpperQuantity < 0 || doors.LowerQuantity > 2 || doors.LowerQuantity < 0)
             throw new InvalidOperationException("Invalid number of doors");
@@ -51,13 +51,13 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
     }
 
     public IEnumerable<PPProduct> GetPPProducts() {
-        string doorType = (Doors.MDFOptions is null) ? "Slab" : "Buyout";
+        string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
         yield return new PPProduct(Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
-        if (Doors.MDFOptions is null) {
+        if (MDFDoorOptions is null) {
             return Enumerable.Empty<MDFDoor>();
         }
 
@@ -72,6 +72,8 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
             doors.Add(builder.WithQty(Doors.UpperQuantity * Qty)
                             .WithProductNumber(ProductNumber)
+                            .WithFramingBead(MDFDoorOptions.StyleName)
+                            .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
                             .Build(height, width));
 
         }
@@ -85,6 +87,8 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
             doors.Add(builder.WithQty(Doors.LowerQuantity * Qty)
                             .WithProductNumber(ProductNumber)
+                            .WithFramingBead(MDFDoorOptions.StyleName)
+                            .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
                             .Build(height, width));
 
         }

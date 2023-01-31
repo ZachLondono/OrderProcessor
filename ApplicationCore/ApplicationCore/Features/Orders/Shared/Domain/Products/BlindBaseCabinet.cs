@@ -26,18 +26,18 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     public static BlindBaseCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, ShelfDepth shelfDepth, HorizontalDrawerBank drawers, IToeType toeType) {
-        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, doors, blindSide, blindWidth, adjustableShelves, shelfDepth, drawers, toeType);
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, doors, blindSide, blindWidth, adjustableShelves, shelfDepth, drawers, toeType);
     }
 
     private BlindBaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
                         BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, ShelfDepth shelfDepth, HorizontalDrawerBank drawers, IToeType toeType)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide) {
 
         Doors = doors;
         BlindSide = blindSide;
@@ -50,7 +50,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     }
 
     public IEnumerable<PPProduct> GetPPProducts() {
-        string doorType = (Doors.MDFOptions is null) ? "Slab" : "Buyout";
+        string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
         yield return new PPProduct(Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), GetManualOverrideParameters());
     }
 
@@ -60,7 +60,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
-        if (Doors.MDFOptions is null) {
+        if (MDFDoorOptions is null) {
             return Enumerable.Empty<MDFDoor>();
         }
 
@@ -72,6 +72,8 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
             var door = getBuilder().WithQty(Doors.Quantity * Qty)
                                     .WithProductNumber(ProductNumber)
                                     .WithType(DoorType.Door)
+                                    .WithFramingBead(MDFDoorOptions.StyleName)
+                                    .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
                                     .Build(height, width);
             doors.Add(door);
         }
@@ -81,6 +83,8 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
             var drawers = getBuilder().WithQty(Drawers.Quantity * Qty)
                                         .WithProductNumber(ProductNumber)
                                         .WithType(DoorType.DrawerFront)
+                                        .WithFramingBead(MDFDoorOptions.StyleName)
+                                        .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
                                         .Build(Drawers.FaceHeight, drwWidth);
             doors.Add(drawers);
         }
@@ -90,7 +94,6 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     }
 
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
-
 
         if (Drawers.Quantity == 0) {
             return Enumerable.Empty<DovetailDrawerBox>();

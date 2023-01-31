@@ -16,7 +16,6 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
     public int AdjustableShelves { get; }
     public ShelfDepth ShelfDepth { get; }
     public RollOutOptions RollOutBoxes { get; }
-    public MDFDoorOptions? MDFOptions { get; }
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
@@ -28,10 +27,10 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
     public SinkCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        IToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes, MDFDoorOptions? mdfOptions)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
+                        IToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes)
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide) {
         ToeType = toeType;
         HingeSide = hingeSide;
         DoorQty = doorQty;
@@ -40,24 +39,23 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
         AdjustableShelves = adjustableShelves;
         ShelfDepth = shelfDepth;
         RollOutBoxes = rollOutBoxes;
-        MDFOptions = mdfOptions;
     }
 
     public static SinkCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        IToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes, MDFDoorOptions? mdfOptions)
-                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, toeType, hingeSide, doorQty, falseDrawerQty, drawerFaceHeight, adjustableShelves, shelfDepth, rollOutBoxes, mdfOptions);
+                        IToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes)
+                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, toeType, hingeSide, doorQty, falseDrawerQty, drawerFaceHeight, adjustableShelves, shelfDepth, rollOutBoxes);
 
     public IEnumerable<PPProduct> GetPPProducts() {
-        string doorType = (MDFOptions is null) ? "Slab" : "Buyout";
+        string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
         yield return new PPProduct(Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), GetManualOverrideParameters());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
-        if (MDFOptions is null) {
+        if (MDFDoorOptions is null) {
             return Enumerable.Empty<MDFDoor>();
         }
 
@@ -69,6 +67,8 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
             var door = getBuilder().WithQty(DoorQty * Qty)
                                     .WithType(DoorType.Door)
                                     .WithProductNumber(ProductNumber)
+                                    .WithFramingBead(MDFDoorOptions.StyleName)
+                                    .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
                                     .Build(height, width);
             doors.Add(door);
         }
@@ -78,6 +78,8 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
             var drawers = getBuilder().WithQty(FalseDrawerQty * Qty)
                                         .WithType(DoorType.DrawerFront)
                                         .WithProductNumber(ProductNumber)
+                                        .WithFramingBead(MDFDoorOptions.StyleName)
+                                        .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
                                         .Build(DrawerFaceHeight, drwWidth);
             doors.Add(drawers);
         }

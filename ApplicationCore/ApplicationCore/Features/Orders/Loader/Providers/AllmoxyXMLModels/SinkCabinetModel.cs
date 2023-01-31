@@ -41,9 +41,6 @@ public class SinkCabinetModel : CabinetModelBase {
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
-        MDFDoorOptions? mdfOptions = null;
-        if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
-
         Dimension[] rollOutBoxPositions = AllmoxyXMLOrderProviderHelpers.GetRollOutPositions(RollOuts.Pos1, RollOuts.Pos2, RollOuts.Pos3, RollOuts.Pos4, RollOuts.Pos5);
         bool scoopFront = true;
         RollOutBlockPosition rollOutBlocks = AllmoxyXMLOrderProviderHelpers.GetRollOutBlockPositions(RollOuts.Blocks);
@@ -64,7 +61,6 @@ public class SinkCabinetModel : CabinetModelBase {
                     .WithFalseDrawerQty(DrawerQty)
                     .WithDrawerFaceHeight(Dimension.FromMillimeters(DrawerFaceHeight))
                     .WithAdjustableShelves(AdjShelfQty)
-                    .WithMDFOptions(Cabinet.Fronts.Type == "Slab" ? null : mdfOptions)
                     .WithShelfDepth(shelfDepth)
                     .Build();
     }

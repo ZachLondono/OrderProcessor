@@ -37,13 +37,13 @@ public class WallDiagonalCornerCabinetDoorTests {
         // Arrange
         var cabinet = new WallDiagonalCornerCabinetBuilder()
                             .WithDoorQty(doorQty)
-                            .WithMDFOptions(_mdfOptions)
                             .WithRightWidth(Dimension.FromMillimeters(610))
                             .WithRightDepth(Dimension.FromMillimeters(305))
                             .WithWidth(Dimension.FromMillimeters(610))
                             .WithDepth(Dimension.FromMillimeters(305))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithQty(cabinetQty)
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -61,12 +61,12 @@ public class WallDiagonalCornerCabinetDoorTests {
         // Arrange
         var cabinet = new WallDiagonalCornerCabinetBuilder()
                             .WithDoorQty(1)
-                            .WithMDFOptions(null)
                             .WithRightWidth(Dimension.FromMillimeters(610))
                             .WithRightDepth(Dimension.FromMillimeters(305))
                             .WithWidth(Dimension.FromMillimeters(610))
                             .WithDepth(Dimension.FromMillimeters(305))
                             .WithHeight(Dimension.FromMillimeters(876))
+                            .WithMDFDoorOptions(null)
                             .Build();
         
 
@@ -87,12 +87,12 @@ public class WallDiagonalCornerCabinetDoorTests {
         // Arrange
         var cabinet = new WallDiagonalCornerCabinetBuilder()
                             .WithDoorQty(doorQty)
-                            .WithMDFOptions(_mdfOptions)
                             .WithRightWidth(Dimension.FromMillimeters(rightWidth))
                             .WithRightDepth(Dimension.FromMillimeters(rightDepth))
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithDepth(Dimension.FromMillimeters(cabDepth))
                             .WithHeight(Dimension.FromMillimeters(876))
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -112,12 +112,12 @@ public class WallDiagonalCornerCabinetDoorTests {
         // Arrange
         var cabinet = new WallDiagonalCornerCabinetBuilder()
                             .WithDoorQty(1)
-                            .WithMDFOptions(_mdfOptions)
                             .WithRightWidth(Dimension.FromMillimeters(610))
                             .WithRightDepth(Dimension.FromMillimeters(305))
                             .WithWidth(Dimension.FromMillimeters(610))
                             .WithDepth(Dimension.FromMillimeters(305))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 

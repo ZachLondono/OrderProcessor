@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Builders;
@@ -11,7 +10,6 @@ internal class WallDiagonalCornerCabinetBuilder : CabinetBuilder<WallDiagonalCor
     public Dimension RightDepth { get; private set; }
     public HingeSide HingeSide { get; private set; }
     public int DoorQty { get; private set; }
-    public MDFDoorOptions? MDFOptions { get; private set; }
     public int AdjustableShelves { get; private set; }
 
     public WallDiagonalCornerCabinetBuilder() {
@@ -19,7 +17,6 @@ internal class WallDiagonalCornerCabinetBuilder : CabinetBuilder<WallDiagonalCor
         RightDepth = Dimension.Zero;
         HingeSide = HingeSide.Left;
         DoorQty = 0;
-        MDFOptions = null;
         AdjustableShelves = 0;
     }
 
@@ -43,18 +40,13 @@ internal class WallDiagonalCornerCabinetBuilder : CabinetBuilder<WallDiagonalCor
         return this;
     }
 
-    public WallDiagonalCornerCabinetBuilder WithMDFOptions(MDFDoorOptions? mdfOptions) {
-        MDFOptions = mdfOptions;
-        return this;
-    }
-
     public WallDiagonalCornerCabinetBuilder WithAdjustableShelves(int adjustableShelves) {
         AdjustableShelves = adjustableShelves;
         return this;
     }
 
     public override WallDiagonalCornerCabinet Build() {
-        var cabinet = WallDiagonalCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, RightWidth, RightDepth, AdjustableShelves, HingeSide, DoorQty, MDFOptions);
+        var cabinet = WallDiagonalCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, RightWidth, RightDepth, AdjustableShelves, HingeSide, DoorQty);
         return cabinet;
     }
 

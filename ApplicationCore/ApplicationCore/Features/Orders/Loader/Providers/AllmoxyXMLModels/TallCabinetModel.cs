@@ -63,9 +63,9 @@ public class TallCabinetModel : CabinetModelBase {
         if (LowerDoorQty == 0) {
             doors = TallCabinetDoors.NoDoors();
         } else if (UpperDoorQty != 0) {
-            doors = new(Dimension.FromMillimeters(LowerDoorHeight), hingeSide, mdfOptions);
+            doors = new(Dimension.FromMillimeters(LowerDoorHeight), hingeSide);
         } else {
-            doors = new(hingeSide, mdfOptions);
+            doors = new(hingeSide);
         }
 
         var builder = builderFactory.CreateTallCabinetBuilder();

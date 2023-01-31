@@ -15,7 +15,6 @@ internal class SinkCabinetBuilder : CabinetBuilder<SinkCabinet> {
     public int AdjustableShelves { get; private set; }
     public ShelfDepth ShelfDepth { get; private set; }
     public RollOutOptions RollOutBoxes { get; private set; }
-    public MDFDoorOptions? MDFOptions { get; private set; }
 
     public SinkCabinetBuilder() {
         ToeType = new NoToe();
@@ -25,7 +24,6 @@ internal class SinkCabinetBuilder : CabinetBuilder<SinkCabinet> {
         DrawerFaceHeight = Dimension.Zero;
         AdjustableShelves = 0;
         ShelfDepth = ShelfDepth.Default;
-        MDFOptions = null;
         RollOutBoxes = new(Array.Empty<Dimension>(), false, RollOutBlockPosition.Both, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.FingerJointBirch);
     }
 
@@ -69,13 +67,8 @@ internal class SinkCabinetBuilder : CabinetBuilder<SinkCabinet> {
         return this;
     }
 
-    public SinkCabinetBuilder WithMDFOptions(MDFDoorOptions? mdfOptions) {
-        MDFOptions = mdfOptions;
-        return this;
-    }
-
     public override SinkCabinet Build() {
-        var cabinet = SinkCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, ToeType, HingeSide, DoorQty, FalseDrawerQty, DrawerFaceHeight, AdjustableShelves, ShelfDepth, RollOutBoxes, MDFOptions);
+        var cabinet = SinkCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, ToeType, HingeSide, DoorQty, FalseDrawerQty, DrawerFaceHeight, AdjustableShelves, ShelfDepth, RollOutBoxes);
         return cabinet;
     }
 

@@ -25,9 +25,6 @@ public class WallDiagonalCornerCabinetModel : CabinetModelBase {
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
-        MDFDoorOptions? mdfOptions = null;
-        if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
-
         var builder = builderFactory.CreateWallDiagonalCornerCabinetBuilder();
 
         return InitilizeBuilder<WallDiagonalCornerCabinetBuilder, WallDiagonalCornerCabinet>(builder)
@@ -36,7 +33,6 @@ public class WallDiagonalCornerCabinetModel : CabinetModelBase {
                     .WithAdjustableShelves(AdjShelfQty)
                     .WithHingeSide((HingeSide == "Left") ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right)
                     .WithDoorQty(DoorQty)
-                    .WithMDFOptions(Cabinet.Fronts.Type == "Slab" ? null : mdfOptions)
                     .Build();
     }
 

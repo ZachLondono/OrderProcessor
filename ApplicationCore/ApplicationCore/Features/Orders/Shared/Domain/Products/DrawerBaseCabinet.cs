@@ -9,7 +9,6 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDrawerBoxContainer {
 
     public IToeType ToeType { get; }
-    public MDFDoorOptions? Fronts { get; }
     public VerticalDrawerBank Drawers { get; }
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
@@ -22,36 +21,35 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
 
     public static DrawerBaseCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        IToeType toeType, VerticalDrawerBank drawers, MDFDoorOptions? fronts) {
-        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, toeType, drawers, fronts);
+                        IToeType toeType, VerticalDrawerBank drawers) {
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, toeType, drawers);
     }
 
     private DrawerBaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        IToeType toeType, VerticalDrawerBank drawers, MDFDoorOptions? fronts)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
+                        IToeType toeType, VerticalDrawerBank drawers)
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide) {
 
         if (drawers.FaceHeights.Count() > 5)
             throw new InvalidOperationException("Invalid number of drawers");
 
         Drawers = drawers;
-        Fronts = fronts;
         ToeType = toeType;
     }
 
     public IEnumerable<PPProduct> GetPPProducts() {
         // TODO: add option for no doors
-        string doorType = (Fronts is null) ? "Slab" : "Buyout";
+        string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
         yield return new PPProduct(Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
-        if (Fronts is null) {
+        if (MDFDoorOptions is null) {
             return Enumerable.Empty<MDFDoor>();
         }
 
@@ -64,6 +62,8 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
             var door = getBuilder().WithQty(1 * Qty)
                                     .WithType(DoorType.Door)
                                     .WithProductNumber(ProductNumber)
+                                    .WithFramingBead(MDFDoorOptions.StyleName)
+                                    .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
                                     .Build(height, width);
 
             doors.Add(door);

@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using System.Xml.Serialization;
 
@@ -28,9 +27,6 @@ public class BaseDiagonalCornerCabinetModel : CabinetModelBase {
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
-        MDFDoorOptions? mdfOptions = null;
-        if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
-
         var builder = builderFactory.CreateBaseDiagonalCornerCabinetBuilder();
 
         return InitilizeBuilder<BaseDiagonalCornerCabinetBuilder, BaseDiagonalCornerCabinet>(builder)
@@ -40,7 +36,6 @@ public class BaseDiagonalCornerCabinetModel : CabinetModelBase {
                     .WithAdjustableShelves(AdjShelfQty)
                     .WithHingeSide((HingeSide == "Left") ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right)
                     .WithDoorQty(DoorQty)
-                    .WithMDFOptions(Cabinet.Fronts.Type == "Slab" ? null : mdfOptions)
                     .Build();
 
     }

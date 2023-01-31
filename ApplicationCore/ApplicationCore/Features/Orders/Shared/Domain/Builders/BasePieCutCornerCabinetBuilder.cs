@@ -12,7 +12,6 @@ internal class BasePieCutCornerCabinetBuilder : CabinetBuilder<BasePieCutCornerC
     public IToeType ToeType { get; private set; }
     public int AdjustableShelves { get; private set; }
     public HingeSide HingeSide { get; private set; }
-    public MDFDoorOptions? MDFOptions { get; private set; }
     public CabinetDoorGaps DoorGaps { get; private set; }
 
     public BasePieCutCornerCabinetBuilder() {
@@ -21,7 +20,6 @@ internal class BasePieCutCornerCabinetBuilder : CabinetBuilder<BasePieCutCornerC
         ToeType = new NoToe();
         AdjustableShelves = 0;
         HingeSide = HingeSide.Left;
-        MDFOptions = null;
     }
 
     public BasePieCutCornerCabinetBuilder WithRightWidth(Dimension rightWidth) {
@@ -49,13 +47,8 @@ internal class BasePieCutCornerCabinetBuilder : CabinetBuilder<BasePieCutCornerC
         return this;
     }
 
-    public BasePieCutCornerCabinetBuilder WithMDFOptions(MDFDoorOptions? mdfOptions) {
-        MDFOptions = mdfOptions;
-        return this;
-    }
-
     public override BasePieCutCornerCabinet Build() {
-        var cabinet = BasePieCutCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, EdgeBandingColor, RightSide, LeftSide, RightWidth, RightDepth, ToeType, AdjustableShelves, HingeSide, MDFOptions);
+        var cabinet = BasePieCutCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, RightWidth, RightDepth, ToeType, AdjustableShelves, HingeSide);
         return cabinet;
     }
 

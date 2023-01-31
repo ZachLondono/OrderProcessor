@@ -13,7 +13,6 @@ internal class BasePieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
     public IToeType ToeType { get; }
     public int AdjustableShelves { get; }
     public HingeSide HingeSide { get; }
-    public MDFDoorOptions? MDFOptions { get; }
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
@@ -25,33 +24,32 @@ internal class BasePieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
 
     public BasePieCutCornerCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        Dimension rightWidth, Dimension rightDepth, IToeType toeType, int adjustableShelves, HingeSide hingeSide, MDFDoorOptions? mdfDoorOptions)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide) {
+                        Dimension rightWidth, Dimension rightDepth, IToeType toeType, int adjustableShelves, HingeSide hingeSide)
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide) {
         RightWidth = rightWidth;
         RightDepth = rightDepth;
         ToeType = toeType;
         AdjustableShelves = adjustableShelves;
         HingeSide = hingeSide;
-        MDFOptions = mdfDoorOptions;
     }
 
     public static BasePieCutCornerCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        Dimension rightWidth, Dimension rightDepth, IToeType toeType, int adjustableShelves, HingeSide hingeSide, MDFDoorOptions? mdfDoorOptions)
-    => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, edgeBandingColor, rightSide, leftSide, rightWidth, rightDepth, toeType, adjustableShelves, hingeSide, mdfDoorOptions);
+                        Dimension rightWidth, Dimension rightDepth, IToeType toeType, int adjustableShelves, HingeSide hingeSide)
+    => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, rightWidth, rightDepth, toeType, adjustableShelves, hingeSide);
 
     public IEnumerable<PPProduct> GetPPProducts() {
-        string doorType = (MDFOptions is null) ? "Slab" : "Buyout";
+        string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
         yield return new PPProduct(Room, "BCPC", ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
-        if (MDFOptions is null) {
+        if (MDFDoorOptions is null) {
             return Enumerable.Empty<MDFDoor>();
         }
 
@@ -60,10 +58,18 @@ internal class BasePieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
         Dimension bumperWidth = Dimension.FromMillimeters(3);
 
         Dimension leftWidth = Width - RightDepth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
-        MDFDoor leftDoor = getBuilder().WithQty(Qty).WithProductNumber(ProductNumber).Build(height, leftWidth);
+        MDFDoor leftDoor = getBuilder().WithQty(Qty)
+                                        .WithProductNumber(ProductNumber)
+                                        .WithFramingBead(MDFDoorOptions.StyleName)
+                                        .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                                        .Build(height, leftWidth);
 
         Dimension rightWidth = RightWidth - Depth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
-        MDFDoor rightDoor = getBuilder().WithQty(Qty).WithProductNumber(ProductNumber).Build(height, rightWidth);
+        MDFDoor rightDoor = getBuilder().WithQty(Qty)
+                                        .WithProductNumber(ProductNumber)
+                                        .WithFramingBead(MDFDoorOptions.StyleName)
+                                        .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                                        .Build(height, rightWidth);
 
         return new List<MDFDoor>() { leftDoor, rightDoor };
 

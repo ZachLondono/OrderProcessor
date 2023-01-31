@@ -89,15 +89,14 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
 
     private void GenerateOrderForms(Order order, IEnumerable<MDFDoor> doors, string template, string outputDirectory, bool generateTokens) {
 
-
         var groups = doors.GroupBy(d => new DoorStyleGroupKey() {
             Material = d.Material,
             FramingBead = d.FramingBead,
             EdgeDetail = d.EdgeDetail,
             PanelDrop = d.PanelDrop.AsMillimeters(),
             PanelDetail = "Flat",
-            FinishType = "None",
-            FinishColor = ""
+            FinishType = d.PaintColor is null ? "None" : "Std. Paint",
+            FinishColor = d.PaintColor ?? ""
         });
 
         Application app = new() {
@@ -222,7 +221,7 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
         string finalFilename = filename;
 
         string filepath = Path.Combine(direcotry, $"{finalFilename}.{fileExtension}");
-       
+
         while (_fileReader.DoesFileExist(filepath)) {
 
             finalFilename = $"{filename} ({index++})";

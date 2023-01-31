@@ -36,13 +36,13 @@ public class BasePieCutCornerCabinetTests {
 
         // Arrange
         var cabinet = new WallPieCutCornerCabinetBuilder()
-                            .WithMDFOptions(_mdfOptions)
                             .WithRightWidth(Dimension.FromMillimeters(610))
                             .WithRightDepth(Dimension.FromMillimeters(305))
                             .WithWidth(Dimension.FromMillimeters(610))
                             .WithDepth(Dimension.FromMillimeters(305))
                             .WithHeight(Dimension.FromMillimeters(305))
                             .WithQty(cabinetQty)
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -59,12 +59,12 @@ public class BasePieCutCornerCabinetTests {
 
         // Arrange
         var cabinet = new WallPieCutCornerCabinetBuilder()
-                            .WithMDFOptions(null)
                             .WithRightWidth(Dimension.FromMillimeters(610))
                             .WithRightDepth(Dimension.FromMillimeters(305))
                             .WithWidth(Dimension.FromMillimeters(610))
                             .WithDepth(Dimension.FromMillimeters(305))
                             .WithHeight(Dimension.FromMillimeters(305))
+                            .WithMDFDoorOptions(null)
                             .Build();
         
 
@@ -83,12 +83,12 @@ public class BasePieCutCornerCabinetTests {
 
         // Arrange
         var cabinet = new BasePieCutCornerCabinetBuilder()
-                            .WithMDFOptions(_mdfOptions)
                             .WithRightWidth(Dimension.FromMillimeters(rightWidth))
                             .WithRightDepth(Dimension.FromMillimeters(rightDepth))
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithDepth(Dimension.FromMillimeters(cabDepth))
                             .WithHeight(Dimension.FromMillimeters(876))
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -109,12 +109,12 @@ public class BasePieCutCornerCabinetTests {
         // Arrange
         var cabinet = new BasePieCutCornerCabinetBuilder()
                             .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
-                            .WithMDFOptions(_mdfOptions)
                             .WithRightWidth(Dimension.FromMillimeters(610))
                             .WithRightDepth(Dimension.FromMillimeters(305))
                             .WithWidth(Dimension.FromMillimeters(610))
                             .WithDepth(Dimension.FromMillimeters(305))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 

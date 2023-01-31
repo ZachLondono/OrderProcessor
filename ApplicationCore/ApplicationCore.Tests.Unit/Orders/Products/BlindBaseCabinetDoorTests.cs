@@ -37,7 +37,7 @@ public class BlindBaseCabinetDoorTests {
 
         // Arrange
         var cabinet = new BlindBaseCabinetBuilder()
-                            .WithDoors(new() { Quantity = doorQty, MDFOptions = _mdfOptions })
+                            .WithDoors(new() { Quantity = doorQty })
                             .WithDrawers(new() {
                                 BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = drawerQty,
@@ -49,6 +49,7 @@ public class BlindBaseCabinetDoorTests {
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(cabinetQty)
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -65,7 +66,7 @@ public class BlindBaseCabinetDoorTests {
 
         // Arrange
         var cabinet = new BlindBaseCabinetBuilder()
-                            .WithDoors(new() { Quantity = 1, MDFOptions = null })
+                            .WithDoors(new() { Quantity = 1 })
                             .WithDrawers(new() {
                                 BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
@@ -76,6 +77,7 @@ public class BlindBaseCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(1067))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithMDFDoorOptions(null)
                             .Build();
         
 
@@ -94,7 +96,7 @@ public class BlindBaseCabinetDoorTests {
 
         // Arrange
         var cabinet = new BlindBaseCabinetBuilder()
-                            .WithDoors(new() { Quantity = doorQty, MDFOptions = _mdfOptions })
+                            .WithDoors(new() { Quantity = doorQty })
                             .WithDrawers(new() {
                                 BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
@@ -105,6 +107,7 @@ public class BlindBaseCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -124,7 +127,7 @@ public class BlindBaseCabinetDoorTests {
 
         // Arrange
         var cabinet = new BlindBaseCabinetBuilder()
-                            .WithDoors(new() { Quantity = 2, MDFOptions = _mdfOptions })
+                            .WithDoors(new() { Quantity = 2 })
                             .WithDrawers(new() {
                                 BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = drawerQty,
@@ -135,6 +138,7 @@ public class BlindBaseCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -155,10 +159,11 @@ public class BlindBaseCabinetDoorTests {
         // Arrange
         var cabinet = new BlindBaseCabinetBuilder()
                             .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
-                            .WithDoors(new() { Quantity = 1, MDFOptions = _mdfOptions })
+                            .WithDoors(new() { Quantity = 1 })
                             .WithWidth(Dimension.FromMillimeters(456))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -180,7 +185,7 @@ public class BlindBaseCabinetDoorTests {
         // Arrange
         var cabinet = new BlindBaseCabinetBuilder()
                             .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
-                            .WithDoors(new() { Quantity = 1, MDFOptions = _mdfOptions })
+                            .WithDoors(new() { Quantity = 1 })
                             .WithDrawers(new() {
                                 BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
@@ -190,6 +195,7 @@ public class BlindBaseCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(456))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 

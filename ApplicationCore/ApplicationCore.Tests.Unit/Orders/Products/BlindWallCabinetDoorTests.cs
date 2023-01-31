@@ -36,12 +36,13 @@ public class BlindWallCabinetDoorTests {
 
         // Arrange
         var cabinet = new BlindWallCabinetBuilder()
-                            .WithDoors(new() { Quantity = doorQty, MDFOptions = _mdfOptions })
+                            .WithDoors(new() { Quantity = doorQty })
                             .WithBlindWidth(Dimension.FromMillimeters(339))
                             .WithWidth(Dimension.FromMillimeters(685))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(cabinetQty)
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -58,11 +59,12 @@ public class BlindWallCabinetDoorTests {
 
         // Arrange
         var cabinet = new BlindWallCabinetBuilder()
-                            .WithDoors(new() { Quantity = 1, MDFOptions = null })
+                            .WithDoors(new() { Quantity = 1 })
                             .WithBlindWidth(Dimension.FromMillimeters(339))
                             .WithWidth(Dimension.FromMillimeters(685))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithMDFDoorOptions(null)
                             .Build();
         
 
@@ -81,11 +83,12 @@ public class BlindWallCabinetDoorTests {
 
         // Arrange
         var cabinet = new BlindWallCabinetBuilder()
-                            .WithDoors(new() { Quantity = doorQty, MDFOptions = _mdfOptions })
+                            .WithDoors(new() { Quantity = doorQty })
                             .WithBlindWidth(Dimension.FromMillimeters(blindWidth))
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
@@ -105,10 +108,11 @@ public class BlindWallCabinetDoorTests {
 
         // Arrange
         var cabinet = new BlindWallCabinetBuilder()
-                            .WithDoors(new() { Quantity = 1, MDFOptions = _mdfOptions })
+                            .WithDoors(new() { Quantity = 1 })
                             .WithWidth(Dimension.FromMillimeters(456))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithMDFDoorOptions(_mdfOptions)
                             .Build();
         
 
