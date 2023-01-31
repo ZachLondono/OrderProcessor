@@ -15,9 +15,9 @@ public record BaseCabinetDoors {
     public BaseCabinetDoors(HingeSide hingeSide = HingeSide.NotApplicable) {
         
         if (hingeSide == HingeSide.NotApplicable) { 
-            Quantity = 1;
-        } else {
             Quantity = 2;
+        } else {
+            Quantity = 1;
         }
 
         HingeSide = hingeSide;
