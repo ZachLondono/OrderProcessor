@@ -15,9 +15,9 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
     private readonly IUIBus _uibus;
     private readonly ILogger<DoorOrderHandler> _logger;
     private readonly IFileReader _fileReader;
-    private readonly ProductBuilderFactory _factory;
+    private readonly ComponentBuilderFactory _factory;
 
-    public DoorOrderHandler(IUIBus uibus, ILogger<DoorOrderHandler> logger, IFileReader fileReader, ProductBuilderFactory factory) {
+    public DoorOrderHandler(IUIBus uibus, ILogger<DoorOrderHandler> logger, IFileReader fileReader, ComponentBuilderFactory factory) {
         _uibus = uibus;
         _logger = logger;
         _fileReader = fileReader;

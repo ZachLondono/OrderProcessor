@@ -17,13 +17,13 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
     private readonly ILogger<PackingListHandler> _logger;
     private readonly IBus _bus;
     private readonly IUIBus _uibus;
-    private readonly ProductBuilderFactory _productBuilderFactory;
+    private readonly ComponentBuilderFactory _componentBuilderFactory;
 
-    public PackingListHandler(ILogger<PackingListHandler> logger, IBus bus, IUIBus uibus, ProductBuilderFactory productBuilderFactory) {
+    public PackingListHandler(ILogger<PackingListHandler> logger, IBus bus, IUIBus uibus, ComponentBuilderFactory compnentBuilderFactory) {
         _bus = bus;
         _uibus = uibus;
         _logger = logger;
-        _productBuilderFactory = productBuilderFactory;
+        _componentBuilderFactory = compnentBuilderFactory;
     }
 
     public override async Task Handle(TriggerOrderReleaseNotification notification) {
@@ -66,7 +66,7 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
                         .Cast<IDrawerBoxContainer>()
                         .SelectMany(c => {
                             try {
-                                return c.GetDrawerBoxes(_productBuilderFactory.CreateDovetailDrawerBoxBuilder);
+                                return c.GetDrawerBoxes(_componentBuilderFactory.CreateDovetailDrawerBoxBuilder);
                             } catch (Exception ex) {
                                 _uibus.Publish(new OrderReleaseErrorNotification($"Error getting drawer boxes from product '{ex.Message}'"));
                                 return Enumerable.Empty<DovetailDrawerBox>();

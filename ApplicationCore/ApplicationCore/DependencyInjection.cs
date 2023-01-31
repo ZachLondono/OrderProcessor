@@ -27,6 +27,7 @@ public static class DependencyInjection {
         services.AddMediatR(typeof(DependencyInjection));
 
         services.AddSingleton<ProductBuilderFactory>();
+        services.AddSingleton<ComponentBuilderFactory>();
         services.AddSingleton<OrderState>();
         services.AddSingleton<CompanyState>();
         services.AddSingleton<IServiceProvider>(sp => sp);
