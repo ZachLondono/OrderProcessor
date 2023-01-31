@@ -117,7 +117,7 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
 
                 FillOrderSheet(order, group, workbook, orderNumber);
 
-                string fileName = GetAvailableFileName(outputDirectory, $"{orderNumber} - {order.Name} MDF DOORS");
+                string fileName = GetAvailableFileName(outputDirectory, $"{orderNumber} {order.Name} MDF DOORS");
                 string finalPath = Path.Combine(outputDirectory, fileName);
 
                 workbook.SaveAs2(finalPath);
@@ -154,7 +154,7 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
     private static void FillOrderSheet(Order order, IGrouping<DoorStyleGroupKey, MDFDoor> doors, Workbook workbook, string orderNumber) {
 
         Worksheet ws = workbook.Worksheets["MDF"];
-        ws.Range["OrderDate"].Value2 = order.OrderDate.ToString("ddd, MM/dd/yyyy");
+        ws.Range["OrderDate"].Value2 = order.OrderDate;
         ws.Range["Company"].Value2 = order.Customer.Name;
         ws.Range["JobNumber"].Value2 = orderNumber;
         ws.Range["JobName"].Value2 = order.Name;
