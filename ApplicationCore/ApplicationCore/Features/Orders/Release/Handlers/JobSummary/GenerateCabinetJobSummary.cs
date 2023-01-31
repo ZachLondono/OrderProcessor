@@ -62,8 +62,8 @@ internal class GenerateCabinetJobSummary : DomainListener<TriggerOrderReleaseNot
                                                     Name = c.Room,
                                                     Series = GetCabinetSeries(c),
                                                     CabFinish = GetCabientFinish(c.FinishMaterial),
-                                                    DoorStyle = "Unknown",
-                                                    DoorFinish = "Unknown"
+                                                    DoorStyle = c.MDFDoorOptions?.StyleName ?? "",
+                                                    DoorFinish = c.MDFDoorOptions?.Color ?? GetCabientFinish(c.FinishMaterial)
                                                 })
                                                 .Select(g => g.Key);
 
@@ -93,11 +93,17 @@ internal class GenerateCabinetJobSummary : DomainListener<TriggerOrderReleaseNot
 
     }
 
-    public string GetCabinetSeries(Cabinet cabinet) {
+    public static string GetCabinetSeries(Cabinet cabinet) {
+        
+        if (cabinet.BoxMaterial.Core == CabinetMaterialCore.Plywood) return "Sterling 18_5";
+        else if (cabinet.BoxMaterial.Core == CabinetMaterialCore.Flake && cabinet.FinishMaterial.Core == CabinetMaterialCore.Flake) return "Crown Paint";
+        else if (cabinet.BoxMaterial.Core == CabinetMaterialCore.Flake && cabinet.FinishMaterial.Core == CabinetMaterialCore.Plywood) return "Crown Veneer";
+
         return "Unknown";
+
     }
 
-    public string GetCabientFinish(CabinetFinishMaterial material) {
+    public static string GetCabientFinish(CabinetFinishMaterial material) {
 
         if (material.PaintColor is not null) {
 
