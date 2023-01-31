@@ -220,12 +220,12 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
         int index = 1;
 
         string filepath = Path.Combine(direcotry, $"{filename}.{fileExtension}");
-
+       
         while (_fileReader.DoesFileExist(filepath)) {
 
-            filename = $"{filename} ({index++}).{fileExtension}";
+            filename = $"{filename} ({index++})";
 
-            filepath = Path.Combine(direcotry, filename);
+            filepath = Path.Combine(direcotry, $"{filename}.{fileExtension}");
 
         }
 
