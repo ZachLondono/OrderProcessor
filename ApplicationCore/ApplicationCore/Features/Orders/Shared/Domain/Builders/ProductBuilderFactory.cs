@@ -24,5 +24,4 @@ public class ProductBuilderFactory {
 
     internal WallPieCutCornerCabinetBuilder CreateWallPieCutCornerCabinetBuilder() => new();
 
-
 }
