@@ -11,5 +11,6 @@ public class NestedPart {
     public Dimension Length { get; init; } = Dimension.FromMillimeters(0);
     public string Description { get; init; } = string.Empty;
     public Point Center { get; init; } = new Point(0, 0);
+    public string ProductNumber { get; init; } = string.Empty;
 
 }
