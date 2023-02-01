@@ -30,7 +30,8 @@ internal class CADCodeLabelDBExistingJobProvider : IExistingJobProvider {
 			    Width,
 			    Length,
 			    XDimension As InsertX,
-			    YDimension As InsertY
+			    YDimension As InsertY,
+                (SELECT TOP 1 [Cabinet Number] FROM [{jobName}] WHERE [{jobName}].[GlobalId] = [Label Sequence:{jobName}].[GlobalId]) As ProductNumber
 		    From [Label Sequence:{jobName}];");
 
         var patterns = await connection.QueryAsync<Pattern>($"SELECT [PatternFilename] AS Name, [PatternFilename] AS ImagePath, Material AS MaterialName, [Panel Width] AS MaterialWidth, [Panel Length] AS MaterialLength, [Thickness] As MaterialThickness  FROM [Label Sequence:{jobName}]");
