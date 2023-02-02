@@ -1,0 +1,150 @@
+﻿@using ApplicationCore.Features.Shared.Components
+@using ApplicationCore.Infrastructure;
+@using static ApplicationCore.Features.Shared.Components.Button;
+@inject IBus Bus
+@inject IModalService ModalService
+
+<table class="table-auto">
+
+    <thead class="border-b border-slate-300">
+        <tr class="dark:bg-slate-700 dark:text-gray-500">
+            <th class="p-5">Name</th>
+            <th class="p-5">Products</th>
+            <th class="p-5">Status</th>
+            <th class="p-5"></th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @if (_error is not null) {
+
+            <tr>
+                <td colspan="4" class="whitespace-nowrap p-5 border-b text-center text-red-600">_error</td>
+            </tr>
+
+        } else if (_isLoading) {
+
+            <tr>
+                <td colspan="4" class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">Loading...</td>
+            </tr>
+
+        } else if (!WorkOrders.Any()) {
+
+            <tr>
+                <td colspan="4" class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">No work orders</td>
+            </tr>
+
+        } else {
+            
+            @foreach (var workOrder in WorkOrders) {
+                
+                <tr>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@workOrder.Name</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@workOrder.ProductIds.Count</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@workOrder.Status</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">
+
+                        @if (workOrder.Status != Status.Complete) {
+                            <Button Style="ButtonStyle.Text" Color="ButtonColor.Primary" OnClickAsync="async () => await CompleteWorkOrder(workOrder)">Complete</Button>
+                        }
+
+                        <Button Style="ButtonStyle.Text" Color="ButtonColor.Secondary" OnClickAsync="async () => await DeleteWorkOrder(workOrder)">Delete</Button>
+
+                    </td>
+                </tr>
+
+            }
+
+        }
+
+    </tbody>
+
+</table>
+
+
+
+@code {
+
+    [Parameter]
+    public Guid? OrderId { get; set; } = null;
+
+    private bool _isLoading = true;
+    private string? _error = null;
+
+    public List<WorkOrder> WorkOrders { get; set; } = new();
+
+    protected override async Task OnInitializedAsync() {
+
+        await LoadWorkOrders();
+
+    }
+
+    public async Task LoadWorkOrders() {
+
+        _isLoading = true;
+        if (OrderId is null) {
+            _error = "No order selected";
+            _isLoading = false;
+            StateHasChanged();
+            return;
+        }
+
+        var result = await Bus.Send(new GetWorkOrdersInOrder.Query((Guid)OrderId));
+
+        result.Match(
+
+            workorders => {
+                WorkOrders = new(workorders);
+            },
+
+            error => {
+                _error = $"[{error.Title}] : {error.Details}";
+            }
+
+        );
+
+        _isLoading = false;
+        StateHasChanged();
+
+    }
+
+    public async Task CompleteWorkOrder(WorkOrder workOrder) {
+
+        var result = await Bus.Send(new UpdateWorkOrder.Command(workOrder.Id, workOrder.Name, Status.Complete));
+
+        await result.MatchAsync(
+
+            async _ => {
+                workOrder.Status = Status.Complete;
+                await ModalService.OpenInformationDialog("Updated", $"Work order '{workOrder.Name}' completed", InformationDialog.MessageType.Information);
+            },
+
+            error => ModalService.OpenErrorDialog(error)
+
+        );
+
+        StateHasChanged();
+
+    }
+
+    public async Task DeleteWorkOrder(WorkOrder workOrder) {
+
+        var result = await Bus.Send(new DeleteWorkOrder.Command(workOrder.Id));
+
+        await result.MatchAsync(
+
+            async _ => {
+                WorkOrders.Remove(workOrder);
+                await ModalService.OpenInformationDialog("Deleted", $"Work order '{workOrder.Name}' deleted", InformationDialog.MessageType.Information);
+            },
+
+            error => ModalService.OpenErrorDialog(error)
+
+        );
+
+        StateHasChanged();
+
+    }
+
+}
