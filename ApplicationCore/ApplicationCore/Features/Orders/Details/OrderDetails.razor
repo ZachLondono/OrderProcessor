@@ -15,8 +15,10 @@
 @using ApplicationCore.Features.Orders.Shared;
 @using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 @using ApplicationCore.Pages.OrderDetails;
+@using static ApplicationCore.Features.Orders.Details.CabinetProductTable;
 @inject IBus Bus
 @inject OrderState OrderState
+@inject Manufacturing.IsProductComplete IsProductComplete
 
 @if (OrderState.Order is null) {
     <span>No order selected</span>
@@ -296,9 +298,8 @@
                 <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@drawerBoxes" />
             }
 
-            var cabinets = OrderState.Order.Products.Where(p => p is Cabinet).Cast<Cabinet>();
-            if (cabinets.Any()) {
-                <CabinetProductTable UseInches="@_useInches" Cabinets="@cabinets"/>
+            if (Cabinets.Any()) {
+                <CabinetProductTable UseInches="@_useInches" Cabinets="@Cabinets"/>
             }
 
         }
@@ -312,6 +313,8 @@
 
     [Parameter]
     public IOrderDetailsViewModel? ViewModel { get; set; }
+
+    public List<CabinetRowModel> Cabinets { get; set; } = new();
 
     private string? _vendorName = null;
     private ReleaseProfile? _customReleaseProfile = null;
@@ -338,6 +341,34 @@
         if (ViewModel is not null) {
             _vendorName = await ViewModel.GetCompanyName(OrderState.Order.VendorId);
         }
+
+        await LoadCabinets();
+
+    }
+
+    private async Task LoadCabinets() {
+
+        if (OrderState.Order is null) {
+            return;
+        }
+
+        var cabinets = OrderState.Order
+                                .Products
+                                .Where(p => p is Cabinet)
+                                .Cast<Cabinet>();
+
+        foreach (var cabinet in cabinets) {
+
+            bool isComplete = await IsProductComplete(OrderState.Order.Id, cabinet.Id);
+
+            Cabinets.Add(new() {
+                Cabinet = cabinet,
+                IsComplete = isComplete
+            });
+
+        }
+
+        StateHasChanged();
 
     }
 
