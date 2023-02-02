@@ -1,9 +1,9 @@
-﻿using System.Data;
+﻿using System.Data.OleDb;
 
 namespace ApplicationCore.Features.Shared;
 
 public interface IAccessDBConnectionFactory {
 
-    public IDbConnection CreateConnection(string filePath);
+    public OleDbConnection CreateConnection(string filePath);
 
 }
