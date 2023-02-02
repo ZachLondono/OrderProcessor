@@ -161,7 +161,7 @@
                         IsGrained = existingJob.Inventory
                                             .Where(inv => inv.Name == pattern.MaterialName)
                                             .Select(inv => inv.Grained)
-                                            .FirstOrDefault()?.Equals("Yes") ?? false,
+                                            .FirstOrDefault()?.Equals("1") ?? false,
                         Yield = 0 // TODO: calculate yield
                     },
                     Parts = parts
