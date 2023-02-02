@@ -8,5 +8,6 @@ public record ProductRecord {
     public required int Pos { get; init; }
     public required string SeqText { get; init; }
     public required bool CustomSpec { get; init; }
+    public required Guid ProductId { get; init; }
     public required Dictionary<string, string> Parameters { get; set; }
 }

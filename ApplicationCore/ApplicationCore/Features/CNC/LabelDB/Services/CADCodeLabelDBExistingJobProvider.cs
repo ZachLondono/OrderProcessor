@@ -22,6 +22,13 @@ internal class CADCodeLabelDBExistingJobProvider : IExistingJobProvider {
 
         var inventory = await connection.QueryAsync<UsedInventory>($"SELECT [Sheets Used] As Qty, Description AS Name, Width, Length, Thickness, Graining As Grained FROM [Inventory:{jobName}];");
 
+        connection.Open();
+        var schema = await connection.GetSchemaAsync("COLUMNS");
+        connection.Close();
+        bool containsId = schema?.Select($"TABLE_NAME='{jobName}' AND COLUMN_NAME='ProductId'").Length > 0;
+
+        string subQuery = containsId ? $"(SELECT TOP 1 ProductId FROM [{jobName}] WHERE cStr([{jobName}].[GlobalId]) = cStr([Label Sequence:{jobName}].[GlobalId])) As ProductId" : "\"0\" As ProductId";
+
         var parts = await connection.QueryAsync<ManufacturedPart>(
             @$"SELECT
 			    (SELECT TOP 1 [Face5FileName] FROM [Parts:{jobName}] WHERE cStr([Parts:{jobName}].[GlobalId]) = cStr([Label Sequence:{jobName}].[GlobalId])) As Name,
@@ -32,8 +39,9 @@ internal class CADCodeLabelDBExistingJobProvider : IExistingJobProvider {
 			    XDimension As InsertX,
 			    YDimension As InsertY,
                 (SELECT TOP 1 [Cabinet Number] FROM [{jobName}] WHERE cStr([{jobName}].[GlobalId]) = cStr([Label Sequence:{jobName}].[GlobalId])) As ProductNumber,
-                ([Face6Part] = 0) AS HasFace6
-		    From [Label Sequence:{jobName}];");
+                (Face6Part = 0) AS HasFace6,
+                {subQuery}
+		    From [Label Sequence:{jobName}]");
 
         var patterns = await connection.QueryAsync<Pattern>($"SELECT [PatternFilename] AS Name, [PatternFilename] AS ImagePath, Material AS MaterialName, [Panel Width] AS MaterialWidth, [Panel Length] AS MaterialLength, [Thickness] As MaterialThickness  FROM [Label Sequence:{jobName}]");
         patterns = patterns.Distinct().ToList();
@@ -47,6 +55,5 @@ internal class CADCodeLabelDBExistingJobProvider : IExistingJobProvider {
         );
 
     }
-
 
 }
