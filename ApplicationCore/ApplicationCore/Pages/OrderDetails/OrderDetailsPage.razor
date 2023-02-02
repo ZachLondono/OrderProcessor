@@ -12,20 +12,37 @@
 @using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 @using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 @using ApplicationCore.Features.Orders.Shared.Domain;
+@using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Features.ProductPlanner.Contracts;
 @using ApplicationCore.Features.ProductPlanner;
 @using ApplicationCore.Features.Shared.Domain;
+@using ApplicationCore.Features.WorkOrders
 @using ApplicationCore.Infrastructure;
 @implements IOrderDetailsViewModel
 @inject IBus Bus
 @inject NavigationManager NavigationManager
 @inject CompanyState CompanyState
+@inject OrderState OrderState
 @inject IFilePicker FilePicker
 @inject IModalService ModalService
+@inject Manufacturing.CreateWorkOrder CreateWorkOrder
 
-<OrderDetails ViewModel="@this" />
+<div>
+
+    <section id="orderDetails">
+        <OrderDetails ViewModel="@this" />
+    </section>
+
+    <section id="workOrders" class="mt-12">
+        <OrderTaskList OrderId="@OrderState.Order?.Id" @ref="_orderTaskList" />
+    </section>
+
+</div>
+
 
 @code {
+
+    public OrderTaskList? _orderTaskList;
 
     public async Task<string> GetCompanyName(Guid companyId) {
 
@@ -120,6 +137,8 @@
 
         var jobsByMachine = selectedJobs.GroupBy(job => job.MachineName).ToList();
 
+        List<string> productIds = new();
+
         foreach (var selectedJobsGroup in jobsByMachine) {
 
             List<ExistingJob> existingJobs = new();
@@ -137,6 +156,16 @@
                 }
 
                 existingJobs.Add(existingJob);
+
+                foreach (var part in existingJob.Parts) {
+
+                    if (productIds.Contains(part.ProductId)) {
+                        continue;
+                    }
+
+                    productIds.Add(part.ProductId);
+
+                }
 
             }
 
@@ -190,6 +219,35 @@
             await Bus.Send(new GenerateCNCReleasePDF.Command(releasedJob, @"C:\Users\Zachary Londono\Desktop\ExampleConfiguration\cutlists"));
 
         }
+
+        if (productIds.Any()) {
+
+            var ids = productIds.Select(str => {
+
+                if (Guid.TryParse(str, out Guid id)) {
+                    return id;
+                }
+
+                return Guid.Empty;
+
+            })
+            .Where(id => id != Guid.Empty && order.Products.Any(p => p.Id == id))
+            .Distinct()
+            .ToList();
+
+            if (ids.Any()) {
+
+                await CreateWorkOrder(order.Id, "CNC", ids);
+
+                if (_orderTaskList is not null) {
+                    await _orderTaskList.LoadWorkOrders();
+                }
+
+            }
+
+        }
+
+        StateHasChanged();
 
     }
 
