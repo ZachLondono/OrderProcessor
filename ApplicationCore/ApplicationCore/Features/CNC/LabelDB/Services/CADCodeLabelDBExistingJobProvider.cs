@@ -24,13 +24,15 @@ internal class CADCodeLabelDBExistingJobProvider : IExistingJobProvider {
 
         var parts = await connection.QueryAsync<ManufacturedPart>(
             @$"SELECT
-			    (SELECT TOP 1 [Face5FileName] FROM [Parts:{jobName}] WHERE [Parts:{jobName}].[GlobalId] = [Label Sequence:{jobName}].[GlobalId]) As Name,
-			    (SELECT TOP 1 [Description1] FROM [Parts:{jobName}] WHERE [Parts:{jobName}].[GlobalId] = [Label Sequence:{jobName}].[GlobalId]) As Description,
+			    (SELECT TOP 1 [Face5FileName] FROM [Parts:{jobName}] WHERE cStr([Parts:{jobName}].[GlobalId]) = cStr([Label Sequence:{jobName}].[GlobalId])) As Name,
+			    (SELECT TOP 1 [Description1] FROM [Parts:{jobName}] WHERE cStr([Parts:{jobName}].[GlobalId]) = cStr([Label Sequence:{jobName}].[GlobalId])) As Description,
 			    Pattern AS PatternNumber,
 			    Width,
 			    Length,
 			    XDimension As InsertX,
-			    YDimension As InsertY
+			    YDimension As InsertY,
+                (SELECT TOP 1 [Cabinet Number] FROM [{jobName}] WHERE cStr([{jobName}].[GlobalId]) = cStr([Label Sequence:{jobName}].[GlobalId])) As ProductNumber,
+                ([Face6Part] = 0) AS HasFace6
 		    From [Label Sequence:{jobName}];");
 
         var patterns = await connection.QueryAsync<Pattern>($"SELECT [PatternFilename] AS Name, [PatternFilename] AS ImagePath, Material AS MaterialName, [Panel Width] AS MaterialWidth, [Panel Length] AS MaterialLength, [Thickness] As MaterialThickness  FROM [Label Sequence:{jobName}]");

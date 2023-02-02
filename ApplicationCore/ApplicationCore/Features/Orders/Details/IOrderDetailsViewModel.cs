@@ -13,4 +13,6 @@ public interface IOrderDetailsViewModel {
 
     public Task<string> ExportOrderForPSI(Order order);
 
+    public Task GenerateCNCReleasePDF(Order order);
+
 }

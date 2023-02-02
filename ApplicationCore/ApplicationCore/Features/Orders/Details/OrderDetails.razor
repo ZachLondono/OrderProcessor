@@ -89,6 +89,11 @@
                         Export for PSI
                      </Button>
                 </div>
+                <div class="mb-4">
+                    <Button Type="button" OnClickAsync="GenerateCNCReleasePDF" Color="ButtonColor.Secondary" Style="ButtonStyle.Text">
+                        Generate CNC PDF
+                     </Button>
+                </div>
             </div>
             <InputTextArea placeholder="Note" Value="@_infoModel.ProductionNote" ValueChanged="@NoteChanged" ValueExpression="() => _infoModel.ProductionNote" for="note" class="w-full mt-5"></InputTextArea>
         </div>
@@ -475,8 +480,18 @@
         if (errors != string.Empty) {
             await Modal.OpenInformationDialog("Manual Overrides Needed:", errors, InformationDialog.MessageType.Information);
         } else {
-            await Modal.OpenInformationDialog("Completed", $"EXT export completed", InformationDialog.MessageType.Information);
+            await Modal.OpenInformationDialog("Completed", "EXT export completed", InformationDialog.MessageType.Information);
         }
+
+    }
+
+    private async Task GenerateCNCReleasePDF() {
+        
+        if (OrderState.Order is null || ViewModel is null) return;
+
+        await ViewModel.GenerateCNCReleasePDF(OrderState.Order);
+
+        await Modal.OpenInformationDialog("Completed", "CNC PDF Generated", InformationDialog.MessageType.Information);
 
     }
 
