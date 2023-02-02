@@ -147,21 +147,25 @@
                                                     .ToDictionary(g => g.Key, g => g.Last());
 
 
-           var programs = existingJobs.SelectMany(existingJob => existingJob.Patterns.Select(pattern => new ReleasedProgram() {
-                Name = pattern.Name,
-                ImagePath = $"Y:\\CADCode\\pix\\{pattern.ImagePath}.wmf",
-                Material = new ProgramMaterial() {
-                    Name = pattern.MaterialName,
-                    Width = pattern.MaterialWidth,
-                    Length = pattern.MaterialLength,
-                    Thickness = pattern.MaterialThickness,
+            var programs = existingJobs.SelectMany(existingJob => existingJob.Patterns.Select(pattern => {
+                var parts = GetParts(nestedPartByProgram, pattern.Name);
+                return new ReleasedProgram() {
+                    Name = pattern.Name,
+                    ImagePath = $"Y:\\CADCode\\pix\\{pattern.ImagePath}.wmf",
+                    HasFace6 = parts.Any(p => p.HasFace6),
+                    Material = new ProgramMaterial() {
+                        Name = pattern.MaterialName,
+                        Width = pattern.MaterialWidth,
+                        Length = pattern.MaterialLength,
+                        Thickness = pattern.MaterialThickness,
                         IsGrained = existingJob.Inventory
                                             .Where(inv => inv.Name == pattern.MaterialName)
                                             .Select(inv => inv.Grained)
                                             .FirstOrDefault()?.Equals("Yes") ?? false,
-                    Yield = 0 // TODO: calculate yield
-                },
-                Parts = GetParts(nestedPartByProgram, pattern.Name)
+                        Yield = 0 // TODO: calculate yield
+                    },
+                    Parts = parts
+                };
             }));
 
             var result = await Bus.Send(new GetCompanyNameById.Query(order.VendorId));
@@ -193,14 +197,15 @@
 
         if (nestPartsByPatternName.TryGetValue(patternName, out var parts)) {
 
-            return parts.Select(part => new NestedPart() {
-                Name = part.Name,
-                Width = Dimension.FromMillimeters(part.Width),
-                Length = Dimension.FromMillimeters(part.Length),
-                Description = part.Description,
-                Center = new Point(part.InsertX + part.Length / 2, part.InsertY + part.Width / 2),
-                ProductNumber = part.ProductNumber
-            }).ToList();
+            return parts.Select(part => new NestedPart(){
+                    Name = part.Name,
+                    Width = Dimension.FromMillimeters(part.Width),
+                    Length = Dimension.FromMillimeters(part.Length),
+                    Description = part.Description,
+                    Center = new Point(part.InsertX + part.Length / 2, part.InsertY + part.Width / 2),
+                    ProductNumber = part.ProductNumber,
+                    HasFace6 = part.HasFace6 == 0
+                }).ToList();
 
         }
 

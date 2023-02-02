@@ -121,6 +121,15 @@ internal class PDFBuilder {
                 x.Item().AlignCenter()
                         .Text(data.Title)
                         .WithStyle(titleStyle);
+
+                if (data.Title2 != "") {
+
+                    x.Item().AlignCenter()
+                        .Text(data.Title2)
+                        .WithStyle(titleStyle);
+
+                }
+
                 x.Item().AlignCenter()
                         .PaddingBottom(20)
                         .Text(data.Subtitle)

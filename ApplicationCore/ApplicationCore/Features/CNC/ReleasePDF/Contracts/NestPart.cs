@@ -6,6 +6,7 @@ namespace ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 public class NestedPart {
 
     public string Name { get; init; } = string.Empty;
+    public bool HasFace6 { get; init; } = false;
     public string ImagePath { get; init; } = string.Empty;
     public Dimension Width { get; init; } = Dimension.FromMillimeters(0);
     public Dimension Length { get; init; } = Dimension.FromMillimeters(0);
