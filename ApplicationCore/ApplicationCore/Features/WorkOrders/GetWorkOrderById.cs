@@ -1,0 +1,51 @@
+﻿using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Data;
+using Dapper;
+
+namespace ApplicationCore.Features.WorkOrders;
+
+public class GetWorkOrderById {
+
+    public record Query(Guid Id) : ICommand<WorkOrder>;
+
+    public class Handler : CommandHandler<Query, WorkOrder> {
+
+        public readonly IDbConnectionFactory _factory;
+
+        public Handler(IDbConnectionFactory factory) {
+            _factory = factory;
+        }
+
+        public override async Task<Response<WorkOrder>> Handle(Query query) {
+
+            using var connection = _factory.CreateConnection();
+
+            DataModel? data = await connection.QuerySingleOrDefaultAsync<DataModel>(@"SELECT id, order_id, name, status FROM work_orders WHERE id = @Id", query);
+
+            if (data is null) {
+                return Response<WorkOrder>.Error(new() {
+                    Title = "Not Found",
+                    Details = "Work order was not found in database"
+                });
+            }
+
+            var products = await connection.QueryAsync<Guid>(@"SELECT product_id FROM work_order_products WHERE work_order_id = @Id", data);
+
+            var workorder = new WorkOrder(data.Id, data.Name, data.OrderId, products.ToList(), data.Status);
+
+            return Response<WorkOrder>.Success(workorder);
+
+        }
+
+    }
+
+    public class DataModel {
+
+        public Guid Id { get; set; }
+        public Guid OrderId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public Status Status { get; set; }
+
+    }
+
+}
