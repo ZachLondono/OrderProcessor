@@ -13,7 +13,7 @@ public class OrderTaskListViewModel {
 
     #region ObservableProperties
 
-    private bool _isLoading = true;
+    private bool _isLoading = false;
     public bool IsLoading {
         get => _isLoading;
         set {
@@ -54,6 +54,8 @@ public class OrderTaskListViewModel {
     }
 
     public async Task LoadWorkOrders() {
+
+        if (IsLoading) return;
 
         IsLoading = true;
         if (OrderId is null) {
