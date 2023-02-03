@@ -1,8 +1,6 @@
 ﻿using ApplicationCore.Features.Shared;
 using ApplicationCore.Infrastructure;
 using Blazored.Modal.Services;
-using System.Collections.ObjectModel;
-
 namespace ApplicationCore.Features.WorkOrders;
 
 public class OrderTaskListViewModel {
@@ -31,7 +29,7 @@ public class OrderTaskListViewModel {
         }
     }
 
-    private ObservableCollection<WorkOrder> _workOrders = new();
+    private List<WorkOrder> _workOrders = new();
     public IEnumerable<WorkOrder> WorkOrders {
         get => _workOrders;
         private set {
@@ -50,7 +48,6 @@ public class OrderTaskListViewModel {
         _bus = bus;
         _uiBus = uiBus;
         _modalService = modalService;
-        _workOrders.CollectionChanged += (s, e) => OnPropertyChanged?.Invoke();
     }
 
     public async Task LoadWorkOrders() {
@@ -117,6 +114,7 @@ public class OrderTaskListViewModel {
 
         );
 
+        OnPropertyChanged?.Invoke();
         _uiBus.Publish(new WorkOrdersUpdatNotification());
 
     }
