@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.Shared;
 
-public class Manufacturing {
+public static class Manufacturing {
 
     public delegate Task<Guid> CreateWorkOrder(Guid orderId, string name, IReadOnlyCollection<Guid> productId);
 
