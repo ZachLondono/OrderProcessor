@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
 using ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
 using ApplicationCore.Features.CNC.ReleasePDF.Styling;
+using BarcodeLib;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -44,15 +45,22 @@ internal class PDFBuilder {
             .AlignCenter()
             .Column(col => { 
 
-                col.Item().Text(summary.Title).WithStyle(pageHeaderStyle);
+                col.Item().AlignCenter().Text(summary.Title).WithStyle(pageHeaderStyle);
 
                 if (summary.WorkOrderId != "") {
+
+                    var barcode = new Barcode();
+                    var img = barcode.Encode(TYPE.CODE128B, summary.WorkOrderId, 300, 50);
+
+                    using var ms = new MemoryStream();
+                    img.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                    var imgdata = ms.ToArray();
+
                     col.Item()
-                        .PaddingVertical(5)
                         .AlignCenter()
-                        .Text($"*{summary.WorkOrderId}*")
-                        .FontSize(24)
-                        .FontFamily("Code 128");
+                        .PaddingVertical(5)
+                        .Width(2, Unit.Inch)
+                        .Image(imgdata);
                 }
 
 
