@@ -20,7 +20,7 @@ public class GetWorkOrderById {
 
             using var connection = _factory.CreateConnection();
 
-            DataModel? data = await connection.QuerySingleOrDefaultAsync<DataModel>(@"SELECT id, order_id, name, status FROM work_orders WHERE id = @Id", query);
+            DataModel? data = await connection.QuerySingleOrDefaultAsync<DataModel>(@"SELECT id, order_id AS OrderId, name, status FROM work_orders WHERE id = @Id", query);
 
             if (data is null) {
                 return Response<WorkOrder>.Error(new() {
