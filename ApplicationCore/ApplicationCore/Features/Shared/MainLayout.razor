@@ -6,6 +6,7 @@
 @using ApplicationCore.Features.CNC.LabelDB
 @using ApplicationCore.Features.Orders.Loader.Dialog;
 @using ApplicationCore.Features.Orders.Shared.State;
+@using ApplicationCore.Features.WorkOrders;
 @using ApplicationCore.Infrastructure
 @using System.Diagnostics;
 @using static ApplicationCore.Features.Shared.InformationDialog;
@@ -78,6 +79,12 @@
 					</svg>
 					<span class="h-6 align-middle">Add Company</span>
 				</div>
+				<div @onclick="OpenBarCodeDialog" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 dark:hover:bg-slate-600  text-gray-500 hover:text-black dark:hover:text-white">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 inline-block">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5" />
+					</svg>
+					<span class="h-6 align-middle">Barcode</span>
+				</div>
 			</section>
 
 			<div onclick="toggleDarkMode()" class="text-xs w-24 mx-2 py-4 ease-in duration-300 cursor-pointer select-none absolute bottom-0 text-gray-500 hover:text-black dark:hover:text-white">
@@ -111,7 +118,7 @@
 
 			var sourcePrompt = Modal.Show<GetAllmoxyOrderNumberDialog>("Enter Order Number");
 			var promptResult = await sourcePrompt.Result;
-			
+
 			if (promptResult.Cancelled) {
 				return;
 			}
@@ -151,6 +158,13 @@
 		var dialog = Modal.Show<CreateCompanyDialog>();
 		var result = await dialog.Result;
 		if (result.Confirmed) NavigationManager.NavigateTo("/companies/details", true);
+	}
+
+	private async Task OpenBarCodeDialog() {
+
+		var dialog = Modal.Show<BarCodeScanningDialog>();
+		_ = await dialog.Result;
+
 	}
 
     private async Task GoBack() {
