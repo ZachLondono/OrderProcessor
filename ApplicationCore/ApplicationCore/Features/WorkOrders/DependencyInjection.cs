@@ -14,7 +14,13 @@ public static class DependencyInjection {
             return async (orderId, name, productIds) => {
                 var command = new CreateWorkOrder.Command(name, orderId, productIds);
                 var response = await bus.Send(command);
-                response.OnError(error => throw new InvalidOperationException($"{error.Title} - {error.Details}"));
+                
+                Guid id = Guid.Empty;
+                response.Match(
+                    wo => id = wo.Id,
+                    error => throw new InvalidOperationException($"{error.Title} - {error.Details}")
+                );
+                return id;
             };
 
         });
