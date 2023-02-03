@@ -43,10 +43,12 @@ public class OrderTaskListViewModel {
     #endregion
 
     private readonly IBus _bus;
+    private readonly IUIBus _uiBus;
     private readonly IModalService _modalService;
 
-    public OrderTaskListViewModel(IBus bus, IModalService modalService) {
+    public OrderTaskListViewModel(IBus bus, IUIBus uiBus, IModalService modalService) {
         _bus = bus;
+        _uiBus = uiBus;
         _modalService = modalService;
         _workOrders.CollectionChanged += (s, e) => OnPropertyChanged?.Invoke();
     }
@@ -94,6 +96,8 @@ public class OrderTaskListViewModel {
 
         );
 
+        _uiBus.Publish(new WorkOrdersUpdatNotification());
+
     }
 
     public async Task DeleteWorkOrder(WorkOrder workOrder) {
@@ -110,6 +114,8 @@ public class OrderTaskListViewModel {
             _modalService.OpenErrorDialog
 
         );
+
+        _uiBus.Publish(new WorkOrdersUpdatNotification());
 
     }
 
