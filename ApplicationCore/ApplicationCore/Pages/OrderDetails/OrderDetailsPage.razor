@@ -138,6 +138,7 @@
         var jobsByMachine = selectedJobs.GroupBy(job => job.MachineName).ToList();
 
         List<string> productIds = new();
+        List<ReleasedJob> jobsToRelease = new();
 
         foreach (var selectedJobsGroup in jobsByMachine) {
 
@@ -216,9 +217,11 @@
                 }
             };
 
-            await Bus.Send(new GenerateCNCReleasePDF.Command(releasedJob, @"C:\Users\Zachary Londono\Desktop\ExampleConfiguration\cutlists"));
+            jobsToRelease.Add(releasedJob);
 
         }
+
+        Guid? workOrderId = null;
 
         if (productIds.Any()) {
 
@@ -237,13 +240,21 @@
 
             if (ids.Any()) {
 
-                await CreateWorkOrder(order.Id, "CNC", ids);
+                workOrderId = await CreateWorkOrder(order.Id, "CNC", ids);
 
                 if (_orderTaskList is not null) {
                     await _orderTaskList.LoadWorkOrders();
                 }
 
             }
+
+        }
+
+        foreach (var job in jobsToRelease) {
+
+            job.WorkOrderId = workOrderId;
+
+            await Bus.Send(new GenerateCNCReleasePDF.Command(job, @"C:\Users\Zachary Londono\Desktop\ExampleConfiguration\cutlists"));
 
         }
 
