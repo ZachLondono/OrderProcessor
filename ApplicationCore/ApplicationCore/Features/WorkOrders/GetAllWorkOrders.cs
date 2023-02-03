@@ -20,7 +20,7 @@ internal class GetAllWorkOrders {
 
             using var connection = _factory.CreateConnection();
 
-            var data = await connection.QueryAsync<DataModel>(@"SELECT id, name, status FROM work_orders");
+            var data = await connection.QueryAsync<DataModel>(@"SELECT id, order_id, name, status FROM work_orders");
 
             List<WorkOrder> workorders = new();
 
