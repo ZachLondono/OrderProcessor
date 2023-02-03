@@ -42,8 +42,22 @@ internal class PDFBuilder {
         var pageHeaderStyle = config.HeaderStyle;
         page.Header()
             .AlignCenter()
-            .Text(summary.Title)
-            .WithStyle(pageHeaderStyle);
+            .Column(col => { 
+
+                col.Item().Text(summary.Title).WithStyle(pageHeaderStyle);
+
+                if (summary.WorkOrderId != "") {
+                    col.Item()
+                        .PaddingVertical(5)
+                        .AlignCenter()
+                        .Text($"*{summary.WorkOrderId}*")
+                        .FontSize(24)
+                        .FontFamily("Code 128");
+                }
+
+
+
+            });
 
         page.Content().Column(c => {
 

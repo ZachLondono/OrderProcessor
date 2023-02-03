@@ -3,6 +3,7 @@ using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
 using ApplicationCore.Features.CNC.ReleasePDF.Styling;
 using QuestPDF.Fluent;
+using System;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF.Services;
 
@@ -164,8 +165,11 @@ public class QuestPDFWriter : IReleasePDFWriter {
         tables.Add(materialTable);
         tables.Add(partsTable);
 
+        string workIdStr = job.WorkOrderId is null ? "" : GetGuidAsBase64((Guid) job.WorkOrderId);
+
         var cover = new CoverModel() {
             Title = $"{job.JobName}  [{release.MachineName}]",
+            WorkOrderId = workIdStr,
             Info = new Dictionary<string, string>() {
                     {"Vendor", job.VendorName },
                     {"Customer", job.CustomerName },
@@ -174,8 +178,11 @@ public class QuestPDFWriter : IReleasePDFWriter {
                 },
             Tables = tables
         };
+
         return cover;
     }
+
+    private static string GetGuidAsBase64(Guid id) => Convert.ToBase64String(id.ToByteArray()).Replace("/", "-").Replace("+", "_").Replace("=", "");
 
     private static string GetFileName(string path, string filename) {
 
