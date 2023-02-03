@@ -17,6 +17,8 @@ using ApplicationCore.Features.Companies.Queries;
 using static ApplicationCore.Features.Orders.Release.Handlers.GenerateCabinetPackingList;
 using ApplicationCore.Features.WorkOrders;
 using ApplicationCore.Pages.OrderDetails;
+using ApplicationCore.Features.WorkOrders.AllWorkOrders;
+using ApplicationCore.Features.Orders;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -28,8 +30,6 @@ public static class DependencyInjection {
 
         services.AddMediatR(typeof(DependencyInjection));
 
-        services.AddSingleton<ProductBuilderFactory>();
-        services.AddSingleton<OrderState>();
         services.AddSingleton<CompanyState>();
         services.AddSingleton<IServiceProvider>(sp => sp);
         services.AddTransient<IAccessDBConnectionFactory, AccessDBConnectionFactory>();
@@ -79,11 +79,9 @@ public static class DependencyInjection {
 
         services.AddViewModels();
 
-        // TODO: validate configuration data
+        services.AddOrdering(configuration);
 
         services.AddWorkOrders();
-
-        services.AddOrderLoading(configuration);
 
         services.AddEmailing();
 
@@ -104,6 +102,7 @@ public static class DependencyInjection {
         =>  services.AddTransient<OrderListViewModel>()
                     .AddTransient<OrderTaskListViewModel>()
                     .AddTransient<OrderDetailsPageViewModel>()
-                    .AddTransient<BarCodeScanningDialogViewModel>();
+                    .AddTransient<BarCodeScanningDialogViewModel>()
+                    .AddTransient<AllWorkOrdersListViewModel>();
 
 }
