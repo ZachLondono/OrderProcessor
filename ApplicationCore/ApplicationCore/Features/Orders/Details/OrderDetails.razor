@@ -6,6 +6,7 @@
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Features.ProductPlanner;
 @using ApplicationCore.Features.ProductPlanner.Contracts;
+@using ApplicationCore.Features.WorkOrders;
 @using ApplicationCore.Infrastructure
 @using System.Diagnostics
 @using ApplicationCore.Features.Shared.Components
@@ -16,6 +17,8 @@
 @using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 @using ApplicationCore.Pages.OrderDetails;
 @using static ApplicationCore.Features.Orders.Details.CabinetProductTable;
+@using Status = ApplicationCore.Features.Orders.Shared.Domain.Enums.Status;
+@inherits UIListenerComponent<WorkOrdersUpdatNotification>
 @inject IBus Bus
 @inject OrderState OrderState
 @inject Manufacturing.IsProductComplete IsProductComplete
@@ -342,29 +345,29 @@
             _vendorName = await ViewModel.GetCompanyName(OrderState.Order.VendorId);
         }
 
-        await LoadCabinets();
+        Cabinets = OrderState.Order
+                            .Products
+                            .Where(p => p is Cabinet)
+                            .Cast<Cabinet>()
+                            .Select(cab => new CabinetRowModel() {
+                                Cabinet = cab,
+                                IsComplete = false
+                            })
+                            .ToList();
+
+        await UpdateProductStatuses();
 
     }
 
-    private async Task LoadCabinets() {
+    private async Task UpdateProductStatuses() {
 
         if (OrderState.Order is null) {
             return;
         }
 
-        var cabinets = OrderState.Order
-                                .Products
-                                .Where(p => p is Cabinet)
-                                .Cast<Cabinet>();
+        foreach (var cabinet in Cabinets) {
 
-        foreach (var cabinet in cabinets) {
-
-            bool isComplete = await IsProductComplete(OrderState.Order.Id, cabinet.Id);
-
-            Cabinets.Add(new() {
-                Cabinet = cabinet,
-                IsComplete = isComplete
-            });
+            cabinet.IsComplete = await IsProductComplete(OrderState.Order.Id, cabinet.Cabinet.Id);
 
         }
 
@@ -517,7 +520,7 @@
     }
 
     private async Task GenerateCNCReleasePDF() {
-        
+
         if (OrderState.Order is null || ViewModel is null) return;
 
         await ViewModel.GenerateCNCReleasePDF(OrderState.Order);
@@ -536,6 +539,12 @@
         public string Name { get; set; } = string.Empty;
         public string ProductionNote { get; set; } = string.Empty;
         public DateTime ProductionDate { get; set; } = DateTime.Now;
+
+    }
+
+    public override void Handle(WorkOrdersUpdatNotification notification) {
+
+        InvokeAsync(UpdateProductStatuses);
 
     }
 
