@@ -99,10 +99,8 @@ public static class DependencyInjection {
         return services;
     }
 
-    private static IServiceCollection AddViewModels(this IServiceCollection services) {
-        services.AddTransient<OrderListViewModel>();
-        return services;
-
-    }
+    private static IServiceCollection AddViewModels(this IServiceCollection services) 
+        =>  services.AddTransient<OrderListViewModel>()
+                    .AddTransient<OrderTaskListViewModel>();
 
 }

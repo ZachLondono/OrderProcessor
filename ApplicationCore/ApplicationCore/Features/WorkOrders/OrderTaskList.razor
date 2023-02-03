@@ -11,25 +11,33 @@
             <th class="p-5">Name</th>
             <th class="p-5">Products</th>
             <th class="p-5">Status</th>
-            <th class="p-5"></th>
+            <th class="p-5">
+                <ToolTip Text="Refresh" UnderLine="false">
+                    <div class="text-gray-700 hover:text-sky-600 hover:cursor-pointer" @onclick="async () => await DataContext!.LoadWorkOrders()">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                    </div>
+                </ToolTip>
+            </th>
         </tr>
     </thead>
 
     <tbody>
 
-        @if (_error is not null) {
+        @if (DataContext!.Error is not null) {
 
             <tr>
                 <td colspan="4" class="whitespace-nowrap p-5 border-b text-center text-red-600">_error</td>
             </tr>
 
-        } else if (_isLoading) {
+        } else if (DataContext.IsLoading) {
 
             <tr>
                 <td colspan="4" class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">Loading...</td>
             </tr>
 
-        } else if (!WorkOrders.Any()) {
+        } else if (!DataContext.WorkOrders.Any()) {
 
             <tr>
                 <td colspan="4" class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">No work orders</td>
@@ -37,7 +45,7 @@
 
         } else {
             
-            @foreach (var workOrder in WorkOrders) {
+            @foreach (var workOrder in DataContext.WorkOrders) {
                 
                 <tr>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@workOrder.Name</td>
@@ -46,10 +54,10 @@
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">
 
                         @if (workOrder.Status != Status.Complete) {
-                            <Button Style="ButtonStyle.Text" Color="ButtonColor.Primary" OnClickAsync="async () => await CompleteWorkOrder(workOrder)">Complete</Button>
+                            <Button Style="ButtonStyle.Text" Color="ButtonColor.Primary" OnClickAsync="async () => await DataContext.CompleteWorkOrder(workOrder)">Complete</Button>
                         }
 
-                        <Button Style="ButtonStyle.Text" Color="ButtonColor.Secondary" OnClickAsync="async () => await DeleteWorkOrder(workOrder)">Delete</Button>
+                        <Button Style="ButtonStyle.Text" Color="ButtonColor.Secondary" OnClickAsync="async () => await DataContext.DeleteWorkOrder(workOrder)">Delete</Button>
 
                     </td>
                 </tr>
@@ -67,83 +75,27 @@
 @code {
 
     [Parameter]
-    public Guid? OrderId { get; set; } = null;
+    public Guid? OrderId { get; set; }
 
-    private bool _isLoading = true;
-    private string? _error = null;
+    [Inject]
+    public OrderTaskListViewModel? DataContext { get; set; }
 
-    public List<WorkOrder> WorkOrders { get; set; } = new();
+    protected override async Task OnParametersSetAsync() {
 
-    protected override async Task OnInitializedAsync() {
+        DataContext!.OrderId = OrderId;
+        await DataContext!.LoadWorkOrders();
 
-        await LoadWorkOrders();
+    }
+
+    protected override void OnInitialized() {
+
+        DataContext!.OnPropertyChanged += () => StateHasChanged();
 
     }
 
     public async Task LoadWorkOrders() {
 
-        _isLoading = true;
-        if (OrderId is null) {
-            _error = "No order selected";
-            _isLoading = false;
-            StateHasChanged();
-            return;
-        }
-
-        var result = await Bus.Send(new GetWorkOrdersInOrder.Query((Guid)OrderId));
-
-        result.Match(
-
-            workorders => {
-                WorkOrders = new(workorders);
-            },
-
-            error => {
-                _error = $"[{error.Title}] : {error.Details}";
-            }
-
-        );
-
-        _isLoading = false;
-        StateHasChanged();
-
-    }
-
-    public async Task CompleteWorkOrder(WorkOrder workOrder) {
-
-        var result = await Bus.Send(new UpdateWorkOrder.Command(workOrder.Id, workOrder.Name, Status.Complete));
-
-        await result.MatchAsync(
-
-            async _ => {
-                workOrder.Status = Status.Complete;
-                await ModalService.OpenInformationDialog("Updated", $"Work order '{workOrder.Name}' completed", InformationDialog.MessageType.Information);
-            },
-
-            error => ModalService.OpenErrorDialog(error)
-
-        );
-
-        StateHasChanged();
-
-    }
-
-    public async Task DeleteWorkOrder(WorkOrder workOrder) {
-
-        var result = await Bus.Send(new DeleteWorkOrder.Command(workOrder.Id));
-
-        await result.MatchAsync(
-
-            async _ => {
-                WorkOrders.Remove(workOrder);
-                await ModalService.OpenInformationDialog("Deleted", $"Work order '{workOrder.Name}' deleted", InformationDialog.MessageType.Information);
-            },
-
-            error => ModalService.OpenErrorDialog(error)
-
-        );
-
-        StateHasChanged();
+        await DataContext!.LoadWorkOrders();
 
     }
 
