@@ -16,6 +16,7 @@ using ApplicationCore.Features.Orders.List;
 using ApplicationCore.Features.Companies.Queries;
 using static ApplicationCore.Features.Orders.Release.Handlers.GenerateCabinetPackingList;
 using ApplicationCore.Features.WorkOrders;
+using ApplicationCore.Pages.OrderDetails;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -101,6 +102,7 @@ public static class DependencyInjection {
 
     private static IServiceCollection AddViewModels(this IServiceCollection services) 
         =>  services.AddTransient<OrderListViewModel>()
-                    .AddTransient<OrderTaskListViewModel>();
+                    .AddTransient<OrderTaskListViewModel>()
+                    .AddTransient<OrderDetailsPageViewModel>();
 
 }
