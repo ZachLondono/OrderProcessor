@@ -3,7 +3,6 @@ using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
 using ApplicationCore.Features.CNC.ReleasePDF.Styling;
 using QuestPDF.Fluent;
-using System;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF.Services;
 
