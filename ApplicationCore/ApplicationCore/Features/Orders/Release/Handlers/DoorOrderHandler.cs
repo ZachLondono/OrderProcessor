@@ -34,13 +34,18 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
         var doors = notification.Order
                             .Products
                             .Where(p => p is IDoorContainer)
-                            .Cast<IDoorContainer>()
-                            .SelectMany(c => {
+                            .SelectMany(p => {
                                 try {
-                                    return c.GetDoors(_factory.CreateMDFDoorBuilder);
+                                    
+                                    return ((IDoorContainer) p).GetDoors(_factory.CreateMDFDoorBuilder)
+                                                                    .Select(d => new MDFDoorComponent() {
+                                                                        ProductId = p.Id,
+                                                                        Door = d
+                                                                    });
+
                                 } catch (Exception ex) {
                                     _uibus.Publish(new OrderReleaseErrorNotification($"Error getting doors from product '{ex.Message}'"));
-                                    return Enumerable.Empty<MDFDoor>();
+                                    return Enumerable.Empty<MDFDoorComponent>();
                                 }
                             })
                             .ToList();
@@ -87,16 +92,16 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
 
     }
 
-    private void GenerateOrderForms(Order order, IEnumerable<MDFDoor> doors, string template, string outputDirectory, bool generateTokens) {
+    private void GenerateOrderForms(Order order, IEnumerable<MDFDoorComponent> doors, string template, string outputDirectory, bool generateTokens) {
 
         var groups = doors.GroupBy(d => new DoorStyleGroupKey() {
-            Material = d.Material,
-            FramingBead = d.FramingBead,
-            EdgeDetail = d.EdgeDetail,
-            PanelDrop = d.PanelDrop.AsMillimeters(),
+            Material = d.Door.Material,
+            FramingBead = d.Door.FramingBead,
+            EdgeDetail = d.Door.EdgeDetail,
+            PanelDrop = d.Door.PanelDrop.AsMillimeters(),
             PanelDetail = "Flat",
-            FinishType = d.PaintColor is null ? "None" : "Std. Paint",
-            FinishColor = d.PaintColor ?? ""
+            FinishType = d.Door.PaintColor is null ? "None" : "Std. Color",
+            FinishColor = d.Door.PaintColor ?? ""
         });
 
         Application app = new() {
@@ -151,7 +156,7 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
 
     }
 
-    private static void FillOrderSheet(Order order, IGrouping<DoorStyleGroupKey, MDFDoor> doors, Workbook workbook, string orderNumber) {
+    private static void FillOrderSheet(Order order, IGrouping<DoorStyleGroupKey, MDFDoorComponent> doors, Workbook workbook, string orderNumber) {
 
         Worksheet ws = workbook.Worksheets["MDF"];
         ws.Range["OrderDate"].Value2 = order.OrderDate;
@@ -172,24 +177,28 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
         int offset = 1;
 
         var data = doors.Select(d => new dynamic[] {
-                            d.ProductNumber,
-                            d.Type switch {
+                            d.Door.ProductNumber,
+                            d.Door.Type switch {
                                 DoorType.Door => "Door",
                                 DoorType.DrawerFront => "Drawer Front",
                                 _ => "Door"
                             },
                             offset++,
-                            d.Qty,
-                            d.Width.AsMillimeters(),
-                            d.Height.AsMillimeters(),
-                            d.Note
+                            d.Door.Qty,
+                            d.Door.Width.AsMillimeters(),
+                            d.Door.Height.AsMillimeters(),
+                            d.Door.Note
                         })
                         .ToArray();
 
         var rows = CreateRectangularArray(data);
-
         var outputRng = ws.Range[$"A16:G{15 + rows.GetLength(0)}"];
         outputRng.Value2 = rows;
+
+        var ids = doors.Select(d => new dynamic[] { d.ProductId.ToString() } ).ToArray();
+        rows = CreateRectangularArray(ids);
+        var idsRng = ws.Range[$"BJ16:BJ{15 + rows.GetLength(0)}"];
+        idsRng.Value2 = rows;
 
     }
 
@@ -231,6 +240,13 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
         }
 
         return finalFilename;
+
+    }
+
+    public record MDFDoorComponent {
+
+        public required Guid ProductId { get; set; }
+        public required MDFDoor Door { get; set; }
 
     }
 

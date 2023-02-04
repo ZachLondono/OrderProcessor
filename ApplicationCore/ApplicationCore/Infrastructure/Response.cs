@@ -20,6 +20,10 @@ public class Response<TSuccess> {
         _isSuccess = false;
     }
 
+    public static Response<TSuccess> Success(TSuccess value) => new(value);
+
+    public static Response<TSuccess> Error(Error error) => new(error);
+
     public void Match(Action<TSuccess> onSuccess, Action<Error> onError) {
         switch (_isSuccess) {
             case true:
@@ -67,4 +71,6 @@ public class Response<TSuccess> {
 public class Response : Response<Unit> {
     public Response() : base(new Unit()) { }
     public Response(Error error) : base(error) { }
+    public static Response Success() => new();
+    public new static Response Error(Error error) => new(error);
 }

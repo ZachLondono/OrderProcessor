@@ -164,8 +164,11 @@ public class QuestPDFWriter : IReleasePDFWriter {
         tables.Add(materialTable);
         tables.Add(partsTable);
 
+        string workIdStr = job.WorkOrderId is null ? "" : GetGuidAsBase64((Guid) job.WorkOrderId);
+
         var cover = new CoverModel() {
             Title = $"{job.JobName}  [{release.MachineName}]",
+            WorkOrderId = workIdStr,
             Info = new Dictionary<string, string>() {
                     {"Vendor", job.VendorName },
                     {"Customer", job.CustomerName },
@@ -174,8 +177,11 @@ public class QuestPDFWriter : IReleasePDFWriter {
                 },
             Tables = tables
         };
+
         return cover;
     }
+
+    private static string GetGuidAsBase64(Guid id) => Convert.ToBase64String(id.ToByteArray()).Replace("/", "-").Replace("+", "_").Replace("=", "");
 
     private static string GetFileName(string path, string filename) {
 

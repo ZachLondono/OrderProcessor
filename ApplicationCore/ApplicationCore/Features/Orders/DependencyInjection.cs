@@ -1,0 +1,42 @@
+﻿using ApplicationCore.Features.Orders.Loader;
+using ApplicationCore.Features.Orders.Ordering;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.State;
+using ApplicationCore.Infrastructure;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace ApplicationCore.Features.Orders;
+
+public static class DependencyInjection {
+
+    public static IServiceCollection AddOrdering(this IServiceCollection services, IConfiguration configuration) {
+
+        services.AddOrderLoading(configuration);
+        services.AddSingleton<ProductBuilderFactory>();
+        services.AddSingleton<OrderState>();
+
+        services.AddTransient<Features.Shared.Ordering.GetOrderNumberById>(sp => {
+
+            var bus = sp.GetRequiredService<IBus>();
+            return async (id) => {
+
+                var response = await bus.Send(new GetOrderNumberById.Query(id));
+
+                string number = "";
+                response.Match(
+                    result => number = result,
+                    error => number = "Unknown"
+                );
+
+                return number;
+
+            };
+
+        });
+
+        return services;
+
+    }
+
+}

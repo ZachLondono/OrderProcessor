@@ -2,6 +2,7 @@
 
 public class PPProduct {
 
+    public Guid ProductId { get; }
     public string Room { get; }
     public string Name { get; }
     public int SequenceNum { get;  }
@@ -15,7 +16,8 @@ public class PPProduct {
     public Dictionary<string, string> OverrideParameters { get; }
     public Dictionary<string, string> ManualOverrideParameters { get; }
 
-    public PPProduct(string room, string name, int sequenceNum, string catalog, string materialType, string doorType, string hardwareType, Dictionary<string, PPMaterial> finishMaterials, Dictionary<string, PPMaterial> ebMaterials, Dictionary<string, string> parameters, Dictionary<string, string> overrideParameters, Dictionary<string, string> manualOverrideParameters) {
+    public PPProduct(Guid productId, string room, string name, int sequenceNum, string catalog, string materialType, string doorType, string hardwareType, Dictionary<string, PPMaterial> finishMaterials, Dictionary<string, PPMaterial> ebMaterials, Dictionary<string, string> parameters, Dictionary<string, string> overrideParameters, Dictionary<string, string> manualOverrideParameters) {
+        ProductId = productId;
         Room = room;
         Name = name;
         SequenceNum = sequenceNum;
