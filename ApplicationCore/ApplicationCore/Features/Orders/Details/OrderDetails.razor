@@ -46,7 +46,7 @@
 
     <section class="mt-10" id="actions">
         <div class="mb-4">
-            <Button Type="button" OnClickAsync="ReleaseOrder" Class="float-left flex justify-center items-center h-10 w-36" Rounded="ButtonRounded.Left" Color="ButtonColor.Secondary">
+            <Button Type="button" OnClickAsync="ReleaseOrder" Disabled="_isReleasing" Class="float-left flex justify-center items-center h-10 w-36" Rounded="ButtonRounded.Left" Color="ButtonColor.Secondary">
                 @if (_isReleasing) {
                     <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -330,6 +330,11 @@
     }
 
     private async Task ReleaseOrder() {
+
+        if (_isReleasing == true) {
+            return;
+        }
+
         _isReleasing = true;
 
         var parameters = new ModalParameters();
