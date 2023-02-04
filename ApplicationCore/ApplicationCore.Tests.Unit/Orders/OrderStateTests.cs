@@ -7,6 +7,7 @@ using NSubstitute;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Features.Companies.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Tests.Unit.Orders;
 
@@ -15,9 +16,10 @@ public class OrderStateTests {
     private readonly OrderState _sut;
     private readonly IBus _bus = Substitute.For<IBus>();
     private readonly IUIBus _uiBus = Substitute.For<IUIBus>();
+    private readonly ILogger<OrderState> _logger = Substitute.For<ILogger<OrderState>>();
 
     public OrderStateTests() {
-        _sut = new(_bus, _uiBus);
+        _sut = new(_bus, _uiBus, _logger);
     }
 
     [Fact]

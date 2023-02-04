@@ -3,6 +3,7 @@ using ApplicationCore.Features.Orders.Release;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.Shared.State;
 
@@ -12,10 +13,12 @@ public class OrderState {
 
     private readonly IBus _bus;
     private readonly IUIBus _uibus;
+    private readonly ILogger<OrderState> _logger;
 
-    public OrderState(IBus bus, IUIBus uibus) {
+    public OrderState(IBus bus, IUIBus uibus, ILogger<OrderState> logger) {
         _bus = bus;
         _uibus = uibus;
+        _logger = logger;
     }
 
     public async Task LoadOrder(Guid orderId) {
@@ -25,12 +28,13 @@ public class OrderState {
                 Order = order;
             },
             error => {
-                // TODO: log error
+                _logger.LogError("Error loading order while trying to set current order {Error}", error);
             }
         );
     }
 
     public async Task Release(ReleaseProfile? profile = null) {
+        
         if (Order is null) return;
 
         ReleaseProfile? releaseProfile = profile;
@@ -40,12 +44,15 @@ public class OrderState {
             response.Match(
                 c => releaseProfile = c?.ReleapseProfile ?? null,
                 error => {
-                    // TODO: notify and log error
+                    _logger.LogError("Error loading release profile for order's vendor while trying to release order {Error}", error);
                 }
             );
         }
 
-        if (releaseProfile is null) return; // TODO: notify of error
+        if (releaseProfile is null) {
+            _uibus.Publish(new OrderReleaseErrorNotification("No release profile set"));
+            return;
+        }
 
         await ReleaseWithProfile(releaseProfile);
 
