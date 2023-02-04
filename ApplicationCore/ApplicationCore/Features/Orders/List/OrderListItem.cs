@@ -1,12 +1,8 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-
-namespace ApplicationCore.Features.List;
+﻿namespace ApplicationCore.Features.List;
 
 public class OrderListItem {
 
     public Guid Id { get; init; }
-
-    public Status Status { get; init; } = Status.UNKNOWN;
 
     public string Name { get; init; } = string.Empty;
 

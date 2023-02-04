@@ -8,7 +8,6 @@
 
     <thead class="border-b border-slate-300">
         <tr>
-            <th class="p-5 dark:text-gray-500">Status</th>
             <th class="p-5 dark:text-gray-500">Number</th>
             <th class="p-5 dark:text-gray-500">Name</th>
             <th class="p-5 dark:text-gray-500">Customer</th>
@@ -48,9 +47,6 @@
         <tbody>
             @foreach(var order in ViewModel.Orders) {
                 <tr class="justify-center hover:bg-slate-200 dark:hover:bg-slate-500 cursor-pointer">
-                    <td class="p-5 text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenOrder(order.Id)">
-                        <span class=@($"rounded-full px-3 py-1 mb-3 text-white text-xs font-semibold lowercase {order.Status.GetColor()}")>@order.Status</span>
-                    </td>
                     <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenOrder(order.Id)">@order.Number</td>
                     <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenOrder(order.Id)">@order.Name</td>
                     <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenOrder(order.Id)">@order.CustomerName</td>

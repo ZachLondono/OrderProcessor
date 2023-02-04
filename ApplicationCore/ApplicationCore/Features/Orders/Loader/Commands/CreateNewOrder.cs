@@ -63,23 +63,18 @@ public class CreateNewOrder {
                     order.Billing.Address.Country,
                 });
 
-                const string command = @"INSERT INTO orders (id, source, status, number, name, vendorid, customername, productionnote, customercomment, orderdate, releasedate, productiondate, completedate, info, tax, priceadjustment, rush, shippingmethod, shippingprice, shippingcontact, shippingphonenumber, shippingaddressid, invoiceemail, billingphonenumber, billingaddressid)
-                                        VALUES (@Id, @Source, @Status, @Number, @Name, @VendorId, @CustomerName, @ProductionNote, @CustomerComment, @OrderDate, @ReleaseDate, @ProductionDate, @CompleteDate, @Info, @Tax, @PriceAdjustment, @Rush, @ShippingMethod, @ShippingPrice, @ShippingContact, @ShippingPhoneNumber, @ShippingAddressId, @InvoiceEmail, @BillingPhoneNumber, @BillingAddressId);";
+                const string command = @"INSERT INTO orders (id, source, number, name, vendorid, customername, customercomment, orderdate, info, tax, priceadjustment, rush, shippingmethod, shippingprice, shippingcontact, shippingphonenumber, shippingaddressid, invoiceemail, billingphonenumber, billingaddressid)
+                                        VALUES (@Id, @Source, @Number, @Name, @VendorId, @CustomerName, @CustomerComment, @OrderDate, @Info, @Tax, @PriceAdjustment, @Rush, @ShippingMethod, @ShippingPrice, @ShippingContact, @ShippingPhoneNumber, @ShippingAddressId, @InvoiceEmail, @BillingPhoneNumber, @BillingAddressId);";
 
                 await connection.ExecuteAsync(command, new {
                     order.Id,
                     order.Source,
-                    Status = order.Status.ToString(),
                     order.Name,
                     order.Number,
                     order.VendorId,
                     CustomerName = order.Customer.Name,
-                    order.ProductionNote,
                     order.CustomerComment,
                     order.OrderDate,
-                    order.ReleaseDate,
-                    order.ProductionDate,
-                    order.CompleteDate,
                     Info = (IDictionary<string, string>)order.Info,
                     order.Tax,
                     order.PriceAdjustment,

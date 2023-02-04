@@ -1,15 +1,7 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Shared.Domain;
+﻿using ApplicationCore.Features.Shared.Domain;
 namespace ApplicationCore.Features.Orders.Shared.Domain;
 
 public static class Extensions {
-
-    public static string GetColor(this Status status) => status switch {
-        Status.Pending => "bg-amber-500",
-        Status.Released => "bg-blue-500",
-        Status.Completed => "bg-green-500",
-        _ => "bg-gray-500"
-    };
 
     public static string GetFormatedFraction(this Dimension dimension) {
 
