@@ -37,9 +37,6 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
         var order = notification.Order;
 
-        var customerName = order.Customer.Name;
-        var vendorName = await GetCompanyName(order.VendorId);
-
         var dovetailBoxes = order.Products
                                 .Where(p => p is IDrawerBoxContainer)
                                 .Cast<IDrawerBoxContainer>()
@@ -52,6 +49,14 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                     }
                                 })
                                 .ToList();
+
+        if (!dovetailBoxes.Any()) {
+            _uibus.Publish(new OrderReleaseInfoNotification("Not creating Cut Lists, because there where no drawer boxes found"));
+            return;
+        }
+
+        var customerName = order.Customer.Name;
+        var vendorName = await GetCompanyName(order.VendorId);
 
         CutList cutList = CreateStdCutList(order, dovetailBoxes, customerName, vendorName, _construction);
         CutList optimizedCutList = CreateOptimizedCutList(order, dovetailBoxes, customerName, vendorName, _construction);

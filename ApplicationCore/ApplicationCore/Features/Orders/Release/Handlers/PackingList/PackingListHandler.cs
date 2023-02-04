@@ -54,13 +54,6 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
             return;
         }
 
-        var config = new ClosedXMLTemplateConfiguration() { TemplateFilePath = notification.ReleaseProfile.PackingListTemplatePath };
-        var outputDir = notification.ReleaseProfile.PackingListOutputDirectory;
-        var doPrint = notification.ReleaseProfile.PrintPackingList;
-
-        var custLine2Str = string.IsNullOrWhiteSpace(order.Shipping.Address.Country + order.Shipping.Address.State + order.Shipping.Address.Zip) ? "" : $"{order.Shipping.Address.City}, {order.Shipping.Address.State} {order.Shipping.Address.Zip}";
-        var vendLine2Str = string.IsNullOrWhiteSpace(vendor.Address.Country + vendor.Address.State + vendor.Address.Zip) ? "" : $"{vendor.Address.City}, {vendor.Address.State} {vendor.Address.Zip}";
-
         var items = order.Products
                         .Where(p => p is IDrawerBoxContainer)
                         .Cast<IDrawerBoxContainer>()
@@ -81,6 +74,18 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
                             Width = b.Width.AsInchFraction().ToString(),
                             Depth = b.Depth.AsInchFraction().ToString()
                         }).ToList();
+
+        if (!items.Any()) {
+            _uibus.Publish(new OrderReleaseInfoNotification("Not creating packing list, because there where no drawer boxes found"));
+            return;
+        }
+
+        var config = new ClosedXMLTemplateConfiguration() { TemplateFilePath = notification.ReleaseProfile.PackingListTemplatePath };
+        var outputDir = notification.ReleaseProfile.PackingListOutputDirectory;
+        var doPrint = notification.ReleaseProfile.PrintPackingList;
+
+        var custLine2Str = string.IsNullOrWhiteSpace(order.Shipping.Address.Country + order.Shipping.Address.State + order.Shipping.Address.Zip) ? "" : $"{order.Shipping.Address.City}, {order.Shipping.Address.State} {order.Shipping.Address.Zip}";
+        var vendLine2Str = string.IsNullOrWhiteSpace(vendor.Address.Country + vendor.Address.State + vendor.Address.Zip) ? "" : $"{vendor.Address.City}, {vendor.Address.State} {vendor.Address.Zip}";
 
         var packinglist = new Models.PackingList() {
             Customer = new() {

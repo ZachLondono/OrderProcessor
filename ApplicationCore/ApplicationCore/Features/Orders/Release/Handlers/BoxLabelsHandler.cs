@@ -2,7 +2,6 @@
 using ApplicationCore.Features.Labels.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Infrastructure;
 using Microsoft.Extensions.Logging;
@@ -45,6 +44,11 @@ internal class BoxLabelsHandler : DomainListener<TriggerOrderReleaseNotification
                                     }
                                 })
                                 .ToList();
+
+        if (!dovetailBoxes.Any()) {
+            _uibus.Publish(new OrderReleaseInfoNotification("Not printing box labels, because there where no drawer boxes found"));
+            return;
+        }
 
         var labels = new List<Label>();
         foreach (var box in dovetailBoxes) {
