@@ -63,8 +63,6 @@ internal class PDFBuilder {
                         .Image(imgdata);
                 }
 
-
-
             });
 
         page.Content().Column(c => {
@@ -203,6 +201,7 @@ internal class PDFBuilder {
                     .BorderBottom(0.5f)
                     .Background(Colors.Grey.Lighten3)
                     .AlignCenter()
+                    .AlignMiddle()
                     .Text(key)
                     .WithStyle(headerStyle);
 
@@ -218,6 +217,7 @@ internal class PDFBuilder {
                     .BorderRight(0.5f)
                     .BorderBottom(0.5f)
                     .AlignCenter()
+                    .AlignMiddle()
                     .Text(value)
                     .WithStyle(cellStyle);
             }
