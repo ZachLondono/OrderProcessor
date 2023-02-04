@@ -131,7 +131,8 @@ internal class OrderDetailsPageViewModel : IOrderDetailsViewModel {
 
         var jobsByMachine = selectedJobs.GroupBy(job => job.MachineName).ToList();
 
-        List<string> productIds = new();
+        HashSet<string> productIds = new();
+        HashSet<string> partClasses = new();
         List<ReleasedJob> jobsToRelease = new();
 
         foreach (var selectedJobsGroup in jobsByMachine) {
@@ -154,11 +155,13 @@ internal class OrderDetailsPageViewModel : IOrderDetailsViewModel {
 
                 foreach (var part in existingJob.Parts) {
 
-                    if (productIds.Contains(part.ProductId)) {
-                        continue;
+                    if (!productIds.Contains(part.ProductId)) {
+                        productIds.Add(part.ProductId);
                     }
 
-                    productIds.Add(part.ProductId);
+                    if (!partClasses.Contains(part.PartClass)) {
+                        partClasses.Add(part.PartClass);
+                    }
 
                 }
 
@@ -217,6 +220,16 @@ internal class OrderDetailsPageViewModel : IOrderDetailsViewModel {
 
         Guid? workOrderId = null;
         if (productIds.Any()) {
+
+            string workOrderName = partClasses.Distinct()
+                                                .Select(partClass => partClass.ToLower() switch {
+                                                    "royal2" => "Cabinets",
+                                                    "royal_c" => "Closets",
+                                                    "mdfdoor" => "MDF Doors",
+                                                    _ => "CNC"
+                                                })
+                                                .Aggregate((l, r) => $"{l},{r}");
+
             var ids = productIds.Select(str => {
 
                 if (Guid.TryParse(str, out Guid id)) {
@@ -232,7 +245,7 @@ internal class OrderDetailsPageViewModel : IOrderDetailsViewModel {
 
             if (ids.Any()) {
 
-                workOrderId = await _createWorkOrder(order.Id, "CNC", ids);
+                workOrderId = await _createWorkOrder(order.Id, workOrderName, ids);
 
                 if (OrderTaskList is not null) {
                     await OrderTaskList.LoadWorkOrders();
