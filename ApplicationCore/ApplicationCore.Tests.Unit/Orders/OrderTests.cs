@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using FluentAssertions;
@@ -49,54 +48,6 @@ public class OrderTests {
         subtotal.Should().Be(boxes.Sum(b => b.UnitPrice * b.Qty) + items.Sum(i => i.Price));
         total.Should().Be(boxes.Sum(b => b.UnitPrice * b.Qty) + items.Sum(i => i.Price) + tax + shipping.Price);
         adjSubTotal.Should().Be(subtotal + priceAdjustment);
-
-    }
-
-    [Fact]
-    public void Release_ShouldUpdateStatusAndDate() {
-
-        // Arrange
-        var order = new OrderBuilder().Buid();
-
-        // Act
-        order.Release();
-
-        // Assert
-        //order.ReleaseDate.Should().Be(DateTime.Today);
-        order.ProductionDate.Should().Be(DateTime.Today.AddDays(7));
-        order.Status.Should().Be(Status.Released);
-
-    }
-
-    [Fact]
-    public void Release_ShouldUpdateStatusAndDate_WhenProductionDateIsGiven() {
-
-        // Arrange
-        var order = new OrderBuilder().Buid();
-        DateTime productionDate = DateTime.Today.AddDays(13);
-
-        // Act
-        order.Release(productionDate);
-
-        // Assert
-        //order.ReleaseDate.Should().Be(DateTime.Today);
-        order.ProductionDate.Should().Be(productionDate);
-        order.Status.Should().Be(Status.Released);
-
-    }
-
-    [Fact]
-    public void Complete_ShouldUpdateStatusAndDate() {
-
-        // Arrange
-        var order = new OrderBuilder().Buid();
-
-        // Act
-        order.Complete();
-
-        // Assert
-        //order.CompleteDate.Should().Be(DateTime.Today);
-        order.Status.Should().Be(Status.Completed);
 
     }
 

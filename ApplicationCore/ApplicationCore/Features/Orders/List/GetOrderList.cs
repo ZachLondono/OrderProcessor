@@ -22,7 +22,6 @@ public class GetOrderList {
 
             const string query = @"SELECT
                                     id,
-                                    status,
                                     name,
                                     number,
                                     orderdate,
@@ -30,6 +29,8 @@ public class GetOrderList {
                                     vendorid,
                                     0 as itemcount
                                 FROM orders;";
+
+            // TODO: get item count
 
             var items = await connection.QueryAsync<OrderListItem>(query);
 
