@@ -1,9 +1,5 @@
-﻿using ApplicationCore.Features.CNC.GCode.Domain;
-using ApplicationCore.Features.CNC.LabelDB.Contracts;
-using ApplicationCore.Features.CNC.LabelDB;
-using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
+﻿using ApplicationCore.Features.CNC.LabelDB.Contracts;
 using ApplicationCore.Features.CNC.ReleasePDF;
-using ApplicationCore.Features.CNC.Shared;
 using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.ProductPlanner.Contracts;
@@ -11,33 +7,19 @@ using ApplicationCore.Features.ProductPlanner;
 using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Details;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.WorkOrders;
-using ApplicationCore.Features.Shared.Domain;
 using ApplicationCore.Features.Shared;
 using ApplicationCore.Infrastructure;
-using Blazored.Modal.Services;
-using Blazored.Modal;
 
 namespace ApplicationCore.Pages.OrderDetails;
 
-internal class OrderDetailsPageViewModel : IOrderDetailsViewModel {
+internal class OrderDetailsPageViewModel : IOrderDetailsPageViewModel {
 
     public Action? OnPropertyChanged { get; set; }
 
-    public OrderTaskList? OrderTaskList { get; set; }
-
     private readonly IBus _bus;
-    private readonly NavigationService _navigationService;
-    private readonly IFilePicker _filePicker;
-    private readonly IModalService _modalService;
-    private readonly Manufacturing.CreateWorkOrder _createWorkOrder;
 
-    public OrderDetailsPageViewModel(IBus bus, NavigationService navigationService, IFilePicker filePicker, IModalService modalService, Manufacturing.CreateWorkOrder createWorkOrder) {
+    public OrderDetailsPageViewModel(IBus bus) {
         _bus = bus;
-        _navigationService = navigationService;
-        _filePicker = filePicker;
-        _modalService = modalService;
-        _createWorkOrder = createWorkOrder;
     }
 
     public async Task<string> GetCompanyName(Guid companyId) {
@@ -50,10 +32,6 @@ internal class OrderDetailsPageViewModel : IOrderDetailsViewModel {
 
         return name;
 
-    }
-
-    public async Task OpenCompanyPage(Guid companyId) {
-        await _navigationService.NavigateToCompanyPage(companyId);
     }
 
     public async Task<ReleaseProfile?> GetVendorReleaseProfile(Guid vendorId) {
@@ -103,187 +81,15 @@ internal class OrderDetailsPageViewModel : IOrderDetailsViewModel {
 
     }
 
-    public async Task GenerateCNCReleasePDF(Order order) {
+    public async Task<GenerateReleaseForSelectedJobs.ReleaseGenerationResult?> GenerateCNCReleasePDF(Order order, string selectedPath, IEnumerable<AvailableJob> selectedJobs) {
 
-        string selectedPath = "";
+        var response = await _bus.Send(new GenerateReleaseForSelectedJobs.Command(order.Id, "Title", "Customer Name", "Vendor Name", DateTime.Now, selectedPath, selectedJobs));
 
-        bool wasPicked = await _filePicker.PickFileAsync("Select label database", "Y:\\CADCode\\Label Data", new("CADCode Label File", ".mdb"), (path) => {
-            selectedPath = path;
-        });
+        GenerateReleaseForSelectedJobs.ReleaseGenerationResult? result = null;
 
-        if (!wasPicked || selectedPath == "") {
-            return;
-        }
+        response.OnSuccess(r => result = r);
 
-        var modal = _modalService.Show<ListAvailableJobsDialog>("Select Job", new ModalParameters() {
-                { "LabelDatabaseFilePath", selectedPath }
-        });
-        var modalResult = await modal.Result;
-
-        if (modalResult.Cancelled) {
-            return;
-        }
-
-        if (modalResult.Data is not IEnumerable<AvailableJob> selectedJobs) {
-            _ = await _modalService.OpenInformationDialog("Error", "Unexpected Data Returned", InformationDialog.MessageType.Warning);
-            return;
-        }
-
-        var jobsByMachine = selectedJobs.GroupBy(job => job.MachineName).ToList();
-
-        HashSet<string> productIds = new();
-        HashSet<string> partClasses = new();
-        List<ReleasedJob> jobsToRelease = new();
-
-        foreach (var selectedJobsGroup in jobsByMachine) {
-
-            List<ExistingJob> existingJobs = new();
-
-            foreach (var selectedJob in selectedJobsGroup) {
-
-                var loadJobResult = await _bus.Send(new LoadJobFromLabelDB.Command(selectedPath, selectedJob.Name));
-
-                ExistingJob? existingJob = null;
-
-                loadJobResult.OnSuccess(job => existingJob = job);
-
-                if (existingJob is null) {
-                    continue;
-                }
-
-                existingJobs.Add(existingJob);
-
-                foreach (var part in existingJob.Parts) {
-
-                    if (!productIds.Contains(part.ProductId)) {
-                        productIds.Add(part.ProductId);
-                    }
-
-                    if (!partClasses.Contains(part.PartClass)) {
-                        partClasses.Add(part.PartClass);
-                    }
-
-                }
-
-            }
-
-            var nestedPartByProgram = existingJobs.SelectMany(existingJob => existingJob.Parts
-                                                                                        .GroupBy(part => part.PatternNumber)
-                                                                                        .ToDictionary(group => existingJob.Patterns.Skip(group.Key - 1).FirstOrDefault()?.Name ?? "", group => group.ToList()))
-                                                    .GroupBy(kvp => kvp.Key, kvp => kvp.Value)
-                                                    .ToDictionary(g => g.Key, g => g.Last());
-
-
-            var programs = existingJobs.SelectMany(existingJob => existingJob.Patterns.Select(pattern => {
-                var parts = GetParts(nestedPartByProgram, pattern.Name);
-                return new ReleasedProgram() {
-                    Name = pattern.Name,
-                    ImagePath = $"Y:\\CADCode\\pix\\{pattern.ImagePath}.wmf",
-                    HasFace6 = parts.Any(p => p.HasFace6),
-                    Material = new ProgramMaterial() {
-                        Name = pattern.MaterialName,
-                        Width = pattern.MaterialWidth,
-                        Length = pattern.MaterialLength,
-                        Thickness = pattern.MaterialThickness,
-                        IsGrained = existingJob.Inventory
-                                            .Where(inv => inv.Name == pattern.MaterialName)
-                                            .Select(inv => inv.Grained)
-                                            .FirstOrDefault()?.Equals("1") ?? false,
-                        Yield = 0 // TODO: calculate yield
-                    },
-                    Parts = parts
-                };
-            }));
-
-            var result = await _bus.Send(new GetCompanyNameById.Query(order.VendorId));
-            string vendorName = "";
-            result.OnSuccess(name => vendorName = name ?? "");
-
-            ReleasedJob releasedJob = new() {
-                JobName = $"{order.Number} {order.Name}",
-                CustomerName = order.Customer.Name,
-                VendorName = vendorName,
-                OrderDate = order.OrderDate,
-                ReleaseDate = DateTime.Now,
-                Releases = new List<MachineRelease>() {
-                    new() {
-                        MachineName = selectedJobsGroup.Key,
-                        MachineTableOrientation = (selectedJobsGroup.Key == "Omnitech" ? TableOrientation.Rotated : TableOrientation.Standard),
-                        Programs = programs
-                    }
-                }
-            };
-
-            jobsToRelease.Add(releasedJob);
-
-        }
-
-        Guid? workOrderId = null;
-        if (productIds.Any()) {
-
-            string workOrderName = partClasses.Distinct()
-                                                .Select(partClass => partClass.ToLower() switch {
-                                                    "royal2" => "Cabinets",
-                                                    "royal_c" => "Closets",
-                                                    "mdfdoor" => "MDF Doors",
-                                                    _ => "CNC"
-                                                })
-                                                .Aggregate((l, r) => $"{l},{r}");
-
-            var ids = productIds.Select(str => {
-
-                if (Guid.TryParse(str, out Guid id)) {
-                    return id;
-                }
-
-                return Guid.Empty;
-
-            })
-            .Where(id => id != Guid.Empty && order.Products.Any(p => p.Id == id))
-            .Distinct()
-            .ToList();
-
-            if (ids.Any()) {
-
-                workOrderId = await _createWorkOrder(order.Id, workOrderName, ids);
-
-                if (OrderTaskList is not null) {
-                    await OrderTaskList.LoadWorkOrders();
-                }
-
-            }
-
-        }
-
-        foreach (var job in jobsToRelease) {
-
-            job.WorkOrderId = workOrderId;
-
-            await _bus.Send(new GenerateCNCReleasePDF.Command(job, @"C:\Users\Zachary Londono\Desktop\ExampleConfiguration\cutlists"));
-
-        }
-
-        OnPropertyChanged!.Invoke();
-
-    }
-
-    private static List<NestedPart> GetParts(IDictionary<string, List<ManufacturedPart>> nestPartsByPatternName, string patternName) {
-
-        if (nestPartsByPatternName.TryGetValue(patternName, out var parts)) {
-
-            return parts.Select(part => new NestedPart() {
-                Name = part.Name,
-                Width = Dimension.FromMillimeters(part.Width),
-                Length = Dimension.FromMillimeters(part.Length),
-                Description = part.Description,
-                Center = new Point(part.InsertX + part.Length / 2, part.InsertY + part.Width / 2),
-                ProductNumber = part.ProductNumber,
-                HasFace6 = part.HasFace6 == 0
-            }).ToList();
-
-        }
-
-        return new();
+        return result;
 
     }
 

@@ -1,4 +1,6 @@
-﻿@using ApplicationCore.Features.Companies.Domain.ValueObjects
+﻿@using ApplicationCore.Features.CNC.LabelDB;
+@using ApplicationCore.Features.CNC.LabelDB.Contracts;
+@using ApplicationCore.Features.Companies.Domain.ValueObjects
 @using ApplicationCore.Features.Orders.Details;
 @using ApplicationCore.Features.Orders.Shared.Domain
 @using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
@@ -19,8 +21,11 @@
 @using static ApplicationCore.Features.Orders.Details.CabinetProductTable;
 @inherits UIListenerComponent<WorkOrdersUpdatNotification>
 @inject IBus Bus
+@inject IUIBus UIBus
 @inject OrderState OrderState
 @inject Manufacturing.IsProductComplete IsProductComplete
+@inject IFilePicker FilePicker
+@inject NavigationService NavigationService
 
 @if (OrderState.Order is null) {
     <span>No order selected</span>
@@ -261,7 +266,7 @@
     public IModalService Modal { get; set; } = default!;
 
     [Parameter]
-    public IOrderDetailsViewModel? ViewModel { get; set; }
+    public IOrderDetailsPageViewModel? ViewModel { get; set; }
 
     public List<CabinetRowModel> Cabinets { get; set; } = new();
 
@@ -325,8 +330,7 @@
     }
 
     public async Task OpenCompanyPage(Guid companyId) {
-        if (ViewModel is null) return;
-        await ViewModel.OpenCompanyPage(companyId);
+        await NavigationService.NavigateToCompanyPage(companyId);
     }
 
     private async Task ReleaseOrder() {
@@ -374,9 +378,43 @@
 
         if (OrderState.Order is null || ViewModel is null) return;
 
-        await ViewModel.GenerateCNCReleasePDF(OrderState.Order);
+        string selectedPath = "";
+        bool wasPicked = await FilePicker.PickFileAsync("Select label database", "Y:\\CADCode\\Label Data", new("CADCode Label File", ".mdb"), (path) => {
+            selectedPath = path;
+        });
+        if (!wasPicked || selectedPath == "") {
+            return;
+        }
 
-        await Modal.OpenInformationDialog("Completed", "CNC PDF Generated", InformationDialog.MessageType.Information);
+        var modal = Modal.Show<ListAvailableJobsDialog>("Select Job", new ModalParameters() {
+                { "LabelDatabaseFilePath", selectedPath }
+        });
+        var modalResult = await modal.Result;
+
+        if (modalResult.Cancelled) {
+            return;
+        }
+
+        if (modalResult.Data is not IEnumerable<AvailableJob> selectedJobs) {
+            _ = await Modal.OpenInformationDialog("Error", "Unexpected Data Returned", InformationDialog.MessageType.Warning);
+            return;
+        }
+
+        var result = await ViewModel.GenerateCNCReleasePDF(OrderState.Order, selectedPath, selectedJobs);
+
+        if (result is null) {
+
+            await Modal.OpenInformationDialog("Errror", "No pdfs where generated", InformationDialog.MessageType.Error);
+
+        } else {
+
+            await Modal.OpenInformationDialog("Completed", "CNC PDF Generated", InformationDialog.MessageType.Information);
+
+            if (result.WorkOrderId is not null) {
+                UIBus.Publish(new WorkOrdersUpdatNotification());
+            }
+
+        }
 
     }
 
@@ -384,7 +422,7 @@
         _useInches = !_useInches;
     }
 
-    public override void Handle(WorkOrdersUpdatNotification notification) {
+    public override void Handle(WorkOrdersUpdatNotification notification) {  
 
         InvokeAsync(UpdateProductStatuses);
 

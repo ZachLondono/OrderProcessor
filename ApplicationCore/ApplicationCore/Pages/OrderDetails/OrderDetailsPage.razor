@@ -2,6 +2,7 @@
 @using ApplicationCore.Features.Orders.Details
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Features.WorkOrders;
+@using ApplicationCore.Infrastructure;
 @inject OrderDetailsPageViewModel DataContext
 @inject OrderState OrderState
 
@@ -12,7 +13,7 @@
     </section>
 
     <section id="workOrders" class="mt-12">
-        <OrderTaskList OrderId="@OrderState.Order?.Id" @ref="DataContext.OrderTaskList" />
+        <OrderTaskList OrderId="@OrderState.Order?.Id" />
     </section>
 
 </div>
