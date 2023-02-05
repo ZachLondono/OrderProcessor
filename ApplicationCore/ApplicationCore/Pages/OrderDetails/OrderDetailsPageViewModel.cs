@@ -83,7 +83,7 @@ internal class OrderDetailsPageViewModel : IOrderDetailsPageViewModel {
 
     public async Task<GenerateReleaseForSelectedJobs.ReleaseGenerationResult?> GenerateCNCReleasePDF(Order order, string selectedPath, IEnumerable<AvailableJob> selectedJobs) {
 
-        var response = await _bus.Send(new GenerateReleaseForSelectedJobs.Command(order.Id, "Title", "Customer Name", "Vendor Name", DateTime.Now, selectedPath, selectedJobs));
+        var response = await Task.Run(() => _bus.Send(new GenerateReleaseForSelectedJobs.Command(order.Id, "Title", "Customer Name", "Vendor Name", DateTime.Now, selectedPath, selectedJobs)));
 
         GenerateReleaseForSelectedJobs.ReleaseGenerationResult? result = null;
 
