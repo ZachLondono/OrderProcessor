@@ -1,5 +1,6 @@
 ﻿@using ApplicationCore.Features.CNC.LabelDB;
 @using ApplicationCore.Features.CNC.LabelDB.Contracts;
+@using ApplicationCore.Features.CNC.ReleasePDF;
 @using ApplicationCore.Features.Companies.Domain.ValueObjects
 @using ApplicationCore.Features.Orders.Details;
 @using ApplicationCore.Features.Orders.Shared.Domain
@@ -378,10 +379,24 @@
 
         if (OrderState.Order is null || ViewModel is null) return;
 
+        var options = new ModalOptions() {
+            HideHeader = true,
+            HideCloseButton = true,
+            DisableBackgroundCancel = true
+        };
+        var waitingDialog = Modal.Show<InformationDialog>("", options: options, parameters: new ModalParameters {
+            { "Type", InformationDialog.MessageType.Information },
+            { "Title", "Waiting..." },
+            { "Details", "Select label file." }
+        });
+
         string selectedPath = "";
         bool wasPicked = await FilePicker.PickFileAsync("Select label database", "Y:\\CADCode\\Label Data", new("CADCode Label File", ".mdb"), (path) => {
             selectedPath = path;
         });
+
+        waitingDialog.Close();
+
         if (!wasPicked || selectedPath == "") {
             return;
         }
@@ -400,7 +415,15 @@
             return;
         }
 
-        var result = await ViewModel.GenerateCNCReleasePDF(OrderState.Order, selectedPath, selectedJobs);
+        waitingDialog = Modal.Show<InformationDialog>("", options: options, parameters: new ModalParameters {
+            { "Type", InformationDialog.MessageType.Information },
+            { "Title", "Loading..." },
+            { "Details", "Generating files" }
+        });
+
+        var result = await ViewModel.GenerateCNCReleasePDF(OrderState.Order, selectedPath, selectedJobs).ConfigureAwait(true);
+
+        waitingDialog.Close();
 
         if (result is null) {
 
