@@ -8,12 +8,12 @@ public abstract class BaseListenerComponent : ComponentBase, IUIListener, IDispo
     protected IUIBus? UIBus { get; set; }
 
     protected override void OnInitialized() {
-        if (UIBus is not null) UIBus.Register(this);
+        UIBus?.Register(this);
         base.OnInitialized();
     }
 
     public void Dispose() {
-        if (UIBus is not null) UIBus.UnRegister(this);
+        UIBus?.UnRegister(this);
         GC.SuppressFinalize(this);
     }
 }
