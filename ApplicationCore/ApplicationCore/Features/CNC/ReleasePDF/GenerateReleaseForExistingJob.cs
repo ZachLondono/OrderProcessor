@@ -79,7 +79,7 @@ public class GenerateReleaseForSelectedJobs {
 
                 job.WorkOrderId = workOrderId;
 
-                IEnumerable<string>? filePaths = await Task.Run(() =>  _pdfService.GeneratePDFs(job, @"C:\Users\Zachary Londono\Desktop\ExampleConfiguration\cutlists"));
+                IEnumerable<string>? filePaths = _pdfService.GeneratePDFs(job, @"C:\Users\Zachary Londono\Desktop\ExampleConfiguration\cutlists");
 
                 if (filePaths is null) continue;
 
