@@ -10,6 +10,7 @@ internal class WallPieCutCornerCabinetBuilder : CabinetBuilder<WallPieCutCornerC
     public Dimension RightDepth { get; private set; }
     public int AdjustableShelves { get; private set; }
     public HingeSide HingeSide { get; private set; }
+    public Dimension ExtendDown { get; private set; }
 
     public WallPieCutCornerCabinetBuilder() {
         RightWidth = Dimension.Zero;
@@ -38,8 +39,13 @@ internal class WallPieCutCornerCabinetBuilder : CabinetBuilder<WallPieCutCornerC
         return this;
     }
 
+    public WallPieCutCornerCabinetBuilder WithExtendedDoor(Dimension extendDown) {
+        ExtendDown = extendDown;
+        return this;
+    }
+
     public override WallPieCutCornerCabinet Build() {
-        var cabinet = WallPieCutCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, RightWidth, RightDepth, AdjustableShelves, HingeSide);
+        var cabinet = WallPieCutCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, RightWidth, RightDepth, AdjustableShelves, HingeSide, ExtendDown);
         return cabinet;
     }
 

@@ -12,6 +12,7 @@ internal class WallPieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
     public Dimension RightDepth { get; }
     public int AdjustableShelves { get; }
     public HingeSide HingeSide { get; }
+    public Dimension ExtendedDoor { get; }
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),
@@ -25,7 +26,7 @@ internal class WallPieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        Dimension rightWidth, Dimension rightDepth, int adjustableShelves, HingeSide hingeSide)
+                        Dimension rightWidth, Dimension rightDepth, int adjustableShelves, HingeSide hingeSide, Dimension extendedDoor)
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide) {
 
         if (leftSide.Type == CabinetSideType.AppliedPanel || rightSide.Type == CabinetSideType.AppliedPanel)
@@ -35,19 +36,20 @@ internal class WallPieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
         RightDepth = rightDepth;
         AdjustableShelves = adjustableShelves;
         HingeSide = hingeSide;
+        ExtendedDoor = extendedDoor;
     }
 
     public static WallPieCutCornerCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide,
-                        Dimension rightWidth, Dimension rightDepth, int adjustableShelves, HingeSide hingeSide)
-    => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, rightWidth, rightDepth, adjustableShelves, hingeSide);
+                        Dimension rightWidth, Dimension rightDepth, int adjustableShelves, HingeSide hingeSide, Dimension extendedDoor)
+    => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, rightWidth, rightDepth, adjustableShelves, hingeSide, extendedDoor);
 
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Id, Room, "WCPC", ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), new(), new());
+        yield return new PPProduct(Id, Room, "WCPC", ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), new());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
@@ -95,6 +97,18 @@ internal class WallPieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
         }
 
         return parameters;
+    }
+
+    private Dictionary<string, string> GetParameterOverrides() {
+
+        var parameters = new Dictionary<string, string>();
+
+        if (ExtendedDoor != Dimension.Zero) {
+            parameters.Add("ExtendDoorD", ExtendedDoor.AsMillimeters().ToString());
+        }
+
+        return parameters;
+
     }
 
     private string GetHingeSideOption() => HingeSide switch {

@@ -23,6 +23,10 @@ public class BlindWallCabinetModel : CabinetModelBase {
     [XmlElement("adjShelfQty")]
     public int AdjShelfQty { get; set; }
 
+    [XmlElement("extendDoorDown")]
+    public double ExtendDoorDown { get; set; }
+
+
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
         bool hingeLeft = (HingeSide == "Left");
@@ -39,6 +43,7 @@ public class BlindWallCabinetModel : CabinetModelBase {
                     .WithAdjustableShelves(AdjShelfQty)
                     .WithBlindSide(BlindSide == "Left" ? Shared.Domain.Enums.BlindSide.Left : Shared.Domain.Enums.BlindSide.Right)
                     .WithBlindWidth(Dimension.FromMillimeters(BlindWidth))
+                    .WithExtendedDoor(Dimension.FromMillimeters(ExtendDoorDown))
                     .Build();
 
     }

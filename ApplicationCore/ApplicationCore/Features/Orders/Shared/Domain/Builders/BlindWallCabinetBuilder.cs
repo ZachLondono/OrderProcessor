@@ -11,6 +11,7 @@ internal class BlindWallCabinetBuilder : CabinetBuilder<BlindWallCabinet> {
     public int AdjustableShelves { get; private set; }
     public BlindSide BlindSide { get; private set; }
     public Dimension BlindWidth { get; private set; }
+    public Dimension ExtendDown { get; private set; }
 
     public BlindWallCabinetBuilder() {
         Doors = new();
@@ -39,8 +40,13 @@ internal class BlindWallCabinetBuilder : CabinetBuilder<BlindWallCabinet> {
         return this;
     }
 
+    public BlindWallCabinetBuilder WithExtendedDoor(Dimension extendDown) {
+        ExtendDown = extendDown;
+        return this;
+    }
+
     public override BlindWallCabinet Build() {
-        var cabinet = BlindWallCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, Doors, BlindSide, BlindWidth, AdjustableShelves);
+        var cabinet = BlindWallCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, Doors, BlindSide, BlindWidth, AdjustableShelves, ExtendDown);
         return cabinet;
     }
 

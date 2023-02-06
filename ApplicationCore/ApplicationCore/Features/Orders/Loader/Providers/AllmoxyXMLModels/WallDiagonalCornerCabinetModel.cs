@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using System.Xml.Serialization;
 
@@ -23,6 +22,9 @@ public class WallDiagonalCornerCabinetModel : CabinetModelBase {
     [XmlElement("adjShelfQty")]
     public int AdjShelfQty { get; set; }
 
+    [XmlElement("extendDoorDown")]
+    public double ExtendDoorDown { get; set; }
+
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
         var builder = builderFactory.CreateWallDiagonalCornerCabinetBuilder();
@@ -33,6 +35,7 @@ public class WallDiagonalCornerCabinetModel : CabinetModelBase {
                     .WithAdjustableShelves(AdjShelfQty)
                     .WithHingeSide((HingeSide == "Left") ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right)
                     .WithDoorQty(DoorQty)
+                    .WithExtendedDoor(Dimension.FromMillimeters(ExtendDoorDown))
                     .Build();
     }
 

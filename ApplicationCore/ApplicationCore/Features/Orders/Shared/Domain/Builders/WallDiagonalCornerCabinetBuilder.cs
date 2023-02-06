@@ -11,6 +11,7 @@ internal class WallDiagonalCornerCabinetBuilder : CabinetBuilder<WallDiagonalCor
     public HingeSide HingeSide { get; private set; }
     public int DoorQty { get; private set; }
     public int AdjustableShelves { get; private set; }
+    public Dimension ExtendDown { get; private set; }
 
     public WallDiagonalCornerCabinetBuilder() {
         RightWidth = Dimension.Zero;
@@ -45,8 +46,13 @@ internal class WallDiagonalCornerCabinetBuilder : CabinetBuilder<WallDiagonalCor
         return this;
     }
 
+    public WallDiagonalCornerCabinetBuilder WithExtendedDoor(Dimension extendDown) {
+        ExtendDown = extendDown;
+        return this;
+    }
+
     public override WallDiagonalCornerCabinet Build() {
-        var cabinet = WallDiagonalCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, RightWidth, RightDepth, AdjustableShelves, HingeSide, DoorQty);
+        var cabinet = WallDiagonalCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, RightWidth, RightDepth, AdjustableShelves, HingeSide, DoorQty, ExtendDown);
         return cabinet;
     }
 
