@@ -62,7 +62,7 @@
 
     protected override async Task OnParametersSetAsync() {
 
-        var response = await Bus.Send(new ListAvailableJobsInLabelDB.Command(LabelDatabaseFilePath));
+        var response = await Task.Run(() => Bus.Send(new ListAvailableJobsInLabelDB.Command(LabelDatabaseFilePath)));
 
         response.Match(
             jobs => {
