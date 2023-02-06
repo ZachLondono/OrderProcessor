@@ -109,7 +109,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         var cutlistItems = dovetailBoxes
                                 .SelectMany(b => {
 
-                                    var items = new List<CutListService.PartRow>();
+                                    var items = new List<PartRow>();
                                     foreach (var part in b.GetParts(construction)) {
 
                                         items.Add(new() {
@@ -142,7 +142,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                 .Select(g => {
                                     var qty = g.Sum(b => b.Qty);
                                     string cabNumbers = string.Join(',', g.Select(p => p.ProductNumber).Distinct());
-                                    return new CutListService.PartRow() {
+                                    return new PartRow() {
                                         CabNumbers = cabNumbers,
                                         Line = lineNum++,
                                         Name = DrawerBoxPartType.Unknown.ToString(),
@@ -165,7 +165,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         int lineNum = 1;
         var cutlistItems = dovetailBoxes
                                 .SelectMany(b => {
-                                    var items = new List<CutListService.PartRow>();
+                                    var items = new List<PartRow>();
                                     foreach (var part in b.GetParts(construction).Where(p => p.Type == DrawerBoxPartType.Bottom)) {
                                         items.Add(new() {
                                             CabNumbers = part.ProductNumber.ToString(),
@@ -188,7 +188,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
     }
 
-    private static CutList CreateCutList(Order order, IEnumerable<DovetailDrawerBox> dovetailBoxes, string customerName, string vendorName, List<CutListService.PartRow> parts, string name) {
+    private static CutList CreateCutList(Order order, IEnumerable<DovetailDrawerBox> dovetailBoxes, string customerName, string vendorName, List<PartRow> parts, string name) {
 
         // TODO: if a drawerbox has a different option then the most common option than it should be shown in a part comment
 
@@ -224,7 +224,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
 
         var cutlist = new CutList() {
             Name = name,
-            Header = new CutListService.Header() {
+            Header = new Header() {
                 OrderNumber = order.Number,
                 JobName = order.Name,
                 BoxCount = order.Products.Sum(b => b.Qty),
