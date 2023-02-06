@@ -68,7 +68,7 @@ internal class SinkCabinetBuilder : CabinetBuilder<SinkCabinet> {
     }
 
     public override SinkCabinet Build() {
-        var cabinet = SinkCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, ToeType, HingeSide, DoorQty, FalseDrawerQty, DrawerFaceHeight, AdjustableShelves, ShelfDepth, RollOutBoxes);
+        var cabinet = SinkCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, Comment, ToeType, HingeSide, DoorQty, FalseDrawerQty, DrawerFaceHeight, AdjustableShelves, ShelfDepth, RollOutBoxes);
         return cabinet;
     }
 

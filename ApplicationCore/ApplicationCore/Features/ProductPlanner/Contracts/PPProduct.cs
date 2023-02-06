@@ -10,13 +10,14 @@ public class PPProduct {
     public string MaterialType { get; }
     public string DoorType { get; }
     public string HardwareType { get; }
+    public string Comment { get; }
     public Dictionary<string, PPMaterial> FinishMaterials { get; }
     public Dictionary<string, PPMaterial> EBMaterials { get; }
     public Dictionary<string, string> Parameters { get; }
     public Dictionary<string, string> OverrideParameters { get; }
     public Dictionary<string, string> ManualOverrideParameters { get; }
 
-    public PPProduct(Guid productId, string room, string name, int sequenceNum, string catalog, string materialType, string doorType, string hardwareType, Dictionary<string, PPMaterial> finishMaterials, Dictionary<string, PPMaterial> ebMaterials, Dictionary<string, string> parameters, Dictionary<string, string> overrideParameters, Dictionary<string, string> manualOverrideParameters) {
+    public PPProduct(Guid productId, string room, string name, int sequenceNum, string catalog, string materialType, string doorType, string hardwareType, string comment, Dictionary<string, PPMaterial> finishMaterials, Dictionary<string, PPMaterial> ebMaterials, Dictionary<string, string> parameters, Dictionary<string, string> overrideParameters, Dictionary<string, string> manualOverrideParameters) {
         ProductId = productId;
         Room = room;
         Name = name;
@@ -24,6 +25,7 @@ public class PPProduct {
         Catalog = catalog;
         MaterialType = materialType;
         DoorType = doorType;
+        Comment = comment;
         HardwareType = hardwareType;
         FinishMaterials = finishMaterials;
         EBMaterials = ebMaterials;

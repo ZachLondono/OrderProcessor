@@ -26,9 +26,9 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
     public WallDiagonalCornerCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide,
+                        CabinetSide rightSide, CabinetSide leftSide, string comment,
                         Dimension rightWidth, Dimension rightDepth, int adjShelfQty, HingeSide hingeSide, int doorQty, Dimension extendedDoor)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfOptions, edgeBandingColor, rightSide, leftSide) {
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfOptions, edgeBandingColor, rightSide, leftSide, comment) {
 
         if (leftSide.Type == CabinetSideType.AppliedPanel || rightSide.Type == CabinetSideType.AppliedPanel)
             throw new InvalidOperationException("Wall cabinet cannot have applied panel sides");
@@ -47,9 +47,9 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
     public static WallDiagonalCornerCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide,
+                        CabinetSide rightSide, CabinetSide leftSide, string comment,
                         Dimension rightWidth, Dimension rightDepth, int adjShelfQty, HingeSide hingeSide, int doorQty, Dimension extendedDoor)
-                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfOptions, edgeBandingColor, rightSide, leftSide, rightWidth, rightDepth, adjShelfQty, hingeSide, doorQty, extendedDoor);
+                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfOptions, edgeBandingColor, rightSide, leftSide, comment, rightWidth, rightDepth, adjShelfQty, hingeSide, doorQty, extendedDoor);
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
@@ -60,7 +60,7 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
             _ => "WC1D-M"
         };
 
-        yield return new PPProduct(Id, Room, sku, ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), new());
+        yield return new PPProduct(Id, Room, sku, ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), new());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {

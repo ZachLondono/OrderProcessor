@@ -207,6 +207,6 @@ public class PPJobConverterTests {
     }
 
     private static PPProduct CreateProduct(string room = "", string name = "", string catalog = "", string materialType = "", string doorType = "", string hardwareType = "", Dictionary<string, string>? overrideParameters = null)
-        => new(Guid.NewGuid(), room, name, 1, catalog, materialType, doorType, hardwareType, new(), new(), new(), overrideParameters ?? new(), new());
+        => new(Guid.NewGuid(), room, name, 1, catalog, materialType, doorType, hardwareType, "", new(), new(), new(), overrideParameters ?? new(), new());
 
 }
