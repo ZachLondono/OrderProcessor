@@ -81,7 +81,9 @@
     private bool _releaseDone = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender) {
-        if (firstRender) await OrderState.Release(ReleaseProfile);
+        if (firstRender) {
+            await Task.Run(() => OrderState.Release(ReleaseProfile));
+        }
     }
 
     public void Handle(OrderReleaseInfoNotification notification) {
