@@ -379,16 +379,7 @@
 
         if (OrderState.Order is null || ViewModel is null) return;
 
-        var options = new ModalOptions() {
-            HideHeader = true,
-            HideCloseButton = true,
-            DisableBackgroundCancel = true
-        };
-        var waitingDialog = Modal.Show<InformationDialog>("", options: options, parameters: new ModalParameters {
-            { "Type", InformationDialog.MessageType.Information },
-            { "Title", "Waiting..." },
-            { "Details", "Select label file." }
-        });
+        var waitingDialog = ShowLoadingDialog("Waiting", "Select Label File.");
 
         string selectedPath = "";
         bool wasPicked = await FilePicker.PickFileAsync("Select label database", "Y:\\CADCode\\Label Data", new("CADCode Label File", ".mdb"), (path) => {
@@ -401,11 +392,8 @@
             return;
         }
 
-        var modal = Modal.Show<ListAvailableJobsDialog>("Select Job", new ModalParameters() {
-                { "LabelDatabaseFilePath", selectedPath }
-        });
+        var modal = Modal.Show<ListAvailableJobsDialog>("Select Job", new ModalParameters() { { "LabelDatabaseFilePath", selectedPath } });
         var modalResult = await modal.Result;
-
         if (modalResult.Cancelled) {
             return;
         }
@@ -415,15 +403,9 @@
             return;
         }
 
-        waitingDialog = Modal.Show<InformationDialog>("", options: options, parameters: new ModalParameters {
-            { "Type", InformationDialog.MessageType.Information },
-            { "Title", "Loading..." },
-            { "Details", "Generating files" }
-        });
-
-        var result = await ViewModel.GenerateCNCReleasePDF(OrderState.Order, selectedPath, selectedJobs).ConfigureAwait(true);
-
-        waitingDialog.Close();
+        var loadingDialog = ShowLoadingDialog("Loading", "Generating files");
+        var result = await Task.Run(() => ViewModel.GenerateCNCReleasePDF(OrderState.Order, selectedPath, selectedJobs)).ConfigureAwait(true);
+        loadingDialog.Close();
 
         if (result is null) {
 
@@ -438,6 +420,22 @@
             }
 
         }
+
+    }
+
+    private IModalReference ShowLoadingDialog(string title, string message) {
+        
+        var options = new ModalOptions() {
+            HideHeader = true,
+            HideCloseButton = true,
+            DisableBackgroundCancel = true
+        };
+        
+        return Modal.Show<InformationDialog>("", options: options, parameters: new ModalParameters {
+            { "Type", InformationDialog.MessageType.Information },
+            { "Title", title},
+            { "Details", message }
+        });
 
     }
 
