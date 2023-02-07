@@ -46,9 +46,9 @@ public abstract class AbstractCompanyQueryHandler<TQuery> : QueryHandler<TQuery,
     private async Task<ReleaseProfile> GetReleaseProfile(IDbConnection connection, Guid companyId) {
 
         const string query = @"SELECT
-                                    generatecutlist, cutlistoutputdirectory, printcutlist, cutlisttemplatepath,
-                                    generatepackinglist, packinglistoutputdirectory, printpackinglist, packinglisttemplatepath,
-                                    generateinvoice, invoiceoutputdirectory, printinvoice, invoicetemplatepath,
+                                    generatecutlist, cutlistoutputdirectory, printcutlist,
+                                    generatepackinglist, packinglistoutputdirectory, printpackinglist,
+                                    generateinvoice, invoiceoutputdirectory, printinvoice,
                                     generatebol, boloutputdirectory, printbol, boltemplatefilepath,
                                     printboxlabels, boxlabelstemplatefilepath,
                                     printorderlabel, orderlabeltemplatefilepath,
