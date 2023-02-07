@@ -64,7 +64,6 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         CutList optimizedCutList = CreateOptimizedCutList(order, dovetailBoxes, customerName, vendorName, _construction);
         CutList bottomCutList = CreateBottomCutList(order, dovetailBoxes, customerName, vendorName, _construction);
 
-        var config = new ClosedXMLTemplateConfiguration() { TemplateFilePath = notification.ReleaseProfile.CutListTemplatePath };
         string outputDir = notification.ReleaseProfile.CutListOutputDirectory;
         bool doPrint = notification.ReleaseProfile.PrintCutList;
         string job = $"{order.Number} - {order.Name}";
