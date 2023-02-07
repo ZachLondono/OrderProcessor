@@ -80,7 +80,7 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
                                 .Select(b => new DrawerBoxItem() {
                                     Line = b.ProductNumber,
                                     Qty = b.Qty,
-                                    Description = "Dovetail Drawer Box",
+                                    Description = b.Description,
                                     Height = b.Height.AsInchFraction().ToString(),
                                     Width = b.Width.AsInchFraction().ToString(),
                                     Depth = b.Depth.AsInchFraction().ToString()
@@ -92,7 +92,7 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
                         .Select(b => new CabinetItem() {
                             Line = b.ProductNumber,
                             Qty = b.Qty,
-                            Description = "Cabinet",
+                            Description = b.Description,
                             Height = b.Height.AsInchFraction().ToString(),
                             Width = b.Width.AsInchFraction().ToString(),
                             Depth = b.Depth.AsInchFraction().ToString()
