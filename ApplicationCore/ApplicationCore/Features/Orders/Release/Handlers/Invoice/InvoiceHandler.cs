@@ -28,7 +28,7 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
 
     public override async Task Handle(TriggerOrderReleaseNotification notification) {
 
-        if (!notification.ReleaseProfile.GenerateInvoice) {
+        /*if (!notification.ReleaseProfile.GenerateInvoice) {
             _uibus.Publish(new OrderReleaseInfoNotification("Not creating invoice, because option was disabled"));
             return;
         }
@@ -133,7 +133,7 @@ internal class InvoiceHandler : DomainListener<TriggerOrderReleaseNotification> 
         }
 
         _logger.LogInformation("Invoice created: {FilePath}", invResponse.FilePath);
-        _uibus.Publish(new OrderReleaseSuccessNotification($"Invoice created {invResponse.FilePath}"));
+        _uibus.Publish(new OrderReleaseSuccessNotification($"Invoice created {invResponse.FilePath}"));*/
 
     }
 

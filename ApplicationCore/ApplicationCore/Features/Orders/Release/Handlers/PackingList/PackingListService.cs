@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Release.Handlers.PackingList.Models;
 using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.PackingList;
 
@@ -143,7 +142,7 @@ internal class PackingListService {
 
     public static int AddDrawerBoxTable(IXLWorksheet worksheet, int row, IEnumerable<DrawerBoxItem> drawerBoxes) {
 
-        AddProductTitile(worksheet, row, drawerBoxes.Count(), "Drawer Box(es) in order");
+        AddProductTitile(worksheet, row, drawerBoxes.Sum(d => d.Qty), "Drawer Box(es) in order");
 
         worksheet.Row(++row).Height = 7;
 
@@ -180,7 +179,7 @@ internal class PackingListService {
 
     public static int AddDoorTable(IXLWorksheet worksheet, int row, IEnumerable<DoorItem> doors) {
         
-        AddProductTitile(worksheet, row, doors.Count(), "Door(s) in order");
+        AddProductTitile(worksheet, row, doors.Sum(d => d.Qty), "Door(s) in order");
         
         worksheet.Row(++row).Height = 7;
 
@@ -215,7 +214,7 @@ internal class PackingListService {
 
     public static int AddCabinetTable(IXLWorksheet worksheet, int row, IEnumerable<CabinetItem> cabinets) {
 
-        AddProductTitile(worksheet, row, cabinets.Count(), "Cabinet(s) in order");
+        AddProductTitile(worksheet, row, cabinets.Sum(c => c.Qty), "Cabinet(s) in order");
         
         worksheet.Row(++row).Height = 7;
 

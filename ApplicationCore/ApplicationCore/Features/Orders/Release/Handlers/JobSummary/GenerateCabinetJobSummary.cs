@@ -87,7 +87,7 @@ internal class GenerateCabinetJobSummary : DomainListener<TriggerOrderReleaseNot
 
         }
 
-        string outputFile = GetAvailableFileName(outputDirectory, $"{order.Number} - Job Summary");
+        string outputFile = _fileReader.GetAvailableFileName(outputDirectory, $"{order.Number} - Job Summary", "xlsx");
 
         template.SaveAs(outputFile);
 
@@ -118,22 +118,6 @@ internal class GenerateCabinetJobSummary : DomainListener<TriggerOrderReleaseNot
         };
 
         return material.Finish + " " + suffix;
-
-    }
-
-    public string GetAvailableFileName(string direcotry, string filename, string fileExtension = "xlsx") {
-
-        int index = 1;
-
-        string filepath = Path.Combine(direcotry, $"{filename}.{fileExtension}");
-
-        while (_fileReader.DoesFileExist(filepath)) {
-
-            filepath = Path.Combine(direcotry, $"{filename} ({index++}).{fileExtension}");
-
-        }
-
-        return filepath;
 
     }
 
