@@ -17,6 +17,8 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
     public ShelfDepth ShelfDepth { get; }
     public RollOutOptions RollOutBoxes { get; }
 
+    public override string Description => "Sink Cabinet";
+
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
         BottomGap = Dimension.Zero,

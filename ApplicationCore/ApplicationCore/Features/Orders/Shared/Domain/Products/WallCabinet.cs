@@ -12,6 +12,8 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     public WallCabinetInside Inside { get; }
     public bool FinishedBottom { get; }
 
+    public override string Description => "Wall Cabinet";
+
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),
         BottomGap = Dimension.Zero,

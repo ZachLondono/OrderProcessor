@@ -9,6 +9,40 @@ public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDrawerBoxC
     public Guid Id { get; }
     public decimal UnitPrice { get; }
 
+    public string Description {
+        get {
+
+            string description = "Dovetail Drawer Box";
+
+            if (Options.UBoxDimensions is not null) {
+                description = "U-Shaped " + description;
+            }
+
+            if (Options.Logo != Enums.LogoPosition.None) {
+                description += ", Logo";
+            }
+
+            if (Options.ScoopFront) {
+                description += ", Scoop Front";
+            }
+
+            if (!string.IsNullOrWhiteSpace(Options.Accessory)) {
+                description += $", {Options.Accessory}";
+            }
+
+            if (Options.FixedDivdersCounts is not null) {
+                description += ", Fixed Dividers";
+            }
+
+            if (Options.PostFinish) {
+                description += ", Finished";
+            }
+
+            return description;
+
+        }
+    }
+
     public DovetailDrawerBoxProduct(Guid id, decimal unitPrice, int qty, int productNumber, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options)
                             : base(qty, productNumber, height, width, depth, note, options, labelFields) {
         Id = id;

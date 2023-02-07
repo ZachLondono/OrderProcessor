@@ -11,6 +11,8 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
     public IToeType ToeType { get; }
     public VerticalDrawerBank Drawers { get; }
 
+    public override string Description => $"{Drawers.FaceHeights.Count()} Drawer Cabinet";
+
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
         BottomGap = Dimension.Zero,

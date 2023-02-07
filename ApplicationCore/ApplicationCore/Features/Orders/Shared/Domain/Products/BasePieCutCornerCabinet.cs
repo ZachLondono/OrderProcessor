@@ -14,6 +14,8 @@ internal class BasePieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
     public int AdjustableShelves { get; }
     public HingeSide HingeSide { get; }
 
+    public override string Description => "Pie Cut Corner Base Cabinet";
+
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
         BottomGap = Dimension.Zero,

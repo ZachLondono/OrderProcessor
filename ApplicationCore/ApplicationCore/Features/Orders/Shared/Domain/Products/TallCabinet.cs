@@ -12,6 +12,8 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
     public IToeType ToeType { get; }
     public TallCabinetInside Inside { get; }
 
+    public override string Description => "Tall Cabinet";
+
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),
         BottomGap = Dimension.Zero,

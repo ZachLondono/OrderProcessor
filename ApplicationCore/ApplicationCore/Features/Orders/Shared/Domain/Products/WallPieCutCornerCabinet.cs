@@ -14,6 +14,8 @@ internal class WallPieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
     public HingeSide HingeSide { get; }
     public Dimension ExtendedDoor { get; }
 
+    public override string Description => "Pie Cut Corner Wall Cabinet";
+
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),
         BottomGap = Dimension.Zero,
