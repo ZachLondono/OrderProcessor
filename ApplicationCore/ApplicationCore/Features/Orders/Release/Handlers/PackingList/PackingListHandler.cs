@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Company = ApplicationCore.Features.Companies.Domain.Company;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using ApplicationCore.Features.Shared;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.PackingList;
 
@@ -13,11 +14,13 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
     private readonly ILogger<PackingListHandler> _logger;
     private readonly IBus _bus;
     private readonly IUIBus _uibus;
+    private readonly IFileReader _fileReader;
 
-    public PackingListHandler(ILogger<PackingListHandler> logger, IBus bus, IUIBus uibus) {
+    public PackingListHandler(ILogger<PackingListHandler> logger, IBus bus, IUIBus uibus, IFileReader fileReader) {
         _bus = bus;
         _uibus = uibus;
         _logger = logger;
+        _fileReader = fileReader;
     }
 
     public override async Task Handle(TriggerOrderReleaseNotification notification) {
@@ -42,8 +45,7 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
         var service = new PackingListService();
         try {
             var wb = service.GeneratePackingList(packinglist);
-            // TODO: add suffix to file name if it already exists
-            string outputFile = Path.Combine(outputDir, $"{order.Number} - {order.Name} PACKING LIST.xlsx");
+            string outputFile = GetAvailableFileName(outputDir, $"{order.Number} - {order.Name} PACKING LIST");
             wb.SaveAs(outputFile);
             _uibus.Publish(new OrderReleaseFileCreatedNotification("Packing List created", outputFile));
         } catch (Exception ex) {
@@ -121,6 +123,22 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
         };
         
         return packinglist;
+
+    }
+
+    private string GetAvailableFileName(string direcotry, string filename) {
+
+        int index = 1;
+
+        string filepath = Path.Combine(direcotry, $"{filename}.xlsx");
+
+        while (_fileReader.DoesFileExist(filepath)) {
+
+            filepath = Path.Combine(direcotry, $"{filename} ({index++}).xlsx");
+
+        }
+
+        return filepath;
 
     }
 

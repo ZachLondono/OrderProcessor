@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Shared;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.CutListing;
 
@@ -18,13 +19,15 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
     private readonly IUIBus _uibus;
     private readonly ConstructionValues _construction;
     private readonly ProductBuilderFactory _productBuilderFactory;
+    private readonly IFileReader _fileReader;
 
-    public CutListHandler(ILogger<CutListHandler> logger, IBus bus, IUIBus uibus, ConstructionValues construction, ProductBuilderFactory productBuilderFactory) {
+    public CutListHandler(ILogger<CutListHandler> logger, IBus bus, IUIBus uibus, ConstructionValues construction, ProductBuilderFactory productBuilderFactory, IFileReader fileReader) {
         _logger = logger;
         _bus = bus;
         _uibus = uibus;
         _construction = construction;
         _productBuilderFactory = productBuilderFactory;
+        _fileReader = fileReader;
     }
 
     public override async Task Handle(TriggerOrderReleaseNotification notification) {
@@ -77,13 +80,28 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         var service = new CutListService();
         try {
             var wb = service.GenerateCutList(cutlist.Header, cutlist.Parts);
-            // TODO: add suffix to file name if it already exists
-            string outputFile = Path.Combine(outputDir, $"{job} {cutlist.Name}.xlsx");
+            string outputFile = GetAvailableFileName(outputDir, $"{job} {cutlist.Name} PACKING LIST");
             wb.SaveAs(outputFile);
             _uibus.Publish(new OrderReleaseFileCreatedNotification("Cut List created", outputFile));
         } catch (Exception ex) {
             _uibus.Publish(new OrderReleaseErrorNotification($"Error creating Cut List {ex.Message}"));
         }
+
+    }
+
+    private string GetAvailableFileName(string direcotry, string filename) {
+
+        int index = 1;
+
+        string filepath = Path.Combine(direcotry, $"{filename}.xlsx");
+
+        while (_fileReader.DoesFileExist(filepath)) {
+
+            filepath = Path.Combine(direcotry, $"{filename} ({index++}).xlsx");
+
+        }
+
+        return filepath;
 
     }
 
