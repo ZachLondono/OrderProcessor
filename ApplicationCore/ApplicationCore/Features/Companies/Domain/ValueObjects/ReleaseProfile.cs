@@ -5,15 +5,12 @@ public class ReleaseProfile {
     public required bool GenerateCutList { get; set; }
     public required string CutListOutputDirectory { get; set; }
     public required bool PrintCutList { get; set; }
-    public required string CutListTemplatePath { get; set; }
     public required bool GeneratePackingList { get; set; }
     public required string PackingListOutputDirectory { get; set; }
     public required bool PrintPackingList { get; set; }
-    public required string PackingListTemplatePath { get; set; }
     public required bool GenerateInvoice { get; set; }
     public required string InvoiceOutputDirectory { get; set; }
     public required bool PrintInvoice { get; set; }
-    public required string InvoiceTemplatePath { get; set; }
     public required bool GenerateBOL { get; set; }
     public required string BOLOutputDirectory { get; set; }
     public required bool PrintBOL { get; set; }
@@ -42,14 +39,11 @@ public class ReleaseProfile {
         GenerateCutList = false,
         CutListOutputDirectory = string.Empty,
         PrintCutList = false,
-        CutListTemplatePath = string.Empty,
         GeneratePackingList = false,
         PackingListOutputDirectory = string.Empty,
-        PackingListTemplatePath = string.Empty,
         PrintPackingList = false,
         GenerateInvoice = false,
         InvoiceOutputDirectory = string.Empty,
-        InvoiceTemplatePath = string.Empty,
         PrintInvoice = false,
         PrintBoxLabels = false,
         BoxLabelsTemplateFilePath = string.Empty,

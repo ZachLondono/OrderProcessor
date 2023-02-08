@@ -64,7 +64,6 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         CutList optimizedCutList = CreateOptimizedCutList(order, dovetailBoxes, customerName, vendorName, _construction);
         CutList bottomCutList = CreateBottomCutList(order, dovetailBoxes, customerName, vendorName, _construction);
 
-        var config = new ClosedXMLTemplateConfiguration() { TemplateFilePath = notification.ReleaseProfile.CutListTemplatePath };
         string outputDir = notification.ReleaseProfile.CutListOutputDirectory;
         bool doPrint = notification.ReleaseProfile.PrintCutList;
         string job = $"{order.Number} - {order.Name}";
@@ -80,28 +79,12 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         var service = new CutListService();
         try {
             var wb = service.GenerateCutList(cutlist.Header, cutlist.Parts);
-            string outputFile = GetAvailableFileName(outputDir, $"{job} {cutlist.Name} PACKING LIST");
+            string outputFile = _fileReader.GetAvailableFileName(outputDir, $"{job} {cutlist.Name} PACKING LIST", ".xlsx");
             wb.SaveAs(outputFile);
             _uibus.Publish(new OrderReleaseFileCreatedNotification("Cut List created", outputFile));
         } catch (Exception ex) {
             _uibus.Publish(new OrderReleaseErrorNotification($"Error creating Cut List {ex.Message}"));
         }
-
-    }
-
-    private string GetAvailableFileName(string direcotry, string filename) {
-
-        int index = 1;
-
-        string filepath = Path.Combine(direcotry, $"{filename}.xlsx");
-
-        while (_fileReader.DoesFileExist(filepath)) {
-
-            filepath = Path.Combine(direcotry, $"{filename} ({index++}).xlsx");
-
-        }
-
-        return filepath;
 
     }
 

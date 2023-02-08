@@ -16,6 +16,8 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     public Dimension BlindWidth { get; }
     public IToeType ToeType { get; }
 
+    public override string Description => "Blind Base Cabinet";
+
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
         BottomGap = Dimension.Zero,

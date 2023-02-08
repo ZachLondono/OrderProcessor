@@ -45,7 +45,7 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
         var service = new PackingListService();
         try {
             var wb = service.GeneratePackingList(packinglist);
-            string outputFile = GetAvailableFileName(outputDir, $"{order.Number} - {order.Name} PACKING LIST");
+            string outputFile = _fileReader.GetAvailableFileName(outputDir, $"{order.Number} - {order.Name} PACKING LIST", ".xlsx");
             wb.SaveAs(outputFile);
             _uibus.Publish(new OrderReleaseFileCreatedNotification("Packing List created", outputFile));
         } catch (Exception ex) {
@@ -80,7 +80,7 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
                                 .Select(b => new DrawerBoxItem() {
                                     Line = b.ProductNumber,
                                     Qty = b.Qty,
-                                    Description = "Dovetail Drawer Box",
+                                    Description = b.Description,
                                     Height = b.Height.AsInchFraction().ToString(),
                                     Width = b.Width.AsInchFraction().ToString(),
                                     Depth = b.Depth.AsInchFraction().ToString()
@@ -92,7 +92,7 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
                         .Select(b => new CabinetItem() {
                             Line = b.ProductNumber,
                             Qty = b.Qty,
-                            Description = "Cabinet",
+                            Description = b.Description,
                             Height = b.Height.AsInchFraction().ToString(),
                             Width = b.Width.AsInchFraction().ToString(),
                             Depth = b.Depth.AsInchFraction().ToString()
@@ -123,22 +123,6 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
         };
         
         return packinglist;
-
-    }
-
-    private string GetAvailableFileName(string direcotry, string filename) {
-
-        int index = 1;
-
-        string filepath = Path.Combine(direcotry, $"{filename}.xlsx");
-
-        while (_fileReader.DoesFileExist(filepath)) {
-
-            filepath = Path.Combine(direcotry, $"{filename} ({index++}).xlsx");
-
-        }
-
-        return filepath;
 
     }
 

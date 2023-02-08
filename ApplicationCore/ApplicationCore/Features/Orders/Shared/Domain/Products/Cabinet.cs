@@ -23,6 +23,7 @@ public abstract class Cabinet : IProduct {
     public CabinetSide RightSide { get; }
     public CabinetSide LeftSide { get; }
     public string Comment { get; }
+    public abstract string Description { get; }
 
     public static CabinetConstruction Construction { get; set; } = new() {
         TopThickness = Dimension.FromMillimeters(19),

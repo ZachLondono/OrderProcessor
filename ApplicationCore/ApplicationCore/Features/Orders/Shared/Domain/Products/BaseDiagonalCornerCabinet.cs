@@ -14,6 +14,8 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
     public HingeSide HingeSide { get; }
     public int DoorQty { get; }
     public int AdjustableShelves { get; }
+    
+    public override string Description => "Diagonal Corner Base Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),

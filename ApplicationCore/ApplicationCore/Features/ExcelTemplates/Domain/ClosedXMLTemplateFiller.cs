@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.ExcelTemplates.Contracts;
-using ApplicationCore.Features.Shared;
+﻿using ApplicationCore.Features.Shared;
 
 namespace ApplicationCore.Features.ExcelTemplates.Domain;
 
@@ -26,7 +25,7 @@ internal class ClosedXMLTemplateFiller : ITemplateFiller {
             using var template = _factory.CreateTemplate(stream);
             template.AddVariable(model);
             _ = template.Generate();
-            var filepath = GetAvailableFileName(outputDirectory, filename);
+            var filepath = _fileReader.GetAvailableFileName(outputDirectory, filename, ".xlsx");
             template.SaveAs(filepath);
 
             return filepath;
@@ -35,22 +34,6 @@ internal class ClosedXMLTemplateFiller : ITemplateFiller {
 
         if (print) {
             await _printer.PrintFile(filepath);
-        }
-
-        return filepath;
-
-    }
-
-    private string GetAvailableFileName(string direcotry, string filename) {
-
-        int index = 1;
-
-        string filepath = Path.Combine(direcotry, $"{filename}.xlsx");
-
-        while (_fileReader.DoesFileExist(filepath)) {
-
-            filepath = Path.Combine(direcotry, $"{filename} ({index++}).xlsx");
-
         }
 
         return filepath;

@@ -122,7 +122,7 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
 
                 FillOrderSheet(order, group, workbook, orderNumber);
 
-                string fileName = GetAvailableFileName(outputDirectory, $"{orderNumber} {order.Name} MDF DOORS");
+                string fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{orderNumber} {order.Name} MDF DOORS", ".xlsm");
                 string finalPath = Path.Combine(outputDirectory, fileName);
 
                 workbook.SaveAs2(finalPath);
@@ -220,26 +220,6 @@ internal class DoorOrderHandler : DomainListener<TriggerOrderReleaseNotification
         }
 
         return ret;
-
-    }
-
-    private string GetAvailableFileName(string direcotry, string filename, string fileExtension = "xlsm") {
-
-        int index = 1;
-
-        string finalFilename = filename;
-
-        string filepath = Path.Combine(direcotry, $"{finalFilename}.{fileExtension}");
-
-        while (_fileReader.DoesFileExist(filepath)) {
-
-            finalFilename = $"{filename} ({index++})";
-
-            filepath = Path.Combine(direcotry, $"{finalFilename}.{fileExtension}");
-
-        }
-
-        return finalFilename;
 
     }
 

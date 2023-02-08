@@ -13,6 +13,8 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
     public HorizontalDrawerBank Drawers { get; }
     public BaseCabinetInside Inside { get; }
 
+    public override string Description => "Base Cabinet";
+
     public static CabinetDoorGaps DoorGaps { get; set; } = new () {
         TopGap = Dimension.FromMillimeters(7),
         BottomGap = Dimension.Zero,
