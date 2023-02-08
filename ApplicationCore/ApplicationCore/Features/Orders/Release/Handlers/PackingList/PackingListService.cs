@@ -49,18 +49,21 @@ internal class PackingListService {
         int row = 12;
 
         if (packingList.DrawerBoxes.Any()) {
-            AddDrawerBoxTable(ws, row, packingList.DrawerBoxes);
+            row = AddDrawerBoxTable(ws, row, packingList.DrawerBoxes);
         }
 
         if (packingList.Doors.Any()) {
-            AddDoorTable(ws, row, packingList.Doors);
+            row = AddDoorTable(ws, row, packingList.Doors);
         }
 
         if (packingList.Cabinets.Any()) {
-            AddCabinetTable(ws, row, packingList.Cabinets);
+            row = AddCabinetTable(ws, row, packingList.Cabinets);
         }
 
         ws.Column(4).Width = 20;
+
+        ws.PageSetup.PrintAreas.Add(1, 1, row, 8);
+        ws.PageSetup.PagesWide = 1;
 
         return workbook;
 
