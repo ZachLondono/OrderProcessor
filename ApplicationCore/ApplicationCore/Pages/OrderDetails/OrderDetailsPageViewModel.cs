@@ -17,9 +17,11 @@ internal class OrderDetailsPageViewModel : IOrderDetailsPageViewModel {
     public Action? OnPropertyChanged { get; set; }
 
     private readonly IBus _bus;
+    private readonly IFileReader _fileReader;
 
-    public OrderDetailsPageViewModel(IBus bus) {
+    public OrderDetailsPageViewModel(IBus bus, IFileReader fileReader) {
         _bus = bus;
+        _fileReader = fileReader;
     }
 
     public async Task<string> GetCompanyName(Guid companyId) {
@@ -59,9 +61,13 @@ internal class OrderDetailsPageViewModel : IOrderDetailsPageViewModel {
                             .Cast<IPPProductContainer>()
                             .SelectMany(c => c.GetPPProducts())
             .ToList();
-            var job = new PPJob($"{order.Number} - {order.Name}", order.OrderDate, products);
 
-            var filePath = Path.Combine(@"C:\CP3\CPDATA", $"{order.Number} - {order.Name}.ext");
+
+            string jobName = $"{order.Number} - {order.Name}".Replace(".", "")[..30];
+
+            var job = new PPJob(jobName, order.OrderDate, products);
+
+            var filePath = _fileReader.GetAvailableFileName(@"C:\CP3\CPDATA", jobName, "ext");
 
             var result = await _bus.Send(new GenerateEXTFile.Command(job, filePath));
 
