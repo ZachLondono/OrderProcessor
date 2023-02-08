@@ -286,12 +286,12 @@
             <span>No products in order</span>
         } else {
 
-            var drawerBoxes = OrderState.Order.Products.Where(p => p is DovetailDrawerBoxProduct).Cast<DovetailDrawerBoxProduct>();
+            var drawerBoxes = OrderState.Order.Products.OfType<DovetailDrawerBoxProduct>();
             if (drawerBoxes.Any()) {
                 <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@drawerBoxes" />
             }
 
-            var cabinets = OrderState.Order.Products.Where(p => p is Cabinet).Cast<Cabinet>();
+            var cabinets = OrderState.Order.Products.OfType<Cabinet>();
             if (cabinets.Any()) {
                 <CabinetProductTable UseInches="@_useInches" Cabinets="@cabinets"/>
             }
