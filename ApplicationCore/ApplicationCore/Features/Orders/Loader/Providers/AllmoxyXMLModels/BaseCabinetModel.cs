@@ -51,9 +51,10 @@ public class BaseCabinetModel : CabinetModelBase {
             2 => new(),
             _ => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right)
         };
+
         HorizontalDrawerBank drawers = new() {
             BoxMaterial = AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial),
-            FaceHeight = Dimension.FromMillimeters(DrawerFaceHeight),
+            FaceHeight = DrawerQty == 0 ? Dimension.Zero : Dimension.FromMillimeters(DrawerFaceHeight),
             Quantity = DrawerQty,
             SlideType = AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide)
         };
