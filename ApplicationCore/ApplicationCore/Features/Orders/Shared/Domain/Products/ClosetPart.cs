@@ -5,7 +5,7 @@ using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class ClosetPart : IProduct, IPPProductContainer {
+public class ClosetPart : IProduct, IPPProductContainer {
     
     public Guid Id { get; }
     public int Qty { get; }
@@ -59,7 +59,8 @@ internal class ClosetPart : IProduct, IPPProductContainer {
             ["EB_Top"] = new(ebMaterial, EdgeBandingColor)
         };
 
-        return new List<PPProduct>() { new PPProduct(Id, Room, SKU, ProductNumber, "Royal_c", materialType, "slab", "standard", Comment, finishMaterials, ebMaterials, new(Parameters), new(), new()) };
+        //return new List<PPProduct>() { new PPProduct(Id, Room, SKU, ProductNumber, "Royal_c", materialType, "slab", "standard", Comment, finishMaterials, ebMaterials, new(Parameters), new(), new()) };
+        return new List<PPProduct>() { new PPProduct(Room, SKU, ProductNumber, "Royal_c", materialType, "slab", "standard", finishMaterials, ebMaterials, new(Parameters), new(), new()) };
 
     }
 }
