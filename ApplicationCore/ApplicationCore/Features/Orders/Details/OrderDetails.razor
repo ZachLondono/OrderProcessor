@@ -296,6 +296,11 @@
                 <CabinetProductTable UseInches="@_useInches" Cabinets="@cabinets"/>
             }
 
+            var closetParts = OrderState.Order.Products.OfType<ClosetPart>();
+            if (closetParts.Any()) {
+                <ClosetPartProductTable UseInches="@_useInches" ClosetParts="@closetParts" />
+            }
+
         }
     </section>
 }
