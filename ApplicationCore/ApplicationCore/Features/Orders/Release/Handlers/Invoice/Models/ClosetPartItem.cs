@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.Orders.Release.Handlers.Invoice.Models;
 
-internal class Item {
+internal class ClosetPartItem {
 
     public int Line { get; set; }
 
@@ -8,16 +8,13 @@ internal class Item {
 
     public string Description { get; set; } = string.Empty;
 
-    public string Logo { get; set; } = string.Empty;
-
-    public string Height { get; set; } = string.Empty;
-
     public string Width { get; set; } = string.Empty;
 
-    public string Depth { get; set; } = string.Empty;
+    public string Length { get; set; } = string.Empty;
 
     public string Price { get; set; } = string.Empty;
 
     public string ExtPrice { get; set; } = string.Empty;
 
 }
+
