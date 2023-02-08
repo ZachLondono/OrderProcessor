@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Features.Companies.Queries;
-using ApplicationCore.Features.ExcelTemplates.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Release.Handlers.CutListing.Models;
@@ -79,7 +78,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         var service = new CutListService();
         try {
             var wb = service.GenerateCutList(cutlist.Header, cutlist.Parts);
-            string outputFile = _fileReader.GetAvailableFileName(outputDir, $"{job} {cutlist.Name} PACKING LIST", ".xlsx");
+            string outputFile = _fileReader.GetAvailableFileName(outputDir, $"{job} {cutlist.Name} CUT LIST", ".xlsx");
             wb.SaveAs(outputFile);
             _uibus.Publish(new OrderReleaseFileCreatedNotification("Cut List created", outputFile));
         } catch (Exception ex) {
