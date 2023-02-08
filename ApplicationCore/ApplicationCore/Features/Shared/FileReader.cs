@@ -12,6 +12,10 @@ public class FileReader : IFileReader {
             filename = filename.Replace(c, '_');
         }
 
+        if (fileExtension.StartsWith(".")) {
+            fileExtension = fileExtension[1..];
+        }
+
         string filepath = Path.Combine(direcotry, $"{filename}{(fileExtension == string.Empty ? "" : $".{fileExtension}")}");
 
         while (DoesFileExist(filepath)) {
