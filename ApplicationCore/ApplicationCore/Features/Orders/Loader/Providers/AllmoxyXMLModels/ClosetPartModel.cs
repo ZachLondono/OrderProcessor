@@ -18,34 +18,34 @@ public class ClosetPartModel : ProductModel {
     [XmlElement("room")]
     public string Room { get; set; } = string.Empty;
 
-    [XmlAttribute("sku")]
+    [XmlElement("sku")]
     public string SKU { get; set; } = string.Empty;
 
-    [XmlArray("width")]
+    [XmlElement("width")]
     public double Width { get; set; }
     
-    [XmlArray("length")]
+    [XmlElement("length")]
     public double Length { get; set; }
     
-    [XmlArray("qty")]
+    [XmlElement("qty")]
     public int Qty { get; set; }
 
-    [XmlArray("unitPrice")]
+    [XmlElement("unitPrice")]
     public string UnitPrice { get; set; } = string.Empty;
 
-    [XmlArray("edgeBandColor")]
+    [XmlElement("edgeBandColor")]
     public string EdgeBandColor { get; set; } = string.Empty;
 
-    [XmlArray("materialFinish")]
+    [XmlElement("materialFinish")]
     public string MaterialFinish { get; set; } = string.Empty;
     
-    [XmlArray("materialCore")]
+    [XmlElement("materialCore")]
     public string MaterialCore { get; set; } = string.Empty;
     
-    [XmlArray("paintColor")]
+    [XmlElement("paintColor")]
     public string PaintColor { get; set; } = string.Empty;
     
-    [XmlArray("comment")]
+    [XmlElement("comment")]
     public string Comment { get; set; } = string.Empty;
 
     [XmlArray("parameters")]
