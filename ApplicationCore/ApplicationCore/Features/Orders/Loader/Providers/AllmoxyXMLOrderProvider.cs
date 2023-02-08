@@ -7,6 +7,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using MoreLinq;
 using ApplicationCore.Features.Orders.Loader.Dialog;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using System.Xml.Schema;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 
@@ -119,6 +120,11 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             errors.ForEach(error => OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Error] [{error.Severity}] {error.Exception.Message}"));
 
             return !errors.Any();
+
+        } catch (XmlSchemaException ex) {
+
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Schema Error] XML schema is not valid L{ex.LineNumber} - {ex.Message}");
+            return false;
 
         } catch {
 
