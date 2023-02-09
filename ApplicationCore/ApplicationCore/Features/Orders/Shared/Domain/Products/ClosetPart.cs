@@ -10,7 +10,6 @@ public class ClosetPart : IProduct, IPPProductContainer {
     public Guid Id { get; }
     public int Qty { get; }
     public decimal UnitPrice { get; }
-
     public int ProductNumber { get; }
     public string Room { get; }
     public string SKU { get; }
@@ -20,6 +19,8 @@ public class ClosetPart : IProduct, IPPProductContainer {
     public string EdgeBandingColor { get; }
     public string Comment { get; }
     public IReadOnlyDictionary<string, string> Parameters { get; }
+
+    public string Description => $"Closet Part - {SKU}";
 
     public ClosetPart(Guid id, int qty, decimal unitPrice, int productNumber, string room, string sku, Dimension width, Dimension length, ClosetMaterial material, string edgeBandingColor, string comment, IReadOnlyDictionary<string, string> parameters) {
         Id = id;
@@ -59,8 +60,7 @@ public class ClosetPart : IProduct, IPPProductContainer {
             ["EB_Top"] = new(ebMaterial, EdgeBandingColor)
         };
 
-        //return new List<PPProduct>() { new PPProduct(Id, Room, SKU, ProductNumber, "Royal_c", materialType, "slab", "standard", Comment, finishMaterials, ebMaterials, new(Parameters), new(), new()) };
-        return new List<PPProduct>() { new PPProduct(Room, SKU, ProductNumber, "Royal_c", materialType, "slab", "standard", finishMaterials, ebMaterials, new(Parameters), new(), new()) };
+        return new List<PPProduct>() { new PPProduct(Id, Room, SKU, ProductNumber, "Royal_c", materialType, "slab", "standard", Comment, finishMaterials, ebMaterials, new(Parameters), new(), new()) };
 
     }
 }
