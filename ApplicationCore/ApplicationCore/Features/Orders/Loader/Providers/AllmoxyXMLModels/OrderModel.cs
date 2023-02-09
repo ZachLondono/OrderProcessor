@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using System.Xml.Serialization;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
@@ -42,6 +43,8 @@ public class OrderModel {
     [XmlArrayItem("blindBaseCabinet", typeof(BlindBaseCabinetModel))]
     [XmlArrayItem("blindWallCabinet", typeof(BlindWallCabinetModel))]
     [XmlArrayItem("closetPart", typeof(ClosetPartModel))]
+    [XmlArrayItem("mdfDoor", typeof(MDFDoorModel))]
+    [XmlArrayItem("dovetailDrawerBox", typeof(DovetailDrawerBoxModel))]
     public List<ProductModel> Products { get; set; } = new();
 
 }
