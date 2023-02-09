@@ -17,15 +17,16 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
     private readonly IBus _bus;
     private readonly IUIBus _uibus;
     private readonly ConstructionValues _construction;
-    private readonly ProductBuilderFactory _productBuilderFactory;
+    private readonly ComponentBuilderFactory _componentBuilderFactory;
     private readonly IFileReader _fileReader;
 
-    public CutListHandler(ILogger<CutListHandler> logger, IBus bus, IUIBus uibus, ConstructionValues construction, ProductBuilderFactory productBuilderFactory, IFileReader fileReader) {
+    public CutListHandler(ILogger<CutListHandler> logger, IBus bus, IUIBus uibus, ConstructionValues construction, ComponentBuilderFactory compnentBuilderFactory, IFileReader fileReader) {
+
         _logger = logger;
         _bus = bus;
         _uibus = uibus;
         _construction = construction;
-        _productBuilderFactory = productBuilderFactory;
+        _componentBuilderFactory = compnentBuilderFactory;
         _fileReader = fileReader;
     }
 
@@ -43,7 +44,7 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                 .Cast<IDrawerBoxContainer>()
                                 .SelectMany(c => {
                                     try { 
-                                        return c.GetDrawerBoxes(_productBuilderFactory.CreateDovetailDrawerBoxBuilder);
+                                        return c.GetDrawerBoxes(_componentBuilderFactory.CreateDovetailDrawerBoxBuilder);
                                     } catch (Exception ex) {
                                         _uibus.Publish(new OrderReleaseErrorNotification($"Error getting drawer boxes from product '{ex.Message}'"));
                                         return Enumerable.Empty<DovetailDrawerBox>();

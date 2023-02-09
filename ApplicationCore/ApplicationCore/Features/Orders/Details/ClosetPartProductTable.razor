@@ -1,0 +1,52 @@
+﻿@using ApplicationCore.Features.Orders.Shared.Domain.Products;
+@using ApplicationCore.Features.Orders.Shared.Domain;
+
+<div class="overflow-x-auto rounded-md">
+    <table class="table-auto">
+        <thead class="border-b border-slate-300">
+            <tr class="dark:bg-slate-700 dark:text-gray-500">
+                <th class="p-5">#</th>
+                <th class="p-5">Qty</th>
+                <th class="p-5">Width</th>
+                <th class="p-5">Length</th>
+                <th class="p-5">SKU</th>
+                <th class="p-5">Material</th>
+                <th class="p-5">Paint</th>
+                <th class="p-5">EB Color</th>
+                <th class="p-5">Room</th>
+                <th class="p-5">Unit $</th>
+                <th class="p-5">Ext. $</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var closetPart in ClosetParts) {
+                <tr>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@closetPart.ProductNumber</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@closetPart.Qty</td>
+                    @if (UseInches) {
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)closetPart.Width.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)closetPart.Length.GetFormatedFraction())"</td>
+                    } else {
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@closetPart.Width.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@closetPart.Length.AsMillimeters().ToString("0.00")</td>
+                    }
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@closetPart.SKU</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{closetPart.Material.Finish}/{closetPart.Material.Core}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{closetPart.Material.PaintColor ?? "N/A"}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@closetPart.EdgeBandingColor</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@closetPart.Room</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@closetPart.UnitPrice.ToString("$0.00")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((closetPart.UnitPrice * closetPart.Qty).ToString("$0.00"))</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@code {
+    [Parameter]
+    public IEnumerable<ClosetPart> ClosetParts { get; set; } = Enumerable.Empty<ClosetPart>();
+    [Parameter]
+    public bool UseInches { get; set; }
+}

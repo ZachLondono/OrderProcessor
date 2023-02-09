@@ -73,7 +73,7 @@ internal class PackingListHandler : DomainListener<TriggerOrderReleaseNotificati
         if (hasError || vendor is null) {
             _uibus.Publish(new OrderReleaseErrorNotification("Could not load customer or vendor information for order"));
         }
-
+      
         var drawerBoxes = order.Products
                                 .Where(p => p is DovetailDrawerBoxProduct)
                                 .Cast<DovetailDrawerBoxProduct>()
