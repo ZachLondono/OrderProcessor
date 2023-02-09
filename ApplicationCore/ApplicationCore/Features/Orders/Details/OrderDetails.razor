@@ -288,17 +288,34 @@
 
             var drawerBoxes = OrderState.Order.Products.OfType<DovetailDrawerBoxProduct>();
             if (drawerBoxes.Any()) {
-                <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@drawerBoxes" />
+                <section class="mt-5">
+                    <h3>Drawer Boxes</h3>
+                    <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@drawerBoxes" />
+                </section>
             }
 
             var cabinets = OrderState.Order.Products.OfType<Cabinet>();
             if (cabinets.Any()) {
-                <CabinetProductTable UseInches="@_useInches" Cabinets="@cabinets"/>
+                <section class="mt-5">
+                    <h3>Cabinets</h3>
+                    <CabinetProductTable UseInches="@_useInches" Cabinets="@cabinets"/>
+                </section>
             }
 
             var closetParts = OrderState.Order.Products.OfType<ClosetPart>();
             if (closetParts.Any()) {
-                <ClosetPartProductTable UseInches="@_useInches" ClosetParts="@closetParts" />
+                <section class="mt-5">
+                    <h3>Closet Parts</h3>
+                    <ClosetPartProductTable UseInches="@_useInches" ClosetParts="@closetParts" />
+                </section>
+            }
+
+            var doors = OrderState.Order.Products.OfType<MDFDoorProduct>();
+            if (doors.Any()) {
+                <section class="mt-5">
+                    <h3>MDF Doors</h3>
+                    <MDFDoorProductTable UseInches="@_useInches" MDFDoors="@doors" />
+                </section>
             }
 
         }
