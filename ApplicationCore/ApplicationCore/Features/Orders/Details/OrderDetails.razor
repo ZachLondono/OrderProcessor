@@ -19,6 +19,9 @@
 @using ApplicationCore.Features.Orders.Shared;
 @using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 @using ApplicationCore.Pages.OrderDetails;
+@using static ApplicationCore.Features.Orders.Details.MDFDoorProductTable;
+@using static ApplicationCore.Features.Orders.Details.DovetailDrawerBoxProductTable;
+@using static ApplicationCore.Features.Orders.Details.ClosetPartProductTable;
 @using static ApplicationCore.Features.Orders.Details.CabinetProductTable;
 @inherits UIListenerComponent<WorkOrdersUpdatNotification>
 @inject IBus Bus
@@ -248,35 +251,31 @@
             <span>No products in order</span>
         } else {
 
-            var drawerBoxes = OrderState.Order.Products.OfType<DovetailDrawerBoxProduct>();
-            if (drawerBoxes.Any()) {
+            if (DrawerBoxes.Any()) {
                 <section class="mt-5">
                     <h3>Drawer Boxes</h3>
-                    <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@drawerBoxes" />
+                    <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@DrawerBoxes" />
                 </section>
             }
 
-            var cabinets = OrderState.Order.Products.OfType<Cabinet>();
-            if (cabinets.Any()) {
+            if (Cabinets.Any()) {
                 <section class="mt-5">
                     <h3>Cabinets</h3>
-                    <CabinetProductTable UseInches="@_useInches" Cabinets="@cabinets"/>
+                    <CabinetProductTable UseInches="@_useInches" Cabinets="@Cabinets" />
                 </section>
             }
 
-            var closetParts = OrderState.Order.Products.OfType<ClosetPart>();
-            if (closetParts.Any()) {
+            if (ClosetParts.Any()) {
                 <section class="mt-5">
                     <h3>Closet Parts</h3>
-                    <ClosetPartProductTable UseInches="@_useInches" ClosetParts="@closetParts" />
+                    <ClosetPartProductTable UseInches="@_useInches" ClosetParts="@ClosetParts" />
                 </section>
             }
 
-            var doors = OrderState.Order.Products.OfType<MDFDoorProduct>();
-            if (doors.Any()) {
+            if (Doors.Any()) {
                 <section class="mt-5">
                     <h3>MDF Doors</h3>
-                    <MDFDoorProductTable UseInches="@_useInches" MDFDoors="@doors" />
+                    <MDFDoorProductTable UseInches="@_useInches" MDFDoors="@Doors" />
                 </section>
       
             }
@@ -294,6 +293,9 @@
     public IOrderDetailsPageViewModel? ViewModel { get; set; }
 
     public List<CabinetRowModel> Cabinets { get; set; } = new();
+    public List<ClosetPartRowModel> ClosetParts { get; set; } = new();
+    public List<DovetailDrawerBoxRowModel> DrawerBoxes { get; set; } = new();
+    public List<MDFDoorRowModel> Doors { get; set; } = new();
 
     private string? _vendorName = null;
     private ReleaseProfile? _customReleaseProfile = null;
@@ -312,13 +314,39 @@
 
         Cabinets = OrderState.Order
                             .Products
-                            .Where(p => p is Cabinet)
-                            .Cast<Cabinet>()
+                            .OfType<Cabinet>()
                             .Select(cab => new CabinetRowModel() {
                                 Cabinet = cab,
                                 IsComplete = false
                             })
                             .ToList();
+
+        ClosetParts = OrderState.Order
+                                .Products
+                                .OfType<ClosetPart>()
+                                .Select(cp => new ClosetPartRowModel() {
+                                    ClosetPart = cp,
+                                    IsComplete = false
+                                })
+                                .ToList();
+
+        DrawerBoxes = OrderState.Order
+                                .Products
+                                .OfType<DovetailDrawerBoxProduct>()
+                                .Select(db => new DovetailDrawerBoxRowModel() {
+                                    DrawerBox = db,
+                                    IsComplete = false
+                                })
+                                .ToList();
+
+        Doors = OrderState.Order
+                        .Products
+                        .OfType<MDFDoorProduct>()
+                        .Select(door => new MDFDoorRowModel() {
+                            Door = door,
+                            IsComplete = false
+                        })
+                        .ToList();
 
         await UpdateProductStatuses();
 
@@ -333,6 +361,24 @@
         foreach (var cabinet in Cabinets) {
 
             cabinet.IsComplete = await IsProductComplete(OrderState.Order.Id, cabinet.Cabinet.Id);
+
+        }
+
+        foreach (var part in ClosetParts) {
+
+            part.IsComplete = await IsProductComplete(OrderState.Order.Id, part.ClosetPart.Id);
+
+        }
+
+        foreach (var db in DrawerBoxes) {
+
+            db.IsComplete = await IsProductComplete(OrderState.Order.Id, db.DrawerBox.Id);
+
+        }
+
+        foreach (var door in Doors) {
+
+            door.IsComplete = await IsProductComplete(OrderState.Order.Id, door.Door.Id);
 
         }
 
