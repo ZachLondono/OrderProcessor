@@ -77,7 +77,7 @@ public abstract class Cabinet : IProduct {
             { "F_Exp_SemiExp", new PPMaterial(finishMaterial, FinishMaterial.Finish) },
             { "F_Exp_Unseen", new PPMaterial(finishMaterial,FinishMaterial.Finish) },
             { "F_Exposed", new PPMaterial(finishMaterial, FinishMaterial.Finish) },
-            { "F_OvenSupport", new PPMaterial("PRE","Veneer") },
+            { "F_OvenSupport", new PPMaterial("Veneer", "PRE") },
             { "F_SemiExp_Unseen", new PPMaterial(boxMaterial, BoxMaterial.Finish) },
             { "F_SemiExposed", new PPMaterial(boxMaterial, BoxMaterial.Finish) }
         };
