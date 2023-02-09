@@ -25,7 +25,6 @@
 @using static ApplicationCore.Features.Orders.Details.CabinetProductTable;
 @inherits UIListenerComponent<WorkOrdersUpdatNotification>
 @inject IBus Bus
-@inject IUIBus UIBus
 @inject OrderState OrderState
 @inject Manufacturing.IsProductComplete IsProductComplete
 @inject IFilePicker FilePicker
@@ -315,37 +314,25 @@
         Cabinets = OrderState.Order
                             .Products
                             .OfType<Cabinet>()
-                            .Select(cab => new CabinetRowModel() {
-                                Cabinet = cab,
-                                IsComplete = false
-                            })
+                            .Select(cab => new CabinetRowModel(cab))
                             .ToList();
 
         ClosetParts = OrderState.Order
                                 .Products
                                 .OfType<ClosetPart>()
-                                .Select(cp => new ClosetPartRowModel() {
-                                    ClosetPart = cp,
-                                    IsComplete = false
-                                })
+                                .Select(cp => new ClosetPartRowModel(cp))
                                 .ToList();
 
         DrawerBoxes = OrderState.Order
                                 .Products
                                 .OfType<DovetailDrawerBoxProduct>()
-                                .Select(db => new DovetailDrawerBoxRowModel() {
-                                    DrawerBox = db,
-                                    IsComplete = false
-                                })
+                                .Select(db => new DovetailDrawerBoxRowModel(db))
                                 .ToList();
 
         Doors = OrderState.Order
                         .Products
                         .OfType<MDFDoorProduct>()
-                        .Select(door => new MDFDoorRowModel() {
-                            Door = door,
-                            IsComplete = false
-                        })
+                        .Select(door => new MDFDoorRowModel(door))
                         .ToList();
 
         await UpdateProductStatuses();
@@ -358,31 +345,24 @@
             return;
         }
 
-        foreach (var cabinet in Cabinets) {
-
-            cabinet.IsComplete = await IsProductComplete(OrderState.Order.Id, cabinet.Cabinet.Id);
-
-        }
-
-        foreach (var part in ClosetParts) {
-
-            part.IsComplete = await IsProductComplete(OrderState.Order.Id, part.ClosetPart.Id);
-
-        }
-
-        foreach (var db in DrawerBoxes) {
-
-            db.IsComplete = await IsProductComplete(OrderState.Order.Id, db.DrawerBox.Id);
-
-        }
-
-        foreach (var door in Doors) {
-
-            door.IsComplete = await IsProductComplete(OrderState.Order.Id, door.Door.Id);
-
-        }
+        await UpdateProducts(Cabinets);
+        await UpdateProducts(ClosetParts);
+        await UpdateProducts(DrawerBoxes);
+        await UpdateProducts(Doors);
 
         StateHasChanged();
+
+    }
+
+    private async Task UpdateProducts<T>(IEnumerable<ProductRowModel<T>> products) where T : IProduct {
+
+        if (OrderState.Order is null) return;
+
+        foreach (var product in products) {
+
+            product.IsComplete = await IsProductComplete(OrderState.Order.Id, product.Product.Id);
+
+        }
 
     }
 
@@ -494,13 +474,13 @@
     }
 
     private IModalReference ShowLoadingDialog(string title, string message) {
-        
+
         var options = new ModalOptions() {
             HideHeader = true,
             HideCloseButton = true,
             DisableBackgroundCancel = true
         };
-        
+
         return Modal.Show<InformationDialog>("", options: options, parameters: new ModalParameters {
             { "Type", InformationDialog.MessageType.Information },
             { "Title", title},
@@ -516,6 +496,17 @@
     public override void Handle(WorkOrdersUpdatNotification notification) {  
 
         InvokeAsync(UpdateProductStatuses);
+
+    }
+
+    public abstract class ProductRowModel<T> where T : IProduct {
+
+        public T Product { get; init; }
+        public bool IsComplete { get; set; } = false;
+
+        public ProductRowModel(T product ) {
+            Product = product;
+        }
 
     }
 

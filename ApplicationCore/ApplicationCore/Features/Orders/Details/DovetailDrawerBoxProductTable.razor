@@ -5,6 +5,7 @@
 @using ApplicationCore.Infrastructure;
 @using ApplicationCore.Features.Orders.Shared;
 @using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+@using static ApplicationCore.Features.Orders.Details.OrderDetails;
 @inject IBus Bus
 
 <div class="overflow-x-auto rounded-md">
@@ -63,48 +64,48 @@
                                 </ToolTip>
                             }
                         </td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.DrawerBox.ProductNumber</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.DrawerBox.Qty</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.ProductNumber</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Qty</td>
                         @if (UseInches) {
-                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.DrawerBox.Height.GetFormatedFraction())"</td>
-                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.DrawerBox.Width.GetFormatedFraction())"</td>
-                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.DrawerBox.Depth.GetFormatedFraction())"</td>
+                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.Product.Height.GetFormatedFraction())"</td>
+                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.Product.Width.GetFormatedFraction())"</td>
+                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.Product.Depth.GetFormatedFraction())"</td>
                         } else {
-                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.DrawerBox.Height.AsMillimeters().ToString("0.00")</td>
-                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.DrawerBox.Width.AsMillimeters().ToString("0.00")</td>
-                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.DrawerBox.Depth.AsMillimeters().ToString("0.00")</td>
+                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Height.AsMillimeters().ToString("0.00")</td>
+                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Width.AsMillimeters().ToString("0.00")</td>
+                            <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Depth.AsMillimeters().ToString("0.00")</td>
                         }
-                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@row.DrawerBox.Options.FrontMaterial</td>
-                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@row.DrawerBox.Options.SideMaterial</td>
-                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@row.DrawerBox.Options.BackMaterial</td>
-                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@row.DrawerBox.Options.BottomMaterial</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(row.DrawerBox.Options.ScoopFront ? "Y" : "N")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(row.DrawerBox.Options.Logo == LogoPosition.None ? "N" : "Y")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(row.DrawerBox.Options.PostFinish ? "Y" : "N")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(row.DrawerBox.Options.FaceMountingHoles ? "Y" : "N")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(row.DrawerBox.Options.Assembled ? "Y" : "N")</td>
-                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@row.DrawerBox.Options.Clips</td>
-                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@row.DrawerBox.Options.Notches</td>
-                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@row.DrawerBox.Options.Accessory</td>
-                        @if (row.DrawerBox.Options.UBoxDimensions is not null) {
+                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@row.Product.Options.FrontMaterial</td>
+                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@row.Product.Options.SideMaterial</td>
+                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@row.Product.Options.BackMaterial</td>
+                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@row.Product.Options.BottomMaterial</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(row.Product.Options.ScoopFront ? "Y" : "N")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(row.Product.Options.Logo == LogoPosition.None ? "N" : "Y")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(row.Product.Options.PostFinish ? "Y" : "N")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(row.Product.Options.FaceMountingHoles ? "Y" : "N")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(row.Product.Options.Assembled ? "Y" : "N")</td>
+                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@row.Product.Options.Clips</td>
+                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@row.Product.Options.Notches</td>
+                        <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white">@row.Product.Options.Accessory</td>
+                        @if (row.Product.Options.UBoxDimensions is not null) {
                             @if (UseInches) {
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.DrawerBox.Options.UBoxDimensions.A.GetFormatedFraction())"</td>
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.DrawerBox.Options.UBoxDimensions.B.GetFormatedFraction())"</td>
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.DrawerBox.Options.UBoxDimensions.C.GetFormatedFraction())"</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.Product.Options.UBoxDimensions.A.GetFormatedFraction())"</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.Product.Options.UBoxDimensions.B.GetFormatedFraction())"</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.Product.Options.UBoxDimensions.C.GetFormatedFraction())"</td>
                             } else {
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.DrawerBox.Options.UBoxDimensions.A.AsMillimeters().ToString("0.00")</td>
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.DrawerBox.Options.UBoxDimensions.B.AsMillimeters().ToString("0.00")</td>
-                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.DrawerBox.Options.UBoxDimensions.C.AsMillimeters().ToString("0.00")</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Options.UBoxDimensions.A.AsMillimeters().ToString("0.00")</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Options.UBoxDimensions.B.AsMillimeters().ToString("0.00")</td>
+                                <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Options.UBoxDimensions.C.AsMillimeters().ToString("0.00")</td>
                             }
                         } else {
                             <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white"></td>
                             <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white"></td>
                             <td class="whitespace-nowrap p-5 border-b dark:border-slate-500 dark:text-white"></td>
                         }
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.DrawerBox.Options.FixedDivdersCounts?.WideCount</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.DrawerBox.Options.FixedDivdersCounts?.DeepCount</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">$@row.DrawerBox.UnitPrice.ToString("0.00")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">$@((row.DrawerBox.UnitPrice * row.DrawerBox.Qty).ToString("0.00"))</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Options.FixedDivdersCounts?.WideCount</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Options.FixedDivdersCounts?.DeepCount</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">$@row.Product.UnitPrice.ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">$@((row.Product.UnitPrice * row.Product.Qty).ToString("0.00"))</td>
                     </tr>
                 }
             }
@@ -120,9 +121,8 @@
     [Parameter]
     public bool UseInches { get; set; } = false;
 
-    public class DovetailDrawerBoxRowModel {
-        public required bool IsComplete { get; set; }
-        public required DovetailDrawerBoxProduct DrawerBox { get; init; }
+    public class DovetailDrawerBoxRowModel : ProductRowModel<DovetailDrawerBoxProduct> {
+        public DovetailDrawerBoxRowModel(DovetailDrawerBoxProduct product) : base(product) { }
     }
 
 }
