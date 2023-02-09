@@ -62,9 +62,16 @@ public abstract class Cabinet : IProduct {
 
     protected string GetMaterialType() {
 
-        if (BoxMaterial.Core == CabinetMaterialCore.Plywood) return "Sterling 18_5";
-        else if (BoxMaterial.Core == CabinetMaterialCore.Flake && FinishMaterial.Core == CabinetMaterialCore.Flake) return "Crown Paint";
-        else if (BoxMaterial.Core == CabinetMaterialCore.Flake && FinishMaterial.Core == CabinetMaterialCore.Plywood) return "Crown Veneer";
+        if (BoxMaterial.Core == CabinetMaterialCore.Plywood) {
+            return "Sterling 18_5";
+        } else if (BoxMaterial.Core == CabinetMaterialCore.Flake && FinishMaterial.Core == CabinetMaterialCore.Flake) {
+            if (BoxMaterial.Finish.ToLower() == "white") {
+                return "Monarch Core";
+            }
+            return "Crown Paint";
+        } else if (BoxMaterial.Core == CabinetMaterialCore.Flake && FinishMaterial.Core == CabinetMaterialCore.Plywood) {
+            return "Crown Veneer";
+        }
 
         throw new InvalidOperationException("Unexpected material combination");
 
