@@ -101,7 +101,7 @@ internal class GenerateCabinetPackingList : DomainListener<TriggerOrderReleaseNo
 
         }
 
-        string outputFile = GetAvailableFileName(outputDirectory, $"{order.Number} - Cabinet Packing List");
+        string outputFile = _fileReader.GetAvailableFileName(outputDirectory, $"{order.Number} - Cabinet Packing List", ".xlsx");
 
         template.SaveAs(outputFile);
 
@@ -114,22 +114,6 @@ internal class GenerateCabinetPackingList : DomainListener<TriggerOrderReleaseNo
         }
 
         return $"{address.City} {address.State}, {address.Zip}";
-
-    }
-
-    public string GetAvailableFileName(string direcotry, string filename, string fileExtension = "xlsx") {
-
-        int index = 1;
-
-        string filepath = Path.Combine(direcotry, $"{filename}.{fileExtension}");
-
-        while (_fileReader.DoesFileExist(filepath)) {
-
-            filepath = Path.Combine(direcotry, $"{filename} ({index++}).{fileExtension}");
-
-        }
-
-        return filepath;
 
     }
 

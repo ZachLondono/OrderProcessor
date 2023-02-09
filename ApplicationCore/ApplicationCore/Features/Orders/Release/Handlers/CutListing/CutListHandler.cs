@@ -1,6 +1,4 @@
 ﻿using ApplicationCore.Features.Companies.Queries;
-using ApplicationCore.Features.ExcelTemplates.Contracts;
-using ApplicationCore.Features.ExcelTemplates.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Release.Handlers.CutListing.Models;
@@ -9,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Shared;
 
 namespace ApplicationCore.Features.Orders.Release.Handlers.CutListing;
 
@@ -19,13 +18,16 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
     private readonly IUIBus _uibus;
     private readonly ConstructionValues _construction;
     private readonly ComponentBuilderFactory _componentBuilderFactory;
+    private readonly IFileReader _fileReader;
 
-    public CutListHandler(ILogger<CutListHandler> logger, IBus bus, IUIBus uibus, ConstructionValues construction, ComponentBuilderFactory compnentBuilderFactory) {
+    public CutListHandler(ILogger<CutListHandler> logger, IBus bus, IUIBus uibus, ConstructionValues construction, ComponentBuilderFactory compnentBuilderFactory, IFileReader fileReader) {
+
         _logger = logger;
         _bus = bus;
         _uibus = uibus;
         _construction = construction;
         _componentBuilderFactory = compnentBuilderFactory;
+        _fileReader = fileReader;
     }
 
     public override async Task Handle(TriggerOrderReleaseNotification notification) {
@@ -36,9 +38,6 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
         }
 
         var order = notification.Order;
-
-        var customerName = order.Customer.Name;
-        var vendorName = await GetCompanyName(order.VendorId);
 
         var dovetailBoxes = order.Products
                                 .Where(p => p is IDrawerBoxContainer)
@@ -53,53 +52,39 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                 })
                                 .ToList();
 
+        if (!dovetailBoxes.Any()) {
+            _uibus.Publish(new OrderReleaseInfoNotification("Not creating Cut Lists, because there where no drawer boxes found"));
+            return;
+        }
+
+        var customerName = order.Customer.Name;
+        var vendorName = await GetCompanyName(order.VendorId);
+
         CutList cutList = CreateStdCutList(order, dovetailBoxes, customerName, vendorName, _construction);
         CutList optimizedCutList = CreateOptimizedCutList(order, dovetailBoxes, customerName, vendorName, _construction);
         CutList bottomCutList = CreateBottomCutList(order, dovetailBoxes, customerName, vendorName, _construction);
 
-        var config = new ClosedXMLTemplateConfiguration() { TemplateFilePath = notification.ReleaseProfile.CutListTemplatePath };
         string outputDir = notification.ReleaseProfile.CutListOutputDirectory;
         bool doPrint = notification.ReleaseProfile.PrintCutList;
-        string prefix = $"{order.Number} - {order.Name}";
+        string job = $"{order.Number} - {order.Name}";
 
-        var responseStd = await _bus.Send(new FillTemplateRequest(cutList, outputDir, $"{prefix} CUTLIST", doPrint, config));
-        responseStd.Match(
-            r => {
-                _logger.LogInformation("Drawer Box Cut List Created : {FilePath}", r.FilePath);
-                _uibus.Publish(new OrderReleaseSuccessNotification($"Cut List created {r.FilePath}"));
-            },
-            error => {
-                _logger.LogError("Error creating Cut List : {Error}", error);
-                _uibus.Publish(new OrderReleaseErrorNotification($"Error creating Cut List {error.Details}"));
-            }
-        );
+        GenerateCutList(cutList, job, outputDir);
+        GenerateCutList(optimizedCutList, job, outputDir);
+        GenerateCutList(bottomCutList, job, outputDir);
 
-        var responseOptimized = await _bus.Send(new FillTemplateRequest(optimizedCutList, outputDir, $"{prefix} OPTIMIZED CUTLIST", doPrint, config));
-        responseOptimized.Match(
-            r => {
-                _logger.LogInformation("Drawer Box Cut List Created : {FilePath}", r.FilePath);
-                _uibus.Publish(new OrderReleaseSuccessNotification($"Cut List created {r.FilePath}"));
-            },
-            error => {
-                _logger.LogError("Error creating Cut List : {Error}", error);
-                _uibus.Publish(new OrderReleaseErrorNotification($"Error creating Cut List {error.Details}"));
-            }
-        );
+    }
 
-        var responseBottom = await _bus.Send(new FillTemplateRequest(bottomCutList, outputDir, $"{prefix} BOTTOM CUTLIST", doPrint, config));
-        responseBottom.Match(
-            r => {
-                _logger.LogInformation("Drawer Box Cut List Created : {FilePath}", r.FilePath);
-                _uibus.Publish(new OrderReleaseSuccessNotification($"Cut List created {r.FilePath}"));
-            },
-            error => {
-                _logger.LogError("Error creating Cut List : {Error}", error);
-                _uibus.Publish(new OrderReleaseErrorNotification($"Error creating Cut List {error.Details}"));
-            }
-        );
+    private void GenerateCutList(CutList cutlist, string job, string outputDir) {
 
-        // TODO: if necessary, format the generated cutlist note field when the note is really long by writing the note in the left cell, autofit the row then merge the cells
-
+        var service = new CutListService();
+        try {
+            var wb = service.GenerateCutList(cutlist.Header, cutlist.Parts);
+            string outputFile = _fileReader.GetAvailableFileName(outputDir, $"{job} {cutlist.Name} CUT LIST", ".xlsx");
+            wb.SaveAs(outputFile);
+            _uibus.Publish(new OrderReleaseFileCreatedNotification("Cut List created", outputFile));
+        } catch (Exception ex) {
+            _uibus.Publish(new OrderReleaseErrorNotification($"Error creating Cut List {ex.Message}"));
+        }
 
     }
 
@@ -120,26 +105,24 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
     }
 
     private static CutList CreateStdCutList(Order order, IEnumerable<DovetailDrawerBox> dovetailBoxes, string customerName, string vendorName, ConstructionValues construction) {
-        int groupNum = 0;
+        
         int lineNum = 1;
         var cutlistItems = dovetailBoxes
                                 .SelectMany(b => {
-                                    groupNum++;
 
-                                    var items = new List<Item>();
+                                    var items = new List<PartRow>();
                                     foreach (var part in b.GetParts(construction)) {
 
                                         items.Add(new() {
-                                            GroupNumber = groupNum,
-                                            CabNumber = part.ProductNumber.ToString(),
-                                            LineNumber = lineNum++,
-                                            PartName = part.Type.ToString(),
+                                            CabNumbers = part.ProductNumber.ToString(),
+                                            Line = lineNum++,
+                                            Name = part.Type.ToString(),
                                             Qty = part.Qty,
                                             Width = part.Width.AsMillimeters(),
                                             Length = part.Length.AsMillimeters(),
                                             Comment = part.Comment,
                                             Material = part.Material,
-                                            Size = $"{part.Width.AsInchFraction()}\"W x {part.Length.AsInchFraction()}\"L",
+                                            PartSize = $"{part.Width.AsInchFraction()}\"W x {part.Length.AsInchFraction()}\"L",
                                         });
                                     }
 
@@ -147,12 +130,12 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                 })
                                 .ToList();
 
-        return CreateCutList(order, dovetailBoxes, customerName, vendorName, cutlistItems);
+        return CreateCutList(order, dovetailBoxes, customerName, vendorName, cutlistItems, "CUTLIST");
 
     }
 
     private static CutList CreateOptimizedCutList(Order order, IEnumerable<DovetailDrawerBox> dovetailBoxes, string customerName, string vendorName, ConstructionValues construction) {
-        int groupNum = 0;
+        
         int lineNum = 1;
         var cutlistItems = dovetailBoxes
                                 .SelectMany(b => b.GetParts(construction).Where(p => p.Type != DrawerBoxPartType.Bottom))
@@ -160,47 +143,41 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                 .Select(g => {
                                     var qty = g.Sum(b => b.Qty);
                                     string cabNumbers = string.Join(',', g.Select(p => p.ProductNumber).Distinct());
-                                    groupNum++;
-                                    return new Item() {
-                                        GroupNumber = groupNum,
-                                        CabNumber = cabNumbers,
-                                        LineNumber = lineNum++,
-                                        PartName = DrawerBoxPartType.Unknown.ToString(),
+                                    return new PartRow() {
+                                        CabNumbers = cabNumbers,
+                                        Line = lineNum++,
+                                        Name = DrawerBoxPartType.Unknown.ToString(),
                                         Qty = qty,
                                         Width = g.Key.Width.AsMillimeters(),
                                         Length = g.Key.Length.AsMillimeters(),
                                         Comment = "",
                                         Material = g.Key.Material,
-                                        Size = $"{g.Key.Width.AsInchFraction()}\"W x {g.Key.Length.AsInchFraction()}\"L",
+                                        PartSize = $"{g.Key.Width.AsInchFraction()}\"W x {g.Key.Length.AsInchFraction()}\"L",
                                     };
                                 })
                                 .ToList();
 
-        return CreateCutList(order, dovetailBoxes, customerName, vendorName, cutlistItems);
+        return CreateCutList(order, dovetailBoxes, customerName, vendorName, cutlistItems, "OPTIMIZED");
 
     }
 
     private static CutList CreateBottomCutList(Order order, IEnumerable<DovetailDrawerBox> dovetailBoxes, string customerName, string vendorName, ConstructionValues construction) {
-        int groupNum = 0;
+        
         int lineNum = 1;
-
         var cutlistItems = dovetailBoxes
                                 .SelectMany(b => {
-                                    groupNum++;
-
-                                    var items = new List<Item>();
+                                    var items = new List<PartRow>();
                                     foreach (var part in b.GetParts(construction).Where(p => p.Type == DrawerBoxPartType.Bottom)) {
                                         items.Add(new() {
-                                            GroupNumber = groupNum,
-                                            CabNumber = part.ProductNumber.ToString(),
-                                            LineNumber = lineNum++,
-                                            PartName = part.Type.ToString(),
+                                            CabNumbers = part.ProductNumber.ToString(),
+                                            Line = lineNum++,
+                                            Name = part.Type.ToString(),
                                             Qty = part.Qty,
                                             Width = Math.Round(part.Width.AsMillimeters(), 2),
                                             Length = Math.Round(part.Length.AsMillimeters(), 2),
                                             Comment = part.Comment,
                                             Material = part.Material,
-                                            Size = $"{part.Width.AsInchFraction()}\"W x {part.Length.AsInchFraction()}\"L",
+                                            PartSize = $"{part.Width.AsInchFraction()}\"W x {part.Length.AsInchFraction()}\"L"
                                         });
                                     }
 
@@ -208,11 +185,11 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                 })
                                 .ToList();
 
-        return CreateCutList(order, dovetailBoxes, customerName, vendorName, cutlistItems);
+        return CreateCutList(order, dovetailBoxes, customerName, vendorName, cutlistItems, "BOTTOMS");
 
     }
 
-    private static CutList CreateCutList(Order order, IEnumerable<DovetailDrawerBox> dovetailBoxes, string customerName, string vendorName, List<Item> cutlistItems) {
+    private static CutList CreateCutList(Order order, IEnumerable<DovetailDrawerBox> dovetailBoxes, string customerName, string vendorName, List<PartRow> parts, string name) {
 
         // TODO: if a drawerbox has a different option then the most common option than it should be shown in a part comment
 
@@ -240,24 +217,31 @@ public class CutListHandler : DomainListener<TriggerOrderReleaseNotification> {
                                 .First()
                                 .First();
 
+        var assembled = dovetailBoxes.Select(b => b.Options.Assembled)
+                                .GroupBy(c => c)
+                                .OrderByDescending(g => g.Count())
+                                .First()
+                                .First();
+
         var cutlist = new CutList() {
+            Name = name,
             Header = new Header() {
                 OrderNumber = order.Number,
-                OrderName = order.Name,
+                JobName = order.Name,
                 BoxCount = order.Products.Sum(b => b.Qty),
-                Clips = $"Clips: {clips}",
-                MountingHoles = $"Mounting Holes : {(mountingHoles ? "Yes" : "No")}", // Get the most common mounting holes option
-                Notch = $"Notch: {notch}",
-                PostFinish = $"Post Finish: {(postFin ? "Yes" : "No")}",
+                Clips = clips,
+                MountingHoles = mountingHoles,
+                Notches = notch,
+                Finish = postFin,
                 CustomerName = customerName,
                 VendorName = vendorName,
                 Note = order.CustomerComment,
-                OrderDate = order.OrderDate.ToShortDateString(),
+                OrderDate = order.OrderDate,
+                Assembly = assembled,
             },
-            Items = cutlistItems
+            Parts = parts
         };
         return cutlist;
     }
-
 
 }

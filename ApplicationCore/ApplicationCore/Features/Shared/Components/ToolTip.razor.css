@@ -4,6 +4,21 @@
     cursor: help;
 }
 
+.right_offset {
+    margin-left: -10px;
+}
+    .right_offset::after {
+        margin-left: -55px;
+    }
+
+.left_offset {
+    margin-left: -110px;
+}
+
+    .left_offset::after {
+        margin-left: 45px;
+    }
+
 span {
     visibility: hidden;
     position: absolute;

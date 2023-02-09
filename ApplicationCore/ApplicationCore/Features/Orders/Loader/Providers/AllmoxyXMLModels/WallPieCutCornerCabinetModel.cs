@@ -20,6 +20,9 @@ public class WallPieCutCornerCabinetModel : CabinetModelBase {
     [XmlElement("adjShelfQty")]
     public int AdjShelfQty { get; set; }
 
+    [XmlElement("extendDoorDown")]
+    public double ExtendDoorDown { get; set; }
+
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
         var builder = builderFactory.CreateWallPieCutCornerCabinetBuilder();
@@ -29,6 +32,7 @@ public class WallPieCutCornerCabinetModel : CabinetModelBase {
                     .WithRightDepth(Dimension.FromMillimeters(RightDepth))
                     .WithAdjustableShelves(AdjShelfQty)
                     .WithHingeSide((HingeSide == "Left") ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right)
+                    .WithExtendedDoor(Dimension.FromMillimeters(ExtendDoorDown))
                     .Build();
 
     }

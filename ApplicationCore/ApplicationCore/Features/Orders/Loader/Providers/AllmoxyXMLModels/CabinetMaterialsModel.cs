@@ -43,4 +43,7 @@ public class CabinetModel {
     [XmlElement("assembled")]
     public string Assembled { get; set; } = string.Empty;
 
+    [XmlElement("comment")]
+    public string Comment { get; set; } = string.Empty;
+
 }

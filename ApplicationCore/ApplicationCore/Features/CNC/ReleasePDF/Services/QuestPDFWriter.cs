@@ -73,10 +73,11 @@ public class QuestPDFWriter : IReleasePDFWriter {
             foreach (var group in partGroups) {
                 var part = group.First();
                 partsTableContent.Add(new()  {
+                        { "Product", part.ProductNumber },
                         { "Qty", group.Count().ToString() },
                         { "Name", part.Name },
-                        { "Width", part.Width.ToString() },
-                        { "Length", part.Length.ToString() },
+                        { "Width", part.Width.AsMillimeters().ToString("0.00") },
+                        { "Length", part.Length.AsMillimeters().ToString("0.00") },
                         { "Description", part.Description }
                     });
             }
@@ -91,7 +92,8 @@ public class QuestPDFWriter : IReleasePDFWriter {
             pages.Add(new() {
                 Header = $"{job.JobName}  [{release.MachineName}]",
                 Title = program.Name,
-                Subtitle = $"{material.Name} - {material.Width}x{material.Length}x{material.Thickness} (grained:{(material.IsGrained ? "yes" : "no")})",
+                Title2 = program.HasFace6 ? $"6{program.Name.Remove(0, 1)}" : "",
+                Subtitle = $"{material.Name} - {material.Width:0.00}x{material.Length:0.00}x{material.Thickness:0.00} (grained:{(material.IsGrained ? "yes" : "no")})",
 
                 Footer = "footer",
                 ImageData = imageData,
@@ -113,9 +115,9 @@ public class QuestPDFWriter : IReleasePDFWriter {
             materialTableContent.Add(new() {
                     { "Qty", mat.Count().ToString() },
                     { "Name", mat.Key.Name },
-                    { "Width", mat.Key.Width.ToString() },
-                    { "Length", mat.Key.Length.ToString() },
-                    { "Thickness", mat.Key.Thickness.ToString() },
+                    { "Width", mat.Key.Width.ToString("0.00") },
+                    { "Length", mat.Key.Length.ToString("0.00") },
+                    { "Thickness", mat.Key.Thickness.ToString("0.00") },
                     { "Grained", mat.Key.IsGrained ? "yes" : "no" },
                 });
         }
@@ -125,15 +127,16 @@ public class QuestPDFWriter : IReleasePDFWriter {
             Content = materialTableContent
         };
 
-        var releasedparts = release.Programs.SelectMany(p => p.Parts).GroupBy(p => p.Name);
+        var releasedparts = release.Programs.SelectMany(p => p.Parts).OrderBy(p => p.ProductNumber).GroupBy(p => p.Name);
         var partsTableContent = new List<Dictionary<string, string>>();
         foreach (var group in releasedparts) {
             var part = group.First();
             partsTableContent.Add(new() {
+                    { "Product", part.ProductNumber },
                     { "Qty", group.Count().ToString() },
                     { "Name", part.Name },
-                    { "Width", part.Width.ToString() },
-                    { "Length", part.Length.ToString() },
+                    { "Width", part.Width.AsMillimeters().ToString("0.00") },
+                    { "Length", part.Length.AsMillimeters().ToString("0.00") },
                 });
         }
 
@@ -161,18 +164,24 @@ public class QuestPDFWriter : IReleasePDFWriter {
         tables.Add(materialTable);
         tables.Add(partsTable);
 
+        string workIdStr = job.WorkOrderId is null ? "" : GetGuidAsBase64((Guid) job.WorkOrderId);
+
         var cover = new CoverModel() {
             Title = $"{job.JobName}  [{release.MachineName}]",
+            WorkOrderId = workIdStr,
             Info = new Dictionary<string, string>() {
-                    {"Vendor", "VendorName" },
-                    {"Customer", "CustomerName" },
-                    {"Order Date", DateTime.Today.ToShortDateString() },
-                    {"Due Date", DateTime.Today.ToShortDateString() }
+                    {"Vendor", job.VendorName },
+                    {"Customer", job.CustomerName },
+                    {"Order Date", job.OrderDate.ToShortDateString() },
+                    {"Release Date", job.ReleaseDate.ToShortDateString() }
                 },
             Tables = tables
         };
+
         return cover;
     }
+
+    private static string GetGuidAsBase64(Guid id) => Convert.ToBase64String(id.ToByteArray()).Replace("/", "-").Replace("+", "_").Replace("=", "");
 
     private static string GetFileName(string path, string filename) {
 

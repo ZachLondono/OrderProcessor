@@ -31,7 +31,7 @@ internal class TallCabinetBuilder : CabinetBuilder<TallCabinet> {
     }
 
     public override TallCabinet Build() {
-        var cabinet = TallCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, Doors, ToeType, Inside);
+        var cabinet = TallCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, Comment, Doors, ToeType, Inside);
         return cabinet;
     }
 }

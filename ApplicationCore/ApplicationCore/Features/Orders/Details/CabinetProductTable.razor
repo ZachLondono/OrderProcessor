@@ -1,10 +1,12 @@
 ﻿@using ApplicationCore.Features.Orders.Shared.Domain.Products;
 @using ApplicationCore.Features.Orders.Shared.Domain;
+@using ApplicationCore.Features.Shared.Components
 
 <div class="overflow-x-auto rounded-md">
     <table class="table-auto">
         <thead class="border-b border-slate-300">
             <tr class="dark:bg-slate-700 dark:text-gray-500">
+                <th></th>
                 <th class="p-5">#</th>
                 <th class="p-5">Qty</th>
                 <th class="p-5">Height</th>
@@ -23,29 +25,44 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var cabinet in Cabinets) {
+            @foreach (var product in Cabinets) {
                 <tr>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.ProductNumber</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.Qty</td>
+                    <td>
+                        @if (product.IsComplete) {
+                            <ToolTip UnderLine="false" Text="Complete" Offset="ToolTip.OffsetSide.Right">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-600">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </ToolTip>
+                        } else {
+                            <ToolTip UnderLine="false" Text="Incomplete" Offset="ToolTip.OffsetSide.Right">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-red-600">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </ToolTip>
+                        }
+                    </td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@product.Cabinet.ProductNumber</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@product.Cabinet.Qty</td>
                     @if (UseInches) {
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)cabinet.Height.GetFormatedFraction())"</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)cabinet.Width.GetFormatedFraction())"</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)cabinet.Depth.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)product.Cabinet.Height.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)product.Cabinet.Width.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)product.Cabinet.Depth.GetFormatedFraction())"</td>
                     } else {
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.Height.AsMillimeters().ToString("0.00")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.Width.AsMillimeters().ToString("0.00")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.Depth.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@product.Cabinet.Height.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@product.Cabinet.Width.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@product.Cabinet.Depth.AsMillimeters().ToString("0.00")</td>
                     }
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{cabinet.BoxMaterial.Finish}/{cabinet.BoxMaterial.Core}")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{cabinet.FinishMaterial.Finish}/{cabinet.FinishMaterial.Core}")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{cabinet.FinishMaterial.PaintColor ?? "N/A"}")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.EdgeBandingColor</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.LeftSide.Type.ToString()</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.RightSide.Type.ToString()</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(cabinet.Assembled ? "Yes" : "No")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.Room</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@cabinet.UnitPrice.ToString("$0.00")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((cabinet.UnitPrice * cabinet.Qty).ToString("$0.00"))</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{product.Cabinet.BoxMaterial.Finish}/{product.Cabinet.BoxMaterial.Core}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{product.Cabinet.FinishMaterial.Finish}/{product.Cabinet.FinishMaterial.Core}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{product.Cabinet.FinishMaterial.PaintColor ?? "N/A"}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@product.Cabinet.EdgeBandingColor</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@product.Cabinet.LeftSide.Type.ToString()</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@product.Cabinet.RightSide.Type.ToString()</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(product.Cabinet.Assembled ? "Yes" : "No")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@product.Cabinet.Room</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@product.Cabinet.UnitPrice.ToString("$0.00")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((product.Cabinet.UnitPrice * product.Cabinet.Qty).ToString("$0.00"))</td>
                 </tr>
             }
         </tbody>
@@ -55,8 +72,17 @@
 @code {
 
     [Parameter]
-    public IEnumerable<Cabinet> Cabinets { get; set; } = Enumerable.Empty<Cabinet>();
+    public IEnumerable<CabinetRowModel> Cabinets { get; set; } = Enumerable.Empty<CabinetRowModel>();
+
     [Parameter]
     public bool UseInches { get; set; }
+
+    public class CabinetRowModel {
+
+        public required bool IsComplete { get; set; }
+        public required Cabinet Cabinet { get; init; }
+
+    }
+
 
 }

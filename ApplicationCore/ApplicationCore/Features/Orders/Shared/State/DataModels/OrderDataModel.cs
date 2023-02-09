@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
@@ -13,23 +12,13 @@ public class OrderDataModel {
 
     public string Name { get; set; } = string.Empty;
 
-    public Status Status { get; set; } = Status.UNKNOWN;
-
     public string CustomerName { get; set; } = string.Empty;
 
     public Guid VendorId { get; set; }
 
-    public string ProductionNote { get; set; } = string.Empty;
-
     public string CustomerComment { get; set; } = string.Empty;
 
     public DateTime OrderDate { get; set; }
-
-    public DateTime? ReleaseDate { get; set; }
-
-    public DateTime? ProductionDate { get; set; }
-
-    public DateTime? CompleteDate { get; set; }
 
     public decimal Tax { get; set; }
 
@@ -91,7 +80,7 @@ public class OrderDataModel {
             }
         };
 
-        return new Order(orderId, Source, Status, Number, Name, customer, VendorId, ProductionNote, CustomerComment, OrderDate, ReleaseDate, ProductionDate, CompleteDate, shippingInfo, billing, Tax, PriceAdjustment, Rush, Info.AsReadOnly(), products, items);
+        return new Order(orderId, Source, Number, Name, customer, VendorId, CustomerComment, OrderDate, shippingInfo, billing, Tax, PriceAdjustment, Rush, Info.AsReadOnly(), products, items);
 
     }
 

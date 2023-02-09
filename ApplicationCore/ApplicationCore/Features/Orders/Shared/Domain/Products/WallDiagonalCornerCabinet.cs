@@ -13,6 +13,9 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
     public HingeSide HingeSide { get; }
     public int DoorQty { get; }
     public int AdjustableShelves { get; }
+    public Dimension ExtendedDoor { get; }
+
+    public override string Description => "Diagonal Corner Wall Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),
@@ -25,9 +28,9 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
     public WallDiagonalCornerCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide,
-                        Dimension rightWidth, Dimension rightDepth, int adjShelfQty, HingeSide hingeSide, int doorQty)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfOptions, edgeBandingColor, rightSide, leftSide) {
+                        CabinetSide rightSide, CabinetSide leftSide, string comment,
+                        Dimension rightWidth, Dimension rightDepth, int adjShelfQty, HingeSide hingeSide, int doorQty, Dimension extendedDoor)
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfOptions, edgeBandingColor, rightSide, leftSide, comment) {
 
         if (leftSide.Type == CabinetSideType.AppliedPanel || rightSide.Type == CabinetSideType.AppliedPanel)
             throw new InvalidOperationException("Wall cabinet cannot have applied panel sides");
@@ -37,6 +40,7 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
         AdjustableShelves = adjShelfQty;
         HingeSide = hingeSide;
         DoorQty = doorQty;
+        ExtendedDoor = extendedDoor;
 
         if (DoorQty > 2 || DoorQty < 1) throw new InvalidOperationException("Invalid number of doors");
 
@@ -45,9 +49,9 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
     public static WallDiagonalCornerCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide,
-                        Dimension rightWidth, Dimension rightDepth, int adjShelfQty, HingeSide hingeSide, int doorQty)
-                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfOptions, edgeBandingColor, rightSide, leftSide, rightWidth, rightDepth, adjShelfQty, hingeSide, doorQty);
+                        CabinetSide rightSide, CabinetSide leftSide, string comment,
+                        Dimension rightWidth, Dimension rightDepth, int adjShelfQty, HingeSide hingeSide, int doorQty, Dimension extendedDoor)
+                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfOptions, edgeBandingColor, rightSide, leftSide, comment, rightWidth, rightDepth, adjShelfQty, hingeSide, doorQty, extendedDoor);
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
@@ -58,7 +62,7 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
             _ => "WC1D-M"
         };
 
-        yield return new PPProduct(Room, sku, ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), new(), new());
+        yield return new PPProduct(Id, Room, sku, ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), new());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
@@ -116,6 +120,18 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
         }
 
         return parameters;
+    }
+
+    private Dictionary<string, string> GetParameterOverrides() {
+
+        var parameters = new Dictionary<string, string>();
+
+        if (ExtendedDoor != Dimension.Zero) {
+            parameters.Add("ExtendDoorD", ExtendedDoor.AsMillimeters().ToString());
+        }
+
+        return parameters;
+
     }
 
     private string GetHingeSideOption() => HingeSide switch {

@@ -22,6 +22,8 @@ public abstract class Cabinet : IProduct {
     public string EdgeBandingColor { get; }
     public CabinetSide RightSide { get; }
     public CabinetSide LeftSide { get; }
+    public string Comment { get; }
+    public abstract string Description { get; }
 
     public static CabinetConstruction Construction { get; set; } = new() {
         TopThickness = Dimension.FromMillimeters(19),
@@ -34,7 +36,7 @@ public abstract class Cabinet : IProduct {
     public Cabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                 Dimension height, Dimension width, Dimension depth,
                 CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
-                CabinetSide rightSide, CabinetSide leftSide) {
+                CabinetSide rightSide, CabinetSide leftSide, string comment) {
 
         Id = id;
         Qty = qty;
@@ -51,10 +53,11 @@ public abstract class Cabinet : IProduct {
         EdgeBandingColor = edgeBandingColor;
         RightSide = rightSide;
         LeftSide = leftSide;
+        Comment = comment;
 
         if (boxMaterial.Core == CabinetMaterialCore.Plywood && finishMaterial.Core == CabinetMaterialCore.Flake)
             throw new InvalidOperationException("Cannot create cabinet with plywood box and flake finished side");
-
+        
     }
 
     protected string GetMaterialType() {

@@ -9,4 +9,6 @@ public interface IFileReader {
 
     bool DoesFileExist(string filePath);
 
+    string GetAvailableFileName(string direcotry, string filename, string fileExtension = "");
+
 }

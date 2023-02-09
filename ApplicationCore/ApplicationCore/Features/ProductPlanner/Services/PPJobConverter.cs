@@ -167,6 +167,8 @@ public class PPJobConverter {
             Qty = 1,
             SeqText = "",
             Units = PPUnits.Millimeters,
+            Comment = product.Comment,
+            ProductId = product.ProductId,
             Parameters = product.Parameters
         };
 

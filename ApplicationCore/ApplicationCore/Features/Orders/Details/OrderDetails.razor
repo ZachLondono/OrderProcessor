@@ -1,4 +1,7 @@
-﻿@using ApplicationCore.Features.Companies.Domain.ValueObjects
+﻿@using ApplicationCore.Features.CNC.LabelDB;
+@using ApplicationCore.Features.CNC.LabelDB.Contracts;
+@using ApplicationCore.Features.CNC.ReleasePDF;
+@using ApplicationCore.Features.Companies.Domain.ValueObjects
 @using ApplicationCore.Features.Orders.Details;
 @using ApplicationCore.Features.Orders.Shared.Domain
 @using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
@@ -6,6 +9,7 @@
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Features.ProductPlanner;
 @using ApplicationCore.Features.ProductPlanner.Contracts;
+@using ApplicationCore.Features.WorkOrders;
 @using ApplicationCore.Infrastructure
 @using System.Diagnostics
 @using ApplicationCore.Features.Shared.Components
@@ -15,193 +19,151 @@
 @using ApplicationCore.Features.Orders.Shared;
 @using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 @using ApplicationCore.Pages.OrderDetails;
+@using static ApplicationCore.Features.Orders.Details.CabinetProductTable;
+@inherits UIListenerComponent<WorkOrdersUpdatNotification>
 @inject IBus Bus
+@inject IUIBus UIBus
 @inject OrderState OrderState
+@inject Manufacturing.IsProductComplete IsProductComplete
+@inject IFilePicker FilePicker
+@inject NavigationService NavigationService
 
 @if (OrderState.Order is null) {
     <span>No order selected</span>
 } else {
     
-    <span class="@($"pill {OrderState.Order.Status.GetColor()}")">@OrderState.Order.Status</span>
+    <section id="summary">
+        <div class="mb-4">
+            <label id="number" class="text-lg w-24 inline-block dark:text-gray-400">Number</label>
+            <span class="text-xl w-64 border-b-2 border-gray-400 dark:text-white">@OrderState.Order.Number</span>
+            @if (OrderState.Order.Rush) {
+                <span class="p-2 text-white font-bold bg-red-500">RUSH</span>
+            }
+        </div>
+        <div>
+            <label id="name" class="text-lg w-24 inline-block dark:text-gray-400">Name</label>
+            <span class="text-xl w-64 border-b-2 border-gray-400 dark:text-white">@OrderState.Order.Name</span>
+        </div>
+        <div>
+            <label id="orderdate" class="text-md w-24 inline-block dark:text-gray-400">Order Date</label>
+            <span class="text-lg dark:text-white">@OrderState.Order.OrderDate.ToShortDateString()</span>
+        </div>
+    </section>
 
-    <EditForm Model="@_infoModel" OnValidSubmit="@SaveOrder">
-        <div class="grid" style="grid-template-columns: 1fr auto;">
-            <div>
-                <div class="mb-4">
-                    <label id="number" class="text-lg w-24 inline-block dark:text-gray-400">Number</label>
-                    <InputText Value="@_infoModel.Number" ValueChanged="@NumberChanged" ValueExpression="() => _infoModel.Number" for="number" class="text-xl w-64 border-b-2 bg-transparent border-gray-400 focus:border-black focus:outline-0 active:outline-0 transition ease-in-out duration-300 dark:text-white"> </InputText>
-                    @if (OrderState.Order.Rush) {
-                        <span class="p-2 text-white font-bold bg-red-500">RUSH</span>
-                    }
-                </div>
-                <div>
-                    <label id="name" class="text-lg w-24 inline-block dark:text-gray-400">Name</label>
-                    <InputText Value="@_infoModel.Name" ValueChanged="@NameChanged" ValueExpression="() => _infoModel.Name" for="name" class="text-xl w-64 border-b-2 bg-transparent border-gray-400 focus:border-black focus:outline-0 active:outline-0 transition ease-in-out duration-300 dark:text-white"></InputText>
-                </div>
-            </div>
-            <div class="row-span-2 ml-5">
-                <div class="mb-4">
-                    <Button Type="submit" Class="flex justify-center items-center w-48">
-                        @if (_isSaving) {
-                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                        }
-                        @if (_isDirty) {
-                            <span>Save</span>
-                        } else {
-                            <span>Saved</span>
-                        }
-                    </Button>
-                </div>
-                <div class="mb-4">
-                    <Button Type="button" OnClickAsync="ReleaseOrder" Class="float-left flex justify-center items-center h-10 w-36" Rounded="ButtonRounded.Left" Color="ButtonColor.Secondary">
-                        @if (_isReleasing) {
-                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                        }
-                        Release
-                    </Button><!--
-                 --><DropDown Class="flex justify-center items-center w-12 h-10" Rounded="ButtonRounded.Right" Color="ButtonColor.Secondary" Position="DropdownPosition.BottomRight" OnOpenAsync="LoadReleaseProfile">
-                        <ButtonContent>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </ButtonContent>
-                        <DropDownContent>
-                            <ReleaseProfileDropDown Profile="_customReleaseProfile" />
-                        </DropDownContent>
-                    </DropDown>
-                </div>
-                @if (OrderState.Order.Status == Status.Released) {
-                    <div class="mb-4">
-                        <Button Type="button" OnClickAsync="CompleteOrder" Class="w-48" Color="ButtonColor.Success">
-                            Complete
-                        </Button>
-                    </div>
+    <section class="mt-10" id="actions">
+        <div class="mb-4">
+            <Button Type="button" OnClickAsync="ReleaseOrder" Disabled="_isReleasing" Class="float-left flex justify-center items-center h-10 w-36" Rounded="ButtonRounded.Left" Color="ButtonColor.Secondary">
+                @if (_isReleasing) {
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
                 }
-                <div class="mb-4">
-                    <Button Type="button" OnClickAsync="ExportForPSI" Color="ButtonColor.Secondary" Style="ButtonStyle.Text">
-                        Export for PSI
-                     </Button>
-                </div>
-            </div>
-            <InputTextArea placeholder="Note" Value="@_infoModel.ProductionNote" ValueChanged="@NoteChanged" ValueExpression="() => _infoModel.ProductionNote" for="note" class="w-full mt-5"></InputTextArea>
+                Release
+            </Button><!--
+         --><DropDown Class="flex justify-center items-center w-12 h-10" Rounded="ButtonRounded.Right" Color="ButtonColor.Secondary" Position="DropdownPosition.BottomRight" OnOpenAsync="LoadReleaseProfile">
+                <ButtonContent>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </ButtonContent>
+                <DropDownContent>
+                    <ReleaseProfileDropDown Profile="_customReleaseProfile" />
+                </DropDownContent>
+            </DropDown>
         </div>
 
-        <section class="mt-6" id="companyInfo">
-            <div>
-                <label id="customer" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Customer</label>
-                <span class="text-lg dark:text-white h-5 align-middle">@OrderState.Order.Customer.Name</span>
-            </div>
-            <div>
-                @if(_vendorName is not null) {
-                    <label id="vendor" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Vendor</label>
-                    <span class="text-lg hover:underline cursor-pointer dark:text-white h-5 align-middle" @onclick="() => OpenCompanyPage(OrderState.Order.VendorId)">@_vendorName</span>
-                    <svg @onclick="SelectVendor" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-4 inline-block text-black dark:text-white cursor-pointer">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                    </svg>
-                } else {
-                    <span>No vendor info</span>
-                }
-            </div>
-            <div>
-                <label id="comment" class="text-md w-24 inline-block dark:text-gray-400">Comment</label>
-                <span class="text-lg dark:text-white">@OrderState.Order.CustomerComment</span>
-            </div>
-        </section>
+        <div class="mb-4">
+            <Button Type="button" OnClickAsync="ExportForPSI" Color="ButtonColor.Secondary" Style="ButtonStyle.Outline">
+                Export for PSI
+            </Button>
+        </div>
+        <div class="mb-4">
+            <Button Type="button" OnClickAsync="GenerateCNCReleasePDF" Color="ButtonColor.Secondary" Style="ButtonStyle.Outline">
+                Generate CNC PDF
+            </Button>
+        </div>
+    </section>
 
-        <section class="mt-10" id="shipping">
-
-            <div>
-                <label id="shippingmethod" class="text-md w-24 inline-block dark:text-gray-400">Method</label>
-                <span class="text-lg dark:text-white">@OrderState.Order.Shipping.Method</span>
-            </div>
-
-            <div>
-                <label id="shippingcontact" class="text-md w-24 inline-block dark:text-gray-400">Contact</label>
-                <span class="text-lg dark:text-white">@OrderState.Order.Shipping.Contact</span>
-            </div>
-
-            <div>
-                <label id="shippingphone" class="text-md w-24 inline-block dark:text-gray-400">Phone</label>
-                <span class="text-lg dark:text-white">@OrderState.Order.Shipping.PhoneNumber</span>
-            </div>
-
-
-            <div>
-                <h3 class="text-md w-24 inline-block dark:text-gray-400">Address</h3>
-                <div class="ml-5">
-                    <div>
-                        <label id="shippingline1" class="text-sm w-24 inline-block dark:text-gray-400">Line 1</label>
-                        <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Line1</span>
-                    </div>
-
-                    <div>
-                        <label id="shippingline2" class="text-sm w-24 inline-block dark:text-gray-400">Line 2</label>
-                        <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Line2</span>
-                    </div>
-
-                    <div>
-                        <label id="shippingline3" class="text-sm w-24 inline-block dark:text-gray-400">Line 3</label>
-                        <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Line3</span>
-                    </div>
-
-                    <div>
-                        <label id="shippingcity" class="text-sm w-24 inline-block dark:text-gray-400">City</label>
-                        <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.City</span>
-                    </div>
-
-                    <div>
-                        <label id="shippingstate" class="text-sm w-24 inline-block dark:text-gray-400">State</label>
-                        <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.State</span>
-                    </div>
-
-                    <div>
-                        <label id="shippingzip" class="text-sm w-24 inline-block dark:text-gray-400">Zip</label>
-                        <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Zip</span>
-                    </div>
-
-                    <div>
-                        <label id="shippingcountry" class="text-sm w-24 inline-block dark:text-gray-400">Country</label>
-                        <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Country</span>
-                    </div>
-                </div>
-            </div>
-
-        </section>
-
-        <section class="mt-10" id="dates">
-            <div>
-                <label id="orderdate" class="text-md w-24 inline-block dark:text-gray-400">Order Date</label>
-                <span class="text-lg dark:text-white">@OrderState.Order.OrderDate.ToShortDateString()</span>
-            </div>
-            <div>
-                <label id="releasedate" class="text-md w-24 inline-block dark:text-gray-400">Release Date</label>
-                <span class="text-lg dark:text-white">@(OrderState.Order.Status == Status.Pending || OrderState.Order.ReleaseDate is null ? "Not Released" : ((DateTime) OrderState.Order.ReleaseDate).ToShortDateString())</span>
-            </div>
-            @if(OrderState.Order.Status != Status.Completed || OrderState.Order.CompleteDate is null) {
-                <div>
-                    <label id="productiondate" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Prod. Date</label>
-                    @if(OrderState.Order.ProductionDate is null) {
-                        <span class="text-lg dark:text-white h-5 align-middle" title="Release order to assign production date">Not Scheduled</span>
-                    } else {
-                        <InputDate TValue="DateTime" Value="@_infoModel.ProductionDate" ValueChanged="@ProductionDateChanged" ValueExpression="() => _infoModel.ProductionDate" class="hover:underline cursor-pointer text-lg dark:text-white h-5 align-middle"></InputDate>
-                    }
-                </div>
+    <section class="mt-10" id="companyInfo">
+        <div>
+            <label id="customer" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Customer</label>
+            <span class="text-lg dark:text-white h-5 align-middle">@OrderState.Order.Customer.Name</span>
+        </div>
+        <div>
+            @if(_vendorName is not null) {
+                <label id="vendor" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Vendor</label>
+                <span class="text-lg hover:underline cursor-pointer dark:text-white h-5 align-middle" @onclick="() => OpenCompanyPage(OrderState.Order.VendorId)">@_vendorName</span>
             } else {
-                <div>
-                    <label id="completedate" class="text-md w-24 inline-block dark:text-gray-400">Comp. Date</label>
-                    <span class="text-lg dark:text-white">@(((DateTime)OrderState.Order.CompleteDate).ToShortDateString())</span>
-                </div>
+                <span>No vendor info</span>
             }
-        </section>
-    
-    </EditForm>
+        </div>
+        <div>
+            <label id="comment" class="text-md w-24 inline-block dark:text-gray-400">Comment</label>
+            <span class="text-lg dark:text-white">@OrderState.Order.CustomerComment</span>
+        </div>
+    </section>
+
+    <section class="mt-10" id="shipping">
+
+        <div>
+            <label id="shippingmethod" class="text-md w-24 inline-block dark:text-gray-400">Method</label>
+            <span class="text-lg dark:text-white">@OrderState.Order.Shipping.Method</span>
+        </div>
+
+        <div>
+            <label id="shippingcontact" class="text-md w-24 inline-block dark:text-gray-400">Contact</label>
+            <span class="text-lg dark:text-white">@OrderState.Order.Shipping.Contact</span>
+        </div>
+
+        <div>
+            <label id="shippingphone" class="text-md w-24 inline-block dark:text-gray-400">Phone</label>
+            <span class="text-lg dark:text-white">@OrderState.Order.Shipping.PhoneNumber</span>
+        </div>
+
+
+        <div>
+            <h3 class="text-md w-24 inline-block dark:text-gray-400">Address</h3>
+            <div class="ml-5">
+                <div>
+                    <label id="shippingline1" class="text-sm w-24 inline-block dark:text-gray-400">Line 1</label>
+                    <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Line1</span>
+                </div>
+
+                <div>
+                    <label id="shippingline2" class="text-sm w-24 inline-block dark:text-gray-400">Line 2</label>
+                    <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Line2</span>
+                </div>
+
+                <div>
+                    <label id="shippingline3" class="text-sm w-24 inline-block dark:text-gray-400">Line 3</label>
+                    <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Line3</span>
+                </div>
+
+                <div>
+                    <label id="shippingcity" class="text-sm w-24 inline-block dark:text-gray-400">City</label>
+                    <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.City</span>
+                </div>
+
+                <div>
+                    <label id="shippingstate" class="text-sm w-24 inline-block dark:text-gray-400">State</label>
+                    <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.State</span>
+                </div>
+
+                <div>
+                    <label id="shippingzip" class="text-sm w-24 inline-block dark:text-gray-400">Zip</label>
+                    <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Zip</span>
+                </div>
+
+                <div>
+                    <label id="shippingcountry" class="text-sm w-24 inline-block dark:text-gray-400">Country</label>
+                    <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Country</span>
+                </div>
+            </div>
+        </div>
+
+    </section>
 
     <section class="mt-10" id="prices">
         <div>
@@ -274,7 +236,7 @@
 	    </section>
     }
 
-    <section class="mt-10" id="drawerBoxes">
+    <section class="mt-10" id="products">
         <header>
             <h3 class="dark:text-gray-400">Products (@OrderState.Order.Products.Sum(b => b.Qty))</h3>
         </header>
@@ -316,6 +278,7 @@
                     <h3>MDF Doors</h3>
                     <MDFDoorProductTable UseInches="@_useInches" MDFDoors="@doors" />
                 </section>
+      
             }
 
         }
@@ -328,33 +291,52 @@
     public IModalService Modal { get; set; } = default!;
 
     [Parameter]
-    public IOrderDetailsViewModel? ViewModel { get; set; }
+    public IOrderDetailsPageViewModel? ViewModel { get; set; }
+
+    public List<CabinetRowModel> Cabinets { get; set; } = new();
 
     private string? _vendorName = null;
     private ReleaseProfile? _customReleaseProfile = null;
 
     private bool _useInches = false;
 
-    private InfoModel _infoModel = new();
-
-    private bool _isSaving = false;
     private bool _isReleasing = false;
-    private bool _isDirty = false;
 
     protected override async Task OnInitializedAsync() {
 
         if (OrderState.Order is null) return;
 
-        _infoModel = new() {
-                Name = OrderState.Order.Name,
-                Number = OrderState.Order.Number,
-                ProductionNote = OrderState.Order.ProductionNote,
-                ProductionDate = (OrderState.Order.ProductionDate is null ? DateTime.Now : (DateTime) OrderState.Order.ProductionDate)
-        };
-
         if (ViewModel is not null) {
             _vendorName = await ViewModel.GetCompanyName(OrderState.Order.VendorId);
         }
+
+        Cabinets = OrderState.Order
+                            .Products
+                            .Where(p => p is Cabinet)
+                            .Cast<Cabinet>()
+                            .Select(cab => new CabinetRowModel() {
+                                Cabinet = cab,
+                                IsComplete = false
+                            })
+                            .ToList();
+
+        await UpdateProductStatuses();
+
+    }
+
+    private async Task UpdateProductStatuses() {
+
+        if (OrderState.Order is null) {
+            return;
+        }
+
+        foreach (var cabinet in Cabinets) {
+
+            cabinet.IsComplete = await IsProductComplete(OrderState.Order.Id, cabinet.Cabinet.Id);
+
+        }
+
+        StateHasChanged();
 
     }
 
@@ -373,83 +355,15 @@
     }
 
     public async Task OpenCompanyPage(Guid companyId) {
-        if (ViewModel is null) return;
-        await ViewModel.OpenCompanyPage(companyId);
-    }
-
-    private async Task SelectVendor() {
-
-        if (OrderState.Order is null) return;
-
-        async Task SetVendor(object? result) {
-            if (OrderState.Order is null) return;
-
-            if (result is Guid vendorId) {
-                OrderState.UpdateVendor(vendorId);
-            }
-
-            if (ViewModel is not null) {
-                _vendorName = await ViewModel.GetCompanyName(OrderState.Order.VendorId);
-            }
-
-            _isDirty = true;
-        }
-
-        await SelectCompanyModal(SetVendor);
-
-    }
-
-    private async Task SelectCompanyModal(Func<object?, Task> onConfirmation) {
-
-        var dialog = Modal.Show<SelectCompanyDialog>();
-        var result = await dialog.Result;
-
-        if (result.Confirmed) {
-            await onConfirmation(result.Data);
-        }
-
-    }
-
-    private void NumberChanged(string value) {
-        _infoModel.Number = value;
-        UpdateInfo();
-    }
-
-    private void NameChanged(string value) {
-        _infoModel.Name = value;
-        UpdateInfo();
-    }
-
-    private void NoteChanged(string value) {
-        _infoModel.ProductionNote = value;
-        UpdateInfo();
-    }
-
-    private void UpdateInfo() {
-        if (OrderState.Order is null) return;
-        OrderState.UpdateInfo(_infoModel.Number, _infoModel.Name, _infoModel.ProductionNote); // TODO: update production note
-        _isDirty = true;
-    }
-
-    private void ProductionDateChanged(DateTime value) {
-        _infoModel.ProductionDate = value;
-        OrderState.ScheduleProduction(value);
-        _isDirty = true;
-    }
-
-    private async Task SaveOrder() {
-        _isSaving = true;
-        var result = await OrderState.SaveChanges();
-        _isSaving = false;
-        _isDirty = false;
-
-        result.OnError(
-            async error => await Modal.OpenErrorDialog(error)
-        );
-
+        await NavigationService.NavigateToCompanyPage(companyId);
     }
 
     private async Task ReleaseOrder() {
+
+        if (_isReleasing == true) {
+            return;
+        }
+
         _isReleasing = true;
 
         var parameters = new ModalParameters();
@@ -468,23 +382,6 @@
         _ = await dialog.Result;
 
         _isReleasing = false;
-        _isDirty = true;
-
-
-        if (OrderState.Order is not null && OrderState.Order.ProductionDate is not null) {
-            _infoModel.ProductionDate = (DateTime) OrderState.Order.ProductionDate;
-            StateHasChanged();
-        }
-
-    }
-
-    private async Task CompleteOrder() {
-        var result = await OrderState.Complete();
-        _isDirty = true;
-
-        result.OnError(
-            async error => await Modal.OpenErrorDialog(error)
-        );
 
     }
 
@@ -497,8 +394,72 @@
         if (errors != string.Empty) {
             await Modal.OpenInformationDialog("Manual Overrides Needed:", errors, InformationDialog.MessageType.Information);
         } else {
-            await Modal.OpenInformationDialog("Completed", $"EXT export completed", InformationDialog.MessageType.Information);
+            await Modal.OpenInformationDialog("Completed", "EXT export completed", InformationDialog.MessageType.Information);
         }
+
+    }
+
+    private async Task GenerateCNCReleasePDF() {
+
+        if (OrderState.Order is null || ViewModel is null) return;
+
+        var waitingDialog = ShowLoadingDialog("Waiting", "Select Label File.");
+
+        string selectedPath = "";
+        bool wasPicked = await FilePicker.PickFileAsync("Select label database", "Y:\\CADCode\\Label Data", new("CADCode Label File", ".mdb"), (path) => {
+            selectedPath = path;
+        });
+
+        waitingDialog.Close();
+
+        if (!wasPicked || selectedPath == "") {
+            return;
+        }
+
+        var modal = Modal.Show<ListAvailableJobsDialog>("Select Job", new ModalParameters() { { "LabelDatabaseFilePath", selectedPath } });
+        var modalResult = await modal.Result;
+        if (modalResult.Cancelled) {
+            return;
+        }
+
+        if (modalResult.Data is not IEnumerable<AvailableJob> selectedJobs) {
+            _ = await Modal.OpenInformationDialog("Error", "Unexpected Data Returned", InformationDialog.MessageType.Warning);
+            return;
+        }
+
+        var loadingDialog = ShowLoadingDialog("Loading", "Generating files");
+        var result = await Task.Run(() => ViewModel.GenerateCNCReleasePDF(OrderState.Order, selectedPath, selectedJobs)).ConfigureAwait(true);
+        loadingDialog.Close();
+
+        if (result is null) {
+
+            await Modal.OpenInformationDialog("Errror", "No pdfs where generated", InformationDialog.MessageType.Error);
+
+        } else {
+
+            await Modal.OpenInformationDialog("Completed", "CNC PDF Generated", InformationDialog.MessageType.Information);
+
+            if (result.WorkOrderId is not null) {
+                UIBus.Publish(new WorkOrdersUpdatNotification());
+            }
+
+        }
+
+    }
+
+    private IModalReference ShowLoadingDialog(string title, string message) {
+        
+        var options = new ModalOptions() {
+            HideHeader = true,
+            HideCloseButton = true,
+            DisableBackgroundCancel = true
+        };
+        
+        return Modal.Show<InformationDialog>("", options: options, parameters: new ModalParameters {
+            { "Type", InformationDialog.MessageType.Information },
+            { "Title", title},
+            { "Details", message }
+        });
 
     }
 
@@ -506,12 +467,9 @@
         _useInches = !_useInches;
     }
 
-    class InfoModel {
+    public override void Handle(WorkOrdersUpdatNotification notification) {  
 
-        public string Number { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public string ProductionNote { get; set; } = string.Empty;
-        public DateTime ProductionDate { get; set; } = DateTime.Now;
+        InvokeAsync(UpdateProductStatuses);
 
     }
 

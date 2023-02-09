@@ -54,7 +54,7 @@ internal class BaseDiagonalCornerCabinetBuilder : CabinetBuilder<BaseDiagonalCor
     }
 
     public override BaseDiagonalCornerCabinet Build() {
-        var cabinet = BaseDiagonalCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, RightWidth, RightDepth, ToeType, AdjustableShelves, HingeSide, DoorQty);
+        var cabinet = BaseDiagonalCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, Comment, RightWidth, RightDepth, ToeType, AdjustableShelves, HingeSide, DoorQty);
         return cabinet;
     }
 

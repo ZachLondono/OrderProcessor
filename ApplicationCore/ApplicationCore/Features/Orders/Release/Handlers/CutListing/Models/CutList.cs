@@ -2,8 +2,10 @@
 
 public class CutList {
 
+    public string Name { get; set; } = string.Empty;
+
     public Header Header { get; set; } = new();
 
-    public List<Item> Items { get; set; } = new();
+    public List<PartRow> Parts { get; set; } = new();
 
 }

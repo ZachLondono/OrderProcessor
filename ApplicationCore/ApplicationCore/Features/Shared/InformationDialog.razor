@@ -31,7 +31,9 @@
 
 <p class="my-5">@((MarkupString)Details)</p>
 
-<button class="btn btn-primary float-right" @onclick="CloseDialog">Close</button>
+@if (!(BlazoredModal.Options.HideCloseButton ?? false)) {
+    <button class="btn btn-primary float-right" @onclick="CloseDialog">Close</button>
+}
 
 @code {
 

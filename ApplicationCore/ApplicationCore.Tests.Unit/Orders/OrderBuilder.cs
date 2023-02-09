@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
@@ -9,17 +8,12 @@ internal class OrderBuilder {
 
     private Guid _id = Guid.NewGuid();
     private string _source = string.Empty;
-    private Status _status = Status.UNKNOWN;
     private string _number = string.Empty;
     private string _name = string.Empty;
     private Customer _customer;
     private Guid _vendorId = Guid.NewGuid();
-    private string _note = string.Empty;
     private string _comment = string.Empty;
     private DateTime _orderDate = DateTime.Today;
-    private DateTime? _releaseDate = null;
-    private DateTime? _completeDate = null;
-    private DateTime? _productionDate = null;
     private decimal _tax = decimal.Zero;
     private ShippingInfo _shipping;
     private BillingInfo _billing;
@@ -61,11 +55,6 @@ internal class OrderBuilder {
         return this;
     }
 
-    public OrderBuilder WithStatus(Status status) {
-        _status = status;
-        return this;
-    }
-
     public OrderBuilder WithNumber(string number) {
         _number = number;
         return this;
@@ -86,11 +75,6 @@ internal class OrderBuilder {
         return this;
     }
 
-    public OrderBuilder WithNote(string note) {
-        _note = note;
-        return this;
-    }
-
     public OrderBuilder WithComment(string comment) {
         _comment = comment;
         return this;
@@ -98,21 +82,6 @@ internal class OrderBuilder {
 
     public OrderBuilder WithOrderDate(DateTime orderDate) {
         _orderDate = orderDate;
-        return this;
-    }
-
-    public OrderBuilder WithReleaseDate(DateTime? releaseDate) {
-        _releaseDate = releaseDate;
-        return this;
-    }
-
-    public OrderBuilder WithProductionDate(DateTime? productionDate) {
-        _productionDate = productionDate;
-        return this;
-    }
-
-    public OrderBuilder WithCompleteDate(DateTime? completeDate) {
-        _completeDate = completeDate;
         return this;
     }
 
@@ -151,6 +120,6 @@ internal class OrderBuilder {
         return this;
     }
 
-    public Order Buid() => new(_id, _source, _status, _number, _name, _customer, _vendorId, _note, _comment, _orderDate, _releaseDate, _productionDate, _completeDate, _shipping, _billing, _tax, _priceAdjustment, _rush, _info, _boxes, _items);
+    public Order Buid() => new(_id, _source, _number, _name, _customer, _vendorId, _comment, _orderDate, _shipping, _billing, _tax, _priceAdjustment, _rush, _info, _boxes, _items);
 
 }

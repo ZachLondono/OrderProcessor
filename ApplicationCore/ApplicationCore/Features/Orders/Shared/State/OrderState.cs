@@ -1,24 +1,24 @@
 ﻿using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.Orders.Release;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Features.Orders.Complete;
 using ApplicationCore.Features.Companies.Domain.ValueObjects;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.Shared.State;
 
 public class OrderState {
 
     public Order? Order { get; private set; }
-    public bool IsDirty { get; private set; } = false;
 
     private readonly IBus _bus;
     private readonly IUIBus _uibus;
+    private readonly ILogger<OrderState> _logger;
 
-    public OrderState(IBus bus, IUIBus uibus) {
+    public OrderState(IBus bus, IUIBus uibus, ILogger<OrderState> logger) {
         _bus = bus;
         _uibus = uibus;
+        _logger = logger;
     }
 
     public async Task LoadOrder(Guid orderId) {
@@ -26,101 +26,15 @@ public class OrderState {
         result.Match(
             order => {
                 Order = order;
-                IsDirty = false;
             },
             error => {
-                // TODO: log error
+                _logger.LogError("Error loading order while trying to set current order {Error}", error);
             }
         );
-    }
-
-    public void UpdateInfo(string number, string name, string productionNote) {
-        if (Order is null) return;
-        Order = new Order(Order.Id, Order.Source, Order.Status, number, name, Order.Customer, Order.VendorId, productionNote, Order.CustomerComment, Order.OrderDate, Order.ReleaseDate, Order.ProductionDate, Order.CompleteDate, Order.Shipping, Order.Billing, Order.Tax, Order.PriceAdjustment, Order.Rush, Order.Info, Order.Products, Order.AdditionalItems);
-        IsDirty = true;
-    }
-
-    public void UpdateCustomer(Customer customer) {
-        if (Order is null) return;
-        Order = new Order(Order.Id, Order.Source, Order.Status, Order.Number, Order.Name, customer, Order.VendorId, Order.ProductionNote, Order.CustomerComment, Order.OrderDate, Order.ReleaseDate, Order.ProductionDate, Order.CompleteDate, Order.Shipping, Order.Billing, Order.Tax, Order.PriceAdjustment, Order.Rush, Order.Info, Order.Products, Order.AdditionalItems);
-        IsDirty = true;
-    }
-
-    public void UpdateVendor(Guid vendorId) {
-        if (Order is null) return;
-        Order = new Order(Order.Id, Order.Source, Order.Status, Order.Number, Order.Name, Order.Customer, vendorId, Order.ProductionNote, Order.CustomerComment, Order.OrderDate, Order.ReleaseDate, Order.ProductionDate, Order.CompleteDate, Order.Shipping, Order.Billing, Order.Tax, Order.PriceAdjustment, Order.Rush, Order.Info, Order.Products, Order.AdditionalItems);
-        IsDirty = true;
-    }
-
-    public void ScheduleProduction(DateTime productionDate) {
-        if (Order is null) return;
-        Order = new Order(Order.Id, Order.Source, Order.Status, Order.Number, Order.Name, Order.Customer, Order.VendorId, Order.ProductionNote, Order.CustomerComment, Order.OrderDate, Order.ReleaseDate, productionDate, Order.CompleteDate, Order.Shipping, Order.Billing, Order.Tax, Order.PriceAdjustment, Order.Rush, Order.Info, Order.Products, Order.AdditionalItems);
-        IsDirty = true;
-    }
-
-    public async Task<Response> SaveChanges() {
-        if (Order is null) return new(new() {
-            Title = "No Order to Save",
-            Details = "There is no order set that can be saved"
-        });
-
-        var response = await _bus.Send(new UpdateOrder.Command(Order));
-        IsDirty = false;
-
-        if (response.IsError) {
-
-            string details = "";
-            response.OnError(e => details = e.Details);
-
-            return new(new() {
-                Title = "Error saving order changes",
-                Details = details
-            });
-
-        }
-        return new();
-
-    }
-
-    public async Task<Response> Complete() {
-        if (Order is null) return new(new() {
-            Title = "No Order to Complete",
-            Details = "There is no order set that can be completed"
-        });
-
-        var response = await _bus.Send(new GetCompanyById.Query(Order.VendorId));
-
-        Error? error = null;
-        response.Match(
-            async company => {
-
-                try {
-
-                    await _bus.Publish(new TriggerOrderCompleteNotification(Order, company.CompleteProfile));
-                    Order.Complete();
-                    IsDirty = true;
-
-                } catch (Exception ex) {
-                    error = new Error() {
-                        Title = "Error Completing Order",
-                        Details = ex.ToString()
-                    };
-                }
-
-            },
-            error => {
-                error = new Error() {
-                    Title = "Error Completing Order",
-                    Details = "Could not load completion settings. " + error.Details
-                };
-            }
-        );
-
-        if (error is not null) return new(error);
-        return new();
     }
 
     public async Task Release(ReleaseProfile? profile = null) {
+        
         if (Order is null) return;
 
         ReleaseProfile? releaseProfile = profile;
@@ -130,12 +44,15 @@ public class OrderState {
             response.Match(
                 c => releaseProfile = c?.ReleapseProfile ?? null,
                 error => {
-                    // TODO: notify and log error
+                    _logger.LogError("Error loading release profile for order's vendor while trying to release order {Error}", error);
                 }
             );
         }
 
-        if (releaseProfile is null) return; // TODO: notify of error
+        if (releaseProfile is null) {
+            _uibus.Publish(new OrderReleaseErrorNotification("No release profile set"));
+            return;
+        }
 
         await ReleaseWithProfile(releaseProfile);
 
@@ -144,20 +61,11 @@ public class OrderState {
     private async Task ReleaseWithProfile(ReleaseProfile profile) {
         if (Order is null) return;
         await _bus.Publish(new TriggerOrderReleaseNotification(Order, profile));
-        Order.Release();
         _uibus.Publish(new OrderReleaseCompletedNotification());
-        IsDirty = true;
     }
-
-    // TODO: add method to add price adjustments to order
-
-    // TODO: add method to add additional items to order
-
-    // TODO: add method to add info fields to order
 
     public void ReplaceOrder(Order order) {
         Order = order;
-        IsDirty = false;
     }
 
 }

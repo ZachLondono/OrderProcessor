@@ -1,5 +1,5 @@
 ﻿<div class="@tooltipClass">
-    <span>@Text</span>
+    <span class="@offsetClass">@Text</span>
     @ChildContent
 </div>
 
@@ -14,6 +14,21 @@
     [Parameter]
     public bool UnderLine { get; set; } = true;
 
+    [Parameter]
+    public OffsetSide Offset { get; set; } = OffsetSide.Center;
+
     private string tooltipClass => $"tooltip-wrapper {(UnderLine ? "border-b border-dotted border-black" : "")}";
+
+    private string offsetClass => Offset switch {
+        OffsetSide.Left => "left_offset",
+        OffsetSide.Right => "right_offset",
+        _ => ""
+    };
+
+    public enum OffsetSide {
+        Center,
+        Left,
+        Right
+    }
 
 }

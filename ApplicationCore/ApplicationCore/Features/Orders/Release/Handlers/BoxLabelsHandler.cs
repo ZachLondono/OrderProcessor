@@ -45,6 +45,11 @@ internal class BoxLabelsHandler : DomainListener<TriggerOrderReleaseNotification
                                 })
                                 .ToList();
 
+        if (!dovetailBoxes.Any()) {
+            _uibus.Publish(new OrderReleaseInfoNotification("Not printing box labels, because there where no drawer boxes found"));
+            return;
+        }
+
         var labels = new List<Label>();
         foreach (var box in dovetailBoxes) {
 

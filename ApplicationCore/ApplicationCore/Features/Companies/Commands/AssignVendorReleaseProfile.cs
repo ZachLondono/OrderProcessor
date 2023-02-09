@@ -31,9 +31,9 @@ public class AssignVendorReleaseProfile {
 
                 command = @"UPDATE releaseprofiles
                             SET
-                                generatecutlist = @GenerateCutList, cutlistoutputdirectory = @CutListOutputDirectory, printcutlist = @PrintCutList, cutlisttemplatepath = @CutListTemplatePath,
-                                generatepackinglist = @GeneratePackingList, packinglistoutputdirectory = @PackingListOutputDirectory, printpackinglist = @PrintPackingList, packinglisttemplatepath = @PackingListTemplatePath,
-                                generateinvoice = @GenerateInvoice, invoiceoutputdirectory = @InvoiceOutputDirectory, printinvoice = @PrintInvoice, invoicetemplatepath = @InvoiceTemplatePath,
+                                generatecutlist = @GenerateCutList, cutlistoutputdirectory = @CutListOutputDirectory, printcutlist = @PrintCutList,
+                                generatepackinglist = @GeneratePackingList, packinglistoutputdirectory = @PackingListOutputDirectory, printpackinglist = @PrintPackingList,
+                                generateinvoice = @GenerateInvoice, invoiceoutputdirectory = @InvoiceOutputDirectory, printinvoice = @PrintInvoice,
                                 generatebol = @GenerateBOL, boloutputdirectory = @BOLOutputDirectory, printbol = @PrintBOL, boltemplatefilepath = @BOLTemplateFilePath,
                                 printboxlabels = @PrintBoxLabels, boxlabelstemplatefilepath = @BoxLabelsTemplateFilePath,
                                 printorderlabel = @PrintOrderLabel, orderlabeltemplatefilepath = @OrderLabelTemplateFilePath,
@@ -48,9 +48,9 @@ public class AssignVendorReleaseProfile {
             } else {
 
                 command = @"INSERT INTO releaseprofiles
-                                (vendorid, generatecutlist, cutlistoutputdirectory, printcutlist, cutlisttemplatepath, generatepackinglist, packinglistoutputdirectory, printpackinglist, packinglisttemplatepath, generateinvoice, invoiceoutputdirectory, printinvoice, invoicetemplatepath, generatebol, boloutputdirectory, printbol, boltemplatefilepath, printboxlabels, boxlabelstemplatefilepath, printorderlabel, orderlabeltemplatefilepath, printaduiepylelabel, aduiepylelabeltemplatefilepath, generatecncprograms, cncreportoutputdirectory, filldoororder, generatedoorprograms, doororderoutputdirectory, doorordertemplatefilepath, generatecabinetjobsummary, cabinetjobsummarytemplatefilepath, cabinetjobsummaryoutputdirectory, generatecabinetpackinglist, cabinetpackinglisttemplatefilepath, cabinetpackinglistoutputdirectory)
+                                (vendorid, generatecutlist, cutlistoutputdirectory, printcutlist, generatepackinglist, packinglistoutputdirectory, printpackinglist, generateinvoice, invoiceoutputdirectory, printinvoice, generatebol, boloutputdirectory, printbol, boltemplatefilepath, printboxlabels, boxlabelstemplatefilepath, printorderlabel, orderlabeltemplatefilepath, printaduiepylelabel, aduiepylelabeltemplatefilepath, generatecncprograms, cncreportoutputdirectory, filldoororder, generatedoorprograms, doororderoutputdirectory, doorordertemplatefilepath, generatecabinetjobsummary, cabinetjobsummarytemplatefilepath, cabinetjobsummaryoutputdirectory, generatecabinetpackinglist, cabinetpackinglisttemplatefilepath, cabinetpackinglistoutputdirectory)
                                 VALUES
-                                (@VendorId, @GenerateCutList, @CutListOutputDirectory, @PrintCutList, @CutListTemplatePath, @GeneratePackingList, @PackingListOutputDirectory, @PrintPackingList, @PackingListTemplatePath, @GenerateInvoice, @InvoiceOutputDirectory, @PrintInvoice, @InvoiceTemplatePath, @GenerateBOL, @BOLOutputDirectory, @PrintBOL, @BOLTemplateFilePath, @PrintBoxLabels, @BoxLabelsTemplateFilePath, @PrintOrderLabel, @OrderLabelTemplateFilePath, @PrintADuiePyleLabel, @ADuiePyleLabelTemplateFilePath, @GenerateCNCPrograms, @CNCReportOutputDirectory, @FillDoorOrder, @GenerateDoorCNCPrograms, @DoorOrderOutputDirectory, @DoorOrderTemplateFilePath, GenerateCabinetJobSummary, CabinetJobSummaryTemplateFilePath, CabinetJobSummaryOutputDirectory, @GenerateCabinetPackingList, @CabinetPackingListTemplateFilePath, @CabinetPackingListOutputDirectory);";
+                                (@VendorId, @GenerateCutList, @CutListOutputDirectory, @PrintCutList, @GeneratePackingList, @PackingListOutputDirectory, @PrintPackingList, @GenerateInvoice, @InvoiceOutputDirectory, @PrintInvoice, @GenerateBOL, @BOLOutputDirectory, @PrintBOL, @BOLTemplateFilePath, @PrintBoxLabels, @BoxLabelsTemplateFilePath, @PrintOrderLabel, @OrderLabelTemplateFilePath, @PrintADuiePyleLabel, @ADuiePyleLabelTemplateFilePath, @GenerateCNCPrograms, @CNCReportOutputDirectory, @FillDoorOrder, @GenerateDoorCNCPrograms, @DoorOrderOutputDirectory, @DoorOrderTemplateFilePath, GenerateCabinetJobSummary, CabinetJobSummaryTemplateFilePath, CabinetJobSummaryOutputDirectory, @GenerateCabinetPackingList, @CabinetPackingListTemplateFilePath, @CabinetPackingListOutputDirectory);";
 
             }
 
@@ -59,15 +59,12 @@ public class AssignVendorReleaseProfile {
                 request.Profile.GenerateCutList,
                 request.Profile.CutListOutputDirectory,
                 request.Profile.PrintCutList,
-                request.Profile.CutListTemplatePath,
                 request.Profile.GeneratePackingList,
                 request.Profile.PackingListOutputDirectory,
                 request.Profile.PrintPackingList,
-                request.Profile.PackingListTemplatePath,
                 request.Profile.GenerateInvoice,
                 request.Profile.InvoiceOutputDirectory,
                 request.Profile.PrintInvoice,
-                request.Profile.InvoiceTemplatePath,
                 request.Profile.GenerateBOL,
                 request.Profile.BOLOutputDirectory,
                 request.Profile.PrintBOL,

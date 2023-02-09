@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
 using ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
 using ApplicationCore.Features.CNC.ReleasePDF.Styling;
+using BarcodeLib;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -42,8 +43,27 @@ internal class PDFBuilder {
         var pageHeaderStyle = config.HeaderStyle;
         page.Header()
             .AlignCenter()
-            .Text(summary.Title)
-            .WithStyle(pageHeaderStyle);
+            .Column(col => { 
+
+                col.Item().AlignCenter().Text(summary.Title).WithStyle(pageHeaderStyle);
+
+                if (summary.WorkOrderId != "") {
+
+                    var barcode = new Barcode();
+                    var img = barcode.Encode(TYPE.CODE128B, summary.WorkOrderId, 300, 50);
+
+                    using var ms = new MemoryStream();
+                    img.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                    var imgdata = ms.ToArray();
+
+                    col.Item()
+                        .AlignCenter()
+                        .PaddingVertical(5)
+                        .Width(2, Unit.Inch)
+                        .Image(imgdata);
+                }
+
+            });
 
         page.Content().Column(c => {
 
@@ -121,6 +141,15 @@ internal class PDFBuilder {
                 x.Item().AlignCenter()
                         .Text(data.Title)
                         .WithStyle(titleStyle);
+
+                if (data.Title2 != "") {
+
+                    x.Item().AlignCenter()
+                        .Text(data.Title2)
+                        .WithStyle(titleStyle);
+
+                }
+
                 x.Item().AlignCenter()
                         .PaddingBottom(20)
                         .Text(data.Subtitle)
@@ -172,6 +201,7 @@ internal class PDFBuilder {
                     .BorderBottom(0.5f)
                     .Background(Colors.Grey.Lighten3)
                     .AlignCenter()
+                    .AlignMiddle()
                     .Text(key)
                     .WithStyle(headerStyle);
 
@@ -187,6 +217,7 @@ internal class PDFBuilder {
                     .BorderRight(0.5f)
                     .BorderBottom(0.5f)
                     .AlignCenter()
+                    .AlignMiddle()
                     .Text(value)
                     .WithStyle(cellStyle);
             }

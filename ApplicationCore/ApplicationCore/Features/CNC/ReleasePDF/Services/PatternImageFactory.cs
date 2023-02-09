@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -19,8 +20,18 @@ public class PatternImageFactory {
 
             try {
                 var bitmap = GetBitmapFromMetaFile(imagePath);
-                AddTextToBitmap(bitmap, text, orientation, sheetWidth, sheetLength);
-                if (orientation == TableOrientation.Rotated) bitmap.RotateFlip(RotateFlipType.Rotate270FlipNone);
+
+                if (orientation == TableOrientation.Rotated) {
+                    bitmap.RotateFlip(RotateFlipType.Rotate90FlipY);
+                    // When rotating a bitmap that changes it's dimensions drawing can only be done within the original bitmaps dimension, so it must be saved and created as a new bitmap
+                    using var stream = new MemoryStream();
+                    bitmap.Save(stream, ImageFormat.Png);
+                    var bitmap2 = new Bitmap(stream);
+                    bitmap.Dispose();
+                    bitmap = bitmap2;
+                }
+
+                AddTextToBitmap(bitmap, text, sheetWidth, sheetLength);
                 return GetBitmapData(bitmap);
             } catch {
 
@@ -49,7 +60,7 @@ public class PatternImageFactory {
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
-    static void AddTextToBitmap(Bitmap bitmap, IEnumerable<ImageText> patternTexts, TableOrientation orientation, double sheetWidth, double sheetLength) {
+    static void AddTextToBitmap(Bitmap bitmap, IEnumerable<ImageText> patternTexts, double sheetWidth, double sheetLength) {
 
         double mmToPxScaleX = bitmap.Width / sheetLength;
         double mmToPxScaleY = bitmap.Height / sheetWidth;
@@ -65,24 +76,12 @@ public class PatternImageFactory {
             cg.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
             double x = text.Location.X * mmToPxScaleX;
-            double y = text.Location.Y * mmToPxScaleY;
-            if (orientation == TableOrientation.Standard) y = bitmap.Height - y;
-            else {
-                //var temp = x;
-                //x = y;
-                //y = temp;
-            }
+            double y = bitmap.Height - (text.Location.Y * mmToPxScaleY);
 
             var textSize = cg.MeasureString(text.Text, font);
-            PointF drawPoint;
-            if (orientation == TableOrientation.Rotated) {
-                cg.TranslateTransform((float)x, (float)y);
-                cg.RotateTransform(90);
-                drawPoint = new PointF(-textSize.Width / 2, -textSize.Height / 2);
-            } else {
-                drawPoint = new PointF((float)x - textSize.Width / 2, (float)y - textSize.Height / 2);
-            }
 
+            var drawPoint = new PointF((float)x - textSize.Width / 2, (float)y - textSize.Height / 2);
+                        
             var rect = new RectangleF(drawPoint, textSize);
             cg.FillRectangle(Brushes.White, rect);
             cg.DrawString(text.Text, font, Brushes.Black, rect);

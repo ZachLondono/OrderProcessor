@@ -21,6 +21,7 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
     public CabinetSide LeftSide { get; set; }
     public CabinetSide RightSide { get; set; }
     public int ProductNumber { get; private set; }
+    public string Comment { get; private set; }
 
     public CabinetBuilder() {
         Qty = 0;
@@ -36,6 +37,7 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
         EdgeBandingColor = string.Empty;
         LeftSide = new(CabinetSideType.Unfinished);
         RightSide = new(CabinetSideType.Unfinished);
+        Comment = string.Empty;
     }
 
     public CabinetBuilder<TCabinet> WithQty(int qty) {
@@ -105,6 +107,11 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
 
     public CabinetBuilder<TCabinet> WithProductNumber(int productNumber) {
         ProductNumber = productNumber;
+        return this;
+    }
+
+    public CabinetBuilder<TCabinet> WithComment(string comment) {
+        Comment = comment;
         return this;
     }
 

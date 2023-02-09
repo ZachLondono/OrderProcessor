@@ -29,7 +29,7 @@ public class GetOrderById {
             var items = itemData.Select(i => i.AsDomainModel());
 
             const string query = @"SELECT
-                                    status, number, name, customername, vendorid, productionNote, customercomment, orderdate, releasedate, productiondate, completedate, info, tax, priceadjustment, rush, shippingmethod, shippingcontact, shippingphonenumber, shippingaddressid, invoiceemail, billingphonenumber, billingaddressid
+                                    number, name, customername, vendorid, customercomment, orderdate, info, tax, priceadjustment, rush, shippingmethod, shippingcontact, shippingphonenumber, shippingaddressid, invoiceemail, billingphonenumber, billingaddressid
                                 FROM orders WHERE id = @OrderId;";
             var data = await connection.QuerySingleAsync<OrderDataModel>(query, request);
 

@@ -1,0 +1,47 @@
+﻿using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Data;
+using Dapper;
+
+namespace ApplicationCore.Features.WorkOrders;
+
+internal class UpdateWorkOrder {
+
+    public record Command(Guid Id, string Name, Status Status) : ICommand;
+
+    public class Handler : CommandHandler<Command> {
+
+        public readonly IDbConnectionFactory _factory;
+
+        public Handler(IDbConnectionFactory factory) {
+            _factory = factory;
+        }
+
+        public override async Task<Response> Handle(Command command) {
+
+            using var connection = _factory.CreateConnection();
+            connection.Open();
+            var trx = connection.BeginTransaction();
+
+            var rows = await connection.ExecuteAsync(@"UPDATE work_orders SET name = @Name, status = @Status WHERE id = @Id;", command, trx);
+
+            if (rows != 1) {
+
+                trx.Rollback();
+                connection.Close();
+
+                return Response.Error(new() {
+                    Title = "Cannot update work order",
+                    Details = "Could not update work order in database"
+                });
+
+            }
+
+            trx.Commit();
+            connection.Close();
+            return Response.Success();
+
+        }
+
+    }
+
+}

@@ -12,6 +12,9 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     public int AdjustableShelves { get; }
     public BlindSide BlindSide { get; }
     public Dimension BlindWidth { get; }
+    public Dimension ExtendedDoor { get; }
+
+    public override string Description => "Blind Wall Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),
@@ -24,28 +27,29 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     public static BlindWallCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide,
-                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves) {
-        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, doors, blindSide, blindWidth, adjustableShelves);
+                        CabinetSide rightSide, CabinetSide leftSide, string comment,
+                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, Dimension extendedDoor) {
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment, doors, blindSide, blindWidth, adjustableShelves, extendedDoor);
     }
 
     private BlindWallCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide,
-                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide) {
+                        CabinetSide rightSide, CabinetSide leftSide, string comment,
+                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, Dimension extendedDoor)
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment) {
 
         Doors = doors;
         AdjustableShelves = adjustableShelves;
         BlindSide = blindSide;
         BlindWidth = blindWidth;
+        ExtendedDoor = extendedDoor;
 
     }
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", GetFinishMaterials(), GetEBMaterials(), GetParameters(), new(), new());
+        yield return new PPProduct(Id, Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), new());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
@@ -92,6 +96,18 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         }
 
         return parameters;
+    }
+
+    private Dictionary<string, string> GetParameterOverrides() {
+
+        var parameters = new Dictionary<string, string>();
+
+        if (ExtendedDoor != Dimension.Zero) {
+            parameters.Add("ExtendDoorD", ExtendedDoor.AsMillimeters().ToString());
+        }
+
+        return parameters;
+
     }
 
     private string GetBlindSideLetter() => BlindSide switch {
