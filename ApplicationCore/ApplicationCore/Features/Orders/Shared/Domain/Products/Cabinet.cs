@@ -74,6 +74,8 @@ public abstract class Cabinet : IProduct {
         string finishMaterial = GetFinishMaterialType(FinishMaterial.Core);
         string boxMaterial = GetFinishMaterialType(BoxMaterial.Core);
         return new Dictionary<string, PPMaterial> {
+            ["F_Door"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),
+            ["F_DoorBack"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),
             ["F_Exp_SemiExp"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),
             ["F_Exp_Unseen"] = new PPMaterial(finishMaterial,FinishMaterial.Finish),
             ["F_Exposed"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),
