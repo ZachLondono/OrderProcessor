@@ -5,4 +5,5 @@ public interface IProduct {
     public int Qty { get; }
     public decimal UnitPrice { get; }
     public string Description { get; }
+    public int ProductNumber { get; }
 }
