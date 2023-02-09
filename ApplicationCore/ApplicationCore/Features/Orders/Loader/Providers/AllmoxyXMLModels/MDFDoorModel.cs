@@ -19,7 +19,10 @@ public class MDFDoorModel : ProductModel {
     public int Qty { get; set; }
 
     [XmlElement("unitPrice")]
-    public decimal UnitPrice { get; set; }
+    public string UnitPrice { get; set; } = string.Empty;
+
+    [XmlElement("room")]
+    public string Room { get; set; } = string.Empty;
 
     [XmlElement("width")]
     public double Width { get; set; }
@@ -73,12 +76,13 @@ public class MDFDoorModel : ProductModel {
     public string Finish { get; set; } = string.Empty;
 
     [XmlElement("customPanelDrop")]
-    public double CustomPanelDrop { get; set; }
+    public string CustomPanelDrop { get; set; } = string.Empty;
 
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
+        decimal unitPrice = AllmoxyXMLOrderProviderHelpers.StringToMoney(UnitPrice);
         var type = DoorType.Door;
         var height = Dimension.FromMillimeters(Height);
         var width = Dimension.FromMillimeters(Width);
@@ -88,9 +92,12 @@ public class MDFDoorModel : ProductModel {
             LeftStile = Dimension.FromMillimeters(LeftStile),
             RightStile = Dimension.FromMillimeters(RightStile)
         };
-        var panelDrop = Dimension.FromMillimeters(CustomPanelDrop);
+        Dimension panelDrop = Dimension.Zero;
+        if (double.TryParse(CustomPanelDrop, out var value)) {
+            panelDrop = Dimension.FromMillimeters(value);
+        }
 
-        return MDFDoorProduct.Create(UnitPrice, Qty, GetProductNumber(), type, height, width, Note, Material, FramingBead, EdgeProfile, frameSize, panelDrop, Finish);
+        return MDFDoorProduct.Create(unitPrice, Room, Qty, GetProductNumber(), type, height, width, Note, Material, FramingBead, EdgeProfile, frameSize, panelDrop, Finish);
 
     }
 }
