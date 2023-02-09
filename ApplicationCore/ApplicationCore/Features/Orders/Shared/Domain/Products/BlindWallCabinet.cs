@@ -95,6 +95,10 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
             parameters.Add("HingeLeft", GetHingeSideOption());
         }
 
+        if (ExtendedDoor != Dimension.Zero && (LeftSide.Type == CabinetSideType.Finished || RightSide.Type == CabinetSideType.Finished)) {
+            parameters.Add("LightRailW", ExtendedDoor.AsMillimeters().ToString());
+        }
+
         return parameters;
     }
 
@@ -102,7 +106,7 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
         var parameters = new Dictionary<string, string>();
 
-        if (ExtendedDoor != Dimension.Zero) {
+        if (ExtendedDoor != Dimension.Zero && LeftSide.Type != CabinetSideType.Finished && RightSide.Type != CabinetSideType.Finished) {
             parameters.Add("ExtendDoorD", ExtendedDoor.AsMillimeters().ToString());
         }
 

@@ -96,6 +96,10 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
             parameters.Add("HingeLeft", GetHingeSideOption());
         }
 
+        if (Doors.ExtendDown != Dimension.Zero && (LeftSide.Type == CabinetSideType.Finished || RightSide.Type == CabinetSideType.Finished)) {
+            parameters.Add("LightRailW", Doors.ExtendDown.AsMillimeters().ToString());
+        }
+
         return parameters;
     }
 
@@ -103,7 +107,7 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
         var parameters = new Dictionary<string, string>();
 
-        if (Doors.ExtendDown != Dimension.Zero) {
+        if (Doors.ExtendDown != Dimension.Zero && LeftSide.Type != CabinetSideType.Finished && RightSide.Type != CabinetSideType.Finished) {
             parameters.Add("ExtendDoorD", Doors.ExtendDown.AsMillimeters().ToString());
         }
 
