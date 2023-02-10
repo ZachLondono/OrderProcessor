@@ -62,7 +62,7 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
             _ => "WC1D-M"
         };
 
-        yield return new PPProduct(Id, Room, sku, ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), new());
+        yield return new PPProduct(Id, Room, sku, ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), new Dictionary<string, string>());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {

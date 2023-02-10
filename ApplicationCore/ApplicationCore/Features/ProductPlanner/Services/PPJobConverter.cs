@@ -176,7 +176,7 @@ public class PPJobConverter {
 
     }
 
-    public static bool AreDictionariesEquivalent(Dictionary<string, string>? x, Dictionary<string, string>? y) {
+    public static bool AreDictionariesEquivalent(IDictionary<string, string>? x, IDictionary<string, string>? y) {
         if (x is null && y is null) return true;
         if (x is null && y is not null || y is null && x is not null) return false;
         if (x!.Count != y!.Count) return false;
@@ -208,11 +208,11 @@ public class PPJobConverter {
         public string MaterialType { get; }
         public string DoorType { get; }
         public string HardwareType { get; }
-        public Dictionary<string, PPMaterial> FinishMaterials { get; }
-        public Dictionary<string, PPMaterial> EBMaterials { get; }
-        public Dictionary<string, string> AllMaterials { get; }
+        public IDictionary<string, PPMaterial> FinishMaterials { get; }
+        public IDictionary<string, PPMaterial> EBMaterials { get; }
+        public IDictionary<string, string> AllMaterials { get; }
 
-        public MaterialGroupKey(string catalog, string materialType, string doorType, string hardwareType, Dictionary<string, PPMaterial> finishMaterials, Dictionary<string, PPMaterial> ebMaterials) {
+        public MaterialGroupKey(string catalog, string materialType, string doorType, string hardwareType, IDictionary<string, PPMaterial> finishMaterials, IDictionary<string, PPMaterial> ebMaterials) {
             Catalog = catalog;
             MaterialType = materialType;
             DoorType = doorType;
@@ -220,7 +220,7 @@ public class PPJobConverter {
             FinishMaterials = finishMaterials;
             EBMaterials = ebMaterials;
 
-            AllMaterials = new();
+            AllMaterials = new Dictionary<string, string>();
             FinishMaterials.ForEach(mat => AllMaterials.Add(mat.Key, mat.Value.ToString()));
             EBMaterials.ForEach(mat => AllMaterials.Add(mat.Key, mat.Value.ToString()));
         }
@@ -239,13 +239,13 @@ public class PPJobConverter {
         public int GetHashCode(MaterialGroupKey obj) => 0;
     }
 
-    class DictionaryValueComparer : IEqualityComparer<Dictionary<string, string>> {
+    class DictionaryValueComparer : IEqualityComparer<IDictionary<string, string>> {
 
-        public bool Equals(Dictionary<string, string>? x, Dictionary<string, string>? y) {
+        public bool Equals(IDictionary<string, string>? x, IDictionary<string, string>? y) {
             return AreDictionariesEquivalent(x, y);
         }
 
-        public int GetHashCode(Dictionary<string, string> obj) => 0;
+        public int GetHashCode(IDictionary<string, string> obj) => 0;
 
     }
 
