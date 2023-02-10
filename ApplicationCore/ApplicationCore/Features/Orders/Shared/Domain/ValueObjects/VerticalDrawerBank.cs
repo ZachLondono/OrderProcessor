@@ -9,4 +9,6 @@ public record VerticalDrawerBank {
     public required CabinetDrawerBoxMaterial BoxMaterial { get; init; }
     public required DrawerSlideType SlideType { get; init; }
 
+    public int DrawerQty => FaceHeights.Count();
+
 }
