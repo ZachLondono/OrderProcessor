@@ -139,6 +139,11 @@ public class DovetailDrawerBoxBuilder {
     }
 
     public DovetailDrawerBoxBuilder WithInnerCabinetDepth(Dimension innerCabinetDepth, DrawerSlideType slideType, bool isRollOut = false) {
+        Depth = GetDrawerBoxDepthFromInnerCabinetDepth(innerCabinetDepth, slideType, isRollOut);
+        return this;
+    }
+
+    public static Dimension GetDrawerBoxDepthFromInnerCabinetDepth(Dimension innerCabinetDepth, DrawerSlideType slideType, bool isRollOut = false) { 
 
         var clearance = DrawerSlideDepthClearance[slideType];
 
@@ -149,9 +154,8 @@ public class DovetailDrawerBoxBuilder {
                 if (depth > innerCabinetDepth - clearance) {
                     continue;
                 }
-            
-                Depth = depth;
-                return this;
+
+                return depth;
 
             }
 
@@ -161,9 +165,7 @@ public class DovetailDrawerBoxBuilder {
 
             int multiple = (int)((innerCabinetDepth - clearance).AsInches() / accuracy);
 
-            Depth = Dimension.FromInches(multiple * accuracy);
-
-            return this;
+            return Dimension.FromInches(multiple * accuracy); ;
 
         }
 
