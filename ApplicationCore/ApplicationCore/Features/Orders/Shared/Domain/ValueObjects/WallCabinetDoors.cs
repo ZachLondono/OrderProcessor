@@ -15,6 +15,22 @@ public record WallCabinetDoors {
         ExtendDown = Dimension.Zero
     };
 
+    public static WallCabinetDoors OneDoor(HingeSide hingeSide) {
+        if (hingeSide == HingeSide.NotApplicable) {
+            throw new ArgumentException("Hinge side must be provided for 1 door cabinet", nameof(hingeSide));
+        }
+
+        return new() {
+            Quantity = 1,
+            HingeSide = hingeSide,
+        };
+    }
+
+    public static WallCabinetDoors TwoDoors() => new() {
+        Quantity = 2,
+        HingeSide = HingeSide.NotApplicable
+    };
+
     public WallCabinetDoors(HingeSide hingeSide = HingeSide.NotApplicable, Dimension? extendDown = null) {
         if (hingeSide == HingeSide.NotApplicable) {
             Quantity = 2;
