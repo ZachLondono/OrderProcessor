@@ -4,7 +4,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.Orders.Products;
+namespace ApplicationCore.Tests.Unit.Orders.Products.Doors;
 
 public class TallCabinetDrawerBoxTests {
 

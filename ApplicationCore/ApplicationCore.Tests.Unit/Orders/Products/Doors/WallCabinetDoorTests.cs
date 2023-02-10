@@ -3,7 +3,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.Orders.Products;
+namespace ApplicationCore.Tests.Unit.Orders.Products.Doors;
 
 public class WallCabinetDoorTests {
 
@@ -43,7 +43,7 @@ public class WallCabinetDoorTests {
                             .WithQty(cabinetQty)
                             .WithMDFDoorOptions(_mdfOptions)
                             .Build();
-        
+
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
@@ -64,7 +64,7 @@ public class WallCabinetDoorTests {
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithMDFDoorOptions(null)
                             .Build();
-        
+
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
@@ -87,7 +87,7 @@ public class WallCabinetDoorTests {
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithMDFDoorOptions(_mdfOptions)
                             .Build();
-        
+
 
 
         // Act
@@ -114,7 +114,7 @@ public class WallCabinetDoorTests {
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithMDFDoorOptions(_mdfOptions)
                             .Build();
-        
+
 
 
         // Act

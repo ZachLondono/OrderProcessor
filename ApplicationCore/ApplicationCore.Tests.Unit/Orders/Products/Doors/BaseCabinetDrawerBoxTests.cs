@@ -4,7 +4,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.Orders.Products;
+namespace ApplicationCore.Tests.Unit.Orders.Products.Doors;
 
 public class BaseCabinetDrawerBoxTests {
 
@@ -244,10 +244,10 @@ public class BlindBaseCabinetDrawerBoxTests {
     }
 
     [Theory]
-    [InlineData(1, 1,  1)]
-    [InlineData(2, 1,  2)]
-    [InlineData(1, 2,  2)]
-    [InlineData(2, 2,  4)]
+    [InlineData(1, 1, 1)]
+    [InlineData(2, 1, 2)]
+    [InlineData(1, 2, 2)]
+    [InlineData(2, 2, 4)]
     public void GetDrawerBoxes_ShouldReturnCorrectQuantityOfDrawerBoxes(int drawerCount, int cabQty, int expectedDrawerCount) {
 
         // Arrange
