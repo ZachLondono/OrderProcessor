@@ -42,6 +42,7 @@ public class OrderModel {
     [XmlArrayItem("sinkCabinet", typeof(SinkCabinetModel))]
     [XmlArrayItem("blindBaseCabinet", typeof(BlindBaseCabinetModel))]
     [XmlArrayItem("blindWallCabinet", typeof(BlindWallCabinetModel))]
+    [XmlArrayItem("trashCabinet", typeof(TrashCabinetModel))]
     [XmlArrayItem("closetPart", typeof(ClosetPartModel))]
     [XmlArrayItem("mdfDoor", typeof(MDFDoorModel))]
     [XmlArrayItem("dovetailDrawerBox", typeof(DovetailDrawerBoxModel))]
