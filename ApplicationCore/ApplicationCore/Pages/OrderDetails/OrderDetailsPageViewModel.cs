@@ -63,7 +63,9 @@ internal class OrderDetailsPageViewModel : IOrderDetailsPageViewModel {
             .ToList();
 
 
-            string jobName = $"{order.Number} - {order.Name}".Replace(".", "")[..30];
+            string jobName = $"{order.Number} - {order.Name}".Replace(".", "");
+
+            if (jobName.Length > 30) jobName = jobName[..30];
 
             var job = new PPJob(jobName, order.OrderDate, products);
 
