@@ -37,7 +37,7 @@ internal class TrashCabinetBuilder : CabinetBuilder<TrashCabinet> {
     }
 
     public TrashCabinetBuilder WithTrashPulloutConfiguration(TrashPulloutConfiguration trashPulloutConfiguration) {
-        TrashPulloutConfiguration = TrashPulloutConfiguration;
+        TrashPulloutConfiguration = trashPulloutConfiguration;
         return this;
     } 
 
