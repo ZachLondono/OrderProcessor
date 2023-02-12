@@ -19,7 +19,7 @@ internal class BaseDiagonalCornerCabinetBuilder : CabinetBuilder<BaseDiagonalCor
         RightDepth = Dimension.Zero;
         ToeType = new NoToe();
         HingeSide = HingeSide.Left;
-        DoorQty = 0;
+        DoorQty = 1;
         AdjustableShelves = 0;
     }
 
