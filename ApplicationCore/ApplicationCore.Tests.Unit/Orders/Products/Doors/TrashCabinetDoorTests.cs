@@ -4,7 +4,7 @@ using ApplicationCore.Features.Shared.Domain;
 using FluentAssertions;
 using MoreLinq;
 
-namespace ApplicationCore.Tests.Unit.Orders.Products;
+namespace ApplicationCore.Tests.Unit.Orders.Products.Doors;
 
 public class TrashCabinetDoorTests {
 
