@@ -1,17 +1,16 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.Orders.Products;
+namespace ApplicationCore.Tests.Unit.Orders.Products.Doors;
 
-public class BaseCabinetDoorTests {
+public class BlindBaseCabinetDoorTests {
 
     private readonly Func<MDFDoorBuilder> _doorBuilderFactory;
     private readonly MDFDoorOptions _mdfOptions;
 
-    public BaseCabinetDoorTests() {
+    public BlindBaseCabinetDoorTests() {
 
         var doorConfiguration = new MDFDoorConfiguration() {
             TopRail = Dimension.Zero,
@@ -37,20 +36,22 @@ public class BaseCabinetDoorTests {
         int drawerQty = 2;
 
         // Arrange
-        var cabinet = new BaseCabinetBuilder()
+        var cabinet = new BlindBaseCabinetBuilder()
                             .WithDoors(new() { Quantity = doorQty })
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
+                                BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = drawerQty,
-                                SlideType = DrawerSlideType.UnderMount,
+                                SlideType = Features.Orders.Shared.Domain.Enums.DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
-                            .WithWidth(Dimension.FromMillimeters(457))
+                            .WithBlindWidth(Dimension.FromMillimeters(635))
+                            .WithWidth(Dimension.FromMillimeters(1067))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(cabinetQty)
                             .WithMDFDoorOptions(_mdfOptions)
                             .Build();
+
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
@@ -64,19 +65,21 @@ public class BaseCabinetDoorTests {
     public void GetDoors_ShouldReturnEmpty_WhenMDFDoorOptionsIsNull() {
 
         // Arrange
-        var cabinet = new BaseCabinetBuilder()
+        var cabinet = new BlindBaseCabinetBuilder()
                             .WithDoors(new() { Quantity = 1 })
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
+                                BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
-                                SlideType = DrawerSlideType.UnderMount,
+                                SlideType = Features.Orders.Shared.Domain.Enums.DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
-                            .WithWidth(Dimension.FromMillimeters(457))
+                            .WithBlindWidth(Dimension.FromMillimeters(635))
+                            .WithWidth(Dimension.FromMillimeters(1067))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithMDFDoorOptions(null)
                             .Build();
+
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
@@ -87,25 +90,26 @@ public class BaseCabinetDoorTests {
     }
 
     [Theory]
-    [InlineData(457, 1, 453)]
-    [InlineData(762, 2, 377.5)]
-    public void DoorWidth_ShouldBeCorrect(double cabWidth, int doorQty, double expectedDoorWidth) {
+    [InlineData(1067, 1, 635, 428.5)]
+    [InlineData(1369, 2, 635, 363.75)]
+    public void DoorWidth_ShouldBeCorrect(double cabWidth, int doorQty, double blindWidth, double expectedDoorWidth) {
 
         // Arrange
-        var cabinet = new BaseCabinetBuilder()
+        var cabinet = new BlindBaseCabinetBuilder()
                             .WithDoors(new() { Quantity = doorQty })
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
+                                BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
-                                SlideType = DrawerSlideType.UnderMount,
+                                SlideType = Features.Orders.Shared.Domain.Enums.DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
+                            .WithBlindWidth(Dimension.FromMillimeters(blindWidth))
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
-                            .WithQty(2)
                             .WithMDFDoorOptions(_mdfOptions)
                             .Build();
+
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
@@ -117,24 +121,26 @@ public class BaseCabinetDoorTests {
     }
 
     [Theory]
-    [InlineData(457, 1, 453)]
-    [InlineData(762, 2, 377.5)]
-    public void DrawerWidth_ShouldBeCorrect_WithMultipleDrawers(double cabWidth, int drawerQty, double expectedDrwWidth) {
+    [InlineData(1067, 1, 635, 428.5)]
+    [InlineData(1369, 2, 635, 363.75)]
+    public void DrawerWidth_ShouldBeCorrect_WithMultipleDrawers(double cabWidth, int drawerQty, double blindWidth, double expectedDrwWidth) {
 
         // Arrange
-        var cabinet = new BaseCabinetBuilder()
+        var cabinet = new BlindBaseCabinetBuilder()
                             .WithDoors(new() { Quantity = 2 })
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
+                                BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = drawerQty,
-                                SlideType = DrawerSlideType.UnderMount,
+                                SlideType = Features.Orders.Shared.Domain.Enums.DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
+                            .WithBlindWidth(Dimension.FromMillimeters(blindWidth))
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithMDFDoorOptions(_mdfOptions)
                             .Build();
+
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
@@ -151,7 +157,7 @@ public class BaseCabinetDoorTests {
     public void DoorHeight_ShouldBeCorrect(double cabHeight, double toeHeight, double expectedDoorHeight) {
 
         // Arrange
-        var cabinet = new BaseCabinetBuilder()
+        var cabinet = new BlindBaseCabinetBuilder()
                             .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
                             .WithDoors(new() { Quantity = 1 })
                             .WithWidth(Dimension.FromMillimeters(456))
@@ -159,6 +165,7 @@ public class BaseCabinetDoorTests {
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithMDFDoorOptions(_mdfOptions)
                             .Build();
+
 
 
         // Act
@@ -176,13 +183,13 @@ public class BaseCabinetDoorTests {
     public void DoorHeight_ShouldBeCorrect_WhenCabinetHasDrawerFace(double cabHeight, double drawerFaceHeight, double toeHeight, double expectedDoorHeight) {
 
         // Arrange
-        var cabinet = new BaseCabinetBuilder()
+        var cabinet = new BlindBaseCabinetBuilder()
                             .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
                             .WithDoors(new() { Quantity = 1 })
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
+                                BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
-                                SlideType = DrawerSlideType.UnderMount,
+                                SlideType = Features.Orders.Shared.Domain.Enums.DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(drawerFaceHeight)
                             })
                             .WithWidth(Dimension.FromMillimeters(456))
@@ -190,6 +197,7 @@ public class BaseCabinetDoorTests {
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithMDFDoorOptions(_mdfOptions)
                             .Build();
+
 
 
         // Act

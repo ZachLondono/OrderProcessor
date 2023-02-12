@@ -55,4 +55,6 @@ public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDrawerBoxC
 
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) { yield return this; }
 
+    public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
+
 }

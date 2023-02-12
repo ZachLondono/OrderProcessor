@@ -13,6 +13,8 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
     public HorizontalDrawerBank Drawers { get; }
     public BaseCabinetInside Inside { get; }
 
+    public Dimension DoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
+
     public override string Description => "Base Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new () {
@@ -87,7 +89,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
         if (Doors.Quantity > 0) {
             Dimension width = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Doors.Quantity - 1)) / Doors.Quantity;
-            Dimension height = Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
+            Dimension height = DoorHeight;
             var door = getBuilder().WithQty(Doors.Quantity * Qty)
                                     .WithProductNumber(ProductNumber)
                                     .WithType(DoorType.Door)
@@ -114,9 +116,6 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
-        var insideWidth = Width - Construction.SideThickness * 2;
-        var insideDepth = Depth - (Construction.BackThickness + Construction.BackInset);
-
         List<DovetailDrawerBox> boxes = new();
 
         if (Drawers.Quantity > 0) {
@@ -125,8 +124,8 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
             int drawerQty = Drawers.Quantity * Qty;
 
-            var box =  getBuilder().WithInnerCabinetDepth(insideDepth, Drawers.SlideType)
-                                    .WithInnerCabinetWidth(insideWidth, Drawers.Quantity, Drawers.SlideType)
+            var box =  getBuilder().WithInnerCabinetDepth(InnerDepth, Drawers.SlideType)
+                                    .WithInnerCabinetWidth(InnerWidth, Drawers.Quantity, Drawers.SlideType)
                                     .WithDrawerFaceHeight(Drawers.FaceHeight)
                                     .WithQty(drawerQty)
                                     .WithOptions(options)
@@ -137,15 +136,15 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
         }
 
-        if (Inside.RollOutBoxes.Positions.Any()) {
+        if (Inside.RollOutBoxes.Qty > 0) {
 
             var options = new DrawerBoxOptions("", "", "", "", "Blum", GetNotchFromSlideType(Inside.RollOutBoxes.SlideType), "", LogoPosition.None);
 
-            int rollOutQty = Inside.RollOutBoxes.Positions.Length * Qty;
+            int rollOutQty = Inside.RollOutBoxes.Qty * Qty;
             var boxHeight = Dimension.FromMillimeters(104);
 
-            var box = getBuilder().WithInnerCabinetDepth(insideDepth, Inside.RollOutBoxes.SlideType, true)
-                                    .WithInnerCabinetWidth(insideWidth, Inside.RollOutBoxes.Blocks, Inside.RollOutBoxes.SlideType)
+            var box = getBuilder().WithInnerCabinetDepth(InnerDepth, Inside.RollOutBoxes.SlideType, true)
+                                    .WithInnerCabinetWidth(InnerWidth, Inside.RollOutBoxes.Blocks, Inside.RollOutBoxes.SlideType)
                                     .WithBoxHeight(boxHeight)
                                     .WithQty(rollOutQty)
                                     .WithOptions(options)
@@ -157,6 +156,79 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
         }
 
         return boxes;
+
+    }
+
+    public override IEnumerable<Supply> GetSupplies() {
+
+        List<Supply> supplies = new();
+
+        if (ToeType is LegLevelers) {
+
+            supplies.Add(Supply.CabinetLeveler(Qty * 4));
+
+        }
+
+        if (Inside.AdjustableShelves > 0) {
+
+            supplies.Add(Supply.LockingShelfPeg(Inside.AdjustableShelves * 4 * Qty));
+
+        }
+
+        if (Doors.Quantity > 0) {
+
+            supplies.Add(Supply.DoorPull(Doors.Quantity * Qty));
+            supplies.AddRange(Supply.StandardHinge(DoorHeight, Doors.Quantity * Qty));
+
+        }
+
+        if (Drawers.Quantity > 0) {
+
+            supplies.Add(Supply.DrawerPull(Drawers.Quantity * Qty));
+
+        }
+
+        if (Drawers.Quantity > 0) {
+
+            Dimension boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, Drawers.SlideType, false);
+
+            switch (Drawers.SlideType) {
+                case DrawerSlideType.UnderMount:
+                    supplies.Add(Supply.UndermountSlide(Drawers.Quantity * Qty, boxDepth));
+                    break;
+                case DrawerSlideType.SideMount:
+                    supplies.Add(Supply.SidemountSlide(Drawers.Quantity * Qty, boxDepth));
+                    break;
+            }
+                
+        }
+
+        if (Inside.RollOutBoxes.Qty > 0) {
+
+            Dimension boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, Drawers.SlideType, true);
+
+            switch (Inside.RollOutBoxes.SlideType) {
+                case DrawerSlideType.UnderMount:
+                    supplies.Add(Supply.UndermountSlide(Inside.RollOutBoxes.Qty * Qty, boxDepth));
+                    break;
+                case DrawerSlideType.SideMount:
+                    supplies.Add(Supply.SidemountSlide(Inside.RollOutBoxes.Qty * Qty, boxDepth));
+                    break;
+            }
+
+            switch (Inside.RollOutBoxes.Blocks) {
+                case RollOutBlockPosition.Left:
+                case RollOutBlockPosition.Right:
+                    supplies.Add(Supply.PullOutBlock(Inside.RollOutBoxes.Qty * Qty));
+                    break;
+                case RollOutBlockPosition.Both:
+                    supplies.Add(Supply.PullOutBlock(Inside.RollOutBoxes.Qty * Qty * 2));
+                    break;
+            }
+
+        }
+
+        return supplies;
 
     }
 

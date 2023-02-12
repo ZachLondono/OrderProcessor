@@ -12,6 +12,22 @@ public record BaseCabinetDoors {
         HingeSide = HingeSide.NotApplicable
     };
 
+    public static BaseCabinetDoors OneDoor(HingeSide hingeSide) {
+        if (hingeSide == HingeSide.NotApplicable) {
+            throw new ArgumentException("Hinge side must be provided for 1 door cabinet", nameof(hingeSide));
+        }
+
+        return new() {
+            Quantity = 1,
+            HingeSide = hingeSide,
+        };
+    }
+
+    public static BaseCabinetDoors TwoDoors() => new() {
+        Quantity = 2,
+        HingeSide = HingeSide.NotApplicable
+    };
+
     public BaseCabinetDoors(HingeSide hingeSide = HingeSide.NotApplicable) {
         
         if (hingeSide == HingeSide.NotApplicable) { 

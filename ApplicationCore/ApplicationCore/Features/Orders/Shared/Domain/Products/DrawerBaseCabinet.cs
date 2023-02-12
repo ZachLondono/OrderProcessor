@@ -46,7 +46,7 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
     public IEnumerable<PPProduct> GetPPProducts() {
         // TODO: add option for no doors
         string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Id, Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new());
+        yield return new PPProduct(Id, Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new Dictionary<string, string>());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
@@ -104,6 +104,32 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
         }
 
         return boxes;
+
+    }
+
+    public override IEnumerable<Supply> GetSupplies() {
+
+        var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, Drawers.SlideType, false);
+
+        List<Supply> supplies = new() {
+            
+            Supply.DrawerPull(Drawers.DrawerQty * Qty),
+
+            Drawers.SlideType switch {
+                DrawerSlideType.SideMount => Supply.SidemountSlide(Drawers.DrawerQty * Qty, boxDepth),
+                DrawerSlideType.UnderMount => Supply.UndermountSlide(Drawers.DrawerQty * Qty, boxDepth),
+                _ => throw new InvalidOperationException("Unknown slide type")
+            }
+
+        };
+
+        if (ToeType is LegLevelers) {
+
+            supplies.Add(Supply.CabinetLeveler(Qty * 4));
+
+        }
+
+        return supplies;
 
     }
 

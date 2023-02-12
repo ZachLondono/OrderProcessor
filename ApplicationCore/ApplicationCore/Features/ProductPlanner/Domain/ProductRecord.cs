@@ -10,5 +10,5 @@ public record ProductRecord {
     public required bool CustomSpec { get; init; }
     public required string Comment { get; init; }
     public required Guid ProductId { get; init; }
-    public required Dictionary<string, string> Parameters { get; set; }
+    public required IDictionary<string, string> Parameters { get; set; }
 }

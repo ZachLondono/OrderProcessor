@@ -4,47 +4,40 @@ using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.Orders.Products;
+namespace ApplicationCore.Tests.Unit.Orders.Products.Drawerboxes;
 
-public class DrawerBaseCabinetDrawerBoxTests {
+public class BlindBaseCabinetDrawerBoxTests {
 
     private readonly Func<DovetailDrawerBoxBuilder> _dovetailDBBuilderFactory;
 
-    public DrawerBaseCabinetDrawerBoxTests() {
+    public BlindBaseCabinetDrawerBoxTests() {
 
         _dovetailDBBuilderFactory = () => new();
 
     }
 
     [Theory]
-    [InlineData(0, 1, 0)]
     [InlineData(1, 1, 1)]
     [InlineData(2, 1, 2)]
-    [InlineData(3, 1, 3)]
-    [InlineData(0, 3, 0)]
-    [InlineData(1, 3, 3)]
-    [InlineData(2, 3, 6)]
-    [InlineData(3, 3, 9)]
+    [InlineData(1, 2, 2)]
+    [InlineData(2, 2, 4)]
     public void GetDrawerBoxes_ShouldReturnCorrectQuantityOfDrawerBoxes(int drawerCount, int cabQty, int expectedDrawerCount) {
 
         // Arrange
-
-        var faceHeights = new Dimension[drawerCount];
-        for (int i = 0; i < drawerCount; i++) {
-            faceHeights[i] = Dimension.FromMillimeters(157);
-        }
-
-        var cabinet = new DrawerBaseCabinetBuilder()
+        var cabinet = new BlindBaseCabinetBuilder()
                             .WithDrawers(new() {
                                 BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
+                                Quantity = drawerCount,
                                 SlideType = DrawerSlideType.UnderMount,
-                                FaceHeights = faceHeights
+                                FaceHeight = Dimension.FromMillimeters(157)
                             })
                             .WithToeType(new LegLevelers())
+                            .WithDoors(new() { Quantity = drawerCount })
+                            .WithBlindWidth(Dimension.FromMillimeters(635))
                             .WithQty(cabQty)
-                            .WithWidth(Dimension.FromMillimeters(456))
+                            .WithWidth(Dimension.FromMillimeters(1067))
                             .WithHeight(Dimension.FromMillimeters(876))
-                            .WithDepth(Dimension.FromMillimeters(610))
+                            .WithDepth(Dimension.FromMillimeters(600))
                             .Build();
 
 
@@ -57,17 +50,20 @@ public class DrawerBaseCabinetDrawerBoxTests {
     }
 
     [Theory]
-    [InlineData(457, DrawerSlideType.UnderMount, 409)]
-    [InlineData(457, DrawerSlideType.SideMount, 393)]
+    [InlineData(1067, DrawerSlideType.UnderMount, 384)]
+    [InlineData(1067, DrawerSlideType.SideMount, 368)]
     public void DrawerBoxWidthTest(double cabWidth, DrawerSlideType slideType, double expectedDrawerWidth) {
 
-        var cabinet = new DrawerBaseCabinetBuilder()
+        var cabinet = new BlindBaseCabinetBuilder()
                             .WithDrawers(new() {
                                 BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
+                                Quantity = 1,
                                 SlideType = slideType,
-                                FaceHeights = new[] { Dimension.FromMillimeters(157) }
+                                FaceHeight = Dimension.FromMillimeters(157)
                             })
                             .WithToeType(new LegLevelers())
+                            .WithDoors(new() { Quantity = 1 })
+                            .WithBlindWidth(Dimension.FromMillimeters(635))
                             .WithQty(1)
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
@@ -89,15 +85,18 @@ public class DrawerBaseCabinetDrawerBoxTests {
     [InlineData(200, 159)]
     public void DrawerBoxHeightTest(double drawerFaceHeight, double expectedDrawerHeight) {
 
-        var cabinet = new DrawerBaseCabinetBuilder()
+        var cabinet = new BlindBaseCabinetBuilder()
                             .WithDrawers(new() {
                                 BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
+                                Quantity = 1,
                                 SlideType = DrawerSlideType.UnderMount,
-                                FaceHeights = new[] { Dimension.FromMillimeters(drawerFaceHeight) }
+                                FaceHeight = Dimension.FromMillimeters(drawerFaceHeight)
                             })
                             .WithToeType(new LegLevelers())
+                            .WithDoors(new() { Quantity = 1 })
+                            .WithBlindWidth(Dimension.FromMillimeters(635))
                             .WithQty(1)
-                            .WithWidth(Dimension.FromMillimeters(457))
+                            .WithWidth(Dimension.FromMillimeters(1067))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .Build();
@@ -124,15 +123,18 @@ public class DrawerBaseCabinetDrawerBoxTests {
     [InlineData(400, DrawerSlideType.SideMount, 355.6, 2)]
     public void DrawerBoxDepthTest(double cabDepth, DrawerSlideType slideType, double expectedDrawerDepth, int accurracy = 0) {
 
-        var cabinet = new DrawerBaseCabinetBuilder()
+        var cabinet = new BlindBaseCabinetBuilder()
                             .WithDrawers(new() {
                                 BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
+                                Quantity = 1,
                                 SlideType = slideType,
-                                FaceHeights = new[] { Dimension.FromMillimeters(157) }
+                                FaceHeight = Dimension.FromMillimeters(157)
                             })
                             .WithToeType(new LegLevelers())
+                            .WithDoors(new() { Quantity = 1 })
+                            .WithBlindWidth(Dimension.FromMillimeters(635))
                             .WithQty(1)
-                            .WithWidth(Dimension.FromMillimeters(457))
+                            .WithWidth(Dimension.FromMillimeters(1067))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(cabDepth))
                             .Build();

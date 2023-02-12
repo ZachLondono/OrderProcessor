@@ -24,4 +24,6 @@ public class MDFDoorProduct : MDFDoor, IProduct, IDoorContainer {
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) { yield return this; }
 
+    public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
+
 }

@@ -19,6 +19,8 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
     public override string Description => "Sink Cabinet";
 
+    public Dimension DoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (FalseDrawerQty > 0 ? DrawerFaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
+
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
         BottomGap = Dimension.Zero,
@@ -114,6 +116,49 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
                                 .Build();
 
         return new DovetailDrawerBox[] { box };
+
+    }
+
+    public override IEnumerable<Supply> GetSupplies() {
+
+        List<Supply> supplies = new();
+
+        if (AdjustableShelves > 0) {
+
+            supplies.Add(Supply.LockingShelfPeg(AdjustableShelves * 4 * Qty));
+
+        }
+
+        if (DoorQty > 0) {
+
+            supplies.Add(Supply.DoorPull(DoorQty * Qty));
+            supplies.AddRange(Supply.StandardHinge(DoorHeight, DoorQty * Qty));
+
+        }
+
+        if (FalseDrawerQty > 0) {
+
+            supplies.Add(Supply.DrawerPull(FalseDrawerQty * Qty));
+
+        }
+
+        if (RollOutBoxes.Qty > 0) {
+
+            var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, RollOutBoxes.SlideType, true);
+
+            switch (RollOutBoxes.SlideType) {
+                case DrawerSlideType.UnderMount:
+                    supplies.Add(Supply.UndermountSlide(RollOutBoxes.Qty * Qty, boxDepth));
+                    break;
+
+                case DrawerSlideType.SideMount:
+                    supplies.Add(Supply.SidemountSlide(RollOutBoxes.Qty * Qty, boxDepth));
+                    break;
+            }
+
+        }
+
+        return supplies;
 
     }
 
@@ -222,4 +267,5 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
         RollOutBlockPosition.Right => "3",
         _ => "0"
     };
+
 }

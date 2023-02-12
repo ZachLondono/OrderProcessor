@@ -14,6 +14,8 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     public Dimension BlindWidth { get; }
     public Dimension ExtendedDoor { get; }
 
+    public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap;
+
     public override string Description => "Blind Wall Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
@@ -49,7 +51,7 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Id, Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), new());
+        yield return new PPProduct(Id, Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), new Dictionary<string, string>());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
@@ -63,7 +65,7 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         }
 
         Dimension width = (Width - BlindWidth - DoorGaps.EdgeReveal - DoorGaps.HorizontalGap / 2 - DoorGaps.HorizontalGap * (Doors.Quantity - 1)) / Doors.Quantity;
-        Dimension height = Height - DoorGaps.TopGap - DoorGaps.BottomGap;
+        Dimension height = DoorHeight;
         var door = getBuilder().WithQty(Doors.Quantity * Qty)
                                 .WithProductNumber(ProductNumber)
                                 .WithType(DoorType.Door)
@@ -73,6 +75,27 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
 
         return new MDFDoor[] { door };
+
+    }
+
+    public override IEnumerable<Supply> GetSupplies() {
+
+        var supplies = new List<Supply>();
+
+        if (AdjustableShelves > 0) {
+
+            supplies.Add(Supply.LockingShelfPeg(4 * AdjustableShelves * Qty));
+
+        }
+
+        if (Doors.Quantity > 0) { 
+        
+            supplies.Add(Supply.DoorPull(Qty * Doors.Quantity));
+            supplies.AddRange(Supply.StandardHinge(DoorHeight, Qty * Doors.Quantity));
+        
+        }
+
+        return supplies;
 
     }
 

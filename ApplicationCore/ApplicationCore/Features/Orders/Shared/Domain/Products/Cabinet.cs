@@ -33,6 +33,9 @@ public abstract class Cabinet : IProduct {
         BackInset = Dimension.FromMillimeters(9)
     };
 
+    public Dimension InnerWidth => Width - Construction.SideThickness * 2;
+    public Dimension InnerDepth => Depth - (Construction.BackThickness + Construction.BackInset);
+
     public Cabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                 Dimension height, Dimension width, Dimension depth,
                 CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
@@ -59,6 +62,8 @@ public abstract class Cabinet : IProduct {
             throw new InvalidOperationException("Cannot create cabinet with plywood box and flake finished side");
         
     }
+
+    public abstract IEnumerable<Supply> GetSupplies();
 
     protected string GetMaterialType() {
 

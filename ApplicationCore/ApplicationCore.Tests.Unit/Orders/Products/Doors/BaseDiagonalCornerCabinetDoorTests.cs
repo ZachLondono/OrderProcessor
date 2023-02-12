@@ -3,14 +3,14 @@ using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.Orders.Products;
+namespace ApplicationCore.Tests.Unit.Orders.Products.Doors;
 
-public class BaseDiagonalCornerCabinet {
+public class BaseDiagonalCornerCabinetDoorTests {
 
     private readonly Func<MDFDoorBuilder> _doorBuilderFactory;
     private readonly MDFDoorOptions _mdfOptions;
 
-    public BaseDiagonalCornerCabinet() {
+    public BaseDiagonalCornerCabinetDoorTests() {
 
         var doorConfiguration = new MDFDoorConfiguration() {
             TopRail = Dimension.Zero,
@@ -46,7 +46,7 @@ public class BaseDiagonalCornerCabinet {
                             .WithQty(cabinetQty)
                             .WithMDFDoorOptions(_mdfOptions)
                             .Build();
-        
+
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
@@ -70,7 +70,7 @@ public class BaseDiagonalCornerCabinet {
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithMDFDoorOptions(null)
                             .Build();
-        
+
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
@@ -96,7 +96,7 @@ public class BaseDiagonalCornerCabinet {
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithMDFDoorOptions(_mdfOptions)
                             .Build();
-        
+
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);
@@ -123,7 +123,7 @@ public class BaseDiagonalCornerCabinet {
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithMDFDoorOptions(_mdfOptions)
                             .Build();
-        
+
 
         // Act
         var doors = cabinet.GetDoors(_doorBuilderFactory);

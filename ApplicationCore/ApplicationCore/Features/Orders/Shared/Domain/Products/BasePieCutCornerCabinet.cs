@@ -16,6 +16,8 @@ internal class BasePieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
 
     public override string Description => "Pie Cut Corner Base Cabinet";
 
+    public Dimension DoorHeight => Height - ToeType.HeightAdjustment - DoorGaps.TopGap;
+
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
         BottomGap = Dimension.Zero,
@@ -46,7 +48,7 @@ internal class BasePieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Id, Room, "BCPC", ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new());
+        yield return new PPProduct(Id, Room, "BCPC", ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new Dictionary<string, string>());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
@@ -55,7 +57,7 @@ internal class BasePieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
             return Enumerable.Empty<MDFDoor>();
         }
 
-        Dimension height = Height - ToeType.HeightAdjustment - DoorGaps.TopGap;
+        Dimension height = DoorHeight;
         Dimension doorThickness = Dimension.FromMillimeters(19);
         Dimension bumperWidth = Dimension.FromMillimeters(3);
 
@@ -74,6 +76,32 @@ internal class BasePieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
                                         .Build(height, rightWidth);
 
         return new List<MDFDoor>() { leftDoor, rightDoor };
+
+    }
+
+    public override IEnumerable<Supply> GetSupplies() {
+
+        List<Supply> supplies = new();
+
+        if (ToeType is LegLevelers) {
+
+            supplies.Add(Supply.CabinetLeveler(Qty * 5));
+
+        }
+
+        if (AdjustableShelves > 0) {
+
+            supplies.Add(Supply.LockingShelfPeg(AdjustableShelves * 5 * Qty));
+
+        }
+
+        supplies.Add(Supply.DoorPull(Qty));
+
+        supplies.AddRange(Supply.StandardHinge(DoorHeight, Qty));
+
+        //supplies.Add(Supply.LazySusan(Qty));
+
+        return supplies;
 
     }
 
