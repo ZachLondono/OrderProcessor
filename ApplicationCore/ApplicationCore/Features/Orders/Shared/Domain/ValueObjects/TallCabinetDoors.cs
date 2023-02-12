@@ -17,6 +17,26 @@ public record TallCabinetDoors {
         HingeSide = HingeSide.NotApplicable
     };
 
+    public static TallCabinetDoors OneDoor(HingeSide hingeSide) {
+        if (hingeSide == HingeSide.NotApplicable) {
+            throw new ArgumentException("Hinge side must be provided for 1 door cabinet", nameof(hingeSide));
+        }
+
+        return new(hingeSide);
+    }
+
+    public static TallCabinetDoors TwoDoors() => new(HingeSide.NotApplicable);
+
+    public static TallCabinetDoors TwoDoorsTwoSections(Dimension lowerDoorHeight, HingeSide hingeSide) {
+        if (hingeSide == HingeSide.NotApplicable) {
+            throw new ArgumentException("Hinge side must be provided for 1 door cabinet", nameof(hingeSide));
+        }
+
+        return new(lowerDoorHeight, HingeSide.NotApplicable);
+    }
+
+    public static TallCabinetDoors FourDoorsTwoSections(Dimension lowerDoorHeight) => new(lowerDoorHeight, HingeSide.NotApplicable);
+
     public TallCabinetDoors(HingeSide hingeSide = HingeSide.NotApplicable) {
 
         if (hingeSide == HingeSide.NotApplicable) {
