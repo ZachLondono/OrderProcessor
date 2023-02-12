@@ -1,0 +1,111 @@
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.Shared.Domain;
+using FluentAssertions;
+
+namespace ApplicationCore.Tests.Unit.Orders.Products.Supplies;
+
+public class TrashCabinetSuppliesTests {
+
+    private readonly TrashCabinetBuilder _builder;
+
+    public TrashCabinetSuppliesTests() {
+
+        _builder = new();
+
+    }
+
+    [Fact]
+    public void Should_IncludeSingleTrashCan_WhenTrashConfigurationIsOneCan() {
+
+        // Arrange
+        var cabinet = _builder.WithTrashPulloutConfiguration(TrashPulloutConfiguration.OneCan).WithQty(2).Build();
+        var expectedSupply = Supply.SingleTrashPullout(cabinet.Qty);
+
+        // Act
+        var supplies = cabinet.GetSupplies();
+
+        // Assert
+        supplies.Should().ContainEquivalentOf(expectedSupply);
+
+    }
+
+    [Fact]
+    public void Should_IncludeDoubleTrashCan_WhenTrashConfigurationIsTwoCans() {
+
+        // Arrange
+        var cabinet = _builder.WithTrashPulloutConfiguration(TrashPulloutConfiguration.TwoCans).WithQty(2).Build();
+        var expectedSupply = Supply.DoubleTrashPullout(cabinet.Qty);
+
+        // Act
+        var supplies = cabinet.GetSupplies();
+
+        // Assert
+        supplies.Should().ContainEquivalentOf(expectedSupply);
+
+    }
+
+    [Fact]
+    public void Should_IncludeFourLegLevelersPerCabinet() {
+
+        // Arrange
+        var cabinet = _builder.WithToeType(new LegLevelers()).WithQty(2).Build();
+        var expectedSupply = Supply.CabinetLeveler(4 * cabinet.Qty);
+
+        // Act
+        var supplies = cabinet.GetSupplies();
+
+        // Assert
+        supplies.Should().ContainEquivalentOf(expectedSupply);
+
+    }
+
+    [Fact]
+    public void Should_IncludeOneDoorAndOneDrawerPullPerCabinet() {
+
+        // Arrange
+        var cabinet = _builder.WithQty(2).Build();
+        var expectedSupplyA = Supply.DoorPull(cabinet.Qty);
+        var expectedSupplyB = Supply.DrawerPull(cabinet.Qty);
+
+        // Act
+        var supplies = cabinet.GetSupplies();
+
+        // Assert
+        supplies.Should().ContainEquivalentOf(expectedSupplyA);
+        supplies.Should().ContainEquivalentOf(expectedSupplyB);
+
+    }
+
+    [Fact]
+    public void Should_IncludeOneUMSlidePerCabinet_WhenSlidesAreUM() {
+
+        // Arrange
+        var cabinet = _builder.WithSlideType(DrawerSlideType.UnderMount).WithQty(2).WithDepth(Dimension.FromMillimeters(500)).Build();
+        var expectedSupply = Supply.UndermountSlide(cabinet.Qty, Dimension.FromMillimeters(457));
+
+        // Act
+        var supplies = cabinet.GetSupplies();
+
+        // Assert
+        supplies.Should().ContainEquivalentOf(expectedSupply);
+
+    }
+
+    [Fact]
+    public void Should_IncludeOneSMSlidePerCabinet_WhenSlidesAreSM() {
+
+        // Arrange
+        var cabinet = _builder.WithSlideType(DrawerSlideType.SideMount).WithQty(2).WithDepth(Dimension.FromMillimeters(500)).Build();
+        var expectedSupply = Supply.SidemountSlide(cabinet.Qty, Dimension.FromMillimeters(457));
+
+        // Act
+        var supplies = cabinet.GetSupplies();
+
+        // Assert
+        supplies.Should().ContainEquivalentOf(expectedSupply);
+
+    }
+
+}

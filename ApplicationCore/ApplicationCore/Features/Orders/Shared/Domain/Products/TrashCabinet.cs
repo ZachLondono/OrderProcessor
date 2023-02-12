@@ -99,6 +99,44 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPP
 
     }
 
+    public override IEnumerable<Supply> GetSupplies() {
+
+        List<Supply> supplies = new() {
+            Supply.DoorPull(Qty),
+            Supply.DrawerPull(Qty)
+        };
+
+        var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, SlideType);
+        switch (SlideType) {
+            case DrawerSlideType.UnderMount:
+                supplies.Add(Supply.UndermountSlide(Qty, boxDepth));
+                break;
+
+            case DrawerSlideType.SideMount:
+                supplies.Add(Supply.SidemountSlide(Qty, boxDepth));
+                break;
+        }
+
+        if (ToeType is LegLevelers) {
+
+            supplies.Add(Supply.CabinetLeveler(4 * Qty));
+
+        }
+
+        switch (TrashPulloutConfiguration) {
+            case TrashPulloutConfiguration.OneCan:
+                supplies.Add(Supply.SingleTrashPullout(Qty));
+                break;
+
+            case TrashPulloutConfiguration.TwoCans:
+                supplies.Add(Supply.DoubleTrashPullout(Qty));
+                break;
+        }
+
+        return supplies;
+
+    }
+
     private Dictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string> {
             ["ProductW"] = Width.AsMillimeters().ToString(),
