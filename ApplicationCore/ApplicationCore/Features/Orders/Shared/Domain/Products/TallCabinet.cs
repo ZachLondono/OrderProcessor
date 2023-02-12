@@ -3,6 +3,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.ProductPlanner.Contracts;
 using ApplicationCore.Features.Shared.Domain;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
@@ -11,6 +12,9 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
     public TallCabinetDoors Doors { get; }
     public IToeType ToeType { get; }
     public TallCabinetInside Inside { get; }
+
+    public Dimension LowerDoorHeight => Doors.UpperQuantity > 0 ? Doors.LowerDoorHeight : Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap;
+    public Dimension UpperDoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - Doors.LowerDoorHeight - DoorGaps.VerticalGap;
 
     public override string Description => "Tall Cabinet";
 
@@ -70,7 +74,7 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
             var builder = getBuilder();
 
             Dimension width = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Doors.UpperQuantity - 1)) / Doors.UpperQuantity;
-            Dimension height = Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - Doors.LowerDoorHeight - DoorGaps.VerticalGap;
+            Dimension height = UpperDoorHeight;
 
             doors.Add(builder.WithQty(Doors.UpperQuantity * Qty)
                             .WithProductNumber(ProductNumber)
@@ -84,7 +88,7 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
             var builder = getBuilder();
 
-            Dimension height = Doors.UpperQuantity > 0 ? Doors.LowerDoorHeight : Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap;
+            Dimension height = LowerDoorHeight;
             Dimension width = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Doors.LowerQuantity - 1)) / Doors.LowerQuantity;
 
             doors.Add(builder.WithQty(Doors.LowerQuantity * Qty)
@@ -123,6 +127,68 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
                                 .Build();
 
         return new DovetailDrawerBox[] { box };
+
+    }
+
+    public override IEnumerable<Supply> GetSupplies() {
+
+        List<Supply> supplies = new();
+
+        if (ToeType is LegLevelers) {
+
+            supplies.Add(Supply.CabinetLeveler(Qty * 4));
+
+        }
+
+        if (Doors.LowerQuantity > 0) {
+
+            supplies.Add(Supply.DoorPull(Doors.LowerQuantity * Qty));
+            supplies.AddRange(Supply.StandardHinge(LowerDoorHeight, Doors.LowerQuantity * Qty));
+
+        }
+
+        if (Doors.UpperQuantity > 0) {
+
+            supplies.Add(Supply.DoorPull(Doors.UpperQuantity * Qty));
+            supplies.AddRange(Supply.StandardHinge(UpperDoorHeight, Doors.UpperQuantity * Qty));
+
+        }
+
+        if (Inside.AdjustableShelvesUpper > 0 || Inside.AdjustableShelvesLower > 0) {
+
+            supplies.Add(Supply.LockingShelfPeg((Inside.AdjustableShelvesUpper + Inside.AdjustableShelvesLower) * Qty * 4));
+
+        }
+
+        if (Inside.RollOutBoxes.Qty > 0) {
+
+            var depth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, Inside.RollOutBoxes.SlideType, true);
+
+            switch (Inside.RollOutBoxes.SlideType) {
+
+                case DrawerSlideType.UnderMount:
+                    supplies.Add(Supply.UndermountSlide(Inside.RollOutBoxes.Qty * Qty, depth));
+                    break;
+
+                case DrawerSlideType.SideMount:
+                    supplies.Add(Supply.SidemountSlide(Inside.RollOutBoxes.Qty * Qty, depth));
+                    break;
+
+            }
+
+            switch (Inside.RollOutBoxes.Blocks) {
+                case RollOutBlockPosition.Left:
+                case RollOutBlockPosition.Right:
+                    supplies.Add(Supply.PullOutBlock(Inside.RollOutBoxes.Qty * Qty));
+                    break;
+                case RollOutBlockPosition.Both:
+                    supplies.Add(Supply.PullOutBlock(Inside.RollOutBoxes.Qty * Qty * 2));
+                    break;
+            }
+
+        }
+
+        return supplies;
 
     }
 

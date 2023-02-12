@@ -17,6 +17,8 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
 
     public override string Description => "Diagonal Corner Wall Cabinet";
 
+    public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap;
+
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),
         BottomGap = Dimension.Zero,
@@ -81,7 +83,7 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
             width = RoundToHalfMM((width - DoorGaps.HorizontalGap) / 2);
         }
 
-        Dimension height = Height - DoorGaps.TopGap - DoorGaps.BottomGap;
+        Dimension height = DoorHeight;
 
         var door = getBuilder().WithQty(DoorQty * Qty)
                                 .WithProductNumber(ProductNumber)
@@ -90,6 +92,27 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
                                 .Build(height, width);
 
         return new List<MDFDoor>() { door };
+
+    }
+
+    public override IEnumerable<Supply> GetSupplies() {
+
+        List<Supply> supplies = new();
+
+        if (AdjustableShelves > 0) {
+
+            supplies.Add(Supply.LockingShelfPeg(AdjustableShelves * 4 * Qty));
+
+        }
+
+        if (DoorQty > 0) {
+
+            supplies.Add(Supply.DoorPull(DoorQty * Qty));
+            supplies.AddRange(Supply.CrossCornerHinge(DoorHeight, DoorQty * Qty));
+
+        }
+
+        return supplies;
 
     }
 

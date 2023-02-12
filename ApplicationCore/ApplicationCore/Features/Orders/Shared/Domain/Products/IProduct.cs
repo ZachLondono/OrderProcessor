@@ -1,4 +1,6 @@
-﻿namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+
+namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
 public interface IProduct {
     public Guid Id { get; }
@@ -6,4 +8,7 @@ public interface IProduct {
     public decimal UnitPrice { get; }
     public string Description { get; }
     public int ProductNumber { get; }
+
+    public IEnumerable<Supply> GetSupplies();
+
 }

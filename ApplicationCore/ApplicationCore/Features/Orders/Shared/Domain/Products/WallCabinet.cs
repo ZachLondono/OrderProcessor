@@ -14,6 +14,8 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     public override string Description => "Wall Cabinet";
 
+    public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap;
+
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),
         BottomGap = Dimension.Zero,
@@ -65,7 +67,7 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         }
 
         Dimension width = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Doors.Quantity - 1)) / Doors.Quantity;
-        Dimension height = Height - DoorGaps.TopGap - DoorGaps.BottomGap;
+        Dimension height = DoorHeight;
         var door = getBuilder().WithQty(Doors.Quantity * Qty)
                                 .WithType(DoorType.Door)
                                 .WithProductNumber(ProductNumber)
@@ -74,6 +76,27 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
                                 .Build(height, width);
 
         return new MDFDoor[] { door };
+
+    }
+
+    public override IEnumerable<Supply> GetSupplies() {
+
+        List<Supply> supplies = new();
+
+        if (Inside.AdjustableShelves > 0) {
+
+            supplies.Add(Supply.LockingShelfPeg(Inside.AdjustableShelves * 4 * Qty));
+
+        }
+
+        if (Doors.Quantity > 0) {
+
+            supplies.Add(Supply.DoorPull(Doors.Quantity * Qty));
+            supplies.AddRange(Supply.StandardHinge(DoorHeight, Doors.Quantity * Qty));
+
+        }
+
+        return supplies;
 
     }
 

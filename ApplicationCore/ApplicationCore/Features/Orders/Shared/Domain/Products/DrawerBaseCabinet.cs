@@ -107,6 +107,32 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
 
     }
 
+    public override IEnumerable<Supply> GetSupplies() {
+
+        var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, Drawers.SlideType, false);
+
+        List<Supply> supplies = new() {
+            
+            Supply.DrawerPull(Drawers.DrawerQty * Qty),
+
+            Drawers.SlideType switch {
+                DrawerSlideType.SideMount => Supply.SidemountSlide(Drawers.DrawerQty * Qty, boxDepth),
+                DrawerSlideType.UnderMount => Supply.UndermountSlide(Drawers.DrawerQty * Qty, boxDepth),
+                _ => throw new InvalidOperationException("Unknown slide type")
+            }
+
+        };
+
+        if (ToeType is LegLevelers) {
+
+            supplies.Add(Supply.CabinetLeveler(Qty * 4));
+
+        }
+
+        return supplies;
+
+    }
+
     private static string GetNotchFromSlideType(DrawerSlideType slide) => slide switch {
         DrawerSlideType.UnderMount => "Standard Notch",
         DrawerSlideType.SideMount => "",

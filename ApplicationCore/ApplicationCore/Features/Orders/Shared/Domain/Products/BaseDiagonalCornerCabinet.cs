@@ -14,7 +14,9 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
     public HingeSide HingeSide { get; }
     public int DoorQty { get; }
     public int AdjustableShelves { get; }
-    
+
+    public Dimension DoorHeight => Height - ToeType.HeightAdjustment - DoorGaps.TopGap - DoorGaps.BottomGap;
+
     public override string Description => "Diagonal Corner Base Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
@@ -77,7 +79,7 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
             width = RoundToHalfMM((width - DoorGaps.HorizontalGap) / 2);
         }
 
-        Dimension height = Height - ToeType.HeightAdjustment - DoorGaps.TopGap - DoorGaps.BottomGap;
+        Dimension height = DoorHeight;
 
         var door = getBuilder().WithQty(DoorQty * Qty)
                                 .WithProductNumber(ProductNumber)
@@ -86,6 +88,33 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
                                 .Build(height, width);
 
         return new List<MDFDoor>() { door };
+
+    }
+
+    public override IEnumerable<Supply> GetSupplies() {
+
+        var supplies = new List<Supply>();
+
+        if (AdjustableShelves > 0) {
+
+            supplies.Add(Supply.LockingShelfPeg(AdjustableShelves * 5 * Qty));
+
+        }
+
+        if (DoorQty > 0) { 
+
+            supplies.Add(Supply.DoorPull(DoorQty * Qty));
+            supplies.AddRange(Supply.CrossCornerHinge(DoorHeight, DoorQty * Qty));
+
+        }
+
+        if (ToeType is LegLevelers) {
+
+            supplies.Add(Supply.CabinetLeveler(Qty * 5));
+
+        }
+
+        return supplies;
 
     }
 

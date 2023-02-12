@@ -16,6 +16,8 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     public Dimension BlindWidth { get; }
     public IToeType ToeType { get; }
 
+    public Dimension DoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
+
     public override string Description => "Blind Base Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
@@ -70,7 +72,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
         if (Doors.Quantity > 0) {
             Dimension width = (Width - BlindWidth - DoorGaps.EdgeReveal - DoorGaps.HorizontalGap / 2 - DoorGaps.HorizontalGap * (Doors.Quantity - 1)) / Doors.Quantity;
-            Dimension height = Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
+            Dimension height = DoorHeight;
             var door = getBuilder().WithQty(Doors.Quantity * Qty)
                                     .WithProductNumber(ProductNumber)
                                     .WithType(DoorType.Door)
@@ -118,6 +120,48 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer {
                                 .Build();
 
         return new List<DovetailDrawerBox>() { box };
+
+    }
+
+    public override IEnumerable<Supply> GetSupplies() {
+
+        List<Supply> supplies = new();
+
+        if (AdjustableShelves > 0) {
+
+            supplies.Add(Supply.LockingShelfPeg(AdjustableShelves * Qty * 4));
+
+        }
+
+        supplies.Add(Supply.DoorPull(Doors.Quantity * Qty));
+
+        supplies.AddRange(Supply.StandardHinge(DoorHeight, Doors.Quantity * Qty));
+
+        if (Drawers.Quantity > 0) {
+
+            supplies.Add(Supply.DrawerPull(Drawers.Quantity * Qty));
+
+            var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, Drawers.SlideType, false);
+
+            switch (Drawers.SlideType) {
+                case DrawerSlideType.UnderMount:
+                    supplies.Add(Supply.UndermountSlide(Drawers.Quantity * Qty, boxDepth));
+                    break;
+
+                case DrawerSlideType.SideMount:
+                    supplies.Add(Supply.SidemountSlide(Drawers.Quantity * Qty, boxDepth));
+                    break;
+            }
+
+        }
+
+        if (ToeType is LegLevelers) {
+
+            supplies.Add(Supply.CabinetLeveler(Qty * 4));
+
+        }
+
+        return supplies;
 
     }
 

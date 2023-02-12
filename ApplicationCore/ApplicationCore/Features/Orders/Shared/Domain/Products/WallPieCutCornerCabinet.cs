@@ -16,6 +16,8 @@ internal class WallPieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
 
     public override string Description => "Pie Cut Corner Wall Cabinet";
 
+    public Dimension DoorHeight => Height - DoorGaps.TopGap;
+
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),
         BottomGap = Dimension.Zero,
@@ -60,7 +62,7 @@ internal class WallPieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
             return Enumerable.Empty<MDFDoor>();
         }
 
-        Dimension height = Height - DoorGaps.TopGap;
+        Dimension height = DoorHeight;
         Dimension doorThickness = Dimension.FromMillimeters(19);
         Dimension bumperWidth = Dimension.FromMillimeters(3);
 
@@ -79,6 +81,24 @@ internal class WallPieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
                                         .Build(height, rightWidth);
 
         return new List<MDFDoor>() { leftDoor, rightDoor };
+
+    }
+
+    public override IEnumerable<Supply> GetSupplies() {
+
+        List<Supply> supplies = new();
+
+        if (AdjustableShelves > 0) {
+
+            supplies.Add(Supply.LockingShelfPeg(AdjustableShelves * 5 * Qty));
+
+        }
+
+        supplies.Add(Supply.DoorPull(Qty));
+
+        supplies.AddRange(Supply.StandardHinge(DoorHeight, Qty));
+
+        return supplies;
 
     }
 
