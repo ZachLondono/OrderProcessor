@@ -5,7 +5,7 @@ public class PPProduct {
     public Guid ProductId { get; }
     public string Room { get; }
     public string Name { get; }
-    public int SequenceNum { get;  }
+    public int SequenceNum { get; }
     public string Catalog { get; }
     public string MaterialType { get; }
     public string DoorType { get; }

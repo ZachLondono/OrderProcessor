@@ -43,7 +43,7 @@ internal class PDFBuilder {
         var pageHeaderStyle = config.HeaderStyle;
         page.Header()
             .AlignCenter()
-            .Column(col => { 
+            .Column(col => {
 
                 col.Item().AlignCenter().Text(summary.Title).WithStyle(pageHeaderStyle);
 

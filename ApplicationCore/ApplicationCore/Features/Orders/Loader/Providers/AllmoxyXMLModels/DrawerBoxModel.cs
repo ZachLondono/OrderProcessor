@@ -71,7 +71,7 @@ public class DovetailDrawerBoxModel : ProductModel {
         var options = new DrawerBoxOptions(Material, Material, Material, Bottom, Clips, Notch, Insert, Shared.Domain.Enums.LogoPosition.None);
 
         return new DovetailDrawerBoxProduct(Guid.Empty, unitPrice, Qty, GetProductNumber(), height, width, depth, Note, labelFields, options);
-        
+
     }
 
 }

@@ -23,10 +23,10 @@ public class ClosetPartModel : ProductModel {
 
     [XmlElement("width")]
     public double Width { get; set; }
-    
+
     [XmlElement("length")]
     public double Length { get; set; }
-    
+
     [XmlElement("qty")]
     public int Qty { get; set; }
 
@@ -38,13 +38,13 @@ public class ClosetPartModel : ProductModel {
 
     [XmlElement("materialFinish")]
     public string MaterialFinish { get; set; } = string.Empty;
-    
+
     [XmlElement("materialCore")]
     public string MaterialCore { get; set; } = string.Empty;
-    
+
     [XmlElement("paintColor")]
     public string PaintColor { get; set; } = string.Empty;
-    
+
     [XmlElement("comment")]
     public string Comment { get; set; } = string.Empty;
 

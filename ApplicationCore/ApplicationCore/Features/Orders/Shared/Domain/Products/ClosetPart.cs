@@ -6,7 +6,7 @@ using ApplicationCore.Features.Shared.Domain;
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
 public class ClosetPart : IProduct, IPPProductContainer {
-    
+
     public Guid Id { get; }
     public int Qty { get; }
     public decimal UnitPrice { get; }

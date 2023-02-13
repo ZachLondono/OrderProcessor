@@ -60,15 +60,15 @@ internal class CADCodeLabelDBExistingJobProvider : IExistingJobProvider {
     }
 
     private static string GetProductIdSubQuery(string jobName, DataTable? schema) {
-        
+
         bool containsId = schema?.Select($"TABLE_NAME='{jobName}' AND COLUMN_NAME='ProductId'").Length > 0;
 
         if (containsId) {
 
             return $"(SELECT TOP 1 ProductId FROM [{jobName}] WHERE cStr([{jobName}].[GlobalId]) = cStr([Label Sequence:{jobName}].[GlobalId])) As ProductId";
 
-        } 
-       
+        }
+
         return "\"0\" As ProductId";
 
     }

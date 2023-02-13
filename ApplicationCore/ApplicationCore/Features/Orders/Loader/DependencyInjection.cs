@@ -3,7 +3,6 @@ using ApplicationCore.Features.Labels.Services;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.Loader.Providers;
-using ApplicationCore.Features.Orders.Providers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ApplicationCore.Features.Orders.Loader.XMLValidation;

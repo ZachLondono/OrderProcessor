@@ -27,7 +27,7 @@ public class PPJobConverter {
                                                     Products = group.ToList()
                                                 })
                                                 .ToList()
-                        });
+                            });
 
 
         int jobId = 0;
@@ -134,7 +134,7 @@ public class PPJobConverter {
     }
 
     private void AddMaterialVariablesToWriter(MaterialGroupKey materials, int levelId) {
-        
+
         var overrides = new VariableOverride() {
             LevelId = levelId,
             Units = PPUnits.Millimeters,

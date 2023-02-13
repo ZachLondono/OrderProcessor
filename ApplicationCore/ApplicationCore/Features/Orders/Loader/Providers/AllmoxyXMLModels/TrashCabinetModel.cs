@@ -43,7 +43,7 @@ public class TrashCabinetModel : CabinetModelBase {
                 .WithSlideType(slideType)
                 .WithToeType(toeType)
                 .WithTrashPulloutConfiguration(trashConfig)
-                .Build();   
+                .Build();
 
     }
 

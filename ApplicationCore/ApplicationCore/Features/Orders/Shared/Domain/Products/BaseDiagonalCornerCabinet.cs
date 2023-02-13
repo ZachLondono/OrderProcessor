@@ -101,7 +101,7 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
 
         }
 
-        if (DoorQty > 0) { 
+        if (DoorQty > 0) {
 
             supplies.Add(Supply.DoorPull(DoorQty * Qty));
             supplies.AddRange(Supply.CrossCornerHinge(DoorHeight, DoorQty * Qty));

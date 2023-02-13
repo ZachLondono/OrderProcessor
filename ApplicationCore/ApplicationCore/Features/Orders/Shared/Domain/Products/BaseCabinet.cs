@@ -17,7 +17,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
     public override string Description => "Base Cabinet";
 
-    public static CabinetDoorGaps DoorGaps { get; set; } = new () {
+    public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
         BottomGap = Dimension.Zero,
         EdgeReveal = Dimension.FromMillimeters(2),
@@ -124,7 +124,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
 
             int drawerQty = Drawers.Quantity * Qty;
 
-            var box =  getBuilder().WithInnerCabinetDepth(InnerDepth, Drawers.SlideType)
+            var box = getBuilder().WithInnerCabinetDepth(InnerDepth, Drawers.SlideType)
                                     .WithInnerCabinetWidth(InnerWidth, Drawers.Quantity, Drawers.SlideType)
                                     .WithDrawerFaceHeight(Drawers.FaceHeight)
                                     .WithQty(drawerQty)
@@ -200,7 +200,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
                     supplies.Add(Supply.SidemountSlide(Drawers.Quantity * Qty, boxDepth));
                     break;
             }
-                
+
         }
 
         if (Inside.RollOutBoxes.Qty > 0) {

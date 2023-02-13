@@ -38,7 +38,7 @@ public record WallCabinetDoors {
             Quantity = 1;
         }
         HingeSide = hingeSide;
-        ExtendDown = extendDown is null ? Dimension.Zero : (Dimension) extendDown;
+        ExtendDown = extendDown is null ? Dimension.Zero : (Dimension)extendDown;
     }
 
 }

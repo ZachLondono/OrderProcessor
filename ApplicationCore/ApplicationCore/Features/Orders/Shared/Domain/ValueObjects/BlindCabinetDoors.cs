@@ -8,10 +8,10 @@ public record BlindCabinetDoors {
     public HingeSide HingeSide { get; init; }
 
     public BlindCabinetDoors(HingeSide hingeSide = HingeSide.NotApplicable) {
-        
+
         if (hingeSide == HingeSide.NotApplicable) {
             Quantity = 2;
-        } else { 
+        } else {
             Quantity = 1;
         }
 

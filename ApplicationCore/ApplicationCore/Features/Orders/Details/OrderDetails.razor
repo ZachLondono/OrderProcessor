@@ -3,9 +3,11 @@
 @using ApplicationCore.Features.CNC.ReleasePDF;
 @using ApplicationCore.Features.Companies.Domain.ValueObjects
 @using ApplicationCore.Features.Orders.Details;
+@using ApplicationCore.Features.Orders.Details.ProductTables
+@using ApplicationCore.Features.Orders.Details.OrderExport;
 @using ApplicationCore.Features.Orders.Shared.Domain
 @using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-@using ApplicationCore.Features.Orders.Release
+@using ApplicationCore.Features.Orders.Details.OrderRelease
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Features.ProductPlanner;
 @using ApplicationCore.Features.ProductPlanner.Contracts;
@@ -19,10 +21,10 @@
 @using ApplicationCore.Features.Orders.Shared;
 @using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 @using ApplicationCore.Pages.OrderDetails;
-@using static ApplicationCore.Features.Orders.Details.MDFDoorProductTable;
-@using static ApplicationCore.Features.Orders.Details.DovetailDrawerBoxProductTable;
-@using static ApplicationCore.Features.Orders.Details.ClosetPartProductTable;
-@using static ApplicationCore.Features.Orders.Details.CabinetProductTable;
+@using static ApplicationCore.Features.Orders.Details.ProductTables.MDFDoorProductTable;
+@using static ApplicationCore.Features.Orders.Details.ProductTables.DovetailDrawerBoxProductTable;
+@using static ApplicationCore.Features.Orders.Details.ProductTables.ClosetPartProductTable;
+@using static ApplicationCore.Features.Orders.Details.ProductTables.CabinetProductTable;
 @inherits UIListenerComponent<WorkOrdersUpdatNotification>
 @inject IBus Bus
 @inject OrderState OrderState
@@ -53,39 +55,24 @@
     </section>
 
     <section class="mt-10" id="actions">
-        <div class="mb-4">
-            <Button Type="button" OnClickAsync="ReleaseOrder" Disabled="_isReleasing" Class="float-left flex justify-center items-center h-10 w-36" Rounded="ButtonRounded.Left" Color="ButtonColor.Secondary">
-                @if (_isReleasing) {
-                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                }
-                Release
-            </Button><!--
-         --><DropDown Class="flex justify-center items-center w-12 h-10" Rounded="ButtonRounded.Right" Color="ButtonColor.Secondary" Position="DropdownPosition.BottomRight" OnOpenAsync="LoadReleaseProfile">
-                <ButtonContent>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                </ButtonContent>
-                <DropDownContent>
-                    <ReleaseProfileDropDown Profile="_customReleaseProfile" />
-                </DropDownContent>
-            </DropDown>
-        </div>
-
-        <div class="mb-4">
-            <Button Type="button" OnClickAsync="ExportForPSI" Color="ButtonColor.Secondary" Style="ButtonStyle.Outline">
-                Export for PSI
-            </Button>
-        </div>
-        <div class="mb-4">
-            <Button Type="button" OnClickAsync="GenerateCNCReleasePDF" Color="ButtonColor.Secondary" Style="ButtonStyle.Outline">
-                Generate CNC PDF
-            </Button>
-        </div>
+        <Button Type="button" OnClickAsync="ExportOrder" Disabled="_isExporting" Class="flex justify-center items-center h-10 w-36 mb-4" Color="ButtonColor.Secondary">
+            @if (_isExporting) {
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            }
+            Export
+        </Button>
+        <Button Type="button" OnClickAsync="ReleaseOrder" Disabled="_isReleasing" Class="flex justify-center items-center h-10 w-36" Color="ButtonColor.Secondary">
+            @if (_isReleasing) {
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            }
+            Release
+        </Button>
     </section>
 
     <section class="mt-10" id="companyInfo">
@@ -281,6 +268,7 @@
 
         }
     </section>
+
 }
 
 @code {
@@ -302,6 +290,7 @@
     private bool _useInches = false;
 
     private bool _isReleasing = false;
+    private bool _isExporting = false;
 
     protected override async Task OnInitializedAsync() {
 
@@ -392,18 +381,12 @@
 
         _isReleasing = true;
 
-        var parameters = new ModalParameters();
-        if (_customReleaseProfile is not null)
-            parameters.Add("ReleaseProfile", _customReleaseProfile);
-
-        var options =  new ModalOptions() {
-            HideHeader = true,
-            HideCloseButton = true,
-            DisableBackgroundCancel = true,
-            Size = ModalSize.Large
-        };
-
-        var dialog = Modal.Show<ReleaseProgressDialog>("Order Release Progress", parameters, options);
+        var dialog = Modal.Show<ReleaseSetupDialog>("Release Setup", new ModalOptions() {
+                HideHeader = false,
+                HideCloseButton = true,
+                DisableBackgroundCancel = true,
+                Size = ModalSize.Medium
+            });
 
         _ = await dialog.Result;
 
@@ -411,81 +394,24 @@
 
     }
 
-    private async Task ExportForPSI() {
+    private async Task ExportOrder() {
 
-        if (OrderState.Order is null || ViewModel is null) return;
-
-        string errors = await ViewModel.ExportOrderForPSI(OrderState.Order);
-
-        if (errors != string.Empty) {
-            await Modal.OpenInformationDialog("Manual Overrides Needed:", errors, InformationDialog.MessageType.Information);
-        } else {
-            await Modal.OpenInformationDialog("Completed", "EXT export completed", InformationDialog.MessageType.Information);
-        }
-
-    }
-
-    private async Task GenerateCNCReleasePDF() {
-
-        if (OrderState.Order is null || ViewModel is null) return;
-
-        var waitingDialog = ShowLoadingDialog("Waiting", "Select Label File.");
-
-        string selectedPath = "";
-        bool wasPicked = await FilePicker.PickFileAsync("Select label database", "Y:\\CADCode\\Label Data", new("CADCode Label File", ".mdb"), (path) => {
-            selectedPath = path;
-        });
-
-        waitingDialog.Close();
-
-        if (!wasPicked || selectedPath == "") {
+        if (_isExporting == true) {
             return;
         }
 
-        var modal = Modal.Show<ListAvailableJobsDialog>("Select Job", new ModalParameters() { { "LabelDatabaseFilePath", selectedPath } });
-        var modalResult = await modal.Result;
-        if (modalResult.Cancelled) {
-            return;
-        }
+        _isExporting = true;
 
-        if (modalResult.Data is not IEnumerable<AvailableJob> selectedJobs) {
-            _ = await Modal.OpenInformationDialog("Error", "Unexpected Data Returned", InformationDialog.MessageType.Warning);
-            return;
-        }
+        var dialog = Modal.Show<ExportSetupDialog>("Export Setup", new ModalOptions() {
+                HideHeader = false,
+                HideCloseButton = true,
+                DisableBackgroundCancel = true,
+                Size = ModalSize.Medium
+            });
 
-        var loadingDialog = ShowLoadingDialog("Loading", "Generating files");
-        var result = await Task.Run(() => ViewModel.GenerateCNCReleasePDF(OrderState.Order, selectedPath, selectedJobs)).ConfigureAwait(true);
-        loadingDialog.Close();
+        _ = await dialog.Result;
 
-        if (result is null) {
-
-            await Modal.OpenInformationDialog("Errror", "No pdfs where generated", InformationDialog.MessageType.Error);
-
-        } else {
-
-            await Modal.OpenInformationDialog("Completed", "CNC PDF Generated", InformationDialog.MessageType.Information);
-
-            if (result.WorkOrderId is not null) {
-                UIBus.Publish(new WorkOrdersUpdatNotification());
-            }
-
-        }
-
-    }
-
-    private IModalReference ShowLoadingDialog(string title, string message) {
-
-        var options = new ModalOptions() {
-            HideHeader = true,
-            HideCloseButton = true,
-            DisableBackgroundCancel = true
-        };
-
-        return Modal.Show<InformationDialog>("", options: options, parameters: new ModalParameters {
-            { "Type", InformationDialog.MessageType.Information },
-            { "Title", title},
-            { "Details", message }
-        });
+        _isExporting = false;
 
     }
 

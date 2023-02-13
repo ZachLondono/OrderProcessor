@@ -164,7 +164,7 @@ public class QuestPDFWriter : IReleasePDFWriter {
         tables.Add(materialTable);
         tables.Add(partsTable);
 
-        string workIdStr = job.WorkOrderId is null ? "" : GetGuidAsBase64((Guid) job.WorkOrderId);
+        string workIdStr = job.WorkOrderId is null ? "" : GetGuidAsBase64((Guid)job.WorkOrderId);
 
         var cover = new CoverModel() {
             Title = $"{job.JobName}  [{release.MachineName}]",

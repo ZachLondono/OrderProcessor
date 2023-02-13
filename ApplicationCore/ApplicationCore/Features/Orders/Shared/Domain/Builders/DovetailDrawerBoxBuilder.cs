@@ -13,7 +13,7 @@ public class DovetailDrawerBoxBuilder {
     public Dimension Depth { get; private set; }
     public string Note { get; private set; }
     public DrawerBoxOptions Options { get; private set; }
-    public Dictionary<string, string> LabelFields { get; private set;  }
+    public Dictionary<string, string> LabelFields { get; private set; }
 
     /// <summary>
     /// Minium clearance between top of drawer box and top of drawer face
@@ -83,18 +83,18 @@ public class DovetailDrawerBoxBuilder {
     }
 
     public DovetailDrawerBoxBuilder WithDrawerFaceHeight(Dimension faceHeight) {
-        
+
         foreach (var height in StdHeights.OrderBy(height => height)) {
-            
+
             if (height > faceHeight - VerticalClearance) {
                 continue;
             }
-            
+
             Height = height;
             return this;
 
         }
-        
+
         throw new ArgumentOutOfRangeException(nameof(faceHeight), "No valid drawer box height for given drawer face height");
 
     }
@@ -105,7 +105,7 @@ public class DovetailDrawerBoxBuilder {
     }
 
     public DovetailDrawerBoxBuilder WithInnerCabinetWidth(Dimension innerCabinetWidth, int drawerCount, DrawerSlideType slideType) {
-        
+
         // Between each drawer box there are 2 dividers
         int dividerCount = (drawerCount - 1) * 2;
 
@@ -143,12 +143,12 @@ public class DovetailDrawerBoxBuilder {
         return this;
     }
 
-    public static Dimension GetDrawerBoxDepthFromInnerCabinetDepth(Dimension innerCabinetDepth, DrawerSlideType slideType, bool isRollOut = false) { 
+    public static Dimension GetDrawerBoxDepthFromInnerCabinetDepth(Dimension innerCabinetDepth, DrawerSlideType slideType, bool isRollOut = false) {
 
         var clearance = DrawerSlideDepthClearance[slideType];
 
-        if (slideType is DrawerSlideType.UnderMount) { 
-            
+        if (slideType is DrawerSlideType.UnderMount) {
+
             foreach (var depth in UnderMountDrawerSlideDepths.OrderBy(depth => depth)) {
 
                 if (depth > innerCabinetDepth - clearance) {

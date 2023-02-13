@@ -10,7 +10,7 @@ public static class Extensions {
         if (fraction.N == 0) {
             return "0";
         }
-        
+
         int whole = fraction.N / fraction.D;
         int n = fraction.N - (whole * fraction.D);
 

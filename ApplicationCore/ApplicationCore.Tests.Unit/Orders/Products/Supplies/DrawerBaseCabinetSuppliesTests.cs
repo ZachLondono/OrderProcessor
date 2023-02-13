@@ -29,10 +29,10 @@ public class DrawerBaseCabinetSuppliesTests {
             faceHeights[i] = Dimension.FromMillimeters(157);
         }
         var cabinet = _builder.WithDrawers(new() {
-                                    FaceHeights = faceHeights,
-                                    BoxMaterial = CabinetDrawerBoxMaterial.SolidBirch,
-                                    SlideType = DrawerSlideType.SideMount
-                                })
+            FaceHeights = faceHeights,
+            BoxMaterial = CabinetDrawerBoxMaterial.SolidBirch,
+            SlideType = DrawerSlideType.SideMount
+        })
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(157 * drawerQty + 10))
                                 .WithDepth(Dimension.FromMillimeters(500))
@@ -63,10 +63,10 @@ public class DrawerBaseCabinetSuppliesTests {
             faceHeights[i] = Dimension.FromMillimeters(157);
         }
         var cabinet = _builder.WithDrawers(new() {
-                                    FaceHeights = faceHeights,
-                                    BoxMaterial = CabinetDrawerBoxMaterial.SolidBirch,
-                                    SlideType = DrawerSlideType.UnderMount
-                                })
+            FaceHeights = faceHeights,
+            BoxMaterial = CabinetDrawerBoxMaterial.SolidBirch,
+            SlideType = DrawerSlideType.UnderMount
+        })
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(157 * drawerQty + 10))
                                 .WithDepth(Dimension.FromMillimeters(500))

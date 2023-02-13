@@ -17,7 +17,7 @@ internal class IsProductComplete {
         }
 
         public override async Task<Response<bool>> Handle(Query query) {
-            
+
             using var connection = _factory.CreateConnection();
 
             const string sql = @"SELECT

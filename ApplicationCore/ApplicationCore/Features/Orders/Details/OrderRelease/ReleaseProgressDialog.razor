@@ -1,0 +1,94 @@
+﻿@using ApplicationCore.Features.Orders.Shared.State;
+@using ApplicationCore.Features.Shared.Components
+@using static ApplicationCore.Features.Shared.Components.Button;
+@using System.Collections.Specialized;
+@using static ApplicationCore.Features.Orders.Details.OrderRelease.ReleaseProgressViewModel;
+@inject OrderState OrderState
+@inject IJSRuntime JSRuntime
+@inject ReleaseProgressViewModel DataContext
+
+<div class="mb-3">
+    @if(DataContext.IsComplete) {
+        <div class="text-center mb-2 font-bold text-green-500">Release Complete</div>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-14 w-14 text-green-700">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+    } else {
+        <div class="text-center mb-4 font-bold text-blue-700">Releasing Order...</div>
+        <svg class="animate-spin mx-auto h-12 w-12 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-10" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+    }
+</div>
+
+<div class="shadow-md max-h-48 w-full overflow-x-hidden overflow-y-scroll p-1.5 border border-gray-200" @ref="_messagebox">
+	<table class="w-full border-collapse text-xs">							
+		<tr>
+			<td colspan="2" class="text-[0.5rem] italic">
+				Progress Log
+			</td>
+		</tr>
+
+        @foreach (var message in DataContext.Messages) {
+            <tr class="border-b border-gray-100">
+                <td class="w-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4">
+                        @switch (message.Type) {
+                            case LogMessageType.Info:
+                                <path class="text-blue-700" stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                                break;
+
+                            case LogMessageType.FileCreated:
+                            case LogMessageType.Success:
+                                <path class="text-green-700" stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                break;
+
+                            case LogMessageType.Error:
+                                <path class="text-red-700" stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                break;
+
+                            default:
+                                break;
+                        }
+                    </svg>
+                </td>
+                <td class="text-overflow-ellipsis">@message.Message</td>
+            </tr>
+        }
+    </table>
+</div>
+
+<Button Style="ButtonStyle.Text" Disabled="@(!DataContext.IsComplete)" OnClickAsync="CloseDialog" Class="mt-3 float-right">Close</Button>
+
+@code {
+
+    [CascadingParameter]
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter]
+    public ReleaseConfiguration? Configuration { get; set; } = default;
+
+    private ElementReference _messagebox;
+
+    protected override async Task OnInitializedAsync() {
+
+        DataContext.OnPropertyChanged += () => InvokeAsync(StateHasChanged);
+        DataContext.Messages.CollectionChanged += UpdateMessageLog;
+
+        if (Configuration is not null) {
+            await Task.Run(() => DataContext.ReleaseOrder(Configuration));
+        }
+
+    }
+
+    public void UpdateMessageLog(object? sender, NotifyCollectionChangedEventArgs args) {
+        InvokeAsync(StateHasChanged);
+        JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
+    }
+
+    private async Task CloseDialog() {
+        await BlazoredModal.CloseAsync();
+    }
+
+}

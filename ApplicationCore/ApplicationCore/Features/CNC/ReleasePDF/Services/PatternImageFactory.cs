@@ -81,7 +81,7 @@ public class PatternImageFactory {
             var textSize = cg.MeasureString(text.Text, font);
 
             var drawPoint = new PointF((float)x - textSize.Width / 2, (float)y - textSize.Height / 2);
-                        
+
             var rect = new RectangleF(drawPoint, textSize);
             cg.FillRectangle(Brushes.White, rect);
             cg.DrawString(text.Text, font, Brushes.Black, rect);

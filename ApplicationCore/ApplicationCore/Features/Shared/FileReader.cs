@@ -5,7 +5,7 @@ public class FileReader : IFileReader {
     public bool DoesFileExist(string filePath) => File.Exists(filePath);
 
     public string GetAvailableFileName(string direcotry, string filename, string fileExtension = "") {
-        
+
         int index = 1;
 
         foreach (char c in Path.GetInvalidFileNameChars()) {

@@ -88,11 +88,11 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
         }
 
-        if (Doors.Quantity > 0) { 
-        
+        if (Doors.Quantity > 0) {
+
             supplies.Add(Supply.DoorPull(Qty * Doors.Quantity));
             supplies.AddRange(Supply.StandardHinge(DoorHeight, Qty * Doors.Quantity));
-        
+
         }
 
         return supplies;

@@ -3,7 +3,7 @@
 namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
 internal readonly struct CabinetDoorGaps {
-    
+
     public CabinetDoorGaps() { }
 
     /// <summary>

@@ -24,8 +24,8 @@ internal class GetWorkOrdersInOrder {
 
             List<WorkOrder> workorders = new();
 
-            foreach (var wo in data) { 
-                
+            foreach (var wo in data) {
+
                 var products = await connection.QueryAsync<Guid>(@"SELECT product_id FROM work_order_products WHERE work_order_id = @Id", wo);
 
                 var workorder = new WorkOrder(wo.Id, wo.Name, command.OrderId, products.ToList(), wo.Status);

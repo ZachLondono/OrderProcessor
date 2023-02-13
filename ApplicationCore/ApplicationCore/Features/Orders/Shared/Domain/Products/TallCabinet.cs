@@ -104,7 +104,7 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
     }
 
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
-        
+
         if (!Inside.RollOutBoxes.Positions.Any()) {
 
             return Enumerable.Empty<DovetailDrawerBox>();

@@ -14,7 +14,7 @@ public static class DependencyInjection {
             return async (orderId, name, productIds) => {
                 var command = new CreateWorkOrder.Command(name, orderId, productIds);
                 var response = await bus.Send(command);
-                
+
                 Guid id = Guid.Empty;
                 response.Match(
                     wo => id = wo.Id,
@@ -29,10 +29,10 @@ public static class DependencyInjection {
 
             var bus = sp.GetRequiredService<IBus>();
             return async (orderId, productId) => {
-                
+
                 var command = new IsProductComplete.Query(orderId, productId);
                 var response = await bus.Send(command);
-                
+
                 bool isComplete = false;
                 response.Match(
                     result => isComplete = result,

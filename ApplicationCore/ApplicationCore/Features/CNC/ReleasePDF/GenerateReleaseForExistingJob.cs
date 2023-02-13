@@ -142,7 +142,7 @@ public class GenerateReleaseForSelectedJobs {
         }
 
         private async Task<Guid?> GenerateWorkOrder(Command command, HashSet<string> productIds, HashSet<string> partClasses) {
-            
+
             Guid? workOrderId = null;
 
             if (productIds.Any()) {

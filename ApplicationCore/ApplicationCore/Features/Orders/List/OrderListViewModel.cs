@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.List;
-using ApplicationCore.Features.Shared;
+﻿using ApplicationCore.Features.Shared;
 using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Features.Orders.List;

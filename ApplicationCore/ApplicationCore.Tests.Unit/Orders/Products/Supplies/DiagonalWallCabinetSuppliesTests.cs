@@ -267,7 +267,7 @@ public class BlindBaseCabinetSuppliesTests {
     public void Should_IncludeOneDrawerSlidesPerDrawerBox_WhenSlideTypeIsSM(int drawerQty) {
 
         // Arrange
-        
+
         var cabinet = _builder.WithDoors(new())
                                 .WithDrawers(new() {
                                     Quantity = drawerQty,
