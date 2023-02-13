@@ -3,7 +3,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Features.Shared;
+using ApplicationCore.Features.Shared.Services;
 using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;

@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Shared;
-using ApplicationCore.Infrastructure;
+﻿using ApplicationCore.Features.Shared.Domain;
+using ApplicationCore.Infrastructure.Bus;
 using DocumentFormat.OpenXml.Presentation;
 using System;
 using System.Collections.Generic;

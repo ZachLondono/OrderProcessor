@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.Companies.Domain;
 using ApplicationCore.Features.Companies.Domain.ValueObjects;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Infrastructure.Data;
 using Dapper;
 

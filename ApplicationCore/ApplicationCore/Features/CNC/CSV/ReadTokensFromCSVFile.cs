@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.CNC.CSV.Contracts;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.CNC.CSV;
 

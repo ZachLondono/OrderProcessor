@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.Orders.Details;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 
 namespace ApplicationCore.Pages.OrderDetails;
 

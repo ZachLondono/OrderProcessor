@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Infrastructure;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using ApplicationCore.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Orders.Shared.State;
 

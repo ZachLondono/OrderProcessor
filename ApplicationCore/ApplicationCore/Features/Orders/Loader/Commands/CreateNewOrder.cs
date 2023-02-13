@@ -2,7 +2,7 @@
 using ApplicationCore.Features.Orders.Shared.Domain.Notifications;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Infrastructure.Data;
 using Dapper;
 using System.Data;

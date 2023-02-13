@@ -1,6 +1,7 @@
 ﻿@page "/companies/list"
-@using ApplicationCore.Infrastructure
-@inject NavigationManager NavigationManager
+@using ApplicationCore.Features.Shared.Services;
+@using ApplicationCore.Infrastructure.Bus
+@inject NavigationService NavigationService
 @inject CompanyState CompanyState
 @inject IBus Bus
 
@@ -41,8 +42,7 @@
     }
 
     private async Task OpenCompany(Guid companyId) {
-        await CompanyState.LoadCompany(companyId);
-        NavigationManager.NavigateTo("/companies/details", true);
+        await NavigationService.NavigateToCompanyPage(companyId);
     }
 
     private async Task LoadCompanies() {

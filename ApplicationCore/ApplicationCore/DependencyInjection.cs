@@ -4,9 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.CompilerServices;
 using ApplicationCore.Features.Companies;
 using Blazored.Modal;
-using ApplicationCore.Features.Shared;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Features.Emails;
 using ApplicationCore.Features.CNC;
 using ApplicationCore.Features.Orders.List;
 using ApplicationCore.Features.Companies.Queries;
@@ -16,6 +14,8 @@ using ApplicationCore.Features.WorkOrders.AllWorkOrders;
 using ApplicationCore.Features.Orders;
 using ApplicationCore.Features.Orders.Details.OrderRelease;
 using ApplicationCore.Features.Orders.Details.OrderExport;
+using ApplicationCore.Infrastructure.Bus;
+using ApplicationCore.Features.Shared.Services;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -47,8 +47,6 @@ public static class DependencyInjection {
         services.AddOrdering(configuration);
 
         services.AddWorkOrders();
-
-        services.AddEmailing();
 
         services.AddCADCode(configuration);
 

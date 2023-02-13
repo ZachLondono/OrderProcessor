@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Notifications;
 

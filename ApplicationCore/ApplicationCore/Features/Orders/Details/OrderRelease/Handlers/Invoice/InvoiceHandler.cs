@@ -1,11 +1,11 @@
 ﻿using ApplicationCore.Features.Companies.Queries;
-using ApplicationCore.Infrastructure;
-using ApplicationCore.Features.Shared;
 using Microsoft.Extensions.Logging;
 using Company = ApplicationCore.Features.Companies.Domain.Company;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice.Models;
+using ApplicationCore.Infrastructure.Bus;
+using ApplicationCore.Features.Shared.Services;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 

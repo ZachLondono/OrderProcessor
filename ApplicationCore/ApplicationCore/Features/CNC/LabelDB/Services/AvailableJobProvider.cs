@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.CNC.LabelDB.Contracts;
-using ApplicationCore.Features.Shared;
+using ApplicationCore.Features.Shared.Services;
 using Dapper;
 
 namespace ApplicationCore.Features.CNC.LabelDB.Services;

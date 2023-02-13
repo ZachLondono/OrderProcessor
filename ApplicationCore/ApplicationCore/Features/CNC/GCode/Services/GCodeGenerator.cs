@@ -4,7 +4,7 @@ using ApplicationCore.Features.CNC.GCode.Contracts.Notifications;
 using ApplicationCore.Features.CNC.GCode.Contracts.Options;
 using ApplicationCore.Features.CNC.GCode.Contracts.Results;
 using ApplicationCore.Features.CNC.GCode.Domain.CADCode;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.UI;
 
 namespace ApplicationCore.Features.CNC.GCode.Services;
 

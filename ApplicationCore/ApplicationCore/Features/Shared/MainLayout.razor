@@ -6,12 +6,14 @@
 @using ApplicationCore.Features.CNC.LabelDB
 @using ApplicationCore.Features.Orders.Loader.Dialog;
 @using ApplicationCore.Features.Orders.Shared.State;
+@using ApplicationCore.Features.Shared.Services;
 @using ApplicationCore.Features.WorkOrders;
 @using ApplicationCore.Infrastructure
 @using System.Diagnostics;
 @using static ApplicationCore.Features.Shared.InformationDialog;
 @using ApplicationCore.Features.CNC.LabelDB.Contracts;
 @using ApplicationCore.Features.Orders.Shared;
+@using ApplicationCore.Infrastructure.Bus;
 @inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager

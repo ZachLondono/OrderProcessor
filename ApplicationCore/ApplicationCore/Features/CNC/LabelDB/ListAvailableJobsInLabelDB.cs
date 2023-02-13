@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.CNC.LabelDB.Contracts;
 using ApplicationCore.Features.CNC.LabelDB.Services;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.CNC.LabelDB;
 

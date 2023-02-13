@@ -10,7 +10,7 @@ using ApplicationCore.Features.Orders.Loader;
 using ApplicationCore.Features.Orders.Ordering;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.State;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -36,7 +36,7 @@ public static class DependencyInjection {
         services.AddTransient<ExtOrderHandler>();
         services.AddTransient<IExtWriter, ExtWriter>();
 
-        services.AddTransient<Features.Shared.Ordering.GetOrderNumberById>(sp => {
+        services.AddTransient<Features.Shared.Contracts.Ordering.GetOrderNumberById>(sp => {
 
             var bus = sp.GetRequiredService<IBus>();
             return async (id) => {

@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Shared;
-using DesktopHost.Dialogs;
+﻿using DesktopHost.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -7,6 +6,7 @@ using ApplicationCore;
 using MediatR;
 using System;
 using System.Windows;
+using ApplicationCore.Features.Shared.Services;
 
 namespace DesktopHost;
 

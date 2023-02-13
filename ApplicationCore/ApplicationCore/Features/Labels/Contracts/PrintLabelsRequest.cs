@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Labels.Domain;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Labels.Contracts;
 

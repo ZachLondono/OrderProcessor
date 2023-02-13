@@ -1,11 +1,11 @@
 ﻿using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList.Models;
-using ApplicationCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Company = ApplicationCore.Features.Companies.Domain.Company;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Shared;
+using ApplicationCore.Infrastructure.Bus;
+using ApplicationCore.Features.Shared.Services;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 

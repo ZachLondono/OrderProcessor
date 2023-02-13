@@ -4,9 +4,9 @@ using ApplicationCore.Features.CNC.LabelDB.Services;
 using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Features.CNC.ReleasePDF.Services;
 using ApplicationCore.Features.CNC.Shared;
-using ApplicationCore.Features.Shared;
+using ApplicationCore.Features.Shared.Contracts;
 using ApplicationCore.Features.Shared.Domain;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 using MoreLinq;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF;

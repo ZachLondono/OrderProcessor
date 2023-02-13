@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Features.CNC.ReleasePDF.Services;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF;
 

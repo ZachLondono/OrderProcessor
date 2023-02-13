@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Programs.Contracts;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Programs;

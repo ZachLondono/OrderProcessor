@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Companies.Domain;
 using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Queries.DataModels;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Infrastructure.Data;
 using Dapper;
 using System.Data;

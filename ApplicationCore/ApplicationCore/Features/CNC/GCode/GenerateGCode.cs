@@ -3,7 +3,7 @@ using ApplicationCore.Features.CNC.GCode.Contracts.Options;
 using ApplicationCore.Features.CNC.GCode.Contracts.Results;
 using ApplicationCore.Features.CNC.GCode.Domain.CADCode;
 using ApplicationCore.Features.CNC.GCode.Services;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.CNC.GCode;
 

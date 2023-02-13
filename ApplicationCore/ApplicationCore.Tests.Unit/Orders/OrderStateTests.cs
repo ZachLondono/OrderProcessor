@@ -8,6 +8,7 @@ using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Features.Companies.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using ApplicationCore.Infrastructure.Bus;
 
 namespace ApplicationCore.Tests.Unit.Orders;
 

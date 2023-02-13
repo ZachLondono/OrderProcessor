@@ -1,7 +1,7 @@
-﻿using ApplicationCore.Infrastructure.Data;
+﻿using ApplicationCore.Infrastructure.Bus;
+using ApplicationCore.Infrastructure.Data;
+using ApplicationCore.Infrastructure.UI;
 using Dapper;
-using MediatR;
-using MediatR.Pipeline;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

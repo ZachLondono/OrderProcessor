@@ -2,8 +2,8 @@
 using MimeKit;
 using NSubstitute;
 using FluentAssertions;
-using ApplicationCore.Features.Shared;
 using ApplicationCore.Features.Emails.Services;
+using ApplicationCore.Features.Shared.Services;
 
 namespace ApplicationCore.Tests.Unit.Emails;
 

@@ -1,9 +1,9 @@
 ﻿using ApplicationCore.Features.Orders.Loader.Commands;
 using ApplicationCore.Features.Orders.Loader.Providers;
-using ApplicationCore.Infrastructure;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Dialog;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using ApplicationCore.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Orders.Loader;
 

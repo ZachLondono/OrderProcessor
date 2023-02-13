@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.CNC.GCode.Domain;
 using ApplicationCore.Features.CNC.Shared;
-using ApplicationCore.Features.Shared;
 using ApplicationCore.Features.Shared.Domain;
+using ApplicationCore.Features.Shared.Services;
 using Dapper;
 
 namespace ApplicationCore.Features.CNC.GCode.Services;

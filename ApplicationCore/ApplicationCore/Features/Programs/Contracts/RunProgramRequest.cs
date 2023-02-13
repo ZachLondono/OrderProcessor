@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Infrastructure;
+﻿using ApplicationCore.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Programs.Contracts;
 

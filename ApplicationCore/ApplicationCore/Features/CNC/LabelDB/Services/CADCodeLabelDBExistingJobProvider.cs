@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.CNC.LabelDB.Contracts;
-using ApplicationCore.Features.Shared;
+using ApplicationCore.Features.Shared.Services;
 using Dapper;
 using System.Data;
 using System.Data.OleDb;
