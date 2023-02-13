@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.CNC.Shared;
+﻿namespace ApplicationCore.Features.CNC.Domain;
 
 public record Speed {
 

@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.CNC.Shared;
+﻿using ApplicationCore.Features.CNC.Domain;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
 

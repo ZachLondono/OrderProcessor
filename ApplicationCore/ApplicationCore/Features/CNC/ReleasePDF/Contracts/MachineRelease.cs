@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.CNC.GCode.Domain;
+﻿using ApplicationCore.Features.CNC.Domain;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 

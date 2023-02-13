@@ -1,9 +1,8 @@
-﻿using ApplicationCore.Features.CNC.GCode.Domain;
-using ApplicationCore.Features.CNC.LabelDB.Contracts;
+﻿using ApplicationCore.Features.CNC.LabelDB.Contracts;
 using ApplicationCore.Features.CNC.LabelDB.Services;
 using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Features.CNC.ReleasePDF.Services;
-using ApplicationCore.Features.CNC.Shared;
+using ApplicationCore.Features.CNC.Domain;
 using ApplicationCore.Features.Shared.Contracts;
 using ApplicationCore.Features.Shared.Domain;
 using ApplicationCore.Infrastructure.Bus;
