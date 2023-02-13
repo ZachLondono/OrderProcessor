@@ -1,13 +1,6 @@
-﻿using ApplicationCore.Features.CNC.LabelDB.Contracts;
-using ApplicationCore.Features.CNC.ReleasePDF;
-using ApplicationCore.Features.Companies.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Queries;
-using ApplicationCore.Features.ProductPlanner.Contracts;
-using ApplicationCore.Features.ProductPlanner;
-using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Details;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Shared;
 using ApplicationCore.Infrastructure;
 
 namespace ApplicationCore.Pages.OrderDetails;

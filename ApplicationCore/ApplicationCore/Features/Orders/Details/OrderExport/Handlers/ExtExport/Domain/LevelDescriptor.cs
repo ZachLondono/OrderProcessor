@@ -1,9 +1,9 @@
-﻿namespace ApplicationCore.Features.ProductPlanner.Domain;
+﻿namespace ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Domain;
 
-public record JobDescriptor {
+public record LevelDescriptor {
+    public required int ParentId { get; set; }
     public required int LevelId { get; set; }
-    public required string Job { get; set; }
-    public required DateTime Date { get; set; }
+    public required string Name { get; set; }
     public required string Catalog { get; set; }
     public required string Materials { get; set; }
     public required string Fronts { get; set; }

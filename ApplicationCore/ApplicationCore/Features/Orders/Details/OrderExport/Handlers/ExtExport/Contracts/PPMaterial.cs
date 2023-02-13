@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.ProductPlanner.Domain;
+﻿using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Domain;
 
-namespace ApplicationCore.Features.ProductPlanner.Contracts;
+namespace ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Contracts;
 
 public class PPMaterial {
 

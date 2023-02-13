@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Features.ProductPlanner.Contracts;
-using ApplicationCore.Features.ProductPlanner.Domain;
+﻿using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Contracts;
+using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Domain;
 using MoreLinq;
 
-namespace ApplicationCore.Features.ProductPlanner.Services;
+namespace ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Services;
 
 public class PPJobConverter {
 

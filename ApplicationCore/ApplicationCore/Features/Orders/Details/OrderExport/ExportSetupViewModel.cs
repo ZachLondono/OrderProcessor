@@ -4,7 +4,7 @@ namespace ApplicationCore.Features.Orders.Details.OrderExport;
 
 internal class ExportSetupViewModel {
 
-    
+
 
 }
 
@@ -45,7 +45,7 @@ internal class ExportProgressViewModel {
         await _service.Export(configuration);
         IsComplete = true;
 
-        InProgress = false;        
+        InProgress = false;
 
     }
 

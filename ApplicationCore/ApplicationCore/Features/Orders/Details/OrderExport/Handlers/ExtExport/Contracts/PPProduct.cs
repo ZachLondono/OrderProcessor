@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.ProductPlanner.Contracts;
+﻿namespace ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Contracts;
 
 public class PPProduct {
 

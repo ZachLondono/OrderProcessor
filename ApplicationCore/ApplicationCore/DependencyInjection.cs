@@ -8,15 +8,12 @@ using ApplicationCore.Features.Shared;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Features.Emails;
 using ApplicationCore.Features.CNC;
-using ApplicationCore.Features.ProductPlanner;
 using ApplicationCore.Features.Orders.List;
 using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.WorkOrders;
 using ApplicationCore.Pages.OrderDetails;
 using ApplicationCore.Features.WorkOrders.AllWorkOrders;
 using ApplicationCore.Features.Orders;
-using ApplicationCore.Features.Orders.Details;
-using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Details.OrderRelease;
 using ApplicationCore.Features.Orders.Details.OrderExport;
 
@@ -54,8 +51,6 @@ public static class DependencyInjection {
         services.AddEmailing();
 
         services.AddCADCode(configuration);
-
-        services.AddProductPlanner();
 
         services.AddBlazoredModal();
 

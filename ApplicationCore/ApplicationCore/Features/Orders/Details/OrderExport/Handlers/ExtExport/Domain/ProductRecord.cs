@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.ProductPlanner.Domain;
+﻿namespace ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Domain;
 
 public record ProductRecord {
     public required int ParentId { get; init; }

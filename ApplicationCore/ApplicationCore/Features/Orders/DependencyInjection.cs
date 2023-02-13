@@ -1,5 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.Details.OrderExport;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
+using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport;
+using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Services;
 using ApplicationCore.Features.Orders.Details.OrderRelease;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
@@ -32,6 +34,7 @@ public static class DependencyInjection {
         services.AddTransient<DoorOrderHandler>();
         services.AddTransient<DovetailOrderHandler>();
         services.AddTransient<ExtOrderHandler>();
+        services.AddTransient<IExtWriter, ExtWriter>();
 
         services.AddTransient<Features.Shared.Ordering.GetOrderNumberById>(sp => {
 
