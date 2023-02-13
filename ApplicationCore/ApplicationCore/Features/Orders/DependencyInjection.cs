@@ -1,4 +1,7 @@
-﻿using ApplicationCore.Features.Orders.Details.OrderExport;
+﻿using ApplicationCore.Features.CNC.LabelDB.Services;
+using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
+using ApplicationCore.Features.CNC.ReleasePDF.Services;
+using ApplicationCore.Features.Orders.Details.OrderExport;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Services;
@@ -35,6 +38,17 @@ public static class DependencyInjection {
         services.AddTransient<DovetailOrderHandler>();
         services.AddTransient<ExtOrderHandler>();
         services.AddTransient<IExtWriter, ExtWriter>();
+
+        var cadcode = configuration.GetRequiredSection("CADCode");
+        var pdfconfig = cadcode.GetValue<string>("ReleasePDFConfig");
+        if (pdfconfig is null) throw new InvalidOperationException("Release PDF configuration was not found");
+        var jsonPDF = new JSONPDFConfigurationProvider(pdfconfig);
+        services.AddTransient<IPDFConfigurationProvider>(s => jsonPDF);
+
+        services.AddTransient<IReleasePDFWriter, QuestPDFWriter>();
+        services.AddTransient<MachineNameProvider>();
+        services.AddTransient<IAvailableJobProvider, AvailableJobProvider>();
+        services.AddTransient<IExistingJobProvider, CADCodeLabelDBExistingJobProvider>();
 
         services.AddTransient<Features.Shared.Contracts.Ordering.GetOrderNumberById>(sp => {
 
