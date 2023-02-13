@@ -34,7 +34,7 @@ internal class DoorOrderHandler {
                                                                         Door = d
                                                                     });
 
-                                } catch (Exception ex) {
+                                } catch {
                                     return Enumerable.Empty<MDFDoorComponent>();
                                 }
                             })
