@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.CNC.LabelDB.Services;
-using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
-using ApplicationCore.Features.CNC.ReleasePDF.Services;
+﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB.Services;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Configuration;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
 using ApplicationCore.Features.Orders.Details.OrderExport;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport;

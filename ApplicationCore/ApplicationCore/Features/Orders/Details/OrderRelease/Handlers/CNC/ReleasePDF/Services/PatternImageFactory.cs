@@ -3,11 +3,11 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
-using ApplicationCore.Features.CNC.Domain;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.PDFModels;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.Domain;
 using Image = System.Drawing.Image;
 
-namespace ApplicationCore.Features.CNC.ReleasePDF.Services;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
 
 public class PatternImageFactory {
 

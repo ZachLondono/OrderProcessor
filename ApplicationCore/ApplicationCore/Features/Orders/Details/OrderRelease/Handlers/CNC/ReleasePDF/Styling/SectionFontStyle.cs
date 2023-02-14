@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ApplicationCore.Features.CNC.ReleasePDF.Styling;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Styling;
 
 public class SectionFontStyle {
 

@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Shared.Services;
 using Dapper;
 
-namespace ApplicationCore.Features.CNC.LabelDB.Services;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB.Services;
 
 internal class MachineNameProvider {
 

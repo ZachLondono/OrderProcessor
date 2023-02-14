@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
+﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Contracts;
 
-namespace ApplicationCore.Features.CNC.ReleasePDF.Services;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
 
 public interface IReleasePDFWriter {
 

@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.CNC.ReleasePDF.Contracts;
+﻿namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Contracts;
 
 public class ReleasedProgram {
 

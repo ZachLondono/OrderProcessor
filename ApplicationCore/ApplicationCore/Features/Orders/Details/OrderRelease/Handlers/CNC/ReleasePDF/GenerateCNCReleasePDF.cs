@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
-using ApplicationCore.Features.CNC.ReleasePDF.Services;
+﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Contracts;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
 using ApplicationCore.Infrastructure.Bus;
 
-namespace ApplicationCore.Features.CNC.ReleasePDF;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
 
 public class GenerateCNCReleasePDF {
 

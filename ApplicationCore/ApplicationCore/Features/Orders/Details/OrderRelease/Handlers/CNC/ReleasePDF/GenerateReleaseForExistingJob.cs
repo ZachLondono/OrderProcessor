@@ -1,14 +1,14 @@
-﻿using ApplicationCore.Features.CNC.LabelDB.Contracts;
-using ApplicationCore.Features.CNC.LabelDB.Services;
-using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
-using ApplicationCore.Features.CNC.ReleasePDF.Services;
-using ApplicationCore.Features.CNC.Domain;
+﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB.Contracts;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB.Services;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Contracts;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.Domain;
 using ApplicationCore.Features.Shared.Contracts;
 using ApplicationCore.Features.Shared.Domain;
 using ApplicationCore.Infrastructure.Bus;
 using MoreLinq;
 
-namespace ApplicationCore.Features.CNC.ReleasePDF;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
 
 public class GenerateReleaseForSelectedJobs {
 

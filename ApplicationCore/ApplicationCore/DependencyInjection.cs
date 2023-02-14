@@ -5,7 +5,6 @@ using System.Runtime.CompilerServices;
 using ApplicationCore.Features.Companies;
 using Blazored.Modal;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Features.CNC;
 using ApplicationCore.Features.Orders.List;
 using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Features.WorkOrders;
@@ -47,8 +46,6 @@ public static class DependencyInjection {
         services.AddOrdering(configuration);
 
         services.AddWorkOrders();
-
-        services.AddCADCode(configuration);
 
         services.AddBlazoredModal();
 

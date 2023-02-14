@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.CNC.LabelDB.Contracts;
+﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB.Contracts;
 
-namespace ApplicationCore.Features.CNC.LabelDB.Services;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB.Services;
 
 public interface IAvailableJobProvider {
 

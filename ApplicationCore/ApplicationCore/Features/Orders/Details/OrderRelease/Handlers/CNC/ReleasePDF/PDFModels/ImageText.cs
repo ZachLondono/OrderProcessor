@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.CNC.Domain;
+﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.Domain;
 
-namespace ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.PDFModels;
 
 public record ImageText {
 

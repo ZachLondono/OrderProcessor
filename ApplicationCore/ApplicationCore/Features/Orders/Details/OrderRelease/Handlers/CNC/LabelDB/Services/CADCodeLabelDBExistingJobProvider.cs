@@ -1,10 +1,10 @@
-﻿using ApplicationCore.Features.CNC.LabelDB.Contracts;
+﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB.Contracts;
 using ApplicationCore.Features.Shared.Services;
 using Dapper;
 using System.Data;
 using System.Data.OleDb;
 
-namespace ApplicationCore.Features.CNC.LabelDB.Services;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB.Services;
 
 internal class CADCodeLabelDBExistingJobProvider : IExistingJobProvider {
 

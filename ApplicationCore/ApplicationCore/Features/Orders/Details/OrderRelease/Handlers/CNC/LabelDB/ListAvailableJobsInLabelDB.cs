@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Features.CNC.LabelDB.Contracts;
-using ApplicationCore.Features.CNC.LabelDB.Services;
+﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB.Contracts;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB.Services;
 using ApplicationCore.Infrastructure.Bus;
 
-namespace ApplicationCore.Features.CNC.LabelDB;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB;
 
 public class ListAvailableJobsInLabelDB {
 

@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.CNC.LabelDB.Contracts;
+﻿namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB.Contracts;
 
 public record ExistingJob(string Name, string MachineName, IEnumerable<UsedInventory> Inventory, IEnumerable<Pattern> Patterns, IEnumerable<ManufacturedPart> Parts);
 public record UsedInventory(int Qty, string Name, string Width, string Length, string Thickness, string Grained);

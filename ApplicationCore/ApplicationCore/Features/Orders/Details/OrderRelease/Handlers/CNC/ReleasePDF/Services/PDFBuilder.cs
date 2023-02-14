@@ -1,12 +1,12 @@
-﻿using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
-using ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
-using ApplicationCore.Features.CNC.ReleasePDF.Styling;
+﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Configuration;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.PDFModels;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Styling;
 using BarcodeLib;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
-namespace ApplicationCore.Features.CNC.ReleasePDF.Services;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
 
 internal class PDFBuilder {
 

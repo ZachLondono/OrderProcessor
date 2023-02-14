@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using System.Text.Json;
 
-namespace ApplicationCore.Features.CNC.ReleasePDF.Configuration;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Configuration;
 
 public class JSONPDFConfigurationProvider : IPDFConfigurationProvider {
 

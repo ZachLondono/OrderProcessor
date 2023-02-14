@@ -1,6 +1,6 @@
 ﻿using QuestPDF.Fluent;
 
-namespace ApplicationCore.Features.CNC.ReleasePDF.Styling;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Styling;
 
 public static class StyleExtensions {
 

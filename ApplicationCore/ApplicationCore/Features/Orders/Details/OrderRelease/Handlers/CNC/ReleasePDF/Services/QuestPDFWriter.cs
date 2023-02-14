@@ -1,10 +1,10 @@
-﻿using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
-using ApplicationCore.Features.CNC.ReleasePDF.Contracts;
-using ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
-using ApplicationCore.Features.CNC.ReleasePDF.Styling;
+﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Configuration;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Contracts;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.PDFModels;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Styling;
 using QuestPDF.Fluent;
 
-namespace ApplicationCore.Features.CNC.ReleasePDF.Services;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
 
 public class QuestPDFWriter : IReleasePDFWriter {
 

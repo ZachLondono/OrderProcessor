@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.CNC.ReleasePDF.Styling;
+﻿namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Styling;
 
 public class Table {
 

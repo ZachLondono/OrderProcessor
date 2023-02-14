@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
-using ApplicationCore.Features.CNC.ReleasePDF.Styling;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Styling;
 
-namespace ApplicationCore.Features.CNC.ReleasePDF.Configuration;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Configuration;
 
 public class PDFConfiguration {
 

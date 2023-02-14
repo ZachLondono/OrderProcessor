@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.CNC.Domain;
+﻿namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.Domain;
 
 public record Point() {
 
