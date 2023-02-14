@@ -1,7 +1,9 @@
 ﻿@using ApplicationCore.Features.Companies.Domain.ValueObjects;
 @using ApplicationCore.Features.Orders.Details.OrderRelease;
-@using ApplicationCore.Features.Shared.Components
 @using static ApplicationCore.Features.Shared.Components.Button;
+@using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB;
+@using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB.Contracts;
+@using ApplicationCore.Features.Shared.Components
 @using ApplicationCore.Features.Shared.Services;
 @inject IFilePicker FilePicker
 
@@ -24,7 +26,28 @@
             <CheckBox @bind-IsChecked="Configuration.GenerateCNCRelease">
                 <span class="text-gray-700">Generate CNC Release PDF</span>
             </CheckBox>
-            <Button OnClickAsync="ChooseCNCDataFile" Color="ButtonColor.Secondary">Select File</Button> <span class="text-sm">@(string.IsNullOrWhiteSpace(Configuration.CNCDataFilePath) ? "No File Selected" : TruncateString(Configuration.CNCDataFilePath))</span>
+            <div class="flex justify-center items-center mt-3">
+                <Button OnClickAsync="ChooseCNCDataFile" Color="ButtonColor.Secondary">Select File</Button> <span class="text-sm px-3">@(string.IsNullOrWhiteSpace(Configuration.CNCDataFilePath) ? "No File Selected" : TruncateString(Configuration.CNCDataFilePath))</span>
+            </div>
+            @if (Configuration.CNCJobs is not null) {
+                <table class="table-auto justify-center mx-auto my-3">
+                    <thead class="border-b border-slate-300">
+                        <tr class="dark:bg-slate-700">
+                            <th class="text-sm">Name</th>
+                            <th class="text-sm">Machine</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var job in Configuration.CNCJobs) {
+                            <tr class="justify-center hover:bg-slate-200 ">
+                                <td class="p-3 border-b text-sm">@job.Name</td>
+                                <td class="p-3 border-b text-sm">@job.MachineName</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
         </section>
 
         <section>
@@ -77,17 +100,57 @@
 
     private async Task ChooseCNCDataFile() {
 
-        // TODO: select jobs from file to include in the PDF
-        await FilePicker.PickFileAsync("Select CADCode Label Data File", "C:\\", new("CADCode Label Database", "mdb"), (file) => {
-            Configuration!.CNCDataFilePath = file;
-            InvokeAsync(StateHasChanged);
+        if (Configuration is null) return;
+
+        var waitingDialog = ShowLoadingDialog("Waiting", "Select Label File.");
+
+        string selectedPath = "";
+        bool wasPicked = await FilePicker.PickFileAsync("Select CADCode Label Data File", "C:\\", new("CADCode Label Database", "mdb"), (file) => {
+            selectedPath = file;
+        });
+
+        waitingDialog.Close();
+
+        if (!wasPicked || selectedPath == "") {
+            return;
+        }
+
+        var modal = ModalService.Show<ListAvailableJobsDialog>("Select Job", new ModalParameters() { { "LabelDatabaseFilePath", selectedPath } });
+        var modalResult = await modal.Result;
+        if (modalResult.Cancelled) {
+            return;
+        }
+
+        if (modalResult.Data is not IEnumerable<AvailableJob> selectedJobs) {
+            _ = await ModalService.OpenInformationDialog("Error", "Unexpected Data Returned", InformationDialog.MessageType.Warning);
+            return;
+        }
+
+        Configuration.CNCDataFilePath = selectedPath;
+        Configuration.CNCJobs = selectedJobs;
+        StateHasChanged();
+
+    }
+    
+    private IModalReference ShowLoadingDialog(string title, string message) {
+
+        var options = new ModalOptions() {
+                HideHeader = true,
+                HideCloseButton = true,
+                DisableBackgroundCancel = true
+            };
+
+        return ModalService.Show<InformationDialog>("", options: options, parameters: new ModalParameters {
+            { "Type", InformationDialog.MessageType.Information },
+            { "Title", title},
+            { "Details", message }
         });
 
     }
 
     private string TruncateString(string value) {
 
-        if (value.Length < 30) return value;
+        if (value.Length < 50) return value;
 
         return $"...{value[(value.Length - 27)..]}";
 
