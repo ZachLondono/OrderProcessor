@@ -16,6 +16,7 @@ using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -32,6 +33,7 @@ public static class DependencyInjection {
         services.AddTransient<InvoiceHandler>();
         services.AddTransient<PackingListHandler>();
         services.AddTransient<JobSummaryHandler>();
+        services.AddTransient<GenerateReleaseForSelectedJobs.Handler>();
 
         services.AddTransient<ExportService>();
         services.AddTransient<DoorOrderHandler>();

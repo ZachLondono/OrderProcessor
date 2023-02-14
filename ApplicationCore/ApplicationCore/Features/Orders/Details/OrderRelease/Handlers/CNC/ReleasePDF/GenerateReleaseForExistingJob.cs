@@ -12,9 +12,9 @@ namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.Rele
 
 public class GenerateReleaseForSelectedJobs {
 
-    public record Command(Guid OrderId, string Title, string CustomerName, string VendorName, DateTime OrderDate, string LabelFilePath, IEnumerable<AvailableJob> SelectedJobs) : ICommand<ReleaseGenerationResult>;
+    public record Command(Guid OrderId, string Title, string CustomerName, string VendorName, DateTime OrderDate, string LabelFilePath, IEnumerable<AvailableJob> SelectedJobs);
 
-    public class Handler : CommandHandler<Command, ReleaseGenerationResult> {
+    public class Handler {
 
         private readonly IExistingJobProvider _existingJobProvider;
         private readonly Manufacturing.CreateWorkOrder _createWorkOrder;
@@ -26,7 +26,7 @@ public class GenerateReleaseForSelectedJobs {
             _pdfService = pdfService;
         }
 
-        public override async Task<Response<ReleaseGenerationResult>> Handle(Command command) {
+        public async Task<Response<ReleaseGenerationResult>> Handle(Command command) {
 
             var jobsByMachine = command.SelectedJobs.GroupBy(job => job.MachineName).ToList();
 
