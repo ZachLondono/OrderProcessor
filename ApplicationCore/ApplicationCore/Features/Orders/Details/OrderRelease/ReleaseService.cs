@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
+﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Features.Orders.Shared.State;
@@ -14,12 +15,14 @@ internal class ReleaseService {
     private readonly InvoiceHandler _invoiceHandler;
     private readonly PackingListHandler _packingListHandler;
     private readonly JobSummaryHandler _jobSummaryHandler;
+    private readonly GenerateReleaseForSelectedJobs.Handler _cncReleaseHandler;
     private readonly OrderState _orderState;
 
-    public ReleaseService(InvoiceHandler invoiceHandler, PackingListHandler packingListHandler, JobSummaryHandler jobSummaryHandler, OrderState orderState) {
+    public ReleaseService(InvoiceHandler invoiceHandler, PackingListHandler packingListHandler, JobSummaryHandler jobSummaryHandler, GenerateReleaseForSelectedJobs.Handler cncReleaseHandler, OrderState orderState) {
         _invoiceHandler = invoiceHandler;
         _packingListHandler = packingListHandler;
         _jobSummaryHandler = jobSummaryHandler;
+        _cncReleaseHandler = cncReleaseHandler;
         _orderState = orderState;
     }
 
@@ -51,7 +54,9 @@ internal class ReleaseService {
             OnProgressReport?.Invoke("Skipping packing list, because it was unchecked");
         }
 
-        if (configuration.GenerateCNCRelease) {
+        if (configuration.GenerateCNCRelease && configuration.CNCDataFilePath is not null && configuration.CNCJobs is not null && configuration.CNCJobs.Any()) {
+
+            _ = await _cncReleaseHandler.Handle(new GenerateReleaseForSelectedJobs.Command(order.Id, $"{order.Number} {order.Name}", order.Customer.Name, "Vendor Name", DateTime.Now, configuration.CNCDataFilePath, configuration.CNCJobs));
 
         }
 
