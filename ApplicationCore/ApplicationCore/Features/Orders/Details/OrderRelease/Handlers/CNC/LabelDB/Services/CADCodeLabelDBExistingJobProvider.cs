@@ -30,23 +30,8 @@ internal class CADCodeLabelDBExistingJobProvider : IExistingJobProvider {
 
         string productIdSubQuery = GetProductIdSubQuery(jobName, schema);
         string productClassSubQuery = GetPartClassSubQuery(jobName, schema);
-
-        var parts = await connection.QueryAsync<ManufacturedPart>(
-            @$"SELECT
-			    (SELECT TOP 1 [Face5FileName] FROM [Parts:{jobName}] WHERE cStr([Parts:{jobName}].[GlobalId]) = cStr([Label Sequence:{jobName}].[GlobalId])) As Name,
-			    (SELECT TOP 1 [Description1] FROM [Parts:{jobName}] WHERE cStr([Parts:{jobName}].[GlobalId]) = cStr([Label Sequence:{jobName}].[GlobalId])) As Description,
-			    Pattern AS PatternNumber,
-			    Width,
-			    Length,
-			    XDimension As InsertX,
-			    YDimension As InsertY,
-                (SELECT TOP 1 [Cabinet Number] FROM [{jobName}] WHERE cStr([{jobName}].[GlobalId]) = cStr([Label Sequence:{jobName}].[GlobalId])) As ProductNumber,
-                (Face6Part = 0) AS HasFace6,
-                {productIdSubQuery},
-                {productClassSubQuery}
-		    From [Label Sequence:{jobName}]");
-
-        var patterns = await connection.QueryAsync<Pattern>($"SELECT [PatternFilename] AS Name, [PatternFilename] AS ImagePath, Material AS MaterialName, [Panel Width] AS MaterialWidth, [Panel Length] AS MaterialLength, [Thickness] As MaterialThickness  FROM [Label Sequence:{jobName}]");
+        IEnumerable<ManufacturedPart> parts = await GetParts(jobName, connection, productIdSubQuery, productClassSubQuery);
+        IEnumerable<Pattern> patterns = await GetPatterns(jobName, connection);
         patterns = patterns.Distinct().ToList();
 
         return new ExistingJob(
@@ -57,6 +42,35 @@ internal class CADCodeLabelDBExistingJobProvider : IExistingJobProvider {
             Parts: parts
         );
 
+    }
+
+    private static async Task<IEnumerable<Pattern>> GetPatterns(string jobName, OleDbConnection connection) {
+        try { 
+            return await connection.QueryAsync<Pattern>($"SELECT [PatternFilename] AS Name, [PatternFilename] AS ImagePath, Material AS MaterialName, [Panel Width] AS MaterialWidth, [Panel Length] AS MaterialLength, [Thickness] As MaterialThickness  FROM [Label Sequence:{jobName}]");
+        } catch {
+            return Enumerable.Empty<Pattern>();
+        }
+    }
+
+    private static async Task<IEnumerable<ManufacturedPart>> GetParts(string jobName, OleDbConnection connection, string productIdSubQuery, string productClassSubQuery) {
+        try { 
+            return await connection.QueryAsync<ManufacturedPart>(
+                        @$"SELECT
+			        (SELECT TOP 1 [Face5FileName] FROM [Parts:{jobName}] WHERE cStr([Parts:{jobName}].[GlobalId]) = cStr([Label Sequence:{jobName}].[GlobalId])) As Name,
+			        (SELECT TOP 1 [Description1] FROM [Parts:{jobName}] WHERE cStr([Parts:{jobName}].[GlobalId]) = cStr([Label Sequence:{jobName}].[GlobalId])) As Description,
+			        Pattern AS PatternNumber,
+			        Width,
+			        Length,
+			        XDimension As InsertX,
+			        YDimension As InsertY,
+                    (SELECT TOP 1 [Cabinet Number] FROM [{jobName}] WHERE cStr([{jobName}].[GlobalId]) = cStr([Label Sequence:{jobName}].[GlobalId])) As ProductNumber,
+                    (Face6Part = 0) AS HasFace6,
+                    {productIdSubQuery},
+                    {productClassSubQuery}
+		        From [Label Sequence:{jobName}]");
+        } catch {
+            return Enumerable.Empty<ManufacturedPart>();
+        }
     }
 
     private static string GetProductIdSubQuery(string jobName, DataTable? schema) {
