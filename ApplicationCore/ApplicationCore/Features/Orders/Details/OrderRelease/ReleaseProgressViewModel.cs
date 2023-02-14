@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-
+﻿
 namespace ApplicationCore.Features.Orders.Details.OrderRelease;
 
 internal class ReleaseProgressViewModel {
@@ -24,16 +23,16 @@ internal class ReleaseProgressViewModel {
         }
     }
 
-    public ObservableCollection<ProgressLogMessage> Messages { get; } = new();
+    public Action<ProgressLogMessage>? OnMessagePublished { get; set; }
 
     private readonly ReleaseService _service;
 
     public ReleaseProgressViewModel(ReleaseService service) {
         _service = service;
 
-        _service.OnProgressReport += (message) => Messages.Add(new(LogMessageType.Info, message));
-        _service.OnError += (message) => Messages.Add(new(LogMessageType.Error, message));
-        _service.OnActionComplete += (message) => Messages.Add(new(LogMessageType.Success, message));
+        _service.OnProgressReport += (message) => OnMessagePublished?.Invoke(new(LogMessageType.Info, message));
+        _service.OnError += (message) => OnMessagePublished?.Invoke(new(LogMessageType.Error, message));
+        _service.OnActionComplete += (message) => OnMessagePublished?.Invoke(new(LogMessageType.Success, message));
     }
 
     public async Task ReleaseOrder(ReleaseConfiguration configuration) {

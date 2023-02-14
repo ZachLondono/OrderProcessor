@@ -3,6 +3,7 @@ using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Features.Orders.Shared.State;
+using MoreLinq;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease;
 
@@ -56,8 +57,16 @@ internal class ReleaseService {
 
         if (configuration.GenerateCNCRelease && configuration.CNCDataFilePath is not null && configuration.CNCJobs is not null && configuration.CNCJobs.Any()) {
 
-            _ = await _cncReleaseHandler.Handle(new GenerateReleaseForSelectedJobs.Command(order.Id, $"{order.Number} {order.Name}", order.Customer.Name, "Vendor Name", DateTime.Now, configuration.CNCDataFilePath, configuration.CNCJobs));
+            var response = await _cncReleaseHandler.Handle(new GenerateReleaseForSelectedJobs.Command(order.Id, $"{order.Number} {order.Name}", order.Customer.Name, "Vendor Name", DateTime.Now, configuration.CNCDataFilePath, configuration.CNCJobs));
 
+            response.OnSuccess(result => {
+                result.FilesWritten.ForEach(file => OnProgressReport?.Invoke($"File written '{file}'"));
+            });
+
+            OnActionComplete?.Invoke("CNC release complete");
+
+        } else {
+            OnProgressReport?.Invoke("Skipping CNC release, because it was unchecked");
         }
 
         if (configuration.GenerateJobSummary && configuration.JobSummaryTemplate is not null) {

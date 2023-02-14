@@ -30,7 +30,7 @@
 			</td>
 		</tr>
 
-        @foreach (var message in DataContext.Messages.ToList()) {
+        @foreach (var message in _messages) {
             <tr class="border-b border-gray-100">
                 <td class="w-4">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4">
@@ -69,12 +69,13 @@
     [Parameter]
     public ReleaseConfiguration? Configuration { get; set; } = default;
 
+    private List<ProgressLogMessage> _messages = new();
     private ElementReference _messagebox;
 
     protected override async Task OnInitializedAsync() {
 
         DataContext.OnPropertyChanged += () => InvokeAsync(StateHasChanged);
-        DataContext.Messages.CollectionChanged += UpdateMessageLog;
+        DataContext.OnMessagePublished += AddMessageToLog;
 
         if (Configuration is not null) {
             await Task.Run(() => DataContext.ReleaseOrder(Configuration));
@@ -82,8 +83,11 @@
 
     }
 
-    public void UpdateMessageLog(object? sender, NotifyCollectionChangedEventArgs args) {
-        InvokeAsync(StateHasChanged);
+    private void AddMessageToLog(ProgressLogMessage message) {
+        InvokeAsync(() => {
+            _messages.Add(message);
+            StateHasChanged();
+        });
         JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
     }
 
