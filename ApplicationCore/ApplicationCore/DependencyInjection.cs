@@ -62,9 +62,7 @@ public static class DependencyInjection {
                     .AddTransient<OrderDetailsPageViewModel>()
                     .AddTransient<BarCodeScanningDialogViewModel>()
                     .AddTransient<AllWorkOrdersListViewModel>()
-                    .AddTransient<ReleaseSetupViewModel>()
                     .AddTransient<ReleaseProgressViewModel>()
-                    .AddTransient<ExportSetupViewModel>()
                     .AddTransient<ExportProgressViewModel>();
 
 }

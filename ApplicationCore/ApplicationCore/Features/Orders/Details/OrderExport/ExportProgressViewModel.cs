@@ -2,12 +2,6 @@
 
 namespace ApplicationCore.Features.Orders.Details.OrderExport;
 
-internal class ExportSetupViewModel {
-
-
-
-}
-
 internal class ExportProgressViewModel {
 
     public Action? OnPropertyChanged { get; set; }
