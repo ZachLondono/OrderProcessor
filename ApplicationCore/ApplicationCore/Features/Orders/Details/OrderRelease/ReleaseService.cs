@@ -6,7 +6,6 @@ using ApplicationCore.Features.Orders.Details.Shared;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Features.Shared.Services;
-using MoreLinq;
 using QuestPDF.Fluent;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease;
@@ -49,9 +48,9 @@ internal class ReleaseService {
         await GeneratePackingList(configuration, order);
 
         List<IDocumentDecorator> cncDecorators = new();
-        if (configuration.GenerateCNCRelease && configuration.CNCDataFilePath is not null && configuration.CNCJobs is not null && configuration.CNCJobs.Any()) {
+        if (configuration.GenerateCNCRelease && configuration.CNCDataFilePath is not null) {
 
-            var response = await _cncReleaseHandler.Handle(new GenerateReleaseForSelectedJobs.Command(order.Id, $"{order.Number} {order.Name}", order.Customer.Name, "Vendor Name", DateTime.Now, configuration.CNCDataFilePath, configuration.CNCJobs));
+            var response = await _cncReleaseHandler.Handle(new GenerateReleaseForSelectedJobs.Command(order.Id, $"{order.Number} {order.Name}", order.Customer.Name, "Vendor Name", DateTime.Now, configuration.CNCDataFilePath));
 
             response.OnSuccess(result => cncDecorators.AddRange(result.Decorators));
 

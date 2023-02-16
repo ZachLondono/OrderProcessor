@@ -1,6 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB.Contracts;
-
-namespace ApplicationCore.Features.Orders.Details.OrderRelease;
+﻿namespace ApplicationCore.Features.Orders.Details.OrderRelease;
 
 public class ReleaseConfiguration {
 
@@ -11,8 +9,6 @@ public class ReleaseConfiguration {
     public bool GeneratePackingList { get; set; }
 
     public string? CNCDataFilePath { get; set; }
-
-    public IEnumerable<AvailableJob>? CNCJobs { get; set; }
 
     public bool GenerateCNCRelease { get; set; }
 

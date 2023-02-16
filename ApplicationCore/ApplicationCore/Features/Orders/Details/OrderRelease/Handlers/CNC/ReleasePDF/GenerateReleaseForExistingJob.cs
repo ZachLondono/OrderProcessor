@@ -1,6 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB.Contracts;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB.Services;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Contracts;
+﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.Domain;
 using ApplicationCore.Features.Shared.Contracts;
@@ -8,134 +6,138 @@ using ApplicationCore.Features.Shared.Domain;
 using ApplicationCore.Infrastructure.Bus;
 using MoreLinq;
 using ApplicationCore.Features.Orders.Details.Shared;
+using System.Xml.Linq;
+using CADCode;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
 
 internal class GenerateReleaseForSelectedJobs {
 
-    public record Command(Guid OrderId, string Title, string CustomerName, string VendorName, DateTime OrderDate, string LabelFilePath, IEnumerable<AvailableJob> SelectedJobs);
+    public record Command(Guid OrderId, string Title, string CustomerName, string VendorName, DateTime OrderDate, string ReportFilePath);
 
     public class Handler {
 
-        private readonly IExistingJobProvider _existingJobProvider;
         private readonly Manufacturing.CreateWorkOrder _createWorkOrder;
         private readonly IReleasePDFWriter _pdfService;
 
-        public Handler(IExistingJobProvider existingJobProvider, Manufacturing.CreateWorkOrder createWorkOrder, IReleasePDFWriter pdfService) {
-            _existingJobProvider = existingJobProvider;
+        public Handler(Manufacturing.CreateWorkOrder createWorkOrder, IReleasePDFWriter pdfService) {
             _createWorkOrder = createWorkOrder;
             _pdfService = pdfService;
         }
 
         public async Task<Response<ReleaseGenerationResult>> Handle(Command command) {
 
-            var jobsByMachine = command.SelectedJobs.GroupBy(job => job.MachineName).ToList();
+            ReleasedJob? releasedJob = CreateReleasedJob(command);
 
-            HashSet<string> productIds = new();
-            HashSet<string> partClasses = new();
-            List<ReleasedJob> jobsToRelease = new();
+            if (releasedJob is null) {
 
-            foreach (var selectedJobsGroup in jobsByMachine) {
-
-                List<ExistingJob> existingJobs = new();
-
-                foreach (var selectedJob in selectedJobsGroup) {
-
-                    ExistingJob? existingJob = await _existingJobProvider.LoadExistingJobAsync(command.LabelFilePath, selectedJob.Name);
-
-                    if (existingJob is null) {
-                        // TODO: log warning
-                        continue;
-                    }
-
-                    existingJobs.Add(existingJob);
-
-                }
-
-
-                existingJobs.SelectMany(j => j.Parts)
-                            .Select(part => part.ProductId)
-                            .Except(productIds)
-                            .Distinct()
-                            .ForEach(id => productIds.Add(id));
-
-                existingJobs.SelectMany(j => j.Parts)
-                            .Select(part => part.PartClass)
-                            .Except(partClasses)
-                            .Distinct()
-                            .ForEach(cl => partClasses.Add(cl));
-
-
-                ReleasedJob releasedJob = CreateReleasedJob(command, existingJobs, selectedJobsGroup.Key);
-
-                jobsToRelease.Add(releasedJob);
+                return Response<ReleaseGenerationResult>.Error(new() {
+                    Title = "Could not generate release",
+                    Details = "Unable to load data from report"
+                });
 
             }
 
-            Guid? workOrderId = await GenerateWorkOrder(command, productIds, partClasses);
-
-            List<IDocumentDecorator> documentDecorators = new();
-            foreach (var job in jobsToRelease) {
-
-                job.WorkOrderId = workOrderId;
-
-                var decortors = _pdfService.GenerateDecorators(job);
-
-                documentDecorators.AddRange(decortors);
-
-            }
+            Guid? workOrderId = null; //await GenerateWorkOrder(command, productIds, partClasses);
+            releasedJob.WorkOrderId = workOrderId;
+            var decortors = _pdfService.GenerateDecorators(releasedJob);
 
             return Response<ReleaseGenerationResult>.Success(new() {
                 WorkOrderId = workOrderId,
-                Decorators = documentDecorators
+                Decorators = decortors
             });
 
         }
 
-        private static ReleasedJob CreateReleasedJob(Command command, List<ExistingJob> existingJobs, string machineName) {
-            var nestedPartByProgram = existingJobs.SelectMany(existingJob => existingJob.Parts
-                                                                                        .GroupBy(part => part.PatternNumber)
-                                                                                        .ToDictionary(group => existingJob.Patterns.Skip(group.Key - 1).FirstOrDefault()?.Name ?? "", group => group.ToList())
-                                                    )
-                                                    .GroupBy(kvp => kvp.Key, kvp => kvp.Value)
-                                                    .ToDictionary(g => g.Key, g => g.Last());
+        private static ReleasedJob? CreateReleasedJob(Command command) {
+            XDocument xdoc = XDocument.Load(command.ReportFilePath);
 
+            if (xdoc.Root is null) {
+                Console.WriteLine("No root found");
+                return null;
+            }
 
-            var programs = existingJobs.SelectMany(existingJob => existingJob.Patterns.Select(pattern => {
-                var parts = GetParts(nestedPartByProgram, pattern.Name);
-                return new ReleasedProgram() {
-                    Name = pattern.Name,
-                    ImagePath = $"Y:\\CADCode\\pix\\{pattern.ImagePath}.wmf",
-                    HasFace6 = parts.Any(p => p.HasFace6),
-                    Material = new ProgramMaterial() {
-                        Name = pattern.MaterialName,
-                        Width = pattern.MaterialWidth,
-                        Length = pattern.MaterialLength,
-                        Thickness = pattern.MaterialThickness,
-                        IsGrained = existingJob.Inventory
-                                            .Where(inv => inv.Name == pattern.MaterialName)
-                                            .Select(inv => inv.Grained)
-                                            .FirstOrDefault()?.Equals("1") ?? false,
-                        Yield = 0 // TODO: calculate yield
-                    },
-                    Parts = parts
-                };
-            }));
+            var job = xdoc.Root.Element("Job");
 
-            ReleasedJob releasedJob = new() {
-                JobName = command.Title,
-                CustomerName = command.CustomerName,
-                VendorName = command.VendorName,
+            if (job is null) {
+                Console.WriteLine("No job found");
+                return null;
+            }
+
+            var nestItems = job.Elements("Item").Where(item => item.ElementValue("Note") == "Nested blocknest").Where(nest => nest.Elements("Part").Any());
+
+            Dictionary<string, Part> allParts = new();
+
+            var nests = nestItems.Select(item => {
+                var parts = item.Elements("Part").Select(Part.FromXElemnt).ToList();
+                parts.ForEach(part => allParts.TryAdd(part.Id, part));
+                return new Nest(item.AttributeValue("ID"), item.ElementValue("Name"), parts);
+            }).ToList();
+
+            var patternScheduleItems = job.Element("Manufacturing").Elements("PatternSchedule");
+
+            var patternSchedules = patternScheduleItems.Select(PatternSchedule.FromXElement);
+
+            var materials = job.Elements("Material").Select(MaterialRecord.FromXElement).ToDictionary(m => m.Id);
+
+            var labels = job.Element("Manufacturing").Elements("Label").Select(PartLabels.FromXElement).ToDictionary(l => l.Id);
+
+            var releasedJob = new ReleasedJob() {
+                JobName = job.ElementValue("Name"),
                 OrderDate = command.OrderDate,
                 ReleaseDate = DateTime.Now,
-                Releases = new List<MachineRelease>() {
-                        new() {
-                            MachineName = machineName,
-                            MachineTableOrientation = (machineName == "Omnitech" ? TableOrientation.Rotated : TableOrientation.Standard),
-                            Programs = programs
-                        }
-                    }
+                CustomerName = command.CustomerName,
+                VendorName = command.VendorName,
+                WorkOrderId = null,
+                Releases = patternSchedules.GroupBy(sched => GetMachineName(sched.Name))
+                                            .Select(group => new MachineRelease() {
+                                                MachineName = group.Key,
+                                                MachineTableOrientation = GetTableOrientationFromMachineName(group.Key),
+                                                Programs = group.SelectMany(group => group.Patterns)
+                                                                .Select(pattern => {
+                                                                    var material = materials[pattern.MaterialId];
+                                                                    return new ReleasedProgram() {
+                                                                        Name = pattern.Name,
+                                                                        HasFace6 = false,
+                                                                        ImagePath = $"y:\\CADCode\\pix\\{GetImageFileName(pattern.Name)}.wmf",
+                                                                        Material = new() {
+                                                                            IsGrained = false,
+                                                                            Yield = 0,
+                                                                            Name = material.Name,
+                                                                            Width = material.YDim,
+                                                                            Length = material.XDim,
+                                                                            Thickness = material.ZDim
+                                                                        },
+                                                                        Parts = pattern.Parts
+                                                                                        .SelectMany(part => {
+                                                                                            List<(string partId, PatternPartLocation location)> points = new();
+                                                                                            part.Locations.ToList().ForEach(loc => points.Add((part.PartId, loc)));
+                                                                                            return points;
+                                                                                        })
+                                                                                        .Select(nestPart => {
+                                                                                            var part = allParts[nestPart.partId];
+                                                                                            var label = labels[part.LabelId];
+                                                                                            return new NestedPart() {
+                                                                                                Name = part.Name,
+                                                                                                Width = Dimension.FromMillimeters(part.Width),
+                                                                                                Length = Dimension.FromMillimeters(part.Length),
+                                                                                                Center = new() {
+                                                                                                    X = nestPart.location.Insert.X + (nestPart.location.IsRotated ? part.Length : part.Width) / 2,
+                                                                                                    Y = nestPart.location.Insert.Y + (nestPart.location.IsRotated ? part.Width : part.Length) / 2
+                                                                                                },
+                                                                                                IsRotated = nestPart.location.IsRotated,
+                                                                                                Description = label.Fields.GetValueOrEmpty("Description"),
+                                                                                                ProductNumber = label.Fields.GetValueOrEmpty("ProductNumber"),
+                                                                                                ImageData = label.Fields.GetValueOrEmpty("Machining Picture"),
+                                                                                                HasFace6 = false
+                                                                                            };
+                                                                                        })
+                                                                                        .ToList()
+                                                                    };
+                                                                })
+                                            })
             };
+
             return releasedJob;
         }
 
@@ -178,32 +180,107 @@ internal class GenerateReleaseForSelectedJobs {
             return workOrderId;
         }
 
-        private static List<NestedPart> GetParts(IDictionary<string, List<ManufacturedPart>> nestPartsByPatternName, string patternName) {
-
-            if (nestPartsByPatternName.TryGetValue(patternName, out var parts)) {
-
-                return parts.Select(part => new NestedPart() {
-                    Name = part.Name,
-                    Width = Dimension.FromMillimeters(part.Width),
-                    Length = Dimension.FromMillimeters(part.Length),
-                    Description = part.Description,
-                    Center = new Point(part.InsertX + part.Length / 2, part.InsertY + part.Width / 2),
-                    ProductNumber = part.ProductNumber,
-                    HasFace6 = part.HasFace6 == 0
-                }).ToList();
-
-            }
-
-            return new();
-
-        }
-
     }
 
     public class ReleaseGenerationResult {
 
         public Guid? WorkOrderId { get; set; }
         public IEnumerable<IDocumentDecorator> Decorators { get; set; } = Enumerable.Empty<IDocumentDecorator>();
+
+    }
+
+    private static string GetMachineName(string scheduleName) {
+
+        if (scheduleName.Contains("OMNITECH")) return "OMNITECH";
+        if (scheduleName.Contains("ANDI STRATOS")) return "ANDI STRATOS";
+        return "UNKNOWN";
+
+    }
+
+    private static TableOrientation GetTableOrientationFromMachineName(string machineName) => machineName switch {
+        "OMNITECH" => TableOrientation.Rotated,
+        _ => TableOrientation.Standard
+    };
+
+    private static string GetImageFileName(string patternName) {
+
+        int idx = patternName.IndexOf('.');
+        if (idx < 0) {
+            return patternName;
+        }
+
+        return patternName.Substring(0, idx);
+
+    }
+
+    record Nest(string Id, string Name, IEnumerable<Part> Parts);
+
+    record Part(string Id, string LabelId, string Name, double Width, double Length, IEnumerable<string> PatternScheduleIds) {
+        public static Part FromXElemnt(XElement element) => new(element.AttributeValue("ID"), element.AttributeValue("LabelID"), element.ElementValue("Name"), element.ElementDouble("FinishedLength"), element.ElementDouble("FinishedWidth"), element.AttributeValue("PatSchID").Split(' '));
+    }
+
+    record PatternSchedule(string Id, string Name, IEnumerable<Pattern> Patterns) {
+        public static PatternSchedule FromXElement(XElement element) => new(element.AttributeValue("ID"), element.ElementValue("Name"), element.Elements("Pattern").Select(Pattern.FromXElement));
+    }
+
+    record Pattern(string Id, string Name, string MaterialId, IEnumerable<PatternPart> Parts) {
+        public static Pattern FromXElement(XElement element) => new(element.AttributeValue("ID"), element.ElementValue("Name"), element.AttributeValue("MatID"), PatternPart.FromXEment(element));
+    }
+
+    record PatternPart(string PartId, IEnumerable<PatternPartLocation> Locations) {
+        public static IEnumerable<PatternPart> FromXEment(XElement patternElement) {
+
+            return patternElement.Elements("NestPart")
+                            .GroupBy(nestPart => nestPart.AttributeValue("PartID"))
+                            .Select(group =>
+                                new PatternPart(group.Key,
+                                                group.Select(nestPart => {
+                                                    var insert = nestPart.Element("Insert");
+                                                    bool isRotated = nestPart.ElementValue("Rotation") == "90";
+
+                                                    return new PatternPartLocation(new Point() {
+                                                        X = insert.AttributeDouble("x"),
+                                                        Y = insert.AttributeDouble("y")
+                                                    }, isRotated);
+                                                }))
+                            );
+
+        }
+    }
+
+    record PatternPartLocation(Point Insert, bool IsRotated);
+
+    record MaterialRecord(string Id, string Name, double XDim, double YDim, double ZDim) {
+        public static MaterialRecord FromXElement(XElement element) => new(element.AttributeValue("ID"), element.ElementValue("Name"), element.ElementDouble("XDim"), element.ElementDouble("YDim"), element.ElementDouble("ZDim"));
+    }
+
+    public record PartLabels(string Id, Dictionary<string, string> Fields) {
+
+        public static PartLabels FromXElement(XElement element) {
+
+            Dictionary<string, string> fields = new();
+
+            string name = "";
+            foreach (var subelement in element.Descendants()) {
+
+                switch (subelement.Name.ToString()) {
+
+                    case "Name":
+                        name = subelement.Value;
+                        break;
+
+                    case "Value":
+                        fields.TryAdd(name, subelement.Value);
+                        name = "";
+                        break;
+
+                }
+
+            }
+
+            return new(element.AttributeValue("ID"), fields);
+
+        }
 
     }
 
