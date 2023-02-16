@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.LabelDB.Services;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Configuration;
+﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Configuration;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
 using ApplicationCore.Features.Orders.Details.OrderExport;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
@@ -46,9 +45,6 @@ public static class DependencyInjection {
         services.AddTransient<IPDFConfigurationProvider>(s => jsonPDF);
 
         services.AddTransient<IReleasePDFWriter, QuestPDFWriter>();
-        services.AddTransient<MachineNameProvider>();
-        services.AddTransient<IAvailableJobProvider, AvailableJobProvider>();
-        services.AddTransient<IExistingJobProvider, CADCodeLabelDBExistingJobProvider>();
 
         services.AddTransient<Features.Shared.Contracts.Ordering.GetOrderNumberById>(sp => {
 

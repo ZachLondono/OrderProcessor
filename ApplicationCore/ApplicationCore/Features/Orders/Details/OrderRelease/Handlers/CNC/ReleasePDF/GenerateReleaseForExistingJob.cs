@@ -7,7 +7,6 @@ using ApplicationCore.Infrastructure.Bus;
 using MoreLinq;
 using ApplicationCore.Features.Orders.Details.Shared;
 using System.Xml.Linq;
-using CADCode;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
 
