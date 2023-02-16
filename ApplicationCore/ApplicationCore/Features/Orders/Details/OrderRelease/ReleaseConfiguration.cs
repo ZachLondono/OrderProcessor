@@ -18,8 +18,6 @@ public class ReleaseConfiguration {
 
     public bool GenerateJobSummary { get; set; }
 
-    public string? JobSummaryTemplate { get; set; }
-
     public string? EmailRecipients { get; set; }
 
     public bool SendEmail { get; set; }

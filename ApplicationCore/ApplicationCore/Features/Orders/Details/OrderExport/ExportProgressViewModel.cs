@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-
+﻿
 namespace ApplicationCore.Features.Orders.Details.OrderExport;
 
 internal class ExportProgressViewModel {
@@ -24,7 +23,7 @@ internal class ExportProgressViewModel {
         }
     }
 
-    public ObservableCollection<ProgressLogMessage> Messages { get; } = new();
+    public Action<ProgressLogMessage>? OnMessagePublished { get; set;  }
 
     private readonly ExportService _service;
 

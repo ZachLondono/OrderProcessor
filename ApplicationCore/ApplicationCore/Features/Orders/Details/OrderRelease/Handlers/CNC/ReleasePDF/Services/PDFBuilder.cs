@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Configuration;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.PDFModels;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Styling;
+using ApplicationCore.Features.Orders.Details.Shared;
 using BarcodeLib;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -8,30 +9,32 @@ using QuestPDF.Infrastructure;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
 
-internal class PDFBuilder {
+internal class ReleasePDFDecorator : IDocumentDecorator {
 
-    public List<PageModel> Pages { get; init; } = new();
-    public CoverModel Cover { get; set; } = new();
     private readonly PDFConfiguration _config;
+    private readonly CoverModel _cover;
+    private readonly IEnumerable<PageModel> _pages;
 
-    public PDFBuilder(PDFConfiguration config) {
+    public ReleasePDFDecorator(PDFConfiguration config, CoverModel cover, IEnumerable<PageModel> pages) {
         _config = config;
+        _cover = cover;
+        _pages = pages;
     }
 
-    public Document BuildDocument() {
-        return Document.Create(d => {
-            if (Cover is not null) {
-                d.Page(page => {
-                    BuildSummary(page, Cover, _config);
-                });
-            }
+    public void Decorate(IDocumentContainer container) {
 
-            foreach (var data in Pages) {
-                d.Page(page => {
-                    BuildPage(page, data, _config);
-                });
-            }
-        });
+        if (_cover is not null) {
+            container.Page(page => {
+                BuildSummary(page, _cover, _config);
+            });
+        }
+
+        foreach (var data in _pages) {
+            container.Page(page => {
+                BuildPage(page, data, _config);
+            });
+        }
+
     }
 
     private static void BuildSummary(PageDescriptor page, CoverModel summary, PDFConfiguration config) {

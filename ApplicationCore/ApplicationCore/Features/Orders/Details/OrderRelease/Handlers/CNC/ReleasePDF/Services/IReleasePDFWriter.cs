@@ -1,9 +1,10 @@
 ﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Contracts;
+using ApplicationCore.Features.Orders.Details.Shared;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
 
-public interface IReleasePDFWriter {
+internal interface IReleasePDFWriter {
 
-    public IEnumerable<string> GeneratePDFs(ReleasedJob job, string outputDirectory);
+    public IEnumerable<IDocumentDecorator> GenerateDecorators(ReleasedJob job);
 
 }

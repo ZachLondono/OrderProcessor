@@ -7,10 +7,11 @@ using ApplicationCore.Features.Shared.Contracts;
 using ApplicationCore.Features.Shared.Domain;
 using ApplicationCore.Infrastructure.Bus;
 using MoreLinq;
+using ApplicationCore.Features.Orders.Details.Shared;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
 
-public class GenerateReleaseForSelectedJobs {
+internal class GenerateReleaseForSelectedJobs {
 
     public record Command(Guid OrderId, string Title, string CustomerName, string VendorName, DateTime OrderDate, string LabelFilePath, IEnumerable<AvailableJob> SelectedJobs);
 
@@ -73,22 +74,20 @@ public class GenerateReleaseForSelectedJobs {
 
             Guid? workOrderId = await GenerateWorkOrder(command, productIds, partClasses);
 
-            List<string> filesWritten = new();
+            List<IDocumentDecorator> documentDecorators = new();
             foreach (var job in jobsToRelease) {
 
                 job.WorkOrderId = workOrderId;
 
-                IEnumerable<string>? filePaths = _pdfService.GeneratePDFs(job, @"C:\Users\Zachary Londono\Desktop\ExampleConfiguration\cutlists");
+                var decortors = _pdfService.GenerateDecorators(job);
 
-                if (filePaths is null) continue;
-
-                filesWritten.AddRange(filePaths);
+                documentDecorators.AddRange(decortors);
 
             }
 
             return Response<ReleaseGenerationResult>.Success(new() {
                 WorkOrderId = workOrderId,
-                FilesWritten = filesWritten
+                Decorators = documentDecorators
             });
 
         }
@@ -204,7 +203,7 @@ public class GenerateReleaseForSelectedJobs {
     public class ReleaseGenerationResult {
 
         public Guid? WorkOrderId { get; set; }
-        public IEnumerable<string> FilesWritten { get; set; } = Enumerable.Empty<string>();
+        public IEnumerable<IDocumentDecorator> Decorators { get; set; } = Enumerable.Empty<IDocumentDecorator>();
 
     }
 

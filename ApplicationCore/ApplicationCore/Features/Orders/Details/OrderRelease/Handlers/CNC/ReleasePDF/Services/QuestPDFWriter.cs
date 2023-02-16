@@ -2,11 +2,11 @@
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.PDFModels;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Styling;
-using QuestPDF.Fluent;
+using ApplicationCore.Features.Orders.Details.Shared;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
 
-public class QuestPDFWriter : IReleasePDFWriter {
+internal class QuestPDFWriter : IReleasePDFWriter {
 
     private readonly IPDFConfigurationProvider _configProvider;
 
@@ -14,52 +14,23 @@ public class QuestPDFWriter : IReleasePDFWriter {
         _configProvider = configProvider;
     }
 
-    public IEnumerable<string> GeneratePDFs(ReleasedJob job, string outputDirectory) {
-
-        var createdFiles = new List<string>();
+    public IEnumerable<IDocumentDecorator> GenerateDecorators(ReleasedJob job) {
 
         // TODO: validate configuration
         var config = _configProvider.GetConfiguration();
+
+        List<IDocumentDecorator> decorators = new();
 
         foreach (var release in job.Releases) {
 
             CoverModel cover = CreateCover(job, release);
             List<PageModel> pages = CreatePages(job, release);
 
-            var pdfmanager = new PDFBuilder(config) {
-                Pages = pages,
-                Cover = cover
-            };
-
-            try {
-                var document = pdfmanager.BuildDocument();
-                // TODO: get path from configuration
-                var filepath = GetFileName(outputDirectory, $"{job.JobName} - {release.MachineName} CUTLIST");
-                document.GeneratePdf(filepath);
-                createdFiles.Add(filepath);
-
-                //document.WithMetadata(new() {
-                //    RasterDpi = 216 // increase resolution of image for printing
-                //});
-                //var images = document.GenerateImages();
-                //foreach (var data in images) {
-                //    using var ms = new MemoryStream(data);
-                //    var image = System.Drawing.Image.FromStream(ms);
-                //    var printer = new Printer(image);
-                //    // TODO get printer name (create a printer service which has the printer name configured and used everywhere that a pdf needs to be printed)
-                //    //printer.Print("HP4D193E (HP Officejet Pro 8600)");
-                //    printer.Print("Microsoft Print to PDF");
-                //}
-
-            } catch (Exception ex) {
-                // TODO: warn about failed pdf generation
-                Console.WriteLine("Failed to create pdf");
-                Console.WriteLine(ex.ToString());
-            }
+            decorators.Add(new ReleasePDFDecorator(config, cover, pages));
 
         }
 
-        return createdFiles;
+        return decorators;
 
     }
 

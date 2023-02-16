@@ -2,8 +2,12 @@
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
+using ApplicationCore.Features.Orders.Details.Shared;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.State;
+using ApplicationCore.Features.Shared.Services;
 using MoreLinq;
+using QuestPDF.Fluent;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease;
 
@@ -15,16 +19,16 @@ internal class ReleaseService {
 
     private readonly InvoiceHandler _invoiceHandler;
     private readonly PackingListHandler _packingListHandler;
-    private readonly JobSummaryHandler _jobSummaryHandler;
     private readonly GenerateReleaseForSelectedJobs.Handler _cncReleaseHandler;
     private readonly OrderState _orderState;
+    private readonly IFileReader _fileReader;
 
-    public ReleaseService(InvoiceHandler invoiceHandler, PackingListHandler packingListHandler, JobSummaryHandler jobSummaryHandler, GenerateReleaseForSelectedJobs.Handler cncReleaseHandler, OrderState orderState) {
+    public ReleaseService(InvoiceHandler invoiceHandler, PackingListHandler packingListHandler, GenerateReleaseForSelectedJobs.Handler cncReleaseHandler, OrderState orderState, IFileReader fileReader) {
         _invoiceHandler = invoiceHandler;
         _packingListHandler = packingListHandler;
-        _jobSummaryHandler = jobSummaryHandler;
         _cncReleaseHandler = cncReleaseHandler;
         _orderState = orderState;
+        _fileReader = fileReader;
     }
 
     public async Task Release(ReleaseConfiguration configuration) {
@@ -41,11 +45,85 @@ internal class ReleaseService {
 
         var order = _orderState.Order;
 
-        if (configuration.GenerateInvoice) {
-            await _invoiceHandler.Handle(order, configuration.OutputDirectory);
-            OnActionComplete?.Invoke("Invoice generated");
+        await GenerateInvoice(configuration, order);
+        await GeneratePackingList(configuration, order);
+
+        List<IDocumentDecorator> cncDecorators = new();
+        if (configuration.GenerateCNCRelease && configuration.CNCDataFilePath is not null && configuration.CNCJobs is not null && configuration.CNCJobs.Any()) {
+
+            var response = await _cncReleaseHandler.Handle(new GenerateReleaseForSelectedJobs.Command(order.Id, $"{order.Number} {order.Name}", order.Customer.Name, "Vendor Name", DateTime.Now, configuration.CNCDataFilePath, configuration.CNCJobs));
+
+            response.OnSuccess(result => cncDecorators.AddRange(result.Decorators));
+
+            OnActionComplete?.Invoke("CNC release complete");
+
         } else {
-            OnProgressReport?.Invoke("Skipping invoice, because it was unchecked");
+            OnProgressReport?.Invoke("Skipping CNC release, because it was unchecked");
+        }
+
+
+        bool generatePDF = false;
+
+        IDocumentDecorator? summaryDecorator = null;
+        if (configuration.GenerateJobSummary) {
+            summaryDecorator = new JobSummaryDocumentDecorator(order);
+            generatePDF = true;
+        }
+
+        List<Document> documents = new();
+        if (cncDecorators.Any()) {
+            
+            foreach (var decorator in cncDecorators) {
+
+                documents.Add(Document.Create(doc => {
+
+                    summaryDecorator?.Decorate(doc);
+
+                    decorator.Decorate(doc);
+
+                }));
+
+            }
+
+        } else if (summaryDecorator is not null) {
+
+            documents.Add(Document.Create(summaryDecorator.Decorate));
+
+        }
+
+        List<string> generatedFiles = new();
+        if (generatePDF) { 
+
+            foreach (var document in documents) { 
+
+                try { 
+                    var filePath = _fileReader.GetAvailableFileName(configuration.OutputDirectory, $"{order.Number} {order.Name}", ".pdf");
+                    document.GeneratePdf(filePath);
+                    generatedFiles.Add(filePath);
+                } catch (Exception ex) {
+                    generatePDF = false;
+                    OnError?.Invoke($"Error generating pdf {ex.Message}");
+                }
+
+            }
+
+        }
+
+        if (configuration.SendEmail) {
+
+            // TODO: attach pdf to email
+
+        }
+
+        OnActionComplete?.Invoke("Release Complete");
+
+    }
+
+    private async Task GeneratePackingList(ReleaseConfiguration configuration, Order order) {
+
+        if (configuration.OutputDirectory is null) {
+            OnError?.Invoke("No output directory set");
+            return;
         }
 
         if (configuration.GeneratePackingList) {
@@ -54,35 +132,20 @@ internal class ReleaseService {
         } else {
             OnProgressReport?.Invoke("Skipping packing list, because it was unchecked");
         }
-
-        if (configuration.GenerateCNCRelease && configuration.CNCDataFilePath is not null && configuration.CNCJobs is not null && configuration.CNCJobs.Any()) {
-
-            var response = await _cncReleaseHandler.Handle(new GenerateReleaseForSelectedJobs.Command(order.Id, $"{order.Number} {order.Name}", order.Customer.Name, "Vendor Name", DateTime.Now, configuration.CNCDataFilePath, configuration.CNCJobs));
-
-            response.OnSuccess(result => {
-                result.FilesWritten.ForEach(file => OnProgressReport?.Invoke($"File written '{file}'"));
-            });
-
-            OnActionComplete?.Invoke("CNC release complete");
-
-        } else {
-            OnProgressReport?.Invoke("Skipping CNC release, because it was unchecked");
-        }
-
-        if (configuration.GenerateJobSummary && configuration.JobSummaryTemplate is not null) {
-
-            _jobSummaryHandler.Handle(order, configuration.JobSummaryTemplate, configuration.OutputDirectory);
-
-        }
-
-        if (configuration.SendEmail) {
-
-
-
-        }
-
-        OnActionComplete?.Invoke("Release Complete");
-
     }
 
+    private async Task GenerateInvoice(ReleaseConfiguration configuration, Order order) {
+
+        if (configuration.OutputDirectory is null) {
+            OnError?.Invoke("No output directory set");
+            return;
+        }
+
+        if (configuration.GenerateInvoice) {
+            await _invoiceHandler.Handle(order, configuration.OutputDirectory);
+            OnActionComplete?.Invoke("Invoice generated");
+        } else {
+            OnProgressReport?.Invoke("Skipping invoice, because it was unchecked");
+        }
+    }
 }
