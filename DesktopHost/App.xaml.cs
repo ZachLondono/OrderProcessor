@@ -7,6 +7,7 @@ using MediatR;
 using System;
 using System.Windows;
 using ApplicationCore.Features.Shared.Services;
+using DesktopHost.Error;
 
 namespace DesktopHost;
 
@@ -17,10 +18,23 @@ public partial class App : Application {
 
     private void Application_Startup(object sender, StartupEventArgs e) {
 
-        var configuration = BuildConfiguration();
-        var serviceProvider = BuildServiceProvider(configuration);
+        try { 
+            
+            var configuration = BuildConfiguration();
+            var serviceProvider = BuildServiceProvider(configuration);
 
-        new MainWindow(serviceProvider).Show();
+            new MainWindow(serviceProvider).Show();
+
+        } catch (Exception ex) {
+
+            new ErrorWindow {
+                DataContext = new ErrorWindowViewModel() {
+                    Title = "Error Initilizing Application",
+                    Message = ex.Message
+                }
+            }.Show();
+
+        }
 
     }
 
@@ -56,6 +70,5 @@ public partial class App : Application {
         loggingBuilder.AddFilter("ApplicationCore", LogLevel.Information);
 #endif
     }
-
 
 }
