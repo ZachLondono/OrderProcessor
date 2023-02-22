@@ -14,10 +14,6 @@ internal class SqliteDbConnectionFactory : IDbConnectionFactory {
 
     public IDbConnection CreateConnection() {
 
-        //SqliteConnectionStringBuilder builder = new SqliteConnectionStringBuilder();
-        //builder.Pooling = false;
-        //builder.
-        //builder.ConnectionString = 
         var connstring = _configuration.GetConnectionString("DrawerBoxOrders");
         var connection = new SqliteConnection(connstring);
 
