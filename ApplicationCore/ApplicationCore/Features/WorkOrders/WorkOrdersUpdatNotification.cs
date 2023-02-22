@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Infrastructure;
+﻿using ApplicationCore.Infrastructure.UI;
 
 namespace ApplicationCore.Features.WorkOrders;
 

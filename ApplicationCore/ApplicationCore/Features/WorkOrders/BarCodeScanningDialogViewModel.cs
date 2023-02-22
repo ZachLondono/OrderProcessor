@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Shared;
-using ApplicationCore.Infrastructure;
+﻿using ApplicationCore.Features.Shared.Domain;
+using ApplicationCore.Infrastructure.Bus;
 using DocumentFormat.OpenXml.Presentation;
 using System;
 using System.Collections.Generic;
@@ -40,24 +40,24 @@ internal class BarCodeScanningDialogViewModel {
     }
 
     public async Task SubmitScannedBarcode() {
-        
+
         Error = null;
         Message = null;
 
         Guid? workOrderId = null;
 
-        try { 
-            
+        try {
+
             workOrderId = ShortGuid.Parse(Code).ToGuid();
 
         } catch {
-            
+
             Error = "Barcode foramt is invalid";
             return;
 
         }
 
-        var queryResponse = await _bus.Send(new GetWorkOrderById.Query((Guid) workOrderId));
+        var queryResponse = await _bus.Send(new GetWorkOrderById.Query((Guid)workOrderId));
 
         WorkOrder? workOrder = null;
         queryResponse.OnSuccess(wo => workOrder = wo);
@@ -67,7 +67,7 @@ internal class BarCodeScanningDialogViewModel {
             return;
         }
 
-        var commandResponse = await _bus.Send(new UpdateWorkOrder.Command((Guid) workOrderId, workOrder.Name, Status.Complete));
+        var commandResponse = await _bus.Send(new UpdateWorkOrder.Command((Guid)workOrderId, workOrder.Name, Status.Complete));
 
         commandResponse.Match(
             _ => Message = $"Work order '{workOrder.Name}' updated.",

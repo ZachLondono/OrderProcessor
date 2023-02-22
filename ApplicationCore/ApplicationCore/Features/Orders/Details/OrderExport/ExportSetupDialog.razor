@@ -1,0 +1,104 @@
+﻿@using ApplicationCore.Features.Companies.Domain.ValueObjects;
+@using ApplicationCore.Features.Orders.Details.OrderExport;
+@using ApplicationCore.Features.Shared.Components
+@using static ApplicationCore.Features.Shared.Components.Button;
+@using ApplicationCore.Features.Shared.Services;
+@inject IFilePicker FilePicker
+
+
+@if (Configuration is null) {
+    <span>Loading...</span>    
+} else {
+
+    <div class="flex flex-col space-y-5">
+
+        @if(_errorMessage is not null) {
+            
+            <section>
+                <span class="text-red-600">@_errorMessage</span>
+            </section>
+
+        }
+
+        <section>
+            <CheckBox @bind-IsChecked="Configuration.FillDovetailOrder">
+                <span class="text-gray-700">Fill Dovetail DB order</span>
+            </CheckBox>
+            <label class="block text-sm font-medium text-gray-700">Template</label>
+            <input type="text" class="mt-1 w-full" @bind="@Configuration.DovetailTemplateFilePath" />
+        </section>
+
+        <section>
+            <CheckBox @bind-IsChecked="Configuration.FillMDFDoorOrder">
+                <span class="text-gray-700">Fill MDF Door order</span>
+            </CheckBox>
+            <label class="block text-sm font-medium text-gray-700">Template</label>
+            <input type="text" class="mt-1 w-full" @bind="@Configuration.MDFDoorTemplateFilePath" />
+        </section>
+
+        <section>
+            <CheckBox @bind-IsChecked="Configuration.GenerateEXT">
+                <span class="text-gray-700">Generate EXT File</span>
+            </CheckBox>
+        </section>
+
+        <section>
+            <label class="block text-sm font-medium text-gray-700">Output directory</label>
+            <input type="text" class="mt-1 w-full" @bind="@Configuration.OutputDirectory" />
+        </section>
+
+        <section>
+            <Button Color="ButtonColor.Primary" Style="ButtonStyle.Text" OnClickAsync="Export">Export</Button>
+            <Button Color="ButtonColor.Secondary" Style="ButtonStyle.Text" OnClickAsync="Cancel">Cancel</Button>
+        </section>
+
+    </div>
+}
+
+
+@code {
+
+    [CascadingParameter]
+    private BlazoredModalInstance ModalInstance { get; set; } = default!;
+
+    [CascadingParameter]
+    public IModalService ModalService { get; set; } = default!;
+
+    public ExportConfiguration? Configuration { get; set; } = new();
+    private string? _errorMessage = null;
+
+    private async Task Cancel() {
+
+        await ModalInstance.CancelAsync();
+
+    }
+
+    public async Task Export() {
+
+        _errorMessage = null;
+
+        if (Configuration is null) {
+            _errorMessage = "Could not load release configuration";
+            return;
+        }
+
+        var parameters = new ModalParameters() {
+            { "Configuration",  Configuration }
+        };
+
+        var options = new ModalOptions() {
+                HideHeader = true,
+                HideCloseButton = true,
+                DisableBackgroundCancel = true,
+                Size = ModalSize.Large
+            };
+
+        var dialog = ModalService.Show<ExportProgressDialog>("Order Export Progress", parameters, options);
+
+        _ = await dialog.Result;
+
+        await ModalInstance.CloseAsync();
+
+    }
+
+}

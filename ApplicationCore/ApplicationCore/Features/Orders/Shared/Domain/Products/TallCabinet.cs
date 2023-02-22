@@ -1,7 +1,7 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Contracts;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Features.ProductPlanner.Contracts;
 using ApplicationCore.Features.Shared.Domain;
 using DocumentFormat.OpenXml.Wordprocessing;
 
@@ -104,7 +104,7 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
     }
 
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
-        
+
         if (!Inside.RollOutBoxes.Positions.Any()) {
 
             return Enumerable.Empty<DovetailDrawerBox>();

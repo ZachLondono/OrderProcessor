@@ -1,6 +1,7 @@
-﻿using ApplicationCore.Features.Shared;
+﻿using ApplicationCore.Features.Shared.Services;
 using Microsoft.Win32;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace DesktopHost.Dialogs;
@@ -12,6 +13,10 @@ public class WPFDialogFilePicker : IFilePicker {
         // The file picker must be run in a seperate thread than the ui, otherwise it will crash the WPF application if the user takes too long to pick a file
 
         string? result = await Task.Run(() => {
+
+            if (!Directory.Exists(directory)) {
+                directory = Directory.GetCurrentDirectory();
+            }
 
             var dialog = new OpenFileDialog {
                 InitialDirectory = directory,

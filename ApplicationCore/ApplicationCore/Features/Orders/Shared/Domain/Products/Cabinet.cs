@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+﻿using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Contracts;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Features.ProductPlanner.Contracts;
 using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
@@ -60,7 +60,7 @@ public abstract class Cabinet : IProduct {
 
         if (boxMaterial.Core == CabinetMaterialCore.Plywood && finishMaterial.Core == CabinetMaterialCore.Flake)
             throw new InvalidOperationException("Cannot create cabinet with plywood box and flake finished side");
-        
+
     }
 
     public abstract IEnumerable<Supply> GetSupplies();
@@ -89,7 +89,7 @@ public abstract class Cabinet : IProduct {
             ["F_Door"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),
             ["F_DoorBack"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),
             ["F_Exp_SemiExp"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),
-            ["F_Exp_Unseen"] = new PPMaterial(finishMaterial,FinishMaterial.Finish),
+            ["F_Exp_Unseen"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),
             ["F_Exposed"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),
             ["F_OvenSupport"] = new PPMaterial("Veneer", "PRE"),
             ["F_SemiExp_Unseen"] = new PPMaterial(boxMaterial, BoxMaterial.Finish),
@@ -107,10 +107,10 @@ public abstract class Cabinet : IProduct {
         string finishEBMaterial = GetEBMaterialType(FinishMaterial.Core);
         string boxEBMaterial = GetEBMaterialType(BoxMaterial.Core);
         return new Dictionary<string, PPMaterial>() {
-            ["EB_Case"] = new PPMaterial(finishEBMaterial,EdgeBandingColor),
+            ["EB_Case"] = new PPMaterial(finishEBMaterial, EdgeBandingColor),
             ["EB_Inside"] = new PPMaterial(boxEBMaterial, BoxMaterial.Finish),
-            ["EB_ShellExposed"] = new PPMaterial(finishEBMaterial,EdgeBandingColor),
-            ["EB_WallBottom"] = new PPMaterial(finishEBMaterial,EdgeBandingColor),
+            ["EB_ShellExposed"] = new PPMaterial(finishEBMaterial, EdgeBandingColor),
+            ["EB_WallBottom"] = new PPMaterial(finishEBMaterial, EdgeBandingColor),
         };
     }
 

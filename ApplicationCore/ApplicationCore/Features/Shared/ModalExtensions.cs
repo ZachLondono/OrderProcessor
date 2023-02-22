@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Infrastructure;
+﻿using ApplicationCore.Infrastructure.Bus;
 using Blazored.Modal;
 using Blazored.Modal.Services;
 using static ApplicationCore.Features.Shared.InformationDialog;

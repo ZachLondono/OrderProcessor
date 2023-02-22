@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.Shared.Domain;
 
-public readonly struct  Dimension : IComparable {
+public readonly struct Dimension : IComparable {
 
     private readonly double _mm;
 

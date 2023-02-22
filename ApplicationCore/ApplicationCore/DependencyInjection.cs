@@ -4,21 +4,17 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.CompilerServices;
 using ApplicationCore.Features.Companies;
 using Blazored.Modal;
-using ApplicationCore.Features.Shared;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Features.Emails;
-using ApplicationCore.Features.CNC;
-using ApplicationCore.Features.Orders.Loader;
-using ApplicationCore.Features.ProductPlanner;
-using ApplicationCore.Features.Orders.Shared.State;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.List;
 using ApplicationCore.Features.Companies.Queries;
-using static ApplicationCore.Features.Orders.Release.Handlers.GenerateCabinetPackingList;
 using ApplicationCore.Features.WorkOrders;
 using ApplicationCore.Pages.OrderDetails;
 using ApplicationCore.Features.WorkOrders.AllWorkOrders;
 using ApplicationCore.Features.Orders;
+using ApplicationCore.Features.Orders.Details.OrderRelease;
+using ApplicationCore.Features.Orders.Details.OrderExport;
+using ApplicationCore.Infrastructure.Bus;
+using ApplicationCore.Features.Shared.Services;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -45,49 +41,11 @@ public static class DependencyInjection {
             };
         });
 
-        services.AddTransient<VendorInfo.GetVendorInfoById>((sp) => {
-            var bus = sp.GetRequiredService<IBus>();
-            return async (id) => {
-
-                var response = await bus.Send(new GetCompanyById.Query(id));
-                Vendor? vendor = null;
-                response.OnSuccess(result => {
-                    
-                    if (result is null) {
-                        return;
-                    }
-
-                    vendor = new() {
-                        Name = result.Name,
-                        Address = new() {
-                            Line1 = result.Address.Line1,
-                            Line2 = result.Address.Line2,
-                            Line3 = result.Address.Line3,
-                            City = result.Address.City,
-                            State = result.Address.State,
-                            Zip = result.Address.Zip,
-                            Country = result.Address.Country
-                        }
-                    };
-
-                });
-
-                return vendor;
-
-            };
-        });
-
         services.AddViewModels();
 
         services.AddOrdering(configuration);
 
         services.AddWorkOrders();
-
-        services.AddEmailing();
-
-        services.AddCADCode(configuration);
-
-        services.AddProductPlanner();
 
         services.AddBlazoredModal();
 
@@ -98,11 +56,13 @@ public static class DependencyInjection {
         return services;
     }
 
-    private static IServiceCollection AddViewModels(this IServiceCollection services) 
-        =>  services.AddTransient<OrderListViewModel>()
+    private static IServiceCollection AddViewModels(this IServiceCollection services)
+        => services.AddTransient<OrderListViewModel>()
                     .AddTransient<OrderTaskListViewModel>()
                     .AddTransient<OrderDetailsPageViewModel>()
                     .AddTransient<BarCodeScanningDialogViewModel>()
-                    .AddTransient<AllWorkOrdersListViewModel>();
+                    .AddTransient<AllWorkOrdersListViewModel>()
+                    .AddTransient<ReleaseProgressViewModel>()
+                    .AddTransient<ExportProgressViewModel>();
 
 }

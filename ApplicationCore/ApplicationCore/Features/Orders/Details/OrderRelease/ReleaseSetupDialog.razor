@@ -1,0 +1,158 @@
+﻿@using ApplicationCore.Features.Companies.Domain.ValueObjects;
+@using ApplicationCore.Features.Orders.Details.OrderRelease;
+@using static ApplicationCore.Features.Shared.Components.Button;
+@using ApplicationCore.Features.Shared.Components
+@using ApplicationCore.Features.Shared.Services;
+@inject IFilePicker FilePicker
+
+
+@if (Configuration is null) {
+    <span>Loading...</span>    
+} else {
+
+    <div class="flex flex-col space-y-5">
+
+        @if(_errorMessage is not null) {
+            
+            <section>
+                <span class="text-red-600">@_errorMessage</span>
+            </section>
+
+        }
+
+        <section>
+            <CheckBox @bind-IsChecked="Configuration.GenerateCNCRelease">
+                <span class="text-gray-700">Generate CNC Release PDF</span>
+            </CheckBox>
+            <div class="flex justify-center items-center mt-3">
+                <Button OnClickAsync="ChooseCNCDataFile" Color="ButtonColor.Secondary">Select File</Button> <span class="text-sm px-3">@(string.IsNullOrWhiteSpace(Configuration.CNCDataFilePath) ? "No File Selected" : TruncateString(Configuration.CNCDataFilePath))</span>
+            </div>
+        </section>
+
+        <section>
+            <CheckBox @bind-IsChecked="Configuration.GeneratePackingList">
+                <span class="text-gray-700">Generate Packing List</span>
+            </CheckBox>
+            <CheckBox @bind-IsChecked="Configuration.GenerateInvoice">
+                <span class="text-gray-700">Generate Invoice</span>
+            </CheckBox>
+        </section>
+
+        <section>
+            <CheckBox @bind-IsChecked="Configuration.GenerateJobSummary">
+                <span class="text-gray-700">Generate Job Summary</span>
+            </CheckBox>
+        </section>
+
+        <section>
+            <CheckBox @bind-IsChecked="Configuration.SendEmail">
+                <span class="text-gray-700">Send Email</span>
+            </CheckBox>
+            <label class="block text-sm font-medium text-gray-700">Email Recipients</label>
+            <input type="text" class="mt-1 w-full" @bind="@Configuration.EmailRecipients" />
+        </section>
+
+        <section>
+            <label class="block text-sm font-medium text-gray-700">Output Directory</label>
+            <input type="text" class="mt-1 w-full" @bind="@Configuration.OutputDirectory" />
+        </section>
+
+        <section>
+            <Button Color="ButtonColor.Primary" Style="ButtonStyle.Text" OnClickAsync="Release">Release</Button>
+            <Button Color="ButtonColor.Secondary" Style="ButtonStyle.Text" OnClickAsync="Cancel">Cancel</Button>
+        </section>
+
+    </div>
+}
+
+@code {
+
+    [CascadingParameter]
+    private BlazoredModalInstance ModalInstance { get; set; } = default!;
+
+    [CascadingParameter]
+    public IModalService ModalService { get; set; } = default!;
+
+    public ReleaseConfiguration? Configuration { get; set; } = new();
+    private string? _errorMessage = null;
+
+    private async Task ChooseCNCDataFile() {
+
+        if (Configuration is null) return;
+
+        var waitingDialog = ShowLoadingDialog("Waiting", "Select Report File.");
+
+        string selectedPath = "";
+        bool wasPicked = await FilePicker.PickFileAsync("Select CADCode WS Report File", "C:\\", new("CADCode WS Report", "xml"), (file) => {
+            selectedPath = file;
+        });
+
+        waitingDialog.Close();
+
+        if (!wasPicked || selectedPath == "") {
+            return;
+        }
+
+        Configuration.CNCDataFilePath = selectedPath;
+        StateHasChanged();
+
+    }
+    
+    private IModalReference ShowLoadingDialog(string title, string message) {
+
+        var options = new ModalOptions() {
+                HideHeader = true,
+                HideCloseButton = true,
+                DisableBackgroundCancel = true
+            };
+
+        return ModalService.Show<InformationDialog>("", options: options, parameters: new ModalParameters {
+            { "Type", InformationDialog.MessageType.Information },
+            { "Title", title},
+            { "Details", message }
+        });
+
+    }
+
+    private string TruncateString(string value) {
+
+        if (value.Length < 50) return value;
+
+        return $"...{value[(value.Length - 27)..]}";
+
+    }
+
+    private async Task Cancel() {
+
+        await ModalInstance.CancelAsync();
+
+    }
+
+    private async Task Release() {
+
+        _errorMessage = null;
+
+        if (Configuration is null) {
+            _errorMessage = "Could not load release configuration";
+            return;
+        }
+
+        var parameters = new ModalParameters() {
+            { "Configuration",  Configuration }
+        };
+
+        var options = new ModalOptions() {
+                HideHeader = true,
+                HideCloseButton = true,
+                DisableBackgroundCancel = true,
+                Size = ModalSize.Large
+            };
+
+        var dialog = ModalService.Show<ReleaseProgressDialog>("Order Release Progress", parameters, options);
+
+        _ = await dialog.Result;
+
+        await ModalInstance.CloseAsync();
+    }
+
+}

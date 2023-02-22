@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Shared;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 using Blazored.Modal.Services;
 using static ApplicationCore.Features.WorkOrders.AllWorkOrders.GetAllWorkOrders;
 

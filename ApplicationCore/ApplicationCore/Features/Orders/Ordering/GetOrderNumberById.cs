@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Infrastructure;
+﻿using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Infrastructure.Data;
 using Dapper;
 
@@ -17,7 +17,7 @@ internal class GetOrderNumberById {
         }
 
         public override async Task<Response<string>> Handle(Query query) {
-            
+
             using var connection = _factory.CreateConnection();
 
             string? name = await connection.QuerySingleOrDefaultAsync<string>("SELECT number FROM orders WHERE id = @Id", query);

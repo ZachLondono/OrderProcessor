@@ -1,7 +1,7 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Contracts;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Features.ProductPlanner.Contracts;
 using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
@@ -101,7 +101,7 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
 
         }
 
-        if (DoorQty > 0) { 
+        if (DoorQty > 0) {
 
             supplies.Add(Supply.DoorPull(DoorQty * Qty));
             supplies.AddRange(Supply.CrossCornerHinge(DoorHeight, DoorQty * Qty));

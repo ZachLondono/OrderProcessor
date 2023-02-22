@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Infrastructure;
+﻿using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Infrastructure.Data;
 using Dapper;
 
-namespace ApplicationCore.Features.List;
+namespace ApplicationCore.Features.Orders.List;
 
 public class GetOrderList {
 

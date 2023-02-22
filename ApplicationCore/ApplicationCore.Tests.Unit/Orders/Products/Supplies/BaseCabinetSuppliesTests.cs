@@ -71,11 +71,11 @@ public class BaseCabinetSuppliesTests {
         }
 
         var cabinet = _builder.WithDrawers(new() {
-                                    Quantity = drawerQty,
-                                    FaceHeight = Dimension.FromMillimeters(157),
-                                    BoxMaterial = CabinetDrawerBoxMaterial.SolidBirch,
-                                    SlideType = DrawerSlideType.UnderMount
-                                })
+            Quantity = drawerQty,
+            FaceHeight = Dimension.FromMillimeters(157),
+            BoxMaterial = CabinetDrawerBoxMaterial.SolidBirch,
+            SlideType = DrawerSlideType.UnderMount
+        })
                                 .WithInside(new(0, new RollOutOptions(positions, true, RollOutBlockPosition.None, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.SolidBirch), ShelfDepth.Default))
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
@@ -121,7 +121,7 @@ public class BaseCabinetSuppliesTests {
                                 .Build();
 
         Supply expectedSupplyA = Supply.UndermountSlide(cabinet.Qty * drawerQty, Dimension.FromMillimeters(457));
-        
+
         // Act
         var supplies = cabinet.GetSupplies();
 
@@ -144,11 +144,11 @@ public class BaseCabinetSuppliesTests {
         }
 
         var cabinet = _builder.WithDrawers(new() {
-                                    Quantity = drawerQty,
-                                    FaceHeight = Dimension.FromMillimeters(157),
-                                    BoxMaterial = CabinetDrawerBoxMaterial.SolidBirch,
-                                    SlideType = DrawerSlideType.SideMount
-                                })
+            Quantity = drawerQty,
+            FaceHeight = Dimension.FromMillimeters(157),
+            BoxMaterial = CabinetDrawerBoxMaterial.SolidBirch,
+            SlideType = DrawerSlideType.SideMount
+        })
                                 .WithInside(new(0, new RollOutOptions(positions, true, RollOutBlockPosition.None, DrawerSlideType.SideMount, CabinetDrawerBoxMaterial.SolidBirch), ShelfDepth.Default))
                                 .WithDoors(BaseCabinetDoors.TwoDoors())
                                 .WithWidth(Dimension.FromMillimeters(500))
@@ -171,7 +171,7 @@ public class BaseCabinetSuppliesTests {
 
     [Fact]
     public void Should_IncludeFourLegLevelersPerCabinet_WhenToeTypeIsLegLeveler() {
-        
+
         // Arrange
         var cabinet = _builder.WithDoors(BaseCabinetDoors.OneDoor(HingeSide.Left))
                                 .WithToeType(new LegLevelers())
@@ -195,7 +195,7 @@ public class BaseCabinetSuppliesTests {
     [InlineData(1, 4)]
     [InlineData(2, 8)]
     public void Should_IncludeFourShelfPegsPerAdjustableShelf(int adjShelfQty, int expectedPegQty) {
-        
+
         // Arrange
         var cabinet = _builder.WithDoors(BaseCabinetDoors.OneDoor(HingeSide.Left))
                                 .WithInside(new(adjShelfQty, 0, ShelfDepth.Default))

@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.List;
+﻿namespace ApplicationCore.Features.Orders.List;
 
 public class OrderListItem {
 

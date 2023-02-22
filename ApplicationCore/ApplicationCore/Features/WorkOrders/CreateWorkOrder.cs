@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Infrastructure;
+﻿using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Infrastructure.Data;
 using Dapper;
 
@@ -59,7 +59,7 @@ internal class CreateWorkOrder {
             trx.Commit();
             connection.Close();
             return Response<WorkOrder>.Success(workorder);
-            
+
         }
 
     }

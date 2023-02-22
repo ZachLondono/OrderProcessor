@@ -4,6 +4,7 @@ using ApplicationCore.Features.Companies.Domain;
 using ApplicationCore.Features.Companies.Domain.ValueObjects;
 using ApplicationCore.Features.Companies.Queries;
 using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 using FluentAssertions;
 using NSubstitute;
 

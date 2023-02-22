@@ -206,7 +206,7 @@ public class TallCabinetSuppliesTests {
             positions[i] = Dimension.Zero;
         }
 
-        var cabinet = _builder.WithInside(new(0, 0,0, new RollOutOptions(positions, true, rollOutBlockPosition, DrawerSlideType.SideMount, CabinetDrawerBoxMaterial.SolidBirch)))
+        var cabinet = _builder.WithInside(new(0, 0, 0, new RollOutOptions(positions, true, rollOutBlockPosition, DrawerSlideType.SideMount, CabinetDrawerBoxMaterial.SolidBirch)))
                                 .WithDoors(TallCabinetDoors.NoDoors())
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))

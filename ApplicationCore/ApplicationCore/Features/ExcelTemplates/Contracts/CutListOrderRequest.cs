@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.ExcelTemplates.Domain;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.ExcelTemplates.Contracts;
 

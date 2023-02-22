@@ -32,7 +32,7 @@ public class MDFDoorModel : ProductModel {
 
     [XmlElement("topRail")]
     public double TopRail { get; set; }
-    
+
     [XmlElement("bottomRail")]
     public double BottomRail { get; set; }
 

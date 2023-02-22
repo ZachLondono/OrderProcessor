@@ -1,6 +1,5 @@
-﻿using ApplicationCore.Features.List;
-using ApplicationCore.Features.Shared;
-using ApplicationCore.Infrastructure;
+﻿using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Orders.List;
 

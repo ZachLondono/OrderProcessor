@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.ProductPlanner.Contracts;
-using ApplicationCore.Features.ProductPlanner.Domain;
-using ApplicationCore.Features.ProductPlanner.Services;
+﻿using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Contracts;
+using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Domain;
+using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Services;
 using NSubstitute;
 
 namespace ApplicationCore.Tests.Unit.ProductPlanner;
@@ -207,6 +207,6 @@ public class PPJobConverterTests {
     }
 
     private static PPProduct CreateProduct(string room = "", string name = "", string catalog = "", string materialType = "", string doorType = "", string hardwareType = "", Dictionary<string, string>? overrideParameters = null)
-        => new(Guid.NewGuid(), room, name, 1, catalog, materialType, doorType, hardwareType, "", new Dictionary<string, PPMaterial>(), new Dictionary<string,PPMaterial>(), new Dictionary<string,string>(), overrideParameters ?? new(), new Dictionary<string, string>());
+        => new(Guid.NewGuid(), room, name, 1, catalog, materialType, doorType, hardwareType, "", new Dictionary<string, PPMaterial>(), new Dictionary<string, PPMaterial>(), new Dictionary<string, string>(), overrideParameters ?? new(), new Dictionary<string, string>());
 
 }

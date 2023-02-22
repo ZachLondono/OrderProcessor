@@ -1,7 +1,7 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Contracts;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Features.ProductPlanner.Contracts;
 using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
@@ -43,7 +43,7 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPP
                         CabinetSide rightSide, CabinetSide leftSide, string comment,
                         Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, DrawerSlideType slideType, CabinetDrawerBoxMaterial drawerBoxMaterial, IToeType toeType)
         => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment, drawerFaceHeight, trashPulloutConfiguration, slideType, drawerBoxMaterial, toeType);
-    
+
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
         yield return new PPProduct(Id, Room, "BT1D1D", ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new Dictionary<string, string>());

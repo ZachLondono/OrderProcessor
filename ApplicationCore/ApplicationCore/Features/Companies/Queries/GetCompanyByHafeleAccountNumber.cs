@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Companies.Domain;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Infrastructure.Data;
 
 namespace ApplicationCore.Features.Companies.Queries;
