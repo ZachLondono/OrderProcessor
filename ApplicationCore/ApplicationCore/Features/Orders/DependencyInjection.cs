@@ -15,12 +15,15 @@ using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
+using ApplicationCore.Features.Orders.Data;
 
 namespace ApplicationCore.Features.Orders;
 
 public static class DependencyInjection {
 
     public static IServiceCollection AddOrdering(this IServiceCollection services, IConfiguration configuration) {
+
+        services.AddTransient<IOrderingDbConnectionFactory, SqliteOrderingDbConnectionFactory>();
 
         services.AddOrderLoading(configuration);
         services.AddSingleton<ProductBuilderFactory>();

@@ -1,9 +1,9 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using ApplicationCore.Features.Orders.Data;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.State.DataModels;
 using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Infrastructure.Data;
 using Dapper;
 
 namespace ApplicationCore.Features.Orders.Shared.State;
@@ -14,9 +14,9 @@ public class GetOrderById {
 
     public class Handler : QueryHandler<Query, Order> {
 
-        private readonly IDbConnectionFactory _factory;
+        private readonly IOrderingDbConnectionFactory _factory;
 
-        public Handler(IDbConnectionFactory factory) {
+        public Handler(IOrderingDbConnectionFactory factory) {
             _factory = factory;
         }
 

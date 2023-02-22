@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Infrastructure.Data;
+﻿using ApplicationCore.Features.Orders.Data;
+using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 
 namespace ApplicationCore.Features.Orders.List;
@@ -10,9 +10,9 @@ public class GetOrderList {
 
     public class Handler : QueryHandler<Query, IEnumerable<OrderListItem>> {
 
-        private readonly IDbConnectionFactory _factory;
+        private readonly IOrderingDbConnectionFactory _factory;
 
-        public Handler(IDbConnectionFactory factory) {
+        public Handler(IOrderingDbConnectionFactory factory) {
             _factory = factory;
         }
 

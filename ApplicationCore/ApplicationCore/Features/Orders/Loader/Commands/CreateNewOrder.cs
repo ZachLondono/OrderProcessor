@@ -1,24 +1,25 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using ApplicationCore.Features.Orders.Data;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Notifications;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Infrastructure.Data;
 using Dapper;
 using System.Data;
 using System.Diagnostics;
 
 namespace ApplicationCore.Features.Orders.Loader.Commands;
+
 public class CreateNewOrder {
 
     public record Command(string Source, string Number, string Name, Customer Customer, Guid VendorId, string Comment, DateTime OrderDate, ShippingInfo Shipping, BillingInfo Billing, decimal Tax, decimal PriceAdjustment, bool Rush, IReadOnlyDictionary<string, string> Info, IEnumerable<IProduct> Products, IEnumerable<AdditionalItem> AdditionalItems, Guid? OrderId = null) : ICommand<Order>;
 
     public class Handler : CommandHandler<Command, Order> {
 
-        private readonly IDbConnectionFactory _factory;
+        private readonly IOrderingDbConnectionFactory _factory;
         private readonly IBus _bus;
 
-        public Handler(IDbConnectionFactory factory, IBus bus) {
+        public Handler(IOrderingDbConnectionFactory factory, IBus bus) {
             _factory = factory;
             _bus = bus;
         }

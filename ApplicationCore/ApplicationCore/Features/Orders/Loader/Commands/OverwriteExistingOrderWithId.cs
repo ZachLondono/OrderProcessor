@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using ApplicationCore.Features.Orders.Data;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Infrastructure.Data;
 using Dapper;
 
 namespace ApplicationCore.Features.Orders.Loader.Commands;
@@ -14,9 +14,9 @@ public class OverwriteExistingOrderWithId {
     public class Handler : CommandHandler<Command, Order> {
 
         private readonly IBus _bus;
-        private readonly IDbConnectionFactory _factory;
+        private readonly IOrderingDbConnectionFactory _factory;
 
-        public Handler(IBus bus, IDbConnectionFactory factory) {
+        public Handler(IBus bus, IOrderingDbConnectionFactory factory) {
             _bus = bus;
             _factory = factory;
         }
