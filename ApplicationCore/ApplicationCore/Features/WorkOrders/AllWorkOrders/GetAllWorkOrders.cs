@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Shared.Contracts;
+using ApplicationCore.Features.WorkOrders.Shared;
 using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Infrastructure.Data;
 using Dapper;

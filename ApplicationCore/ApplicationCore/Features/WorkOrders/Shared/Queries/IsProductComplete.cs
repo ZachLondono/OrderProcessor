@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Infrastructure.Data;
+﻿using ApplicationCore.Features.WorkOrders.Data;
+using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 
-namespace ApplicationCore.Features.WorkOrders;
+namespace ApplicationCore.Features.WorkOrders.Shared.Queries;
 
 internal class IsProductComplete {
 
@@ -10,9 +10,9 @@ internal class IsProductComplete {
 
     public class Handler : QueryHandler<Query, bool> {
 
-        public readonly IDbConnectionFactory _factory;
+        public readonly IWorkOrdersDbConnectionFactory _factory;
 
-        public Handler(IDbConnectionFactory factory) {
+        public Handler(IWorkOrdersDbConnectionFactory factory) {
             _factory = factory;
         }
 
@@ -35,7 +35,7 @@ internal class IsProductComplete {
                 CompleteStatus = Status.Complete
             });
 
-            var isComplete = (result.Total > 0) && (result.InComplete == 0);
+            var isComplete = result.Total > 0 && result.InComplete == 0;
 
             return Response<bool>.Success(isComplete);
 

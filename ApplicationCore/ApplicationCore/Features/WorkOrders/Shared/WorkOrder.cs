@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.WorkOrders;
+﻿namespace ApplicationCore.Features.WorkOrders.Shared;
 
 public class WorkOrder {
 

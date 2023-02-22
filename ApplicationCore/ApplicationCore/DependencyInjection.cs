@@ -7,7 +7,6 @@ using Blazored.Modal;
 using ApplicationCore.Infrastructure;
 using ApplicationCore.Features.Orders.List;
 using ApplicationCore.Features.Companies.Queries;
-using ApplicationCore.Features.WorkOrders;
 using ApplicationCore.Pages.OrderDetails;
 using ApplicationCore.Features.WorkOrders.AllWorkOrders;
 using ApplicationCore.Features.Orders;
@@ -15,6 +14,9 @@ using ApplicationCore.Features.Orders.Details.OrderRelease;
 using ApplicationCore.Features.Orders.Details.OrderExport;
 using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Features.WorkOrders.BarCodeScanning;
+using ApplicationCore.Features.WorkOrders.OrderTaskList;
+using ApplicationCore.Features.WorkOrders;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 

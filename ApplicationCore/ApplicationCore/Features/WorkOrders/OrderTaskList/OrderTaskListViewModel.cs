@@ -1,8 +1,11 @@
 ﻿using ApplicationCore.Features.Shared;
+using ApplicationCore.Features.WorkOrders.Shared;
+using ApplicationCore.Features.WorkOrders.Shared.Commands;
 using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Infrastructure.UI;
 using Blazored.Modal.Services;
-namespace ApplicationCore.Features.WorkOrders;
+
+namespace ApplicationCore.Features.WorkOrders.OrderTaskList;
 
 public class OrderTaskListViewModel {
 

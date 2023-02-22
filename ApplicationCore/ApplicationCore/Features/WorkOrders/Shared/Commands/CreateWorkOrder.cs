@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Infrastructure.Data;
+﻿using ApplicationCore.Features.WorkOrders.Data;
+using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 
-namespace ApplicationCore.Features.WorkOrders;
+namespace ApplicationCore.Features.WorkOrders.Shared.Commands;
 
 internal class CreateWorkOrder {
 
@@ -10,9 +10,9 @@ internal class CreateWorkOrder {
 
     public class Handler : CommandHandler<Command, WorkOrder> {
 
-        public readonly IDbConnectionFactory _factory;
+        public readonly IWorkOrdersDbConnectionFactory _factory;
 
-        public Handler(IDbConnectionFactory factory) {
+        public Handler(IWorkOrdersDbConnectionFactory factory) {
             _factory = factory;
         }
 

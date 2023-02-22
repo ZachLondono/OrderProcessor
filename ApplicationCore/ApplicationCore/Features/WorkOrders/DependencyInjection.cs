@@ -1,4 +1,7 @@
 ﻿using ApplicationCore.Features.Shared.Contracts;
+using ApplicationCore.Features.WorkOrders.Data;
+using ApplicationCore.Features.WorkOrders.Shared.Commands;
+using ApplicationCore.Features.WorkOrders.Shared.Queries;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,6 +10,8 @@ namespace ApplicationCore.Features.WorkOrders;
 public static class DependencyInjection {
 
     public static IServiceCollection AddWorkOrders(this IServiceCollection services) {
+
+        services.AddTransient<IWorkOrdersDbConnectionFactory, SqliteWorkOrdersDbConnectionFactory>();
 
         services.AddTransient<Manufacturing.CreateWorkOrder>(sp => {
 

@@ -1,8 +1,9 @@
-﻿using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Infrastructure.Data;
+﻿using ApplicationCore.Features.WorkOrders.Data;
+using ApplicationCore.Features.WorkOrders.Shared;
+using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 
-namespace ApplicationCore.Features.WorkOrders;
+namespace ApplicationCore.Features.WorkOrders.BarCodeScanning;
 
 public class GetWorkOrderById {
 
@@ -10,9 +11,9 @@ public class GetWorkOrderById {
 
     public class Handler : CommandHandler<Query, WorkOrder> {
 
-        public readonly IDbConnectionFactory _factory;
+        public readonly IWorkOrdersDbConnectionFactory _factory;
 
-        public Handler(IDbConnectionFactory factory) {
+        public Handler(IWorkOrdersDbConnectionFactory factory) {
             _factory = factory;
         }
 

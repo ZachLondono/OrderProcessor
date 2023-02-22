@@ -1,13 +1,9 @@
 ﻿using ApplicationCore.Features.Shared.Domain;
+using ApplicationCore.Features.WorkOrders.Shared;
+using ApplicationCore.Features.WorkOrders.Shared.Commands;
 using ApplicationCore.Infrastructure.Bus;
-using DocumentFormat.OpenXml.Presentation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ApplicationCore.Features.WorkOrders;
+namespace ApplicationCore.Features.WorkOrders.BarCodeScanning;
 
 internal class BarCodeScanningDialogViewModel {
 
