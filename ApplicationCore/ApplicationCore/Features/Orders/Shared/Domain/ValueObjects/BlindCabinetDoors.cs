@@ -7,6 +7,10 @@ public record BlindCabinetDoors {
     public int Quantity { get; init; }
     public HingeSide HingeSide { get; init; }
 
+    public static BlindCabinetDoors OneDoor(HingeSide hingeSide) => new(hingeSide);
+
+    public static BlindCabinetDoors TwoDoors() => new(HingeSide.NotApplicable);
+
     public BlindCabinetDoors(HingeSide hingeSide = HingeSide.NotApplicable) {
 
         if (hingeSide == HingeSide.NotApplicable) {
