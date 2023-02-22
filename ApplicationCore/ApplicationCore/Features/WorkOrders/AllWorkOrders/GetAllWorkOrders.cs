@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Shared.Contracts;
+using ApplicationCore.Features.WorkOrders.Data;
 using ApplicationCore.Features.WorkOrders.Shared;
 using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Infrastructure.Data;
 using Dapper;
 
 namespace ApplicationCore.Features.WorkOrders.AllWorkOrders;
@@ -12,10 +12,10 @@ public class GetAllWorkOrders {
 
     public class Handler : CommandHandler<Query, IEnumerable<Model>> {
 
-        private readonly IDbConnectionFactory _factory;
+        private readonly IWorkOrdersDbConnectionFactory _factory;
         private readonly Ordering.GetOrderNumberById _getOrderNumberById;
 
-        public Handler(IDbConnectionFactory factory, Ordering.GetOrderNumberById getOrderNumberById) {
+        public Handler(IWorkOrdersDbConnectionFactory factory, Ordering.GetOrderNumberById getOrderNumberById) {
             _factory = factory;
             _getOrderNumberById = getOrderNumberById;
         }
