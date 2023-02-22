@@ -30,7 +30,7 @@ public class CreateCompany {
                                         VALUES
                                             (@Id, @Name, @PhoneNumber, @InvoiceEmail, @ConfirmationEmail, @ContactName);
                                         INSERT INTO addresses
-                                            (companyid, line1, line2, line3, city, state, zip, country)
+                                            (id, line1, line2, line3, city, state, zip, country)
                                         VALUES
                                             (@Id, @Line1, @Line2, @Line3, @City, @State, @Zip, @Country);
                                     COMMIT;";

@@ -1,10 +1,11 @@
 ﻿using ApplicationCore.Features.Orders.Data;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.State.DataModels;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
+using Microsoft.Extensions.Logging;
+using System.Data;
 
 namespace ApplicationCore.Features.Orders.Shared.State;
 
@@ -24,33 +25,23 @@ public class GetOrderById {
 
             using var connection = _factory.CreateConnection();
 
-            const string itemQuery = "SELECT id, description, price FROM additionalitems WHERE orderid = @OrderId;";
-            var itemData = await connection.QueryAsync<AdditionalItemDataModel>(itemQuery, request);
+            var orderData = await connection.QuerySingleAsync<OrderDataModel>(OrderDataModel.GetQueryById(), new { Id = request.OrderId });
+            
+            var itemData = await connection.QueryAsync<AdditionalItemDataModel>(AdditionalItemDataModel.GetQueryByOrderId(), request);
             var items = itemData.Select(i => i.AsDomainModel());
 
-            const string query = @"SELECT
-                                    number, name, customername, vendorid, customercomment, orderdate, info, tax, priceadjustment, rush, shippingmethod, shippingcontact, shippingphonenumber, shippingaddressid, invoiceemail, billingphonenumber, billingaddressid
-                                FROM orders WHERE id = @OrderId;";
-            var data = await connection.QuerySingleAsync<OrderDataModel>(query, request);
+            var products = GetProducts(request.OrderId, connection);
 
-            const string shippingAddressQuery = @"SELECT
-                                                    line1, line2, line3, city, state, zip, country
-                                                  FROM shippingaddresses WHERE id = @AddressId";
-            var shippingAddress = await connection.QuerySingleAsync<Address>(shippingAddressQuery, new {
-                AddressId = data.ShippingAddressId
-            });
+            var order = orderData.AsDomainModel(request.OrderId, products, items);
 
-            const string billingAddressQuery = @"SELECT
-                                                    line1, line2, line3, city, state, zip, country
-                                                  FROM billingaddresses WHERE id = @AddressId";
-            var billingAddress = await connection.QuerySingleAsync<Address>(billingAddressQuery, new {
-                AddressId = data.BillingAddressId
-            });
+            return Response<Order>.Success(order);
 
-            var order = data.AsDomainModel(request.OrderId, shippingAddress, billingAddress, new List<IProduct>(), items);
+        }
 
-            return new(order);
+        private IEnumerable<IProduct> GetProducts(Guid orderId, IDbConnection connection) {
 
+            return Enumerable.Empty<IProduct>();
+            
         }
 
     }

@@ -12,4 +12,6 @@ public class AdditionalItemDataModel {
 
     public AdditionalItem AsDomainModel() => new AdditionalItem(Id, Description, Price);
 
+    public static string GetQueryByOrderId() => "SELECT id, description, price FROM additionalitems WHERE orderid = @OrderId;";
+
 }

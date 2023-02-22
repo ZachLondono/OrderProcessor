@@ -27,7 +27,7 @@ public class UpdateCompany {
                                         WHERE id = @Id;
                                         UPDATE addresses
                                         SET line1 = @Line1, line2 = @Line2, line3 = @Line3, city = @City, state = @State, zip = @Zip, country = @Country
-                                        WHERE companyid = @Id;
+                                        WHERE id = @Id;
                                     COMMIT;";
 
             await connection.ExecuteAsync(command, new {

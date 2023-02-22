@@ -7,44 +7,40 @@ namespace ApplicationCore.Features.Orders.Shared.State.DataModels;
 public class OrderDataModel {
 
     public string Source { get; set; } = string.Empty;
-
     public string Number { get; set; } = string.Empty;
-
     public string Name { get; set; } = string.Empty;
-
     public string CustomerName { get; set; } = string.Empty;
-
     public Guid VendorId { get; set; }
-
     public string CustomerComment { get; set; } = string.Empty;
-
     public DateTime OrderDate { get; set; }
-
     public decimal Tax { get; set; }
-
     public decimal PriceAdjustment { get; set; }
-
     public bool Rush { get; set; }
-
     public IDictionary<string, string> Info { get; set; } = new Dictionary<string, string>();
 
     public string ShippingMethod { get; set; } = string.Empty;
-
     public decimal ShippingPrice { get; set; }
-
     public string ShippingContact { get; set; } = string.Empty;
-
     public string ShippingPhoneNumber { get; set; } = string.Empty;
-
-    public Guid ShippingAddressId { get; set; }
+    public string ShippingLine1 { get; set; } = string.Empty;
+    public string ShippingLine2 { get; set; } = string.Empty;
+    public string ShippingLine3 { get; set; } = string.Empty;
+    public string ShippingCity { get; set; } = string.Empty;
+    public string ShippingState { get; set; } = string.Empty;
+    public string ShippingZip { get; set; } = string.Empty;
+    public string ShippingCountry { get; set; } = string.Empty;
 
     public string? InvoiceEmail { get; set; } = null;
-
     public string BillingPhoneNumber { get; set; } = string.Empty;
+    public string BillingLine1 { get; set; } = string.Empty;
+    public string BillingLine2 { get; set; } = string.Empty;
+    public string BillingLine3 { get; set; } = string.Empty;
+    public string BillingCity { get; set; } = string.Empty;
+    public string BillingState { get; set; } = string.Empty;
+    public string BillingZip { get; set; } = string.Empty;
+    public string BillingCountry { get; set; } = string.Empty;
 
-    public Guid BillingAddressId { get; set; }
-
-    public Order AsDomainModel(Guid orderId, Address shippingAddress, Address billingAddress, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> items) {
+    public Order AsDomainModel(Guid orderId, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> items) {
 
         ShippingInfo shippingInfo = new() {
             Contact = ShippingContact,
@@ -52,13 +48,13 @@ public class OrderDataModel {
             PhoneNumber = ShippingPhoneNumber,
             Price = ShippingPrice,
             Address = new() {
-                Line1 = shippingAddress.Line1,
-                Line2 = shippingAddress.Line2,
-                Line3 = shippingAddress.Line3,
-                City = shippingAddress.City,
-                State = shippingAddress.State,
-                Zip = shippingAddress.Zip,
-                Country = shippingAddress.Country,
+                Line1 = ShippingLine1,
+                Line2 = ShippingLine2,
+                Line3 = ShippingLine3,
+                City = ShippingCity,
+                State = ShippingState,
+                Zip = ShippingZip,
+                Country = ShippingCountry,
             }
         };
 
@@ -70,13 +66,13 @@ public class OrderDataModel {
             InvoiceEmail = InvoiceEmail,
             PhoneNumber = BillingPhoneNumber,
             Address = new() {
-                Line1 = billingAddress.Line1,
-                Line2 = billingAddress.Line2,
-                Line3 = billingAddress.Line3,
-                City = billingAddress.City,
-                State = billingAddress.State,
-                Zip = billingAddress.Zip,
-                Country = billingAddress.Country,
+                Line1 = BillingLine1,
+                Line2 = BillingLine2,
+                Line3 = BillingLine3,
+                City = BillingCity,
+                State = BillingState,
+                Zip = BillingZip,
+                Country = BillingCountry,
             }
         };
 
@@ -84,4 +80,43 @@ public class OrderDataModel {
 
     }
 
+    public static string GetQueryById()
+        => @"SELECT
+
+                orders.id,
+                orders.number,
+                orders.name,
+                orders.customer_name AS CustomerName,
+                orders.vendor_id AS VendorId,
+                orders.customer_comment AS CustomerComment,
+                orders.order_date AS OrderDate,
+                orders.info,
+                orders.tax,
+                orders.price_adjustment AS PriceAdjustment,
+                orders.rush,
+                orders.shipping_method AS ShippingMethod,
+                orders.shipping_contact AS ShippingContact,
+                orders.shipping_phonenumber AS ShippingPhoneNumber,
+                shipping_address.line1 AS ShippingLine1,
+                shipping_address.line2 AS ShippingLine2,
+                shipping_address.line3 AS ShippingLine3,
+                shipping_address.city AS ShippingCity,
+                shipping_address.state AS ShippingState,
+                shipping_address.zip AS ShippingZip,
+                shipping_address.country AS ShippingCountry,
+                orders.invoice_email AS InvoiceEmail,
+                orders.billing_phonenumber AS BillingPhoneNumber,
+                billing_address.line1 AS BillingLine1,
+                billing_address.line2 AS BillingLine2,
+                billing_address.line3 AS BillingLine3,
+                billing_address.city AS BillingCity,
+                billing_address.state AS BillingState,
+                billing_address.zip AS BillingZip,
+                billing_address.country AS BillingCountry
+
+            FROM orders
+                JOIN addresses AS shipping_address ON shipping_address.id = orders.shipping_address_id
+                JOIN addresses AS billing_address ON billing_address.id = orders.billing_address_id
+            WHERE
+                orders.id = @Id;";
 }

@@ -24,9 +24,9 @@ public class GetOrderList {
                                     id,
                                     name,
                                     number,
-                                    orderdate,
-                                    customername,
-                                    vendorid,
+                                    order_date AS OrderDate,
+                                    customer_name AS CustomerName,
+                                    vendor_id AS VendorId,
                                     0 as itemcount
                                 FROM orders;";
 
