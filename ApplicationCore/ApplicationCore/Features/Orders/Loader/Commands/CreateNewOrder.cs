@@ -7,7 +7,6 @@ using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using System.Data;
-using System.Diagnostics;
 
 namespace ApplicationCore.Features.Orders.Loader.Commands;
 
@@ -52,18 +51,25 @@ public partial class CreateNewOrder {
 
                 trx.Commit();
 
+                await _bus.Publish(new OrderCreatedNotification() {
+                    Order = order
+                });
+
+                return new(order);
+
             } catch (Exception ex) {
+                
                 trx.Rollback();
-                Debug.WriteLine(ex);
+                _logger.LogError(ex, "Exception thrown while creating order");
+
+                return Response<Order>.Error(new() {
+                    Title = "Could not create order",
+                    Details = $"An exception was thrown while trying to create order, check logs for detauls - {ex.Message}"
+                });
+
             } finally {
                 connection.Close();
-            }
-
-            await _bus.Publish(new OrderCreatedNotification() {
-                Order = order
-            });
-
-            return new(order);
+            }        
 
         }
 
