@@ -41,4 +41,8 @@
     <Exec Command="(cd ../ &amp;&amp; tailwindcss.exe -i ./DesktopHost/Styles/input.css -o ./DesktopHost/wwwroot/css/app.css)" />
   </Target>
 
+  <Target Name="FullClean" AfterTargets="Clean">
+      <RemoveDir Directories="$(OUTDIR)" />
+  </Target>
+
 </Project>
