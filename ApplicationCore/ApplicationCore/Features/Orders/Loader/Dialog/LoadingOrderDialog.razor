@@ -114,7 +114,7 @@
 
                 _messages.Add(new OrderLoadMessage() {
                     Severity = MessageSeverity.Error,
-                    Message = error.Title
+                    Message = error.Title + " - " + error.Details
                 });
                 _state = State.Error;
 
