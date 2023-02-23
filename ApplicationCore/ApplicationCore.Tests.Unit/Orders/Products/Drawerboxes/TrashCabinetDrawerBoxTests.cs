@@ -23,7 +23,7 @@ public class TrashCabinetDrawerBoxTests {
 
         // Arrange
         var cabinet = new TrashCabinetBuilder()
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithQty(cabQty)
                             .WithWidth(Dimension.FromMillimeters(456))
                             .WithHeight(Dimension.FromMillimeters(876))
@@ -46,7 +46,7 @@ public class TrashCabinetDrawerBoxTests {
 
         var cabinet = new TrashCabinetBuilder()
                             .WithSlideType(slideType)
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithQty(1)
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
@@ -70,7 +70,7 @@ public class TrashCabinetDrawerBoxTests {
 
         var cabinet = new TrashCabinetBuilder()
                             .WithDrawerFaceHeight(Dimension.FromMillimeters(drawerFaceHeight))
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithQty(1)
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(876))
@@ -101,7 +101,7 @@ public class TrashCabinetDrawerBoxTests {
 
         var cabinet = new TrashCabinetBuilder()
                             .WithSlideType(slideType)
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithQty(1)
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(876))

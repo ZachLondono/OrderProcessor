@@ -11,4 +11,6 @@ public record VerticalDrawerBank {
 
     public int DrawerQty => FaceHeights.Count();
 
+    public bool Any() => FaceHeights.Any();
+
 }

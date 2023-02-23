@@ -97,7 +97,9 @@ public class MDFDoorModel : ProductModel {
             panelDrop = Dimension.FromMillimeters(value);
         }
 
-        return MDFDoorProduct.Create(unitPrice, Room, Qty, GetProductNumber(), type, height, width, Note, Material, FramingBead, EdgeProfile, frameSize, panelDrop, Finish);
+        Dimension thickness = Dimension.FromInches(0.75);
+
+        return MDFDoorProduct.Create(unitPrice, Room, Qty, GetProductNumber(), type, height, width, Note, frameSize, Material, thickness, FramingBead, EdgeProfile, PanelDetail, panelDrop, Finish);
 
     }
 }

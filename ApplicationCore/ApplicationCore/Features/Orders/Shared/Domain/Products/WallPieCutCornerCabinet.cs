@@ -14,7 +14,7 @@ internal class WallPieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
     public HingeSide HingeSide { get; }
     public Dimension ExtendedDoor { get; }
 
-    public override string Description => "Pie Cut Corner Wall Cabinet";
+    public override string GetDescription() => "Pie Cut Corner Wall Cabinet";
 
     public Dimension DoorHeight => Height - DoorGaps.TopGap;
 
@@ -69,15 +69,15 @@ internal class WallPieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
         Dimension leftWidth = Width - RightDepth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
         MDFDoor leftDoor = getBuilder().WithQty(Qty)
                                         .WithProductNumber(ProductNumber)
-                                        .WithFramingBead(MDFDoorOptions.StyleName)
-                                        .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                                        .WithFramingBead(MDFDoorOptions.FramingBead)
+                                        .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
                                         .Build(height, leftWidth);
 
         Dimension rightWidth = RightWidth - Depth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
         MDFDoor rightDoor = getBuilder().WithQty(Qty)
                                         .WithProductNumber(ProductNumber)
-                                        .WithFramingBead(MDFDoorOptions.StyleName)
-                                        .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                                        .WithFramingBead(MDFDoorOptions.FramingBead)
+                                        .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
                                         .Build(height, rightWidth);
 
         return new List<MDFDoor>() { leftDoor, rightDoor };

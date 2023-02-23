@@ -88,12 +88,12 @@ internal static class AllmoxyXMLOrderProviderHelpers {
         _ => ShelfDepth.Default
     };
 
-    public static IToeType GetToeType(string name) => name switch {
-        "Leg Levelers" => new LegLevelers(),
-        "Full Height Sides" => new FurnitureBase(),
-        "No Toe" => new NoToe(),
-        "Notched" => new Notched(),
-        _ => new LegLevelers()
+    public static ToeType GetToeType(string name) => name switch {
+        "Leg Levelers" => ToeType.LegLevelers,
+        "Full Height Sides" => ToeType.FurnitureBase,
+        "No Toe" => ToeType.NoToe,
+        "Notched" => ToeType.Notched,
+        _ => ToeType.LegLevelers
     };
 
     public static decimal StringToMoney(string str) {

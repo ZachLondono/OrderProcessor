@@ -13,7 +13,7 @@ internal class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
     public ShelfDepth ShelfDepth { get; private set; }
     public BlindSide BlindSide { get; private set; }
     public Dimension BlindWidth { get; private set; }
-    public IToeType ToeType { get; private set; }
+    public ToeType ToeType { get; private set; }
 
     public BlindBaseCabinetBuilder() {
         Doors = new();
@@ -21,7 +21,7 @@ internal class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
         ShelfDepth = ShelfDepth.Default;
         BlindSide = BlindSide.Left;
         BlindWidth = Dimension.Zero;
-        ToeType = new NoToe();
+        ToeType = ToeType.NoToe;
         Drawers = new() {
             BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
             FaceHeight = Dimension.Zero,
@@ -60,7 +60,7 @@ internal class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
         return this;
     }
 
-    public BlindBaseCabinetBuilder WithToeType(IToeType toeType) {
+    public BlindBaseCabinetBuilder WithToeType(ToeType toeType) {
         ToeType = toeType;
         return this;
     }

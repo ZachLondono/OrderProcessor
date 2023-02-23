@@ -65,7 +65,7 @@ internal class PackingListHandler {
                                 .Select(b => new DrawerBoxItem() {
                                     Line = b.ProductNumber,
                                     Qty = b.Qty,
-                                    Description = b.Description,
+                                    Description = b.GetDescription(),
                                     Height = b.Height.AsInchFraction().ToString(),
                                     Width = b.Width.AsInchFraction().ToString(),
                                     Depth = b.Depth.AsInchFraction().ToString()
@@ -77,7 +77,7 @@ internal class PackingListHandler {
                         .Select(b => new CabinetItem() {
                             Line = b.ProductNumber,
                             Qty = b.Qty,
-                            Description = b.Description,
+                            Description = b.GetDescription(),
                             Height = b.Height.AsInchFraction().ToString(),
                             Width = b.Width.AsInchFraction().ToString(),
                             Depth = b.Depth.AsInchFraction().ToString()

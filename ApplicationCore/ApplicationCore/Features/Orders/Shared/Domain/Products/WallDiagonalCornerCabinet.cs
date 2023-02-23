@@ -15,7 +15,7 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
     public int AdjustableShelves { get; }
     public Dimension ExtendedDoor { get; }
 
-    public override string Description => "Diagonal Corner Wall Cabinet";
+    public override string GetDescription() => "Diagonal Corner Wall Cabinet";
 
     public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap;
 
@@ -87,8 +87,8 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
 
         var door = getBuilder().WithQty(DoorQty * Qty)
                                 .WithProductNumber(ProductNumber)
-                                .WithFramingBead(MDFDoorOptions.StyleName)
-                                .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                                .WithFramingBead(MDFDoorOptions.FramingBead)
+                                .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
                                 .Build(height, width);
 
         return new List<MDFDoor>() { door };

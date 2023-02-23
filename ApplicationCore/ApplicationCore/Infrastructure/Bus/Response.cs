@@ -46,6 +46,11 @@ public class Response<TSuccess> {
         }
     }
 
+    public TOut Match<TOut>(Func<TSuccess, TOut> onSuccess, Func<Error, TOut> onError) {
+        if (_isSuccess) return onSuccess(_value!);
+        return onError(_error!);
+    }
+
     public void OnSuccess(Action<TSuccess> onSuccess) {
         if (!_isSuccess || _value is null) return;
         onSuccess(_value!);

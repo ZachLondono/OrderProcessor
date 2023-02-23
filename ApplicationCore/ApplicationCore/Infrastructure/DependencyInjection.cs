@@ -25,8 +25,6 @@ public static class DependencyInjection {
 
         SqlMapper.RemoveTypeMap(typeof(decimal));
         SqlMapper.AddTypeHandler(new SqliteDecimalTypeHandler());
-        SqlMapper.AddTypeHandler(new SqliteFixedDivdersCountsTypeHandler());
-        SqlMapper.AddTypeHandler(new SqliteUBoxDimensionTypeHandler());
         SqlMapper.AddTypeHandler(new SqliteDimensionTypeHandler());
         SqlMapper.AddTypeHandler(new SqliteDictionaryEnumerableTypeHandler());
         SqlMapper.AddTypeHandler(new SqliteGuidTypeHandler());

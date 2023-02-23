@@ -3,7 +3,7 @@ using System.Text.Json;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using Dapper;
 
-namespace ApplicationCore.Infrastructure.Data;
+namespace ApplicationCore.Features.Orders.Data;
 
 public class SqliteFixedDivdersCountsTypeHandler : SqlMapper.TypeHandler<FixedDivdersCounts?> {
 

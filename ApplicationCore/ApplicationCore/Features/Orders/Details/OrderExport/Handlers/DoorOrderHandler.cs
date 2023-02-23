@@ -82,7 +82,7 @@ internal class DoorOrderHandler {
             FramingBead = d.Door.FramingBead,
             EdgeDetail = d.Door.EdgeDetail,
             PanelDrop = d.Door.PanelDrop.AsMillimeters(),
-            PanelDetail = "Flat",
+            PanelDetail = d.Door.PanelDetail,
             FinishType = d.Door.PaintColor is null ? "None" : "Std. Color",
             FinishColor = d.Door.PaintColor ?? ""
         });

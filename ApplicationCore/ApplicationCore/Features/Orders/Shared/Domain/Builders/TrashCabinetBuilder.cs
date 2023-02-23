@@ -11,14 +11,14 @@ internal class TrashCabinetBuilder : CabinetBuilder<TrashCabinet> {
     public DrawerSlideType SlideType { get; private set; }
     public CabinetDrawerBoxMaterial DrawerBoxMaterial { get; private set; }
     public TrashPulloutConfiguration TrashPulloutConfiguration { get; private set; }
-    public IToeType ToeType { get; private set; }
+    public ToeType ToeType { get; private set; }
 
     public TrashCabinetBuilder() {
         DrawerFaceHeight = Dimension.FromMillimeters(157);
         SlideType = DrawerSlideType.UnderMount;
         DrawerBoxMaterial = CabinetDrawerBoxMaterial.SolidBirch;
         TrashPulloutConfiguration = TrashPulloutConfiguration.OneCan;
-        ToeType = new LegLevelers();
+        ToeType = ToeType.LegLevelers;
     }
 
     public TrashCabinetBuilder WithDrawerFaceHeight(Dimension drawerFaceHeight) {
@@ -26,7 +26,7 @@ internal class TrashCabinetBuilder : CabinetBuilder<TrashCabinet> {
         return this;
     }
 
-    public TrashCabinetBuilder WithToeType(IToeType toeType) {
+    public TrashCabinetBuilder WithToeType(ToeType toeType) {
         ToeType = toeType;
         return this;
     }

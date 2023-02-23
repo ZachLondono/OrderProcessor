@@ -12,9 +12,9 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPP
     public DrawerSlideType SlideType { get; set; }
     public CabinetDrawerBoxMaterial DrawerBoxMaterial { get; set; }
     public TrashPulloutConfiguration TrashPulloutConfiguration { get; set; }
-    public IToeType ToeType { get; }
+    public ToeType ToeType { get; }
 
-    public override string Description => "Trash Pullout Cabinet";
+    public override string GetDescription() => "Trash Pullout Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
@@ -28,7 +28,7 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPP
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, DrawerSlideType slideType, CabinetDrawerBoxMaterial drawerBoxMaterial, IToeType toeType)
+                        Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, DrawerSlideType slideType, CabinetDrawerBoxMaterial drawerBoxMaterial, ToeType toeType)
         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment) {
         DrawerFaceHeight = drawerFaceHeight;
         TrashPulloutConfiguration = trashPulloutConfiguration;
@@ -41,7 +41,7 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPP
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, DrawerSlideType slideType, CabinetDrawerBoxMaterial drawerBoxMaterial, IToeType toeType)
+                        Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, DrawerSlideType slideType, CabinetDrawerBoxMaterial drawerBoxMaterial, ToeType toeType)
         => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment, drawerFaceHeight, trashPulloutConfiguration, slideType, drawerBoxMaterial, toeType);
 
     public IEnumerable<PPProduct> GetPPProducts() {
@@ -62,16 +62,16 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPP
         var door = getBuilder().WithQty(Qty)
                                 .WithProductNumber(ProductNumber)
                                 .WithType(DoorType.Door)
-                                .WithFramingBead(MDFDoorOptions.StyleName)
-                                .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                                .WithFramingBead(MDFDoorOptions.FramingBead)
+                                .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
                                 .Build(height, width);
         doors.Add(door);
 
         var drawers = getBuilder().WithQty(Qty)
                                     .WithProductNumber(ProductNumber)
                                     .WithType(DoorType.DrawerFront)
-                                    .WithFramingBead(MDFDoorOptions.StyleName)
-                                    .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                                    .WithFramingBead(MDFDoorOptions.FramingBead)
+                                    .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
                                     .Build(DrawerFaceHeight, width);
         doors.Add(drawers);
 
@@ -79,19 +79,18 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPP
 
     }
 
+    public DrawerBoxOptions DrawerBoxOptions => new("", "", "", "", "Blum", GetNotchFromSlideType(SlideType), SlideType, "", LogoPosition.None);
+
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
         var insideWidth = Width - Construction.SideThickness * 2;
         var insideDepth = Depth - (Construction.BackThickness + Construction.BackInset);
 
-        var options = new DrawerBoxOptions("", "", "", "", "Blum", GetNotchFromSlideType(SlideType), "", LogoPosition.None);
-
-
         var box = getBuilder().WithInnerCabinetDepth(insideDepth, SlideType)
                                 .WithInnerCabinetWidth(insideWidth, 1, SlideType)
                                 .WithDrawerFaceHeight(DrawerFaceHeight)
                                 .WithQty(Qty)
-                                .WithOptions(options)
+                                .WithOptions(DrawerBoxOptions)
                                 .WithProductNumber(ProductNumber)
                                 .Build();
 
@@ -117,7 +116,7 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPP
                 break;
         }
 
-        if (ToeType is LegLevelers) {
+        if (ToeType == ToeType.LegLevelers) {
 
             supplies.Add(Supply.CabinetLeveler(4 * Qty));
 

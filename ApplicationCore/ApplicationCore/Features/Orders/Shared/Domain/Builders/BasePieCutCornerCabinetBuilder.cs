@@ -9,7 +9,7 @@ internal class BasePieCutCornerCabinetBuilder : CabinetBuilder<BasePieCutCornerC
 
     public Dimension RightWidth { get; private set; }
     public Dimension RightDepth { get; private set; }
-    public IToeType ToeType { get; private set; }
+    public ToeType ToeType { get; private set; }
     public int AdjustableShelves { get; private set; }
     public HingeSide HingeSide { get; private set; }
     public CabinetDoorGaps DoorGaps { get; private set; }
@@ -17,7 +17,7 @@ internal class BasePieCutCornerCabinetBuilder : CabinetBuilder<BasePieCutCornerC
     public BasePieCutCornerCabinetBuilder() {
         RightWidth = Dimension.Zero;
         RightDepth = Dimension.Zero;
-        ToeType = new NoToe();
+        ToeType = ToeType.NoToe;
         AdjustableShelves = 0;
         HingeSide = HingeSide.Left;
     }
@@ -32,7 +32,7 @@ internal class BasePieCutCornerCabinetBuilder : CabinetBuilder<BasePieCutCornerC
         return this;
     }
 
-    public BasePieCutCornerCabinetBuilder WithToeType(IToeType toeType) {
+    public BasePieCutCornerCabinetBuilder WithToeType(ToeType toeType) {
         ToeType = toeType;
         return this;
     }

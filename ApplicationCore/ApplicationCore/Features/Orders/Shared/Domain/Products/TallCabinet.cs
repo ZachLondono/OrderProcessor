@@ -4,19 +4,20 @@ using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.Data.Sqlite;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
 internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDrawerBoxContainer {
 
     public TallCabinetDoors Doors { get; }
-    public IToeType ToeType { get; }
+    public ToeType ToeType { get; }
     public TallCabinetInside Inside { get; }
 
     public Dimension LowerDoorHeight => Doors.UpperQuantity > 0 ? Doors.LowerDoorHeight : Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap;
     public Dimension UpperDoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - Doors.LowerDoorHeight - DoorGaps.VerticalGap;
 
-    public override string Description => "Tall Cabinet";
+    public override string GetDescription() => "Tall Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),
@@ -30,7 +31,7 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        TallCabinetDoors doors, IToeType toeType, TallCabinetInside inside) {
+                        TallCabinetDoors doors, ToeType toeType, TallCabinetInside inside) {
         return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment, doors, toeType, inside);
     }
 
@@ -38,7 +39,7 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        TallCabinetDoors doors, IToeType toeType, TallCabinetInside inside)
+                        TallCabinetDoors doors, ToeType toeType, TallCabinetInside inside)
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment) {
 
         if (doors.UpperQuantity > 2 || doors.UpperQuantity < 0 || doors.LowerQuantity > 2 || doors.LowerQuantity < 0)
@@ -78,8 +79,8 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
             doors.Add(builder.WithQty(Doors.UpperQuantity * Qty)
                             .WithProductNumber(ProductNumber)
-                            .WithFramingBead(MDFDoorOptions.StyleName)
-                            .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                            .WithFramingBead(MDFDoorOptions.FramingBead)
+                            .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
                             .Build(height, width));
 
         }
@@ -93,25 +94,24 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
             doors.Add(builder.WithQty(Doors.LowerQuantity * Qty)
                             .WithProductNumber(ProductNumber)
-                            .WithFramingBead(MDFDoorOptions.StyleName)
-                            .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                            .WithFramingBead(MDFDoorOptions.FramingBead)
+                            .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
                             .Build(height, width));
 
         }
 
         return doors;
-
     }
+
+    public DrawerBoxOptions DrawerBoxOptions => new("", "", "", "", "Blum", GetNotchFromSlideType(Inside.RollOutBoxes.SlideType), Inside.RollOutBoxes.SlideType, "", LogoPosition.None);
 
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
-        if (!Inside.RollOutBoxes.Positions.Any()) {
+        if (!Inside.RollOutBoxes.Any()) {
 
             return Enumerable.Empty<DovetailDrawerBox>();
 
         }
-
-        var options = new DrawerBoxOptions("", "", "", "", "Blum", GetNotchFromSlideType(Inside.RollOutBoxes.SlideType), "", LogoPosition.None);
 
         var insideWidth = Width - Construction.SideThickness * 2;
         var insideDepth = Depth - (Construction.BackThickness + Construction.BackInset);
@@ -122,7 +122,7 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
                                 .WithInnerCabinetWidth(insideWidth, Inside.RollOutBoxes.Blocks, Inside.RollOutBoxes.SlideType)
                                 .WithBoxHeight(boxHeight)
                                 .WithQty(rollOutQty)
-                                .WithOptions(options)
+                                .WithOptions(DrawerBoxOptions)
                                 .WithProductNumber(ProductNumber)
                                 .Build();
 
@@ -134,7 +134,7 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
         List<Supply> supplies = new();
 
-        if (ToeType is LegLevelers) {
+        if (ToeType == ToeType.LegLevelers) {
 
             supplies.Add(Supply.CabinetLeveler(Qty * 4));
 

@@ -7,11 +7,11 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Builders;
 
 internal class DrawerBaseCabinetBuilder : CabinetBuilder<DrawerBaseCabinet> {
 
-    public IToeType ToeType { get; private set; }
+    public ToeType ToeType { get; private set; }
     public VerticalDrawerBank Drawers { get; private set; }
 
     public DrawerBaseCabinetBuilder() {
-        ToeType = new NoToe();
+        ToeType = ToeType.NoToe;
         Drawers = new() {
             BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
             FaceHeights = Enumerable.Empty<Dimension>(),
@@ -19,7 +19,7 @@ internal class DrawerBaseCabinetBuilder : CabinetBuilder<DrawerBaseCabinet> {
         };
     }
 
-    public DrawerBaseCabinetBuilder WithToeType(IToeType toeType) {
+    public DrawerBaseCabinetBuilder WithToeType(ToeType toeType) {
         ToeType = toeType;
         return this;
     }

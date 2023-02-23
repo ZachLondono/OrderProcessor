@@ -8,14 +8,14 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Builders;
 internal class BaseCabinetBuilder : CabinetBuilder<BaseCabinet> {
 
     public BaseCabinetDoors Doors { get; private set; }
-    public IToeType ToeType { get; private set; }
+    public ToeType ToeType { get; private set; }
     public HorizontalDrawerBank Drawers { get; private set; }
     public BaseCabinetInside Inside { get; private set; }
 
     public BaseCabinetBuilder() {
         Inside = new();
         Doors = new();
-        ToeType = new NoToe();
+        ToeType = ToeType.NoToe;
         Drawers = new() {
             Quantity = 0,
             BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
@@ -28,7 +28,7 @@ internal class BaseCabinetBuilder : CabinetBuilder<BaseCabinet> {
         Doors = doors;
         return this;
     }
-    public BaseCabinetBuilder WithToeType(IToeType toeType) {
+    public BaseCabinetBuilder WithToeType(ToeType toeType) {
         ToeType = toeType;
         return this;
     }

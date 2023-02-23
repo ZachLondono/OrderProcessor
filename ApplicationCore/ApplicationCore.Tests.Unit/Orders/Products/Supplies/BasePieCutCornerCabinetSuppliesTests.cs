@@ -19,7 +19,7 @@ public class BasePieCutCornerCabinetSuppliesTests {
     public void Should_IncludeFiveLegLevelersPerCabinet_WhenToeTypeIsLegLeveler() {
 
         // Arrange
-        var cabinet = _builder.WithToeType(new LegLevelers())
+        var cabinet = _builder.WithToeType(ToeType.LegLevelers)
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
                                 .WithDepth(Dimension.FromMillimeters(500))

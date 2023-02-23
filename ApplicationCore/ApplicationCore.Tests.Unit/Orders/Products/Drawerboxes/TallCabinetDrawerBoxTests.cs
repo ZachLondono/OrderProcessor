@@ -34,7 +34,7 @@ public class TallCabinetDrawerBoxTests {
 
         var cabinet = new TallCabinetBuilder()
                             .WithInside(new(0, 0, 0, new RollOutOptions(rollOutPositions, false, RollOutBlockPosition.Both, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.FingerJointBirch)))
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithQty(cabQty)
                             .WithWidth(Dimension.FromMillimeters(456))
                             .WithHeight(Dimension.FromMillimeters(876))
@@ -63,7 +63,7 @@ public class TallCabinetDrawerBoxTests {
 
         var cabinet = new TallCabinetBuilder()
                             .WithInside(new(0, 0, 0, new RollOutOptions(new Dimension[] { Dimension.FromMillimeters(19) }, false, blockPositions, slideType, CabinetDrawerBoxMaterial.FingerJointBirch)))
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithQty(1)
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
@@ -94,7 +94,7 @@ public class TallCabinetDrawerBoxTests {
 
         var cabinet = new TallCabinetBuilder()
                             .WithInside(new(0, 0, 0, new RollOutOptions(new Dimension[] { Dimension.FromMillimeters(19) }, false, RollOutBlockPosition.Both, slideType, CabinetDrawerBoxMaterial.FingerJointBirch)))
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithQty(1)
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(876))

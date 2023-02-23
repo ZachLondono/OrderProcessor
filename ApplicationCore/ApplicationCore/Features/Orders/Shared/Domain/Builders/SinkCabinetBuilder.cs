@@ -7,7 +7,7 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Builders;
 
 internal class SinkCabinetBuilder : CabinetBuilder<SinkCabinet> {
 
-    public IToeType ToeType { get; private set; }
+    public ToeType ToeType { get; private set; }
     public HingeSide HingeSide { get; private set; }
     public int DoorQty { get; private set; }
     public int FalseDrawerQty { get; private set; }
@@ -17,7 +17,7 @@ internal class SinkCabinetBuilder : CabinetBuilder<SinkCabinet> {
     public RollOutOptions RollOutBoxes { get; private set; }
 
     public SinkCabinetBuilder() {
-        ToeType = new NoToe();
+        ToeType = ToeType.NoToe;
         HingeSide = HingeSide.Left;
         DoorQty = 0;
         FalseDrawerQty = 0;
@@ -27,7 +27,7 @@ internal class SinkCabinetBuilder : CabinetBuilder<SinkCabinet> {
         RollOutBoxes = new(Array.Empty<Dimension>(), false, RollOutBlockPosition.Both, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.FingerJointBirch);
     }
 
-    public SinkCabinetBuilder WithToeType(IToeType toeType) {
+    public SinkCabinetBuilder WithToeType(ToeType toeType) {
         ToeType = toeType;
         return this;
     }

@@ -10,4 +10,6 @@ public record HorizontalDrawerBank {
     public required CabinetDrawerBoxMaterial BoxMaterial { get; init; }
     public required DrawerSlideType SlideType { get; init; }
 
+    public bool Any() => Quantity > 0;
+
 }

@@ -27,10 +27,10 @@ internal class DovetailOrderHandler {
             return Task.CompletedTask;
         }
 
-        var groups = order.Products.OfType<IDrawerBoxContainer>().SelectMany(p => p.GetDrawerBoxes(_factory.CreateDovetailDrawerBoxBuilder)).GroupBy(b => b.Options.Assembled);
+        var groups = order.Products.OfType<IDrawerBoxContainer>().SelectMany(p => p.GetDrawerBoxes(_factory.CreateDovetailDrawerBoxBuilder)).GroupBy(b => b.DrawerBoxOptions.Assembled);
 
-        foreach (var group in groups) { 
-            
+        foreach (var group in groups) {
+
             using var stream = _fileReader.OpenReadFileStream(template);
             var workbook = new XLWorkbook(stream);
 
@@ -81,15 +81,15 @@ internal class DovetailOrderHandler {
                 A = "",
                 B = "",
                 C = "",
-                Material = b.Options.FrontMaterial,
-                Bottom = b.Options.BottomMaterial,
-                Notch = b.Options.Notches,
-                Insert = b.Options.Accessory,
-                Clips = b.Options.Clips,
-                MountingHoles = b.Options.FaceMountingHoles ? "Yes" : "No",
-                PostFinish = b.Options.PostFinish ? "Yes" : "No",
-                ScoopFront = b.Options.ScoopFront ? "Yes" : "No",
-                Logo = b.Options.Logo.ToString(),
+                Material = b.DrawerBoxOptions.FrontMaterial,
+                Bottom = b.DrawerBoxOptions.BottomMaterial,
+                Notch = b.DrawerBoxOptions.Notches,
+                Insert = b.DrawerBoxOptions.Accessory,
+                Clips = b.DrawerBoxOptions.Clips,
+                MountingHoles = b.DrawerBoxOptions.FaceMountingHoles ? "Yes" : "No",
+                PostFinish = b.DrawerBoxOptions.PostFinish ? "Yes" : "No",
+                ScoopFront = b.DrawerBoxOptions.ScoopFront ? "Yes" : "No",
+                Logo = b.DrawerBoxOptions.Logo.ToString(),
                 LevelName = "",
                 Note = b.Note,
                 Name = "",
@@ -220,7 +220,7 @@ internal class DovetailOrderHandler {
             public object? Logo { get; set; }
             public object? LevelName { get; set; }
             public object? Note { get; set; }
-            public object? Name { get;  set; }
+            public object? Name { get; set; }
             public object? Description { get; set; }
             public object? UnitPrice { get; set; }
 

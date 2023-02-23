@@ -174,7 +174,7 @@ public class BaseCabinetSuppliesTests {
 
         // Arrange
         var cabinet = _builder.WithDoors(BaseCabinetDoors.OneDoor(HingeSide.Left))
-                                .WithToeType(new LegLevelers())
+                                .WithToeType(ToeType.LegLevelers)
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
                                 .WithDepth(Dimension.FromMillimeters(500))

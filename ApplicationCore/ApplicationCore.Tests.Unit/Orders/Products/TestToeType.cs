@@ -3,7 +3,7 @@ using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products;
 
-public class TestToeType : IToeType {
+public class TestToeType : ToeType {
     public Dimension ToeHeight { get; }
     public Dimension HeightAdjustment { get; }
     public string PSIParameter => string.Empty;

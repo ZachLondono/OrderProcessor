@@ -12,7 +12,7 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     public WallCabinetInside Inside { get; }
     public bool FinishedBottom { get; }
 
-    public override string Description => "Wall Cabinet";
+    public override string GetDescription() => "Wall Cabinet";
 
     public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap;
 
@@ -71,8 +71,8 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         var door = getBuilder().WithQty(Doors.Quantity * Qty)
                                 .WithType(DoorType.Door)
                                 .WithProductNumber(ProductNumber)
-                                .WithFramingBead(MDFDoorOptions.StyleName)
-                                .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                                .WithFramingBead(MDFDoorOptions.FramingBead)
+                                .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
                                 .Build(height, width);
 
         return new MDFDoor[] { door };

@@ -20,7 +20,7 @@ public class ClosetPart : IProduct, IPPProductContainer {
     public string Comment { get; }
     public IReadOnlyDictionary<string, string> Parameters { get; }
 
-    public string Description => $"Closet Part - {SKU}";
+    public string GetDescription() => $"Closet Part - {SKU}";
 
     public ClosetPart(Guid id, int qty, decimal unitPrice, int productNumber, string room, string sku, Dimension width, Dimension length, ClosetMaterial material, string edgeBandingColor, string comment, IReadOnlyDictionary<string, string> parameters) {
         Id = id;

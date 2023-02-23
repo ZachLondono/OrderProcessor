@@ -19,12 +19,14 @@ public class WallPieCutCornerCabinetDoorTests {
             RightStile = Dimension.Zero,
             EdgeDetail = "",
             FramingBead = "",
-            Material = ""
+            Material = "",
+            PanelDetail = "",
+            Thickness = Dimension.Zero
         };
 
         _doorBuilderFactory = () => new(doorConfiguration);
 
-        _mdfOptions = new("Style", "Color");
+        _mdfOptions = new("MDF", Dimension.Zero, "Shaker", "Eased", "Flat", Dimension.Zero, null);
 
     }
 

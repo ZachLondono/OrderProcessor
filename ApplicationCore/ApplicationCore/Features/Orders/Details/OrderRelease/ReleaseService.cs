@@ -71,7 +71,7 @@ internal class ReleaseService {
 
         List<Document> documents = new();
         if (cncDecorators.Any()) {
-            
+
             foreach (var decorator in cncDecorators) {
 
                 documents.Add(Document.Create(doc => {
@@ -91,11 +91,11 @@ internal class ReleaseService {
         }
 
         List<string> generatedFiles = new();
-        if (generatePDF) { 
+        if (generatePDF) {
 
-            foreach (var document in documents) { 
+            foreach (var document in documents) {
 
-                try { 
+                try {
                     var filePath = _fileReader.GetAvailableFileName(configuration.OutputDirectory, $"{order.Number} {order.Name}", ".pdf");
                     document.GeneratePdf(filePath);
                     generatedFiles.Add(filePath);

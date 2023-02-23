@@ -19,12 +19,14 @@ public class BaseDiagonalCornerCabinetDoorTests {
             RightStile = Dimension.Zero,
             EdgeDetail = "",
             FramingBead = "",
-            Material = ""
+            Material = "",
+            PanelDetail = "",
+            Thickness = Dimension.Zero
         };
 
         _doorBuilderFactory = () => new(doorConfiguration);
 
-        _mdfOptions = new("Style", "Color");
+        _mdfOptions = new("MDF", Dimension.Zero, "Shaker", "Eased", "Flat", Dimension.Zero, null);
 
     }
 
@@ -37,7 +39,7 @@ public class BaseDiagonalCornerCabinetDoorTests {
         // Arrange
         var cabinet = new BaseDiagonalCornerCabinetBuilder()
                             .WithDoorQty(doorQty)
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithRightWidth(Dimension.FromMillimeters(610))
                             .WithRightDepth(Dimension.FromMillimeters(305))
                             .WithWidth(Dimension.FromMillimeters(610))
@@ -62,7 +64,7 @@ public class BaseDiagonalCornerCabinetDoorTests {
         // Arrange
         var cabinet = new BaseDiagonalCornerCabinetBuilder()
                             .WithDoorQty(1)
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithRightWidth(Dimension.FromMillimeters(610))
                             .WithRightDepth(Dimension.FromMillimeters(305))
                             .WithWidth(Dimension.FromMillimeters(610))

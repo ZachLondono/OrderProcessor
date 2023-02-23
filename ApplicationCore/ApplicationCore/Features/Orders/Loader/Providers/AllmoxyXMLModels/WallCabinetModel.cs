@@ -28,9 +28,6 @@ public class WallCabinetModel : CabinetModelBase {
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
-        MDFDoorOptions? mdfOptions = null;
-        if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
-
         bool hingeLeft = (HingeSide == "Left");
         Dimension doorExtendDown = Dimension.FromMillimeters(ExtendDoorDown);
         WallCabinetDoors doors = DoorQty switch {

@@ -14,6 +14,7 @@
                 <th class="p-5">Length</th>
                 <th class="p-5">Framing Bead</th>
                 <th class="p-5">Edge Detail</th>
+                <th class="p-5">Panel Drop</th>
                 <th class="p-5">Paint</th>
                 <th class="p-5">Room</th>
                 <th class="p-5">Unit $</th>
@@ -49,7 +50,11 @@
                     }
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.FramingBead</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.EdgeDetail</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.PanelDrop</td>
+                    @if (UseInches){
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.Product.PanelDrop.GetFormatedFraction())"</td>
+                    } else {
+                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.PanelDrop.AsMillimeters().ToString("0.00")</td>
+                    }
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(row.Product.PaintColor is null ? "N/A" : row.Product.PaintColor)</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Room</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.UnitPrice.ToString("$0.00")</td>

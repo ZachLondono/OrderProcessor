@@ -23,7 +23,7 @@ internal class ExportProgressViewModel {
         }
     }
 
-    public Action<ProgressLogMessage>? OnMessagePublished { get; set;  }
+    public Action<ProgressLogMessage>? OnMessagePublished { get; set; }
 
     private readonly ExportService _service;
 

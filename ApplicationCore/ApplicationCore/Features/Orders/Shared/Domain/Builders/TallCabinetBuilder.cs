@@ -6,12 +6,12 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Builders;
 internal class TallCabinetBuilder : CabinetBuilder<TallCabinet> {
 
     public TallCabinetDoors Doors { get; private set; }
-    public IToeType ToeType { get; private set; }
+    public ToeType ToeType { get; private set; }
     public TallCabinetInside Inside { get; private set; }
 
     public TallCabinetBuilder() {
         Doors = new();
-        ToeType = new NoToe();
+        ToeType = ToeType.NoToe;
         Inside = new();
     }
 
@@ -20,7 +20,7 @@ internal class TallCabinetBuilder : CabinetBuilder<TallCabinet> {
         return this;
     }
 
-    public TallCabinetBuilder WithToeType(IToeType toeType) {
+    public TallCabinetBuilder WithToeType(ToeType toeType) {
         ToeType = toeType;
         return this;
     }

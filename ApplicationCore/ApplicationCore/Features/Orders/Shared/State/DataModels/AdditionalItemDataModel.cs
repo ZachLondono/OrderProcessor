@@ -10,8 +10,8 @@ public class AdditionalItemDataModel {
 
     public decimal Price { get; set; }
 
-    public AdditionalItem AsDomainModel() => new AdditionalItem(Id, Description, Price);
+    public AdditionalItem AsDomainModel() => new(Id, Description, Price);
 
-    public static string GetQueryByOrderId() => "SELECT id, description, price FROM additionalitems WHERE orderid = @OrderId;";
+    public static string GetQueryByOrderId() => "SELECT id, description, price FROM additional_items WHERE order_id = @OrderId;";
 
 }

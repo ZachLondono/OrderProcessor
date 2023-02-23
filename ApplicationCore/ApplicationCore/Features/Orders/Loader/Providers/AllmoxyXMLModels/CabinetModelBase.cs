@@ -26,7 +26,7 @@ public abstract class CabinetModelBase : ProductModel {
         CabinetMaterialCore finishCore = AllmoxyXMLOrderProviderHelpers.GetFinishedSideMaterialCore(Cabinet.FinishMaterial.Type, boxCore);
 
         MDFDoorOptions? mdfOptions = null;
-        if (Cabinet.Fronts.Type != "Slab") mdfOptions = new(Cabinet.Fronts.Style, Cabinet.Fronts.Color);
+        if (Cabinet.Fronts.Type != "Slab") mdfOptions = new("MDF", Dimension.FromInches(0.75), Cabinet.Fronts.Style, "Eased", "Flat", Dimension.Zero, Cabinet.Fronts.Color);
 
         string finishColor = (Cabinet.FinishMaterial.Type == "paint" ? Cabinet.BoxMaterial.Finish : Cabinet.FinishMaterial.Finish);
         string? finishPaintColor = (Cabinet.FinishMaterial.Type == "paint" ? Cabinet.FinishMaterial.Finish : null);

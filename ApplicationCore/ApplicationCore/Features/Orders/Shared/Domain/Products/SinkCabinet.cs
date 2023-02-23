@@ -8,7 +8,7 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
 internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDrawerBoxContainer {
 
-    public IToeType ToeType { get; }
+    public ToeType ToeType { get; }
     public HingeSide HingeSide { get; }
     public int DoorQty { get; }
     public int FalseDrawerQty { get; }
@@ -17,7 +17,7 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
     public ShelfDepth ShelfDepth { get; }
     public RollOutOptions RollOutBoxes { get; }
 
-    public override string Description => "Sink Cabinet";
+    public override string GetDescription() => "Sink Cabinet";
 
     public Dimension DoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (FalseDrawerQty > 0 ? DrawerFaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
 
@@ -33,7 +33,7 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        IToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes)
+                        ToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes)
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment) {
         ToeType = toeType;
         HingeSide = hingeSide;
@@ -49,7 +49,7 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        IToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes)
+                        ToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes)
                         => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment, toeType, hingeSide, doorQty, falseDrawerQty, drawerFaceHeight, adjustableShelves, shelfDepth, rollOutBoxes);
 
     public IEnumerable<PPProduct> GetPPProducts() {
@@ -71,8 +71,8 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
             var door = getBuilder().WithQty(DoorQty * Qty)
                                     .WithType(DoorType.Door)
                                     .WithProductNumber(ProductNumber)
-                                    .WithFramingBead(MDFDoorOptions.StyleName)
-                                    .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                                    .WithFramingBead(MDFDoorOptions.FramingBead)
+                                    .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
                                     .Build(height, width);
             doors.Add(door);
         }
@@ -82,8 +82,8 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
             var drawers = getBuilder().WithQty(FalseDrawerQty * Qty)
                                         .WithType(DoorType.DrawerFront)
                                         .WithProductNumber(ProductNumber)
-                                        .WithFramingBead(MDFDoorOptions.StyleName)
-                                        .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                                        .WithFramingBead(MDFDoorOptions.FramingBead)
+                                        .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
                                         .Build(DrawerFaceHeight, drwWidth);
             doors.Add(drawers);
         }
@@ -92,6 +92,8 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
     }
 
+    public DrawerBoxOptions DrawerBoxOptions => new("", "", "", "", "Blum", GetNotchFromSlideType(RollOutBoxes.SlideType), RollOutBoxes.SlideType, "", LogoPosition.None);
+
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
         if (!RollOutBoxes.Positions.Any()) {
@@ -99,8 +101,6 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
             return Enumerable.Empty<DovetailDrawerBox>();
 
         }
-
-        var options = new DrawerBoxOptions("", "", "", "", "Blum", GetNotchFromSlideType(RollOutBoxes.SlideType), "", LogoPosition.None);
 
         var insideWidth = Width - Construction.SideThickness * 2;
         var insideDepth = Depth - (Construction.BackThickness + Construction.BackInset);
@@ -111,7 +111,7 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
                                 .WithInnerCabinetWidth(insideWidth, RollOutBoxes.Blocks, RollOutBoxes.SlideType)
                                 .WithBoxHeight(boxHeight)
                                 .WithQty(rollOutQty)
-                                .WithOptions(options)
+                                .WithOptions(DrawerBoxOptions)
                                 .WithProductNumber(ProductNumber)
                                 .Build();
 

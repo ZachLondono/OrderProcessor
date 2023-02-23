@@ -10,14 +10,14 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
 
     public Dimension RightWidth { get; }
     public Dimension RightDepth { get; }
-    public IToeType ToeType { get; }
+    public ToeType ToeType { get; }
     public HingeSide HingeSide { get; }
     public int DoorQty { get; }
     public int AdjustableShelves { get; }
 
     public Dimension DoorHeight => Height - ToeType.HeightAdjustment - DoorGaps.TopGap - DoorGaps.BottomGap;
 
-    public override string Description => "Diagonal Corner Base Cabinet";
+    public override string GetDescription() => "Diagonal Corner Base Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
@@ -31,7 +31,7 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        Dimension rightWidth, Dimension rightDepth, IToeType toeType, int adjShelfQty, HingeSide hingeSide, int doorQty)
+                        Dimension rightWidth, Dimension rightDepth, ToeType toeType, int adjShelfQty, HingeSide hingeSide, int doorQty)
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment) {
         RightWidth = rightWidth;
         RightDepth = rightDepth;
@@ -48,7 +48,7 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        Dimension rightWidth, Dimension rightDepth, IToeType toeType, int adjShelfQty, HingeSide hingeSide, int doorQty)
+                        Dimension rightWidth, Dimension rightDepth, ToeType toeType, int adjShelfQty, HingeSide hingeSide, int doorQty)
                         => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment, rightWidth, rightDepth, toeType, adjShelfQty, hingeSide, doorQty);
 
     public IEnumerable<PPProduct> GetPPProducts() {
@@ -83,8 +83,8 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
 
         var door = getBuilder().WithQty(DoorQty * Qty)
                                 .WithProductNumber(ProductNumber)
-                                .WithFramingBead(MDFDoorOptions.StyleName)
-                                .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                                .WithFramingBead(MDFDoorOptions.FramingBead)
+                                .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
                                 .Build(height, width);
 
         return new List<MDFDoor>() { door };
@@ -108,7 +108,7 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
 
         }
 
-        if (ToeType is LegLevelers) {
+        if (ToeType == ToeType.LegLevelers) {
 
             supplies.Add(Supply.CabinetLeveler(Qty * 5));
 

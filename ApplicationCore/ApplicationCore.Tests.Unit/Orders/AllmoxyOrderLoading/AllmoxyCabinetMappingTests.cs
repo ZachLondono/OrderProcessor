@@ -189,12 +189,12 @@ public class AllmoxyCabinetMappingTests {
 
         // Assert
         builder.LeftSide.DoorOptions.Should().NotBeNull();
-        builder.LeftSide.DoorOptions!.Color.Should().Be(_sut.Cabinet.Fronts.Color);
-        builder.LeftSide.DoorOptions!.StyleName.Should().Be(_sut.Cabinet.Fronts.Style);
+        builder.LeftSide.DoorOptions!.PaintColor.Should().Be(_sut.Cabinet.Fronts.Color);
+        builder.LeftSide.DoorOptions!.FramingBead.Should().Be(_sut.Cabinet.Fronts.Style);
 
         builder.RightSide.DoorOptions.Should().NotBeNull();
-        builder.RightSide.DoorOptions!.Color.Should().Be(_sut.Cabinet.Fronts.Color);
-        builder.RightSide.DoorOptions!.StyleName.Should().Be(_sut.Cabinet.Fronts.Style);
+        builder.RightSide.DoorOptions!.PaintColor.Should().Be(_sut.Cabinet.Fronts.Color);
+        builder.RightSide.DoorOptions!.FramingBead.Should().Be(_sut.Cabinet.Fronts.Style);
 
     }
 

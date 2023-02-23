@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
 using ApplicationCore.Features.Orders.Data;
+using Dapper;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -24,6 +25,11 @@ public static class DependencyInjection {
     public static IServiceCollection AddOrdering(this IServiceCollection services, IConfiguration configuration) {
 
         services.AddTransient<IOrderingDbConnectionFactory, SqliteOrderingDbConnectionFactory>();
+
+        SqlMapper.AddTypeHandler(new ToeTypeDimensionTypeHandler());
+        SqlMapper.AddTypeHandler(new SqliteFixedDivdersCountsTypeHandler());
+        SqlMapper.AddTypeHandler(new SqliteUBoxDimensionTypeHandler());
+        SqlMapper.AddTypeHandler(new DimensionArrayTypeHandler());
 
         services.AddOrderLoading(configuration);
         services.AddSingleton<ProductBuilderFactory>();

@@ -16,7 +16,7 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap;
 
-    public override string Description => "Blind Wall Cabinet";
+    public override string GetDescription() => "Blind Wall Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),
@@ -69,8 +69,8 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         var door = getBuilder().WithQty(Doors.Quantity * Qty)
                                 .WithProductNumber(ProductNumber)
                                 .WithType(DoorType.Door)
-                                .WithFramingBead(MDFDoorOptions.StyleName)
-                                .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                                .WithFramingBead(MDFDoorOptions.FramingBead)
+                                .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
                                 .Build(height, width);
 
 

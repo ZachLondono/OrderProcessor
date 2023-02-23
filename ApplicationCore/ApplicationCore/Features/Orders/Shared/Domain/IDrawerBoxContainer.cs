@@ -8,6 +8,8 @@ namespace ApplicationCore.Features.Orders.Shared.Domain;
 /// </summary>
 internal interface IDrawerBoxContainer {
 
+    DrawerBoxOptions DrawerBoxOptions { get; }
+
     IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder);
 
 }

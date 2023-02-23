@@ -123,7 +123,7 @@ public class TallCabinetSuppliesTests {
 
         // Arrange
         var cabinet = _builder.WithDoors(new(HingeSide.Left))
-                                .WithToeType(new LegLevelers())
+                                .WithToeType(ToeType.LegLevelers)
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
                                 .WithDepth(Dimension.FromMillimeters(500))

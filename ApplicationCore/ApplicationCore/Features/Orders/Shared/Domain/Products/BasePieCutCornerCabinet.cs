@@ -10,11 +10,11 @@ internal class BasePieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
 
     public Dimension RightWidth { get; }
     public Dimension RightDepth { get; }
-    public IToeType ToeType { get; }
+    public ToeType ToeType { get; }
     public int AdjustableShelves { get; }
     public HingeSide HingeSide { get; }
 
-    public override string Description => "Pie Cut Corner Base Cabinet";
+    public override string GetDescription() => "Pie Cut Corner Base Cabinet";
 
     public Dimension DoorHeight => Height - ToeType.HeightAdjustment - DoorGaps.TopGap;
 
@@ -30,7 +30,7 @@ internal class BasePieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        Dimension rightWidth, Dimension rightDepth, IToeType toeType, int adjustableShelves, HingeSide hingeSide)
+                        Dimension rightWidth, Dimension rightDepth, ToeType toeType, int adjustableShelves, HingeSide hingeSide)
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment) {
         RightWidth = rightWidth;
         RightDepth = rightDepth;
@@ -43,7 +43,7 @@ internal class BasePieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        Dimension rightWidth, Dimension rightDepth, IToeType toeType, int adjustableShelves, HingeSide hingeSide)
+                        Dimension rightWidth, Dimension rightDepth, ToeType toeType, int adjustableShelves, HingeSide hingeSide)
     => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment, rightWidth, rightDepth, toeType, adjustableShelves, hingeSide);
 
     public IEnumerable<PPProduct> GetPPProducts() {
@@ -64,15 +64,15 @@ internal class BasePieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
         Dimension leftWidth = Width - RightDepth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
         MDFDoor leftDoor = getBuilder().WithQty(Qty)
                                         .WithProductNumber(ProductNumber)
-                                        .WithFramingBead(MDFDoorOptions.StyleName)
-                                        .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                                        .WithFramingBead(MDFDoorOptions.FramingBead)
+                                        .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
                                         .Build(height, leftWidth);
 
         Dimension rightWidth = RightWidth - Depth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
         MDFDoor rightDoor = getBuilder().WithQty(Qty)
                                         .WithProductNumber(ProductNumber)
-                                        .WithFramingBead(MDFDoorOptions.StyleName)
-                                        .WithPaintColor(MDFDoorOptions.Color == "" ? null : MDFDoorOptions.Color)
+                                        .WithFramingBead(MDFDoorOptions.FramingBead)
+                                        .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
                                         .Build(height, rightWidth);
 
         return new List<MDFDoor>() { leftDoor, rightDoor };
@@ -83,7 +83,7 @@ internal class BasePieCutCornerCabinet : Cabinet, IPPProductContainer, IDoorCont
 
         List<Supply> supplies = new();
 
-        if (ToeType is LegLevelers) {
+        if (ToeType == ToeType.LegLevelers) {
 
             supplies.Add(Supply.CabinetLeveler(Qty * 5));
 

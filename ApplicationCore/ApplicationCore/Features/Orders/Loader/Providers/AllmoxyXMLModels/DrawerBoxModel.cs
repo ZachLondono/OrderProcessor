@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
@@ -68,9 +69,9 @@ public class DovetailDrawerBoxModel : ProductModel {
 
         var labelFields = new Dictionary<string, string>();
 
-        var options = new DrawerBoxOptions(Material, Material, Material, Bottom, Clips, Notch, Insert, Shared.Domain.Enums.LogoPosition.None);
+        var options = new DrawerBoxOptions(Material, Material, Material, Bottom, Clips, Notch, DrawerSlideType.Unknown, Insert, LogoPosition.None);
 
-        return new DovetailDrawerBoxProduct(Guid.Empty, unitPrice, Qty, GetProductNumber(), height, width, depth, Note, labelFields, options);
+        return DovetailDrawerBoxProduct.Create(unitPrice, Qty, GetProductNumber(), height, width, depth, Note, labelFields, options);
 
     }
 

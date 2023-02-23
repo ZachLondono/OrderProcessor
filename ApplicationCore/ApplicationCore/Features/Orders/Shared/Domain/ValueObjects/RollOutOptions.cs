@@ -7,4 +7,6 @@ public record RollOutOptions(Dimension[] Positions, bool ScoopFront, RollOutBloc
 
     public int Qty => Positions.Length;
 
+    public bool Any() => Positions.Any();
+
 };

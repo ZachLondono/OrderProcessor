@@ -11,7 +11,9 @@ public class MDFDoorBuilder {
     private DoorType _type;
     private string _note;
     private string _material;
+    private Dimension _thickness;
     private string _framingBead;
+    private string _panelDetail;
     private string _edgeDetail;
     private DoorFrame _frameSize;
     private string? _paintColor;
@@ -21,8 +23,10 @@ public class MDFDoorBuilder {
         _type = DoorType.Door;
         _note = string.Empty;
         _material = configuration.Material;
+        _thickness = configuration.Thickness;
         _framingBead = configuration.FramingBead;
         _edgeDetail = configuration.EdgeDetail;
+        _panelDetail = configuration.PanelDetail;
         _frameSize = new() {
             TopRail = configuration.TopRail,
             BottomRail = configuration.BottomRail,
@@ -42,6 +46,11 @@ public class MDFDoorBuilder {
         return this;
     }
 
+    public MDFDoorBuilder WithThickness(Dimension thickness) {
+        _thickness = thickness;
+        return this;
+    }
+
     public MDFDoorBuilder WithFramingBead(string framingBead) {
         _framingBead = framingBead;
         return this;
@@ -49,6 +58,11 @@ public class MDFDoorBuilder {
 
     public MDFDoorBuilder WithEdgeDetail(string edgeDetail) {
         _edgeDetail = edgeDetail;
+        return this;
+    }
+
+    public MDFDoorBuilder WithPanelDetail(string panelDetail) {
+        _panelDetail = panelDetail;
         return this;
     }
 
@@ -79,7 +93,7 @@ public class MDFDoorBuilder {
 
     public MDFDoor Build(Dimension height, Dimension width) {
 
-        return new MDFDoor(_qty, _productNumber, _type, height, width, _note, _material, _framingBead, _edgeDetail, _frameSize, Dimension.Zero, _paintColor);
+        return new MDFDoor(_qty, _productNumber, _type, height, width, _note, _frameSize, _material, _thickness, _framingBead, _edgeDetail, _panelDetail, Dimension.Zero, _paintColor);
 
     }
 

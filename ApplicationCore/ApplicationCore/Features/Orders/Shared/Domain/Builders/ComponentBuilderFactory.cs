@@ -8,8 +8,10 @@ public class ComponentBuilderFactory {
 
         MDFDoorConfiguration configuration = new() {
             Material = "MDF-3/4\"",
+            Thickness = Dimension.FromInches(0.75),
             FramingBead = "Shaker",
             EdgeDetail = "Eased",
+            PanelDetail = "Flat",
             TopRail = Dimension.Zero,
             BottomRail = Dimension.Zero,
             LeftStile = Dimension.Zero,

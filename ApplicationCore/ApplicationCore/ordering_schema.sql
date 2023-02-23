@@ -1,0 +1,321 @@
+﻿CREATE TABLE version (
+	version TEXT NOT NULL
+);
+
+INSERT INTO version (version) VALUES (1);
+
+-- Order Tables --
+
+CREATE TABLE orders (
+	id BLOB NOT NULL,
+	source TEXT NOT NULL,
+	number TEXT NOT NULL,
+	name TEXT NOT NULL,
+	vendor_id BLOB NOT NULL,
+	customer_name TEXT NOT NULL,
+	customer_comment TEXT,
+	order_date TEXT NOT NULL,
+	info TEXT,
+	tax REAL NOT NULL,
+	price_adjustment REAL NOT NULL,
+	rush INTEGER NOT NULL,
+	shipping_method TEXT,
+	shipping_price REAl,
+	shipping_contact TEXT,
+	shipping_phone_number TEXT,
+	shipping_address_id TEXT NOT NULL,
+	invoice_email TEXT,
+	billing_phone_number TEXT,
+	billing_address_id TEXT NOT NULL,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE addresses (
+	id BLOB NOT NULL,
+	line1 TEXT NOT NULL,
+	line2 TEXT NOT NULL,
+	line3 TEXT NOT NULL,
+	city TEXT NOT NULL,
+	state TEXT NOT NULL,
+	zip TEXT NOT NULL,
+	country TEXT NOT NULL,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE additional_items (
+	id BLOB NOT NULL,
+	description TEXT NOT NULL,
+	price REAL NOT NULL,
+	PRIMARY KEY (id)
+);
+
+-- Product Tables --
+
+CREATE TABLE products (
+	id BLOB NOT NULL,
+	order_id BLOB NOT NULL,
+	qty INTEGER NOT NULL,
+	unit_price INTEGER NOT NULL,
+	product_number INTEGER NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (order_id) REFERENCES orders(id)
+);
+
+CREATE TABLE mdf_door_products (
+	product_id BLOB NOT NULL,
+	mdf_config_id BLOB NOT NULL,
+	height REAL NOT NULL,
+	width REAL NOT NULL,
+	type TEXT NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+	FOREIGN KEY (mdf_config_id) REFERENCES mdf_door_configs(id) ON DELETE CASCADE
+);
+
+CREATE TABLE dovetail_door_products (
+	product_id BLOB NOT NULL,
+	db_config_id BLOB NOT NULL,
+	height REAL NOT NULL,
+	width REAL NOT NULL,
+	depth REAL NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+	FOREIGN KEY (db_config_id) REFERENCES drawer_box_configs(id) ON DELETE CASCADE
+);
+
+CREATE TABLE closet_parts (
+	product_id BLOB NOT NULL,
+	room TEXT NOT NULL,
+	sku TEXT NOT NULL,
+	width REAL NOT NULL,
+	length REAL NOT NULL,
+	material_finish TEXT NOT NULL,
+	material_core TEXT NOT NULL,
+	paint_color TEXT,
+	edge_bading_finish TEXT NOT NULL,
+	comment TEXT NOT NULL,
+	parameters TEXT NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE cabinets (
+	product_id BLOB NOT NULL,
+	height REAL NOT NULL,
+	width REAL NOT NULL,
+	depth REAL NOT NULL,
+	box_material_core TEXT NOT NULL,
+	box_material_finish TEXT NOT NULL,
+	finish_material_core TEXT NOT NULL,
+	finish_material_finish TEXT NOT NULL,
+	finish_material_paint TEXT,
+	edge_bading_finish TEXT NOT NULL,
+	left_side_type TEXT NOT NULL,
+	right_side_type TEXT NOT NULL,
+	assembled INTEGER NOT NULL,
+	comment TEXT NOT NULL,
+	room TEXT NOT NULL,
+	mdf_config_id BLOB,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+	FOREIGN KEY (mdf_config_id) REFERENCES mdf_door_configs(id) ON DELETE CASCADE
+);
+
+CREATE TABLE roll_out_configs (
+	id BLOB NOT NULL,
+	positions TEXT NOT NULL,
+	block_type TEXT NOT NULL,
+	scoop_front INTEGER NOT NULL,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE drawer_box_configs (
+	id BLOB NOT NULL,
+	front_material TEXT NOT NULL,
+	back_material TEXT NOT NULL,
+	side_material TEXT NOT NULL,
+	bottom_material TEXT NOT NULL,
+	clips TEXT NOT NULL,
+	notches TEXT NOT NULL,
+	accessory TEXT NOT NULL,
+	logo TEXT NOT NULL,
+	post_finish INTEGER NOT NULL,
+	scoop_front INTEGER NOT NULL,
+	face_mounting_holes INTEGER NOT NULL,
+	assembled INTEGER NOT NULL,
+	slide_type TEXT NOT NULL,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE mdf_door_configs (
+	id BLOB NOT NULL,
+	framing_bead TEXT NOT NULL,
+	edge_detail TEXT NOT NULL,
+	panel_detail TEXT NOT NULL,
+	thickness TEXT NOT NULL,
+	material TEXT NOT NULL,
+	panel_drop REAL,
+	paint_color TEXT,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE base_cabinets (
+	product_id BLOB NOT NULL,
+	toe_type TEXT NOT NULL,	
+	door_qty INTEGER NOT NULL,
+	hinge_side TEXT NOT NULL,
+	roll_out_config_id BLOB,
+	adj_shelf_qty INTEGER NOT NULL,
+	vert_div_qty INTEGER NOT NULL,
+	shelf_depth TEXT NOT NULL,
+	drawer_face_height REAL NOT NULL,
+	drawer_qty INTEGER NOT NULL,
+	db_config_id BLOB,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+	FOREIGN KEY (roll_out_config_id) REFERENCES roll_out_configs(id) ON DELETE CASCADE,
+	FOREIGN KEY (db_config_id) REFERENCES drawer_box_configs(id) ON DELETE CASCADE
+);
+
+CREATE TABLE wall_cabinets (
+	product_id BLOB NOT NULL,
+	door_qty INTEGER NOT NULL,
+	hinge_side TEXT NOT NULL,
+	door_extend_down REAL NOT NULL,
+	adj_shelf_qty INTEGER NOT NULL,
+	vert_div_qty INTEGER NOT NULL,
+	finished_bottom INTEGER NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE drawer_base_cabinets (
+	product_id BLOB NOT NULL,
+	toe_type TEXT NOT NULL,
+	face_heights TEXT NOT NULL,
+	db_config_id BLOB NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+	FOREIGN KEY (db_config_id) REFERENCES drawer_box_configs(id) ON DELETE CASCADE
+);
+
+CREATE TABLE tall_cabinets (
+	product_id BLOB NOT NULL,
+	toe_type TEXT NOT NULL,
+	lower_adj_shelf_qty INTEGER NOT NULL,
+	upper_adj_shelf_qty INTEGER NOT NULL,
+	lower_vert_div_qty INTEGER NOT NULL,
+	upper_vert_div_qty INTEGER NOT NULL,
+	roll_out_config BLOB,
+	lower_door_qty INTEGER NOT NULL,
+	upper_door_qty INTEGER NOT NULL,
+	lower_door_height REAL NOT NULL,
+	hinge_side TEXT NOT NULL,
+	db_config_id BLOB NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+	FOREIGN KEY (db_config_id) REFERENCES drawer_box_configs(id) ON DELETE CASCADE
+);
+
+CREATE TABLE sink_cabinets (
+	product_id BLOB NOT NULL,
+	toe_type TEXT NOT NULL,
+	hinge_side TEXT NOT NULL,
+	door_qty INTEGER NOT NULL,
+	false_drawer_qty INTEGER NOT NULL,
+	drawer_face_height REAL NOT NULL,
+	adj_shelf_qty INTEGER NOT NULL,
+	shelf_depth TEXT NOT NULL,
+	roll_out_config_id BLOB,
+	db_config_id BLOB NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+	FOREIGN KEY (roll_out_config_id) REFERENCES roll_out_configs(id) ON DELETE CASCADE,
+	FOREIGN KEY (db_config_id) REFERENCES drawer_box_configs(id) ON DELETE CASCADE
+);
+
+CREATE TABLE trash_cabinets (
+	product_id BLOB NOT NULL,
+	toe_type TEXT NOT NULL,
+	trash_config TEXT NOT NULL,
+	drawer_face_height REAL NOT NULL,
+	db_config_id BLOB NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+	FOREIGN KEY (db_config_id) REFERENCES drawer_box_configs(id) ON DELETE CASCADE
+);
+
+CREATE TABLE diagonal_base_cabinets (
+	product_id BLOB NOT NULL,
+	toe_type TEXT NOT NULL,
+	right_width REAL NOT NULL,
+	right_depth REAL NOT NULL,
+	hinge_side TEXT NOT NULL,
+	door_qty INTEGER NOT NULL,
+	adj_shelf_qty INTEGER NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE diagonal_wall_cabinets (
+	product_id BLOB NOT NULL,
+	right_width REAL NOT NULL,
+	right_depth REAL NOT NULL,
+	hinge_side TEXT NOT NULL,
+	door_qty INTEGER NOT NULL,
+	door_extend_down REAL NOT NULL,
+	adj_shelf_qty INTEGER NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE pie_cut_base_cabinets (
+	product_id BLOB NOT NULL,
+	toe_type TEXT NOT NULL,
+	right_width REAL NOT NULL,
+	right_depth REAL NOT NULL,
+	hinge_side TEXT NOT NULL,
+	adj_shelf_qty INTEGER NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE pie_cut_wall_cabinets (
+	product_id BLOB NOT NULL,
+	right_width REAL NOT NULL,
+	right_depth REAL NOT NULL,
+	hinge_side TEXT NOT NULL,
+	door_extend_down REAL NOT NULL,
+	adj_shelf_qty INTEGER NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE blind_base_cabinets (
+	product_id BLOB NOT NULL,
+	toe_type TEXT NOT NULL,
+	adj_shelf_qty INTEGER NOT NULL,
+	shelf_depth TEXT NOT NULL,
+	blind_side TEXT NOT NULL,
+	blind_width REAL NOT NULL,
+	door_qty INTEGER NOT NULL,
+	hinge_side TEXT NOT NULL,
+	drawer_qty INTEGER NOT NULL,
+	drawer_face_height TEXT NOT NULL,
+	db_config_id BLOB,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+	FOREIGN KEY (db_config_id) REFERENCES drawer_box_configs(id) ON DELETE CASCADE
+);
+
+CREATE TABLE blind_wall_cabinets (
+	product_id BLOB NOT NULL,
+	blind_side TEXT NOT NULL,
+	blind_width REAL NOT NULL,
+	adj_shelf_qty INTEGER NOT NULL,
+	door_extend_down REAL NOT NULL,
+	door_qty INTEGER NOT NULL,
+	hinge_side TEXT NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);

@@ -50,7 +50,7 @@ public class TrashCabinetSuppliesTests {
     public void Should_IncludeFourLegLevelersPerCabinet() {
 
         // Arrange
-        var cabinet = _builder.WithToeType(new LegLevelers()).WithQty(2).Build();
+        var cabinet = _builder.WithToeType(ToeType.LegLevelers).WithQty(2).Build();
         var expectedSupply = Supply.CabinetLeveler(4 * cabinet.Qty);
 
         // Act

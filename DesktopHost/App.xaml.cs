@@ -18,8 +18,8 @@ public partial class App : Application {
 
     private void Application_Startup(object sender, StartupEventArgs e) {
 
-        try { 
-            
+        try {
+
             var configuration = BuildConfiguration();
             var serviceProvider = BuildServiceProvider(configuration);
 

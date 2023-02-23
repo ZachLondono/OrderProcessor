@@ -20,12 +20,14 @@ public class TallCabinetDoorTests {
             RightStile = Dimension.Zero,
             EdgeDetail = "",
             FramingBead = "",
-            Material = ""
+            Material = "",
+            PanelDetail = "",
+            Thickness = Dimension.Zero
         };
 
         _doorBuilderFactory = () => new(doorConfiguration);
 
-        _mdfOptions = new("Style", "Color");
+        _mdfOptions = new("MDF", Dimension.Zero, "Shaker", "Eased", "Flat", Dimension.Zero, null);
 
     }
 
@@ -38,7 +40,7 @@ public class TallCabinetDoorTests {
         // Arrange
         var cabinet = new TallCabinetBuilder()
                             .WithDoors(new(HingeSide.Left))
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(2134))
                             .WithDepth(Dimension.FromMillimeters(610))
@@ -61,7 +63,7 @@ public class TallCabinetDoorTests {
         // Arrange
         var cabinet = new TallCabinetBuilder()
                             .WithDoors(new(HingeSide.Left))
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(2134))
                             .WithDepth(Dimension.FromMillimeters(610))
@@ -87,7 +89,7 @@ public class TallCabinetDoorTests {
         // Arrange
         var cabinet = new TallCabinetBuilder()
                             .WithDoors(new(hingeSide))
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
@@ -144,7 +146,7 @@ public class TallCabinetDoorTests {
         // Arrange
         var cabinet = new TallCabinetBuilder()
                             .WithDoors(new(Dimension.FromMillimeters(lowerDoorHeight), hingeSide))
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))

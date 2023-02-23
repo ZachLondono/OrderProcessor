@@ -31,7 +31,7 @@ public class BlindBaseCabinetDrawerBoxTests {
                                 SlideType = DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithDoors(new() { Quantity = drawerCount })
                             .WithBlindWidth(Dimension.FromMillimeters(635))
                             .WithQty(cabQty)
@@ -61,7 +61,7 @@ public class BlindBaseCabinetDrawerBoxTests {
                                 SlideType = slideType,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithDoors(new() { Quantity = 1 })
                             .WithBlindWidth(Dimension.FromMillimeters(635))
                             .WithQty(1)
@@ -92,7 +92,7 @@ public class BlindBaseCabinetDrawerBoxTests {
                                 SlideType = DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(drawerFaceHeight)
                             })
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithDoors(new() { Quantity = 1 })
                             .WithBlindWidth(Dimension.FromMillimeters(635))
                             .WithQty(1)
@@ -130,7 +130,7 @@ public class BlindBaseCabinetDrawerBoxTests {
                                 SlideType = slideType,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
-                            .WithToeType(new LegLevelers())
+                            .WithToeType(ToeType.LegLevelers)
                             .WithDoors(new() { Quantity = 1 })
                             .WithBlindWidth(Dimension.FromMillimeters(635))
                             .WithQty(1)

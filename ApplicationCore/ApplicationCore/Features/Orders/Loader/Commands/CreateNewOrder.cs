@@ -5,21 +5,24 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
+using Microsoft.Extensions.Logging;
 using System.Data;
 using System.Diagnostics;
 
 namespace ApplicationCore.Features.Orders.Loader.Commands;
 
-public class CreateNewOrder {
+public partial class CreateNewOrder {
 
     public record Command(string Source, string Number, string Name, Customer Customer, Guid VendorId, string Comment, DateTime OrderDate, ShippingInfo Shipping, BillingInfo Billing, decimal Tax, decimal PriceAdjustment, bool Rush, IReadOnlyDictionary<string, string> Info, IEnumerable<IProduct> Products, IEnumerable<AdditionalItem> AdditionalItems, Guid? OrderId = null) : ICommand<Order>;
 
-    public class Handler : CommandHandler<Command, Order> {
+    public partial class Handler : CommandHandler<Command, Order> {
 
+        private readonly ILogger<Handler> _logger;
         private readonly IOrderingDbConnectionFactory _factory;
         private readonly IBus _bus;
 
-        public Handler(IOrderingDbConnectionFactory factory, IBus bus) {
+        public Handler(ILogger<Handler> logger, IOrderingDbConnectionFactory factory, IBus bus) {
+            _logger = logger;
             _factory = factory;
             _bus = bus;
         }
@@ -35,39 +38,82 @@ public class CreateNewOrder {
 
             try {
 
-
                 Guid shippingAddressId = Guid.NewGuid();
-                const string shippingAddressCommand = @"INSERT INTO shippingaddresses (id, line1, line2, line3, city, state, zip, country)
-                                                        VALUES (@Id, @Line1, @Line2, @Line3, @City, @State, @Zip, @Country);";
-                await connection.ExecuteAsync(shippingAddressCommand, new {
-                    Id = shippingAddressId,
-                    order.Shipping.Address.Line1,
-                    order.Shipping.Address.Line2,
-                    order.Shipping.Address.Line3,
-                    order.Shipping.Address.City,
-                    order.Shipping.Address.State,
-                    order.Shipping.Address.Zip,
-                    order.Shipping.Address.Country,
-                });
+                await InsertAddress(order.Shipping.Address, shippingAddressId, connection, trx);
 
                 Guid billingAddressId = Guid.NewGuid();
-                const string billingAddressCommand = @"INSERT INTO billingaddresses (id, line1, line2, line3, city, state, zip, country)
-                                                        VALUES (@Id, @Line1, @Line2, @Line3, @City, @State, @Zip, @Country);";
-                await connection.ExecuteAsync(billingAddressCommand, new {
-                    Id = billingAddressId,
-                    order.Billing.Address.Line1,
-                    order.Billing.Address.Line2,
-                    order.Billing.Address.Line3,
-                    order.Billing.Address.City,
-                    order.Billing.Address.State,
-                    order.Billing.Address.Zip,
-                    order.Billing.Address.Country,
-                });
+                await InsertAddress(order.Billing.Address, billingAddressId, connection, trx);
 
-                const string command = @"INSERT INTO orders (id, source, number, name, vendorid, customername, customercomment, orderdate, info, tax, priceadjustment, rush, shippingmethod, shippingprice, shippingcontact, shippingphonenumber, shippingaddressid, invoiceemail, billingphonenumber, billingaddressid)
-                                        VALUES (@Id, @Source, @Number, @Name, @VendorId, @CustomerName, @CustomerComment, @OrderDate, @Info, @Tax, @PriceAdjustment, @Rush, @ShippingMethod, @ShippingPrice, @ShippingContact, @ShippingPhoneNumber, @ShippingAddressId, @InvoiceEmail, @BillingPhoneNumber, @BillingAddressId);";
+                await InsertOrder(order, shippingAddressId, billingAddressId, connection, trx);
 
-                await connection.ExecuteAsync(command, new {
+                await InsertItems(request.AdditionalItems, order.Id, connection, trx);
+
+                await InsertProducts(order.Products, order.Id, connection, trx);
+
+                trx.Commit();
+
+            } catch (Exception ex) {
+                trx.Rollback();
+                Debug.WriteLine(ex);
+            } finally {
+                connection.Close();
+            }
+
+            await _bus.Publish(new OrderCreatedNotification() {
+                Order = order
+            });
+
+            return new(order);
+
+        }
+
+        private static async Task InsertOrder(Order order, Guid shippingAddressId, Guid billingAddressId, IDbConnection connection, IDbTransaction trx) {
+            await connection.ExecuteAsync(
+                """
+                INSERT INTO orders
+                    (id,
+                    source,
+                    number,
+                    name,
+                    vendor_id,
+                    customer_name,
+                    customer_comment,
+                    order_date,
+                    info,
+                    tax,
+                    price_adjustment,
+                    rush,
+                    shipping_method,
+                    shipping_price,
+                    shipping_contact,
+                    shipping_phone_number,
+                    shipping_address_id,
+                    invoice_email,
+                    billing_phone_number,
+                    billing_address_id)
+                VALUES
+                    (@Id,
+                    @Source,
+                    @Number,
+                    @Name,
+                    @VendorId,
+                    @CustomerName,
+                    @CustomerComment,
+                    @OrderDate,
+                    @Info,
+                    @Tax,
+                    @PriceAdjustment,
+                    @Rush,
+                    @ShippingMethod,
+                    @ShippingPrice,
+                    @ShippingContact,
+                    @ShippingPhoneNumber,
+                    @ShippingAddressId,
+                    @InvoiceEmail,
+                    @BillingPhoneNumber,
+                    @BillingAddressId);
+                """,
+                new {
                     order.Id,
                     order.Source,
                     order.Name,
@@ -89,44 +135,60 @@ public class CreateNewOrder {
                     BillingPhoneNumber = order.Billing.PhoneNumber,
                     BillingAddressId = billingAddressId
                 }, trx);
+        }
 
-                foreach (var item in request.AdditionalItems) {
+        private static async Task InsertAddress(Address address, Guid id, IDbConnection connection, IDbTransaction trx) {
 
-                    await CreateItem(item, order.Id, connection, trx);
+            string addressInsertQuery = @"INSERT INTO addresses (id, line1, line2, line3, city, state, zip, country)
+                                            VALUES (@Id, @Line1, @Line2, @Line3, @City, @State, @Zip, @Country);";
 
-                }
-
-                trx.Commit();
-
-            } catch (Exception ex) {
-                trx.Rollback();
-                Debug.WriteLine(ex);
-            } finally {
-                connection.Close();
-            }
-
-            await _bus.Publish(new OrderCreatedNotification() {
-                Order = order
-            });
-
-            return new(order);
+            await connection.ExecuteAsync(addressInsertQuery, new {
+                Id = id,
+                address.Line1,
+                address.Line2,
+                address.Line3,
+                address.City,
+                address.State,
+                address.Zip,
+                address.Country,
+            }, trx);
 
         }
 
-        private static async Task CreateItem(AdditionalItem item, Guid orderId, IDbConnection connection, IDbTransaction transaction) {
+        private static async Task InsertItems(IEnumerable<AdditionalItem> items, Guid orderId, IDbConnection connection, IDbTransaction trx) {
 
-            const string itemCommand = @"INSERT INTO additionalitems (id, orderid, description, price)
-                                        VALUES (@Id, @OrderId, @Description, @Price)";
+            foreach (var item in items) {
 
-            await connection.ExecuteAsync(itemCommand, new {
-                item.Id,
-                OrderId = orderId,
-                item.Description,
-                item.Price
-            }, transaction);
+                const string itemCommand = @"INSERT INTO additional_items (id, orderid, description, price)
+                                        VALUES (@Id, @OrderId, @Description, @Price);";
 
+                await connection.ExecuteAsync(itemCommand, new {
+                    item.Id,
+                    OrderId = orderId,
+                    item.Description,
+                    item.Price
+                }, trx);
+
+            }
+
+        }
+
+        private async Task InsertProducts(IEnumerable<IProduct> products, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+
+            foreach (var product in products) {
+
+                await InsertProduct((dynamic)product, orderId, connection, trx);
+
+            }
+
+        }
+
+        private Task InsertProduct(object unknown, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+            _logger.LogCritical("No insert method for product type {Type}", unknown.GetType());
+            return Task.CompletedTask;
         }
 
     }
 
 }
+
