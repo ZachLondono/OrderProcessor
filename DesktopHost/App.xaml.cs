@@ -8,6 +8,7 @@ using System;
 using System.Windows;
 using ApplicationCore.Features.Shared.Services;
 using DesktopHost.Error;
+using System.Windows.Threading;
 
 namespace DesktopHost;
 
@@ -17,6 +18,8 @@ namespace DesktopHost;
 public partial class App : Application {
 
     private void Application_Startup(object sender, StartupEventArgs e) {
+
+        Current.DispatcherUnhandledException += AppDispatcherUnhandledException;
 
         try {
 
@@ -69,6 +72,30 @@ public partial class App : Application {
 #else
         loggingBuilder.AddFilter("ApplicationCore", LogLevel.Information);
 #endif
+    }
+
+    private void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e) {
+        runException(e.Exception);
+
+        e.Handled = true;
+    }
+
+    void runException(Exception ex) {
+        
+        var window = new ErrorWindow {
+            DataContext = new ErrorWindowViewModel() {
+                Title = "Unhandled Exception in Application",
+                Message = string.Format(
+                            "{0} Error:  {1}\r\n\r\n{2}",
+                            ex.Source, ex.Message, ex.StackTrace)
+            }
+        };
+
+        window.ShowDialog();
+        
+        if (ex.InnerException != null) {
+            runException(ex.InnerException);
+        }
     }
 
 }
