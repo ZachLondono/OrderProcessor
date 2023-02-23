@@ -8,6 +8,7 @@ using System;
 using System.Windows;
 using ApplicationCore.Features.Shared.Services;
 using DesktopHost.Error;
+using Serilog;
 using System.Windows.Threading;
 
 namespace DesktopHost;
@@ -60,18 +61,18 @@ public partial class App : Application {
 #if DEBUG
         services.AddBlazorWebViewDeveloperTools();
 #endif
-
+        
         return services.BuildServiceProvider();
 
     }
 
     private static void ConfigureLogging(ILoggingBuilder loggingBuilder) {
-        loggingBuilder.AddDebug();
-#if DEBUG
-        loggingBuilder.AddFilter("ApplicationCore", LogLevel.Trace);
-#else
-        loggingBuilder.AddFilter("ApplicationCore", LogLevel.Information);
-#endif
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Debug()
+            .WriteTo.SQLite("logs.db")
+            .CreateLogger();
+
+        loggingBuilder.ClearProviders().AddSerilog();
     }
 
     private void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e) {
