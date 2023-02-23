@@ -8,10 +8,10 @@ public record ToeType {
     public Dimension HeightAdjustment { get; }
     public string PSIParameter { get; }
 
-    private ToeType(Dimension toeHeight, Dimension heightAdjustment, string pSIParameter) {
+    protected ToeType(Dimension toeHeight, Dimension heightAdjustment, string psiParameter) {
         ToeHeight = toeHeight;
         HeightAdjustment = heightAdjustment;
-        PSIParameter = pSIParameter;
+        PSIParameter = psiParameter;
     }
 
     public static ToeType Notched => new(Dimension.FromMillimeters(102), Dimension.Zero, "0");
