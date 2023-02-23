@@ -46,12 +46,12 @@
         <tbody>
             @foreach(var order in ViewModel.Orders) {
                 <tr class="justify-center hover:bg-slate-200 dark:hover:bg-slate-500 cursor-pointer">
-                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenOrder(order.Id)">@order.Number</td>
-                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenOrder(order.Id)">@order.Name</td>
-                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenOrder(order.Id)">@order.CustomerName</td>
+                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await SelectOrder(order.Id)">@order.Number</td>
+                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await SelectOrder(order.Id)">@order.Name</td>
+                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await SelectOrder(order.Id)">@order.CustomerName</td>
                     <td class="p-5 whitespace-nowrap border-b hover:text-underline dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenCompanyPage(order.VendorId)">@order.VendorName</td>
-                    <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenOrder(order.Id)">@order.ItemCount</td>
-                    <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await ViewModel.OpenOrder(order.Id)">@order.OrderDate.ToShortDateString()</td>
+                    <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await SelectOrder(order.Id)">@order.ItemCount</td>
+                    <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await SelectOrder(order.Id)">@order.OrderDate.ToShortDateString()</td>
                 </tr>
             }
         </tbody>
@@ -63,6 +63,9 @@
 
 @code {
 
+    [CascadingParameter]
+    public IModalService ModalService { get; set; } = default!;
+
     protected override async Task OnInitializedAsync() {
 
         if (ViewModel is null) {
@@ -72,6 +75,20 @@
         ViewModel.OnPropertyChanged += () => StateHasChanged();
 
         await ViewModel.LoadOrders();
+
+    }
+
+    private async Task SelectOrder(Guid orderId) {
+
+        try {
+            await ViewModel.OpenOrder(orderId);
+        } catch (Exception ex) {
+
+            await ModalService.OpenErrorDialog(new() {
+                    Title = "Error Opening Order",
+                    Details = $"An exception was thrown while trying to open the order <br><br><br> {ex.Message} <br><br> {ex.StackTrace}"
+            }, ModalSize.ExtraLarge);
+        }
 
     }
 
