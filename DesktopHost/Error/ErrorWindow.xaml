@@ -5,9 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DesktopHost"
         mc:Ignorable="d"
+        SizeToContent="WidthAndHeight"
         Title="ErrorWindow" Height="118" Width="360">
-    <StackPanel>
-        <TextBlock Text="{Binding Path=Title}" HorizontalAlignment="Center" />
-        <TextBlock Text="{Binding Path=Message}" HorizontalAlignment="Center" />
-    </StackPanel>
+    <Border Padding="10">
+        <StackPanel>
+            <TextBlock Text="{Binding Path=Title}" HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding Path=Message}" HorizontalAlignment="Center" />
+        </StackPanel>
+    </Border>
 </Window>
