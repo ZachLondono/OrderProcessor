@@ -115,8 +115,8 @@ public class OrderDataModel {
                 billing_address.country AS BillingCountry
 
             FROM orders
-                JOIN addresses AS shipping_address ON shipping_address.id = orders.shipping_address_id
-                JOIN addresses AS billing_address ON billing_address.id = orders.billing_address_id
+                LEFT JOIN addresses AS shipping_address ON shipping_address.id = orders.shipping_address_id
+                LEFT JOIN addresses AS billing_address ON billing_address.id = orders.billing_address_id
             WHERE
                 orders.id = @Id;";
 }
