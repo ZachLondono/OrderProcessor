@@ -27,7 +27,16 @@ public class GetOrderById {
 
             using var connection = _factory.CreateConnection();
 
-            var orderData = await connection.QuerySingleAsync<OrderDataModel>(OrderDataModel.GetQueryById(), new { Id = request.OrderId });
+            var orderData = await connection.QuerySingleOrDefaultAsync<OrderDataModel>(OrderDataModel.GetQueryById(), new { Id = request.OrderId });
+
+            if (orderData is null) {
+
+                return Response<Order>.Error(new() {
+                    Title = "Order not found",
+                    Details = $"Could not find order in database with given id {request.OrderId}"
+                });
+
+            }
 
             var itemData = await connection.QueryAsync<AdditionalItemDataModel>(AdditionalItemDataModel.GetQueryByOrderId(), request);
             var items = itemData.Select(i => i.AsDomainModel());
