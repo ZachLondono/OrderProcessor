@@ -16,9 +16,6 @@ public partial class CreateNewOrder {
                 await InsertMDFConfig((Guid)mdfConfigId, mdfConfig, connection, trx);
             }
 
-            Guid rollOutConfigId = Guid.NewGuid();
-            await InsertRollOutConfig(rollOutConfigId, cabinet.Inside.RollOutBoxes, connection, trx);
-
             var dbConfigId = Guid.NewGuid();
             await InsertCabinetDBConfig(dbConfigId, cabinet.DrawerBoxOptions, connection, trx);
 
@@ -30,7 +27,9 @@ public partial class CreateNewOrder {
                 ToeType = cabinet.ToeType,
                 DoorQty = cabinet.Doors.Quantity,
                 HingeSide = cabinet.Doors.HingeSide,
-                ROConfigId = rollOutConfigId,
+                RolloutConfigPositions = cabinet.Inside.RollOutBoxes.Positions,
+                RolloutConfigBlockType = cabinet.Inside.RollOutBoxes.Blocks,
+                RolloutConfigScoopFront = cabinet.Inside.RollOutBoxes.ScoopFront,
                 AdjShelfQty = cabinet.Inside.AdjustableShelves,
                 VertDivQty = cabinet.Inside.VerticalDividers,
                 ShelfDepth = cabinet.Inside.ShelfDepth,
@@ -45,7 +44,9 @@ public partial class CreateNewOrder {
                         toe_type,
                         door_qty,
                         hinge_side,
-                        roll_out_config_id,
+                        rollout_positions,
+                        rollout_block_type,
+                        rollout_scoop_front,
                         adj_shelf_qty,
                         vert_div_qty,
                         shelf_depth,
@@ -57,7 +58,9 @@ public partial class CreateNewOrder {
                         @ToeType,
                         @DoorQty,
                         @HingeSide,
-                        @ROConfigId,
+                        @RolloutConfigPositions,
+                        @RolloutConfigBlockType,
+                        @RolloutConfigScoopFront,
                         @AdjShelfQty,
                         @VertDivQty,
                         @ShelfDepth,

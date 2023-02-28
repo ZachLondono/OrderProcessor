@@ -67,9 +67,9 @@ internal class SinkCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
             db_config.material AS DBMaterial,
             db_config.slide_type AS DBSlideType,
 
-            roll_out_configs.positions AS ROPositions,
-            roll_out_configs.block_type AS ROBlockType,
-            roll_out_configs.scoop_front AS ROScoopFront,
+            sink_cabinets.rollout_positions AS ROPositions,
+            sink_cabinets.rollout_block_type AS ROBlockType,
+            sink_cabinets.rollout_scoop_front AS ROScoopFront,
 
             cabinets.mdf_config_id IS NULL AS ContainsMDFDoor,
             mdf_door_configs.framing_bead AS FramingBead,
@@ -85,7 +85,6 @@ internal class SinkCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
             JOIN products ON sink_cabinets.product_id = products.id
             JOIN cabinets ON cabinets.product_id = sink_cabinets.product_id
             JOIN cabinet_db_configs AS db_config ON sink_cabinets.db_config_id = db_config.id
-            JOIN roll_out_configs ON roll_out_configs.id = sink_cabinets.roll_out_config_id
             LEFT JOIN mdf_door_configs ON cabinets.mdf_config_id = mdf_door_configs.id
 
         WHERE

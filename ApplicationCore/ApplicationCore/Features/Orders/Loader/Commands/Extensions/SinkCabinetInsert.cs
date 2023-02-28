@@ -16,9 +16,6 @@ public partial class CreateNewOrder {
                 await InsertMDFConfig((Guid)mdfConfigId, mdfConfig, connection, trx);
             }
 
-            Guid rollOutConfigId = Guid.NewGuid();
-            await InsertRollOutConfig(rollOutConfigId, cabinet.RollOutBoxes, connection, trx);
-
             var dbConfigId = Guid.NewGuid();
             await InsertCabinetDBConfig(dbConfigId, cabinet.DrawerBoxOptions, connection, trx);
 
@@ -34,7 +31,9 @@ public partial class CreateNewOrder {
                 DrawerFaceHeight = cabinet.DrawerFaceHeight,
                 AdjShelfQty = cabinet.AdjustableShelves,
                 ShelfDepth = cabinet.ShelfDepth,
-                RollOutConfigId = rollOutConfigId,
+                RolloutConfigPositions = cabinet.RollOutBoxes.Positions,
+                RolloutConfigBlockType = cabinet.RollOutBoxes.Blocks,
+                RolloutConfigScoopFront = cabinet.RollOutBoxes.ScoopFront,
                 DBConfigId = dbConfigId
             };
 
@@ -48,7 +47,9 @@ public partial class CreateNewOrder {
                         drawer_face_height,
                         adj_shelf_qty,
                         shelf_depth,
-                        roll_out_config_id,
+                        rollout_positions,
+                        rollout_block_type,
+                        rollout_scoop_front,
                         db_config_id)
                     VALUES
                         (@ProductId,
@@ -59,7 +60,9 @@ public partial class CreateNewOrder {
                         @DrawerFaceHeight,
                         @AdjShelfQty,
                         @ShelfDepth,
-                        @RollOutConfigId,
+                        @RolloutConfigPositions,
+                        @RolloutConfigBlockType,
+                        @RolloutConfigScoopFront,
                         @DBConfigId);
                     """, parameters, trx);
 

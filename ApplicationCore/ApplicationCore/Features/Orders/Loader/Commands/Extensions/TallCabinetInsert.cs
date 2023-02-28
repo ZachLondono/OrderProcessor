@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using Dapper;
 using System.Data;
 
@@ -17,9 +16,6 @@ public partial class CreateNewOrder {
                 await InsertMDFConfig((Guid)mdfConfigId, mdfConfig, connection, trx);
             }
 
-            var rollOutConfigId = Guid.NewGuid();
-            await InsertRollOutConfig(rollOutConfigId, cabinet.Inside.RollOutBoxes, connection, trx);
-
             var dbConfigId = Guid.NewGuid();
             await InsertCabinetDBConfig(dbConfigId, cabinet.DrawerBoxOptions, connection, trx);
 
@@ -33,7 +29,9 @@ public partial class CreateNewOrder {
                 UpperAdjShelfQty = cabinet.Inside.AdjustableShelvesUpper,
                 LowerVertDivQty = cabinet.Inside.VerticalDividersLower,
                 UpperVertDivQty = cabinet.Inside.VerticalDividersUpper,
-                RollOutConfigId = rollOutConfigId,
+                RolloutConfigPositions = cabinet.Inside.RollOutBoxes.Positions,
+                RolloutConfigBlockType = cabinet.Inside.RollOutBoxes.Blocks,
+                RolloutConfigScoopFront = cabinet.Inside.RollOutBoxes.ScoopFront,
                 LowerDoorQty = cabinet.Doors.LowerDoorHeight,
                 UpperDoorQty = cabinet.Doors.UpperQuantity,
                 LowerDoorHeight = cabinet.Doors.LowerDoorHeight,
@@ -49,7 +47,9 @@ public partial class CreateNewOrder {
                         upper_adj_shelf_qty,
                         lower_vert_div_qty,
                         upper_vert_div_qty,
-                        roll_out_config_id,
+                        rollout_positions,
+                        rollout_block_type,
+                        rollout_scoop_front,
                         lower_door_qty,
                         upper_door_qty,
                         lower_door_height,
@@ -62,7 +62,9 @@ public partial class CreateNewOrder {
                         @UpperAdjShelfQty,
                         @LowerVertDivQty,
                         @UpperVertDivQty,
-                        @RollOutConfigId,
+                        @RolloutConfigPositions,
+                        @RolloutConfigBlockType,
+                        @RolloutConfigScoopFront,
                         @LowerDoorQty,
                         @UpperDoorQty,
                         @LowerDoorHeight,

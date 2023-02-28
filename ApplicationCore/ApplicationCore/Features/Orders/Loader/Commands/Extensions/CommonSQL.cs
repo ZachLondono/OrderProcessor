@@ -89,25 +89,6 @@ public partial class CreateNewOrder {
 
         }
 
-        private static async Task InsertRollOutConfig(Guid id, RollOutOptions rollout, IDbConnection connection, IDbTransaction trx) {
-
-            var parameters = new {
-                ROConfigId = id,
-                ROConfigPositions = rollout.Positions,
-                ROConfigBlockType = rollout.Blocks,
-                ROConfigScoopFront = rollout.ScoopFront
-            };
-
-            await connection.ExecuteAsync(
-                """
-                INSERT INTO roll_out_configs
-                    (id, positions, block_type, scoop_front)
-                VALUES
-                    (@ROConfigId, @ROConfigPositions, @ROConfigBlockType, @ROConfigScoopFront);
-                """, parameters, trx);
-
-        }
-
         private static async Task InsertMDFConfig(Guid id, MDFDoorOptions options, IDbConnection connection, IDbTransaction trx) {
 
             var parameters = new {

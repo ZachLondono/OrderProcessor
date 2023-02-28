@@ -22,9 +22,15 @@ CREATE TABLE orders (
 	billing_phone_number TEXT,
 	billing_address_id BLOB NOT NULL,
 	PRIMARY KEY (id),
-	FOREIGN KEY (shipping_address_id) REFERENCES addresses(id) ON DELETE CASCADE,
-	FOREIGN KEY (billing_address_id) REFERENCES addresses(id) ON DELETE CASCADE
+	FOREIGN KEY (shipping_address_id) REFERENCES addresses(id),
+	FOREIGN KEY (billing_address_id) REFERENCES addresses(id)
 );
+
+CREATE TRIGGER remove_order_addresses AFTER DELETE ON orders
+BEGIN
+	DELETE FROM addresses WHERE id = OLD.shipping_address_id;
+	DELETE FROM addresses WHERE id = OLD.billing_address_id;
+END;
 
 CREATE TABLE addresses (
 	id BLOB NOT NULL,
@@ -44,7 +50,7 @@ CREATE TABLE additional_items (
 	description TEXT NOT NULL,
 	price REAL NOT NULL,
 	PRIMARY KEY (id),
-	FOREIGN KEY (order_id) REFERENCES orders(id)
+	FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
 -- Product Tables --
@@ -56,7 +62,7 @@ CREATE TABLE products (
 	unit_price REAL NOT NULL,
 	product_number INTEGER NOT NULL,
 	PRIMARY KEY (id),
-	FOREIGN KEY (order_id) REFERENCES orders(id)
+	FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
 CREATE TABLE mdf_door_products (
@@ -72,8 +78,13 @@ CREATE TABLE mdf_door_products (
 	right_stile REAL NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-	FOREIGN KEY (product_id) REFERENCES mdf_door_configs(id) ON DELETE CASCADE
+	FOREIGN KEY (product_id) REFERENCES mdf_door_configs(id)
 );
+
+CREATE TRIGGER remove_mdf_door_config AFTER DELETE ON mdf_door_products
+BEGIN
+	DELETE FROM mdf_door_configs WHERE id = OLD.product_id;
+END;
 
 CREATE TABLE dovetail_drawer_products (
 	product_id BLOB NOT NULL,
@@ -84,8 +95,13 @@ CREATE TABLE dovetail_drawer_products (
 	label_fields TEXT NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-	FOREIGN KEY (product_id) REFERENCES drawer_box_configs(id) ON DELETE CASCADE
+	FOREIGN KEY (product_id) REFERENCES drawer_box_configs(id)
 );
+
+CREATE TRIGGER remove_dovetail_drawer_config AFTER DELETE ON dovetail_drawer_products
+BEGIN
+	DELETE FROM drawer_box_configs WHERE id = OLD.product_id;
+END;
 
 CREATE TABLE closet_parts (
 	product_id BLOB NOT NULL,
@@ -122,16 +138,13 @@ CREATE TABLE cabinets (
 	mdf_config_id BLOB,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-	FOREIGN KEY (mdf_config_id) REFERENCES mdf_door_configs(id) ON DELETE CASCADE
+	FOREIGN KEY (mdf_config_id) REFERENCES mdf_door_configs(id)
 );
 
-CREATE TABLE roll_out_configs (
-	id BLOB NOT NULL,
-	positions TEXT NOT NULL,
-	block_type INTEGER NOT NULL,
-	scoop_front INTEGER NOT NULL,
-	PRIMARY KEY (id)
-);
+CREATE TRIGGER remove_cabinet_mdf_config AFTER DELETE ON cabinets
+BEGIN
+	DELETE FROM mdf_door_configs WHERE id = OLD.mdf_config_id;
+END;
 
 CREATE TABLE drawer_box_configs (
 	id BLOB NOT NULL,
@@ -174,7 +187,9 @@ CREATE TABLE base_cabinets (
 	toe_type TEXT NOT NULL,	
 	door_qty INTEGER NOT NULL,
 	hinge_side INTEGER NOT NULL,
-	roll_out_config_id BLOB NOT NULL,
+	rollout_positions TEXT NOT NULL,
+	rollout_block_type INTEGER NOT NULL,
+	rollout_scoop_front INTEGER NOT NULL,
 	adj_shelf_qty INTEGER NOT NULL,
 	vert_div_qty INTEGER NOT NULL,
 	shelf_depth INTEGER NOT NULL,
@@ -183,8 +198,7 @@ CREATE TABLE base_cabinets (
 	db_config_id BLOB,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-	FOREIGN KEY (roll_out_config_id) REFERENCES roll_out_configs(id) ON DELETE CASCADE,
-	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id) ON DELETE CASCADE
+	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)
 );
 
 CREATE TABLE wall_cabinets (
@@ -206,7 +220,7 @@ CREATE TABLE drawer_base_cabinets (
 	db_config_id BLOB NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id) ON DELETE CASCADE
+	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)
 );
 
 CREATE TABLE tall_cabinets (
@@ -216,7 +230,9 @@ CREATE TABLE tall_cabinets (
 	upper_adj_shelf_qty INTEGER NOT NULL,
 	lower_vert_div_qty INTEGER NOT NULL,
 	upper_vert_div_qty INTEGER NOT NULL,
-	roll_out_config_id BLOB,
+	rollout_positions TEXT NOT NULL,
+	rollout_block_type INTEGER NOT NULL,
+	rollout_scoop_front INTEGER NOT NULL,
 	lower_door_qty INTEGER NOT NULL,
 	upper_door_qty INTEGER NOT NULL,
 	lower_door_height REAL NOT NULL,
@@ -224,7 +240,7 @@ CREATE TABLE tall_cabinets (
 	db_config_id BLOB NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id) ON DELETE CASCADE
+	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)
 );
 
 CREATE TABLE sink_cabinets (
@@ -236,12 +252,13 @@ CREATE TABLE sink_cabinets (
 	drawer_face_height REAL NOT NULL,
 	adj_shelf_qty INTEGER NOT NULL,
 	shelf_depth INTEGER NOT NULL,
-	roll_out_config_id BLOB,
+	rollout_positions TEXT NOT NULL,
+	rollout_block_type INTEGER NOT NULL,
+	rollout_scoop_front INTEGER NOT NULL,
 	db_config_id BLOB NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-	FOREIGN KEY (roll_out_config_id) REFERENCES roll_out_configs(id) ON DELETE CASCADE,
-	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id) ON DELETE CASCADE
+	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)
 );
 
 CREATE TABLE trash_cabinets (
@@ -252,7 +269,7 @@ CREATE TABLE trash_cabinets (
 	db_config_id BLOB NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id) ON DELETE CASCADE
+	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)
 );
 
 CREATE TABLE diagonal_base_cabinets (
@@ -315,7 +332,7 @@ CREATE TABLE blind_base_cabinets (
 	db_config_id BLOB,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id) ON DELETE CASCADE
+	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)
 );
 
 CREATE TABLE blind_wall_cabinets (
