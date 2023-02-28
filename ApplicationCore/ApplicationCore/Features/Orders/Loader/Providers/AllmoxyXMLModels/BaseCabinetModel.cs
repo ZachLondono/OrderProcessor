@@ -53,17 +53,17 @@ public class BaseCabinetModel : CabinetModelBase {
         };
 
         HorizontalDrawerBank drawers = new() {
-            BoxMaterial = AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial),
             FaceHeight = DrawerQty == 0 ? Dimension.Zero : Dimension.FromMillimeters(DrawerFaceHeight),
-            Quantity = DrawerQty,
-            SlideType = AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide)
+            Quantity = DrawerQty
         };
+
+        var boxOptions = new CabinetDrawerBoxOptions(AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial), AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide));
 
         BaseCabinetInside inside;
         Dimension[] rollOutBoxPositions = AllmoxyXMLOrderProviderHelpers.GetRollOutPositions(RollOuts.Pos1, RollOuts.Pos2, RollOuts.Pos3, RollOuts.Pos4, RollOuts.Pos5);
         RollOutBlockPosition rollOutBlocks = AllmoxyXMLOrderProviderHelpers.GetRollOutBlockPositions(RollOuts.Blocks);
         if (rollOutBoxPositions.Length != 0) {
-            var rollOutOptions = new RollOutOptions(rollOutBoxPositions, true, rollOutBlocks, drawers.SlideType, drawers.BoxMaterial);
+            var rollOutOptions = new RollOutOptions(rollOutBoxPositions, true, rollOutBlocks);
             inside = new(AdjShelfQty, rollOutOptions, AllmoxyXMLOrderProviderHelpers.GetShelfDepth(ShelfDepth));
         } else inside = new(AdjShelfQty, VerticalDividerQty, AllmoxyXMLOrderProviderHelpers.GetShelfDepth(ShelfDepth));
 
@@ -76,6 +76,7 @@ public class BaseCabinetModel : CabinetModelBase {
                     .WithToeType(toeType)
                     .WithDoors(doors)
                     .WithDrawers(drawers)
+                    .WithBoxOptions(boxOptions)
                     .Build();
 
     }

@@ -16,14 +16,11 @@ public partial class CreateNewOrder {
                 await InsertMDFConfig((Guid)mdfConfigId, mdfConfig, connection, trx);
             }
 
-            Guid? rollOutConfigId = null;
-            if (cabinet.RollOutBoxes.Any()) {
-                rollOutConfigId = Guid.NewGuid();
-                await InsertRollOutConfig((Guid)rollOutConfigId, cabinet.RollOutBoxes, connection, trx);
-            }
+            Guid rollOutConfigId = Guid.NewGuid();
+            await InsertRollOutConfig(rollOutConfigId, cabinet.RollOutBoxes, connection, trx);
 
             var dbConfigId = Guid.NewGuid();
-            await InsertDBConfig(dbConfigId, cabinet.DrawerBoxOptions, connection, trx);
+            await InsertCabinetDBConfig(dbConfigId, cabinet.DrawerBoxOptions, connection, trx);
 
             await InsertIntoProductTable(cabinet, orderId, connection, trx);
             await InsertCabinet(cabinet, mdfConfigId, connection, trx);
@@ -48,7 +45,7 @@ public partial class CreateNewOrder {
                         hinge_side,
                         door_qty,
                         false_drawer_qty,
-                        drawer_face_heights,
+                        drawer_face_height,
                         adj_shelf_qty,
                         shelf_depth,
                         roll_out_config_id,
@@ -62,7 +59,7 @@ public partial class CreateNewOrder {
                         @DrawerFaceHeight,
                         @AdjShelfQty,
                         @ShelfDepth,
-                        @RollOutConfigId
+                        @RollOutConfigId,
                         @DBConfigId);
                     """, parameters, trx);
 

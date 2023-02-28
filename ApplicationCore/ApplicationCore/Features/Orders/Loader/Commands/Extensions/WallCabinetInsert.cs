@@ -26,7 +26,7 @@ public partial class CreateNewOrder {
                 DoorExtendDown = cabinet.Doors.ExtendDown,
                 AdjShelfQty = cabinet.Inside.AdjustableShelves,
                 VertDivQty = cabinet.Inside.VerticalDividers,
-                FinisedBottom = cabinet.FinishedBottom
+                FinishedBottom = cabinet.FinishedBottom
             };
 
             await connection.ExecuteAsync("""

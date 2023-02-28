@@ -16,14 +16,11 @@ public partial class CreateNewOrder {
                 await InsertMDFConfig((Guid)mdfConfigId, mdfConfig, connection, trx);
             }
 
-            Guid? rollOutConfigId = null;
-            if (cabinet.Inside.RollOutBoxes.Any()) {
-                rollOutConfigId = Guid.NewGuid();
-                await InsertRollOutConfig((Guid)rollOutConfigId, cabinet.Inside.RollOutBoxes, connection, trx);
-            }
+            Guid rollOutConfigId = Guid.NewGuid();
+            await InsertRollOutConfig(rollOutConfigId, cabinet.Inside.RollOutBoxes, connection, trx);
 
             var dbConfigId = Guid.NewGuid();
-            await InsertDBConfig(dbConfigId, cabinet.DrawerBoxOptions, connection, trx);
+            await InsertCabinetDBConfig(dbConfigId, cabinet.DrawerBoxOptions, connection, trx);
 
             await InsertIntoProductTable(cabinet, orderId, connection, trx);
             await InsertCabinet(cabinet, mdfConfigId, connection, trx);

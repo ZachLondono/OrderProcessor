@@ -9,10 +9,9 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPProductContainer {
 
     public Dimension DrawerFaceHeight { get; set; }
-    public DrawerSlideType SlideType { get; set; }
-    public CabinetDrawerBoxMaterial DrawerBoxMaterial { get; set; }
     public TrashPulloutConfiguration TrashPulloutConfiguration { get; set; }
     public ToeType ToeType { get; }
+    public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
 
     public override string GetDescription() => "Trash Pullout Cabinet";
 
@@ -27,22 +26,21 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPP
     public TrashCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, DrawerSlideType slideType, CabinetDrawerBoxMaterial drawerBoxMaterial, ToeType toeType)
-        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment) {
+                        CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
+                        Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, CabinetDrawerBoxOptions drawerBoxOptions, ToeType toeType)
+        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
         DrawerFaceHeight = drawerFaceHeight;
         TrashPulloutConfiguration = trashPulloutConfiguration;
-        SlideType = slideType;
-        DrawerBoxMaterial = drawerBoxMaterial;
+        DrawerBoxOptions = drawerBoxOptions;
         ToeType = toeType;
     }
 
     public static TrashCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, DrawerSlideType slideType, CabinetDrawerBoxMaterial drawerBoxMaterial, ToeType toeType)
-        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment, drawerFaceHeight, trashPulloutConfiguration, slideType, drawerBoxMaterial, toeType);
+                        CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
+                        Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, CabinetDrawerBoxOptions drawerBoxOptions, ToeType toeType)
+        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, drawerFaceHeight, trashPulloutConfiguration, drawerBoxOptions, toeType);
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
@@ -79,18 +77,16 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPP
 
     }
 
-    public DrawerBoxOptions DrawerBoxOptions => new("", "", "", "", "Blum", GetNotchFromSlideType(SlideType), SlideType, "", LogoPosition.None);
-
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
         var insideWidth = Width - Construction.SideThickness * 2;
         var insideDepth = Depth - (Construction.BackThickness + Construction.BackInset);
 
-        var box = getBuilder().WithInnerCabinetDepth(insideDepth, SlideType)
-                                .WithInnerCabinetWidth(insideWidth, 1, SlideType)
+        var box = getBuilder().WithInnerCabinetDepth(insideDepth, DrawerBoxOptions.SlideType)
+                                .WithInnerCabinetWidth(insideWidth, 1, DrawerBoxOptions.SlideType)
                                 .WithDrawerFaceHeight(DrawerFaceHeight)
                                 .WithQty(Qty)
-                                .WithOptions(DrawerBoxOptions)
+                                .WithOptions(DrawerBoxOptions.DrawerBoxOptions)
                                 .WithProductNumber(ProductNumber)
                                 .Build();
 
@@ -105,8 +101,8 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPP
             Supply.DrawerPull(Qty)
         };
 
-        var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, SlideType);
-        switch (SlideType) {
+        var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType);
+        switch (DrawerBoxOptions.SlideType) {
             case DrawerSlideType.UnderMount:
                 supplies.Add(Supply.UndermountSlide(Qty, boxDepth));
                 break;
@@ -141,8 +137,8 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPP
             ["ProductW"] = Width.AsMillimeters().ToString(),
             ["ProductH"] = Height.AsMillimeters().ToString(),
             ["ProductD"] = Depth.AsMillimeters().ToString(),
-            ["FinishedLeft"] = GetSideOption(LeftSide.Type),
-            ["FinishedRight"] = GetSideOption(RightSide.Type),
+            ["FinishedLeft"] = GetSideOption(LeftSideType),
+            ["FinishedRight"] = GetSideOption(RightSideType),
             ["AppliedPanel"] = GetAppliedPanelOption(),
             ["DrawerH1"] = DrawerFaceHeight.AsMillimeters().ToString()
         };
@@ -160,18 +156,12 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPP
             }
         }
 
-        if (SlideType == DrawerSlideType.SideMount) {
+        if (DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
             parameters.Add("_DrawerRunType", "4");
         }
 
         return parameters;
 
     }
-
-    private static string GetNotchFromSlideType(DrawerSlideType slide) => slide switch {
-        DrawerSlideType.UnderMount => "Standard Notch",
-        DrawerSlideType.SideMount => "",
-        _ => ""
-    };
 
 }

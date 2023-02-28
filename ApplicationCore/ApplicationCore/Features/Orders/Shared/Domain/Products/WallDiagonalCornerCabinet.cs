@@ -27,14 +27,14 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
         VerticalGap = Dimension.FromMillimeters(3),
     };
 
-    public WallDiagonalCornerCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
+    internal WallDiagonalCornerCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide, string comment,
+                        CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         Dimension rightWidth, Dimension rightDepth, int adjShelfQty, HingeSide hingeSide, int doorQty, Dimension extendedDoor)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfOptions, edgeBandingColor, rightSide, leftSide, comment) {
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
-        if (leftSide.Type == CabinetSideType.AppliedPanel || rightSide.Type == CabinetSideType.AppliedPanel)
+        if (leftSideType == CabinetSideType.AppliedPanel || leftSideType == CabinetSideType.AppliedPanel)
             throw new InvalidOperationException("Wall cabinet cannot have applied panel sides");
 
         RightWidth = rightWidth;
@@ -51,9 +51,9 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
     public static WallDiagonalCornerCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide, string comment,
+                        CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         Dimension rightWidth, Dimension rightDepth, int adjShelfQty, HingeSide hingeSide, int doorQty, Dimension extendedDoor)
-                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfOptions, edgeBandingColor, rightSide, leftSide, comment, rightWidth, rightDepth, adjShelfQty, hingeSide, doorQty, extendedDoor);
+                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfOptions, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, adjShelfQty, hingeSide, doorQty, extendedDoor);
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
@@ -131,8 +131,8 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
             { "ProductH", Height.AsMillimeters().ToString() },
             { "ProductD", Depth.AsMillimeters().ToString() },
             { "ProductDRight", RightDepth.AsMillimeters().ToString() },
-            { "FinishedLeft", GetSideOption(LeftSide.Type) },
-            { "FinishedRight", GetSideOption(RightSide.Type) },
+            { "FinishedLeft", GetSideOption(LeftSideType) },
+            { "FinishedRight", GetSideOption(RightSideType) },
             { "ShelfQ", AdjustableShelves.ToString() },
             { "AppliedPanel", GetAppliedPanelOption() },
             { "LazySusan", "N" },
@@ -142,7 +142,7 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
             parameters.Add("HingeLeft", GetHingeSideOption());
         }
 
-        if (ExtendedDoor != Dimension.Zero && (LeftSide.Type == CabinetSideType.Finished || RightSide.Type == CabinetSideType.Finished)) {
+        if (ExtendedDoor != Dimension.Zero && (LeftSideType == CabinetSideType.Finished || RightSideType == CabinetSideType.Finished)) {
             parameters.Add("LightRailW", ExtendedDoor.AsMillimeters().ToString());
         }
 
@@ -153,7 +153,7 @@ internal class WallDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
 
         var parameters = new Dictionary<string, string>();
 
-        if (ExtendedDoor != Dimension.Zero && LeftSide.Type != CabinetSideType.Finished && RightSide.Type != CabinetSideType.Finished) {
+        if (ExtendedDoor != Dimension.Zero && LeftSideType != CabinetSideType.Finished && RightSideType != CabinetSideType.Finished) {
             parameters.Add("ExtendDoorD", ExtendedDoor.AsMillimeters().ToString());
         }
 

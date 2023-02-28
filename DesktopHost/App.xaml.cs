@@ -61,7 +61,7 @@ public partial class App : Application {
 #if DEBUG
         services.AddBlazorWebViewDeveloperTools();
 #endif
-        
+
         return services.BuildServiceProvider();
 
     }
@@ -82,7 +82,7 @@ public partial class App : Application {
     }
 
     void runException(Exception ex) {
-        
+
         var window = new ErrorWindow {
             DataContext = new ErrorWindowViewModel() {
                 Title = "Unhandled Exception in Application",
@@ -93,7 +93,7 @@ public partial class App : Application {
         };
 
         window.ShowDialog();
-        
+
         if (ex.InnerException != null) {
             runException(ex.InnerException);
         }

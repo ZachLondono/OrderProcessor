@@ -3,7 +3,7 @@ using System.Text.Json;
 using ApplicationCore.Features.Shared.Domain;
 using Dapper;
 
-namespace ApplicationCore.Features.Orders.Data;
+namespace ApplicationCore.Infrastructure.Data;
 
 public class DimensionArrayTypeHandler : SqlMapper.TypeHandler<Dimension[]> {
 
@@ -20,7 +20,7 @@ public class DimensionArrayTypeHandler : SqlMapper.TypeHandler<Dimension[]> {
         }
 
         Dimension[] dimensions = new Dimension[val.Length];
-        for (int i = 0; i < val.Length; i++ ) {
+        for (int i = 0; i < val.Length; i++) {
             dimensions[i] = Dimension.FromMillimeters(val[i]);
         }
         return dimensions;

@@ -24,16 +24,16 @@ internal class GenerateReleaseForSelectedJobs {
             _pdfService = pdfService;
         }
 
-        public async Task<Response<ReleaseGenerationResult>> Handle(Command command) {
+        public Task<Response<ReleaseGenerationResult>> Handle(Command command) {
 
             ReleasedJob? releasedJob = CreateReleasedJob(command);
 
             if (releasedJob is null) {
 
-                return Response<ReleaseGenerationResult>.Error(new() {
+                return Task.FromResult(Response<ReleaseGenerationResult>.Error(new() {
                     Title = "Could not generate release",
                     Details = "Unable to load data from report"
-                });
+                }));
 
             }
 
@@ -41,10 +41,10 @@ internal class GenerateReleaseForSelectedJobs {
             releasedJob.WorkOrderId = workOrderId;
             var decortors = _pdfService.GenerateDecorators(releasedJob);
 
-            return Response<ReleaseGenerationResult>.Success(new() {
+            return Task.FromResult(Response<ReleaseGenerationResult>.Success(new() {
                 WorkOrderId = workOrderId,
                 Decorators = decortors
-            });
+            }));
 
         }
 

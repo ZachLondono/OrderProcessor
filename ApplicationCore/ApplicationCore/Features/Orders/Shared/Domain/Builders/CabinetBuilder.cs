@@ -18,8 +18,8 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
     public CabinetFinishMaterial FinishMaterial { get; private set; }
     public MDFDoorOptions? MDFDoorOptions { get; private set; }
     public string EdgeBandingColor { get; private set; }
-    public CabinetSide LeftSide { get; set; }
-    public CabinetSide RightSide { get; set; }
+    public CabinetSideType LeftSideType { get; set; }
+    public CabinetSideType RightSideType { get; set; }
     public int ProductNumber { get; private set; }
     public string Comment { get; private set; }
 
@@ -35,8 +35,8 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
         FinishMaterial = new(string.Empty, CabinetMaterialCore.Flake, null);
         MDFDoorOptions = null;
         EdgeBandingColor = string.Empty;
-        LeftSide = new(CabinetSideType.Unfinished);
-        RightSide = new(CabinetSideType.Unfinished);
+        LeftSideType = CabinetSideType.Unfinished;
+        RightSideType = CabinetSideType.Unfinished;
         Comment = string.Empty;
     }
 
@@ -95,13 +95,13 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
         return this;
     }
 
-    public CabinetBuilder<TCabinet> WithLeftSide(CabinetSide leftSide) {
-        LeftSide = leftSide;
+    public CabinetBuilder<TCabinet> WithLeftSideType(CabinetSideType leftSideType) {
+        LeftSideType = leftSideType;
         return this;
     }
 
-    public CabinetBuilder<TCabinet> WithRightSide(CabinetSide rightSide) {
-        RightSide = rightSide;
+    public CabinetBuilder<TCabinet> WithRightSideType(CabinetSideType rightSideType) {
+        RightSideType = rightSideType;
         return this;
     }
 

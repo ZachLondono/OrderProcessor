@@ -51,11 +51,11 @@ public class BlindBaseCabinetModel : CabinetModelBase {
         };
 
         HorizontalDrawerBank drawers = new() {
-            BoxMaterial = AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial),
             FaceHeight = Dimension.FromMillimeters(DrawerFaceHeight),
-            Quantity = DrawerQty,
-            SlideType = AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide)
+            Quantity = DrawerQty
         };
+
+        var boxOptions = new CabinetDrawerBoxOptions(AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial), AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide));
 
         var blindSide = (BlindSide == "Left" ? Shared.Domain.Enums.BlindSide.Left : Shared.Domain.Enums.BlindSide.Right);
 
@@ -71,6 +71,7 @@ public class BlindBaseCabinetModel : CabinetModelBase {
                 .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
                 .WithDoors(doors)
                 .WithShelfDepth(shelfDepth)
+                .WithBoxOptions(boxOptions)
                 .Build();
 
     }

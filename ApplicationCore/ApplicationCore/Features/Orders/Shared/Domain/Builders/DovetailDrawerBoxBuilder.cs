@@ -64,7 +64,7 @@ public class DovetailDrawerBoxBuilder {
         Depth = Dimension.Zero;
         Note = string.Empty;
         LabelFields = new();
-        Options = new("UNKNOWN", "UNKNOWN", "UNKNOWN", "UNKNOWN", "", "", DrawerSlideType.Unknown, "", LogoPosition.None);
+        Options = new("UNKNOWN", "UNKNOWN", "UNKNOWN", "UNKNOWN", "", "", "", LogoPosition.None);
     }
 
     public DovetailDrawerBoxBuilder WithQty(int qty) {

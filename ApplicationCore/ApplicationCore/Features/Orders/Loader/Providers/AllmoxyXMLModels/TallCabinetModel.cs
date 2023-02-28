@@ -51,7 +51,7 @@ public class TallCabinetModel : CabinetModelBase {
         Dimension[] rollOutBoxPositions = AllmoxyXMLOrderProviderHelpers.GetRollOutPositions(RollOuts.Pos1, RollOuts.Pos2, RollOuts.Pos3, RollOuts.Pos4, RollOuts.Pos5);
         RollOutBlockPosition rollOutBlocks = AllmoxyXMLOrderProviderHelpers.GetRollOutBlockPositions(RollOuts.Blocks);
         if (rollOutBoxPositions.Length != 0) {
-            var rollOutOptions = new RollOutOptions(rollOutBoxPositions, true, rollOutBlocks, AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide), AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial));
+            var rollOutOptions = new RollOutOptions(rollOutBoxPositions, true, rollOutBlocks);
             inside = new(UpperAdjShelfQty, LowerAdjShelfQty, UpperVerticalDividerQty, rollOutOptions);
         } else inside = new(UpperAdjShelfQty, LowerAdjShelfQty, UpperVerticalDividerQty, LowerVerticalDividerQty);
 
@@ -65,12 +65,15 @@ public class TallCabinetModel : CabinetModelBase {
             doors = new(hingeSide);
         }
 
+        var boxOptions = new CabinetDrawerBoxOptions(AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial), AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide));
+
         var builder = builderFactory.CreateTallCabinetBuilder();
 
         return InitilizeBuilder<TallCabinetBuilder, TallCabinet>(builder)
                     .WithDoors(doors)
                     .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
                     .WithInside(inside)
+                    .WithBoxOptions(boxOptions)
                     .Build();
 
     }

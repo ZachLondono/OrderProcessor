@@ -44,10 +44,10 @@ public class SinkCabinetModel : CabinetModelBase {
         Dimension[] rollOutBoxPositions = AllmoxyXMLOrderProviderHelpers.GetRollOutPositions(RollOuts.Pos1, RollOuts.Pos2, RollOuts.Pos3, RollOuts.Pos4, RollOuts.Pos5);
         bool scoopFront = true;
         RollOutBlockPosition rollOutBlocks = AllmoxyXMLOrderProviderHelpers.GetRollOutBlockPositions(RollOuts.Blocks);
-        var slideType = AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide);
-        var material = AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial);
 
-        var rollOutOptions = new RollOutOptions(rollOutBoxPositions, scoopFront, rollOutBlocks, slideType, material);
+        var boxOptions = new CabinetDrawerBoxOptions(AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial), AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide));
+
+        var rollOutOptions = new RollOutOptions(rollOutBoxPositions, scoopFront, rollOutBlocks);
 
         var shelfDepth = AllmoxyXMLOrderProviderHelpers.GetShelfDepth(ShelfDepth);
 
@@ -62,6 +62,7 @@ public class SinkCabinetModel : CabinetModelBase {
                     .WithDrawerFaceHeight(Dimension.FromMillimeters(DrawerFaceHeight))
                     .WithAdjustableShelves(AdjShelfQty)
                     .WithShelfDepth(shelfDepth)
+                    .WithBoxOptions(boxOptions)
                     .Build();
     }
 

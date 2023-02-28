@@ -45,16 +45,17 @@ public class DrawerBaseCabinetModel : CabinetModelBase {
         if (DrawerQty >= 5) drawerFaces[4] = Dimension.FromMillimeters(DrawerFace5);
 
         VerticalDrawerBank verticalDrawerBank = new() {
-            BoxMaterial = AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial),
-            FaceHeights = drawerFaces,
-            SlideType = AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide)
+            FaceHeights = drawerFaces
         };
+
+        var boxOptions = new CabinetDrawerBoxOptions(AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial), AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide));
 
         var builder = builderFactory.CreateDrawerBaseCabinetBuilder();
 
         return InitilizeBuilder<DrawerBaseCabinetBuilder, DrawerBaseCabinet>(builder)
                     .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
                     .WithDrawers(verticalDrawerBank)
+                    .WithBoxOptions(boxOptions)
                     .Build();
     }
 

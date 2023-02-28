@@ -41,4 +41,22 @@ public record WallCabinetDoors {
         ExtendDown = extendDown is null ? Dimension.Zero : (Dimension)extendDown;
     }
 
+    public WallCabinetDoors(int quantity, HingeSide hingeSide, Dimension extendDown) {
+
+        if (quantity == 1 && hingeSide == HingeSide.NotApplicable) {
+            throw new InvalidOperationException("Hinge side must be specified");
+        }
+
+        if (quantity == 2 && hingeSide != HingeSide.NotApplicable) {
+            hingeSide = HingeSide.NotApplicable;
+        }
+
+        if (extendDown < Dimension.Zero) throw new ArgumentException("Door extend down cannot be negative");
+
+        Quantity = quantity;
+        HingeSide = hingeSide;
+        ExtendDown = extendDown;
+
+    }
+
 }

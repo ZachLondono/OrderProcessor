@@ -14,6 +14,8 @@ public partial class CreateNewOrder {
 
             var parameters = new {
                 ProductId = mdfdoor.Id,
+                mdfdoor.Room,
+                mdfdoor.Note,
                 mdfdoor.Height,
                 mdfdoor.Width,
                 mdfdoor.Type,
@@ -26,6 +28,8 @@ public partial class CreateNewOrder {
             await connection.ExecuteAsync("""
                     INSERT INTO mdf_door_products
                         (product_id,
+                        room,
+                        note,
                         height,
                         width,
                         type,
@@ -35,6 +39,8 @@ public partial class CreateNewOrder {
                         right_stile)
                     VALUES
                         (@ProductId,
+                        @Room,
+                        @Note,
                         @Height,
                         @Width,
                         @Type,

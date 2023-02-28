@@ -15,7 +15,7 @@ public record TallCabinetInside {
         AdjustableShelvesUpper = 0;
         VerticalDividersLower = 0;
         VerticalDividersUpper = 0;
-        RollOutBoxes = new(Array.Empty<Dimension>(), false, RollOutBlockPosition.None, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.FingerJointBirch);
+        RollOutBoxes = new(Array.Empty<Dimension>(), false, RollOutBlockPosition.None);
     }
 
     public TallCabinetInside(int adjShelvesUpper, int adjShelvesLower, int verticalDividersUpper, RollOutOptions rollOuts) {
@@ -31,7 +31,19 @@ public record TallCabinetInside {
         AdjustableShelvesUpper = adjShelvesUpper;
         VerticalDividersLower = verticalDividersLower;
         VerticalDividersUpper = verticalDividersUpper;
-        RollOutBoxes = new(Array.Empty<Dimension>(), false, RollOutBlockPosition.None, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.FingerJointBirch);
+        RollOutBoxes = new(Array.Empty<Dimension>(), false, RollOutBlockPosition.None);
+    }
+
+    public TallCabinetInside(int adjShelvesUpper, int adjShelvesLower, int verticalDividersUpper, int verticalDividersLower, RollOutOptions rollOuts) {
+        AdjustableShelvesLower = adjShelvesLower;
+        AdjustableShelvesUpper = adjShelvesUpper;
+        VerticalDividersLower = verticalDividersLower;
+        VerticalDividersUpper = verticalDividersUpper;
+        RollOutBoxes = rollOuts;
+
+        if (VerticalDividersLower > 0 && RollOutBoxes.Any()) {
+            throw new InvalidOperationException("Tall cabinet cannot contain roll out drawer boxes and vertical dividers in lower section");
+        }
     }
 
 }

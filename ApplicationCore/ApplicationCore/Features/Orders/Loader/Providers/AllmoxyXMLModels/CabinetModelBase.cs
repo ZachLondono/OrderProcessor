@@ -32,8 +32,8 @@ public abstract class CabinetModelBase : ProductModel {
         string? finishPaintColor = (Cabinet.FinishMaterial.Type == "paint" ? Cabinet.FinishMaterial.Finish : null);
         CabinetMaterial boxMaterial = new(Cabinet.BoxMaterial.Finish, boxCore);
         CabinetFinishMaterial finishMaterial = new(finishColor, finishCore, finishPaintColor);
-        CabinetSide leftSide = new(AllmoxyXMLOrderProviderHelpers.GetCabinetSideType(Cabinet.LeftSide), mdfOptions);
-        CabinetSide rightSide = new(AllmoxyXMLOrderProviderHelpers.GetCabinetSideType(Cabinet.RightSide), mdfOptions);
+        CabinetSideType leftSideType = AllmoxyXMLOrderProviderHelpers.GetCabinetSideType(Cabinet.LeftSide);
+        CabinetSideType rightSideType = AllmoxyXMLOrderProviderHelpers.GetCabinetSideType(Cabinet.RightSide);
 
         string edgeBandingColor;
         if (Cabinet.EdgeBandColor == "Match Finish") {
@@ -53,8 +53,8 @@ public abstract class CabinetModelBase : ProductModel {
                                     .WithProductNumber(GetProductNumber())
                                     .WithBoxMaterial(boxMaterial)
                                     .WithFinishMaterial(finishMaterial)
-                                    .WithLeftSide(leftSide)
-                                    .WithRightSide(rightSide)
+                                    .WithLeftSideType(leftSideType)
+                                    .WithRightSideType(rightSideType)
                                     .WithEdgeBandingColor(edgeBandingColor)
                                     .WithWidth(Dimension.FromMillimeters(Cabinet.Width))
                                     .WithHeight(Dimension.FromMillimeters(Cabinet.Height))

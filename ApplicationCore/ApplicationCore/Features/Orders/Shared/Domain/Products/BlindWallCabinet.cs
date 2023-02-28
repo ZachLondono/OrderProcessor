@@ -29,17 +29,17 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     public static BlindWallCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide, string comment,
+                        CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, Dimension extendedDoor) {
-        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment, doors, blindSide, blindWidth, adjustableShelves, extendedDoor);
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, blindSide, blindWidth, adjustableShelves, extendedDoor);
     }
 
-    private BlindWallCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
+    internal BlindWallCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide, string comment,
+                        CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, Dimension extendedDoor)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment) {
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         Doors = doors;
         AdjustableShelves = adjustableShelves;
@@ -108,8 +108,8 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
             { "ProductW", Width.AsMillimeters().ToString() },
             { "ProductH", Height.AsMillimeters().ToString() },
             { "ProductD", Depth.AsMillimeters().ToString() },
-            { "FinishedLeft", GetSideOption(LeftSide.Type) },
-            { "FinishedRight", GetSideOption(RightSide.Type) },
+            { "FinishedLeft", GetSideOption(LeftSideType) },
+            { "FinishedRight", GetSideOption(RightSideType) },
             { "ShelfQ", AdjustableShelves.ToString() },
             { "BlindWWall", BlindWidth.AsMillimeters().ToString() }
         };
@@ -118,7 +118,7 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
             parameters.Add("HingeLeft", GetHingeSideOption());
         }
 
-        if (ExtendedDoor != Dimension.Zero && (LeftSide.Type == CabinetSideType.Finished || RightSide.Type == CabinetSideType.Finished)) {
+        if (ExtendedDoor != Dimension.Zero && (LeftSideType == CabinetSideType.Finished || RightSideType == CabinetSideType.Finished)) {
             parameters.Add("LightRailW", ExtendedDoor.AsMillimeters().ToString());
         }
 
@@ -129,7 +129,7 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
         var parameters = new Dictionary<string, string>();
 
-        if (ExtendedDoor != Dimension.Zero && LeftSide.Type != CabinetSideType.Finished && RightSide.Type != CabinetSideType.Finished) {
+        if (ExtendedDoor != Dimension.Zero && LeftSideType != CabinetSideType.Finished && RightSideType != CabinetSideType.Finished) {
             parameters.Add("ExtendDoorD", ExtendedDoor.AsMillimeters().ToString());
         }
 

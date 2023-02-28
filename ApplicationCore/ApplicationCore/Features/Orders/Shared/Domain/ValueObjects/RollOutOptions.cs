@@ -3,7 +3,7 @@ using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
-public record RollOutOptions(Dimension[] Positions, bool ScoopFront, RollOutBlockPosition Blocks, DrawerSlideType SlideType, CabinetDrawerBoxMaterial Material) {
+public record RollOutOptions(Dimension[] Positions, bool ScoopFront, RollOutBlockPosition Blocks) {
 
     public int Qty => Positions.Length;
 

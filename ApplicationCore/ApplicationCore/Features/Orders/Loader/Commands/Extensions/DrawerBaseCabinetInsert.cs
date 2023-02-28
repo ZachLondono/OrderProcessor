@@ -17,7 +17,7 @@ public partial class CreateNewOrder {
             }
 
             var dbConfigId = Guid.NewGuid();
-            await InsertDBConfig(dbConfigId, cabinet.DrawerBoxOptions, connection, trx);
+            await InsertCabinetDBConfig(dbConfigId, cabinet.DrawerBoxOptions, connection, trx);
 
             await InsertIntoProductTable(cabinet, orderId, connection, trx);
             await InsertCabinet(cabinet, mdfConfigId, connection, trx);

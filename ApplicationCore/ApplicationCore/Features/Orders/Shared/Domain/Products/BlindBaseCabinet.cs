@@ -15,6 +15,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
     public BlindSide BlindSide { get; }
     public Dimension BlindWidth { get; }
     public ToeType ToeType { get; }
+    public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
 
     public Dimension DoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
 
@@ -31,17 +32,17 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
     public static BlindBaseCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, ShelfDepth shelfDepth, HorizontalDrawerBank drawers, ToeType toeType) {
-        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment, doors, blindSide, blindWidth, adjustableShelves, shelfDepth, drawers, toeType);
+                        CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
+                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, ShelfDepth shelfDepth, HorizontalDrawerBank drawers, ToeType toeType, CabinetDrawerBoxOptions drawerBoxOptions) {
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, blindSide, blindWidth, adjustableShelves, shelfDepth, drawers, toeType, drawerBoxOptions);
     }
 
-    private BlindBaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
+    internal BlindBaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, ShelfDepth shelfDepth, HorizontalDrawerBank drawers, ToeType toeType)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment) {
+                        CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
+                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, ShelfDepth shelfDepth, HorizontalDrawerBank drawers, ToeType toeType, CabinetDrawerBoxOptions drawerBoxOptions)
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         Doors = doors;
         BlindSide = blindSide;
@@ -50,7 +51,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
         Drawers = drawers;
         ToeType = toeType;
         BlindWidth = blindWidth;
-
+        DrawerBoxOptions = drawerBoxOptions;
     }
 
     public IEnumerable<PPProduct> GetPPProducts() {
@@ -97,8 +98,6 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
 
     }
 
-    public DrawerBoxOptions DrawerBoxOptions => new("", "", "", "", "Blum", GetNotchFromSlideType(Drawers.SlideType), Drawers.SlideType, "", LogoPosition.None);
-
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
         if (Drawers.Quantity == 0) {
@@ -111,11 +110,11 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
 
         int drawerQty = Drawers.Quantity * Qty;
 
-        var box = getBuilder().WithInnerCabinetDepth(insideDepth, Drawers.SlideType)
-                                .WithInnerCabinetWidth(insideWidth, Drawers.Quantity, Drawers.SlideType)
+        var box = getBuilder().WithInnerCabinetDepth(insideDepth, DrawerBoxOptions.SlideType)
+                                .WithInnerCabinetWidth(insideWidth, Drawers.Quantity, DrawerBoxOptions.SlideType)
                                 .WithDrawerFaceHeight(Drawers.FaceHeight)
                                 .WithQty(drawerQty)
-                                .WithOptions(DrawerBoxOptions)
+                                .WithOptions(DrawerBoxOptions.DrawerBoxOptions)
                                 .WithProductNumber(ProductNumber)
                                 .Build();
 
@@ -141,9 +140,9 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
 
             supplies.Add(Supply.DrawerPull(Drawers.Quantity * Qty));
 
-            var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, Drawers.SlideType, false);
+            var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, false);
 
-            switch (Drawers.SlideType) {
+            switch (DrawerBoxOptions.SlideType) {
                 case DrawerSlideType.UnderMount:
                     supplies.Add(Supply.UndermountSlide(Drawers.Quantity * Qty, boxDepth));
                     break;
@@ -165,19 +164,13 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
 
     }
 
-    private static string GetNotchFromSlideType(DrawerSlideType slide) => slide switch {
-        DrawerSlideType.UnderMount => "Standard Notch",
-        DrawerSlideType.SideMount => "",
-        _ => ""
-    };
-
     private Dictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {
             { "ProductW", Width.AsMillimeters().ToString() },
             { "ProductH", Height.AsMillimeters().ToString() },
             { "ProductD", Depth.AsMillimeters().ToString() },
-            { "FinishedLeft", GetSideOption(LeftSide.Type) },
-            { "FinishedRight", GetSideOption(RightSide.Type) },
+            { "FinishedLeft", GetSideOption(LeftSideType) },
+            { "FinishedRight", GetSideOption(RightSideType) },
             { "ShelfQ", AdjustableShelves.ToString() },
             { "BlindW", BlindWidth.AsMillimeters().ToString() }
         };
@@ -200,7 +193,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
             }
         }
 
-        if (LeftSide.Type != CabinetSideType.IntegratedPanel && RightSide.Type != CabinetSideType.IntegratedPanel && ShelfDepth == ShelfDepth.Full) {
+        if (LeftSideType != CabinetSideType.IntegratedPanel && RightSideType != CabinetSideType.IntegratedPanel && ShelfDepth == ShelfDepth.Full) {
 
             Dimension backThickness = Dimension.FromMillimeters(13);
             Dimension backInset = Dimension.FromMillimeters(9);
@@ -218,7 +211,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
 
         var parameters = new Dictionary<string, string>();
 
-        if (LeftSide.Type != CabinetSideType.IntegratedPanel && RightSide.Type != CabinetSideType.IntegratedPanel) {
+        if (LeftSideType != CabinetSideType.IntegratedPanel && RightSideType != CabinetSideType.IntegratedPanel) {
 
             if (ShelfDepth == ShelfDepth.Half) {
 

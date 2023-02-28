@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using System.Xml.Serialization;
 
@@ -27,20 +28,19 @@ public class TrashCabinetModel : CabinetModelBase {
 
         var toeType = AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType);
         var faceHeight = Dimension.FromMillimeters(DrawerFaceHeight);
-        var dbMaterial = AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial);
-        var slideType = AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide);
         var trashConfig = TrashPulloutQty switch {
             1 => TrashPulloutConfiguration.OneCan,
             2 => TrashPulloutConfiguration.TwoCans,
             _ => throw new InvalidOperationException("Unrecognized trash pullout qty")
         };
 
+        var boxOptions = new CabinetDrawerBoxOptions(AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial), AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide));
+
         var builder = builderFactory.CreateTrashCabinetBuilder();
 
         return InitilizeBuilder<TrashCabinetBuilder, TrashCabinet>(builder)
                 .WithDrawerFaceHeight(faceHeight)
-                .WithDrawerBoxMaterial(dbMaterial)
-                .WithSlideType(slideType)
+                .WithBoxOptions(boxOptions)
                 .WithToeType(toeType)
                 .WithTrashPulloutConfiguration(trashConfig)
                 .Build();

@@ -2,6 +2,6 @@
 
 internal interface IQueryableProductDataModel : IProductDataModel {
 
-    public static abstract string GetQueryByOrderId();
+    public static abstract string GetQueryByOrderId { get; }
 
 }

@@ -20,8 +20,8 @@ public abstract class Cabinet : IProduct {
     public CabinetFinishMaterial FinishMaterial { get; }
     public MDFDoorOptions? MDFDoorOptions { get; init; }
     public string EdgeBandingColor { get; }
-    public CabinetSide RightSide { get; }
-    public CabinetSide LeftSide { get; }
+    public CabinetSideType RightSideType { get; }
+    public CabinetSideType LeftSideType { get; }
     public string Comment { get; }
     public abstract string GetDescription();
 
@@ -39,7 +39,7 @@ public abstract class Cabinet : IProduct {
     public Cabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                 Dimension height, Dimension width, Dimension depth,
                 CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
-                CabinetSide rightSide, CabinetSide leftSide, string comment) {
+                CabinetSideType rightSideType, CabinetSideType leftSideType, string comment) {
 
         Id = id;
         Qty = qty;
@@ -54,12 +54,15 @@ public abstract class Cabinet : IProduct {
         FinishMaterial = finishMaterial;
         MDFDoorOptions = mdfDoorOptions;
         EdgeBandingColor = edgeBandingColor;
-        RightSide = rightSide;
-        LeftSide = leftSide;
+        RightSideType = rightSideType;
+        LeftSideType = leftSideType;
         Comment = comment;
 
         if (boxMaterial.Core == CabinetMaterialCore.Plywood && finishMaterial.Core == CabinetMaterialCore.Flake)
             throw new InvalidOperationException("Cannot create cabinet with plywood box and flake finished side");
+
+        if (LeftSideType == CabinetSideType.IntegratedPanel || LeftSideType == CabinetSideType.AppliedPanel || RightSideType == CabinetSideType.IntegratedPanel || RightSideType == CabinetSideType.AppliedPanel)
+            throw new InvalidOperationException("MDFDoorOptions are required when creating a cabinet side with a door");
 
     }
 
@@ -97,7 +100,7 @@ public abstract class Cabinet : IProduct {
         };
     }
 
-    private string GetFinishMaterialType(CabinetMaterialCore material) => material switch {
+    private static string GetFinishMaterialType(CabinetMaterialCore material) => material switch {
         CabinetMaterialCore.Flake => "Mela",
         CabinetMaterialCore.Plywood => "Veneer",
         _ => "Mela"
@@ -114,13 +117,13 @@ public abstract class Cabinet : IProduct {
         };
     }
 
-    private string GetEBMaterialType(CabinetMaterialCore material) => material switch {
+    private static string GetEBMaterialType(CabinetMaterialCore material) => material switch {
         CabinetMaterialCore.Flake => "PVC",
         CabinetMaterialCore.Plywood => "Veneer",
         _ => "PVC"
     };
 
-    protected string GetSideOption(CabinetSideType side) => side switch {
+    protected static string GetSideOption(CabinetSideType side) => side switch {
         CabinetSideType.AppliedPanel => "0",
         CabinetSideType.Unfinished => "0",
         CabinetSideType.Finished => "1",
@@ -128,13 +131,12 @@ public abstract class Cabinet : IProduct {
         _ => "0"
     };
 
-
     protected string GetAppliedPanelOption() {
-        if (LeftSide.Type == CabinetSideType.AppliedPanel && RightSide.Type != CabinetSideType.AppliedPanel) {
+        if (LeftSideType == CabinetSideType.AppliedPanel && RightSideType != CabinetSideType.AppliedPanel) {
             return "1";
-        } else if (LeftSide.Type == CabinetSideType.AppliedPanel && RightSide.Type == CabinetSideType.AppliedPanel) {
+        } else if (LeftSideType == CabinetSideType.AppliedPanel && RightSideType == CabinetSideType.AppliedPanel) {
             return "2";
-        } else if (LeftSide.Type != CabinetSideType.AppliedPanel && RightSide.Type == CabinetSideType.AppliedPanel) {
+        } else if (LeftSideType != CabinetSideType.AppliedPanel && RightSideType == CabinetSideType.AppliedPanel) {
             return "3";
         } else return "0";
     }

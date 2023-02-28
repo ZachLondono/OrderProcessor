@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Shared.Services;
 using ApplicationCore.Infrastructure.Bus;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.List;
 
@@ -43,11 +44,14 @@ public class OrderListViewModel {
         }
     }
 
-    private readonly NavigationService _navigationService;
+
+    private readonly ILogger<OrderListViewModel> _logger;
     private readonly IBus _bus;
+    private readonly NavigationService _navigationService;
     private readonly CompanyInfo.GetCompanyNameById _getCompanyNameById;
 
-    public OrderListViewModel(IBus bus, NavigationService navigationService, CompanyInfo.GetCompanyNameById getCompanyNameById) {
+    public OrderListViewModel(ILogger<OrderListViewModel> logger, IBus bus, NavigationService navigationService, CompanyInfo.GetCompanyNameById getCompanyNameById) {
+        _logger = logger;
         _bus = bus;
         _navigationService = navigationService;
         _getCompanyNameById = getCompanyNameById;
@@ -59,16 +63,22 @@ public class OrderListViewModel {
 
     public async Task LoadOrders() {
 
-        var response = await _bus.Send(new GetOrderList.Query());
-        response.Match(
-            orders => {
-                Orders = orders;
-            },
-            errors => {
-                HasError = true;
-                ErrorMessage = errors.Title;
-            }
-        );
+        try {
+            var response = await _bus.Send(new GetOrderList.Query());
+            response.Match(
+                orders => {
+                    Orders = orders;
+                },
+                errors => {
+                    HasError = true;
+                    ErrorMessage = errors.Title;
+                }
+            );
+        } catch (Exception ex) {
+            _logger.LogError(ex, "Exception thrown while loading order list");
+            HasError = true;
+            ErrorMessage = "Could not load orders";
+        }
 
         if (Orders is null) {
             return;

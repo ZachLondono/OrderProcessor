@@ -155,48 +155,12 @@ public class AllmoxyCabinetMappingTests {
         var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
 
         // Assert
-        builder.LeftSide.Type.Should().Be(expected);
+        builder.LeftSideType.Should().Be(expected);
 
-        builder.RightSide.Type.Should().Be(expected);
-
-    }
-
-    [Fact]
-    public void CabinetSideDoorOptions_ShouldBeNull_WhenFrontTypeIsSlab() {
-
-        // Arrange
-        _sut.Cabinet.Fronts.Type = "Slab";
-
-        // Act
-        var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
-
-        // Assert
-        builder.LeftSide.DoorOptions.Should().BeNull();
-        builder.RightSide.DoorOptions.Should().BeNull();
+        builder.RightSideType.Should().Be(expected);
 
     }
 
-    [Fact]
-    public void CabinetSideDoorOptions_ShouldNotBeNull_WhenFrontTypeIsNotSlab() {
-
-        // Arrange
-        _sut.Cabinet.Fronts.Type = "NotSlab";
-        _sut.Cabinet.Fronts.Style = "StyleABC";
-        _sut.Cabinet.Fronts.Color = "ColorDEF";
-
-        // Act
-        var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
-
-        // Assert
-        builder.LeftSide.DoorOptions.Should().NotBeNull();
-        builder.LeftSide.DoorOptions!.PaintColor.Should().Be(_sut.Cabinet.Fronts.Color);
-        builder.LeftSide.DoorOptions!.FramingBead.Should().Be(_sut.Cabinet.Fronts.Style);
-
-        builder.RightSide.DoorOptions.Should().NotBeNull();
-        builder.RightSide.DoorOptions!.PaintColor.Should().Be(_sut.Cabinet.Fronts.Color);
-        builder.RightSide.DoorOptions!.FramingBead.Should().Be(_sut.Cabinet.Fronts.Style);
-
-    }
 
     [Theory]
     [InlineData("pb", "pb", CabinetMaterialCore.Flake, CabinetMaterialCore.Flake)]

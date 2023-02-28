@@ -10,6 +10,7 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
 
     public ToeType ToeType { get; }
     public VerticalDrawerBank Drawers { get; }
+    public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
 
     public override string GetDescription() => $"{Drawers.FaceHeights.Count()} Drawer Cabinet";
 
@@ -24,23 +25,24 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
     public static DrawerBaseCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        ToeType toeType, VerticalDrawerBank drawers) {
-        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment, toeType, drawers);
+                        CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
+                        ToeType toeType, VerticalDrawerBank drawers, CabinetDrawerBoxOptions drawerBoxOptions) {
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, toeType, drawers, drawerBoxOptions);
     }
 
-    private DrawerBaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
+    internal DrawerBaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        ToeType toeType, VerticalDrawerBank drawers)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment) {
+                        CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
+                        ToeType toeType, VerticalDrawerBank drawers, CabinetDrawerBoxOptions drawerBoxOptions)
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (drawers.FaceHeights.Count() > 5)
             throw new InvalidOperationException("Invalid number of drawers");
 
         Drawers = drawers;
         ToeType = toeType;
+        DrawerBoxOptions = drawerBoxOptions;
     }
 
     public IEnumerable<PPProduct> GetPPProducts() {
@@ -76,8 +78,6 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
 
     }
 
-    public DrawerBoxOptions DrawerBoxOptions => new("", "", "", "", "Blum", GetNotchFromSlideType(Drawers.SlideType), Drawers.SlideType, "", LogoPosition.None);
-
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
         if (!Drawers.FaceHeights.Any()) {
@@ -91,11 +91,11 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
 
         foreach (var height in Drawers.FaceHeights) {
 
-            var box = getBuilder().WithInnerCabinetDepth(insideDepth, Drawers.SlideType)
-                                    .WithInnerCabinetWidth(insideWidth, 1, Drawers.SlideType)
+            var box = getBuilder().WithInnerCabinetDepth(insideDepth, DrawerBoxOptions.SlideType)
+                                    .WithInnerCabinetWidth(insideWidth, 1, DrawerBoxOptions.SlideType)
                                     .WithDrawerFaceHeight(height)
                                     .WithQty(Qty)
-                                    .WithOptions(DrawerBoxOptions)
+                                    .WithOptions(DrawerBoxOptions.DrawerBoxOptions)
                                     .WithProductNumber(ProductNumber)
                                     .Build();
 
@@ -109,15 +109,15 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
 
     public override IEnumerable<Supply> GetSupplies() {
 
-        var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, Drawers.SlideType, false);
+        var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, false);
 
         List<Supply> supplies = new() {
 
-            Supply.DrawerPull(Drawers.DrawerQty * Qty),
+            Supply.DrawerPull(Drawers.Qty * Qty),
 
-            Drawers.SlideType switch {
-                DrawerSlideType.SideMount => Supply.SidemountSlide(Drawers.DrawerQty * Qty, boxDepth),
-                DrawerSlideType.UnderMount => Supply.UndermountSlide(Drawers.DrawerQty * Qty, boxDepth),
+            DrawerBoxOptions.SlideType switch {
+                DrawerSlideType.SideMount => Supply.SidemountSlide(Drawers.Qty * Qty, boxDepth),
+                DrawerSlideType.UnderMount => Supply.UndermountSlide(Drawers.Qty * Qty, boxDepth),
                 _ => throw new InvalidOperationException("Unknown slide type")
             }
 
@@ -133,12 +133,6 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
 
     }
 
-    private static string GetNotchFromSlideType(DrawerSlideType slide) => slide switch {
-        DrawerSlideType.UnderMount => "Standard Notch",
-        DrawerSlideType.SideMount => "",
-        _ => ""
-    };
-
     private string GetProductName() {
         if (!Drawers.FaceHeights.Any()) return "DB1D";
         return $"DB{Drawers.FaceHeights.Count()}D";
@@ -149,8 +143,8 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
             { "ProductW", Width.AsMillimeters().ToString() },
             { "ProductH", Height.AsMillimeters().ToString() },
             { "ProductD", Depth.AsMillimeters().ToString() },
-            { "FinishedLeft", GetSideOption(LeftSide.Type) },
-            { "FinishedRight", GetSideOption(RightSide.Type) },
+            { "FinishedLeft", GetSideOption(LeftSideType) },
+            { "FinishedRight", GetSideOption(RightSideType) },
             { "AppliedPanel", GetAppliedPanelOption() },
         };
 
@@ -174,7 +168,7 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
             }
         }
 
-        if (Drawers.FaceHeights.Any() && Drawers.SlideType == DrawerSlideType.SideMount) {
+        if (Drawers.FaceHeights.Any() && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
             parameters.Add("_DrawerRunType", "4");
         }
 

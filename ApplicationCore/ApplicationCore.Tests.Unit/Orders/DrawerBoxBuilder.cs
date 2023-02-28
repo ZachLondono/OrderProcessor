@@ -22,8 +22,7 @@ public class DrawerBoxBuilder {
         "",
         "",
         "",
-        "",
-        DrawerSlideType.Unknown,
+        ""
         "",
         LogoPosition.None);
 

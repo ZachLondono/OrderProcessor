@@ -31,7 +31,7 @@ internal class WallCabinetBuilder : CabinetBuilder<WallCabinet> {
     }
 
     public override WallCabinet Build() {
-        var cabinet = WallCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, Comment, Doors, Inside, FinishBottom);
+        var cabinet = WallCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, Doors, Inside, FinishBottom);
         return cabinet;
     }
 

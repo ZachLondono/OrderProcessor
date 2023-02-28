@@ -58,18 +58,18 @@ public partial class CreateNewOrder {
                 return new(order);
 
             } catch (Exception ex) {
-                
+
                 trx.Rollback();
                 _logger.LogError(ex, "Exception thrown while creating order");
 
                 return Response<Order>.Error(new() {
                     Title = "Could not create order",
-                    Details = $"An exception was thrown while trying to create order, check logs for detauls - {ex.Message}"
+                    Details = $"An exception was thrown while trying to create order, check logs for details - {ex.Message}"
                 });
 
             } finally {
                 connection.Close();
-            }        
+            }
 
         }
 

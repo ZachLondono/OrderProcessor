@@ -4,7 +4,7 @@ using System.Data;
 
 namespace ApplicationCore.Features.Orders.Data;
 
-public class ToeTypeDimensionTypeHandler : SqlMapper.TypeHandler<ToeType> {
+public class ToeTypeTypeHandler : SqlMapper.TypeHandler<ToeType> {
     public override void SetValue(IDbDataParameter parameter, ToeType toetype) {
         parameter.Value = toetype.PSIParameter;
     }

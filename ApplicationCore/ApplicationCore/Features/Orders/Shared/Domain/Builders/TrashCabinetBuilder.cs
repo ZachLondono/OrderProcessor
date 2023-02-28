@@ -8,17 +8,15 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Builders;
 internal class TrashCabinetBuilder : CabinetBuilder<TrashCabinet> {
 
     public Dimension DrawerFaceHeight { get; private set; }
-    public DrawerSlideType SlideType { get; private set; }
-    public CabinetDrawerBoxMaterial DrawerBoxMaterial { get; private set; }
     public TrashPulloutConfiguration TrashPulloutConfiguration { get; private set; }
     public ToeType ToeType { get; private set; }
+    public CabinetDrawerBoxOptions BoxOptions { get; private set; }
 
     public TrashCabinetBuilder() {
         DrawerFaceHeight = Dimension.FromMillimeters(157);
-        SlideType = DrawerSlideType.UnderMount;
-        DrawerBoxMaterial = CabinetDrawerBoxMaterial.SolidBirch;
         TrashPulloutConfiguration = TrashPulloutConfiguration.OneCan;
         ToeType = ToeType.LegLevelers;
+        BoxOptions = new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount);
     }
 
     public TrashCabinetBuilder WithDrawerFaceHeight(Dimension drawerFaceHeight) {
@@ -31,23 +29,18 @@ internal class TrashCabinetBuilder : CabinetBuilder<TrashCabinet> {
         return this;
     }
 
-    public TrashCabinetBuilder WithSlideType(DrawerSlideType slideType) {
-        SlideType = slideType;
-        return this;
-    }
-
     public TrashCabinetBuilder WithTrashPulloutConfiguration(TrashPulloutConfiguration trashPulloutConfiguration) {
         TrashPulloutConfiguration = trashPulloutConfiguration;
         return this;
     }
 
-    public TrashCabinetBuilder WithDrawerBoxMaterial(CabinetDrawerBoxMaterial cabinetDrawerBoxMaterial) {
-        DrawerBoxMaterial = cabinetDrawerBoxMaterial;
+    public TrashCabinetBuilder WithBoxOptions(CabinetDrawerBoxOptions boxOptions) {
+        BoxOptions = boxOptions;
         return this;
     }
 
     public override TrashCabinet Build() {
-        var cabinet = TrashCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, Comment, DrawerFaceHeight, TrashPulloutConfiguration, SlideType, DrawerBoxMaterial, ToeType);
+        var cabinet = TrashCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, DrawerFaceHeight, TrashPulloutConfiguration, BoxOptions, ToeType);
         return cabinet;
     }
 

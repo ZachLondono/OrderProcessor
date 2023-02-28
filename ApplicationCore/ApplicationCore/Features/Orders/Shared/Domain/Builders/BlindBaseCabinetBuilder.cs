@@ -14,6 +14,7 @@ internal class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
     public BlindSide BlindSide { get; private set; }
     public Dimension BlindWidth { get; private set; }
     public ToeType ToeType { get; private set; }
+    public CabinetDrawerBoxOptions BoxOptions { get; private set; }
 
     public BlindBaseCabinetBuilder() {
         Doors = new();
@@ -23,11 +24,10 @@ internal class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
         BlindWidth = Dimension.Zero;
         ToeType = ToeType.NoToe;
         Drawers = new() {
-            BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
             FaceHeight = Dimension.Zero,
-            Quantity = 0,
-            SlideType = DrawerSlideType.UnderMount
+            Quantity = 0
         };
+        BoxOptions = new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount);
     }
 
     public BlindBaseCabinetBuilder WithDoors(BlindCabinetDoors doors) {
@@ -65,8 +65,13 @@ internal class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
         return this;
     }
 
+    public BlindBaseCabinetBuilder WithBoxOptions(CabinetDrawerBoxOptions boxOptions) {
+        BoxOptions = boxOptions;
+        return this;
+    }
+
     public override BlindBaseCabinet Build() {
-        var cabinet = BlindBaseCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, Comment, Doors, BlindSide, BlindWidth, AdjustableShelves, ShelfDepth, Drawers, ToeType);
+        var cabinet = BlindBaseCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, Doors, BlindSide, BlindWidth, AdjustableShelves, ShelfDepth, Drawers, ToeType, BoxOptions);
         return cabinet;
     }
 

@@ -58,8 +58,8 @@
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.FinishMaterial.Finish}/{row.Product.FinishMaterial.Core}")</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.FinishMaterial.PaintColor ?? "N/A"}")</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.EdgeBandingColor</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.LeftSide.Type.ToString()</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.RightSide.Type.ToString()</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.LeftSideType.ToString()</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.RightSideType.ToString()</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(row.Product.Assembled ? "Yes" : "No")</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Room</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.UnitPrice.ToString("$0.00")</td>

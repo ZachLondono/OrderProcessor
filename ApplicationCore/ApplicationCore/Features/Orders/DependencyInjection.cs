@@ -26,10 +26,9 @@ public static class DependencyInjection {
 
         services.AddTransient<IOrderingDbConnectionFactory, SqliteOrderingDbConnectionFactory>();
 
-        SqlMapper.AddTypeHandler(new ToeTypeDimensionTypeHandler());
+        SqlMapper.AddTypeHandler(new ToeTypeTypeHandler());
         SqlMapper.AddTypeHandler(new SqliteFixedDivdersCountsTypeHandler());
         SqlMapper.AddTypeHandler(new SqliteUBoxDimensionTypeHandler());
-        SqlMapper.AddTypeHandler(new DimensionArrayTypeHandler());
 
         services.AddOrderLoading(configuration);
         services.AddSingleton<ProductBuilderFactory>();

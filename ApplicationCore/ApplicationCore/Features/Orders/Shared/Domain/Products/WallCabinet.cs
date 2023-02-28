@@ -27,19 +27,19 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
     public static WallCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide, string comment,
+                        CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         WallCabinetDoors doors, WallCabinetInside inside, bool finishedBottom) {
-        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment, doors, inside, finishedBottom);
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, inside, finishedBottom);
     }
 
-    private WallCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
+    internal WallCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide, string comment,
+                        CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         WallCabinetDoors doors, WallCabinetInside inside, bool finishedBottom)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment) {
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
-        if (leftSide.Type == CabinetSideType.AppliedPanel || rightSide.Type == CabinetSideType.AppliedPanel)
+        if (leftSideType == CabinetSideType.AppliedPanel || rightSideType == CabinetSideType.AppliedPanel)
             throw new InvalidOperationException("Wall cabinet cannot have applied panel sides");
 
         if (doors.Quantity > 2 || doors.Quantity < 0)
@@ -109,8 +109,8 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
             { "ProductW", Width.AsMillimeters().ToString() },
             { "ProductH", Height.AsMillimeters().ToString() },
             { "ProductD", Depth.AsMillimeters().ToString() },
-            { "FinishedLeft", GetSideOption(LeftSide.Type) },
-            { "FinishedRight", GetSideOption(RightSide.Type) },
+            { "FinishedLeft", GetSideOption(LeftSideType) },
+            { "FinishedRight", GetSideOption(RightSideType) },
             { "ShelfQ", Inside.AdjustableShelves.ToString() },
             { "DividerQ", Inside.VerticalDividers.ToString() }
         };
@@ -119,7 +119,7 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
             parameters.Add("HingeLeft", GetHingeSideOption());
         }
 
-        if (Doors.ExtendDown != Dimension.Zero && (LeftSide.Type == CabinetSideType.Finished || RightSide.Type == CabinetSideType.Finished)) {
+        if (Doors.ExtendDown != Dimension.Zero && (LeftSideType == CabinetSideType.Finished || RightSideType == CabinetSideType.Finished)) {
             parameters.Add("LightRailW", Doors.ExtendDown.AsMillimeters().ToString());
         }
 
@@ -130,7 +130,7 @@ internal class WallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
         var parameters = new Dictionary<string, string>();
 
-        if (Doors.ExtendDown != Dimension.Zero && LeftSide.Type != CabinetSideType.Finished && RightSide.Type != CabinetSideType.Finished) {
+        if (Doors.ExtendDown != Dimension.Zero && LeftSideType != CabinetSideType.Finished && RightSideType != CabinetSideType.Finished) {
             parameters.Add("ExtendDoorD", Doors.ExtendDown.AsMillimeters().ToString());
         }
 

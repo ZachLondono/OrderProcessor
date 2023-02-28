@@ -41,8 +41,8 @@ public partial class CreateNewOrder {
                 CabFinishMaterialFinish = cabinet.FinishMaterial.Finish,
                 CabFinishMaterialPaint = cabinet.FinishMaterial.PaintColor,
                 CabEdgeBandingFinish = cabinet.EdgeBandingColor,
-                CabLeftSideType = cabinet.LeftSide.Type,
-                CabRightSideType = cabinet.RightSide.Type,
+                CabLeftSideType = cabinet.LeftSideType,
+                CabRightSideType = cabinet.RightSideType,
                 CabAssembled = cabinet.Assembled,
                 CabComment = cabinet.Comment,
                 CabRoom = cabinet.Room,
@@ -61,7 +61,7 @@ public partial class CreateNewOrder {
                     finish_material_core,
                     finish_material_finish,
                     finish_material_paint,
-                    edge_bading_finish,
+                    edge_banding_finish,
                     left_side_type,
                     right_side_type,
                     assembled,
@@ -145,6 +145,28 @@ public partial class CreateNewOrder {
 
         }
 
+        private static async Task InsertCabinetDBConfig(Guid id, CabinetDrawerBoxOptions dbOptions, IDbConnection connection, IDbTransaction trx) {
+
+            var parameters = new {
+                Id = id,
+                dbOptions.Material,
+                dbOptions.SlideType
+            };
+
+            await connection.ExecuteAsync(
+                """
+                INSERT INTO cabinet_db_configs
+                    (id,
+                    material,
+                    slide_type)
+                VALUES
+                    (@Id,
+                    @Material,
+                    @SlideType);
+                """, parameters, trx);
+
+        }
+
         private static async Task InsertDBConfig(Guid id, DrawerBoxOptions dbOptions, IDbConnection connection, IDbTransaction trx) {
 
             var parameters = new {
@@ -161,7 +183,6 @@ public partial class CreateNewOrder {
                 dbOptions.ScoopFront,
                 dbOptions.FaceMountingHoles,
                 dbOptions.Assembled,
-                SlideType = dbOptions.SlideType,
             };
 
             await connection.ExecuteAsync(
@@ -179,8 +200,7 @@ public partial class CreateNewOrder {
                     post_finish,
                     scoop_front,
                     face_mounting_holes,
-                    assembled,
-                    slide_type)
+                    assembled)
                 VALUES
                     (@Id,
                     @FrontMaterial,
@@ -194,8 +214,7 @@ public partial class CreateNewOrder {
                     @PostFinish,
                     @ScoopFront,
                     @FaceMountingHoles,
-                    @Assembled,
-                    @SlideType);
+                    @Assembled);
                 """, parameters, trx);
 
         }

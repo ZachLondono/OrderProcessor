@@ -16,20 +16,26 @@ public partial class CreateNewOrder {
                 ProductId = drawerbox.Id,
                 drawerbox.Height,
                 drawerbox.Width,
-                drawerbox.Depth
+                drawerbox.Depth,
+                drawerbox.Note,
+                LabelFields = (IDictionary<string, string>)drawerbox.LabelFields
             };
 
             await connection.ExecuteAsync("""
-                    INSERT INTO dovetail_door_products
+                    INSERT INTO dovetail_drawer_products
                         (product_id,
                         height,
                         width,
-                        depth)
+                        depth,
+                        note,
+                        label_fields)
                     VALUES
                         (@ProductId,
                         @Height,
                         @Width,
-                        @Depth);
+                        @Depth,
+                        @Note,
+                        @LabelFields);
                     """, parameters, trx);
 
         }

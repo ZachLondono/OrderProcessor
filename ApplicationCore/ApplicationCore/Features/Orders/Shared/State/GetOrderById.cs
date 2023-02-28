@@ -41,7 +41,7 @@ public class GetOrderById {
             var itemData = await connection.QueryAsync<AdditionalItemDataModel>(AdditionalItemDataModel.GetQueryByOrderId(), request);
             var items = itemData.Select(i => i.AsDomainModel());
 
-            var products = GetProducts(request.OrderId, connection);
+            var products = await GetProducts(request.OrderId, connection);
 
             var order = orderData.AsDomainModel(request.OrderId, products, items);
 
@@ -49,11 +49,27 @@ public class GetOrderById {
 
         }
 
-        private IEnumerable<IProduct> GetProducts(Guid orderId, IDbConnection connection) {
+        private async Task<IEnumerable<IProduct>> GetProducts(Guid orderId, IDbConnection connection) {
 
             List<IProductDataModel> productData = new();
 
             // add product data to list here
+            await AddProductDataToCollection<ClosetPartDataModel>(productData, orderId, connection);
+            await AddProductDataToCollection<DovetailDrawerBoxDataModel>(productData, orderId, connection);
+            await AddProductDataToCollection<MDFDoorDataModel>(productData, orderId, connection);
+
+            await AddProductDataToCollection<BaseCabinetDataModel>(productData, orderId, connection);
+            await AddProductDataToCollection<WallCabinetDataModel>(productData, orderId, connection);
+            await AddProductDataToCollection<DrawerBaseCabinetDataModel>(productData, orderId, connection);
+            await AddProductDataToCollection<TallCabinetDataModel>(productData, orderId, connection);
+            await AddProductDataToCollection<SinkCabinetDataModel>(productData, orderId, connection);
+            await AddProductDataToCollection<TrashCabinetDataModel>(productData, orderId, connection);
+            await AddProductDataToCollection<DiagonalBaseCabinetDataModel>(productData, orderId, connection);
+            await AddProductDataToCollection<DiagonalWallCabinetDataModel>(productData, orderId, connection);
+            await AddProductDataToCollection<PieCutWallCabinetDataModel>(productData, orderId, connection);
+            await AddProductDataToCollection<PieCutBaseCabinetDataModel>(productData, orderId, connection);
+            await AddProductDataToCollection<BlindWallCabinetDataModel>(productData, orderId, connection);
+            await AddProductDataToCollection<BlindBaseCabinetDataModel>(productData, orderId, connection);
 
             return productData.Aggregate(new List<IProduct>(), ProductAggregator);
 
@@ -63,7 +79,8 @@ public class GetOrderById {
 
             try {
 
-                var data = await connection.QueryAsync<T>(T.GetQueryByOrderId(), new { OrderId = orderId });
+                string query = T.GetQueryByOrderId;
+                var data = await connection.QueryAsync<T>(query, new { OrderId = orderId });
                 productData.AddRange(data.Cast<IProductDataModel>());
 
             } catch (Exception ex) {

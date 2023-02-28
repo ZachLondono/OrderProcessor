@@ -23,4 +23,14 @@ public record BlindCabinetDoors {
 
     }
 
+    public BlindCabinetDoors(HingeSide hingeSide, int quantity) {
+
+        if (quantity == 1 && hingeSide == HingeSide.NotApplicable) {
+            throw new InvalidOperationException("");
+        }
+
+        HingeSide = hingeSide;
+        Quantity = quantity;
+    }
+
 }

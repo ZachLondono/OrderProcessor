@@ -69,7 +69,7 @@ public class DovetailDrawerBoxModel : ProductModel {
 
         var labelFields = new Dictionary<string, string>();
 
-        var options = new DrawerBoxOptions(Material, Material, Material, Bottom, Clips, Notch, DrawerSlideType.Unknown, Insert, LogoPosition.None);
+        var options = new DrawerBoxOptions(Material, Material, Material, Bottom, Clips, Notch, Insert, LogoPosition.None);
 
         return DovetailDrawerBoxProduct.Create(unitPrice, Qty, GetProductNumber(), height, width, depth, Note, labelFields, options);
 

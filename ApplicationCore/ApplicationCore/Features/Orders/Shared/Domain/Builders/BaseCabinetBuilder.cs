@@ -11,6 +11,7 @@ internal class BaseCabinetBuilder : CabinetBuilder<BaseCabinet> {
     public ToeType ToeType { get; private set; }
     public HorizontalDrawerBank Drawers { get; private set; }
     public BaseCabinetInside Inside { get; private set; }
+    public CabinetDrawerBoxOptions BoxOptions { get; private set; }
 
     public BaseCabinetBuilder() {
         Inside = new();
@@ -18,10 +19,9 @@ internal class BaseCabinetBuilder : CabinetBuilder<BaseCabinet> {
         ToeType = ToeType.NoToe;
         Drawers = new() {
             Quantity = 0,
-            BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
-            FaceHeight = Dimension.Zero,
-            SlideType = DrawerSlideType.UnderMount
+            FaceHeight = Dimension.Zero
         };
+        BoxOptions = new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount);
     }
 
     public BaseCabinetBuilder WithDoors(BaseCabinetDoors doors) {
@@ -41,8 +41,13 @@ internal class BaseCabinetBuilder : CabinetBuilder<BaseCabinet> {
         return this;
     }
 
+    public BaseCabinetBuilder WithBoxOptions(CabinetDrawerBoxOptions boxOptions) {
+        BoxOptions = boxOptions;
+        return this;
+    }
+
     public override BaseCabinet Build() {
-        var cabinet = BaseCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSide, LeftSide, Comment, Doors, ToeType, Drawers, Inside);
+        var cabinet = BaseCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, Doors, ToeType, Drawers, Inside, BoxOptions);
         return cabinet;
     }
 

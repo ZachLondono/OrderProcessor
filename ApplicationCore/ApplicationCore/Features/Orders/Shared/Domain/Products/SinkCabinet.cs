@@ -16,6 +16,7 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
     public int AdjustableShelves { get; }
     public ShelfDepth ShelfDepth { get; }
     public RollOutOptions RollOutBoxes { get; }
+    public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
 
     public override string GetDescription() => "Sink Cabinet";
 
@@ -32,9 +33,9 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
     public SinkCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        ToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment) {
+                        CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
+                        ToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes, CabinetDrawerBoxOptions drawerBoxOptions)
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
         ToeType = toeType;
         HingeSide = hingeSide;
         DoorQty = doorQty;
@@ -43,14 +44,15 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
         AdjustableShelves = adjustableShelves;
         ShelfDepth = shelfDepth;
         RollOutBoxes = rollOutBoxes;
+        DrawerBoxOptions = drawerBoxOptions;
     }
 
     public static SinkCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
-                        CabinetSide rightSide, CabinetSide leftSide, string comment,
-                        ToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes)
-                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSide, leftSide, comment, toeType, hingeSide, doorQty, falseDrawerQty, drawerFaceHeight, adjustableShelves, shelfDepth, rollOutBoxes);
+                        CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
+                        ToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes, CabinetDrawerBoxOptions drawerBoxOptions)
+                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, toeType, hingeSide, doorQty, falseDrawerQty, drawerFaceHeight, adjustableShelves, shelfDepth, rollOutBoxes, drawerBoxOptions);
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
@@ -92,8 +94,6 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
     }
 
-    public DrawerBoxOptions DrawerBoxOptions => new("", "", "", "", "Blum", GetNotchFromSlideType(RollOutBoxes.SlideType), RollOutBoxes.SlideType, "", LogoPosition.None);
-
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
         if (!RollOutBoxes.Positions.Any()) {
@@ -107,11 +107,11 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
         int rollOutQty = RollOutBoxes.Positions.Length * Qty;
         var boxHeight = Dimension.FromMillimeters(104);
 
-        var box = getBuilder().WithInnerCabinetDepth(insideDepth, RollOutBoxes.SlideType, true)
-                                .WithInnerCabinetWidth(insideWidth, RollOutBoxes.Blocks, RollOutBoxes.SlideType)
+        var box = getBuilder().WithInnerCabinetDepth(insideDepth, DrawerBoxOptions.SlideType, true)
+                                .WithInnerCabinetWidth(insideWidth, RollOutBoxes.Blocks, DrawerBoxOptions.SlideType)
                                 .WithBoxHeight(boxHeight)
                                 .WithQty(rollOutQty)
-                                .WithOptions(DrawerBoxOptions)
+                                .WithOptions(DrawerBoxOptions.DrawerBoxOptions)
                                 .WithProductNumber(ProductNumber)
                                 .Build();
 
@@ -144,9 +144,9 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
         if (RollOutBoxes.Qty > 0) {
 
-            var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, RollOutBoxes.SlideType, true);
+            var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, true);
 
-            switch (RollOutBoxes.SlideType) {
+            switch (DrawerBoxOptions.SlideType) {
                 case DrawerSlideType.UnderMount:
                     supplies.Add(Supply.UndermountSlide(RollOutBoxes.Qty * Qty, boxDepth));
                     break;
@@ -162,12 +162,6 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
     }
 
-    private static string GetNotchFromSlideType(DrawerSlideType slide) => slide switch {
-        DrawerSlideType.UnderMount => "Standard Notch",
-        DrawerSlideType.SideMount => "",
-        _ => ""
-    };
-
     private string GetProductName() => $"S{DoorQty}D{FalseDrawerQty}FD";
 
     private Dictionary<string, string> GetParameters() {
@@ -175,8 +169,8 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
             { "ProductW", Width.AsMillimeters().ToString() },
             { "ProductH", Height.AsMillimeters().ToString() },
             { "ProductD", Depth.AsMillimeters().ToString() },
-            { "FinishedLeft", GetSideOption(LeftSide.Type) },
-            { "FinishedRight", GetSideOption(RightSide.Type) },
+            { "FinishedLeft", GetSideOption(LeftSideType) },
+            { "FinishedRight", GetSideOption(RightSideType) },
             { "ShelfQ", AdjustableShelves.ToString() },
             { "PulloutBlockType", GetRollOutBlockOption() },
             { "AppliedPanel", GetAppliedPanelOption() },
@@ -208,11 +202,11 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
             }
         }
 
-        if (RollOutBoxes.Positions.Any() && RollOutBoxes.SlideType == DrawerSlideType.SideMount) {
+        if (RollOutBoxes.Positions.Any() && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
             parameters.Add("_DrawerRunType", "4");
         }
 
-        if (LeftSide.Type != CabinetSideType.IntegratedPanel && RightSide.Type != CabinetSideType.IntegratedPanel && ShelfDepth == ShelfDepth.Full) {
+        if (LeftSideType != CabinetSideType.IntegratedPanel && RightSideType != CabinetSideType.IntegratedPanel && ShelfDepth == ShelfDepth.Full) {
 
             Dimension backThickness = Dimension.FromMillimeters(13);
             Dimension backInset = Dimension.FromMillimeters(9);
@@ -230,7 +224,7 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
         var parameters = new Dictionary<string, string>();
 
-        if (LeftSide.Type != CabinetSideType.IntegratedPanel && RightSide.Type != CabinetSideType.IntegratedPanel) {
+        if (LeftSideType != CabinetSideType.IntegratedPanel && RightSideType != CabinetSideType.IntegratedPanel) {
 
             if (ShelfDepth == ShelfDepth.Half) {
 
