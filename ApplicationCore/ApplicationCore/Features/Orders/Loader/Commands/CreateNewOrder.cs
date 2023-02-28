@@ -30,7 +30,7 @@ public partial class CreateNewOrder {
 
             Order order = Order.Create(request.Source, request.Number, request.Name, request.Customer, request.VendorId, request.Comment, request.OrderDate, request.Shipping, request.Billing, request.Tax, request.PriceAdjustment, request.Rush, request.Info, request.Products, request.AdditionalItems, request.OrderId);
 
-            using var connection = _factory.CreateConnection();
+            using var connection = await _factory.CreateConnection();
 
             connection.Open();
             var trx = connection.BeginTransaction();

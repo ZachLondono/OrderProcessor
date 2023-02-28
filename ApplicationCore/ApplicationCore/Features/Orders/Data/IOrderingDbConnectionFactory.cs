@@ -4,6 +4,6 @@ namespace ApplicationCore.Features.Orders.Data;
 
 public interface IOrderingDbConnectionFactory {
 
-    public IDbConnection CreateConnection();
+    public Task<IDbConnection> CreateConnection();
 
 }

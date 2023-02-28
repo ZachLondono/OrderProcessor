@@ -26,7 +26,7 @@ public class OverwriteExistingOrderWithId {
             const string deleteOrderCommand = "DELETE FROM orders WHERE id = @ExistingId;";
             const string deleteBoxesCommand = "DELETE FROM additionalitems WHERE orderid = @ExistingId;";
 
-            using var connection = _factory.CreateConnection();
+            using var connection = await _factory.CreateConnection();
 
             connection.Open();
             var trx = connection.BeginTransaction();

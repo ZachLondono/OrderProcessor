@@ -1,10 +1,4 @@
-﻿CREATE TABLE version (
-	version TEXT NOT NULL
-);
-
-INSERT INTO version (version) VALUES (1);
-
--- Order Tables --
+﻿-- Order Tables --
 
 CREATE TABLE orders (
 	id BLOB NOT NULL,
@@ -222,7 +216,7 @@ CREATE TABLE tall_cabinets (
 	upper_adj_shelf_qty INTEGER NOT NULL,
 	lower_vert_div_qty INTEGER NOT NULL,
 	upper_vert_div_qty INTEGER NOT NULL,
-	roll_out_config BLOB,
+	roll_out_config_id BLOB,
 	lower_door_qty INTEGER NOT NULL,
 	upper_door_qty INTEGER NOT NULL,
 	lower_door_height REAL NOT NULL,
@@ -309,7 +303,7 @@ CREATE TABLE pie_cut_wall_cabinets (
 
 CREATE TABLE blind_base_cabinets (
 	product_id BLOB NOT NULL,
-	toe_type INTEGER NOT NULL,
+	toe_type TEXT NOT NULL,
 	adj_shelf_qty INTEGER NOT NULL,
 	shelf_depth TEXT NOT NULL,
 	blind_side INTEGER NOT NULL,

@@ -1,6 +1,9 @@
-﻿@using ApplicationCore.Features.Orders.Shared.Domain
+﻿@using ApplicationCore.Features.Orders.Data;
+@using ApplicationCore.Features.Orders.Shared.Domain
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Infrastructure
+@using ApplicationCore.Features.Shared.Components;
+@using static ApplicationCore.Features.Shared.Components.Button;
 @inject OrderListViewModel ViewModel
 
 <table class="w-full table-auto">
@@ -19,25 +22,35 @@
     @if (ViewModel is null || ViewModel.IsLoading) {
 
         <tr>
-            <td colspan="6">
-                <span>Loading...</span>
+            <td colspan="6" class="text-center">
+                <div class="my-5 text-gray-500 text-lg">Loading...</div>
             </td>
         </tr>
 
     } else if (ViewModel.HasError) {
 
         <tr>
-            <td colspan="6">
-                <span class="text-red-600">Error loading orders [@ViewModel.ErrorMessage]</span>
+            <td colspan="6" class="text-center">
+                <div class="my-5 text-red-600 text-lg">Error loading orders [@ViewModel.ErrorMessage]</div>
+                <Button Type="button" OnClickAsync="LoadOrders"  Color="ButtonColor.Primary" Disabled="@ViewModel.IsLoading">Refresh</Button>
             </td>
         </tr>
 
     } else if (ViewModel.Orders is null) {
 
         <tr>
-            <td colspan="6">
-                <span>Could not load orders</span>
-                <button type="button" class="text-white bg-blue-700 rounded-md text-xs px-2.5 py-1 mr-2 mb-2 hover:bg-blue-800" @onclick="ViewModel.LoadOrders">Refresh</button>
+            <td colspan="6" class="text-center">
+                <div class="my-5 text-gray-500 text-lg">Could not load orders</div>
+                <Button Type="button" OnClickAsync="LoadOrders"  Color="ButtonColor.Primary" Disabled="@ViewModel.IsLoading">Refresh</Button>
+            </td>
+        </tr>
+
+    } else if (!ViewModel.Orders.Any()) {
+
+        <tr>
+            <td colspan="6" class="text-center">
+                <div class="my-5 text-gray-500 text-lg">No orders to display.</div>
+                <Button Type="button" OnClickAsync="LoadOrders"  Color="ButtonColor.Primary" Disabled="@ViewModel.IsLoading">Refresh</Button>
             </td>
         </tr>
 
@@ -74,7 +87,36 @@
 
         ViewModel.OnPropertyChanged += () => StateHasChanged();
 
-        await ViewModel.LoadOrders();
+        await LoadOrders();
+
+    }
+
+    private async Task LoadOrders() {
+
+        try {
+
+            await ViewModel.LoadOrders();
+            ViewModel.HasError = false;
+
+        } catch (IncompatibleDatabaseVersion ex) {
+
+            ViewModel.ErrorMessage = ex.Message;
+
+            await ModalService.OpenErrorDialog(new() {
+                    Title = "Could not load orders",
+                    Details = ex.Message
+                }, ModalSize.Automatic);
+
+        } catch (Exception ex) {
+
+            ViewModel.ErrorMessage = ex.Message;
+
+            await ModalService.OpenErrorDialog(new() {
+                    Title = "Could not load orders",
+                    Details = $"An exception was thrown while trying to load orders <br><br><br> {ex.Message} <br><br> {ex.StackTrace}"
+                }, ModalSize.ExtraLarge);
+
+        }
 
     }
 
@@ -88,6 +130,7 @@
                     Title = "Error Opening Order",
                     Details = $"An exception was thrown while trying to open the order <br><br><br> {ex.Message} <br><br> {ex.StackTrace}"
             }, ModalSize.ExtraLarge);
+
         }
 
     }

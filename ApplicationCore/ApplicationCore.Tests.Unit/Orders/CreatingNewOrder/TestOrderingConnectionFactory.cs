@@ -13,7 +13,7 @@ internal class TestOrderingConnectionFactory : IOrderingDbConnectionFactory {
         _schemaFilePath = schemaFilePath;
     }
 
-    public IDbConnection CreateConnection() {
+    public Task<IDbConnection> CreateConnection() {
 
         var schema = File.ReadAllText(_schemaFilePath);
 
@@ -21,7 +21,7 @@ internal class TestOrderingConnectionFactory : IOrderingDbConnectionFactory {
 
         connection.Execute(schema);
 
-        return connection;
+        return Task.FromResult((IDbConnection)connection);
 
     }
 

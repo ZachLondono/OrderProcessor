@@ -31,15 +31,18 @@ public class OrderListViewModel {
         get => _hasError;
         set {
             _hasError = value;
+            if (value) IsLoading = false;
+            else ErrorMessage = null;
             OnPropertyChanged?.Invoke();
         }
     }
 
-    private string _errorMessage = "";
-    public string ErrorMessage {
+    private string? _errorMessage = null;
+    public string? ErrorMessage {
         get => _errorMessage;
         set {
             _errorMessage = value;
+            if (value is not null) HasError = true;
             OnPropertyChanged?.Invoke();
         }
     }
@@ -63,24 +66,21 @@ public class OrderListViewModel {
 
     public async Task LoadOrders() {
 
-        try {
-            var response = await _bus.Send(new GetOrderList.Query());
-            response.Match(
-                orders => {
-                    Orders = orders;
-                },
-                errors => {
-                    HasError = true;
-                    ErrorMessage = errors.Title;
-                }
-            );
-        } catch (Exception ex) {
-            _logger.LogError(ex, "Exception thrown while loading order list");
-            HasError = true;
-            ErrorMessage = "Could not load orders";
-        }
+        IsLoading = true;
+        HasError = false;
+
+        var response = await _bus.Send(new GetOrderList.Query());
+        response.Match(
+            orders => {
+                Orders = orders;
+            },
+            errors => {
+                ErrorMessage = errors.Title;
+            }
+        );
 
         if (Orders is null) {
+            IsLoading = false;
             return;
         }
 
@@ -93,6 +93,8 @@ public class OrderListViewModel {
             order.VendorName = await _getCompanyNameById(order.VendorId) ?? "";
 
         }
+
+        IsLoading = false;
 
     }
 

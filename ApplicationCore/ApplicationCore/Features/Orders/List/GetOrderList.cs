@@ -18,7 +18,7 @@ public class GetOrderList {
 
         public override async Task<Response<IEnumerable<OrderListItem>>> Handle(Query request) {
 
-            using var connection = _factory.CreateConnection();
+            using var connection = await _factory.CreateConnection();
 
             const string query = @"SELECT
                                     id,

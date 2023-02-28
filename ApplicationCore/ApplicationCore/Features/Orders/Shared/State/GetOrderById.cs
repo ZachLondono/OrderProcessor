@@ -25,7 +25,7 @@ public class GetOrderById {
 
         public override async Task<Response<Order>> Handle(Query request) {
 
-            using var connection = _factory.CreateConnection();
+            using var connection = await _factory.CreateConnection();
 
             var orderData = await connection.QuerySingleOrDefaultAsync<OrderDataModel>(OrderDataModel.GetQueryById(), new { Id = request.OrderId });
 
