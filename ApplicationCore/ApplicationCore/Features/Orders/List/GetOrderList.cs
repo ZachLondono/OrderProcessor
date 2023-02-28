@@ -27,7 +27,7 @@ public class GetOrderList {
                                     order_date AS OrderDate,
                                     customer_name AS CustomerName,
                                     vendor_id AS VendorId,
-                                    0 as itemcount
+                                    (select SUM(qty) from products where products.order_id=orders.id) AS ItemCount
                                 FROM orders;";
 
             // TODO: get item count
