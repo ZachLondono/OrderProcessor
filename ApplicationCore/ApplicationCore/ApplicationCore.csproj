@@ -54,7 +54,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="ordering_schema.sql">
+    <None Update="Schemas\ordering_schema.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Schemas\companies_schema.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Schemas\work_orders_schema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
