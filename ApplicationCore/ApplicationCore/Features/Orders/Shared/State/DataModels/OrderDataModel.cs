@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using ApplicationCore.Features.Companies.Contracts.Entities;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
@@ -9,7 +10,7 @@ public class OrderDataModel {
     public string Source { get; set; } = string.Empty;
     public string Number { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
-    public string CustomerName { get; set; } = string.Empty;
+    public Guid CustomerId { get; set; }
     public Guid VendorId { get; set; }
     public string CustomerComment { get; set; } = string.Empty;
     public DateTime OrderDate { get; set; }
@@ -58,10 +59,6 @@ public class OrderDataModel {
             }
         };
 
-        Customer customer = new() {
-            Name = CustomerName,
-        };
-
         BillingInfo billing = new() {
             InvoiceEmail = InvoiceEmail,
             PhoneNumber = BillingPhoneNumber,
@@ -76,7 +73,7 @@ public class OrderDataModel {
             }
         };
 
-        return new Order(orderId, Source, Number, Name, customer, VendorId, CustomerComment, OrderDate, shippingInfo, billing, Tax, PriceAdjustment, Rush, Info.AsReadOnly(), products, items);
+        return new Order(orderId, Source, Number, Name, CustomerId, VendorId, CustomerComment, OrderDate, shippingInfo, billing, Tax, PriceAdjustment, Rush, Info.AsReadOnly(), products, items);
 
     }
 
@@ -86,7 +83,7 @@ public class OrderDataModel {
                 orders.id,
                 orders.number,
                 orders.name,
-                orders.customer_name AS CustomerName,
+                orders.customer_id AS CustomerId,
                 orders.vendor_id AS VendorId,
                 orders.customer_comment AS CustomerComment,
                 orders.order_date AS OrderDate,

@@ -31,7 +31,6 @@ public static class DependencyInjection {
         SqlMapper.AddTypeHandler(new DimensionArrayTypeHandler());
         SqlMapper.RemoveTypeMap(typeof(Guid));
         SqlMapper.RemoveTypeMap(typeof(Guid?));
-        services.AddSingleton<IDbConnectionFactory, SqliteDbConnectionFactory>();
 
         return services;
 

@@ -1,22 +1,24 @@
-﻿using ApplicationCore.Features.Companies.Queries;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList.Models;
+﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList.Models;
 using Microsoft.Extensions.Logging;
-using Company = ApplicationCore.Features.Companies.Domain.Company;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Features.Companies.Contracts;
+using ApplicationCore.Features.Companies.Contracts.Entities;
+using ApplicationCore.Pages.CustomerDetails;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 
 internal class PackingListHandler {
 
     private readonly ILogger<PackingListHandler> _logger;
-    private readonly IBus _bus;
+    private readonly CompanyDirectory.GetVendorByIdAsync _getVendorById;
+    private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerById;
     private readonly IFileReader _fileReader;
 
-    public PackingListHandler(ILogger<PackingListHandler> logger, IBus bus, IFileReader fileReader) {
-        _bus = bus;
+    public PackingListHandler(ILogger<PackingListHandler> logger, CompanyDirectory.GetVendorByIdAsync getVendorById, CompanyDirectory.GetCustomerByIdAsync getCustomerById, IFileReader fileReader) {
+        _getVendorById = getVendorById;
+        _getCustomerById = getCustomerById;
         _logger = logger;
         _fileReader = fileReader;
     }
@@ -41,23 +43,10 @@ internal class PackingListHandler {
 
     private async Task<Models.PackingList> CreatePackingList(Order order) {
 
-        bool hasError = false;
-
-        Company? vendor = null;
-        var vendorQuery = await GetCompany(order.VendorId);
-        vendorQuery.Match(
-            (company) => {
-                vendor = company;
-            },
-            (error) => {
-                hasError = true;
-                _logger.LogError("Error loading vendor {Error}", error);
-            }
-        );
-
-        /*if (hasError || vendor is null) {
-            
-        }*/
+        Vendor? vendor = await _getVendorById(order.VendorId);
+        if (vendor is null) {
+            _logger.LogError("Could not find vendor {VendorId}", order.VendorId);
+        }
 
         var drawerBoxes = order.Products
                                 .Where(p => p is DovetailDrawerBoxProduct)
@@ -86,9 +75,11 @@ internal class PackingListHandler {
         var custLine2Str = string.IsNullOrWhiteSpace(order.Shipping.Address.Country + order.Shipping.Address.State + order.Shipping.Address.Zip) ? "" : $"{order.Shipping.Address.City}, {order.Shipping.Address.State} {order.Shipping.Address.Zip}";
         var vendLine2Str = string.IsNullOrWhiteSpace(vendor?.Address.Country ?? "" + vendor?.Address.State ?? "" + vendor?.Address.Zip ?? "") ? "" : $"{vendor?.Address.City ?? ""}, {vendor?.Address.State ?? ""} {vendor?.Address.Zip ?? ""}";
 
+        var customer = await _getCustomerById(order.CustomerId);
+
         var packinglist = new Models.PackingList() {
             Customer = new() {
-                Name = order.Customer.Name,
+                Name = customer?.Name ?? "",
                 Line1 = order.Shipping.Address.Line1,
                 Line2 = custLine2Str,
                 Line3 = order.Shipping.PhoneNumber
@@ -97,7 +88,7 @@ internal class PackingListHandler {
                 Name = vendor?.Name ?? "",
                 Line1 = vendor?.Address.Line1 ?? "",
                 Line2 = vendLine2Str,
-                Line3 = vendor?.PhoneNumber ?? ""
+                Line3 = vendor?.Phone ?? ""
             },
             Date = order.OrderDate,
             OrderName = order.Name,
@@ -109,10 +100,6 @@ internal class PackingListHandler {
 
         return packinglist;
 
-    }
-
-    private async Task<Response<Company?>> GetCompany(Guid companyId) {
-        return await _bus.Send(new GetCompanyById.Query(companyId));
     }
 
 }

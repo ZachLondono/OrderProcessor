@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Shared.Services;
+﻿using ApplicationCore.Features.Companies.Contracts;
+using ApplicationCore.Features.Shared.Services;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Logging;
 
@@ -47,29 +48,30 @@ public class OrderListViewModel {
         }
     }
 
-
     private readonly ILogger<OrderListViewModel> _logger;
     private readonly IBus _bus;
     private readonly NavigationService _navigationService;
-    private readonly CompanyInfo.GetCompanyNameById _getCompanyNameById;
+    private readonly CompanyDirectory.GetVendorByIdAsync _getVendorById;
+    private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerById;
 
-    public OrderListViewModel(ILogger<OrderListViewModel> logger, IBus bus, NavigationService navigationService, CompanyInfo.GetCompanyNameById getCompanyNameById) {
+    public OrderListViewModel(ILogger<OrderListViewModel> logger, IBus bus, NavigationService navigationService, CompanyDirectory.GetVendorByIdAsync getVendorById, CompanyDirectory.GetCustomerByIdAsync getCustomerById) {
         _logger = logger;
         _bus = bus;
         _navigationService = navigationService;
-        _getCompanyNameById = getCompanyNameById;
+        _getVendorById = getVendorById;
+        _getCustomerById = getCustomerById;
     }
 
     public async Task OpenOrder(Guid orderId) {
         await _navigationService.NavigateToOrderPage(orderId);
     }
 
-    public async Task LoadOrders() {
+    public async Task LoadOrders(Guid? customerId, Guid? vendorId) {
 
         IsLoading = true;
         HasError = false;
 
-        var response = await _bus.Send(new GetOrderList.Query());
+        var response = await _bus.Send(new GetOrderList.Query(customerId, vendorId));
         response.Match(
             orders => {
                 Orders = orders;
@@ -90,7 +92,11 @@ public class OrderListViewModel {
                 continue;
             }
 
-            order.VendorName = await _getCompanyNameById(order.VendorId) ?? "";
+            var vendor = await _getVendorById(order.VendorId);
+            order.VendorName = vendor?.Name ?? "";
+
+            var customer = await _getCustomerById(order.CustomerId);
+            order.CustomerName = customer?.Name ?? "";
 
         }
 
@@ -98,8 +104,12 @@ public class OrderListViewModel {
 
     }
 
-    public async Task OpenCompanyPage(Guid companyId) {
-        await _navigationService.NavigateToCompanyPage(companyId);
+    public void OpenCustomerPage(Guid companyId) {
+        _navigationService.NavigateToCustomerPage(companyId);
+    }
+
+    public void OpenVendorPage(Guid companyId) {
+        _navigationService.NavigateToVendorPage(companyId);
     }
 
 }

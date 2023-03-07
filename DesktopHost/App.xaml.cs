@@ -10,6 +10,7 @@ using ApplicationCore.Features.Shared.Services;
 using DesktopHost.Error;
 using Serilog;
 using System.Windows.Threading;
+using System.Diagnostics;
 
 namespace DesktopHost;
 
@@ -77,18 +78,20 @@ public partial class App : Application {
 
     private void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e) {
         runException(e.Exception);
-
+        Log.Logger.Error(e.Exception, "Unhandled Exception");
         e.Handled = true;
     }
 
     void runException(Exception ex) {
 
+        string message = string.Format(
+                            "{0} Error:  {1}\r\n\r\n{2}",
+                            ex.Source, ex.Message, ex.StackTrace);
+
         var window = new ErrorWindow {
             DataContext = new ErrorWindowViewModel() {
                 Title = "Unhandled Exception in Application",
-                Message = string.Format(
-                            "{0} Error:  {1}\r\n\r\n{2}",
-                            ex.Source, ex.Message, ex.StackTrace)
+                Message = message
             }
         };
 

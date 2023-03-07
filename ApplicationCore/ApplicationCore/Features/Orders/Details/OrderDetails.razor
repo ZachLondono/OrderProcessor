@@ -1,29 +1,30 @@
-﻿@using ApplicationCore.Features.Companies.Domain.ValueObjects
-@using ApplicationCore.Features.Orders.Details;
-@using ApplicationCore.Features.Orders.Details.ProductTables
-@using ApplicationCore.Features.Orders.Details.OrderExport;
-@using ApplicationCore.Features.Orders.Shared.Domain
-@using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-@using ApplicationCore.Features.Orders.Details.OrderRelease
-@using ApplicationCore.Features.Orders.Shared.State;
-@using ApplicationCore.Features.Shared.Contracts;
-@using ApplicationCore.Features.Shared.Services;
-@using ApplicationCore.Features.WorkOrders;
-@using ApplicationCore.Infrastructure
-@using System.Diagnostics
-@using ApplicationCore.Features.Shared.Components
-@using ApplicationCore.Features.Orders.Shared.Domain.Products;
-@using ApplicationCore.Features.Orders.Shared;
-@using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-@using ApplicationCore.Infrastructure.Bus;
-@using ApplicationCore.Pages.OrderDetails;
-@using ApplicationCore.Infrastructure.UI
-@using static ApplicationCore.Features.Shared.Components.DropDown;
-@using static ApplicationCore.Features.Shared.Components.Button;
-@using static ApplicationCore.Features.Orders.Details.ProductTables.MDFDoorProductTable;
-@using static ApplicationCore.Features.Orders.Details.ProductTables.DovetailDrawerBoxProductTable;
-@using static ApplicationCore.Features.Orders.Details.ProductTables.ClosetPartProductTable;
-@using static ApplicationCore.Features.Orders.Details.ProductTables.CabinetProductTable;
+﻿@    using ApplicationCore.Features.Orders.Details;
+@    using ApplicationCore.Features.Orders.Details.ProductTables
+@    using ApplicationCore.Features.Orders.Details.OrderExport;
+@    using ApplicationCore.Features.Orders.Shared.Domain
+@    using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+@    using ApplicationCore.Features.Orders.Details.OrderRelease
+@    using ApplicationCore.Features.Orders.Shared.State;
+@    using ApplicationCore.Features.Shared.Contracts;
+@    using ApplicationCore.Features.Shared.Services;
+@    using ApplicationCore.Features.WorkOrders;
+@    using ApplicationCore.Infrastructure
+@    using System.Diagnostics
+@    using ApplicationCore.Features.Shared.Components
+@    using ApplicationCore.Features.Orders.Shared.Domain.Products;
+@    using ApplicationCore.Features.Orders.Shared;
+@    using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+@    using ApplicationCore.Infrastructure.Bus;
+@    using ApplicationCore.Pages.OrderDetails;
+@    using ApplicationCore.Infrastructure.UI
+@    using static ApplicationCore.Features.Shared.Components.DropDown;
+@    using static ApplicationCore.Features.Shared.Components.Button;
+@    using static ApplicationCore.Features.Orders.Details.ProductTables.MDFDoorProductTable;
+@    using static ApplicationCore.Features.Orders.Details.ProductTables.DovetailDrawerBoxProductTable;
+@    using static ApplicationCore.Features.Orders.Details.ProductTables.ClosetPartProductTable;
+@    using static ApplicationCore.Features.Orders.Details.ProductTables.CabinetProductTable;
+@    using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+    using ApplicationCore.Features.WorkOrders.Contracts;
 @inherits UIListenerComponent<WorkOrdersUpdatNotification>
 @inject IBus Bus
 @inject OrderState OrderState
@@ -76,13 +77,17 @@
 
     <section class="mt-10" id="companyInfo">
         <div>
-            <label id="customer" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Customer</label>
-            <span class="text-lg dark:text-white h-5 align-middle">@OrderState.Order.Customer.Name</span>
+            @if (_customerName is not null) {
+                <label id="customer" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Customer</label>
+                <span class="text-lg hover:underline cursor-pointer dark:text-white h-5 align-middle" @onclick="() => OpenCustomerPage(OrderState.Order.CustomerId)">@_customerName</span>
+            } else {
+                <span>No customer info</span>
+            }
         </div>
         <div>
             @if(_vendorName is not null) {
                 <label id="vendor" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Vendor</label>
-                <span class="text-lg hover:underline cursor-pointer dark:text-white h-5 align-middle" @onclick="() => OpenCompanyPage(OrderState.Order.VendorId)">@_vendorName</span>
+                <span class="text-lg hover:underline cursor-pointer dark:text-white h-5 align-middle" @onclick="() => OpenVendorPage(OrderState.Order.VendorId)">@_vendorName</span>
             } else {
                 <span>No vendor info</span>
             }
@@ -283,6 +288,7 @@
     public List<DovetailDrawerBoxRowModel> DrawerBoxes { get; set; } = new();
     public List<MDFDoorRowModel> Doors { get; set; } = new();
 
+    private string? _customerName = null;
     private string? _vendorName = null;
     private ReleaseProfile? _customReleaseProfile = null;
 
@@ -296,7 +302,8 @@
         if (OrderState.Order is null) return;
 
         if (ViewModel is not null) {
-            _vendorName = await ViewModel.GetCompanyName(OrderState.Order.VendorId);
+            _vendorName = await ViewModel.GetVendorName(OrderState.Order.VendorId);
+            _customerName = await ViewModel.GetCustomerName(OrderState.Order.CustomerId);
         }
 
         Cabinets = OrderState.Order
@@ -368,8 +375,12 @@
 
     }
 
-    public async Task OpenCompanyPage(Guid companyId) {
-        await NavigationService.NavigateToCompanyPage(companyId);
+    public void OpenCustomerPage(Guid companyId) {
+        NavigationService.NavigateToCustomerPage(companyId);
+    }
+
+    public void OpenVendorPage(Guid companyId) {
+        NavigationService.NavigateToVendorPage(companyId);
     }
 
     private async Task ReleaseOrder() {
@@ -401,7 +412,10 @@
 
         _isExporting = true;
 
-        var dialog = Modal.Show<ExportSetupDialog>("Export Setup", new ModalOptions() {
+        var dialog = Modal.Show<ExportSetupDialog>("Export Setup",
+            new ModalParameters() {
+                { "VendorId", OrderState.Order?.VendorId ?? Guid.Empty }
+            }, new ModalOptions() {
                 HideHeader = false,
                 HideCloseButton = true,
                 DisableBackgroundCancel = true,

@@ -1,0 +1,34 @@
+﻿@page "/allcompanies"
+@using ApplicationCore.Features.Companies.Customers.Create;
+@using ApplicationCore.Features.Companies.Customers.List
+@using ApplicationCore.Features.Companies.Vendors.List
+@using ApplicationCore.Features.Shared.Components
+@inject NavigationManager NavigationManager
+
+<div class="flex space-x-5">
+    <div class="flex-auto">
+        <h2>Customers</h2>
+        <CustomerList />
+    </div>
+    <div class="flex-auto">
+        <h2>Vendors</h2>
+        <VendorList/>
+    </div>
+</div>
+
+
+@code {
+
+    [CascadingParameter]
+    public IModalService Modal { get; set; } = default!;
+
+    private async Task OpenCreateCustomerDialog() {
+        var options = new ModalOptions() {
+                HideHeader = true
+            };
+        var dialog = Modal.Show<CreateCustomerDialog>("", options);
+        var result = await dialog.Result;
+        if (result.Confirmed) NavigationManager.NavigateTo("/customers/details", true);
+    }
+
+}

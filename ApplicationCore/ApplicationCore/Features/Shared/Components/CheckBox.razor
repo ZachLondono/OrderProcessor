@@ -1,11 +1,8 @@
-﻿
-<div @onclick="ValueChanged">
-    <input type="checkbox" @bind="@IsChecked" />
-    <label>@ChildContent</label>
-</div>
+﻿<input type="checkbox" @bind="@IsChecked" id="@Id" />
+<label for="@Id">@ChildContent</label>
 
 @code {
-    
+
     [Parameter]
     public RenderFragment? ChildContent {get; set;}
 
@@ -13,11 +10,9 @@
     public bool IsChecked { get; set; }
 
     [Parameter]
-    public EventCallback<bool> IsCheckedChanged { get; set; }
+    public string Id { get; set; } = Guid.NewGuid().ToString();
 
-    public async Task ValueChanged() {
-        IsChecked = !IsChecked;
-        await IsCheckedChanged.InvokeAsync(IsChecked);
-    }
+    [Parameter]
+    public EventCallback<bool> IsCheckedChanged { get; set; }
 
 }

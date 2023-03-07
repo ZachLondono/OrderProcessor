@@ -8,6 +8,11 @@ using MoreLinq;
 using ApplicationCore.Features.Orders.Loader.Dialog;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using System.Xml.Schema;
+using static ApplicationCore.Features.Companies.Contracts.CompanyDirectory;
+using Address = ApplicationCore.Features.Orders.Shared.Domain.ValueObjects.Address;
+using CompanyAddress = ApplicationCore.Features.Companies.Contracts.ValueObjects.Address;
+using CompanyCustomer = ApplicationCore.Features.Companies.Contracts.Entities.Customer;
+using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 
@@ -17,17 +22,21 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
     private readonly AllmoxyClientFactory _clientfactory;
     private readonly IXMLValidator _validator;
     private readonly ProductBuilderFactory _builderFactory;
+    private readonly GetCustomerIdByAllmoxyIdAsync _getCustomerIdByAllmoxyIdAsync;
+    private readonly InsertCustomerAsync _insertCustomerAsync;
 
     public IOrderLoadingViewModel? OrderLoadingViewModel { get; set; }
 
-    public AllmoxyXMLOrderProvider(AllmoxyConfiguration configuration, AllmoxyClientFactory clientfactory, IXMLValidator validator, ProductBuilderFactory builderFactory) {
+    public AllmoxyXMLOrderProvider(AllmoxyConfiguration configuration, AllmoxyClientFactory clientfactory, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync) {
         _configuration = configuration;
         _clientfactory = clientfactory;
         _validator = validator;
         _builderFactory = builderFactory;
+        _getCustomerIdByAllmoxyIdAsync = getCustomerIdByAllmoxyIdAsync;
+        _insertCustomerAsync = insertCustomerAsync;
     }
 
-    public Task<OrderData?> LoadOrderData(string source) {
+    public async Task<OrderData?> LoadOrderData(string source) {
 
         // Load order to a string
         string exportXML;
@@ -35,20 +44,20 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             exportXML = _clientfactory.CreateClient().GetExport(source, 6);
         } catch (Exception ex) {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not load order data from Allmoxy: {ex.Message}");
-            return Task.FromResult<OrderData?>(null); ;
+            return null;
         }
 
         // Validate data
         if (!ValidateData(exportXML)) {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Order data was not valid");
-            return Task.FromResult<OrderData?>(null);
+            return null;
         }
 
         // Deserialize data
         OrderModel? data = DeserializeData(exportXML);
         if (data is null) {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find order information in given data");
-            return Task.FromResult<OrderData?>(null);
+            return null;
         }
 
         ShippingInfo shipping = new() {
@@ -67,9 +76,9 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             }
         };
 
-        Customer customer = new() {
-            Name = data.Customer.Company
-        };
+        string customerName = data.Customer.Company;
+
+        Guid customerId = await CreateCustomerIfNotExists(data, customerName);
 
         var info = new Dictionary<string, string>() {
             { "Notes", data.Note },
@@ -98,7 +107,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             Tax = AllmoxyXMLOrderProviderHelpers.StringToMoney(data.Invoice.Tax),
             PriceAdjustment = 0M,
             OrderDate = orderDate,
-            Customer = customer,
+            CustomerId = customerId,
             VendorId = Guid.Parse(_configuration.VendorId),
             AdditionalItems = new(),
             Products = products,
@@ -106,7 +115,46 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             Info = info
         };
 
-        return Task.FromResult<OrderData?>(order);
+        return order;
+
+    }
+
+    private async Task<Guid> CreateCustomerIfNotExists(OrderModel data, string customerName) {
+
+        int allmoxyCustomerId = data.Customer.CompanyId;
+        Guid? customerId = await _getCustomerIdByAllmoxyIdAsync(allmoxyCustomerId);
+
+        if (customerId is Guid id) {
+            return id;
+        } else {
+
+            var shippingContact = new Contact() {
+                Name = data.Shipping.Attn,
+                Email = null,
+                Phone = null
+            };
+
+            var shippingAddress = new CompanyAddress() {
+                Line1 = data.Shipping.Address.Line1,
+                Line2 = data.Shipping.Address.Line2,
+                Line3 = data.Shipping.Address.Line3,
+                City = data.Shipping.Address.City,
+                State = data.Shipping.Address.State,
+                Zip = data.Shipping.Address.Zip,
+                Country = data.Shipping.Address.Country
+            };
+
+            var billingContact = new Contact();
+
+            var billingAddress = new CompanyAddress();
+
+            var newCustomer = CompanyCustomer.Create(customerName, data.Shipping.Method, shippingContact, shippingAddress, billingContact, billingAddress);
+
+            await _insertCustomerAsync(newCustomer, allmoxyCustomerId);
+
+            return newCustomer.Id;
+
+        }
 
     }
 

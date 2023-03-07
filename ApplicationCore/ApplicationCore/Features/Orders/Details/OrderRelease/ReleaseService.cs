@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
+﻿using ApplicationCore.Features.Companies.Contracts;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
@@ -7,6 +8,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Features.Shared.Services;
 using QuestPDF.Fluent;
+using static ApplicationCore.Features.Companies.Contracts.CompanyDirectory;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease;
 
@@ -18,16 +20,21 @@ internal class ReleaseService {
 
     private readonly InvoiceHandler _invoiceHandler;
     private readonly PackingListHandler _packingListHandler;
-    private readonly GenerateReleaseForSelectedJobs.Handler _cncReleaseHandler;
     private readonly OrderState _orderState;
     private readonly IFileReader _fileReader;
+    private readonly GenerateReleaseForSelectedJobs.Handler _cncReleaseHandler;
+    private readonly GetCustomerByIdAsync _getCustomerByIdAsync;
+    private readonly GetVendorByIdAsync _getVendorByIdAsync;
 
-    public ReleaseService(InvoiceHandler invoiceHandler, PackingListHandler packingListHandler, GenerateReleaseForSelectedJobs.Handler cncReleaseHandler, OrderState orderState, IFileReader fileReader) {
+    public ReleaseService(InvoiceHandler invoiceHandler, PackingListHandler packingListHandler, OrderState orderState, IFileReader fileReader,
+                        GenerateReleaseForSelectedJobs.Handler cncReleaseHandler, GetCustomerByIdAsync getCustomerByIdAsync, GetVendorByIdAsync getVendorByIdAsync) {
         _invoiceHandler = invoiceHandler;
         _packingListHandler = packingListHandler;
         _cncReleaseHandler = cncReleaseHandler;
         _orderState = orderState;
         _fileReader = fileReader;
+        _getCustomerByIdAsync = getCustomerByIdAsync;
+        _getVendorByIdAsync = getVendorByIdAsync;
     }
 
     public async Task Release(ReleaseConfiguration configuration) {
@@ -50,7 +57,10 @@ internal class ReleaseService {
         List<IDocumentDecorator> cncDecorators = new();
         if (configuration.GenerateCNCRelease && configuration.CNCDataFilePath is not null) {
 
-            var response = await _cncReleaseHandler.Handle(new GenerateReleaseForSelectedJobs.Command(order.Id, $"{order.Number} {order.Name}", order.Customer.Name, "Vendor Name", DateTime.Now, configuration.CNCDataFilePath));
+            var vendor = await _getVendorByIdAsync(order.VendorId);
+            var customer = await _getCustomerByIdAsync(order.CustomerId);
+
+            var response = await _cncReleaseHandler.Handle(new GenerateReleaseForSelectedJobs.Command(order.Id, $"{order.Number} {order.Name}", customer?.Name ?? "", vendor?.Name ?? "", DateTime.Now, configuration.CNCDataFilePath));
 
             response.OnSuccess(result => cncDecorators.AddRange(result.Decorators));
 

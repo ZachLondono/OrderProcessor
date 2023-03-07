@@ -14,7 +14,7 @@ internal class PieCutWallCabinetDataModel : CabinetDataModelBase, IProductDataMo
     public int AdjShelfQty { get; set; }
 
     public IProduct MapToProduct() {
-        
+
         var mdfConfig = GetMDFDoorConfiguration();
 
         var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxMatCore);

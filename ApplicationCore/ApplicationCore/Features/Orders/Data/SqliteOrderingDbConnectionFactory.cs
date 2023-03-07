@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using ApplicationCore.Infrastructure.Data;
+using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,7 @@ namespace ApplicationCore.Features.Orders.Data;
 internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory {
 
     public const int DB_VERSION = 1;
+    private static SemaphoreSlim semaphore = new(1);
 
     private readonly IConfiguration _configuration;
     private readonly ILogger<SqliteOrderingDbConnectionFactory> _logger;
@@ -20,6 +22,8 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
 
     public async Task<IDbConnection> CreateConnection() {
 
+        await semaphore.WaitAsync();
+
         var datasource = _configuration.GetRequiredSection("Ordering").GetValue<string>("Data Source");
 
         var builder = new SqliteConnectionStringBuilder {
@@ -29,7 +33,7 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
 
         var connection = new SqliteConnection(builder.ConnectionString);
 
-        if (File.Exists(datasource)) { 
+        if (File.Exists(datasource)) {
 
             int dbVersion = await GetDatabaseVersion(connection);
             if (dbVersion != DB_VERSION) {
@@ -41,6 +45,8 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
             await InitilizeDatabase(connection);
 
         }
+
+        semaphore.Release();
 
         return connection;
 
@@ -57,11 +63,16 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
         _logger.LogInformation("Initilizing ordering database, version {DB_VERSION} from schema in file {FilePath}", DB_VERSION, schemaPath);
 
         var schema = await File.ReadAllTextAsync(schemaPath);
-        
-        await connection.ExecuteAsync(schema);
 
-        await connection.ExecuteAsync($"PRAGMA SCHEMA_VERSION = {DB_VERSION};");
-        
+        await connection.OpenAsync();
+        var trx = await connection.BeginTransactionAsync();
+
+        await connection.ExecuteAsync(schema, trx);
+        await connection.ExecuteAsync($"PRAGMA SCHEMA_VERSION = {DB_VERSION};", trx);
+
+        trx.Commit();
+        connection.Close();
+
     }
 
     private async Task<int> GetDatabaseVersion(SqliteConnection connection) {

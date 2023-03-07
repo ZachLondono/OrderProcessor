@@ -2,21 +2,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.CompilerServices;
-using ApplicationCore.Features.Companies;
 using Blazored.Modal;
 using ApplicationCore.Infrastructure;
-using ApplicationCore.Features.Orders.List;
-using ApplicationCore.Features.Companies.Queries;
-using ApplicationCore.Pages.OrderDetails;
-using ApplicationCore.Features.WorkOrders.AllWorkOrders;
 using ApplicationCore.Features.Orders;
-using ApplicationCore.Features.Orders.Details.OrderRelease;
-using ApplicationCore.Features.Orders.Details.OrderExport;
-using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Features.Shared.Services;
-using ApplicationCore.Features.WorkOrders.BarCodeScanning;
-using ApplicationCore.Features.WorkOrders.OrderTaskList;
 using ApplicationCore.Features.WorkOrders;
+using ApplicationCore.Features.Companies;
+using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Pages;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -28,28 +20,20 @@ public static class DependencyInjection {
 
         services.AddMediatR(typeof(DependencyInjection));
 
-        services.AddSingleton<CompanyState>();
         services.AddSingleton<IServiceProvider>(sp => sp);
         services.AddTransient<IAccessDBConnectionFactory, AccessDBConnectionFactory>();
 
         services.AddTransient<NavigationService>();
-        services.AddTransient<CompanyInfo.GetCompanyNameById>((sp) => {
-            var bus = sp.GetRequiredService<IBus>();
-            return async (id) => {
-                var response = await bus.Send(new GetCompanyNameById.Query(id));
-                string? name = null;
-                response.OnSuccess(result => name = result);
-                return name;
-            };
-        });
 
-        services.AddViewModels();
+        services.AddCompanies();
 
         services.AddOrdering(configuration);
 
         services.AddWorkOrders();
 
         services.AddBlazoredModal();
+
+        services.AddPages();
 
         services.AddSingleton<IFileReader, FileReader>();
 
@@ -58,13 +42,6 @@ public static class DependencyInjection {
         return services;
     }
 
-    private static IServiceCollection AddViewModels(this IServiceCollection services)
-        => services.AddTransient<OrderListViewModel>()
-                    .AddTransient<OrderTaskListViewModel>()
-                    .AddTransient<OrderDetailsPageViewModel>()
-                    .AddTransient<BarCodeScanningDialogViewModel>()
-                    .AddTransient<AllWorkOrdersListViewModel>()
-                    .AddTransient<ReleaseProgressViewModel>()
-                    .AddTransient<ExportProgressViewModel>();
+
 
 }

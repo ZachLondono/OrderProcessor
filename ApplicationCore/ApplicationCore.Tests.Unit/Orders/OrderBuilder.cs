@@ -10,7 +10,7 @@ internal class OrderBuilder {
     private string _source = string.Empty;
     private string _number = string.Empty;
     private string _name = string.Empty;
-    private Customer _customer;
+    private Guid _customerId = Guid.NewGuid();
     private Guid _vendorId = Guid.NewGuid();
     private string _comment = string.Empty;
     private DateTime _orderDate = DateTime.Today;
@@ -24,10 +24,6 @@ internal class OrderBuilder {
     private List<DovetailDrawerBoxProduct> _boxes = new();
 
     public OrderBuilder() {
-
-        _customer = new() {
-            Name = ""
-        };
 
         _shipping = new() {
             Contact = "",
@@ -65,8 +61,8 @@ internal class OrderBuilder {
         return this;
     }
 
-    public OrderBuilder WithCustomer(Customer customer) {
-        _customer = customer;
+    public OrderBuilder WithCustomerId(Guid customerId) {
+        _customerId = customerId;
         return this;
     }
 
@@ -120,6 +116,6 @@ internal class OrderBuilder {
         return this;
     }
 
-    public Order Buid() => new(_id, _source, _number, _name, _customer, _vendorId, _comment, _orderDate, _shipping, _billing, _tax, _priceAdjustment, _rush, _info, _boxes, _items);
+    public Order Buid() => new(_id, _source, _number, _name, _customerId, _vendorId, _comment, _orderDate, _shipping, _billing, _tax, _priceAdjustment, _rush, _info, _boxes, _items);
 
 }

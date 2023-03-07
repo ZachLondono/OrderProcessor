@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain;
+﻿using ApplicationCore.Features.Companies.Contracts;
+using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
@@ -11,42 +12,43 @@ internal class DovetailOrderHandler {
 
     private readonly IFileReader _fileReader;
     private readonly ComponentBuilderFactory _factory;
+    private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerById;
 
-    public DovetailOrderHandler(IFileReader fileReader, ComponentBuilderFactory factory) {
+    public DovetailOrderHandler(IFileReader fileReader, ComponentBuilderFactory factory, CompanyDirectory.GetCustomerByIdAsync getCustomerById) {
         _fileReader = fileReader;
         _factory = factory;
+        _getCustomerById = getCustomerById;
     }
 
-    public Task Handle(Order order, string template, string outputDirectory) {
+    public async Task Handle(Order order, string template, string outputDirectory) {
 
         if (!File.Exists(template)) {
-            return Task.CompletedTask;
+            return;
         }
 
         if (!Directory.Exists(outputDirectory)) {
-            return Task.CompletedTask;
+            return;
         }
 
         var groups = order.Products.OfType<IDrawerBoxContainer>().SelectMany(p => p.GetDrawerBoxes(_factory.CreateDovetailDrawerBoxBuilder)).GroupBy(b => b.DrawerBoxOptions.Assembled);
 
+        var customer = await _getCustomerById(order.CustomerId);
         foreach (var group in groups) {
 
             using var stream = _fileReader.OpenReadFileStream(template);
             var workbook = new XLWorkbook(stream);
 
-            var data = MapData(order, group);
+            var data = MapData(order, customer?.Name ?? "", group);
             WriteData(workbook, data);
 
-            var filename = _fileReader.GetAvailableFileName(outputDirectory, $"{order.Number} {order.Name} Drawerboxes", ".xlsm");
+            var filename = _fileReader.GetAvailableFileName(outputDirectory, $"{order.Number} - {order.Name} Drawerboxes", ".xlsm");
             workbook.SaveAs(filename);
 
         }
 
-        return Task.CompletedTask;
-
     }
 
-    public static DBOrder MapData(Order order, IGrouping<bool, DovetailDrawerBox> group) {
+    public static DBOrder MapData(Order order, string customerName, IGrouping<bool, DovetailDrawerBox> group) {
         return new() {
             OrderNumber = order.Number,
             OrderDate = order.OrderDate,
@@ -62,7 +64,7 @@ internal class DovetailOrderHandler {
             Assembly = group.Key ? "Assembled" : "UNASSEMBLED - FLAT PACK",
             ShippingInstructions = order.Shipping.Method,
             Customer = new() {
-                Name = order.Customer.Name,
+                Name = customerName,
                 Line1 = order.Shipping.Address.Line1,
                 Line2 = order.Shipping.Address.Line2,
                 City = order.Shipping.Address.City,

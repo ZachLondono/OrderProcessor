@@ -1,0 +1,112 @@
+﻿@using ApplicationCore.Features.Shared.Components
+@inject EditCustomerViewModel DataContext
+
+@if (DataContext.Error is not null) {
+    
+    <div class="overflow-x-scroll">
+        <h3 class="text-md text-red-600">@DataContext.Error.Title</h3>
+        <span class="text-xs">@((MarkupString)DataContext.Error.Details)</span>
+    </div>
+
+} else if (DataContext.IsLoading) {
+
+    <span>Loading...</span>
+
+} else if (DataContext.Model is null) {
+
+    <span>No customer set.</span>
+
+} else {
+
+    <EditForm Model="DataContext.Model" OnValidSubmit="DataContext.Submit" class="flex flex-col space-y-5 overflow-x-hidden px-2">
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="my-5">
+
+            <label for="name" class="block text-sm font-medium text-gray-700">Name*</label>
+            <InputText id="name" @bind-Value="DataContext.Model.Name" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+            <Button Style="Button.ButtonStyle.Contained" Color="Button.ButtonColor.Primary" Type="submit" Disabled="DataContext.IsSaving" class="flex justify-center items-center w-48 mt-5">
+                @if (DataContext.IsSaving) {
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Saving</span>
+                } else {
+                    <span>Save</span>
+                }
+            </Button>
+
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <section id="shipping">
+
+                <h3>Shipping</h3>
+
+                <label for="shipping_contact_name" class="block text-sm font-medium text-gray-700">Name</label>
+                <InputText id="shipping_contact_name" @bind-Value="DataContext.Model.ShippingContact.Name" placeholder="John Smith" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+                <label for="shipping_contact_email" class="block text-sm font-medium text-gray-700">Email</label>
+                <InputText id="shipping_contact_email" @bind-Value="DataContext.Model.ShippingContact.Email" placeholder="abc@email.com" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+                <label for="shipping_contact_phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                <InputText id="shipping_contact_phone" @bind-Value="DataContext.Model.ShippingContact.Phone" placeholder="(000) 000-0000" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+                <h3>Address</h3>
+                <InputText id="shipping_contact_line1" @bind-Value="DataContext.Model.ShippingAddress.Line1" placeholder="Line1" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="shipping_contact_line2" @bind-Value="DataContext.Model.ShippingAddress.Line2" placeholder="Line2" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="shipping_contact_line3" @bind-Value="DataContext.Model.ShippingAddress.Line3" placeholder="Line3" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="shipping_contact_city" @bind-Value="DataContext.Model.ShippingAddress.City" placeholder="City" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="shipping_contact_state" @bind-Value="DataContext.Model.ShippingAddress.State" placeholder="State" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="shipping_contact_zip" @bind-Value="DataContext.Model.ShippingAddress.Zip" placeholder="Zip" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="shipping_contact_country" @bind-Value="DataContext.Model.ShippingAddress.Country" placeholder="Country" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+            </section>
+
+            <section id="billing">
+
+                <h3>Billing</h3>
+            
+                <label for="billing_contact_name" class="block text-sm font-medium text-gray-700">Name</label>
+                <InputText id="billing_contact_name" @bind-Value="DataContext.Model.BillingContact.Name" placeholder="John Smith" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+                <label for="billing_contact_email" class="block text-sm font-medium text-gray-700">Email</label>
+                <InputText id="billing_contact_email" @bind-Value="DataContext.Model.BillingContact.Email" placeholder="abc@email.com" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+                <label for="billing_contact_phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                <InputText id="billing_contact_phone" @bind-Value="DataContext.Model.BillingContact.Phone" placeholder="(000) 000-0000" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+                <h3>Address</h3>
+                <InputText id="billing_contact_line1" @bind-Value="DataContext.Model.BillingAddress.Line1" placeholder="Line1" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="billing_contact_line2" @bind-Value="DataContext.Model.BillingAddress.Line2" placeholder="Line2" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="billing_contact_line3" @bind-Value="DataContext.Model.BillingAddress.Line3" placeholder="Line3" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="billing_contact_city" @bind-Value="DataContext.Model.BillingAddress.City" placeholder="City" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="billing_contact_state" @bind-Value="DataContext.Model.BillingAddress.State" placeholder="State" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="billing_contact_zip" @bind-Value="DataContext.Model.BillingAddress.Zip" placeholder="Zip" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="billing_contact_country" @bind-Value="DataContext.Model.BillingAddress.Country" placeholder="Country" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+            </section>
+        </div>
+
+    </EditForm>
+
+}
+
+@code {
+
+    [Parameter]
+    public Guid CustomerId { get; set; }
+
+    protected override void OnInitialized() {
+        DataContext.OnPropertyChanged += StateHasChanged;
+    }
+
+    protected override async Task OnParametersSetAsync() {
+        await DataContext.SetCustomerId(CustomerId);
+    }
+
+}

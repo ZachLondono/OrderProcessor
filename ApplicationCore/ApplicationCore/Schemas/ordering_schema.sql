@@ -6,7 +6,7 @@ CREATE TABLE orders (
 	number TEXT NOT NULL,
 	name TEXT NOT NULL,
 	vendor_id BLOB NOT NULL,
-	customer_name TEXT NOT NULL,
+	customer_id BLOB NOT NULL,
 	customer_comment TEXT,
 	order_date TEXT NOT NULL,
 	info TEXT,

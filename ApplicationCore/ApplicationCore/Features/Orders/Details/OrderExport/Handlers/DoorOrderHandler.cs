@@ -6,6 +6,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Features.Companies.Contracts;
 
 namespace ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
 
@@ -14,11 +15,13 @@ internal class DoorOrderHandler {
     private readonly ILogger<DoorOrderHandler> _logger;
     private readonly IFileReader _fileReader;
     private readonly ComponentBuilderFactory _factory;
+    private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
 
-    public DoorOrderHandler(ILogger<DoorOrderHandler> logger, IFileReader fileReader, ComponentBuilderFactory factory) {
+    public DoorOrderHandler(ILogger<DoorOrderHandler> logger, IFileReader fileReader, ComponentBuilderFactory factory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync) {
         _logger = logger;
         _fileReader = fileReader;
         _factory = factory;
+        _getCustomerByIdAsync = getCustomerByIdAsync;
     }
 
     public Task Handle(Order order, string template, string outputDirectory) {
@@ -75,7 +78,7 @@ internal class DoorOrderHandler {
 
     }
 
-    private void GenerateOrderForms(Order order, IEnumerable<MDFDoorComponent> doors, string template, string outputDirectory) {
+    private async Task GenerateOrderForms(Order order, IEnumerable<MDFDoorComponent> doors, string template, string outputDirectory) {
 
         var groups = doors.GroupBy(d => new DoorStyleGroupKey() {
             Material = d.Door.Material,
@@ -103,9 +106,12 @@ internal class DoorOrderHandler {
 
                 string orderNumber = $"{order.Number}{(groups.Count() == 1 ? "" : $"-{++index}")}";
 
-                FillOrderSheet(order, group, workbook, orderNumber);
+                var customer = await _getCustomerByIdAsync(order.CustomerId);
+                var customerName = customer?.Name ?? "";
 
-                string fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{orderNumber} {order.Name} MDF DOORS", ".xlsm");
+                FillOrderSheet(order, customerName, group, workbook, orderNumber);
+
+                string fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{orderNumber} - {order.Name} MDF DOORS", ".xlsm");
                 string finalPath = Path.Combine(outputDirectory, fileName);
 
                 workbook.SaveAs2(finalPath);
@@ -124,11 +130,11 @@ internal class DoorOrderHandler {
 
     }
 
-    private static void FillOrderSheet(Order order, IGrouping<DoorStyleGroupKey, MDFDoorComponent> doors, Workbook workbook, string orderNumber) {
+    private static void FillOrderSheet(Order order, string customerName, IGrouping<DoorStyleGroupKey, MDFDoorComponent> doors, Workbook workbook, string orderNumber) {
 
         Worksheet ws = workbook.Worksheets["MDF"];
         ws.Range["OrderDate"].Value2 = order.OrderDate;
-        ws.Range["Company"].Value2 = order.Customer.Name;
+        ws.Range["Company"].Value2 = customerName;
         ws.Range["JobNumber"].Value2 = orderNumber;
         ws.Range["JobName"].Value2 = order.Name;
 

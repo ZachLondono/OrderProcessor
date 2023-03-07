@@ -10,7 +10,9 @@ public class OrderListItem {
 
     public DateTime OrderDate { get; init; }
 
-    public string CustomerName { get; init; } = string.Empty;
+    public string CustomerName { get; set; } = string.Empty;
+
+    public Guid CustomerId { get; init; }
 
     public string VendorName { get; set; } = string.Empty;
 

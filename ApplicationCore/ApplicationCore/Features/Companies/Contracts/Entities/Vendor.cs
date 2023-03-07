@@ -1,0 +1,26 @@
+﻿using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+
+namespace ApplicationCore.Features.Companies.Contracts.Entities;
+
+public class Vendor {
+
+    public Guid Id { get; }
+    public string Name { get; set; }
+    public Address Address { get; set; }
+    public string Phone { get; set; }
+    public ExportProfile ExportProfile { get; set; }
+    public ReleaseProfile ReleaseProfile { get; set; }
+
+    internal Vendor(Guid id, string name, Address address, string phone, ExportProfile exportProfile, ReleaseProfile releaseProfile) {
+        Id = id;
+        Name = name;
+        Address = address;
+        Phone = phone;
+        ExportProfile = exportProfile;
+        ReleaseProfile = releaseProfile;
+    }
+
+    public static Vendor Create(string name, Address address, string phone, ExportProfile exportProfile, ReleaseProfile releaseProfile)
+        => new(Guid.NewGuid(), name, address, phone, exportProfile, releaseProfile);
+
+}
