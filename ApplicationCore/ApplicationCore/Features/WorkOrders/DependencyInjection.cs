@@ -1,5 +1,8 @@
-﻿using ApplicationCore.Features.Shared.Contracts;
+﻿using ApplicationCore.Features.WorkOrders.AllWorkOrders;
+using ApplicationCore.Features.WorkOrders.BarCodeScanning;
+using ApplicationCore.Features.WorkOrders.Contracts;
 using ApplicationCore.Features.WorkOrders.Data;
+using ApplicationCore.Features.WorkOrders.OrderTaskList;
 using ApplicationCore.Features.WorkOrders.Shared.Commands;
 using ApplicationCore.Features.WorkOrders.Shared.Queries;
 using ApplicationCore.Infrastructure.Bus;
@@ -11,6 +14,7 @@ public static class DependencyInjection {
 
     public static IServiceCollection AddWorkOrders(this IServiceCollection services) {
 
+        services.AddViewModels();
         services.AddTransient<IWorkOrdersDbConnectionFactory, SqliteWorkOrdersDbConnectionFactory>();
 
         services.AddTransient<Manufacturing.CreateWorkOrder>(sp => {
@@ -53,5 +57,10 @@ public static class DependencyInjection {
         return services;
 
     }
+
+    private static IServiceCollection AddViewModels(this IServiceCollection services)
+        => services.AddTransient<BarCodeScanningDialogViewModel>()
+                    .AddTransient<AllWorkOrdersListViewModel>()
+                    .AddTransient<OrderTaskListViewModel>();
 
 }

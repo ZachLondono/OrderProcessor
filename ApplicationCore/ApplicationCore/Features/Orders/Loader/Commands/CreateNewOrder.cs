@@ -12,7 +12,7 @@ namespace ApplicationCore.Features.Orders.Loader.Commands;
 
 public partial class CreateNewOrder {
 
-    public record Command(string Source, string Number, string Name, Customer Customer, Guid VendorId, string Comment, DateTime OrderDate, ShippingInfo Shipping, BillingInfo Billing, decimal Tax, decimal PriceAdjustment, bool Rush, IReadOnlyDictionary<string, string> Info, IEnumerable<IProduct> Products, IEnumerable<AdditionalItem> AdditionalItems, Guid? OrderId = null) : ICommand<Order>;
+    public record Command(string Source, string Number, string Name, Guid CustomerId, Guid VendorId, string Comment, DateTime OrderDate, ShippingInfo Shipping, BillingInfo Billing, decimal Tax, decimal PriceAdjustment, bool Rush, IReadOnlyDictionary<string, string> Info, IEnumerable<IProduct> Products, IEnumerable<AdditionalItem> AdditionalItems, Guid? OrderId = null) : ICommand<Order>;
 
     public partial class Handler : CommandHandler<Command, Order> {
 
@@ -28,7 +28,7 @@ public partial class CreateNewOrder {
 
         public override async Task<Response<Order>> Handle(Command request) {
 
-            Order order = Order.Create(request.Source, request.Number, request.Name, request.Customer, request.VendorId, request.Comment, request.OrderDate, request.Shipping, request.Billing, request.Tax, request.PriceAdjustment, request.Rush, request.Info, request.Products, request.AdditionalItems, request.OrderId);
+            Order order = Order.Create(request.Source, request.Number, request.Name, request.CustomerId, request.VendorId, request.Comment, request.OrderDate, request.Shipping, request.Billing, request.Tax, request.PriceAdjustment, request.Rush, request.Info, request.Products, request.AdditionalItems, request.OrderId);
 
             using var connection = await _factory.CreateConnection();
 
@@ -82,7 +82,7 @@ public partial class CreateNewOrder {
                     number,
                     name,
                     vendor_id,
-                    customer_name,
+                    customer_id,
                     customer_comment,
                     order_date,
                     info,
@@ -103,7 +103,7 @@ public partial class CreateNewOrder {
                     @Number,
                     @Name,
                     @VendorId,
-                    @CustomerName,
+                    @CustomerId,
                     @CustomerComment,
                     @OrderDate,
                     @Info,
@@ -125,7 +125,7 @@ public partial class CreateNewOrder {
                     order.Name,
                     order.Number,
                     order.VendorId,
-                    CustomerName = order.Customer.Name,
+                    order.CustomerId,
                     order.CustomerComment,
                     order.OrderDate,
                     Info = (IDictionary<string, string>)order.Info,

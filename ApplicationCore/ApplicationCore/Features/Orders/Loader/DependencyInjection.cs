@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.ExcelTemplates.Domain;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.Loader.Providers;
 using Microsoft.Extensions.Configuration;
@@ -23,11 +22,6 @@ internal static class DependencyInjection {
         services.AddTransient<AllmoxyClientFactory>();
 
         services.AddTransient<IXMLValidator, XMLValidator>();
-
-        services.AddTransient<ITemplateFiller, ClosedXMLTemplateFiller>();
-        services.AddTransient<IExcelTemplate, ClosedXMLTemplate>();
-        services.AddTransient<IExcelTemplateFactory, ExcelTemplateFactory>();
-        services.AddTransient<IExcelPrinter, ProcessExcelPrinter>();
 
         var constructionConfig = configuration.GetRequiredSection("DrawerBoxConstruction").Get<ConstructionValues>();
         services.AddSingleton<ConstructionValues>(constructionConfig);

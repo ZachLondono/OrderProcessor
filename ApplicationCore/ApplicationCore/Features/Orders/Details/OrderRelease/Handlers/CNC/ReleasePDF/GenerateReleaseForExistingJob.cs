@@ -1,12 +1,12 @@
 ﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.Domain;
-using ApplicationCore.Features.Shared.Contracts;
 using ApplicationCore.Features.Shared.Domain;
 using ApplicationCore.Infrastructure.Bus;
 using MoreLinq;
 using ApplicationCore.Features.Orders.Details.Shared;
 using System.Xml.Linq;
+using ApplicationCore.Features.WorkOrders.Contracts;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
 

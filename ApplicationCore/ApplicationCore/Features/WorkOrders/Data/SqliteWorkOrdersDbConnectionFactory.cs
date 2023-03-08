@@ -14,8 +14,14 @@ internal class SqliteWorkOrdersDbConnectionFactory : IWorkOrdersDbConnectionFact
 
     public IDbConnection CreateConnection() {
 
-        var connstring = _configuration.GetConnectionString("WorkOrders");
-        var connection = new SqliteConnection(connstring);
+        var datasource = _configuration.GetRequiredSection("WorkOrders").GetValue<string>("Data Source");
+
+        var builder = new SqliteConnectionStringBuilder {
+            DataSource = datasource,
+            Pooling = false
+        };
+
+        var connection = new SqliteConnection(builder.ConnectionString);
 
         return connection;
 

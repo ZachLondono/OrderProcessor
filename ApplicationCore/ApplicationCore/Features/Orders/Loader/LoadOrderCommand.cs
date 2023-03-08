@@ -43,13 +43,13 @@ public class LoadOrderCommand {
                 Address = new()
             };
 
-            try { 
-            
-                Response<Order> result = await _bus.Send(new CreateNewOrder.Command(request.Source, data.Number, data.Name, data.Customer, data.VendorId, data.Comment, data.OrderDate, data.Shipping, billing, data.Tax, data.PriceAdjustment, data.Rush, data.Info, data.Products, data.AdditionalItems));
+            try {
+
+                Response<Order> result = await _bus.Send(new CreateNewOrder.Command(request.Source, data.Number, data.Name, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Shipping, billing, data.Tax, data.PriceAdjustment, data.Rush, data.Info, data.Products, data.AdditionalItems));
                 return result;
 
             } catch (Exception ex) {
-                
+
                 return Response<Order>.Error(new() {
                     Title = "Could not create new order",
                     Details = ex.Message

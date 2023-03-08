@@ -1,4 +1,4 @@
-﻿@using ApplicationCore.Features.Companies.Create
+﻿@using ApplicationCore.Features.Companies.Customers.Create;
 @using ApplicationCore.Features.Orders
 @using ApplicationCore.Features.Orders.Loader
 @using ApplicationCore.Features.Orders.Loader.Dialog;
@@ -53,7 +53,7 @@
 					</svg>
 					<span class="h-6 align-middle">Orders</span>
 				</NavLink>
-				<NavLink href="/companies/list" ActiveClass="text-blue-500" class="nav-link block cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 dark:hover:bg-slate-600 hover:text-black dark:hover:text-white">
+				<NavLink href="/allcompanies" ActiveClass="text-blue-500" class="nav-link block cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 dark:hover:bg-slate-600 hover:text-black dark:hover:text-white">
 					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 inline-block">
 						<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
 					</svg>					  
@@ -78,11 +78,11 @@
 					</svg>						  
 					<span class="h-6 align-middle">Upload Order</span>
 				</div>
-				<div @onclick="CreateCompany" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 dark:hover:bg-slate-600  text-gray-500 hover:text-black dark:hover:text-white">
+				<div @onclick="CreateCustomer" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 dark:hover:bg-slate-600  text-gray-500 hover:text-black dark:hover:text-white">
 					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 inline-block">
 						<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
 					</svg>
-					<span class="h-6 align-middle">Add Company</span>
+					<span class="h-6 align-middle">Add Customer</span>
 				</div>
 				<div @onclick="OpenBarCodeDialog" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 dark:hover:bg-slate-600  text-gray-500 hover:text-black dark:hover:text-white">
 					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 inline-block">
@@ -156,20 +156,18 @@
 
 	}
 
-	private async Task CreateCompany() {
+	private async Task CreateCustomer() {
 		var options = new ModalOptions() {
-			Class = "text-black dark:bg-slate-800"
+			HideHeader = true
 		};
-		var dialog = Modal.Show<CreateCompanyDialog>();
+		var dialog = Modal.Show<CreateCustomerDialog>("", options);
 		var result = await dialog.Result;
-		if (result.Confirmed) NavigationManager.NavigateTo("/companies/details", true);
+		if (result.Confirmed) NavigationManager.NavigateTo("/customers/details", true);
 	}
 
 	private async Task OpenBarCodeDialog() {
-
 		var dialog = Modal.Show<BarCodeScanningDialog>();
 		_ = await dialog.Result;
-
 	}
 
     private async Task GoBack() {

@@ -15,7 +15,7 @@ internal class SinkCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
     public Dimension DrawerFaceHeight { get; set; }
     public int AdjShelfQty { get; set; }
     public ShelfDepth ShelfDepth { get; set; }
-    
+
     public IProduct MapToProduct() {
 
         var dbOptions = GetDrawerBoxOptions();
