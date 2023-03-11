@@ -49,28 +49,41 @@ internal class UpdateVendor {
                     export_mdf_door_order = @ExportMDFDoorOrder,
                     export_ext_file = @ExportExtFile,
                     export_output_directory = @ExportOutputDirectory,
+
                     release_invoice = @ReleaseInvoice,
+                    release_invoice_output_directory = @ReleaseInvoiceOutputDirectory,
+                    release_invoice_send_email = @ReleaseSendInvoiceEmail,
+                    release_invoice_email_recipients = @ReleaseInvoiceEmailRecipients,
+
+                    release_include_invoice = @ReleaseIncludeInvoice,
                     release_packing_list = @ReleasePackingList,
                     release_job_summary = @ReleaseJobSummary,
                     release_send_email = @ReleaseSendEmail,
                     release_email_recipients = @ReleaseEmailRecipients,
                     release_output_directory = @ReleaseOutputDirectory
+
                 WHERE id = @Id;
                 """, new {
-                                vendor.Id,
-                                vendor.Name,
-                                vendor.Phone,
-                                vendor.ExportProfile.ExportDBOrder,
-                                vendor.ExportProfile.ExportMDFDoorOrder,
-                                vendor.ExportProfile.ExportExtFile,
-                                ExportOutputDirectory = vendor.ExportProfile.OutputDirectory,
-                                ReleaseInvoice = vendor.ReleaseProfile.Invoice,
-                                ReleasePackingList = vendor.ReleaseProfile.PackingList,
-                                ReleaseJobSummary = vendor.ReleaseProfile.JobSummary,
-                                ReleaseSendEmail = vendor.ReleaseProfile.SendEmail,
-                                ReleaseEmailRecipients = vendor.ReleaseProfile.EmailRecipients,
-                                ReleaseOutputDirectory = vendor.ReleaseProfile.OutputDirectory
-                            }, trx);
+                    vendor.Id,
+                    vendor.Name,
+                    vendor.Phone,
+                    vendor.ExportProfile.ExportDBOrder,
+                    vendor.ExportProfile.ExportMDFDoorOrder,
+                    vendor.ExportProfile.ExportExtFile,
+                    ExportOutputDirectory = vendor.ExportProfile.OutputDirectory,
+
+                    ReleaseInvoice = vendor.ReleaseProfile.GenerateInvoice,
+                    ReleaseInvoiceOutputDirectory = vendor.ReleaseProfile.InvoiceOutputDirectory,
+                    ReleaseSendInvoiceEmail = vendor.ReleaseProfile.SendInvoiceEmail,
+                    ReleaseInvoiceEmailRecipients = vendor.ReleaseProfile.InvoiceEmailRecipients,
+
+                    ReleaseIncludeInvoice = vendor.ReleaseProfile.IncludeInvoice,
+                    ReleasePackingList = vendor.ReleaseProfile.GeneratePackingList,
+                    ReleaseJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
+                    ReleaseSendEmail = vendor.ReleaseProfile.SendReleaseEmail,
+                    vendor.ReleaseProfile.ReleaseEmailRecipients,
+                    vendor.ReleaseProfile.ReleaseOutputDirectory
+                }, trx);
 
         }
 

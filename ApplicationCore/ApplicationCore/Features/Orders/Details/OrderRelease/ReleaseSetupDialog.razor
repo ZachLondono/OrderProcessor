@@ -1,9 +1,10 @@
-﻿@using ApplicationCore.Features.Orders.Details.OrderRelease;
+﻿@using ApplicationCore.Features.Companies.Contracts;
+@using ApplicationCore.Features.Orders.Details.OrderRelease;
 @using static ApplicationCore.Features.Shared.Components.Button;
 @using ApplicationCore.Features.Shared.Components
 @using ApplicationCore.Features.Shared.Services;
 @inject IFilePicker FilePicker
-
+@inject CompanyDirectory.GetVendorByIdAsync GetVendorByIdAsync
 
 @if (Configuration is null) {
     <span>Loading...</span>    
@@ -20,40 +21,81 @@
         }
 
         <section>
-            <CheckBox @bind-IsChecked="Configuration.GenerateCNCRelease">
-                <span class="text-gray-700">Generate CNC Release PDF</span>
-            </CheckBox>
-            <div class="flex justify-center items-center mt-3">
-                <Button OnClickAsync="ChooseCNCDataFile" Color="ButtonColor.Secondary">Select File</Button> <span class="text-sm px-3">@(string.IsNullOrWhiteSpace(Configuration.CNCDataFilePath) ? "No File Selected" : TruncateString(Configuration.CNCDataFilePath))</span>
-            </div>
-        </section>
 
-        <section>
-            <CheckBox @bind-IsChecked="Configuration.GeneratePackingList">
-                <span class="text-gray-700">Generate Packing List</span>
-            </CheckBox>
-            <CheckBox @bind-IsChecked="Configuration.GenerateInvoice">
-                <span class="text-gray-700">Generate Invoice</span>
-            </CheckBox>
-        </section>
+            <h3 class="font-semibold mb-3">Release PDF</h3>
 
-        <section>
             <CheckBox @bind-IsChecked="Configuration.GenerateJobSummary">
-                <span class="text-gray-700">Generate Job Summary</span>
+                <span class="text-gray-700">Job Summary</span>
             </CheckBox>
+            
+            <br />
+            
+            <CheckBox @bind-IsChecked="Configuration.GeneratePackingList">
+                <span class="text-gray-700">Packing List</span>
+            </CheckBox>
+            
+            <br />
+            
+            <CheckBox @bind-IsChecked="Configuration.GenerateCNCRelease">
+                <span class="text-gray-700">CNC Patterns</span>
+            </CheckBox>
+            @if (Configuration.GenerateCNCRelease) {
+                <div class="flex justify-center items-center mt-3">
+                    <Button OnClickAsync="ChooseCNCDataFile" Color="ButtonColor.Secondary">Select File</Button> <span class="text-sm px-3">@(string.IsNullOrWhiteSpace(Configuration.CNCDataFilePath) ? "No File Selected" : TruncateString(Configuration.CNCDataFilePath))</span>
+                </div>
+            }
+
+            @if (Configuration.GenerateJobSummary || Configuration.GeneratePackingList || Configuration.GenerateCNCRelease) {
+
+                <br />
+
+                <CheckBox @bind-IsChecked="Configuration.IncludeInvoiceInRelease">
+                    <span class="text-gray-700">Include Invoice</span>
+                </CheckBox>
+
+                <br />
+
+                <CheckBox @bind-IsChecked="Configuration.SendReleaseEmail">
+                    <span class="text-gray-700">Send Email</span>
+                </CheckBox>
+                @if (Configuration.SendReleaseEmail) {
+                    <label class="block text-sm font-medium text-gray-700">Email Recipients</label>
+                    <input type="text" class="mt-1 w-full" @bind="@Configuration.ReleaseEmailRecipients" />
+                }
+
+                <br />
+
+                <label class="block text-sm font-medium text-gray-700">Output Directory</label>
+                <input type="text" class="mt-1 w-full" @bind="Configuration.ReleaseOutputDirectory" />
+
+            }
+
         </section>
 
-        <section>
-            <CheckBox @bind-IsChecked="Configuration.SendEmail">
-                <span class="text-gray-700">Send Email</span>
-            </CheckBox>
-            <label class="block text-sm font-medium text-gray-700">Email Recipients</label>
-            <input type="text" class="mt-1 w-full" @bind="@Configuration.EmailRecipients" />
-        </section>
+        <hr />
 
         <section>
-            <label class="block text-sm font-medium text-gray-700">Output Directory</label>
-            <input type="text" class="mt-1 w-full" @bind="@Configuration.OutputDirectory" />
+
+            <h3 class="font-semibold mb-3">Invoice</h3>
+
+            <CheckBox @bind-IsChecked="Configuration.GenerateInvoice">
+                <span class="text-gray-700">Save Invoice PDF</span>
+            </CheckBox>
+            @if (Configuration.GenerateInvoice) {
+                <label class="block text-sm font-medium text-gray-700">Output Directory</label>
+                <input type="text" class="mt-1 w-full" @bind="Configuration.InvoiceOutputDirectory" />
+            }
+
+            <br />
+
+            <CheckBox @bind-IsChecked="Configuration.SendInvoiceEmail">
+                <span class="text-gray-700">Send Invoice Email</span>
+            </CheckBox>
+            @if (Configuration.SendInvoiceEmail) {
+                <label class="block text-sm font-medium text-gray-700">Email Recipients</label>
+                <input type="text" class="mt-1 w-full" />
+            }
+
         </section>
 
         <section>
@@ -66,6 +108,9 @@
 
 @code {
 
+    [Parameter]
+    public Guid VendorId { get; set; }
+
     [CascadingParameter]
     private BlazoredModalInstance ModalInstance { get; set; } = default!;
 
@@ -74,6 +119,32 @@
 
     public ReleaseConfiguration? Configuration { get; set; } = new();
     private string? _errorMessage = null;
+
+    protected override async Task OnInitializedAsync() {
+
+        var vendor = await GetVendorByIdAsync(VendorId);
+        if (vendor is null) return;
+        Configuration = new() {
+            
+            SendReleaseEmail = vendor.ReleaseProfile.SendReleaseEmail,
+            ReleaseEmailRecipients = vendor.ReleaseProfile.ReleaseEmailRecipients,
+            GenerateJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
+            GeneratePackingList = vendor.ReleaseProfile.GeneratePackingList,
+            IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
+            ReleaseOutputDirectory = vendor.ReleaseProfile.ReleaseOutputDirectory,
+            GenerateCNCRelease = false,
+            CNCDataFilePath = "",
+
+            GenerateInvoice = vendor.ReleaseProfile.GenerateInvoice,
+            SendInvoiceEmail = vendor.ReleaseProfile.SendInvoiceEmail,
+            InvoiceEmailRecipients = vendor.ReleaseProfile.InvoiceEmailRecipients,
+            InvoiceOutputDirectory = vendor.ReleaseProfile.InvoiceOutputDirectory
+
+        };
+
+        StateHasChanged();
+
+    }
 
     private async Task ChooseCNCDataFile() {
 

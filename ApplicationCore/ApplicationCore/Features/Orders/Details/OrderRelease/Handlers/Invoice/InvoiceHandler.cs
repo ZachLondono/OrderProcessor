@@ -76,8 +76,29 @@ internal class InvoiceHandler {
                             ExtPrice = (b.UnitPrice * b.Qty).ToString("$0.00")
                         }).ToList();
 
-        var doors = new List<DoorItem>();
-        var closetParts = new List<ClosetPartItem>();
+        var doors = order.Products
+                        .OfType<MDFDoorProduct>()
+                        .Select(d => new DoorItem() {
+                            Line = d.ProductNumber,
+                            Qty = d.Qty,
+                            Description = d.GetDescription(),
+                            Height = d.Height.AsInchFraction().ToString(),
+                            Width = d.Width.AsInchFraction().ToString(),
+                            Price = d.UnitPrice.ToString("$0.00"),
+                            ExtPrice = (d.UnitPrice * d.Qty).ToString("$0.00")
+                        }).ToList();
+
+        var closetParts = order.Products
+                            .OfType<ClosetPart>()
+                            .Select(c => new ClosetPartItem() {
+                                Line = c.ProductNumber,
+                                Qty = c.Qty,
+                                Description = c.GetDescription(),
+                                Width = c.Width.AsInchFraction().ToString(),
+                                Length = c.Length.AsInchFraction().ToString(),
+                                Price = c.UnitPrice.ToString("$0.00"),
+                                ExtPrice = (c.UnitPrice * c.Qty).ToString("$0.00")
+                            }).ToList();
 
         var customer = await _getCustomerById(order.CustomerId);
 

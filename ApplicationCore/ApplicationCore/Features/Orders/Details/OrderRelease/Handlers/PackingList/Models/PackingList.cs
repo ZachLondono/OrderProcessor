@@ -17,5 +17,7 @@ internal class PackingList {
     public List<DoorItem> Doors { get; set; } = new();
 
     public List<CabinetItem> Cabinets { get; set; } = new();
+    
+    public List<ClosetPartItem> ClosetParts { get; set; } = new();
 
 }

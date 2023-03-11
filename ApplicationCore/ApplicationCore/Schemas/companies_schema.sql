@@ -23,10 +23,15 @@ CREATE TABLE vendors (
 	export_output_directory TEXT NOT NULL,
 
 	release_invoice INTEGER NOT NULL,
+	release_invoice_output_directory TEXT NOT NULL,
+	release_invoice_send_email INTEGER NOT NULL,
+	release_invoice_email_recipients TEXT NOT NULL,
+
 	release_packing_list INTEGER NOT NULL,
+	release_include_invoice INTEGER NOT NULL,
 	release_job_summary INTEGER NOT NULL,
 	release_send_email INTEGER NOT NULL,
-	release_email_recipients INTEGER NOT NULL,
+	release_email_recipients TEXT NOT NULL,
 	release_output_directory TEXT NOT NULL,
 
 	PRIMARY KEY (id),
@@ -62,5 +67,5 @@ CREATE TABLE contacts (
 
 -- Initial Data --
 INSERT INTO addresses (id, line1, line2, line3, city, state, zip, country) VALUES ('4534920a-8b66-4847-b346-7459d7ff3d7b','','','','','','','');
-INSERT INTO vendors (id, name, phone, address_id, export_db_order, export_mdf_door_order, export_ext_file, export_output_directory, release_invoice, release_packing_list, release_job_summary, release_send_email, release_email_recipients, release_output_directory)
-	VALUES ('a81d759d-5b6c-4053-8cec-55a6c94d609e', 'Metro Cabinet Parts', '', '4534920a-8b66-4847-b346-7459d7ff3d7b', 0, 0, 0, './', 0, 0, 0, 0, '', './');
+INSERT INTO vendors (id, name, phone, address_id, export_db_order, export_mdf_door_order, export_ext_file, export_output_directory, release_include_invoice, release_packing_list, release_job_summary, release_send_email, release_email_recipients, release_output_directory, release_invoice, release_invoice_output_directory, release_invoice_send_email, release_invoice_email_recipients)
+	VALUES ('a81d759d-5b6c-4053-8cec-55a6c94d609e', 'Metro Cabinet Parts', '', '4534920a-8b66-4847-b346-7459d7ff3d7b', 0, 0, 0, './', 0, 0, 0, 0, '', './', 0, './', 0, '');

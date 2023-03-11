@@ -1,9 +1,7 @@
-﻿using ApplicationCore.Features.Companies.Contracts;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
+﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
-using ApplicationCore.Features.Orders.Details.Shared;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Features.Shared.Services;
@@ -44,7 +42,7 @@ internal class ReleaseService {
             return;
         }
 
-        if (configuration.OutputDirectory is null) {
+        if (configuration.ReleaseOutputDirectory is null) {
             OnError?.Invoke("No output directory set");
             return;
         }
@@ -54,7 +52,12 @@ internal class ReleaseService {
         await GenerateInvoice(configuration, order);
         await GeneratePackingList(configuration, order);
 
-        List<IDocumentDecorator> cncDecorators = new();
+        List<IDocumentDecorator> decorators = new();
+
+        if (configuration.GenerateJobSummary) {
+            decorators.Add(new JobSummaryDocumentDecorator(order));
+        }
+
         if (configuration.GenerateCNCRelease && configuration.CNCDataFilePath is not null) {
 
             var vendor = await _getVendorByIdAsync(order.VendorId);
@@ -62,7 +65,7 @@ internal class ReleaseService {
 
             var response = await _cncReleaseHandler.Handle(new GenerateReleaseForSelectedJobs.Command(order.Id, $"{order.Number} {order.Name}", customer?.Name ?? "", vendor?.Name ?? "", DateTime.Now, configuration.CNCDataFilePath));
 
-            response.OnSuccess(result => cncDecorators.AddRange(result.Decorators));
+            response.OnSuccess(result => decorators.AddRange(result.Decorators));
 
             OnActionComplete?.Invoke("CNC release complete");
 
@@ -70,55 +73,12 @@ internal class ReleaseService {
             OnProgressReport?.Invoke("Skipping CNC release, because it was unchecked");
         }
 
-
-        bool generatePDF = false;
-
-        IDocumentDecorator? summaryDecorator = null;
-        if (configuration.GenerateJobSummary) {
-            summaryDecorator = new JobSummaryDocumentDecorator(order);
-            generatePDF = true;
+        string releasePdf = string.Empty;
+        if (decorators.Any() || configuration.GenerateJobSummary) {
+            releasePdf = GeneratePDF(configuration.ReleaseOutputDirectory, order, decorators);
         }
 
-        List<Document> documents = new();
-        if (cncDecorators.Any()) {
-
-            foreach (var decorator in cncDecorators) {
-
-                documents.Add(Document.Create(doc => {
-
-                    summaryDecorator?.Decorate(doc);
-
-                    decorator.Decorate(doc);
-
-                }));
-
-            }
-
-        } else if (summaryDecorator is not null) {
-
-            documents.Add(Document.Create(summaryDecorator.Decorate));
-
-        }
-
-        List<string> generatedFiles = new();
-        if (generatePDF) {
-
-            foreach (var document in documents) {
-
-                try {
-                    var filePath = _fileReader.GetAvailableFileName(configuration.OutputDirectory, $"{order.Number} {order.Name}", ".pdf");
-                    document.GeneratePdf(filePath);
-                    generatedFiles.Add(filePath);
-                } catch (Exception ex) {
-                    generatePDF = false;
-                    OnError?.Invoke($"Error generating pdf {ex.Message}");
-                }
-
-            }
-
-        }
-
-        if (configuration.SendEmail) {
+        if (configuration.SendReleaseEmail) {
 
             // TODO: attach pdf to email
 
@@ -128,15 +88,37 @@ internal class ReleaseService {
 
     }
 
+    private string GeneratePDF(string outputDir, Order order, List<IDocumentDecorator> decorators) {
+        
+        Document document = Document.Create(doc => {
+
+            foreach (var decorator in decorators) {
+                decorator.Decorate(doc);
+            }
+
+        });
+
+        try {
+            var filePath = _fileReader.GetAvailableFileName(outputDir, $"{order.Number} {order.Name}", ".pdf");
+            document.GeneratePdf(filePath);
+            return filePath;
+        } catch (Exception ex) {
+            OnError?.Invoke($"Error generating pdf {ex.Message}");
+        }
+
+        return string.Empty;
+
+    }
+
     private async Task GeneratePackingList(ReleaseConfiguration configuration, Order order) {
 
-        if (configuration.OutputDirectory is null) {
+        if (configuration.ReleaseOutputDirectory is null) {
             OnError?.Invoke("No output directory set");
             return;
         }
 
         if (configuration.GeneratePackingList) {
-            await _packingListHandler.Handle(order, configuration.OutputDirectory);
+            await _packingListHandler.Handle(order, configuration.ReleaseOutputDirectory);
             OnActionComplete?.Invoke("Packing list generated");
         } else {
             OnProgressReport?.Invoke("Skipping packing list, because it was unchecked");
@@ -145,13 +127,13 @@ internal class ReleaseService {
 
     private async Task GenerateInvoice(ReleaseConfiguration configuration, Order order) {
 
-        if (configuration.OutputDirectory is null) {
+        if (configuration.ReleaseOutputDirectory is null) {
             OnError?.Invoke("No output directory set");
             return;
         }
 
         if (configuration.GenerateInvoice) {
-            await _invoiceHandler.Handle(order, configuration.OutputDirectory);
+            await _invoiceHandler.Handle(order, configuration.ReleaseOutputDirectory);
             OnActionComplete?.Invoke("Invoice generated");
         } else {
             OnProgressReport?.Invoke("Skipping invoice, because it was unchecked");

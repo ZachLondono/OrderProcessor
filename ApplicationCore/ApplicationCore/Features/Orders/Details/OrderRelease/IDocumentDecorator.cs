@@ -1,6 +1,6 @@
 ﻿using QuestPDF.Infrastructure;
 
-namespace ApplicationCore.Features.Orders.Details.Shared;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease;
 
 internal interface IDocumentDecorator {
 

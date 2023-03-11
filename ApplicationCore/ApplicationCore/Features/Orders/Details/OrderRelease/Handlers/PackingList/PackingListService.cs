@@ -59,6 +59,10 @@ internal class PackingListService {
             row = AddCabinetTable(ws, row, packingList.Cabinets);
         }
 
+        if (packingList.ClosetParts.Any()) {
+            row = AddClosetPartTable(ws, row, packingList.ClosetParts);
+        }
+
         ws.Column(4).Width = 20;
 
         ws.PageSetup.PrintAreas.Add(1, 1, row, 8);
@@ -176,6 +180,7 @@ internal class PackingListService {
 
         }
 
+        row += 2;
         return row;
 
     }
@@ -211,6 +216,7 @@ internal class PackingListService {
 
         }
 
+        row += 2;
         return row;
 
     }
@@ -248,6 +254,43 @@ internal class PackingListService {
 
         }
 
+        row += 2;
+        return row;
+
+    }
+
+    public static int AddClosetPartTable(IXLWorksheet worksheet, int row, IEnumerable<ClosetPartItem> closetParts) {
+
+        AddProductTitile(worksheet, row, closetParts.Sum(d => d.Qty), "Closet Part(s) in order");
+
+        worksheet.Row(++row).Height = 7;
+
+        ++row;
+        AddHeader(worksheet.Cell(row, 2), "Cab");
+        AddHeader(worksheet.Cell(row, 3), "Qty");
+        AddHeader(worksheet.Cell(row, 6), "Width");
+        AddHeader(worksheet.Cell(row, 7), "Length");
+
+        var desc = worksheet.Range(row, 4, row, 5);
+        desc.Cell(1, 1).Value = "Description";
+        desc.Merge();
+        desc.Style.Font.SetBold(true);
+        desc.Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        desc.Style.Fill.BackgroundColor = HighlightColor;
+        desc.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+
+        foreach (var part in closetParts) {
+
+            ++row;
+            AddRowCell(worksheet.Cell(row, 2), part.Line);
+            AddRowCell(worksheet.Cell(row, 3), part.Qty);
+            AddDescriptionCell(worksheet, worksheet.Cell(row, 4), part.Description);
+            AddRowCell(worksheet.Cell(row, 6), part.Width);
+            AddRowCell(worksheet.Cell(row, 7), part.Length);
+
+        }
+
+        row += 2;
         return row;
 
     }

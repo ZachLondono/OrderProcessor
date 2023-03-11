@@ -36,8 +36,13 @@ internal class GetVendorById {
                     vendors.export_output_directory AS ExportOutputDirectory,
 
                     vendors.release_invoice AS ReleaseInvoice,
+                    vendors.release_invoice_output_directory AS InvoiceOutputDirectory,
+                    vendors.release_invoice_send_email AS SendInvoiceEmail,
+                    vendors.release_invoice_email_recipients AS InvoiceEmailRecipients,
+
                     vendors.release_packing_list AS ReleasePackingList,
                     vendors.release_job_summary AS ReleaseJobSummary,
+                    vendors.release_include_invoice AS ReleaseIncludeInvoice,
                     vendors.release_send_email AS ReleaseSendEmail,
                     vendors.release_email_recipients AS ReleaseEmailRecipients,
                     vendors.release_output_directory AS ReleaseOutputDirectory,
@@ -87,8 +92,13 @@ internal class GetVendorById {
             public string ExportOutputDirectory { get; set; } = string.Empty;
 
             public bool ReleaseInvoice { get; set; }
+            public string InvoiceOutputDirectory { get; set; } = string.Empty;
+            public bool SendInvoiceEmail { get; set; }
+            public string InvoiceEmailRecipients { get; set; } = string.Empty;
+
             public bool ReleasePackingList { get; set; }
             public bool ReleaseJobSummary { get; set; }
+            public bool ReleaseIncludeInvoice { get; set; }
             public bool ReleaseSendEmail { get; set; }
             public string ReleaseEmeailRecipients { get; set; } = string.Empty;
             public string ReleaseOutputDirectory { get; set; } = string.Empty;
@@ -113,12 +123,17 @@ internal class GetVendorById {
                 };
 
                 var releaseProfile = new ReleaseProfile() {
-                    Invoice = ReleaseInvoice,
-                    PackingList = ReleasePackingList,
-                    JobSummary = ReleaseJobSummary,
-                    SendEmail = ReleaseSendEmail,
-                    EmailRecipients = ReleaseEmeailRecipients,
-                    OutputDirectory = ReleaseOutputDirectory
+                    IncludeInvoice = ReleaseIncludeInvoice,
+                    GeneratePackingList = ReleasePackingList,
+                    GenerateJobSummary = ReleaseJobSummary,
+                    SendReleaseEmail = ReleaseSendEmail,
+                    ReleaseEmailRecipients = ReleaseEmeailRecipients,
+                    ReleaseOutputDirectory = ReleaseOutputDirectory,
+
+                    GenerateInvoice = ReleaseInvoice,
+                    InvoiceOutputDirectory = InvoiceOutputDirectory,
+                    SendInvoiceEmail = SendInvoiceEmail,
+                    InvoiceEmailRecipients = InvoiceEmailRecipients
                 };
 
                 return new Vendor(Id, Name, address, Phone, exportProfile, releaseProfile);

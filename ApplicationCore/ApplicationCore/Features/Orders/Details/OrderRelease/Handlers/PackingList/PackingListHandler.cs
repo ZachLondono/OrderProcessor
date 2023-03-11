@@ -49,8 +49,7 @@ internal class PackingListHandler {
         }
 
         var drawerBoxes = order.Products
-                                .Where(p => p is DovetailDrawerBoxProduct)
-                                .Cast<DovetailDrawerBoxProduct>()
+                                .OfType<DovetailDrawerBoxProduct>()
                                 .Select(b => new DrawerBoxItem() {
                                     Line = b.ProductNumber,
                                     Qty = b.Qty,
@@ -61,8 +60,7 @@ internal class PackingListHandler {
                                 }).ToList();
 
         var cabinets = order.Products
-                        .Where(p => p is Cabinet)
-                        .Cast<Cabinet>()
+                        .OfType<Cabinet>()
                         .Select(b => new CabinetItem() {
                             Line = b.ProductNumber,
                             Qty = b.Qty,
@@ -71,6 +69,29 @@ internal class PackingListHandler {
                             Width = b.Width.AsInchFraction().ToString(),
                             Depth = b.Depth.AsInchFraction().ToString()
                         }).ToList();
+
+        var closetParts = order.Products
+                            .OfType<ClosetPart>()
+                            .Select(b => new ClosetPartItem() {
+                                Line = b.ProductNumber,
+                                Qty = b.Qty,
+                                Description = b.GetDescription(),
+                                Length = b.Length.AsInchFraction().ToString(),
+                                Width = b.Width.AsInchFraction().ToString()
+                            })
+                            .ToList();
+
+        var doors = order.Products
+                        .OfType<MDFDoorProduct>()
+                        .Select(b => new DoorItem() {
+                            Line = b.ProductNumber,
+                            Qty = b.Qty,
+                            Description = b.GetDescription(),
+                            Height = b.Height.AsInchFraction().ToString(),
+                            Width = b.Width.AsInchFraction().ToString()
+                        })
+                        .ToList();
+
 
         var custLine2Str = string.IsNullOrWhiteSpace(order.Shipping.Address.Country + order.Shipping.Address.State + order.Shipping.Address.Zip) ? "" : $"{order.Shipping.Address.City}, {order.Shipping.Address.State} {order.Shipping.Address.Zip}";
         var vendLine2Str = string.IsNullOrWhiteSpace(vendor?.Address.Country ?? "" + vendor?.Address.State ?? "" + vendor?.Address.Zip ?? "") ? "" : $"{vendor?.Address.City ?? ""}, {vendor?.Address.State ?? ""} {vendor?.Address.Zip ?? ""}";
@@ -95,7 +116,8 @@ internal class PackingListHandler {
             OrderNumber = order.Number,
             DrawerBoxes = drawerBoxes,
             Cabinets = cabinets,
-            Doors = new()
+            ClosetParts = closetParts,
+            Doors = doors
         };
 
         return packinglist;

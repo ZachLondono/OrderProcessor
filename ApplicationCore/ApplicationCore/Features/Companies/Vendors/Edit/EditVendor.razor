@@ -57,30 +57,56 @@
         </section>
 
         <div class="grid grid-cols-2 gap-4">
-            <section id="release_profile" class="grid grid-cols-1 my-2">
+            <section id="release_profile" class="flex flex-1 flex-col my-2">
                 <h3 class="font-medium">Release Profile</h3>
                 <label>
-                    <InputCheckbox id="release_invoice" @bind-Value="DataContext.Model.ReleaseProfile.Invoice" />
-                    Invoice
-                </label>
-                <label>
-                    <InputCheckbox id="release_packing_list" @bind-Value="DataContext.Model.ReleaseProfile.PackingList" />
+                    <InputCheckbox id="release_packing_list" @bind-Value="DataContext.Model.ReleaseProfile.GeneratePackingList" />
                     Packing list
                 </label>
                 <label>
-                    <InputCheckbox id="release_job_summary" @bind-Value="DataContext.Model.ReleaseProfile.JobSummary" />
+                    <InputCheckbox id="release_job_summary" @bind-Value="DataContext.Model.ReleaseProfile.GenerateJobSummary" />
                     Job summary
+                </label>
+                <label>
+                    <InputCheckbox id="release_invoice" @bind-Value="DataContext.Model.ReleaseProfile.IncludeInvoice" />
+                    Invoice
+                </label>
+                <label>
+                    <InputCheckbox id="release_invoice" @bind-Value="DataContext.Model.ReleaseProfile.SendReleaseEmail" />
+                    Send Email
                 </label>
                 <div class="grid items-center gap-2" style="grid-template-columns: min-content auto;">
                     <label class="whitespace-nowrap" for="release_email_recipients">Email recipients</label>
-                    <InputText id="release_email_recipients" @bind-Value="DataContext.Model.ReleaseProfile.EmailRecipients" placeholder="abc1@email.com;abc2@email.com" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    <InputText id="release_email_recipients" @bind-Value="DataContext.Model.ReleaseProfile.ReleaseEmailRecipients" placeholder="abc1@email.com;abc2@email.com" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
 
-                    <label class="whitespace-nowrap" for="release_output_directory">Output directory</label>
-                    <InputText id="release_output_directory" @bind-Value="DataContext.Model.ReleaseProfile.OutputDirectory" placeholder="c:/output/directory" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    <label class="whitespace-nowrap" for="release_output_directory">Release Output directory</label>
+                    <InputText id="release_output_directory" @bind-Value="DataContext.Model.ReleaseProfile.ReleaseOutputDirectory" placeholder="c:/output/directory" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
                 </div>
+                
+                <hr class="my-3">
+                
+                <label>
+                    <InputCheckbox id="release_invoice" @bind-Value="DataContext.Model.ReleaseProfile.GenerateInvoice" />
+                    Save Invoice
+                </label>
+
+
+                <label>
+                    <InputCheckbox id="release_invoice" @bind-Value="DataContext.Model.ReleaseProfile.SendInvoiceEmail" />
+                    Email Invoice
+                </label>
+                
+                <div class="grid items-center gap-2" style="grid-template-columns: min-content auto;">
+                    <label class="whitespace-nowrap" for="release_email_recipients">Invoice Email recipients</label>
+                    <InputText id="release_email_recipients" @bind-Value="DataContext.Model.ReleaseProfile.InvoiceEmailRecipients" placeholder="abc1@email.com;abc2@email.com" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+                    <label class="whitespace-nowrap" for="release_output_directory">Invoice Output directory</label>
+                    <InputText id="release_output_directory" @bind-Value="DataContext.Model.ReleaseProfile.InvoiceOutputDirectory" placeholder="c:/output/directory" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                </div>
+                
             </section>
 
-            <section id="export_profile" class="grid grid-cols-1 my-2">
+            <section id="export_profile" class="flex flex-1 flex-col my-2">
                 <h3 class="font-medium">Export Profile</h3>
                 <label>
                     <InputCheckbox id="export_db_order" @bind-Value="DataContext.Model.ExportProfile.ExportDBOrder" />

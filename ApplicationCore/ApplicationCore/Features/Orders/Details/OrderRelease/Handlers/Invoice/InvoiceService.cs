@@ -68,7 +68,7 @@ internal class InvoiceService {
         }
 
         if (invoice.ClosetParts.Any()) {
-            // Do something...
+            row = AddClosetPartTable(ws, row, invoice.ClosetParts);
         }
 
         if (invoice.Cabinets.Any()) {
@@ -196,6 +196,7 @@ internal class InvoiceService {
 
         }
 
+        row += 2;
         return row;
 
     }
@@ -230,11 +231,12 @@ internal class InvoiceService {
             AddDescriptionCell(worksheet, worksheet.Cell(row, 4), doorItem.Description);
             AddRowCell(worksheet.Cell(row, 6), doorItem.Width);
             AddRowCell(worksheet.Cell(row, 7), doorItem.Height);
-            AddRowCell(worksheet.Cell(row, 9), doorItem.Price);
-            AddRowCell(worksheet.Cell(row, 10), doorItem.ExtPrice);
+            AddRowCell(worksheet.Cell(row, 8), doorItem.Price);
+            AddRowCell(worksheet.Cell(row, 9), doorItem.ExtPrice);
 
         }
 
+        row += 2;
         return row;
 
     }
@@ -276,6 +278,47 @@ internal class InvoiceService {
 
         }
 
+        row += 2;
+        return row;
+
+    }
+
+    public static int AddClosetPartTable(IXLWorksheet worksheet, int row, IEnumerable<ClosetPartItem> closetParts) {
+
+        AddProductTitle(worksheet, row, closetParts.Sum(c => c.Qty), "Closet Part(s) in order");
+
+        worksheet.Row(++row).Height = 7;
+
+        ++row;
+        AddHeader(worksheet.Cell(row, 2), "Cab");
+        AddHeader(worksheet.Cell(row, 3), "Qty");
+        AddHeader(worksheet.Cell(row, 6), "Width");
+        AddHeader(worksheet.Cell(row, 7), "Length");
+        AddHeader(worksheet.Cell(row, 8), "Price");
+        AddHeader(worksheet.Cell(row, 9), "Ext. Price");
+
+        var desc = worksheet.Range(row, 4, row, 5);
+        desc.Cell(1, 1).Value = "Description";
+        desc.Merge();
+        desc.Style.Font.SetBold(true);
+        desc.Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+        desc.Style.Fill.BackgroundColor = HighlightColor;
+        desc.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+
+        foreach (var part in closetParts) {
+
+            ++row;
+            AddRowCell(worksheet.Cell(row, 2), part.Line);
+            AddRowCell(worksheet.Cell(row, 3), part.Qty);
+            AddDescriptionCell(worksheet, worksheet.Cell(row, 4), part.Description);
+            AddRowCell(worksheet.Cell(row, 6), part.Width);
+            AddRowCell(worksheet.Cell(row, 7), part.Length);
+            AddRowCell(worksheet.Cell(row, 8), part.Price);
+            AddRowCell(worksheet.Cell(row, 9), part.ExtPrice);
+
+        }
+
+        row += 2;
         return row;
 
     }

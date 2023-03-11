@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Details.Shared;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
