@@ -23,30 +23,34 @@
         <DataAnnotationsValidator />
         <ValidationSummary />
 
-        <div class="my-5">
+        <div class="my-5 grid grid-cols-2">
 
-            <label for="name" class="block text-sm font-medium text-gray-700">Name*</label>
-            <InputText id="name" @bind-Value="DataContext.Model.Name" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700">Name*</label>
+                <InputText id="name" @bind-Value="DataContext.Model.Name" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
 
-            <label for="name" class="block text-sm font-medium text-gray-700">Phone</label>
-            <InputText id="name" @bind-Value="DataContext.Model.Phone" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <label for="name" class="block text-sm font-medium text-gray-700">Phone</label>
+                <InputText id="name" @bind-Value="DataContext.Model.Phone" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+            </div>
 
-            <Button Style="Button.ButtonStyle.Contained" Color="Button.ButtonColor.Primary" Type="submit" Disabled="DataContext.IsSaving" class="flex justify-center items-center w-48 mt-5">
-                @if (DataContext.IsSaving) {
-                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>Saving</span>
-                } else {
-                    <span>Save</span>
-                }
-            </Button>
+            <div class="mx-3 self-center">
+                <Button Style="Button.ButtonStyle.Contained" Color="Button.ButtonColor.Primary" Type="submit" Disabled="DataContext.IsSaving" class="flex justify-center items-center w-48">
+                    @if (DataContext.IsSaving) {
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Saving</span>
+                    } else {
+                        <span>Save</span>
+                    }
+                </Button>
+            </div>
 
         </div>
 
         <section id="address" class="grid grid-cols-1">
-            <h3 class="font-medium">Address</h3>
+            <h3 class="font-medium text-gray-700">Address</h3>
             <InputText id="address_line1" @bind-Value="DataContext.Model.Address.Line1" placeholder="Line1" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
             <InputText id="address_line2" @bind-Value="DataContext.Model.Address.Line2" placeholder="Line2" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
             <InputText id="address_line3" @bind-Value="DataContext.Model.Address.Line3" placeholder="Line3" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
@@ -58,7 +62,7 @@
 
         <div class="grid grid-cols-2 gap-4">
             <section id="release_profile" class="flex flex-1 flex-col my-2">
-                <h3 class="font-medium">Release Profile</h3>
+                <h3 class="font-medium text-gray-700">Release Profile</h3>
                 <label>
                     <InputCheckbox id="release_packing_list" @bind-Value="DataContext.Model.ReleaseProfile.GeneratePackingList" />
                     Packing list
@@ -107,7 +111,7 @@
             </section>
 
             <section id="export_profile" class="flex flex-1 flex-col my-2">
-                <h3 class="font-medium">Export Profile</h3>
+                <h3 class="font-medium text-gray-700">Export Profile</h3>
                 <label>
                     <InputCheckbox id="export_db_order" @bind-Value="DataContext.Model.ExportProfile.ExportDBOrder" />
                     Drawer box order
