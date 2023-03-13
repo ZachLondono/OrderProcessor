@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Configuration;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.PDFModels;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Styling;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using BarcodeLib;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -20,7 +21,7 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
         _pages = pages;
     }
 
-    public void Decorate(IDocumentContainer container) {
+    public void Decorate(Order order, IDocumentContainer container) {
 
         if (_cover is not null) {
             container.Page(page => {
@@ -212,8 +213,7 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
         var cellStyle = config.TableCellStyle;
         foreach (var row in data.Content) {
             foreach (var key in headers) {
-                string? value;
-                if (!row.TryGetValue(key, out value)) value = "";
+                if (!row.TryGetValue(key, out string? value)) value = "";
                 table.Cell()
                     .BorderLeft(0.5f)
                     .BorderRight(0.5f)

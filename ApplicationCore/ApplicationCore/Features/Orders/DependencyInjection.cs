@@ -5,8 +5,6 @@ using ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Services;
 using ApplicationCore.Features.Orders.Details.OrderRelease;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Features.Orders.Loader;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.State;
@@ -39,8 +37,6 @@ public static class DependencyInjection {
         services.AddSingleton<OrderState>();
 
         services.AddTransient<ReleaseService>();
-        services.AddTransient<InvoiceHandler>();
-        services.AddTransient<PackingListHandler>();
         services.AddTransient<GenerateReleaseForSelectedJobs.Handler>();
 
         services.AddTransient<ExportService>();

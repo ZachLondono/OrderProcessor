@@ -7,19 +7,13 @@ using QuestPDF.Fluent;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 
-internal class JobSummaryDocumentDecorator : IDocumentDecorator {
+internal class JobSummaryDecorator : IDocumentDecorator {
 
-    private readonly Order _order;
-
-    public JobSummaryDocumentDecorator(Order order) {
-        _order = order;
-    }
-
-    public void Decorate(IDocumentContainer container) {
+    public void Decorate(Order order, IDocumentContainer container) {
 
         container.Page(page => {
 
-            page.Content().Text($"Job Summary {_order.Number} {_order.Name}");
+            page.Content().Text($"Job Summary {order.Number} {order.Name}");
 
         });
 
