@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
+﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
@@ -16,11 +17,13 @@ internal class ReleaseService {
     private readonly IFileReader _fileReader;
     private readonly InvoiceDecorator _invoiceDecorator;
     private readonly PackingListDecorator _packingListDecorator;
+    private readonly CNCReleaseDecorator _cncReleaseDecorator;
 
-    public ReleaseService(IFileReader fileReader, InvoiceDecorator invoiceDecorator, PackingListDecorator packingListDecorator) {
+    public ReleaseService(IFileReader fileReader, InvoiceDecorator invoiceDecorator, PackingListDecorator packingListDecorator, CNCReleaseDecorator cncReleaseDecorator) {
         _fileReader = fileReader;
         _invoiceDecorator = invoiceDecorator;
         _packingListDecorator = packingListDecorator;
+        _cncReleaseDecorator = cncReleaseDecorator;
     }
 
     public async Task Release(Order order, ReleaseConfiguration configuration) {
@@ -59,9 +62,9 @@ internal class ReleaseService {
             decorators.Add(_invoiceDecorator);
         }
 
-        if (configuration.GenerateCNCRelease) {
-            // TODO: generate CNC release pdf
-            OnError?.Invoke("Email not implemented");
+        if (configuration.GenerateCNCRelease && configuration.CNCDataFilePath is string filePath) {
+            _cncReleaseDecorator.ReportFilePath = filePath;
+            decorators.Add(_cncReleaseDecorator);
         }
 
         var directories = (configuration.ReleaseOutputDirectory ?? "").Split(';');

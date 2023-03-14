@@ -38,10 +38,10 @@ public static class DependencyInjection {
         services.AddSingleton<ComponentBuilderFactory>();
         services.AddSingleton<OrderState>();
 
+        services.AddTransient<CNCReleaseDecorator>();
         services.AddTransient<InvoiceDecorator>();
         services.AddTransient<PackingListDecorator>();
         services.AddTransient<ReleaseService>();
-        services.AddTransient<GenerateReleaseForSelectedJobs.Handler>();
 
         services.AddTransient<ExportService>();
         services.AddTransient<DoorOrderHandler>();
