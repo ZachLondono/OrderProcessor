@@ -391,9 +391,7 @@
         _isReleasing = true;
 
         var dialog = Modal.Show<ReleaseSetupDialog>("Release Setup",
-            new ModalParameters() {
-                { "VendorId", OrderState.Order?.VendorId ?? Guid.Empty }
-            }, new ModalOptions() {
+            new ModalOptions() {
                 HideHeader = true,
                 HideCloseButton = true,
                 DisableBackgroundCancel = true,
