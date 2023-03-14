@@ -5,6 +5,6 @@ namespace ApplicationCore.Features.Orders.Details.OrderRelease;
 
 internal interface IDocumentDecorator {
 
-    public void Decorate(Order order, IDocumentContainer container);
+    public Task Decorate(Order order, IDocumentContainer container);
 
 }

@@ -21,7 +21,7 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
         _pages = pages;
     }
 
-    public void Decorate(Order order, IDocumentContainer container) {
+    public Task Decorate(Order order, IDocumentContainer container) {
 
         if (_cover is not null) {
             container.Page(page => {
@@ -34,6 +34,8 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
                 BuildPage(page, data, _config);
             });
         }
+
+        return Task.CompletedTask;
 
     }
 

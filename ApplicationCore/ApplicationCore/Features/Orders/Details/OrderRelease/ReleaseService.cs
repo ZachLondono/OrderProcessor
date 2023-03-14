@@ -14,9 +14,13 @@ internal class ReleaseService {
     public Action<string>? OnActionComplete;
 
     private readonly IFileReader _fileReader;
+    private readonly InvoiceDecorator _invoiceDecorator;
+    private readonly PackingListDecorator _packingListDecorator;
 
-    public ReleaseService(IFileReader fileReader) {
+    public ReleaseService(IFileReader fileReader, InvoiceDecorator invoiceDecorator, PackingListDecorator packingListDecorator) {
         _fileReader = fileReader;
+        _invoiceDecorator = invoiceDecorator;
+        _packingListDecorator = packingListDecorator;
     }
 
     public async Task Release(Order order, ReleaseConfiguration configuration) {
@@ -48,11 +52,11 @@ internal class ReleaseService {
         }
 
         if (configuration.GeneratePackingList) {
-            decorators.Add(new PackingListDecorator());
+            decorators.Add(_packingListDecorator);
         }
 
         if (configuration.IncludeInvoiceInRelease) {
-            decorators.Add(new InvoiceDecorator());
+            decorators.Add(_invoiceDecorator);
         }
 
         if (configuration.GenerateCNCRelease) {
@@ -62,7 +66,7 @@ internal class ReleaseService {
 
         var directories = (configuration.ReleaseOutputDirectory ?? "").Split(';');
 
-        var filePaths = GeneratePDF(directories, order, decorators, string.Empty);
+        var filePaths = GeneratePDF(directories, order, decorators, "Release");
 
         if (configuration.SendReleaseEmail && configuration.ReleaseEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending release email");
@@ -81,7 +85,7 @@ internal class ReleaseService {
 
         string[] invoiceDirectories = configuration.GenerateInvoice ? (configuration.InvoiceOutputDirectory ?? "").Split(';') : new string[] { Path.GetTempPath() };
 
-        var filePaths = GeneratePDF(invoiceDirectories, order, new IDocumentDecorator[] { new InvoiceDecorator() }, "Invoice");
+        var filePaths = GeneratePDF(invoiceDirectories, order, new IDocumentDecorator[] { _invoiceDecorator }, "Invoice");
 
         if (configuration.SendInvoiceEmail && configuration.InvoiceEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending invoice email");

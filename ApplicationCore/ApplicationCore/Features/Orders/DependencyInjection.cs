@@ -16,6 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Dapper;
 using ApplicationCore.Features.Orders.Contracts;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -36,6 +38,8 @@ public static class DependencyInjection {
         services.AddSingleton<ComponentBuilderFactory>();
         services.AddSingleton<OrderState>();
 
+        services.AddTransient<InvoiceDecorator>();
+        services.AddTransient<PackingListDecorator>();
         services.AddTransient<ReleaseService>();
         services.AddTransient<GenerateReleaseForSelectedJobs.Handler>();
 

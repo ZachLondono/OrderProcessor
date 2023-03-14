@@ -9,13 +9,15 @@ namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSumma
 
 internal class JobSummaryDecorator : IDocumentDecorator {
 
-    public void Decorate(Order order, IDocumentContainer container) {
+    public Task Decorate(Order order, IDocumentContainer container) {
 
         container.Page(page => {
 
             page.Content().Text($"Job Summary {order.Number} {order.Name}");
 
         });
+
+        return Task.CompletedTask;
 
     }
 
