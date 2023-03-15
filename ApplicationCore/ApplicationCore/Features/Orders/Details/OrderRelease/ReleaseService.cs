@@ -18,12 +18,14 @@ internal class ReleaseService {
     private readonly InvoiceDecorator _invoiceDecorator;
     private readonly PackingListDecorator _packingListDecorator;
     private readonly CNCReleaseDecorator _cncReleaseDecorator;
+    private readonly JobSummaryDecorator _jobSummaryDecorator;
 
-    public ReleaseService(IFileReader fileReader, InvoiceDecorator invoiceDecorator, PackingListDecorator packingListDecorator, CNCReleaseDecorator cncReleaseDecorator) {
+    public ReleaseService(IFileReader fileReader, InvoiceDecorator invoiceDecorator, PackingListDecorator packingListDecorator, CNCReleaseDecorator cncReleaseDecorator, JobSummaryDecorator jobSummaryDecorator) {
         _fileReader = fileReader;
         _invoiceDecorator = invoiceDecorator;
         _packingListDecorator = packingListDecorator;
         _cncReleaseDecorator = cncReleaseDecorator;
+        _jobSummaryDecorator = jobSummaryDecorator;
     }
 
     public async Task Release(Order order, ReleaseConfiguration configuration) {
@@ -51,7 +53,7 @@ internal class ReleaseService {
         List<IDocumentDecorator> decorators = new();
 
         if (configuration.GenerateJobSummary) {
-            decorators.Add(new JobSummaryDecorator());
+            decorators.Add(_jobSummaryDecorator);
         }
 
         if (configuration.GeneratePackingList) {

@@ -1,0 +1,18 @@
+﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
+
+internal class JobSummary {
+
+    public string Number { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string CustomerName { get; set; } = string.Empty;
+    public DateTime ReleaseDate { get; set; }
+    public List<Supply> Supplies { get; set; } = new();
+
+    public List<CabinetGroup> Cabients { get; set; } = new();
+    public List<ClosetPartGroup> ClosetParts { get; set; } = new();
+    public List<DrawerBoxGroup> DrawerBoxes { get; set; } = new();
+    public List<DoorGroup> Doors { get; set; } = new();
+
+}

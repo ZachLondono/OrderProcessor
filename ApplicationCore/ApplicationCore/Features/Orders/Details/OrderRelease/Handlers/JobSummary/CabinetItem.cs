@@ -1,0 +1,16 @@
+﻿using ApplicationCore.Features.Shared.Domain;
+
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
+
+internal class CabinetItem {
+
+    public int Line { get; set; }
+    public int Qty { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public Dimension Width { get; set; }
+    public Dimension Height { get; set; }
+    public Dimension Depth { get; set; }
+    public bool FinLeft { get; set; }
+    public bool FinRight { get; set; }
+
+}

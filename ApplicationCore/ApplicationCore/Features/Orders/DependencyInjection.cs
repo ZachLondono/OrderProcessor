@@ -18,6 +18,7 @@ using Dapper;
 using ApplicationCore.Features.Orders.Contracts;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -38,6 +39,7 @@ public static class DependencyInjection {
         services.AddSingleton<ComponentBuilderFactory>();
         services.AddSingleton<OrderState>();
 
+        services.AddTransient<JobSummaryDecorator>();
         services.AddTransient<CNCReleaseDecorator>();
         services.AddTransient<InvoiceDecorator>();
         services.AddTransient<PackingListDecorator>();

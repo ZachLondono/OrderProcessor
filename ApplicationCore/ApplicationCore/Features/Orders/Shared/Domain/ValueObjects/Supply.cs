@@ -29,6 +29,8 @@ public record Supply(int Qty, string Name) {
 
     }
 
+    public static IEnumerable<Supply> BlindCornerHinge(int qty) => new Supply[2] { new(qty, "Hinge, Blind Corner"), new(qty, "Hinge Plate") };
+
     public static IEnumerable<Supply> CrossCornerHinge(int qty) => new Supply[2] { new(qty, "Hinge, Cross Corner"), new(qty, "Hinge Plate") };
 
     public static IEnumerable<Supply> CrossCornerHinge(Dimension doorHeight, int doorQty) {
