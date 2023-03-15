@@ -54,7 +54,7 @@ internal class PieCutWallCabinetDataModel : CabinetDataModelBase, IProductDataMo
                 pie_cut_wall_cabinets.door_extend_down AS DoorExtendDown,
                 pie_cut_wall_cabinets.adj_shelf_qty AS AdjShelfQty,
 
-           	    cabinets.mdf_config_id IS NULL AS ContainsMDFDoor,
+           	    cabinets.mdf_config_id IS NOT NULL AS ContainsMDFDoor,
            	    mdf_door_configs.framing_bead AS FramingBead,
            	    mdf_door_configs.edge_detail AS EdgeDetail,
            	    mdf_door_configs.panel_detail AS PanelDetail,

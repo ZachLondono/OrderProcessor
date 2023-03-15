@@ -57,7 +57,7 @@ internal class DrawerBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBa
         	db_config.material AS DBMaterial,
         	db_config.slide_type AS DBSlideType,
         
-        	cabinets.mdf_config_id IS NULL AS ContainsMDFDoor,
+        	cabinets.mdf_config_id IS NOT NULL AS ContainsMDFDoor,
         	mdf_door_configs.framing_bead AS FramingBead,
         	mdf_door_configs.edge_detail AS EdgeDetail,
         	mdf_door_configs.panel_detail AS PanelDetail,

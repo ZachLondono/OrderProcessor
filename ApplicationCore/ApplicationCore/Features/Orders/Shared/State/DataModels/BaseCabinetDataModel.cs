@@ -84,7 +84,7 @@ internal class BaseCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
            	    base_cabinets.rollout_block_type AS ROBlockType,
            	    base_cabinets.rollout_scoop_front AS ROScoopFront,
 
-           	    cabinets.mdf_config_id IS NULL AS ContainsMDFDoor,
+           	    cabinets.mdf_config_id IS NOT NULL AS ContainsMDFDoor,
            	    mdf_door_configs.framing_bead AS FramingBead,
            	    mdf_door_configs.edge_detail AS EdgeDetail,
            	    mdf_door_configs.panel_detail AS PanelDetail,
