@@ -32,7 +32,7 @@ public partial class CreateNewOrder {
                 RolloutConfigPositions = cabinet.Inside.RollOutBoxes.Positions,
                 RolloutConfigBlockType = cabinet.Inside.RollOutBoxes.Blocks,
                 RolloutConfigScoopFront = cabinet.Inside.RollOutBoxes.ScoopFront,
-                LowerDoorQty = cabinet.Doors.LowerDoorHeight,
+                LowerDoorQty = cabinet.Doors.LowerQuantity,
                 UpperDoorQty = cabinet.Doors.UpperQuantity,
                 LowerDoorHeight = cabinet.Doors.LowerDoorHeight,
                 HingeSide = cabinet.Doors.HingeSide,
