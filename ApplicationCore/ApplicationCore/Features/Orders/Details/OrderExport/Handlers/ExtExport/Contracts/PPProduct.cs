@@ -3,6 +3,7 @@
 public class PPProduct {
 
     public Guid ProductId { get; }
+    public int Qty { get; }
     public string Room { get; }
     public string Name { get; }
     public int SequenceNum { get; }
@@ -17,8 +18,9 @@ public class PPProduct {
     public IDictionary<string, string> OverrideParameters { get; }
     public IDictionary<string, string> ManualOverrideParameters { get; }
 
-    public PPProduct(Guid productId, string room, string name, int sequenceNum, string catalog, string materialType, string doorType, string hardwareType, string comment, IDictionary<string, PPMaterial> finishMaterials, IDictionary<string, PPMaterial> ebMaterials, IDictionary<string, string> parameters, IDictionary<string, string> overrideParameters, IDictionary<string, string> manualOverrideParameters) {
+    public PPProduct(Guid productId, int qty, string room, string name, int sequenceNum, string catalog, string materialType, string doorType, string hardwareType, string comment, IDictionary<string, PPMaterial> finishMaterials, IDictionary<string, PPMaterial> ebMaterials, IDictionary<string, string> parameters, IDictionary<string, string> overrideParameters, IDictionary<string, string> manualOverrideParameters) {
         ProductId = productId;
+        Qty = qty;
         Room = room;
         Name = name;
         SequenceNum = sequenceNum;

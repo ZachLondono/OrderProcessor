@@ -56,7 +56,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
 
     public IEnumerable<PPProduct> GetPPProducts() {
         string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Id, Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), GetManualOverrideParameters());
+        yield return new PPProduct(Id, Qty, Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), GetManualOverrideParameters());
     }
 
     private string GetProductName() {
@@ -134,7 +134,11 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
 
         supplies.Add(Supply.DoorPull(Doors.Quantity * Qty));
 
-        supplies.AddRange(Supply.StandardHinge(DoorHeight, Doors.Quantity * Qty));
+        supplies.AddRange(Supply.StandardHinge(DoorHeight, Qty));
+
+        if (Doors.Quantity == 2) {
+            supplies.AddRange(Supply.BlindCornerHinge(2 * Qty));
+        }
 
         if (Drawers.Quantity > 0) {
 
