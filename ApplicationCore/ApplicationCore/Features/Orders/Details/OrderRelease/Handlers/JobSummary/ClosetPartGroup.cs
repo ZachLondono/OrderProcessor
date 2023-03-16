@@ -26,7 +26,7 @@ internal class ClosetPartGroup {
         }
 
         int IEqualityComparer<ClosetPartGroup>.GetHashCode(ClosetPartGroup obj) {
-            return HashCode.Combine(obj.Room.GetHashCode(), obj.MaterialFinish.GetHashCode(), obj.MaterialCore.GetHashCode(), obj.EdgeBandingMaterial.GetHashCode(), obj.EdgeBandingFinish.GetHashCode());
+            return HashCode.Combine(obj.Room, obj.MaterialFinish, obj.MaterialCore, obj.EdgeBandingMaterial, obj.EdgeBandingFinish);
         }
 
     }

@@ -6,10 +6,11 @@ using QuestPDF.Helpers;
 using ApplicationCore.Features.Companies.Contracts;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Shared.Domain;
 using static ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary.CabinetGroup;
 using static ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary.ClosetPartGroup;
-using ApplicationCore.Features.Shared.Domain;
-using System.Linq;
+using static ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary.DrawerBoxGroup;
+using static ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary.DoorGroup;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 
@@ -88,7 +89,7 @@ internal class JobSummaryDecorator : IDocumentDecorator {
                         BottomMaterial = "",
                         Clips = "",
                         Notch = ""
-                    })
+                    }, new DrawerBoxGroupComparer())
                     .Select(g => {
                         g.Key.Items = g.Select(i => new DrawerBoxItem() {
                             Line = i.ProductNumber,
@@ -163,20 +164,43 @@ internal class JobSummaryDecorator : IDocumentDecorator {
                         })
                         .ToList();
 
-        // TODO: add comment to job summary
-        //order.CustomerComment
+        var doors = order.Products
+                        .OfType<MDFDoorProduct>()
+                        .GroupBy(d => new DoorGroup {
+                            Room = d.Room,
+                            Finish = "",
+                            Material = "",
+                            Style = ""
+                        }, new DoorGroupComparer())
+                        .Select(g => {
 
-        return new() {
+                            g.Key.Items = g.Select(i => new DoorItem {
+                                Line = i.ProductNumber,
+                                Description = i.GetDescription(),
+                                Qty = i.Qty,
+                                Height = i.Height,
+                                Width = i.Width
+                            })
+                            .OrderBy(i => i.Line)
+                            .ToList();
+
+                            return g.Key;
+
+                        })
+                        .ToList();
+
+        return new JobSummary() {
 
             Number = order.Number,
             Name = order.Name,
             CustomerName = customer?.Name ?? "",
+            Comment = order.CustomerComment,
             ReleaseDate = DateTime.Now,
             Supplies = supplies,
             
             Cabients = cabs,
             ClosetParts = cp,
-            Doors = new(),
+            Doors = doors,
             DrawerBoxes = db
 
         };
@@ -595,7 +619,9 @@ internal class JobSummaryDecorator : IDocumentDecorator {
 
             });
 
-            col.Item().PaddingTop(10).PaddingBottom(10).Row(row => row.RelativeItem().LineHorizontal(1).LineColor(Colors.Grey.Medium));
+            col.Item().PaddingVertical(5).Text(jobSummary.Comment).FontSize(12);
+
+            col.Item().PaddingVertical(10).Row(row => row.RelativeItem().LineHorizontal(1).LineColor(Colors.Grey.Medium));
 
         });
 

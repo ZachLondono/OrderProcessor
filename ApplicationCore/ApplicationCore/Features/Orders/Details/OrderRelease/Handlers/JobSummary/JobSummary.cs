@@ -7,6 +7,7 @@ internal class JobSummary {
     public string Number { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string CustomerName { get; set; } = string.Empty;
+    public string Comment { get; set; } = string.Empty;
     public DateTime ReleaseDate { get; set; }
     public List<Supply> Supplies { get; set; } = new();
 

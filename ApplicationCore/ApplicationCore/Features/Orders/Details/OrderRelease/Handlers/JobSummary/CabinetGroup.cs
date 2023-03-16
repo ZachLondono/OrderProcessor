@@ -30,7 +30,7 @@ internal class CabinetGroup {
         }
 
         int IEqualityComparer<CabinetGroup>.GetHashCode(CabinetGroup obj) {
-            return HashCode.Combine(obj.Room.GetHashCode(), obj.BoxFinish.GetHashCode(), obj.BoxCore.GetHashCode(), obj.FinishFinish.GetHashCode(), obj.FinishCore.GetHashCode(), obj.Paint.GetHashCode(), obj.Fronts.GetHashCode());
+            return HashCode.Combine(obj.Room, obj.BoxFinish, obj.BoxCore, obj.FinishFinish, obj.FinishCore, obj.Paint, obj.Fronts);
         }
 
     }
