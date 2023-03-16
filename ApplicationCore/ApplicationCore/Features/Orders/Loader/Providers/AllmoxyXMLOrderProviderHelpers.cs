@@ -1,9 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
-using ApplicationCore.Features.Orders.Shared.Domain;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 
 internal static class AllmoxyXMLOrderProviderHelpers {
@@ -28,23 +24,12 @@ internal static class AllmoxyXMLOrderProviderHelpers {
         _ => DrawerSlideType.UnderMount
     };
 
-    public static CabinetMaterialCore GetFinishedSideMaterialCore(string name, CabinetMaterialCore boxMaterial) {
-
-        if (boxMaterial == CabinetMaterialCore.Flake) {
-
-            return name switch {
-                "veneer" => CabinetMaterialCore.Plywood,
-                _ => CabinetMaterialCore.Flake
-            };
-
-        } else if (boxMaterial == CabinetMaterialCore.Plywood) {
-
-            return CabinetMaterialCore.Plywood;
-
-        }
-
-        return CabinetMaterialCore.Flake;
-    }
+    public static CabinetMaterialCore GetFinishedSideMaterialCore(string name, CabinetMaterialCore boxMaterial) => name switch {
+        "pb" => CabinetMaterialCore.Flake,
+        "ply" => CabinetMaterialCore.Plywood,
+        "match" => boxMaterial,
+        _ => throw new InvalidOperationException($"Unexpected finish material core '{name}'")
+    };
 
     public static CabinetMaterialCore GetMaterialCore(string name) => name switch {
         "pb" => CabinetMaterialCore.Flake,
