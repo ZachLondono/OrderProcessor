@@ -17,8 +17,8 @@ internal class WallCabinetDataModel : CabinetDataModelBase, IProductDataModel, I
     public IProduct MapToProduct() {
 
         var mdfConfig = GetMDFDoorConfiguration();
-        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxMatCore);
-        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishMatCore, FinishMatPaint);
+        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
+        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         var doors = new WallCabinetDoors(HingeSide, DoorExtendDown);
         var inside = new WallCabinetInside(AdjShelfQty, VertDivQty);

@@ -13,6 +13,7 @@ using Address = ApplicationCore.Features.Orders.Shared.Domain.ValueObjects.Addre
 using CompanyAddress = ApplicationCore.Features.Companies.Contracts.ValueObjects.Address;
 using CompanyCustomer = ApplicationCore.Features.Companies.Contracts.Entities.Customer;
 using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+using System.Xml;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 
@@ -171,6 +172,11 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
         } catch (XmlSchemaException ex) {
 
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Schema Error] XML schema is not valid L{ex.LineNumber} - {ex.Message}");
+            return false;
+
+        } catch (XmlException ex) {
+            
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Schema Error] XML schema is not valid L{ex.LineNumber} - {ex.Message}");
             return false;
 

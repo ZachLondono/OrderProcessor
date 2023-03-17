@@ -28,13 +28,20 @@ internal static class AllmoxyXMLOrderProviderHelpers {
         "pb" => CabinetMaterialCore.Flake,
         "ply" => CabinetMaterialCore.Plywood,
         "match" => boxMaterial,
-        _ => throw new InvalidOperationException($"Unexpected finish material core '{name}'")
+        _ => throw new InvalidOperationException($"Unrecognized finish material core '{name}'")
     };
 
     public static CabinetMaterialCore GetMaterialCore(string name) => name switch {
         "pb" => CabinetMaterialCore.Flake,
         "ply" => CabinetMaterialCore.Plywood,
-        _ => CabinetMaterialCore.Flake
+        _ => throw new InvalidOperationException($"Unrecognized material core '{name}'")
+    };
+
+    public static CabinetMaterialFinishType GetMaterialFinishType(string name) => name switch {
+        "mela" => CabinetMaterialFinishType.Melamine,
+        "veneer" => CabinetMaterialFinishType.Veneer,
+        "paint" => CabinetMaterialFinishType.Paint,
+        _ => throw new InvalidOperationException($"Unrecognized material finish type '{name}'")
     };
 
     public static RollOutBlockPosition GetRollOutBlockPositions(string name) => name switch {

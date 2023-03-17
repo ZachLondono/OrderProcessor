@@ -25,8 +25,8 @@ internal class BlindBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBas
 
         var doors = new BlindCabinetDoors(HingeSide, DoorQty);
 
-        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxMatCore);
-        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishMatCore, FinishMatPaint);
+        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
+        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         var drawers = new HorizontalDrawerBank() {
             FaceHeight = DrawerFaceHeight,

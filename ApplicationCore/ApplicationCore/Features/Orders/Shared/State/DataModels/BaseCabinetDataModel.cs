@@ -36,8 +36,8 @@ internal class BaseCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
 
         BaseCabinetInside inside = new(AdjShelfQty, VertDivQty, rollOuts, ShelfDepth);
 
-        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxMatCore);
-        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishMatCore, FinishMatPaint);
+        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
+        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         return new BaseCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             doors, ToeType, drawers, inside, dbOptions);

@@ -17,8 +17,8 @@ internal class TrashCabinetDataModel : CabinetDrawerBoxContainerDataModelBase, I
         var dbOptions = GetDrawerBoxOptions();
         var mdfConfig = GetMDFDoorConfiguration();
 
-        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxMatCore);
-        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishMatCore, FinishMatPaint);
+        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
+        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         return new TrashCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             DrawerFaceHeight, TrashConfig, dbOptions, ToeType);

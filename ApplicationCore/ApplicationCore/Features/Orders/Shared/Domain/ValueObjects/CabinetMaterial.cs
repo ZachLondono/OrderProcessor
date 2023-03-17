@@ -2,4 +2,4 @@
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
-public record CabinetMaterial(string Finish, CabinetMaterialCore Core);
+public record CabinetMaterial(string Finish, CabinetMaterialFinishType FinishType, CabinetMaterialCore Core);
