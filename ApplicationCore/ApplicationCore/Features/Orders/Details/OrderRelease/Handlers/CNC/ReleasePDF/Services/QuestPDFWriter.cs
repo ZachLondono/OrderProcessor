@@ -62,7 +62,7 @@ internal class QuestPDFWriter : IReleasePDFWriter {
             pages.Add(new() {
                 Header = $"{job.JobName}  [{release.MachineName}]",
                 Title = program.Name,
-                Title2 = program.HasFace6 ? $"6{program.Name.Remove(0, 1)}" : "",
+                Title2 = program.HasFace6 ? $"6{program.Name[1..]}" : "",
                 Subtitle = $"{material.Name} - {material.Width:0.00}x{material.Length:0.00}x{material.Thickness:0.00} (grained:{(material.IsGrained ? "yes" : "no")})",
 
                 Footer = "footer",

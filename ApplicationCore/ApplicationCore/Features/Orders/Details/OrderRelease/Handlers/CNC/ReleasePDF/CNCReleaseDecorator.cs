@@ -82,14 +82,8 @@ internal class CNCReleaseDecorator : IDocumentDecorator {
 
         var labels = job.Element("Manufacturing").Elements("Label").Select(PartLabels.FromXElement).ToDictionary(l => l.Id);
 
-        var releasedJob = new ReleasedJob() {
-            JobName = job.ElementValue("Name"),
-            OrderDate = orderDate,
-            ReleaseDate = DateTime.Now,
-            CustomerName = customerName,
-            VendorName = vendorName,
-            WorkOrderId = null,
-            Releases = patternSchedules.GroupBy(sched => GetMachineName(sched.Name))
+        List<MachineRelease> releases = patternSchedules
+                                        .GroupBy(sched => GetMachineName(sched.Name))
                                         .Select(group => new MachineRelease() {
                                             MachineName = group.Key,
                                             MachineTableOrientation = GetTableOrientationFromMachineName(group.Key),
@@ -135,7 +129,40 @@ internal class CNCReleaseDecorator : IDocumentDecorator {
                                                                                     .ToList()
                                                                 };
                                                             })
-                                        })
+                                        }).ToList();
+
+        foreach (var machineRelease in releases) {
+
+            var twoSidedPrograms = machineRelease.Programs
+                                                .GroupBy(p => p.Name[1..])
+                                                .Where(g => g.Count() == 2);
+
+            List<ReleasedProgram> programs = new(machineRelease.Programs);
+
+            foreach (var group in twoSidedPrograms) {
+
+                var face5Program = group.Where(p => p.Name[0] != '6').FirstOrDefault();
+
+                if (face5Program is null) continue;
+
+                programs.Where(p => p.Name == face5Program.Name).First().HasFace6 = true;
+
+            }
+
+            programs.RemoveAll(p => p.Name[0] == '6');
+
+            machineRelease.Programs = programs;
+
+        }
+
+        var releasedJob = new ReleasedJob() {
+            JobName = job.ElementValue("Name"),
+            OrderDate = orderDate,
+            ReleaseDate = DateTime.Now,
+            CustomerName = customerName,
+            VendorName = vendorName,
+            WorkOrderId = null,
+            Releases = releases
         };
 
         return releasedJob;
