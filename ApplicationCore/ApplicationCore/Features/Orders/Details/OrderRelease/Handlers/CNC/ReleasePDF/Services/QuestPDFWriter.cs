@@ -153,17 +153,4 @@ internal class QuestPDFWriter : IReleasePDFWriter {
 
     private static string GetGuidAsBase64(Guid id) => Convert.ToBase64String(id.ToByteArray()).Replace("/", "-").Replace("+", "_").Replace("=", "");
 
-    private static string GetFileName(string path, string filename) {
-
-        int num = 0;
-
-        string fullpath = Path.Combine(path, $"{filename}.pdf");
-        while (File.Exists(fullpath)) {
-            fullpath = Path.Combine(path, $"{filename} ({++num}).pdf");
-        }
-
-        return fullpath;
-
-    }
-
 }
