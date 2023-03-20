@@ -120,8 +120,14 @@ internal class ReleaseService {
 
         List<string> files = new();
     
-        foreach (var outputDir in outputDirs) { 
-            var filePath = _fileReader.GetAvailableFileName(outputDir, $"{order.Number} {order.Name} - {name}", ".pdf");
+        foreach (var outputDir in outputDirs) {
+            string directory = Path.Combine(outputDir, _fileReader.RemoveInvalidPathCharacters($"{order.Number} {order.Name}"));
+
+            if (!Directory.Exists(directory)) {
+                Directory.CreateDirectory(directory);
+            }
+
+            var filePath = _fileReader.GetAvailableFileName(directory, $"{order.Number} {order.Name} - {name}", ".pdf");
             document.GeneratePdf(filePath);
             files.Add(filePath);
         }
