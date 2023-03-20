@@ -16,4 +16,10 @@ public class ReleaseConfiguration {
     public string? InvoiceEmailRecipients { get; set; }
     public bool SendInvoiceEmail { get; set; }
 
+    public string EmailSenderName { get; set; } = string.Empty;
+    public string EmailSenderEmail { get; set; } = string.Empty;
+    public string EmailSenderPassword { get; set; } = string.Empty;
+    public string EmailServerHost { get; set; } = "smtp-mail.outlook.com";
+    public int EmailServerPort { get; set; } = 587;
+
 }

@@ -4,6 +4,10 @@ using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Shared.Services;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
+using MoreLinq;
 using QuestPDF.Fluent;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease;
@@ -75,11 +79,10 @@ internal class ReleaseService {
 
         if (configuration.SendReleaseEmail && configuration.ReleaseEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending release email");
-            await SendEmailAsync(recipients, new string[] { filePaths.First() });
+            await SendEmailAsync(recipients, $"RELEASED: {order.Number} {order.Name}", "Please see attached release", new string[] { filePaths.First() }, configuration);
         }
 
     }
-
 
     private async Task Invoicing(Order order, ReleaseConfiguration configuration) {
 
@@ -94,7 +97,7 @@ internal class ReleaseService {
 
         if (configuration.SendInvoiceEmail && configuration.InvoiceEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending invoice email");
-            await SendEmailAsync(recipients, new string[] { filePaths.First() });
+            await SendEmailAsync(recipients, $"INVOICE: {order.Number} {order.Name}", "Please see attached invoice", new string[] { filePaths.First() }, configuration);
         }
 
         if (!configuration.GenerateInvoice) {
@@ -103,9 +106,34 @@ internal class ReleaseService {
 
     }
 
-    private Task SendEmailAsync(string recipients, IEnumerable<string> attachments) {
-        OnError?.Invoke("Email not implemented");
-        return Task.CompletedTask;
+    private async Task SendEmailAsync(string recipients, string subject, string body, IEnumerable<string> attachments, ReleaseConfiguration configuration) {
+
+        if (string.IsNullOrWhiteSpace(recipients)) {
+            OnError?.Invoke("No email recipients specified");
+            return;
+        }
+
+        var message = new MimeMessage();
+
+        recipients.Split(';').ForEach(r => message.To.Add(new MailboxAddress(r, r)));
+        message.From.Add(new MailboxAddress(configuration.EmailSenderName, configuration.EmailSenderEmail));
+        message.Subject = subject;
+
+        var builder = new BodyBuilder {
+            TextBody = body
+        };
+        attachments.Where(_fileReader.DoesFileExist).ForEach(att => builder.Attachments.Add(att));
+
+        message.Body = builder.ToMessageBody();
+
+        using var client = new SmtpClient();
+        client.Connect(configuration.EmailServerHost, configuration.EmailServerPort, SecureSocketOptions.Auto);
+        client.Authenticate(configuration.EmailSenderEmail, configuration.EmailSenderPassword);
+
+        var response = await client.SendAsync(message);
+        OnProgressReport?.Invoke($"Email sent with response '{response}'");
+        await client.DisconnectAsync(true);
+
     }
 
     private IEnumerable<string> GeneratePDF(IEnumerable<string> outputDirs, Order order, IEnumerable<IDocumentDecorator> decorators, string name) {
@@ -130,6 +158,7 @@ internal class ReleaseService {
             var filePath = _fileReader.GetAvailableFileName(directory, $"{order.Number} {order.Name} - {name}", ".pdf");
             document.GeneratePdf(filePath);
             files.Add(filePath);
+            OnProgressReport?.Invoke($"File generated {filePath}");
         }
 
         return files;

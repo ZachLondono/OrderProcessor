@@ -19,6 +19,7 @@ using ApplicationCore.Features.Orders.Contracts;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
+using ApplicationCore.Features.Orders.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -33,6 +34,10 @@ public static class DependencyInjection {
         SqlMapper.AddTypeHandler(new ToeTypeTypeHandler());
         SqlMapper.AddTypeHandler(new SqliteFixedDivdersCountsTypeHandler());
         SqlMapper.AddTypeHandler(new SqliteUBoxDimensionTypeHandler());
+
+        services.AddOptions<EmailCredentials>()
+            .Bind(configuration.GetSection("EmailCredentials"))
+            .ValidateDataAnnotations();
 
         services.AddOrderLoading(configuration);
         services.AddSingleton<ProductBuilderFactory>();

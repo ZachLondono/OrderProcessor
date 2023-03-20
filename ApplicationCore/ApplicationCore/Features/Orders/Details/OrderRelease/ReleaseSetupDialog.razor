@@ -1,12 +1,15 @@
 ﻿@using ApplicationCore.Features.Companies.Contracts;
 @using ApplicationCore.Features.Orders.Details.OrderRelease;
 @using static ApplicationCore.Features.Shared.Components.Button;
+@using ApplicationCore.Features.Orders.Shared.Domain;
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Features.Shared.Components
 @using ApplicationCore.Features.Shared.Services;
+@using Microsoft.Extensions.Options;
 @inject IFilePicker FilePicker
 @inject CompanyDirectory.GetVendorByIdAsync GetVendorByIdAsync
 @inject OrderState OrderState
+@inject IOptions<EmailCredentials> _emailCredentials;
 
 @if (Configuration is null) {
     <span>Loading...</span>    
@@ -95,7 +98,7 @@
             </CheckBox>
             @if (Configuration.SendInvoiceEmail) {
                 <label class="block text-sm font-medium text-gray-700">Email Recipients</label>
-                <input type="text" class="mt-1 w-full" />
+                <input type="text" class="mt-1 w-full" @bind="Configuration.InvoiceEmailRecipients"/>
             }
 
         </section>
@@ -126,6 +129,10 @@
 
         var vendor = await GetVendorByIdAsync(order.VendorId);
         if (vendor is null) return;
+
+        var creds = GetEmailCredentials();
+        if (creds is null) creds = new();
+
         Configuration = new() {
 
             SendReleaseEmail = vendor.ReleaseProfile.SendReleaseEmail,
@@ -140,12 +147,25 @@
             GenerateInvoice = vendor.ReleaseProfile.GenerateInvoice,
             SendInvoiceEmail = vendor.ReleaseProfile.SendInvoiceEmail,
             InvoiceEmailRecipients = vendor.ReleaseProfile.InvoiceEmailRecipients,
-            InvoiceOutputDirectory = vendor.ReleaseProfile.InvoiceOutputDirectory
+            InvoiceOutputDirectory = vendor.ReleaseProfile.InvoiceOutputDirectory,
+
+            EmailSenderName = creds.Name,
+            EmailSenderEmail = creds.Email,
+            EmailSenderPassword = creds.Password
 
         };
 
         StateHasChanged();
 
+    }
+
+    private EmailCredentials? GetEmailCredentials() {
+        try {
+            return _emailCredentials.Value;
+        } catch (OptionsValidationException ex) {
+            _errorMessage = $"Email configuration is missing or invalid - {string.Join(',', ex.Failures)}";
+            return null;
+        }
     }
 
     private string GetReportFile(string number, string name) {
