@@ -121,7 +121,8 @@ internal class CNCReleaseDecorator : IDocumentDecorator {
                                                                                             },
                                                                                             IsRotated = nestPart.location.IsRotated,
                                                                                             Description = label.Fields.GetValueOrEmpty("Description"),
-                                                                                            ProductNumber = label.Fields.GetValueOrEmpty("ProductNumber"),
+                                                                                            ProductNumber = label.Fields.GetValueOrEmpty("Cabinet Number"),
+                                                                                            ProductId = Guid.Parse(label.Fields.GetValueOrEmpty("ProductId")),
                                                                                             ImageData = label.Fields.GetValueOrEmpty("Machining Picture"),
                                                                                             HasFace6 = false
                                                                                         };
@@ -262,6 +263,5 @@ internal class CNCReleaseDecorator : IDocumentDecorator {
         }
 
     }
-
 
 }
