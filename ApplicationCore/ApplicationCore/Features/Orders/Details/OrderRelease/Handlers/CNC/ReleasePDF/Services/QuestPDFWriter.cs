@@ -42,9 +42,17 @@ internal class QuestPDFWriter : IReleasePDFWriter {
         int programIndex = 0;
         foreach (var program in releases.First().Programs) {
 
-            List<ReleasedProgram> programs = new();
+            Dictionary<string, SheetProgam> programs = new();
             foreach (var release in releases) {
-                programs.Add(release.Programs.ElementAt(programIndex));
+                var curr = release.Programs.ElementAt(programIndex);
+                programs.Add(
+                    release.MachineName,
+                    new() {
+                        Face5Program = curr.Name,
+                        Face6Program = program.HasFace6 ? $"6{curr.Name[1..]}" : null
+                    }
+                );
+
             }
 
             var partsTableContent = new List<Dictionary<string, string>>();
@@ -70,8 +78,7 @@ internal class QuestPDFWriter : IReleasePDFWriter {
 
             pages.Add(new() {
                 Header = $"{job.JobName}  [{string.Join(',', releases.Select(r => r.MachineName))}]",
-                Title = string.Join(" | ", programs.Select(p => p.Name)),
-                Title2 = program.HasFace6 ? string.Join(" | ", programs.Select(p => $"6{p.Name[1..]}" )) : "",
+                MachinePrograms = programs,
                 Subtitle = $"{material.Name} - {material.Width:0.00}x{material.Length:0.00}x{material.Thickness:0.00} (grained:{(material.IsGrained ? "yes" : "no")})",
 
                 Footer = "footer",
