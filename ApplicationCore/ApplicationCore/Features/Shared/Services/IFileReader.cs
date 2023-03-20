@@ -11,4 +11,6 @@ public interface IFileReader {
 
     string GetAvailableFileName(string direcotry, string filename, string fileExtension = "");
 
+    string RemoveInvalidPathCharacters(string input);
+
 }
