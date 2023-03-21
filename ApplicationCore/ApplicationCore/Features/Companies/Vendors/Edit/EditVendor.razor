@@ -60,6 +60,14 @@
             <InputText id="address_country" @bind-Value="DataContext.Model.Address.Country" placeholder="Country" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
         </section>
 
+        <section id="email" class="grid grid-cols-1">
+            <h3 class="font-medium text-gray-700">Email Sender</h3>
+            <InputText id="email_name" @bind-Value="DataContext.Model.EmailSenderName" placeholder="name" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+            <InputText id="email_address" @bind-Value="DataContext.Model.EmailSenderEmail" placeholder="abc@email.com" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+            <InputText id="email_password" type="password" @bind-Value="DataContext.Model.EmailSenderPassword" placeholder="password" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+        </section>
+
+
         <div class="grid grid-cols-2 gap-4">
             <section id="release_profile" class="flex flex-1 flex-col my-2">
                 <h3 class="font-medium text-gray-700">Release Profile</h3>

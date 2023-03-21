@@ -4,6 +4,7 @@ using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Infrastructure.Data;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
@@ -129,7 +130,7 @@ internal class ReleaseService {
 
         using var client = new SmtpClient();
         client.Connect(configuration.EmailServerHost, configuration.EmailServerPort, SecureSocketOptions.Auto);
-        client.Authenticate(configuration.EmailSenderEmail, configuration.EmailSenderPassword);
+        client.Authenticate(configuration.EmailSenderEmail, UserDataProtection.Unprotect(configuration.EmailSenderPassword));
 
         var response = await client.SendAsync(message);
         OnProgressReport?.Invoke($"Email sent with response '{response}'");

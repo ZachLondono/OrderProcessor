@@ -35,10 +35,6 @@ public static class DependencyInjection {
         SqlMapper.AddTypeHandler(new SqliteFixedDivdersCountsTypeHandler());
         SqlMapper.AddTypeHandler(new SqliteUBoxDimensionTypeHandler());
 
-        services.AddOptions<EmailCredentials>()
-            .Bind(configuration.GetSection("EmailCredentials"))
-            .ValidateDataAnnotations();
-
         services.AddOrderLoading(configuration);
         services.AddSingleton<ProductBuilderFactory>();
         services.AddSingleton<ComponentBuilderFactory>();

@@ -47,6 +47,10 @@ internal class GetVendorById {
                     vendors.release_email_recipients AS ReleaseEmailRecipients,
                     vendors.release_output_directory AS ReleaseOutputDirectory,
 
+                    vendors.email_sender_name AS EmailSenderName,
+                    vendors.email_sender_email AS EmailSenderEmail,
+                    vendors.email_sender_password AS EmailSenderPassword,
+
                     addresses.line1 AS AddrLine1,
                     addresses.line2 AS AddrLine2,
                     addresses.line3 AS AddrLine3,
@@ -100,8 +104,12 @@ internal class GetVendorById {
             public bool ReleaseJobSummary { get; set; }
             public bool ReleaseIncludeInvoice { get; set; }
             public bool ReleaseSendEmail { get; set; }
-            public string ReleaseEmailRecipients { get; set; } = string.Empty;
+            public string ReleaseEmeailRecipients { get; set; } = string.Empty;
             public string ReleaseOutputDirectory { get; set; } = string.Empty;
+
+            public string EmailSenderName { get; set; } = string.Empty;
+            public string EmailSenderEmail { get; set; } = string.Empty;
+            public string EmailSenderPassword { get; set;} = string.Empty;
 
             public Vendor AsVendor() {
 
@@ -127,7 +135,7 @@ internal class GetVendorById {
                     GeneratePackingList = ReleasePackingList,
                     GenerateJobSummary = ReleaseJobSummary,
                     SendReleaseEmail = ReleaseSendEmail,
-                    ReleaseEmailRecipients = ReleaseEmailRecipients,
+                    ReleaseEmailRecipients = ReleaseEmeailRecipients,
                     ReleaseOutputDirectory = ReleaseOutputDirectory,
 
                     GenerateInvoice = ReleaseInvoice,
@@ -136,7 +144,9 @@ internal class GetVendorById {
                     InvoiceEmailRecipients = InvoiceEmailRecipients
                 };
 
-                return new Vendor(Id, Name, address, Phone, exportProfile, releaseProfile);
+                var emailSender = new EmailSender(EmailSenderName, EmailSenderEmail, EmailSenderPassword);
+
+                return new Vendor(Id, Name, address, Phone, exportProfile, releaseProfile, emailSender);
 
             }
 

@@ -10,7 +10,6 @@
 @inject CompanyDirectory.GetVendorByIdAsync GetVendorByIdAsync
 @inject CompanyDirectory.GetCustomerByIdAsync GetCustomerByIdAsync
 @inject OrderState OrderState
-@inject IOptions<EmailCredentials> _emailCredentials;
 
 @if (Configuration is null) {
     <span>Loading...</span>    
@@ -131,9 +130,6 @@
         var vendor = await GetVendorByIdAsync(order.VendorId);
         if (vendor is null) return;
 
-        var creds = GetEmailCredentials();
-        if (creds is null) creds = new();
-
         Configuration = new() {
 
             SendReleaseEmail = vendor.ReleaseProfile.SendReleaseEmail,
@@ -150,9 +146,9 @@
             InvoiceEmailRecipients = vendor.ReleaseProfile.InvoiceEmailRecipients,
             InvoiceOutputDirectory = vendor.ReleaseProfile.InvoiceOutputDirectory,
 
-            EmailSenderName = creds.Name,
-            EmailSenderEmail = creds.Email,
-            EmailSenderPassword = creds.Password
+            EmailSenderName = vendor.EmailSender.Name,
+            EmailSenderEmail = vendor.EmailSender.Email,
+            EmailSenderPassword = vendor.EmailSender.ProtectedPassword
 
         };
 
@@ -168,15 +164,6 @@
 
         StateHasChanged();
 
-    }
-
-    private EmailCredentials? GetEmailCredentials() {
-        try {
-            return _emailCredentials.Value;
-        } catch (OptionsValidationException ex) {
-            _errorMessage = $"Email configuration is missing or invalid - {string.Join(',', ex.Failures)}";
-            return null;
-        }
     }
 
     private string GetReportFile(string number, string name) {

@@ -10,17 +10,19 @@ public class Vendor {
     public string Phone { get; set; }
     public ExportProfile ExportProfile { get; set; }
     public ReleaseProfile ReleaseProfile { get; set; }
+    public EmailSender EmailSender { get; set; }
 
-    internal Vendor(Guid id, string name, Address address, string phone, ExportProfile exportProfile, ReleaseProfile releaseProfile) {
+    internal Vendor(Guid id, string name, Address address, string phone, ExportProfile exportProfile, ReleaseProfile releaseProfile, EmailSender emailSender) {
         Id = id;
         Name = name;
         Address = address;
         Phone = phone;
         ExportProfile = exportProfile;
         ReleaseProfile = releaseProfile;
+        EmailSender = emailSender;
     }
 
-    public static Vendor Create(string name, Address address, string phone, ExportProfile exportProfile, ReleaseProfile releaseProfile)
-        => new(Guid.NewGuid(), name, address, phone, exportProfile, releaseProfile);
+    public static Vendor Create(string name, Address address, string phone, ExportProfile exportProfile, ReleaseProfile releaseProfile, EmailSender emailSender)
+        => new(Guid.NewGuid(), name, address, phone, exportProfile, releaseProfile, emailSender);
 
 }

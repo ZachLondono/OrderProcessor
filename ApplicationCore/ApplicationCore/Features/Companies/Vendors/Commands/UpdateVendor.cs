@@ -60,7 +60,11 @@ internal class UpdateVendor {
                     release_job_summary = @ReleaseJobSummary,
                     release_send_email = @ReleaseSendEmail,
                     release_email_recipients = @ReleaseEmailRecipients,
-                    release_output_directory = @ReleaseOutputDirectory
+                    release_output_directory = @ReleaseOutputDirectory,
+
+                    email_sender_name = @EmailSenderName,
+                    email_sender_email = @EmailSenderEmail,
+                    email_sender_password = @EmailSenderPassword
 
                 WHERE id = @Id;
                 """, new {
@@ -82,7 +86,12 @@ internal class UpdateVendor {
                     ReleaseJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
                     ReleaseSendEmail = vendor.ReleaseProfile.SendReleaseEmail,
                     vendor.ReleaseProfile.ReleaseEmailRecipients,
-                    vendor.ReleaseProfile.ReleaseOutputDirectory
+                    vendor.ReleaseProfile.ReleaseOutputDirectory,
+
+                    EmailSenderName = vendor.EmailSender.Name,
+                    EmailSenderEmail = vendor.EmailSender.Email,
+                    EmailSenderPassword = vendor.EmailSender.ProtectedPassword
+
                 }, trx);
 
         }
