@@ -114,7 +114,14 @@ internal class ReleaseService {
             return;
         }
 
-        IEnumerable<string> invoiceDirectories = configuration.GenerateInvoice ? (configuration.InvoiceOutputDirectory ?? "").Split(';').Where(s => !string.IsNullOrWhiteSpace(s)) : new string[] { Path.GetTempPath() };
+        IEnumerable<string> invoiceDirectories;
+        bool isTemp = false;
+        if (configuration.GenerateInvoice) {
+            invoiceDirectories = (configuration.InvoiceOutputDirectory ?? "").Split(';').Where(s => !string.IsNullOrWhiteSpace(s));
+        } else {
+            invoiceDirectories = new string[] { Path.GetTempPath() };
+            isTemp = true;
+        }
 
         if (!invoiceDirectories.Any() ) {
             OnError?.Invoke("No output directory was specified for invoice pdf");
@@ -123,7 +130,7 @@ internal class ReleaseService {
 
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try { 
-            filePaths = GeneratePDF(invoiceDirectories, order, new IDocumentDecorator[] { _invoiceDecorator }, "Invoice");
+            filePaths = GeneratePDF(invoiceDirectories, order, new IDocumentDecorator[] { _invoiceDecorator }, "Invoice", isTemp);
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate invoice PDF - '{ex.Message}'");
             _logger.LogError(ex, "Exception thrown while trying to generate invoice pdf");
@@ -143,7 +150,7 @@ internal class ReleaseService {
 
         if (!configuration.GenerateInvoice) {
             filePaths.ForEach(file => {
-                _logger.LogInformation($"Deleting temporary invoice pdf '{file}'");
+                _logger.LogInformation("Deleting temporary invoice pdf '@File'", file);
                 File.Delete(file);
             });
         }
@@ -161,6 +168,12 @@ internal class ReleaseService {
             return;
         }
 
+        if (string.IsNullOrWhiteSpace(configuration.EmailSenderEmail)) {
+            OnError?.Invoke("No email sender is configured");
+            return;
+        }
+
+
         message.From.Add(new MailboxAddress(configuration.EmailSenderName, configuration.EmailSenderEmail));
         message.Subject = subject;
 
@@ -176,12 +189,12 @@ internal class ReleaseService {
         client.Authenticate(configuration.EmailSenderEmail, UserDataProtection.Unprotect(configuration.EmailSenderPassword));
 
         var response = await client.SendAsync(message);
-        _logger.LogInformation($"Response from email client - '{response}'");
+        _logger.LogInformation("Response from email client - '@Response'", response);
         await client.DisconnectAsync(true);
 
     }
 
-    private IEnumerable<string> GeneratePDF(IEnumerable<string> outputDirs, Order order, IEnumerable<IDocumentDecorator> decorators, string name) {
+    private IEnumerable<string> GeneratePDF(IEnumerable<string> outputDirs, Order order, IEnumerable<IDocumentDecorator> decorators, string name, bool isTemp = false) {
         
         if (!decorators.Any()) {
             OnError?.Invoke($"There are no pages to add to the '{name}' document");
@@ -214,7 +227,9 @@ internal class ReleaseService {
             document.GeneratePdf(filePath);
             files.Add(filePath);
 
-            OnFileGenerated?.Invoke(Path.GetFullPath(filePath));
+            if (!isTemp) { 
+                OnFileGenerated?.Invoke(Path.GetFullPath(filePath));
+            }
 
         }
 
