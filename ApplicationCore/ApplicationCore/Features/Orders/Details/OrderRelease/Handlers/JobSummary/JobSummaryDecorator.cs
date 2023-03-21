@@ -84,11 +84,11 @@ internal class JobSummaryDecorator : IDocumentDecorator {
         var db = order.Products
                     .OfType<DovetailDrawerBoxProduct>()
                     .GroupBy(b => new DrawerBoxGroup() {
-                        Room = "",
-                        Material = "",
-                        BottomMaterial = "",
-                        Clips = "",
-                        Notch = ""
+                        Room = b.Room,
+                        Material = b.DrawerBoxOptions.GetMaterialName(),
+                        BottomMaterial = b.DrawerBoxOptions.BottomMaterial,
+                        Clips = b.DrawerBoxOptions.Clips,
+                        Notch = b.DrawerBoxOptions.Notches
                     }, new DrawerBoxGroupComparer())
                     .Select(g => {
                         g.Key.Items = g.Select(i => new DrawerBoxItem() {
@@ -168,9 +168,9 @@ internal class JobSummaryDecorator : IDocumentDecorator {
                         .OfType<MDFDoorProduct>()
                         .GroupBy(d => new DoorGroup {
                             Room = d.Room,
-                            Finish = "",
-                            Material = "",
-                            Style = ""
+                            Finish = d.PaintColor ?? "",
+                            Material = d.Material,
+                            Style = d.FramingBead
                         }, new DoorGroupComparer())
                         .Select(g => {
 

@@ -36,4 +36,14 @@ public class DrawerBoxOptions {
         FixedDivdersCounts = fixedDivdersCounts;
     }
 
+    public string GetMaterialName() {
+
+        if (FrontMaterial == BackMaterial && BackMaterial == SideMaterial) {
+            return FrontMaterial;
+        }
+
+        return $"{FrontMaterial} / {BackMaterial} / {SideMaterial}";
+
+    }
+
 }

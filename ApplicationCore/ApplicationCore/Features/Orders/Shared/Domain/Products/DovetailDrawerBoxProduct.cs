@@ -8,6 +8,7 @@ public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDrawerBoxC
 
     public Guid Id { get; }
     public decimal UnitPrice { get; }
+    public string Room { get; }
 
     public string GetDescription() {
 
@@ -41,14 +42,15 @@ public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDrawerBoxC
 
     }
 
-    public DovetailDrawerBoxProduct(Guid id, decimal unitPrice, int qty, int productNumber, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options)
+    public DovetailDrawerBoxProduct(Guid id, decimal unitPrice, int qty, string room, int productNumber, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options)
                             : base(qty, productNumber, height, width, depth, note, options, labelFields) {
         Id = id;
         UnitPrice = unitPrice;
+        Room = room;
     }
 
-    public static DovetailDrawerBoxProduct Create(decimal unitPrice, int qty, int productNumber, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options) {
-        return new(Guid.NewGuid(), unitPrice, qty, productNumber, height, width, depth, note, labelFields, options);
+    public static DovetailDrawerBoxProduct Create(decimal unitPrice, int qty, string room, int productNumber, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options) {
+        return new(Guid.NewGuid(), unitPrice, qty, room, productNumber, height, width, depth, note, labelFields, options);
     }
 
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) { yield return this; }

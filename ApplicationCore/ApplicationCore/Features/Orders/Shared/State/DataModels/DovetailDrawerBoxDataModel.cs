@@ -12,6 +12,7 @@ internal class DovetailDrawerBoxDataModel : ProductDataModelBase, IProductDataMo
     public Dimension Depth { get; set; }
     public string Note { get; set; } = string.Empty;
     public IDictionary<string, string> LabelFields { get; set; } = new Dictionary<string, string>();
+    public string Room { get; set; } = string.Empty;
 
     public string FrontMaterial { get; set; } = string.Empty;
     public string BackMaterial { get; set; } = string.Empty;
@@ -40,6 +41,7 @@ internal class DovetailDrawerBoxDataModel : ProductDataModelBase, IProductDataMo
             	db_product.depth,
             	db_product.note,
             	db_product.label_fields,
+                db_product.room,
 
             	db_config.front_material AS FrontMaterial,
             	db_config.back_material AS BackMaterial,
@@ -66,7 +68,7 @@ internal class DovetailDrawerBoxDataModel : ProductDataModelBase, IProductDataMo
 
         var options = new DrawerBoxOptions(FrontMaterial, BackMaterial, SideMaterial, BottomMaterial, Clips, Notches, Accessory, Logo, PostFinish, ScoopFront, FaceMountingHoles, Assembled, null, null);
 
-        return new DovetailDrawerBoxProduct(Id, UnitPrice, Qty, ProductNumber, Height, Width, Depth, Note, LabelFields.AsReadOnly(), options);
+        return new DovetailDrawerBoxProduct(Id, UnitPrice, Qty, Room, ProductNumber, Height, Width, Depth, Note, LabelFields.AsReadOnly(), options);
 
     }
 
