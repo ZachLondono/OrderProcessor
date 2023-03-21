@@ -8,6 +8,7 @@
 @using Microsoft.Extensions.Options;
 @inject IFilePicker FilePicker
 @inject CompanyDirectory.GetVendorByIdAsync GetVendorByIdAsync
+@inject CompanyDirectory.GetCustomerByIdAsync GetCustomerByIdAsync
 @inject OrderState OrderState
 @inject IOptions<EmailCredentials> _emailCredentials;
 
@@ -154,6 +155,16 @@
             EmailSenderPassword = creds.Password
 
         };
+
+
+        var customer = await GetCustomerByIdAsync(order.CustomerId);
+        if (customer is not null && customer.BillingContact.Email is string invoiceEmail) {
+
+            if (!string.IsNullOrEmpty(Configuration.InvoiceEmailRecipients))
+                Configuration.InvoiceEmailRecipients = invoiceEmail + ";" + Configuration.InvoiceEmailRecipients;
+            else Configuration.InvoiceEmailRecipients = invoiceEmail;
+
+        }
 
         StateHasChanged();
 

@@ -108,14 +108,15 @@ internal class ReleaseService {
 
     private async Task SendEmailAsync(string recipients, string subject, string body, IEnumerable<string> attachments, ReleaseConfiguration configuration) {
 
-        if (string.IsNullOrWhiteSpace(recipients)) {
+        var message = new MimeMessage();
+
+        recipients.Split(';').Where(s => !string.IsNullOrWhiteSpace(s)).ForEach(r => message.To.Add(new MailboxAddress(r, r)));
+
+        if (message.To.Count == 0) {
             OnError?.Invoke("No email recipients specified");
             return;
         }
 
-        var message = new MimeMessage();
-
-        recipients.Split(';').ForEach(r => message.To.Add(new MailboxAddress(r, r)));
         message.From.Add(new MailboxAddress(configuration.EmailSenderName, configuration.EmailSenderEmail));
         message.Subject = subject;
 
