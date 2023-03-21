@@ -12,6 +12,8 @@ internal class ExistingVendorModel {
     public string Name { get; set; } = string.Empty;
     public Address Address { get; set; } = new();
     public string Phone { get; set; } = string.Empty;
+    public string LogoFile { get; set; } = string.Empty;
+    public byte[] Logo { get; set; } = Array.Empty<byte>();
     public ExportProfile ExportProfile { get; set; } = new();
     public ReleaseProfile ReleaseProfile { get; set; } = new();
 
@@ -20,5 +22,7 @@ internal class ExistingVendorModel {
     public string EmailSenderPassword { get; set; } = string.Empty;
 
     public EmailSender GetEmailSender() => new(EmailSenderName, EmailSenderEmail, UserDataProtection.Protect(EmailSenderPassword));
+
+    public string GetBas64EncodedImage() => string.Format("data:image/png;base64,{0}", Convert.ToBase64String(Logo));
 
 }

@@ -45,6 +45,8 @@ internal class UpdateVendor {
                 SET
                     name = @Name,
                     phone = @Phone,
+                    logo = @Logo,
+
                     export_db_order = @ExportDBOrder,
                     export_mdf_door_order = @ExportMDFDoorOrder,
                     export_ext_file = @ExportExtFile,
@@ -71,6 +73,8 @@ internal class UpdateVendor {
                     vendor.Id,
                     vendor.Name,
                     vendor.Phone,
+                    vendor.Logo,
+
                     vendor.ExportProfile.ExportDBOrder,
                     vendor.ExportProfile.ExportMDFDoorOrder,
                     vendor.ExportProfile.ExportExtFile,

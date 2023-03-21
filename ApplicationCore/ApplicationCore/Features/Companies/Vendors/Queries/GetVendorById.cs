@@ -29,6 +29,7 @@ internal class GetVendorById {
                     vendors.id,
                     vendors.name,
                     vendors.phone,
+                    vendors.logo,
 
                     vendors.export_db_order AS ExportDBOrder,
                     vendors.export_mdf_door_order AS ExportMDFDoorOrder,
@@ -81,6 +82,7 @@ internal class GetVendorById {
             public Guid Id { get; set; }
             public string Name { get; set; } = string.Empty;
             public string Phone { get; set; } = string.Empty;
+            public byte[] Logo { get; set; } = Array.Empty<byte>();
 
             public string AddrLine1 { get; set; } = string.Empty;
             public string AddrLine2 { get; set; } = string.Empty;
@@ -146,7 +148,7 @@ internal class GetVendorById {
 
                 var emailSender = new EmailSender(EmailSenderName, EmailSenderEmail, EmailSenderPassword);
 
-                return new Vendor(Id, Name, address, Phone, exportProfile, releaseProfile, emailSender);
+                return new Vendor(Id, Name, address, Phone, Logo, exportProfile, releaseProfile, emailSender);
 
             }
 
