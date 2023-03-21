@@ -34,6 +34,7 @@ internal class ReleaseProgressViewModel {
         _orderState = orderState;
 
         _service.OnProgressReport += (message) => OnMessagePublished?.Invoke(new(LogMessageType.Info, message));
+        _service.OnFileGenerated += (message) => OnMessagePublished?.Invoke(new(LogMessageType.FileCreated, message));
         _service.OnError += (message) => OnMessagePublished?.Invoke(new(LogMessageType.Error, message));
         _service.OnActionComplete += (message) => OnMessagePublished?.Invoke(new(LogMessageType.Success, message));
     }

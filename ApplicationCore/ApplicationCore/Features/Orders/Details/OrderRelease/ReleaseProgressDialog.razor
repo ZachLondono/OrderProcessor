@@ -2,6 +2,7 @@
 @using ApplicationCore.Features.Shared.Components
 @using static ApplicationCore.Features.Shared.Components.Button;
 @using System.Collections.Specialized;
+@using System.Diagnostics;
 @using static ApplicationCore.Features.Orders.Details.OrderRelease.ReleaseProgressViewModel;
 @inject OrderState OrderState
 @inject IJSRuntime JSRuntime
@@ -53,7 +54,11 @@
                         }
                     </svg>
                 </td>
-                <td class="text-overflow-ellipsis">@message.Message</td>
+                @if (message.Type == LogMessageType.FileCreated) {
+                    <td class="text-overflow-ellipsis">File generated <a class="underline cursor-pointer" onclick="@(() => OpenFile(message.Message))">@message.Message</a></td>
+                } else {
+                    <td class="text-overflow-ellipsis">@message.Message</td>
+                }
             </tr>
         }
     </table>
@@ -93,6 +98,21 @@
 
     private async Task CloseDialog() {
         await BlazoredModal.CloseAsync();
+    }
+
+    private void OpenFile(string filePath) {
+
+        try {
+            
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.FileName = filePath;
+            psi.UseShellExecute = true;
+            Process.Start(psi);
+
+        } catch (Exception ex) {
+            Debug.WriteLine(ex);    
+        }
+
     }
 
 }

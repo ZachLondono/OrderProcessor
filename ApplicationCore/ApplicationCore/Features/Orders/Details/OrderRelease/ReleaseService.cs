@@ -17,6 +17,7 @@ namespace ApplicationCore.Features.Orders.Details.OrderRelease;
 internal class ReleaseService {
 
     public Action<string>? OnProgressReport;
+    public Action<string>? OnFileGenerated;
     public Action<string>? OnError;
     public Action<string>? OnActionComplete;
 
@@ -213,7 +214,7 @@ internal class ReleaseService {
             document.GeneratePdf(filePath);
             files.Add(filePath);
 
-            OnProgressReport?.Invoke($"File generated {Path.GetFullPath(filePath)}");
+            OnFileGenerated?.Invoke(Path.GetFullPath(filePath));
 
         }
 
