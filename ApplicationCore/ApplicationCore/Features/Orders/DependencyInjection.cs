@@ -19,7 +19,6 @@ using ApplicationCore.Features.Orders.Contracts;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
-using ApplicationCore.Features.Orders.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders;
 

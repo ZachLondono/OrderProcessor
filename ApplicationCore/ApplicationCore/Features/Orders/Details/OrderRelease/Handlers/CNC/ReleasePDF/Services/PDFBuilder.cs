@@ -53,7 +53,7 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
 
                 col.Item().AlignCenter().Text(summary.Title).WithStyle(pageHeaderStyle);
 
-                if (summary.WorkOrderId != "") {
+                /*if (summary.WorkOrderId != "") {
 
                     var barcode = new Barcode();
                     var img = barcode.Encode(TYPE.CODE128B, summary.WorkOrderId, 300, 50);
@@ -67,7 +67,7 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
                         .PaddingVertical(5)
                         .Width(2, Unit.Inch)
                         .Image(imgdata);
-                }
+                }*/
 
             });
 
