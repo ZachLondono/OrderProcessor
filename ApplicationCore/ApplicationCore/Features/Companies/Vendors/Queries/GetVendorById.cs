@@ -104,7 +104,7 @@ internal class GetVendorById {
             public bool ReleaseJobSummary { get; set; }
             public bool ReleaseIncludeInvoice { get; set; }
             public bool ReleaseSendEmail { get; set; }
-            public string ReleaseEmeailRecipients { get; set; } = string.Empty;
+            public string ReleaseEmailRecipients { get; set; } = string.Empty;
             public string ReleaseOutputDirectory { get; set; } = string.Empty;
 
             public string EmailSenderName { get; set; } = string.Empty;
@@ -135,7 +135,7 @@ internal class GetVendorById {
                     GeneratePackingList = ReleasePackingList,
                     GenerateJobSummary = ReleaseJobSummary,
                     SendReleaseEmail = ReleaseSendEmail,
-                    ReleaseEmailRecipients = ReleaseEmeailRecipients,
+                    ReleaseEmailRecipients = ReleaseEmailRecipients,
                     ReleaseOutputDirectory = ReleaseOutputDirectory,
 
                     GenerateInvoice = ReleaseInvoice,
