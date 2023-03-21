@@ -37,6 +37,7 @@ internal class JobSummaryDecorator : IDocumentDecorator {
             page.Header().Element(e => ComposeHeader(e, jobSummary));
 
             page.Content()
+                .Section("Job Summary")
                 .Column(column => {
 
                     foreach (var group in jobSummary.Cabients) {
@@ -61,6 +62,19 @@ internal class JobSummaryDecorator : IDocumentDecorator {
 
                 });
 
+            page.Footer()
+                .AlignCenter()
+                .Text(x => {
+                    
+                    x.DefaultTextStyle(x => x.FontSize(12));
+
+                    x.Span("Page ");
+                    x.CurrentPageNumber();
+                    x.Span(" of ");
+                    x.TotalPagesWithinSection("Job Summary");
+
+                });
+
         });
 
         return;
@@ -69,9 +83,7 @@ internal class JobSummaryDecorator : IDocumentDecorator {
 
     private async Task<JobSummary> GetJobSummaryModel(Order order) {
 
-        // TODO: get logo from vendor
-        // var vendor = await _getVendorByIdAsync(order.VendorId);
-
+        var vendor = await _getVendorByIdAsync(order.VendorId);
         var customer = await _getCustomerByIdAsync(order.CustomerId);
 
         var supplies = order.Products
@@ -194,6 +206,7 @@ internal class JobSummaryDecorator : IDocumentDecorator {
             Number = order.Number,
             Name = order.Name,
             CustomerName = customer?.Name ?? "",
+            VendorLogo = vendor?.Logo ?? Array.Empty<byte>(),
             Comment = order.CustomerComment,
             ReleaseDate = DateTime.Now,
             Supplies = supplies,
@@ -613,9 +626,11 @@ internal class JobSummaryDecorator : IDocumentDecorator {
                              .Italic();
                      });
 
-                row.ConstantItem(100)
-                    .AlignRight()
-                    .Image(Placeholders.Image(100, 100));
+                if (jobSummary.VendorLogo.Any()) {
+                    row.ConstantItem(100)
+                        .AlignRight()
+                        .Image(jobSummary.VendorLogo);
+                }
 
             });
 
