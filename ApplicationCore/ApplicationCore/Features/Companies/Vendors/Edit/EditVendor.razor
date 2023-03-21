@@ -40,7 +40,7 @@
                         <img src="@DataContext.Model.GetBas64EncodedImage()" style="max-width:100px; max-height:100px"/>
                         <Button Style="Button.ButtonStyle.Outline" OnClick="@(() => { DataContext.Model.LogoFile = string.Empty; DataContext.Model.Logo = Array.Empty<byte>(); StateHasChanged(); })">X</Button>
                     } else {
-                        <span>no logo selected</span>
+                        <span class="italic text-gray-400">no logo selected</span>
                     }
                 </div>
 
