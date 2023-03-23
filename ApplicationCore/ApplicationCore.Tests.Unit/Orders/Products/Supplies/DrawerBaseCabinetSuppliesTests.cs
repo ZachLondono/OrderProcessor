@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
@@ -29,10 +30,8 @@ public class DrawerBaseCabinetSuppliesTests {
             faceHeights[i] = Dimension.FromMillimeters(157);
         }
         var cabinet = _builder.WithDrawers(new() {
-            FaceHeights = faceHeights,
-            BoxMaterial = CabinetDrawerBoxMaterial.SolidBirch,
-            SlideType = DrawerSlideType.SideMount
-        })
+                                    FaceHeights = faceHeights
+                                })
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(157 * drawerQty + 10))
                                 .WithDepth(Dimension.FromMillimeters(500))
@@ -63,10 +62,8 @@ public class DrawerBaseCabinetSuppliesTests {
             faceHeights[i] = Dimension.FromMillimeters(157);
         }
         var cabinet = _builder.WithDrawers(new() {
-            FaceHeights = faceHeights,
-            BoxMaterial = CabinetDrawerBoxMaterial.SolidBirch,
-            SlideType = DrawerSlideType.UnderMount
-        })
+                                    FaceHeights = faceHeights
+                                })
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(157 * drawerQty + 10))
                                 .WithDepth(Dimension.FromMillimeters(500))

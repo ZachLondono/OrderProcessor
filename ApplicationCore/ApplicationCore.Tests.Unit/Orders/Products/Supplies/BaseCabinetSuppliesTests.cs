@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
@@ -71,12 +72,10 @@ public class BaseCabinetSuppliesTests {
         }
 
         var cabinet = _builder.WithDrawers(new() {
-            Quantity = drawerQty,
-            FaceHeight = Dimension.FromMillimeters(157),
-            BoxMaterial = CabinetDrawerBoxMaterial.SolidBirch,
-            SlideType = DrawerSlideType.UnderMount
-        })
-                                .WithInside(new(0, new RollOutOptions(positions, true, RollOutBlockPosition.None, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.SolidBirch), ShelfDepth.Default))
+                                    Quantity = drawerQty,
+                                    FaceHeight = Dimension.FromMillimeters(157)
+                                })
+                                .WithInside(new(0, new RollOutOptions(positions, true, RollOutBlockPosition.None), ShelfDepth.Default))
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
                                 .WithDepth(Dimension.FromMillimeters(500))
@@ -109,11 +108,9 @@ public class BaseCabinetSuppliesTests {
         var cabinet = _builder.WithDoors(BaseCabinetDoors.TwoDoors())
                                 .WithDrawers(new() {
                                     Quantity = drawerQty,
-                                    FaceHeight = Dimension.FromMillimeters(157),
-                                    BoxMaterial = CabinetDrawerBoxMaterial.SolidBirch,
-                                    SlideType = DrawerSlideType.UnderMount
+                                    FaceHeight = Dimension.FromMillimeters(157)
                                 })
-                                .WithInside(new(0, new RollOutOptions(positions, true, RollOutBlockPosition.None, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.SolidBirch), ShelfDepth.Default))
+                                .WithInside(new(0, new RollOutOptions(positions, true, RollOutBlockPosition.None), ShelfDepth.Default))
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
                                 .WithDepth(Dimension.FromMillimeters(500))
@@ -144,12 +141,10 @@ public class BaseCabinetSuppliesTests {
         }
 
         var cabinet = _builder.WithDrawers(new() {
-            Quantity = drawerQty,
-            FaceHeight = Dimension.FromMillimeters(157),
-            BoxMaterial = CabinetDrawerBoxMaterial.SolidBirch,
-            SlideType = DrawerSlideType.SideMount
-        })
-                                .WithInside(new(0, new RollOutOptions(positions, true, RollOutBlockPosition.None, DrawerSlideType.SideMount, CabinetDrawerBoxMaterial.SolidBirch), ShelfDepth.Default))
+                                    Quantity = drawerQty,
+                                    FaceHeight = Dimension.FromMillimeters(157)
+                                })
+                                .WithInside(new(0, new RollOutOptions(positions, true, RollOutBlockPosition.None), ShelfDepth.Default))
                                 .WithDoors(BaseCabinetDoors.TwoDoors())
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
@@ -257,7 +252,7 @@ public class BaseCabinetSuppliesTests {
             positions[i] = Dimension.Zero;
         }
 
-        var cabinet = _builder.WithInside(new(0, new RollOutOptions(positions, true, rollOutBlockPosition, DrawerSlideType.SideMount, CabinetDrawerBoxMaterial.SolidBirch), ShelfDepth.Default))
+        var cabinet = _builder.WithInside(new(0, new RollOutOptions(positions, true, rollOutBlockPosition), ShelfDepth.Default))
                                 .WithDoors(BaseCabinetDoors.TwoDoors())
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))

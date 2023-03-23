@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
@@ -26,9 +27,7 @@ public class BlindBaseCabinetDrawerBoxTests {
         // Arrange
         var cabinet = new BlindBaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = drawerCount,
-                                SlideType = DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
                             .WithToeType(ToeType.LegLevelers)
@@ -56,11 +55,10 @@ public class BlindBaseCabinetDrawerBoxTests {
 
         var cabinet = new BlindBaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
-                                SlideType = slideType,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
+                            .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, slideType))
                             .WithToeType(ToeType.LegLevelers)
                             .WithDoors(new() { Quantity = 1 })
                             .WithBlindWidth(Dimension.FromMillimeters(635))
@@ -87,9 +85,7 @@ public class BlindBaseCabinetDrawerBoxTests {
 
         var cabinet = new BlindBaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
-                                SlideType = DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(drawerFaceHeight)
                             })
                             .WithToeType(ToeType.LegLevelers)
@@ -125,9 +121,7 @@ public class BlindBaseCabinetDrawerBoxTests {
 
         var cabinet = new BlindBaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
-                                SlideType = slideType,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
                             .WithToeType(ToeType.LegLevelers)

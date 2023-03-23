@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
@@ -45,7 +46,7 @@ public class TrashCabinetDrawerBoxTests {
     public void DrawerBoxWidthTest(double cabWidth, DrawerSlideType slideType, double expectedDrawerWidth) {
 
         var cabinet = new TrashCabinetBuilder()
-                            .WithSlideType(slideType)
+                            .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, slideType))
                             .WithToeType(ToeType.LegLevelers)
                             .WithQty(1)
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
@@ -100,7 +101,7 @@ public class TrashCabinetDrawerBoxTests {
     public void DrawerBoxDepthTest(double cabDepth, DrawerSlideType slideType, double expectedDrawerDepth, int accurracy = 0) {
 
         var cabinet = new TrashCabinetBuilder()
-                            .WithSlideType(slideType)
+                            .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, slideType))
                             .WithToeType(ToeType.LegLevelers)
                             .WithQty(1)
                             .WithWidth(Dimension.FromMillimeters(457))

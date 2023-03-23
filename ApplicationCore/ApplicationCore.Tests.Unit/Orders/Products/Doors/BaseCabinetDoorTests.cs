@@ -42,9 +42,7 @@ public class BaseCabinetDoorTests {
         var cabinet = new BaseCabinetBuilder()
                             .WithDoors(new() { Quantity = doorQty })
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = drawerQty,
-                                SlideType = DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
                             .WithWidth(Dimension.FromMillimeters(457))
@@ -69,9 +67,7 @@ public class BaseCabinetDoorTests {
         var cabinet = new BaseCabinetBuilder()
                             .WithDoors(new() { Quantity = 1 })
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
-                                SlideType = DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
                             .WithWidth(Dimension.FromMillimeters(457))
@@ -97,9 +93,7 @@ public class BaseCabinetDoorTests {
         var cabinet = new BaseCabinetBuilder()
                             .WithDoors(new() { Quantity = doorQty })
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
-                                SlideType = DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
@@ -127,9 +121,7 @@ public class BaseCabinetDoorTests {
         var cabinet = new BaseCabinetBuilder()
                             .WithDoors(new() { Quantity = 2 })
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = drawerQty,
-                                SlideType = DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
@@ -182,9 +174,7 @@ public class BaseCabinetDoorTests {
                             .WithToeType(new TestToeType(Dimension.FromMillimeters(toeHeight)))
                             .WithDoors(new() { Quantity = 1 })
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
-                                SlideType = DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(drawerFaceHeight)
                             })
                             .WithWidth(Dimension.FromMillimeters(456))
