@@ -21,6 +21,8 @@ public class PPJobConverter {
                         .Select(group =>
                             new Room() {
                                 Name = group.Key,
+
+                                // products within the room are grouped together by MaterialGroupKey
                                 Groups = group.GroupBy(prod => new MaterialGroupKey(prod.Catalog, prod.MaterialType, prod.DoorType, prod.HardwareType, prod.FinishMaterials, prod.EBMaterials), new MaterialGroupKeyComparer())
                                                 .Select(group => new MaterialGroup() {
                                                     Key = group.Key,
@@ -31,7 +33,6 @@ public class PPJobConverter {
 
 
         int jobId = 0;
-        int roomIdx = 0;
 
         var jobDesc = new JobDescriptor() {
             LevelId = jobId,
@@ -43,17 +44,18 @@ public class PPJobConverter {
             Materials = ""
         };
 
+        _writer.AddRecord(jobDesc);
+
+        // If there is only one unnamed room in the order, there does not need to be a level for the room, instead just skip to adding group levels
         if (rooms.Count() == 1 && string.IsNullOrWhiteSpace(rooms.First().Name)) {
 
             var room = rooms.First();
-
-            _writer.AddRecord(jobDesc);
 
             int groupIdx = 0;
             foreach (var group in room.Groups) {
 
                 groupIdx++;
-                AddGroupToWriter(group, jobId, roomIdx, groupIdx, $"Lvl{groupIdx}");
+                AddGroupToWriter(group, jobId, jobId + groupIdx, $"Lvl{groupIdx}");
 
             }
 
@@ -61,8 +63,7 @@ public class PPJobConverter {
 
         }
 
-        _writer.AddRecord(jobDesc);
-
+        int roomIdx = 0;
         foreach (var room in rooms) {
 
             if (!room.Groups.Any()) {
@@ -78,6 +79,8 @@ public class PPJobConverter {
                 LevelId = jobId + roomIdx,
                 ParentId = jobId,
                 Name = string.IsNullOrEmpty(room.Name) ? $"Lvl{roomIdx}" : room.Name,
+
+                // The from the first group are used, since if there is only one group in the room the products will be added directly to this level
                 Catalog = firstGroup.Key.Catalog,
                 Materials = firstGroup.Key.MaterialType,
                 Fronts = firstGroup.Key.DoorType,
@@ -88,6 +91,8 @@ public class PPJobConverter {
 
             if (room.Groups.Count() == 1) {
 
+                // If there is only one group in the level, add it directly to this level rather than creating sub levels
+
                 AddMaterialVariablesToWriter(firstGroup.Key, level.LevelId);
 
                 foreach (var product in firstGroup.Products) {
@@ -96,14 +101,20 @@ public class PPJobConverter {
 
                 continue;
 
-            }
+            } else { 
 
-            int groupIdx = 0;
-            foreach (var group in room.Groups) {
+                int groupIdx = 0;
+                foreach (var group in room.Groups) {
 
-                groupIdx++;
+                    groupIdx++;
 
-                AddGroupToWriter(group, jobId, roomIdx, groupIdx, $"{groupIdx}-{level.Name}");
+                    int lvlId = jobId + roomIdx + groupIdx;
+                    AddGroupToWriter(group, jobId, lvlId, $"{groupIdx}-{level.Name}");
+
+                }
+
+                // Increment the roomIdx by the number of groups, so that subsequent rooms are not given the same level id as a sub group 
+                roomIdx += groupIdx;
 
             }
 
@@ -111,11 +122,14 @@ public class PPJobConverter {
 
     }
 
-    private void AddGroupToWriter(MaterialGroup group, int jobId, int roomIdx, int groupIdx, string name) {
+    /// <summary>
+    /// Adds a level descriptor for the group, a variable descriptor which holds the variables in the group key and the product descriptors for all products in the group.
+    /// </summary>
+    private void AddGroupToWriter(MaterialGroup group, int parentId, int levelId, string name) {
 
         var subLevel = new LevelDescriptor() {
-            LevelId = jobId + roomIdx + groupIdx,
-            ParentId = jobId + roomIdx,
+            LevelId = levelId,
+            ParentId = parentId,
             Name = name,
             Catalog = group.Key.Catalog,
             Materials = group.Key.MaterialType,
