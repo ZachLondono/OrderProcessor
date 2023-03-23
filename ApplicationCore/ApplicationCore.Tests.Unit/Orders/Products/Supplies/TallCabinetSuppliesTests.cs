@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
@@ -71,7 +72,7 @@ public class TallCabinetSuppliesTests {
         }
 
         var cabinet = _builder.WithDoors(TallCabinetDoors.TwoDoors())
-                                .WithInside(new(0, 0, 0, new RollOutOptions(positions, true, RollOutBlockPosition.None, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.SolidBirch)))
+                                .WithInside(new(0, 0, 0, new RollOutOptions(positions, true, RollOutBlockPosition.None)))
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
                                 .WithDepth(Dimension.FromMillimeters(500))
@@ -100,7 +101,7 @@ public class TallCabinetSuppliesTests {
             positions[i] = Dimension.Zero;
         }
 
-        var cabinet = _builder.WithInside(new(0, 0, 0, new RollOutOptions(positions, true, RollOutBlockPosition.None, DrawerSlideType.SideMount, CabinetDrawerBoxMaterial.SolidBirch)))
+        var cabinet = _builder.WithInside(new(0, 0, 0, new RollOutOptions(positions, true, RollOutBlockPosition.None)))
                                 .WithDoors(TallCabinetDoors.TwoDoors())
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
@@ -206,7 +207,7 @@ public class TallCabinetSuppliesTests {
             positions[i] = Dimension.Zero;
         }
 
-        var cabinet = _builder.WithInside(new(0, 0, 0, new RollOutOptions(positions, true, rollOutBlockPosition, DrawerSlideType.SideMount, CabinetDrawerBoxMaterial.SolidBirch)))
+        var cabinet = _builder.WithInside(new(0, 0, 0, new RollOutOptions(positions, true, rollOutBlockPosition)))
                                 .WithDoors(TallCabinetDoors.NoDoors())
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))

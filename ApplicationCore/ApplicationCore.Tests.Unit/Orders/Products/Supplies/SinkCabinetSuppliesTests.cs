@@ -124,7 +124,7 @@ public class SinkCabinetSuppliesTests {
             positions[i] = Dimension.Zero;
         }
 
-        var cabinet = _builder.WithRollOutBoxes(new RollOutOptions(positions, true, RollOutBlockPosition.None, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.SolidBirch))
+        var cabinet = _builder.WithRollOutBoxes(new RollOutOptions(positions, true, RollOutBlockPosition.None))
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
                                 .WithDepth(Dimension.FromMillimeters(500))
@@ -153,7 +153,7 @@ public class SinkCabinetSuppliesTests {
             positions[i] = Dimension.Zero;
         }
 
-        var cabinet = _builder.WithRollOutBoxes(new RollOutOptions(positions, true, RollOutBlockPosition.None, DrawerSlideType.SideMount, CabinetDrawerBoxMaterial.SolidBirch))
+        var cabinet = _builder.WithRollOutBoxes(new RollOutOptions(positions, true, RollOutBlockPosition.None))
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
                                 .WithDepth(Dimension.FromMillimeters(500))

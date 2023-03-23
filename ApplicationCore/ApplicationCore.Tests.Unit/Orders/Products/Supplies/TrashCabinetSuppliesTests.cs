@@ -1,8 +1,10 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using FluentAssertions;
+using Microsoft.Data.Sqlite;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products.Supplies;
 
@@ -82,7 +84,7 @@ public class TrashCabinetSuppliesTests {
     public void Should_IncludeOneUMSlidePerCabinet_WhenSlidesAreUM() {
 
         // Arrange
-        var cabinet = _builder.WithSlideType(DrawerSlideType.UnderMount).WithQty(2).WithDepth(Dimension.FromMillimeters(500)).Build();
+        var cabinet = _builder.WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount)).WithQty(2).WithDepth(Dimension.FromMillimeters(500)).Build();
         var expectedSupply = Supply.UndermountSlide(cabinet.Qty, Dimension.FromMillimeters(457));
 
         // Act
@@ -97,7 +99,7 @@ public class TrashCabinetSuppliesTests {
     public void Should_IncludeOneSMSlidePerCabinet_WhenSlidesAreSM() {
 
         // Arrange
-        var cabinet = _builder.WithSlideType(DrawerSlideType.SideMount).WithQty(2).WithDepth(Dimension.FromMillimeters(500)).Build();
+        var cabinet = _builder.WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.SideMount)).WithQty(2).WithDepth(Dimension.FromMillimeters(500)).Build();
         var expectedSupply = Supply.SidemountSlide(cabinet.Qty, Dimension.FromMillimeters(457));
 
         // Act

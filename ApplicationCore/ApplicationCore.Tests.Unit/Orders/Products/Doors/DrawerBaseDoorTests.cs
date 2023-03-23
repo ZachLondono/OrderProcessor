@@ -39,9 +39,7 @@ public class DrawerBaseDoorTests {
         // Arrange
         var cabinet = new DrawerBaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
-                                SlideType = Features.Orders.Shared.Domain.Enums.DrawerSlideType.UnderMount,
-                                FaceHeights = new List<Dimension> {
+                                FaceHeights = new Dimension[] {
                                     Dimension.FromMillimeters(157),
                                     Dimension.FromMillimeters(157)
                                 },
@@ -68,11 +66,10 @@ public class DrawerBaseDoorTests {
         // Arrange
         var cabinet = new DrawerBaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
-                                SlideType = Features.Orders.Shared.Domain.Enums.DrawerSlideType.UnderMount,
-                                FaceHeights = new List<Dimension> {
+                                FaceHeights = new Dimension[] {
+                                    Dimension.FromMillimeters(157),
                                     Dimension.FromMillimeters(157)
-                                },
+                                }
                             })
                             .WithWidth(Dimension.FromMillimeters(453))
                             .WithHeight(Dimension.FromMillimeters(876))
@@ -96,11 +93,10 @@ public class DrawerBaseDoorTests {
         // Arrange
         var cabinet = new DrawerBaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
-                                SlideType = Features.Orders.Shared.Domain.Enums.DrawerSlideType.UnderMount,
-                                FaceHeights = new List<Dimension> {
+                                FaceHeights = new Dimension[] {
+                                    Dimension.FromMillimeters(157),
                                     Dimension.FromMillimeters(157)
-                                },
+                                }
                             })
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
@@ -124,15 +120,13 @@ public class DrawerBaseDoorTests {
         // Arrange
         var cabinet = new DrawerBaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = Features.Orders.Shared.Domain.Enums.CabinetDrawerBoxMaterial.FingerJointBirch,
-                                SlideType = Features.Orders.Shared.Domain.Enums.DrawerSlideType.UnderMount,
-                                FaceHeights = new List<Dimension> {
+                                FaceHeights = new Dimension[] {
                                     Dimension.FromMillimeters(face1),
                                     Dimension.FromMillimeters(face2),
                                     Dimension.FromMillimeters(face3),
                                     Dimension.FromMillimeters(face4),
                                     Dimension.FromMillimeters(face5)
-                                },
+                                }
                             })
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(876))

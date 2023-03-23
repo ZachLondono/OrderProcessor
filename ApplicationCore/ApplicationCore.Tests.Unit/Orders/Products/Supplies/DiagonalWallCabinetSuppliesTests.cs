@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
@@ -212,9 +213,7 @@ public class BlindBaseCabinetSuppliesTests {
         var cabinet = _builder.WithDoors(new())
                                 .WithDrawers(new() {
                                     Quantity = drawerQty,
-                                    FaceHeight = Dimension.FromMillimeters(157),
-                                    BoxMaterial = CabinetDrawerBoxMaterial.SolidBirch,
-                                    SlideType = DrawerSlideType.UnderMount
+                                    FaceHeight = Dimension.FromMillimeters(157)
                                 })
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
@@ -241,9 +240,7 @@ public class BlindBaseCabinetSuppliesTests {
         var cabinet = _builder.WithDoors(new())
                                 .WithDrawers(new() {
                                     Quantity = drawerQty,
-                                    FaceHeight = Dimension.FromMillimeters(157),
-                                    BoxMaterial = CabinetDrawerBoxMaterial.SolidBirch,
-                                    SlideType = DrawerSlideType.UnderMount
+                                    FaceHeight = Dimension.FromMillimeters(157)
                                 })
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
@@ -271,9 +268,7 @@ public class BlindBaseCabinetSuppliesTests {
         var cabinet = _builder.WithDoors(new())
                                 .WithDrawers(new() {
                                     Quantity = drawerQty,
-                                    FaceHeight = Dimension.FromMillimeters(157),
-                                    BoxMaterial = CabinetDrawerBoxMaterial.SolidBirch,
-                                    SlideType = DrawerSlideType.SideMount
+                                    FaceHeight = Dimension.FromMillimeters(157)
                                 })
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))

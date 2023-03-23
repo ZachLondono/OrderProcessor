@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
@@ -35,12 +36,10 @@ public class BaseCabinetDrawerBoxTests {
 
         var cabinet = new BaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = drawerCount,
-                                SlideType = DrawerSlideType.UnderMount,
-                                FaceHeight = Dimension.FromMillimeters(157)
+                                FaceHeight = Dimension.FromMillimeters(157),
                             })
-                            .WithInside(new(0, new RollOutOptions(rollOutPositions, false, RollOutBlockPosition.Both, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.FingerJointBirch), ShelfDepth.Default))
+                            .WithInside(new(0, new RollOutOptions(rollOutPositions, false, RollOutBlockPosition.Both), ShelfDepth.Default))
                             .WithToeType(ToeType.LegLevelers)
                             .WithDoors(new() { Quantity = drawerCount })
                             .WithQty(cabQty)
@@ -65,12 +64,11 @@ public class BaseCabinetDrawerBoxTests {
 
         var cabinet = new BaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
-                                SlideType = slideType,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
-                            .WithInside(new(0, new RollOutOptions(Array.Empty<Dimension>(), false, RollOutBlockPosition.Both, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.FingerJointBirch), ShelfDepth.Default))
+                            .WithBoxOptions(new(CabinetDrawerBoxMaterial.SolidBirch, slideType))
+                            .WithInside(new(0, new RollOutOptions(Array.Empty<Dimension>(), false, RollOutBlockPosition.Both), ShelfDepth.Default))
                             .WithToeType(ToeType.LegLevelers)
                             .WithDoors(new() { Quantity = 1 })
                             .WithQty(1)
@@ -101,12 +99,11 @@ public class BaseCabinetDrawerBoxTests {
 
         var cabinet = new BaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 0,
-                                SlideType = slideType,
-                                FaceHeight = Dimension.FromMillimeters(157)
+                                FaceHeight = Dimension.FromMillimeters(157),
                             })
-                            .WithInside(new(0, new RollOutOptions(new Dimension[] { Dimension.FromMillimeters(19) }, false, blockPositions, slideType, CabinetDrawerBoxMaterial.FingerJointBirch), ShelfDepth.Default))
+                            .WithBoxOptions(new(CabinetDrawerBoxMaterial.SolidBirch, slideType))
+                            .WithInside(new(0, new RollOutOptions(new Dimension[] { Dimension.FromMillimeters(19) }, false, blockPositions), ShelfDepth.Default))
                             .WithToeType(ToeType.LegLevelers)
                             .WithDoors(new() { Quantity = 1 })
                             .WithQty(1)
@@ -132,12 +129,10 @@ public class BaseCabinetDrawerBoxTests {
 
         var cabinet = new BaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
-                                SlideType = DrawerSlideType.UnderMount,
                                 FaceHeight = Dimension.FromMillimeters(drawerFaceHeight)
                             })
-                            .WithInside(new(0, new RollOutOptions(Array.Empty<Dimension>(), false, RollOutBlockPosition.Both, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.FingerJointBirch), ShelfDepth.Default))
+                            .WithInside(new(0, new RollOutOptions(Array.Empty<Dimension>(), false, RollOutBlockPosition.Both), ShelfDepth.Default))
                             .WithToeType(ToeType.LegLevelers)
                             .WithDoors(new() { Quantity = 1 })
                             .WithQty(1)
@@ -170,12 +165,11 @@ public class BaseCabinetDrawerBoxTests {
 
         var cabinet = new BaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 1,
-                                SlideType = slideType,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
-                            .WithInside(new(0, new RollOutOptions(Array.Empty<Dimension>(), false, RollOutBlockPosition.Both, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.FingerJointBirch), ShelfDepth.Default))
+                            .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, slideType))
+                            .WithInside(new(0, new RollOutOptions(Array.Empty<Dimension>(), false, RollOutBlockPosition.Both), ShelfDepth.Default))
                             .WithToeType(ToeType.LegLevelers)
                             .WithDoors(new() { Quantity = 1 })
                             .WithQty(1)
@@ -208,12 +202,11 @@ public class BaseCabinetDrawerBoxTests {
 
         var cabinet = new BaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
                                 Quantity = 0,
-                                SlideType = slideType,
                                 FaceHeight = Dimension.FromMillimeters(157)
                             })
-                            .WithInside(new(0, new RollOutOptions(new Dimension[] { Dimension.FromMillimeters(19) }, false, RollOutBlockPosition.Both, slideType, CabinetDrawerBoxMaterial.FingerJointBirch), ShelfDepth.Default))
+                            .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, slideType))
+                            .WithInside(new(0, new RollOutOptions(new Dimension[] { Dimension.FromMillimeters(19) }, false, RollOutBlockPosition.Both), ShelfDepth.Default))
                             .WithToeType(ToeType.LegLevelers)
                             .WithDoors(new() { Quantity = 1 })
                             .WithQty(1)

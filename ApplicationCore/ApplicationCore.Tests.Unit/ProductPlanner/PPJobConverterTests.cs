@@ -141,9 +141,9 @@ public class PPJobConverterTests {
         _sut.ConvertOrder(job);
 
         // Assert
-        _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
-        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "Room A"));
-        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "Room B"));
+        _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name" && j.LevelId == 0));
+        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "Room A" && l.LevelId == 1));
+        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "Room B" && l.LevelId == 2));
         _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<VariableOverride>());
         _writer.ReceivedWithAnyArgs(products.Count).AddRecord(Arg.Any<ProductRecord>());
 
@@ -166,15 +166,15 @@ public class PPJobConverterTests {
         _sut.ConvertOrder(job);
 
         // Assert
-        _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
+        _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name" && j.LevelId == 0));
 
-        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "Room A"));
-        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "1-Room A"));
-        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "2-Room A"));
+        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "Room A" && l.LevelId == 1));
+        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "1-Room A" && l.LevelId == 2));
+        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "2-Room A" && l.LevelId == 3));
 
-        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "Room B"));
-        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "1-Room B"));
-        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "2-Room B"));
+        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "Room B" && l.LevelId == 4));
+        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "1-Room B" && l.LevelId == 5));
+        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "2-Room B" && l.LevelId == 6));
 
         _writer.ReceivedWithAnyArgs(4).AddRecord(Arg.Any<VariableOverride>());
 
@@ -207,6 +207,6 @@ public class PPJobConverterTests {
     }
 
     private static PPProduct CreateProduct(string room = "", string name = "", string catalog = "", string materialType = "", string doorType = "", string hardwareType = "", Dictionary<string, string>? overrideParameters = null)
-        => new(Guid.NewGuid(), room, name, 1, catalog, materialType, doorType, hardwareType, "", new Dictionary<string, PPMaterial>(), new Dictionary<string, PPMaterial>(), new Dictionary<string, string>(), overrideParameters ?? new(), new Dictionary<string, string>());
+        => new(Guid.NewGuid(), 1, room, name, 1, catalog, materialType, doorType, hardwareType, "", new Dictionary<string, PPMaterial>(), new Dictionary<string, PPMaterial>(), new Dictionary<string, string>(), overrideParameters ?? new(), new Dictionary<string, string>());
 
 }

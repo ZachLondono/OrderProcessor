@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
@@ -33,7 +34,7 @@ public class TallCabinetDrawerBoxTests {
         }
 
         var cabinet = new TallCabinetBuilder()
-                            .WithInside(new(0, 0, 0, new RollOutOptions(rollOutPositions, false, RollOutBlockPosition.Both, DrawerSlideType.UnderMount, CabinetDrawerBoxMaterial.FingerJointBirch)))
+                            .WithInside(new(0, 0, 0, new RollOutOptions(rollOutPositions, false, RollOutBlockPosition.Both)))
                             .WithToeType(ToeType.LegLevelers)
                             .WithQty(cabQty)
                             .WithWidth(Dimension.FromMillimeters(456))
@@ -62,7 +63,8 @@ public class TallCabinetDrawerBoxTests {
     public void RollOutDrawerBoxWidthTest(double cabWidth, DrawerSlideType slideType, RollOutBlockPosition blockPositions, double expectedDrawerWidth) {
 
         var cabinet = new TallCabinetBuilder()
-                            .WithInside(new(0, 0, 0, new RollOutOptions(new Dimension[] { Dimension.FromMillimeters(19) }, false, blockPositions, slideType, CabinetDrawerBoxMaterial.FingerJointBirch)))
+                            .WithInside(new(0, 0, 0, new RollOutOptions(new Dimension[] { Dimension.FromMillimeters(19) }, false, blockPositions)))
+                            .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, slideType))
                             .WithToeType(ToeType.LegLevelers)
                             .WithQty(1)
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
@@ -93,7 +95,8 @@ public class TallCabinetDrawerBoxTests {
     public void RollOutDrawerBoxDepthTest(double cabDepth, DrawerSlideType slideType, double expectedDrawerDepth, int accurracy = 0) {
 
         var cabinet = new TallCabinetBuilder()
-                            .WithInside(new(0, 0, 0, new RollOutOptions(new Dimension[] { Dimension.FromMillimeters(19) }, false, RollOutBlockPosition.Both, slideType, CabinetDrawerBoxMaterial.FingerJointBirch)))
+                            .WithInside(new(0, 0, 0, new RollOutOptions(new Dimension[] { Dimension.FromMillimeters(19) }, false, RollOutBlockPosition.Both)))
+                            .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, slideType))
                             .WithToeType(ToeType.LegLevelers)
                             .WithQty(1)
                             .WithWidth(Dimension.FromMillimeters(457))

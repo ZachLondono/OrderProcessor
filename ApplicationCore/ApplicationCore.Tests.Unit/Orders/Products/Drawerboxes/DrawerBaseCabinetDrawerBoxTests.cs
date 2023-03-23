@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
@@ -36,8 +37,6 @@ public class DrawerBaseCabinetDrawerBoxTests {
 
         var cabinet = new DrawerBaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
-                                SlideType = DrawerSlideType.UnderMount,
                                 FaceHeights = faceHeights
                             })
                             .WithToeType(ToeType.LegLevelers)
@@ -63,10 +62,9 @@ public class DrawerBaseCabinetDrawerBoxTests {
 
         var cabinet = new DrawerBaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
-                                SlideType = slideType,
                                 FaceHeights = new[] { Dimension.FromMillimeters(157) }
                             })
+                            .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, slideType))
                             .WithToeType(ToeType.LegLevelers)
                             .WithQty(1)
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
@@ -91,8 +89,6 @@ public class DrawerBaseCabinetDrawerBoxTests {
 
         var cabinet = new DrawerBaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
-                                SlideType = DrawerSlideType.UnderMount,
                                 FaceHeights = new[] { Dimension.FromMillimeters(drawerFaceHeight) }
                             })
                             .WithToeType(ToeType.LegLevelers)
@@ -126,10 +122,9 @@ public class DrawerBaseCabinetDrawerBoxTests {
 
         var cabinet = new DrawerBaseCabinetBuilder()
                             .WithDrawers(new() {
-                                BoxMaterial = CabinetDrawerBoxMaterial.FingerJointBirch,
-                                SlideType = slideType,
                                 FaceHeights = new[] { Dimension.FromMillimeters(157) }
                             })
+                            .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, slideType))
                             .WithToeType(ToeType.LegLevelers)
                             .WithQty(1)
                             .WithWidth(Dimension.FromMillimeters(457))
