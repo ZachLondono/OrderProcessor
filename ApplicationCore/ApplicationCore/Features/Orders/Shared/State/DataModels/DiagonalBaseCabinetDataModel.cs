@@ -19,8 +19,8 @@ internal class DiagonalBaseCabinetDataModel : CabinetDataModelBase, IProductData
 
         var mdfConfig = GetMDFDoorConfiguration();
 
-        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxMatCore);
-        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishMatCore, FinishMatPaint);
+        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
+        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         return new BaseDiagonalCornerCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             RightWidth, RightDepth, ToeType, AdjShelfQty, HingeSide, DoorQty);
@@ -58,7 +58,7 @@ internal class DiagonalBaseCabinetDataModel : CabinetDataModelBase, IProductData
                 diagonal_base_cabinets.door_qty AS DoorQty,
                 diagonal_base_cabinets.adj_shelf_qty AS AdjShelfQty,
 
-           	    cabinets.mdf_config_id IS NULL AS ContainsMDFDoor,
+           	    cabinets.mdf_config_id IS NOT NULL AS ContainsMDFDoor,
            	    mdf_door_configs.framing_bead AS FramingBead,
            	    mdf_door_configs.edge_detail AS EdgeDetail,
            	    mdf_door_configs.panel_detail AS PanelDetail,

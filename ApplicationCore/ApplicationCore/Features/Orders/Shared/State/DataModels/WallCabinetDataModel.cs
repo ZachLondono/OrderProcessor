@@ -17,8 +17,8 @@ internal class WallCabinetDataModel : CabinetDataModelBase, IProductDataModel, I
     public IProduct MapToProduct() {
 
         var mdfConfig = GetMDFDoorConfiguration();
-        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxMatCore);
-        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishMatCore, FinishMatPaint);
+        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
+        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         var doors = new WallCabinetDoors(HingeSide, DoorExtendDown);
         var inside = new WallCabinetInside(AdjShelfQty, VertDivQty);
@@ -58,7 +58,7 @@ internal class WallCabinetDataModel : CabinetDataModelBase, IProductDataModel, I
            	    wall_cabinets.vert_div_qty AS VertDivQty,
            	    wall_cabinets.finished_bottom AS FinishedBottom,
 
-           	    cabinets.mdf_config_id IS NULL AS ContainsMDFDoor,
+           	    cabinets.mdf_config_id IS NOT NULL AS ContainsMDFDoor,
            	    mdf_door_configs.framing_bead AS FramingBead,
            	    mdf_door_configs.edge_detail AS EdgeDetail,
            	    mdf_door_configs.panel_detail AS PanelDetail,

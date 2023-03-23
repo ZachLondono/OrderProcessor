@@ -18,7 +18,8 @@ public partial class CreateNewOrder {
                 drawerbox.Width,
                 drawerbox.Depth,
                 drawerbox.Note,
-                LabelFields = (IDictionary<string, string>)drawerbox.LabelFields
+                LabelFields = (IDictionary<string, string>)drawerbox.LabelFields,
+                drawerbox.Room
             };
 
             await connection.ExecuteAsync("""
@@ -28,14 +29,16 @@ public partial class CreateNewOrder {
                         width,
                         depth,
                         note,
-                        label_fields)
+                        label_fields,
+                        room)
                     VALUES
                         (@ProductId,
                         @Height,
                         @Width,
                         @Depth,
                         @Note,
-                        @LabelFields);
+                        @LabelFields,
+                        @Room);
                     """, parameters, trx);
 
         }

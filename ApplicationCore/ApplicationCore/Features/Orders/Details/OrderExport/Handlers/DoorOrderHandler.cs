@@ -24,7 +24,7 @@ internal class DoorOrderHandler {
         _getCustomerByIdAsync = getCustomerByIdAsync;
     }
 
-    public Task Handle(Order order, string template, string outputDirectory) {
+    public async Task Handle(Order order, string template, string outputDirectory) {
 
         var doors = order.Products
                             .Where(p => p is IDoorContainer)
@@ -44,24 +44,27 @@ internal class DoorOrderHandler {
                             .ToList();
 
         if (!doors.Any()) {
-            return Task.CompletedTask;
+            _logger.LogInformation("No doors in order, not filling door order");
+            return;
         }
 
         if (!File.Exists(template)) {
-            return Task.CompletedTask;
+            _logger.LogError("Door order template file does not exist, not filling door order");
+            return;
         }
 
         if (!Directory.Exists(outputDirectory)) {
-            return Task.CompletedTask;
+            _logger.LogError("Door order output directory does not exist, not filling door order");
+            return;
         }
 
         try {
 
-            GenerateOrderForms(order, doors, template, outputDirectory);
+            await GenerateOrderForms(order, doors, template, outputDirectory);
 
         } catch (Exception ex) {
 
-            _logger.LogError("Exception thrown while filling door order {Exception}", ex);
+            _logger.LogError(ex, "Exception thrown while filling door order");
 
         } finally {
 
@@ -74,7 +77,7 @@ internal class DoorOrderHandler {
         }
 
 
-        return Task.CompletedTask;
+        return;
 
     }
 
@@ -112,11 +115,13 @@ internal class DoorOrderHandler {
                 FillOrderSheet(order, customerName, group, workbook, orderNumber);
 
                 string fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{orderNumber} - {order.Name} MDF DOORS", ".xlsm");
-                string finalPath = Path.Combine(outputDirectory, fileName);
+                string finalPath = Path.GetFullPath(fileName);
 
                 workbook.SaveAs2(finalPath);
 
-            } catch {
+            } catch (Exception ex) {
+
+                _logger.LogError(ex, "Exception thrown while filling door order group");
 
             } finally {
 

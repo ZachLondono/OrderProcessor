@@ -23,8 +23,8 @@ internal class SinkCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
 
         var rollOuts = GetRollOutOptions();
 
-        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxMatCore);
-        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishMatCore, FinishMatPaint);
+        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
+        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         return new SinkCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             ToeType, HingeSide, DoorQty, FalseDrawerQty, DrawerFaceHeight, AdjShelfQty, ShelfDepth, rollOuts, dbOptions);
@@ -71,7 +71,7 @@ internal class SinkCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
             sink_cabinets.rollout_block_type AS ROBlockType,
             sink_cabinets.rollout_scoop_front AS ROScoopFront,
 
-            cabinets.mdf_config_id IS NULL AS ContainsMDFDoor,
+            cabinets.mdf_config_id IS NOT NULL AS ContainsMDFDoor,
             mdf_door_configs.framing_bead AS FramingBead,
             mdf_door_configs.edge_detail AS EdgeDetail,
             mdf_door_configs.panel_detail AS PanelDetail,

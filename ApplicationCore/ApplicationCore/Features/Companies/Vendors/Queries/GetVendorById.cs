@@ -29,6 +29,7 @@ internal class GetVendorById {
                     vendors.id,
                     vendors.name,
                     vendors.phone,
+                    vendors.logo,
 
                     vendors.export_db_order AS ExportDBOrder,
                     vendors.export_mdf_door_order AS ExportMDFDoorOrder,
@@ -36,11 +37,20 @@ internal class GetVendorById {
                     vendors.export_output_directory AS ExportOutputDirectory,
 
                     vendors.release_invoice AS ReleaseInvoice,
+                    vendors.release_invoice_output_directory AS InvoiceOutputDirectory,
+                    vendors.release_invoice_send_email AS SendInvoiceEmail,
+                    vendors.release_invoice_email_recipients AS InvoiceEmailRecipients,
+
                     vendors.release_packing_list AS ReleasePackingList,
                     vendors.release_job_summary AS ReleaseJobSummary,
+                    vendors.release_include_invoice AS ReleaseIncludeInvoice,
                     vendors.release_send_email AS ReleaseSendEmail,
                     vendors.release_email_recipients AS ReleaseEmailRecipients,
                     vendors.release_output_directory AS ReleaseOutputDirectory,
+
+                    vendors.email_sender_name AS EmailSenderName,
+                    vendors.email_sender_email AS EmailSenderEmail,
+                    vendors.email_sender_password AS EmailSenderPassword,
 
                     addresses.line1 AS AddrLine1,
                     addresses.line2 AS AddrLine2,
@@ -72,6 +82,7 @@ internal class GetVendorById {
             public Guid Id { get; set; }
             public string Name { get; set; } = string.Empty;
             public string Phone { get; set; } = string.Empty;
+            public byte[] Logo { get; set; } = Array.Empty<byte>();
 
             public string AddrLine1 { get; set; } = string.Empty;
             public string AddrLine2 { get; set; } = string.Empty;
@@ -87,11 +98,20 @@ internal class GetVendorById {
             public string ExportOutputDirectory { get; set; } = string.Empty;
 
             public bool ReleaseInvoice { get; set; }
+            public string InvoiceOutputDirectory { get; set; } = string.Empty;
+            public bool SendInvoiceEmail { get; set; }
+            public string InvoiceEmailRecipients { get; set; } = string.Empty;
+
             public bool ReleasePackingList { get; set; }
             public bool ReleaseJobSummary { get; set; }
+            public bool ReleaseIncludeInvoice { get; set; }
             public bool ReleaseSendEmail { get; set; }
-            public string ReleaseEmeailRecipients { get; set; } = string.Empty;
+            public string ReleaseEmailRecipients { get; set; } = string.Empty;
             public string ReleaseOutputDirectory { get; set; } = string.Empty;
+
+            public string EmailSenderName { get; set; } = string.Empty;
+            public string EmailSenderEmail { get; set; } = string.Empty;
+            public string EmailSenderPassword { get; set;} = string.Empty;
 
             public Vendor AsVendor() {
 
@@ -113,15 +133,22 @@ internal class GetVendorById {
                 };
 
                 var releaseProfile = new ReleaseProfile() {
-                    Invoice = ReleaseInvoice,
-                    PackingList = ReleasePackingList,
-                    JobSummary = ReleaseJobSummary,
-                    SendEmail = ReleaseSendEmail,
-                    EmailRecipients = ReleaseEmeailRecipients,
-                    OutputDirectory = ReleaseOutputDirectory
+                    IncludeInvoice = ReleaseIncludeInvoice,
+                    GeneratePackingList = ReleasePackingList,
+                    GenerateJobSummary = ReleaseJobSummary,
+                    SendReleaseEmail = ReleaseSendEmail,
+                    ReleaseEmailRecipients = ReleaseEmailRecipients,
+                    ReleaseOutputDirectory = ReleaseOutputDirectory,
+
+                    GenerateInvoice = ReleaseInvoice,
+                    InvoiceOutputDirectory = InvoiceOutputDirectory,
+                    SendInvoiceEmail = SendInvoiceEmail,
+                    InvoiceEmailRecipients = InvoiceEmailRecipients
                 };
 
-                return new Vendor(Id, Name, address, Phone, exportProfile, releaseProfile);
+                var emailSender = new EmailSender(EmailSenderName, EmailSenderEmail, EmailSenderPassword);
+
+                return new Vendor(Id, Name, address, Phone, Logo, exportProfile, releaseProfile, emailSender);
 
             }
 

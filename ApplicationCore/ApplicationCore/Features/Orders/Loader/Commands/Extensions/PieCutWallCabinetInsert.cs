@@ -31,7 +31,6 @@ public partial class CreateNewOrder {
             await connection.ExecuteAsync("""
                     INSERT INTO pie_cut_wall_cabinets
                         (product_id,
-                        toe_type,
                         right_width,
                         right_depth,
                         hinge_side,
@@ -39,7 +38,6 @@ public partial class CreateNewOrder {
                         adj_shelf_qty)
                     VALUES
                         (@ProductId,
-                        @ToeType,
                         @RightWidth,
                         @RightDepth,
                         @HingeSide,

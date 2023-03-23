@@ -2,4 +2,4 @@
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
-public record CabinetFinishMaterial(string Finish, CabinetMaterialCore Core, string? PaintColor = null);
+public record CabinetFinishMaterial(string Finish, CabinetMaterialFinishType FinishType, CabinetMaterialCore Core, string? PaintColor = null);

@@ -31,8 +31,8 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
         Width = Dimension.Zero;
         Height = Dimension.Zero;
         Depth = Dimension.Zero;
-        BoxMaterial = new(string.Empty, CabinetMaterialCore.Flake);
-        FinishMaterial = new(string.Empty, CabinetMaterialCore.Flake, null);
+        BoxMaterial = new(string.Empty, CabinetMaterialFinishType.Melamine, CabinetMaterialCore.Flake);
+        FinishMaterial = new(string.Empty, CabinetMaterialFinishType.Melamine, CabinetMaterialCore.Flake, null);
         MDFDoorOptions = null;
         EdgeBandingColor = string.Empty;
         LeftSideType = CabinetSideType.Unfinished;

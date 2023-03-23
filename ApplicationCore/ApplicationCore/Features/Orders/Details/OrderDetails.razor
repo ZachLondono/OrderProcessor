@@ -390,8 +390,9 @@
 
         _isReleasing = true;
 
-        var dialog = Modal.Show<ReleaseSetupDialog>("Release Setup", new ModalOptions() {
-                HideHeader = false,
+        var dialog = Modal.Show<ReleaseSetupDialog>("Release Setup",
+            new ModalOptions() {
+                HideHeader = true,
                 HideCloseButton = true,
                 DisableBackgroundCancel = true,
                 Size = ModalSize.Medium

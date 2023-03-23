@@ -164,7 +164,7 @@ public class PPJobConverter {
             ParentId = parentLevelId,
             Pos = product.SequenceNum,
             CustomSpec = true,
-            Qty = 1,
+            Qty = product.Qty,
             SeqText = "",
             Units = PPUnits.Millimeters,
             Comment = product.Comment,

@@ -5,8 +5,6 @@ using ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Services;
 using ApplicationCore.Features.Orders.Details.OrderRelease;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Features.Orders.Loader;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.State;
@@ -18,6 +16,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Dapper;
 using ApplicationCore.Features.Orders.Contracts;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -38,10 +39,11 @@ public static class DependencyInjection {
         services.AddSingleton<ComponentBuilderFactory>();
         services.AddSingleton<OrderState>();
 
+        services.AddTransient<JobSummaryDecorator>();
+        services.AddTransient<CNCReleaseDecorator>();
+        services.AddTransient<InvoiceDecorator>();
+        services.AddTransient<PackingListDecorator>();
         services.AddTransient<ReleaseService>();
-        services.AddTransient<InvoiceHandler>();
-        services.AddTransient<PackingListHandler>();
-        services.AddTransient<GenerateReleaseForSelectedJobs.Handler>();
 
         services.AddTransient<ExportService>();
         services.AddTransient<DoorOrderHandler>();

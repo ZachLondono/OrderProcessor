@@ -22,16 +22,18 @@ public abstract class CabinetModelBase : ProductModel {
 
     public TBuilder InitilizeBuilder<TBuilder, TCabinet>(TBuilder builder) where TBuilder : CabinetBuilder<TCabinet> where TCabinet : Cabinet {
 
-        CabinetMaterialCore boxCore = AllmoxyXMLOrderProviderHelpers.GetMaterialCore(Cabinet.BoxMaterial.Type);
-        CabinetMaterialCore finishCore = AllmoxyXMLOrderProviderHelpers.GetFinishedSideMaterialCore(Cabinet.FinishMaterial.Type, boxCore);
+        CabinetMaterialCore boxCore = AllmoxyXMLOrderProviderHelpers.GetMaterialCore(Cabinet.BoxMaterial.Core);
+        CabinetMaterialFinishType boxFinishType = AllmoxyXMLOrderProviderHelpers.GetMaterialFinishType(Cabinet.BoxMaterial.Type);
+        CabinetMaterialCore finishCore = AllmoxyXMLOrderProviderHelpers.GetFinishedSideMaterialCore(Cabinet.FinishMaterial.Core, boxCore);
+        CabinetMaterialFinishType finishFinishType = AllmoxyXMLOrderProviderHelpers.GetMaterialFinishType(Cabinet.FinishMaterial.Type);
 
         MDFDoorOptions? mdfOptions = null;
         if (Cabinet.Fronts.Type != "Slab") mdfOptions = new("MDF", Dimension.FromInches(0.75), Cabinet.Fronts.Style, "Eased", "Flat", Dimension.Zero, Cabinet.Fronts.Color);
 
         string finishColor = (Cabinet.FinishMaterial.Type == "paint" ? Cabinet.BoxMaterial.Finish : Cabinet.FinishMaterial.Finish);
         string? finishPaintColor = (Cabinet.FinishMaterial.Type == "paint" ? Cabinet.FinishMaterial.Finish : null);
-        CabinetMaterial boxMaterial = new(Cabinet.BoxMaterial.Finish, boxCore);
-        CabinetFinishMaterial finishMaterial = new(finishColor, finishCore, finishPaintColor);
+        CabinetMaterial boxMaterial = new(Cabinet.BoxMaterial.Finish, boxFinishType, boxCore);
+        CabinetFinishMaterial finishMaterial = new(finishColor, finishFinishType, finishCore, finishPaintColor);
         CabinetSideType leftSideType = AllmoxyXMLOrderProviderHelpers.GetCabinetSideType(Cabinet.LeftSide);
         CabinetSideType rightSideType = AllmoxyXMLOrderProviderHelpers.GetCabinetSideType(Cabinet.RightSide);
 

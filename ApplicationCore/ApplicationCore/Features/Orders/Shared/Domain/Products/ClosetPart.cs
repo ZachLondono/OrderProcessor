@@ -60,7 +60,7 @@ public class ClosetPart : IProduct, IPPProductContainer {
             ["EB_Top"] = new(ebMaterial, EdgeBandingColor)
         };
 
-        return new List<PPProduct>() { new PPProduct(Id, Room, SKU, ProductNumber, "Royal_c", materialType, "slab", "standard", Comment, finishMaterials, ebMaterials, new Dictionary<string, string>(Parameters), new Dictionary<string, string>(), new Dictionary<string, string>()) };
+        return new List<PPProduct>() { new PPProduct(Id, Qty, Room, SKU, ProductNumber, "Royal_c", materialType, "slab", "standard", Comment, finishMaterials, ebMaterials, new Dictionary<string, string>(Parameters), new Dictionary<string, string>(), new Dictionary<string, string>()) };
     }
 
     public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();

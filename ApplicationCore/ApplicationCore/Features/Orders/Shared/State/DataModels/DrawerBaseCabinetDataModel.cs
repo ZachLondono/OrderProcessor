@@ -19,8 +19,8 @@ internal class DrawerBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBa
             FaceHeights = FaceHeights
         };
 
-        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxMatCore);
-        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishMatCore, FinishMatPaint);
+        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
+        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         return new DrawerBaseCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             ToeType, drawers, dbOptions);
@@ -57,7 +57,7 @@ internal class DrawerBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBa
         	db_config.material AS DBMaterial,
         	db_config.slide_type AS DBSlideType,
         
-        	cabinets.mdf_config_id IS NULL AS ContainsMDFDoor,
+        	cabinets.mdf_config_id IS NOT NULL AS ContainsMDFDoor,
         	mdf_door_configs.framing_bead AS FramingBead,
         	mdf_door_configs.edge_detail AS EdgeDetail,
         	mdf_door_configs.panel_detail AS PanelDetail,

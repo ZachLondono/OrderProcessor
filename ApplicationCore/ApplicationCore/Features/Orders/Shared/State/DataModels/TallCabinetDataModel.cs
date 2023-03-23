@@ -34,8 +34,8 @@ internal class TallCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
 
         TallCabinetInside inside = new(UpperAdjShelfQty, LowerAdjShelfQty, UpperVertDivQty, LowerVertDivQty, rollOuts);
 
-        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxMatCore);
-        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishMatCore, FinishMatPaint);
+        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
+        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         return new TallCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             doors, ToeType, inside, dbOptions);
@@ -83,7 +83,7 @@ internal class TallCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
            	    tall_cabinets.rollout_block_type AS ROBlockType,
            	    tall_cabinets.rollout_scoop_front AS ROScoopFront,
 
-           	    cabinets.mdf_config_id IS NULL AS ContainsMDFDoor,
+           	    cabinets.mdf_config_id IS NOT NULL AS ContainsMDFDoor,
            	    mdf_door_configs.framing_bead AS FramingBead,
            	    mdf_door_configs.edge_detail AS EdgeDetail,
            	    mdf_door_configs.panel_detail AS PanelDetail,

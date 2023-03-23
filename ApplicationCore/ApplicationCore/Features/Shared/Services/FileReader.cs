@@ -8,9 +8,7 @@ public class FileReader : IFileReader {
 
         int index = 1;
 
-        foreach (char c in Path.GetInvalidFileNameChars()) {
-            filename = filename.Replace(c, '_');
-        }
+        filename = RemoveInvalidPathCharacters(filename);
 
         if (fileExtension.StartsWith(".")) {
             fileExtension = fileExtension[1..];
@@ -31,5 +29,15 @@ public class FileReader : IFileReader {
     public Stream OpenReadFileStream(string filepath, FileAccess access = FileAccess.Read) => new FileStream(filepath, FileMode.Open, access, FileShare.ReadWrite);
 
     public async Task<string> ReadFileContentsAsync(string filePath) => await File.ReadAllTextAsync(filePath);
+
+    public string RemoveInvalidPathCharacters(string input) {
+
+        foreach (char c in Path.GetInvalidFileNameChars()) {
+            input = input.Replace(c, '_');
+        }
+
+        return input;
+
+    }
 
 }

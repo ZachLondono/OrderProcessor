@@ -56,9 +56,14 @@ internal class EditVendorViewModel {
                 Id = vendorId,
                 Name = vendor.Name,
                 Phone = vendor.Phone,
+                Logo = vendor.Logo,
+                LogoFile = string.Empty,
                 Address = vendor.Address,
                 ExportProfile = vendor.ExportProfile,
                 ReleaseProfile = vendor.ReleaseProfile,
+                EmailSenderName = vendor.EmailSender.Name,
+                EmailSenderEmail = vendor.EmailSender.Email,
+                EmailSenderPassword = vendor.EmailSender.GetUnprotectedPassword(),
             },
             error => null
         );
@@ -80,9 +85,26 @@ internal class EditVendorViewModel {
         Error = null;
         IsSaving = true;
 
+        byte[] logo = Array.Empty<byte>();
+        try {
+            
+            if (File.Exists(Model.LogoFile)) { 
+                logo = File.ReadAllBytes(Model.LogoFile);
+                Model.Logo = logo;
+            }
+
+        } catch (Exception ex) {
+
+            _error = new() {
+                Title = "Could not read logo file",
+                Details = $"{ex.Message}<br><br>{ex.StackTrace}"
+            };
+
+        }
+
         try {
 
-            var vendor = new Vendor(Model.Id, Model.Name ?? "", Model.Address, Model.Phone, Model.ExportProfile, Model.ReleaseProfile);
+            var vendor = new Vendor(Model.Id, Model.Name ?? "", Model.Address, Model.Phone, logo, Model.ExportProfile, Model.ReleaseProfile, Model.GetEmailSender());
 
             var response = await _bus.Send(new UpdateVendor.Command(vendor));
 

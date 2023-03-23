@@ -11,7 +11,9 @@ internal abstract class CabinetDataModelBase : ProductDataModelBase {
     public Dimension Depth { get; set; }
     public CabinetMaterialCore BoxMatCore { get; set; }
     public string BoxMatFinish { get; set; } = string.Empty;
+    public CabinetMaterialFinishType BoxFinishType { get; set; }
     public CabinetMaterialCore FinishMatCore { get; set; }
+    public CabinetMaterialFinishType FinishFinishType { get; set; }
     public string FinishMatFinish { get; set; } = string.Empty;
     public string? FinishMatPaint { get; set; }
     public string EdgeBandColor { get; set; } = string.Empty;

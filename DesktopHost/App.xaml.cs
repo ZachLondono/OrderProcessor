@@ -45,8 +45,8 @@ public partial class App : Application {
 
     private static IConfiguration BuildConfiguration()
         => new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile("Configuration/credentials.json")
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("Configuration/credentials.json", optional: false, reloadOnChange: true)
                 .Build();
 
     private static IServiceProvider BuildServiceProvider(IConfiguration configuration) {

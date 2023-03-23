@@ -10,4 +10,8 @@ public record Address {
     public string Zip { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
 
+    public string GetLine4() {
+        return $"{City}{(string.IsNullOrWhiteSpace(State) ? "" : $" {State}")}{(string.IsNullOrWhiteSpace(Zip) ? "" : $", {Zip}")}";
+    }
+
 }

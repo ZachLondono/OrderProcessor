@@ -1,4 +1,5 @@
-﻿
+﻿using ApplicationCore.Features.Orders.Shared.State;
+
 namespace ApplicationCore.Features.Orders.Details.OrderRelease;
 
 internal class ReleaseProgressViewModel {
@@ -26,20 +27,28 @@ internal class ReleaseProgressViewModel {
     public Action<ProgressLogMessage>? OnMessagePublished { get; set; }
 
     private readonly ReleaseService _service;
+    private readonly OrderState _orderState;
 
-    public ReleaseProgressViewModel(ReleaseService service) {
+    public ReleaseProgressViewModel(ReleaseService service, OrderState orderState) {
         _service = service;
+        _orderState = orderState;
 
         _service.OnProgressReport += (message) => OnMessagePublished?.Invoke(new(LogMessageType.Info, message));
+        _service.OnFileGenerated += (message) => OnMessagePublished?.Invoke(new(LogMessageType.FileCreated, message));
         _service.OnError += (message) => OnMessagePublished?.Invoke(new(LogMessageType.Error, message));
         _service.OnActionComplete += (message) => OnMessagePublished?.Invoke(new(LogMessageType.Success, message));
     }
 
     public async Task ReleaseOrder(ReleaseConfiguration configuration) {
 
+        if (_orderState.Order is null) {
+            OnMessagePublished?.Invoke(new(LogMessageType.Error, "No order selected"));
+            return;
+        }
+
         InProgress = true;
 
-        await _service.Release(configuration);
+        await _service.Release(_orderState.Order, configuration);
         IsComplete = true;
 
         InProgress = false;

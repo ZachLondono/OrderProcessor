@@ -93,6 +93,7 @@ CREATE TABLE dovetail_drawer_products (
 	depth REAL NOT NULL,
 	note TEXT NOT NULL,
 	label_fields TEXT NOT NULL,
+	room TEXT NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
 	FOREIGN KEY (product_id) REFERENCES drawer_box_configs(id)

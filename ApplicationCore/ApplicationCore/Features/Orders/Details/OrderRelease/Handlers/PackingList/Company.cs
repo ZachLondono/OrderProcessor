@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList.Models;
+﻿namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 
 internal class Company {
 
@@ -10,4 +10,7 @@ internal class Company {
 
     public string Line3 { get; set; } = string.Empty;
 
+    public string Line4 { get; set; } = string.Empty;
+
 }
+

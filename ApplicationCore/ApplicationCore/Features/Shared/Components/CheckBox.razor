@@ -1,4 +1,4 @@
-﻿<input type="checkbox" @bind="@IsChecked" id="@Id" />
+﻿<input type="checkbox" checked="@IsChecked" @oninput="OnIsCheckedChanged" id="@Id" />
 <label for="@Id">@ChildContent</label>
 
 @code {
@@ -14,5 +14,11 @@
 
     [Parameter]
     public EventCallback<bool> IsCheckedChanged { get; set; }
+
+    private Task OnIsCheckedChanged(ChangeEventArgs e) {
+        if (e.Value is not bool newVal) return Task.CompletedTask;
+        IsChecked = newVal;
+        return IsCheckedChanged.InvokeAsync(IsChecked);
+    }
 
 }
