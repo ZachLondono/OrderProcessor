@@ -45,6 +45,8 @@ public static class DependencyInjection {
         services.AddTransient<PackingListDecorator>();
         services.AddTransient<ReleaseService>();
 
+        services.Configure<ExportOptions>(configuration.GetRequiredSection("ExportOptions"));
+
         services.AddTransient<ExportService>();
         services.AddTransient<DoorOrderHandler>();
         services.AddTransient<DovetailOrderHandler>();

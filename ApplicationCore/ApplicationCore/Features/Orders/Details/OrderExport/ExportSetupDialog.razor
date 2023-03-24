@@ -25,27 +25,25 @@
             <CheckBox @bind-IsChecked="Configuration.FillDovetailOrder">
                 <span class="text-gray-700">Fill Dovetail DB order</span>
             </CheckBox>
-            <label class="block text-sm font-medium text-gray-700">Template</label>
-            <input type="text" class="mt-1 w-full" @bind="@Configuration.DovetailTemplateFilePath" />
-        </section>
-
-        <section>
+            
+            <br />
+            
             <CheckBox @bind-IsChecked="Configuration.FillMDFDoorOrder">
                 <span class="text-gray-700">Fill MDF Door order</span>
             </CheckBox>
-            <label class="block text-sm font-medium text-gray-700">Template</label>
-            <input type="text" class="mt-1 w-full" @bind="@Configuration.MDFDoorTemplateFilePath" />
+            
+            <br />
+            
+            <label class="block text-sm font-medium text-gray-700">Output directory</label>
+            <input type="text" class="mt-1 w-full" @bind="@Configuration.OutputDirectory" />
         </section>
+
+        <hr />
 
         <section>
             <CheckBox @bind-IsChecked="Configuration.GenerateEXT">
                 <span class="text-gray-700">Generate EXT File</span>
             </CheckBox>
-        </section>
-
-        <section>
-            <label class="block text-sm font-medium text-gray-700">Output directory</label>
-            <input type="text" class="mt-1 w-full" @bind="@Configuration.OutputDirectory" />
         </section>
 
         <section>
@@ -75,12 +73,12 @@
         var vendor = await GetVendorByIdAsync(VendorId);
         if (vendor is null) return;
         Configuration = new() {
-            DovetailTemplateFilePath = "",
-            MDFDoorTemplateFilePath = "",
+
             FillDovetailOrder = vendor.ExportProfile.ExportDBOrder,
             FillMDFDoorOrder = vendor.ExportProfile.ExportMDFDoorOrder,
             GenerateEXT = vendor.ExportProfile.ExportExtFile,
             OutputDirectory = vendor.ExportProfile.OutputDirectory
+
         };
 
         StateHasChanged();
