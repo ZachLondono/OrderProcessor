@@ -109,7 +109,7 @@ public class PPJobConverter {
                     groupIdx++;
 
                     int lvlId = jobId + roomIdx + groupIdx;
-                    AddGroupToWriter(group, jobId, lvlId, $"{groupIdx}-{level.Name}");
+                    AddGroupToWriter(group, level.LevelId, lvlId, $"{groupIdx}-{level.Name}");
 
                 }
 

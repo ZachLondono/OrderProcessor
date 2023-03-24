@@ -169,12 +169,12 @@ public class PPJobConverterTests {
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name" && j.LevelId == 0));
 
         _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "Room A" && l.LevelId == 1));
-        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "1-Room A" && l.LevelId == 2));
-        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "2-Room A" && l.LevelId == 3));
+        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "1-Room A" && l.LevelId == 2 && l.ParentId == 1));
+        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "2-Room A" && l.LevelId == 3 && l.ParentId == 1));
 
         _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "Room B" && l.LevelId == 4));
-        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "1-Room B" && l.LevelId == 5));
-        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "2-Room B" && l.LevelId == 6));
+        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "1-Room B" && l.LevelId == 5 && l.ParentId == 4));
+        _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "2-Room B" && l.LevelId == 6 && l.ParentId == 4));
 
         _writer.ReceivedWithAnyArgs(4).AddRecord(Arg.Any<VariableOverride>());
 
