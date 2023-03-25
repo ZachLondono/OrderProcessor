@@ -19,6 +19,8 @@ using ApplicationCore.Features.Orders.Contracts;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
+using ApplicationCore.Features.Orders.Loader.Providers.DoorOrderModels;
+using ApplicationCore.Features.Orders.Loader.Providers;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -39,25 +41,9 @@ public static class DependencyInjection {
         services.AddSingleton<ComponentBuilderFactory>();
         services.AddSingleton<OrderState>();
 
-        services.AddTransient<JobSummaryDecorator>();
-        services.AddTransient<CNCReleaseDecorator>();
-        services.AddTransient<InvoiceDecorator>();
-        services.AddTransient<PackingListDecorator>();
-        services.AddTransient<ReleaseService>();
-
-        services.Configure<ExportOptions>(configuration.GetRequiredSection("ExportOptions"));
-
-        services.AddTransient<ExportService>();
-        services.AddTransient<DoorOrderHandler>();
-        services.AddTransient<DovetailOrderHandler>();
-        services.AddTransient<ExtOrderHandler>();
-        services.AddTransient<IExtWriter, ExtWriter>();
-
-        var cadcode = configuration.GetRequiredSection("CADCode");
-        var pdfconfig = cadcode.GetValue<string>("ReleasePDFConfig");
-        if (pdfconfig is null) throw new InvalidOperationException("Release PDF configuration was not found");
-        var jsonPDF = new JSONPDFConfigurationProvider(pdfconfig);
-        services.AddTransient<IPDFConfigurationProvider>(s => jsonPDF);
+        AddReleaseServices(services);
+        AddExportServices(services, configuration);
+        AddOrderProviders(services, configuration);
 
         services.AddTransient<IReleasePDFWriter, QuestPDFWriter>();
 
@@ -82,6 +68,35 @@ public static class DependencyInjection {
 
         return services;
 
+    }
+
+    private static void AddReleaseServices(IServiceCollection services) {
+        services.AddTransient<JobSummaryDecorator>();
+        services.AddTransient<CNCReleaseDecorator>();
+        services.AddTransient<InvoiceDecorator>();
+        services.AddTransient<PackingListDecorator>();
+        services.AddTransient<ReleaseService>();
+    }
+
+    private static void AddExportServices(IServiceCollection services, IConfiguration configuration) {
+        services.Configure<ExportOptions>(configuration.GetRequiredSection("ExportOptions"));
+
+        services.AddTransient<ExportService>();
+        services.AddTransient<DoorOrderHandler>();
+        services.AddTransient<DovetailOrderHandler>();
+        services.AddTransient<ExtOrderHandler>();
+        services.AddTransient<IExtWriter, ExtWriter>();
+    }
+
+    private static void AddOrderProviders(IServiceCollection services, IConfiguration configuration) {
+        services.Configure<DoorOrderProviderOptions>(configuration.GetRequiredSection("DoorOrderProviderOptions"));
+        services.AddTransient<DoorSpreadsheetOrderProvider>();
+
+        var cadcode = configuration.GetRequiredSection("CADCode");
+        var pdfconfig = cadcode.GetValue<string>("ReleasePDFConfig");
+        if (pdfconfig is null) throw new InvalidOperationException("Release PDF configuration was not found");
+        var jsonPDF = new JSONPDFConfigurationProvider(pdfconfig);
+        services.AddTransient<IPDFConfigurationProvider>(s => jsonPDF);
     }
 
     private static IServiceCollection AddViewModels(this IServiceCollection services)

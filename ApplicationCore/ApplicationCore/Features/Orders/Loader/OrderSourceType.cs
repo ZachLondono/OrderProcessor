@@ -1,5 +1,6 @@
 ﻿namespace ApplicationCore.Features.Orders.Loader;
 
 public enum OrderSourceType {
-    AllmoxyXML
+    AllmoxyXML,
+    DoorOrder
 }
