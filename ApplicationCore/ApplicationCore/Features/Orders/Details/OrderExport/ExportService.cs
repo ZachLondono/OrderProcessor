@@ -1,6 +1,9 @@
-﻿using ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
+﻿using ApplicationCore.Features.Companies.Contracts;
+using ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport;
 using ApplicationCore.Features.Orders.Shared.State;
+using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Pages.CustomerDetails;
 using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.Orders.Details.OrderExport;
@@ -14,13 +17,17 @@ internal class ExportService {
     private readonly DovetailOrderHandler _dovetailOrderHandler;
     private readonly ExtOrderHandler _extOrderHandler;
     private readonly ExportOptions _options;
+    private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
+    private readonly IFileReader _fileReader;
 
-    public ExportService(OrderState orderState, DoorOrderHandler doorOrderHandler, DovetailOrderHandler dovetailOrderHandler, ExtOrderHandler extOrderHandler, IOptions<ExportOptions> options) {
+    public ExportService(OrderState orderState, DoorOrderHandler doorOrderHandler, DovetailOrderHandler dovetailOrderHandler, ExtOrderHandler extOrderHandler, IOptions<ExportOptions> options, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IFileReader fileReader) {
         _orderState = orderState;
         _doorOrderHandler = doorOrderHandler;
         _dovetailOrderHandler = dovetailOrderHandler;
         _extOrderHandler = extOrderHandler;
         _options = options.Value;
+        _getCustomerByIdAsync = getCustomerByIdAsync;
+        _fileReader = fileReader;
     }
 
     public async Task Export(ExportConfiguration configuration) {
@@ -31,6 +38,9 @@ internal class ExportService {
 
         var order = _orderState.Order;
         var outputDir = configuration.OutputDirectory;
+
+        var customerName = await GetCustomerName(order.CustomerId);
+        outputDir = outputDir.Replace("{customer}", _fileReader.RemoveInvalidPathCharacters(customerName));
 
         if (configuration.FillMDFDoorOrder) {
 
@@ -55,5 +65,26 @@ internal class ExportService {
         }
 
     }
+
+    private async Task<string> GetCustomerName(Guid customerId) {
+
+        try {
+
+            var customer = await _getCustomerByIdAsync(customerId);
+
+            if (customer is null) {
+                return string.Empty;
+            }
+
+            return customer.Name;
+
+        } catch {
+
+            return string.Empty;
+
+        }
+
+    }
+
 
 }
