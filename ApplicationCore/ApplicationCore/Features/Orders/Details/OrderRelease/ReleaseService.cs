@@ -39,11 +39,6 @@ internal class ReleaseService {
 
     public async Task Release(Order order, ReleaseConfiguration configuration) {
 
-        if (configuration.ReleaseOutputDirectory is null) {
-            OnError?.Invoke("No output directory set");
-            return;
-        }
-
         await CreateReleasePDF(order, configuration);
 
         await Invoicing(order, configuration);
@@ -53,6 +48,11 @@ internal class ReleaseService {
     }
 
     private async Task CreateReleasePDF(Order order, ReleaseConfiguration configuration) {
+
+        if (configuration.ReleaseOutputDirectory is null) {
+            OnError?.Invoke("No output directory set");
+            return;
+        }
 
         if (!configuration.GeneratePackingList && !configuration.GenerateJobSummary && !configuration.GenerateCNCRelease && !configuration.IncludeInvoiceInRelease) {
             OnProgressReport?.Invoke("Not generating release pdf, because options where not enabled");
