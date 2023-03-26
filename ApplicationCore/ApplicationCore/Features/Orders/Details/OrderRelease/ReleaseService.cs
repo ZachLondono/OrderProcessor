@@ -15,7 +15,7 @@ using QuestPDF.Fluent;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease;
 
-internal class ReleaseService {
+public class ReleaseService {
 
     public Action<string>? OnProgressReport;
     public Action<string>? OnFileGenerated;
@@ -24,13 +24,13 @@ internal class ReleaseService {
 
     private readonly ILogger<ReleaseService> _logger;
     private readonly IFileReader _fileReader;
-    private readonly InvoiceDecorator _invoiceDecorator;
-    private readonly PackingListDecorator _packingListDecorator;
-    private readonly CNCReleaseDecorator _cncReleaseDecorator;
-    private readonly JobSummaryDecorator _jobSummaryDecorator;
+    private readonly IInvoiceDecorator _invoiceDecorator;
+    private readonly IPackingListDecorator _packingListDecorator;
+    private readonly ICNCReleaseDecorator _cncReleaseDecorator;
+    private readonly IJobSummaryDecorator _jobSummaryDecorator;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecorator invoiceDecorator, PackingListDecorator packingListDecorator, CNCReleaseDecorator cncReleaseDecorator, JobSummaryDecorator jobSummaryDecorator, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, IInvoiceDecorator invoiceDecorator, IPackingListDecorator packingListDecorator, ICNCReleaseDecorator cncReleaseDecorator, IJobSummaryDecorator jobSummaryDecorator, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync) {
         _fileReader = fileReader;
         _invoiceDecorator = invoiceDecorator;
         _packingListDecorator = packingListDecorator;
@@ -263,7 +263,7 @@ internal class ReleaseService {
 
         } catch (Exception ex) {
 
-            _logger.Log(ex, "Exception thrown while getting cutomer name");
+            _logger.LogError(ex, "Exception thrown while getting cutomer name");
             return string.Empty;
 
         }

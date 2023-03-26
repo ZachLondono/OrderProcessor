@@ -10,7 +10,7 @@ using ApplicationCore.Features.Companies.Contracts;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
 
-internal class CNCReleaseDecorator : IDocumentDecorator {
+internal class CNCReleaseDecorator : ICNCReleaseDecorator {
 
     private readonly IReleasePDFWriter _pdfService;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;

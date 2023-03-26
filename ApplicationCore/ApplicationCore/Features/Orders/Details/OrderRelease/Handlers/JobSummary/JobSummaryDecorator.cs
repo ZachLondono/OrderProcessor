@@ -14,7 +14,7 @@ using static ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSu
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 
-internal class JobSummaryDecorator : IDocumentDecorator {
+internal class JobSummaryDecorator : IJobSummaryDecorator {
 
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;

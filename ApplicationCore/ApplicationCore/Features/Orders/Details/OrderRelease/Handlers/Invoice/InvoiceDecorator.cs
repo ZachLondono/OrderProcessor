@@ -8,7 +8,7 @@ using QuestPDF.Infrastructure;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 
-internal class InvoiceDecorator : IDocumentDecorator {
+internal class InvoiceDecorator : IInvoiceDecorator {
 
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
@@ -494,7 +494,7 @@ internal class InvoiceDecorator : IDocumentDecorator {
 
     private static void FormatFraction(TextDescriptor text, Fraction fraction, float fontSize) {
 
-        if (fraction.N == 0) { 
+        if (fraction.N == 0) {
             text.Span("0").FontSize(fontSize);
             return;
         }
@@ -503,7 +503,7 @@ internal class InvoiceDecorator : IDocumentDecorator {
         int n = fraction.N - whole * fraction.D;
 
         if (whole == 0) {
-            
+
             text.Span(n.ToString()).Superscript().FontSize(fontSize);
             text.Span("/").FontSize(fontSize);
             text.Span(fraction.D.ToString()).FontSize(fontSize - 4);

@@ -8,7 +8,7 @@ using QuestPDF.Infrastructure;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 
-internal class PackingListDecorator : IDocumentDecorator {
+internal class PackingListDecorator : IPackingListDecorator {
 
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
