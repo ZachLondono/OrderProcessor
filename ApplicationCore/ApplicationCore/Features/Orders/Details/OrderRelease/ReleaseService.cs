@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
+﻿using ApplicationCore.Features.Companies.Contracts;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
@@ -27,27 +28,31 @@ internal class ReleaseService {
     private readonly PackingListDecorator _packingListDecorator;
     private readonly CNCReleaseDecorator _cncReleaseDecorator;
     private readonly JobSummaryDecorator _jobSummaryDecorator;
+    private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecorator invoiceDecorator, PackingListDecorator packingListDecorator, CNCReleaseDecorator cncReleaseDecorator, JobSummaryDecorator jobSummaryDecorator) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecorator invoiceDecorator, PackingListDecorator packingListDecorator, CNCReleaseDecorator cncReleaseDecorator, JobSummaryDecorator jobSummaryDecorator, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync) {
         _fileReader = fileReader;
         _invoiceDecorator = invoiceDecorator;
         _packingListDecorator = packingListDecorator;
         _cncReleaseDecorator = cncReleaseDecorator;
         _jobSummaryDecorator = jobSummaryDecorator;
         _logger = logger;
+        _getCustomerByIdAsync = getCustomerByIdAsync;
     }
 
     public async Task Release(Order order, ReleaseConfiguration configuration) {
 
-        await CreateReleasePDF(order, configuration);
+        var customerName = await GetCustomerName(order.CustomerId);
 
-        await Invoicing(order, configuration);
+        await CreateReleasePDF(order, configuration, customerName);
+
+        await Invoicing(order, configuration, customerName);
 
         OnActionComplete?.Invoke("Release Complete");
 
     }
 
-    private async Task CreateReleasePDF(Order order, ReleaseConfiguration configuration) {
+    private async Task CreateReleasePDF(Order order, ReleaseConfiguration configuration, string customerName) {
 
         if (configuration.ReleaseOutputDirectory is null) {
             OnError?.Invoke("No output directory set");
@@ -87,7 +92,7 @@ internal class ReleaseService {
 
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try { 
-            filePaths = GeneratePDF(directories, order, decorators, "Release");
+            filePaths = GeneratePDF(directories, order, decorators, "Release", customerName);
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate release PDF - '{ex.Message}'");
             _logger.LogError(ex, "Exception thrown while trying to generate release pdf");
@@ -107,7 +112,7 @@ internal class ReleaseService {
 
     }
 
-    private async Task Invoicing(Order order, ReleaseConfiguration configuration) {
+    private async Task Invoicing(Order order, ReleaseConfiguration configuration, string customerName) {
 
         if (!configuration.GenerateInvoice && !configuration.SendInvoiceEmail) {
             OnProgressReport?.Invoke("Not generating invoice pdf, because option was not enabled");
@@ -130,7 +135,7 @@ internal class ReleaseService {
 
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try { 
-            filePaths = GeneratePDF(invoiceDirectories, order, new IDocumentDecorator[] { _invoiceDecorator }, "Invoice", isTemp);
+            filePaths = GeneratePDF(invoiceDirectories, order, new IDocumentDecorator[] { _invoiceDecorator }, "Invoice", customerName, isTemp);
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate invoice PDF - '{ex.Message}'");
             _logger.LogError(ex, "Exception thrown while trying to generate invoice pdf");
@@ -194,7 +199,7 @@ internal class ReleaseService {
 
     }
 
-    private IEnumerable<string> GeneratePDF(IEnumerable<string> outputDirs, Order order, IEnumerable<IDocumentDecorator> decorators, string name, bool isTemp = false) {
+    private IEnumerable<string> GeneratePDF(IEnumerable<string> outputDirs, Order order, IEnumerable<IDocumentDecorator> decorators, string name, string customerName, bool isTemp = false) {
         
         if (!decorators.Any()) {
             OnError?.Invoke($"There are no pages to add to the '{name}' document");
@@ -216,8 +221,10 @@ internal class ReleaseService {
         List<string> files = new();
     
         foreach (var outputDir in outputDirs) {
-            
-            string directory = Path.Combine(outputDir, _fileReader.RemoveInvalidPathCharacters($"{order.Number} {order.Name}"));
+
+            string dir = outputDir.Replace("{customer}", _fileReader.RemoveInvalidPathCharacters(customerName));
+
+            string directory = Path.Combine(dir, _fileReader.RemoveInvalidPathCharacters($"{order.Number} {order.Name}"));
 
             if (!Directory.Exists(directory)) {
                 Directory.CreateDirectory(directory);
@@ -234,6 +241,26 @@ internal class ReleaseService {
         }
 
         return files;
+    }
+
+    private async Task<string> GetCustomerName(Guid customerId) {
+
+        try { 
+            
+            var customer = await _getCustomerByIdAsync(customerId);
+            
+            if (customer is null) {
+                return string.Empty;
+            }
+
+            return customer.Name;
+
+        } catch (Exception ex) {
+
+            _logger.Log(ex, "Exception thrown while getting cutomer name");
+            return string.Empty;
+
+        }
 
     }
 
