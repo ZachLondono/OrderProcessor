@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.Companies.Contracts;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Features.Shared.Services;
 using ApplicationCore.Pages.CustomerDetails;
@@ -37,10 +38,10 @@ internal class ExportService {
         }
 
         var order = _orderState.Order;
-        var outputDir = configuration.OutputDirectory;
 
+        var outputDir = configuration.OutputDirectory;
         var customerName = await GetCustomerName(order.CustomerId);
-        outputDir = outputDir.Replace("{customer}", _fileReader.RemoveInvalidPathCharacters(customerName));
+        outputDir = ReplaceTokensInDirectory(customerName, outputDir);
 
         if (configuration.FillMDFDoorOrder) {
 
@@ -64,6 +65,12 @@ internal class ExportService {
 
         }
 
+    }
+
+    public string ReplaceTokensInDirectory(string customerName, string outputDir) {
+        var sanitizedName = _fileReader.RemoveInvalidPathCharacters(customerName);
+        var result = outputDir.Replace("{customer}", sanitizedName);
+        return result;
     }
 
     private async Task<string> GetCustomerName(Guid customerId) {

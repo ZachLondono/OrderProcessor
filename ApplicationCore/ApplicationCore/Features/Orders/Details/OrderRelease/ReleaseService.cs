@@ -222,7 +222,7 @@ internal class ReleaseService {
     
         foreach (var outputDir in outputDirs) {
 
-            string dir = outputDir.Replace("{customer}", _fileReader.RemoveInvalidPathCharacters(customerName));
+            string dir = ReplaceTokensInDirectory(customerName, outputDir);
 
             string directory = Path.Combine(dir, _fileReader.RemoveInvalidPathCharacters($"{order.Number} {order.Name}"));
 
@@ -241,6 +241,12 @@ internal class ReleaseService {
         }
 
         return files;
+    }
+
+    public string ReplaceTokensInDirectory(string customerName, string outputDir) {
+        var sanitizedName = _fileReader.RemoveInvalidPathCharacters(customerName);
+        var result = outputDir.Replace("{customer}", sanitizedName);
+        return result;
     }
 
     private async Task<string> GetCustomerName(Guid customerId) {
