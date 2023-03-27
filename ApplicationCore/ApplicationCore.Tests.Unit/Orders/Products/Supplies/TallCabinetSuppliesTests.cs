@@ -102,6 +102,7 @@ public class TallCabinetSuppliesTests {
         }
 
         var cabinet = _builder.WithInside(new(0, 0, 0, new RollOutOptions(positions, true, RollOutBlockPosition.None)))
+                                .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.SideMount))
                                 .WithDoors(TallCabinetDoors.TwoDoors())
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))

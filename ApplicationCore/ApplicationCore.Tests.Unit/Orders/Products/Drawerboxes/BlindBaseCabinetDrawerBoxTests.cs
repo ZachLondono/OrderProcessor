@@ -122,8 +122,9 @@ public class BlindBaseCabinetDrawerBoxTests {
         var cabinet = new BlindBaseCabinetBuilder()
                             .WithDrawers(new() {
                                 Quantity = 1,
-                                FaceHeight = Dimension.FromMillimeters(157)
+                                FaceHeight = Dimension.FromMillimeters(157),
                             })
+                            .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, slideType))
                             .WithToeType(ToeType.LegLevelers)
                             .WithDoors(new() { Quantity = 1 })
                             .WithBlindWidth(Dimension.FromMillimeters(635))

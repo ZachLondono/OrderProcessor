@@ -39,6 +39,7 @@ public class BaseCabinetDrawerBoxTests {
                                 Quantity = drawerCount,
                                 FaceHeight = Dimension.FromMillimeters(157),
                             })
+                            .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount))
                             .WithInside(new(0, new RollOutOptions(rollOutPositions, false, RollOutBlockPosition.Both), ShelfDepth.Default))
                             .WithToeType(ToeType.LegLevelers)
                             .WithDoors(new() { Quantity = drawerCount })
@@ -132,6 +133,7 @@ public class BaseCabinetDrawerBoxTests {
                                 Quantity = 1,
                                 FaceHeight = Dimension.FromMillimeters(drawerFaceHeight)
                             })
+                            .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount))
                             .WithInside(new(0, new RollOutOptions(Array.Empty<Dimension>(), false, RollOutBlockPosition.Both), ShelfDepth.Default))
                             .WithToeType(ToeType.LegLevelers)
                             .WithDoors(new() { Quantity = 1 })

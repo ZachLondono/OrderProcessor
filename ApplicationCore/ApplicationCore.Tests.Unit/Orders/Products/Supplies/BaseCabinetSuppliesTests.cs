@@ -22,6 +22,7 @@ public class BaseCabinetSuppliesTests {
 
         // Arrange
         var cabinet = _builder.WithDoors(BaseCabinetDoors.OneDoor(HingeSide.Left))
+                                .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount))
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
                                 .WithDepth(Dimension.FromMillimeters(500))
@@ -42,6 +43,7 @@ public class BaseCabinetSuppliesTests {
 
         // Arrange
         var cabinet = _builder.WithDoors(BaseCabinetDoors.TwoDoors())
+                                .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount))
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
                                 .WithDepth(Dimension.FromMillimeters(500))
@@ -75,6 +77,7 @@ public class BaseCabinetSuppliesTests {
                                     Quantity = drawerQty,
                                     FaceHeight = Dimension.FromMillimeters(157)
                                 })
+                                .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount))
                                 .WithInside(new(0, new RollOutOptions(positions, true, RollOutBlockPosition.None), ShelfDepth.Default))
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
@@ -110,6 +113,7 @@ public class BaseCabinetSuppliesTests {
                                     Quantity = drawerQty,
                                     FaceHeight = Dimension.FromMillimeters(157)
                                 })
+                                .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount))
                                 .WithInside(new(0, new RollOutOptions(positions, true, RollOutBlockPosition.None), ShelfDepth.Default))
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
@@ -144,6 +148,7 @@ public class BaseCabinetSuppliesTests {
                                     Quantity = drawerQty,
                                     FaceHeight = Dimension.FromMillimeters(157)
                                 })
+                                .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.SideMount))
                                 .WithInside(new(0, new RollOutOptions(positions, true, RollOutBlockPosition.None), ShelfDepth.Default))
                                 .WithDoors(BaseCabinetDoors.TwoDoors())
                                 .WithWidth(Dimension.FromMillimeters(500))
@@ -152,6 +157,7 @@ public class BaseCabinetSuppliesTests {
                                 .WithQty(2)
                                 .Build();
 
+        // TODO: WHY ARE THERE TWO DIFFERENT VALUES HERE, Why would roll outs have different slide lengths??
         Supply expectedSupplyA = Supply.SidemountSlide(0, Dimension.FromMillimeters(457.2));
         Supply expectedSupplyB = Supply.SidemountSlide(0, Dimension.FromMillimeters(450));
 
@@ -169,6 +175,7 @@ public class BaseCabinetSuppliesTests {
 
         // Arrange
         var cabinet = _builder.WithDoors(BaseCabinetDoors.OneDoor(HingeSide.Left))
+                                .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount))
                                 .WithToeType(ToeType.LegLevelers)
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
@@ -194,6 +201,7 @@ public class BaseCabinetSuppliesTests {
         // Arrange
         var cabinet = _builder.WithDoors(BaseCabinetDoors.OneDoor(HingeSide.Left))
                                 .WithInside(new(adjShelfQty, 0, ShelfDepth.Default))
+                                .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount))
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
                                 .WithDepth(Dimension.FromMillimeters(500))
@@ -219,6 +227,7 @@ public class BaseCabinetSuppliesTests {
 
         // Arrange
         var cabinet = _builder.WithDoors(BaseCabinetDoors.OneDoor(HingeSide.Left))
+                                .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount))
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(cabHeight))
                                 .WithDepth(Dimension.FromMillimeters(500))
@@ -253,6 +262,7 @@ public class BaseCabinetSuppliesTests {
         }
 
         var cabinet = _builder.WithInside(new(0, new RollOutOptions(positions, true, rollOutBlockPosition), ShelfDepth.Default))
+                                .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount))
                                 .WithDoors(BaseCabinetDoors.TwoDoors())
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))

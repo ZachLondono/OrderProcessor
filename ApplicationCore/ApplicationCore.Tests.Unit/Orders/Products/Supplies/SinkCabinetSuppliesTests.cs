@@ -154,6 +154,7 @@ public class SinkCabinetSuppliesTests {
         }
 
         var cabinet = _builder.WithRollOutBoxes(new RollOutOptions(positions, true, RollOutBlockPosition.None))
+                                .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.SideMount))
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
                                 .WithDepth(Dimension.FromMillimeters(500))

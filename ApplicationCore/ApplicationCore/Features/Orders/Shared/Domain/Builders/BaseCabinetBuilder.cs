@@ -21,7 +21,7 @@ internal class BaseCabinetBuilder : CabinetBuilder<BaseCabinet> {
             Quantity = 0,
             FaceHeight = Dimension.Zero
         };
-        BoxOptions = new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount);
+        BoxOptions = new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.Unknown);
     }
 
     public BaseCabinetBuilder WithDoors(BaseCabinetDoors doors) {

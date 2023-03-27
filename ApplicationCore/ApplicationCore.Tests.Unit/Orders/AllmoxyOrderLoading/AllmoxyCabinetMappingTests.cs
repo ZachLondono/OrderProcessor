@@ -16,12 +16,14 @@ public class AllmoxyCabinetMappingTests {
         _sut.GroupNumber = 1;
         _sut.Cabinet = new() {
             BoxMaterial = new() {
-                Finish = "",
-                Type = ""
+                Finish = "blue",
+                Type = "veneer",
+                Core = "ply"
             },
             FinishMaterial = new() {
-                Finish = "",
-                Type = ""
+                Finish = "blue",
+                Type = "veneer",
+                Core = "ply"
             },
             Fronts = new() {
                 Color = "",
@@ -170,12 +172,8 @@ public class AllmoxyCabinetMappingTests {
     public void MaterialCoreTests(string boxCore, string finishCore, CabinetMaterialCore expectedBoxCore, CabinetMaterialCore expectedFinishCore) {
 
         // Arrange
-        _sut.Cabinet.BoxMaterial = new() {
-            Type = boxCore
-        };
-        _sut.Cabinet.FinishMaterial = new() {
-            Type = finishCore
-        };
+        _sut.Cabinet.BoxMaterial.Core = boxCore;
+        _sut.Cabinet.FinishMaterial.Core = finishCore;
 
         // Act
         var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
@@ -191,12 +189,8 @@ public class AllmoxyCabinetMappingTests {
     public void MaterialColorTests() {
 
         // Arrange
-        _sut.Cabinet.BoxMaterial = new() {
-            Finish = "Finish1"
-        };
-        _sut.Cabinet.FinishMaterial = new() {
-            Finish = "Finish2"
-        };
+        _sut.Cabinet.BoxMaterial.Finish = "Finish1";
+        _sut.Cabinet.FinishMaterial.Finish = "Finish2";
 
         // Act
         var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
@@ -212,10 +206,12 @@ public class AllmoxyCabinetMappingTests {
 
         // Arrange
         _sut.Cabinet.BoxMaterial = new() {
+            Core = "flake",
             Finish = "Finish1",
             Type = "pb"
         };
         _sut.Cabinet.FinishMaterial = new() {
+            Core = "flake",
             Finish = "2hsiniF",
             Type = "paint"
         };
@@ -236,6 +232,7 @@ public class AllmoxyCabinetMappingTests {
         // Arrange
         _sut.Cabinet.EdgeBandColor = "Match Finish";
         _sut.Cabinet.FinishMaterial = new() {
+            Core = "pb",
             Finish = "Finish",
             Type = "not paint"
         };
@@ -254,10 +251,12 @@ public class AllmoxyCabinetMappingTests {
         // Arrange
         _sut.Cabinet.EdgeBandColor = "Match Finish";
         _sut.Cabinet.BoxMaterial = new() {
+            Core = "pb",
             Finish = "Finish1",
             Type = "pb"
         };
         _sut.Cabinet.FinishMaterial = new() {
+            Core = "pb",
             Finish = "Finish2",
             Type = "paint"
         };
@@ -276,6 +275,7 @@ public class AllmoxyCabinetMappingTests {
         // Arrange
         _sut.Cabinet.EdgeBandColor = "Do Not Match Finish";
         _sut.Cabinet.FinishMaterial = new() {
+            Core = "pb",
             Finish = "Finish",
             Type = "paint"
         };

@@ -270,6 +270,7 @@ public class BlindBaseCabinetSuppliesTests {
                                     Quantity = drawerQty,
                                     FaceHeight = Dimension.FromMillimeters(157)
                                 })
+                                .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.SideMount))
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(500))
                                 .WithDepth(Dimension.FromMillimeters(500))

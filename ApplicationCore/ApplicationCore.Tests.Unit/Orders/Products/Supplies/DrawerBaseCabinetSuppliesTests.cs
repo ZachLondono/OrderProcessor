@@ -32,6 +32,7 @@ public class DrawerBaseCabinetSuppliesTests {
         var cabinet = _builder.WithDrawers(new() {
                                     FaceHeights = faceHeights
                                 })
+                                .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.SideMount))
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(157 * drawerQty + 10))
                                 .WithDepth(Dimension.FromMillimeters(500))
