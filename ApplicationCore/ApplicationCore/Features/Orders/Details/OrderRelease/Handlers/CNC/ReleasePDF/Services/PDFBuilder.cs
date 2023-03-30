@@ -30,9 +30,12 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
             });
         }
 
+
+        string sectionId = $"Patterns {Guid.NewGuid()}";
         foreach (var data in _pages) {
+
             container.Page(page => {
-                BuildPage(page, data, _config);
+                BuildPage(page, data, _config, sectionId);
             });
         }
 
@@ -127,7 +130,7 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
 
     }
 
-    private static void BuildPage(PageDescriptor page, PageModel data, PDFConfiguration config) {
+    private static void BuildPage(PageDescriptor page, PageModel data, PDFConfiguration config, string sectionId) {
 
         page.Size(PageSizes.A4);
         page.MarginHorizontal(2, Unit.Centimetre);
@@ -140,7 +143,9 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
             .WithStyle(headerStyle);
 
         var titleStyle = config.TitleStyle;
+
         page.Content()
+            .Section(sectionId)
             .PaddingVertical(1, Unit.Centimetre)
             .Column(x => {
 
@@ -208,9 +213,9 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
                 .Text(x => {
                     x.DefaultTextStyle(x => x.FontSize(10));
                     x.Span("Page ");
-                    x.CurrentPageNumber();
+                    x.PageNumberWithinSection(sectionId);
                     x.Span(" of ");
-                    x.TotalPages();
+                    x.TotalPagesWithinSection(sectionId);
                 });
                 c.Item()
                 .AlignCenter()
