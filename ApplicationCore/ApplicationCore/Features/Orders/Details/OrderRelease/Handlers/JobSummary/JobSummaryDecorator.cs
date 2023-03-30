@@ -627,7 +627,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                      });
 
                 if (jobSummary.VendorLogo.Any()) {
-                    row.ConstantItem(100)
+                    row.ConstantItem(150)
                         .AlignRight()
                         .Image(jobSummary.VendorLogo);
                 }
