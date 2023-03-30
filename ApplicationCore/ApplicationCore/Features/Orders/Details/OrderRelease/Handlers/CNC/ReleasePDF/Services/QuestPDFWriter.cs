@@ -56,7 +56,7 @@ internal class QuestPDFWriter : IReleasePDFWriter {
             }
 
             var partsTableContent = new List<Dictionary<string, string>>();
-            var partGroups = program.Parts.OrderBy(p => p.ProductNumber).GroupBy(p => p.ProductId);
+            var partGroups = program.Parts.OrderBy(p => p.ProductNumber).GroupBy(p => p.ProductNumber);
             foreach (var group in partGroups) {
                 var part = group.First();
                 partsTableContent.Add(new()  {
@@ -118,7 +118,7 @@ internal class QuestPDFWriter : IReleasePDFWriter {
             Content = materialTableContent
         };
 
-        var releasedparts = releases.First().Programs.SelectMany(p => p.Parts).OrderBy(p => p.ProductNumber).GroupBy(p => p.ProductId);
+        var releasedparts = releases.First().Programs.SelectMany(p => p.Parts).OrderBy(p => p.ProductNumber).GroupBy(p => p.ProductNumber);
         var partsTableContent = new List<Dictionary<string, string>>();
         foreach (var group in releasedparts) {
             var part = group.First();
