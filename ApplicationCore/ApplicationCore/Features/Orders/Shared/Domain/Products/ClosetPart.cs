@@ -40,7 +40,7 @@ public class ClosetPart : IProduct, IPPProductContainer {
     public IEnumerable<PPProduct> GetPPProducts() {
 
         (string materialType, string finishMaterial, string ebMaterial) = Material.Core switch {
-            ClosetMaterialCore.Flake => ("Melamine", "Mela", "PVC"),
+            ClosetMaterialCore.ParticleBoard => ("Melamine", "Mela", "PVC"),
             ClosetMaterialCore.Plywood => ("PLY", "Veneer", "Veneer"),
             _ => ("Melamine", "Mela", "PVC"),
         };

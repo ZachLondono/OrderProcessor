@@ -25,14 +25,14 @@ internal static class AllmoxyXMLOrderProviderHelpers {
     };
 
     public static CabinetMaterialCore GetFinishedSideMaterialCore(string name, CabinetMaterialCore boxMaterial) => name switch {
-        "pb" => CabinetMaterialCore.Flake,
+        "pb" => CabinetMaterialCore.ParticleBoard,
         "ply" => CabinetMaterialCore.Plywood,
         "match" => boxMaterial,
         _ => throw new InvalidOperationException($"Unrecognized finish material core '{name}'")
     };
 
     public static CabinetMaterialCore GetMaterialCore(string name) => name switch {
-        "pb" => CabinetMaterialCore.Flake,
+        "pb" => CabinetMaterialCore.ParticleBoard,
         "ply" => CabinetMaterialCore.Plywood,
         _ => throw new InvalidOperationException($"Unrecognized material core '{name}'")
     };

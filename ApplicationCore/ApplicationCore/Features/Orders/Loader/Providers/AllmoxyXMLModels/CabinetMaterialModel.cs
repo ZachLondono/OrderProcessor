@@ -5,7 +5,7 @@ namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 public class CabinetMaterialModel {
 
     /// <summary>
-    /// The type of wood used as the substrate for the material. For example 'flake' for flakeboard and 'ply' for plywood.
+    /// The type of wood used as the substrate for the material. For example 'pb' for particle board and 'ply' for plywood.
     /// </summary>
     [XmlElement("core")]
     public string Core { get; set; } = string.Empty;

@@ -58,8 +58,8 @@ public abstract class Cabinet : IProduct {
         LeftSideType = leftSideType;
         Comment = comment;
 
-        if (boxMaterial.Core == CabinetMaterialCore.Plywood && finishMaterial.Core == CabinetMaterialCore.Flake)
-            throw new InvalidOperationException("Cannot create cabinet with plywood box and flake finished side");
+        if (boxMaterial.Core == CabinetMaterialCore.Plywood && finishMaterial.Core == CabinetMaterialCore.ParticleBoard)
+            throw new InvalidOperationException("Cannot create cabinet with plywood box and particle board finished side");
 
         if (LeftSideType == CabinetSideType.IntegratedPanel || LeftSideType == CabinetSideType.AppliedPanel || RightSideType == CabinetSideType.IntegratedPanel || RightSideType == CabinetSideType.AppliedPanel)
             throw new InvalidOperationException("MDFDoorOptions are required when creating a cabinet side with a door");
@@ -72,12 +72,12 @@ public abstract class Cabinet : IProduct {
 
         if (BoxMaterial.Core == CabinetMaterialCore.Plywood) {
             return "Sterling 18_5";
-        } else if (BoxMaterial.Core == CabinetMaterialCore.Flake && FinishMaterial.Core == CabinetMaterialCore.Flake) {
+        } else if (BoxMaterial.Core == CabinetMaterialCore.ParticleBoard && FinishMaterial.Core == CabinetMaterialCore.ParticleBoard) {
             if (BoxMaterial.Finish.ToLower() == "white") {
                 return "Monarch Core";
             }
             return "Crown Paint";
-        } else if (BoxMaterial.Core == CabinetMaterialCore.Flake && FinishMaterial.Core == CabinetMaterialCore.Plywood) {
+        } else if (BoxMaterial.Core == CabinetMaterialCore.ParticleBoard && FinishMaterial.Core == CabinetMaterialCore.Plywood) {
             return "Crown Veneer";
         }
 
@@ -101,7 +101,7 @@ public abstract class Cabinet : IProduct {
     }
 
     private static string GetFinishMaterialType(CabinetMaterialCore material) => material switch {
-        CabinetMaterialCore.Flake => "Mela",
+        CabinetMaterialCore.ParticleBoard => "Mela",
         CabinetMaterialCore.Plywood => "Veneer",
         _ => "Mela"
     };
@@ -118,7 +118,7 @@ public abstract class Cabinet : IProduct {
     }
 
     private static string GetEBMaterialType(CabinetMaterialCore material) => material switch {
-        CabinetMaterialCore.Flake => "PVC",
+        CabinetMaterialCore.ParticleBoard => "PVC",
         CabinetMaterialCore.Plywood => "Veneer",
         _ => "PVC"
     };

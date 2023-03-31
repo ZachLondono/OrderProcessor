@@ -2,5 +2,5 @@
 
 public enum CabinetMaterialCore {
     Plywood,
-    Flake
+    ParticleBoard
 }

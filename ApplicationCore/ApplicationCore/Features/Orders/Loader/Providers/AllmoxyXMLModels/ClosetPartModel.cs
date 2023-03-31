@@ -57,9 +57,9 @@ public class ClosetPartModel : ProductModel {
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
         ClosetMaterialCore core = MaterialCore switch {
-            "flake" => ClosetMaterialCore.Flake,
+            "pb" => ClosetMaterialCore.ParticleBoard,
             "ply" => ClosetMaterialCore.Plywood,
-            _ => ClosetMaterialCore.Flake,
+            _ => throw new InvalidOperationException($"Unexpected material core type '{MaterialCore}'"),
         };
 
         string? paintColor = string.IsNullOrWhiteSpace(PaintColor) ? null : PaintColor;

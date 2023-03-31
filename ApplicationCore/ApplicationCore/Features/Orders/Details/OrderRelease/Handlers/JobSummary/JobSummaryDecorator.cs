@@ -203,7 +203,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         MaterialCore = p.Material.Core.ToString(),
                         MaterialFinish = p.Material.Finish,
                         EdgeBandingFinish = p.EdgeBandingColor,
-                        EdgeBandingMaterial = (p.Material.Core == ClosetMaterialCore.Flake ? "PVC" : "Veneer")
+                        EdgeBandingMaterial = (p.Material.Core == ClosetMaterialCore.ParticleBoard ? "PVC" : "Veneer")
                     }, new ClosetPartGroupComparer())
                     .Select(g => {
 
