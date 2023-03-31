@@ -30,8 +30,11 @@ public abstract class CabinetModelBase : ProductModel {
         MDFDoorOptions? mdfOptions = null;
         if (Cabinet.Fronts.Type != "Slab") mdfOptions = new("MDF", Dimension.FromInches(0.75), Cabinet.Fronts.Style, "Eased", "Flat", Dimension.Zero, Cabinet.Fronts.Color);
 
-        string finishColor = (Cabinet.FinishMaterial.Type == "paint" ? Cabinet.BoxMaterial.Finish : Cabinet.FinishMaterial.Finish);
-        string? finishPaintColor = (Cabinet.FinishMaterial.Type == "paint" ? Cabinet.FinishMaterial.Finish : null);
+        // When the finished sides are painted, the finished sides will be made out of the same material as the rest of the box and then painted over.
+        // So if the finish sides are painted, set the finished sides material's 'Finish' property to that of the box material.
+        // In this case the finished sides material finish data should have a placeholder value such as 'match' to signify that it should match the box material. 
+        string finishColor = (finishFinishType == CabinetMaterialFinishType.Paint ? Cabinet.BoxMaterial.Finish : Cabinet.FinishMaterial.Finish);
+        string? finishPaintColor = (finishFinishType == CabinetMaterialFinishType.Paint ? Cabinet.FinishMaterial.Finish : null);
         CabinetMaterial boxMaterial = new(Cabinet.BoxMaterial.Finish, boxFinishType, boxCore);
         CabinetFinishMaterial finishMaterial = new(finishColor, finishFinishType, finishCore, finishPaintColor);
         CabinetSideType leftSideType = AllmoxyXMLOrderProviderHelpers.GetCabinetSideType(Cabinet.LeftSide);

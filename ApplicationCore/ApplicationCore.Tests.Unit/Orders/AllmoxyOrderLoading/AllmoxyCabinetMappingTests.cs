@@ -165,10 +165,10 @@ public class AllmoxyCabinetMappingTests {
 
 
     [Theory]
-    [InlineData("pb", "pb", CabinetMaterialCore.Flake, CabinetMaterialCore.Flake)]
+    [InlineData("pb", "pb", CabinetMaterialCore.ParticleBoard, CabinetMaterialCore.ParticleBoard)]
     [InlineData("ply", "ply", CabinetMaterialCore.Plywood, CabinetMaterialCore.Plywood)]
-    [InlineData("pb", "paint", CabinetMaterialCore.Flake, CabinetMaterialCore.Flake)]
-    [InlineData("ply", "paint", CabinetMaterialCore.Plywood, CabinetMaterialCore.Plywood)]
+    [InlineData("pb", "match", CabinetMaterialCore.ParticleBoard, CabinetMaterialCore.ParticleBoard)]
+    [InlineData("ply", "match", CabinetMaterialCore.Plywood, CabinetMaterialCore.Plywood)]
     public void MaterialCoreTests(string boxCore, string finishCore, CabinetMaterialCore expectedBoxCore, CabinetMaterialCore expectedFinishCore) {
 
         // Arrange
@@ -206,12 +206,12 @@ public class AllmoxyCabinetMappingTests {
 
         // Arrange
         _sut.Cabinet.BoxMaterial = new() {
-            Core = "flake",
+            Core = "pb",
             Finish = "Finish1",
-            Type = "pb"
+            Type = "mela"
         };
         _sut.Cabinet.FinishMaterial = new() {
-            Core = "flake",
+            Core = "pb",
             Finish = "2hsiniF",
             Type = "paint"
         };
@@ -234,7 +234,7 @@ public class AllmoxyCabinetMappingTests {
         _sut.Cabinet.FinishMaterial = new() {
             Core = "pb",
             Finish = "Finish",
-            Type = "not paint"
+            Type = "mela"
         };
 
         // Act
@@ -253,7 +253,7 @@ public class AllmoxyCabinetMappingTests {
         _sut.Cabinet.BoxMaterial = new() {
             Core = "pb",
             Finish = "Finish1",
-            Type = "pb"
+            Type = "mela"
         };
         _sut.Cabinet.FinishMaterial = new() {
             Core = "pb",
