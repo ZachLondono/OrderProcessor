@@ -94,6 +94,7 @@ public class OrderDataModel {
                 orders.shipping_method AS ShippingMethod,
                 orders.shipping_contact AS ShippingContact,
                 orders.shipping_phone_number AS ShippingPhoneNumber,
+                orders.shipping_price AS ShippingPrice,
                 shipping_address.line1 AS ShippingLine1,
                 shipping_address.line2 AS ShippingLine2,
                 shipping_address.line3 AS ShippingLine3,
