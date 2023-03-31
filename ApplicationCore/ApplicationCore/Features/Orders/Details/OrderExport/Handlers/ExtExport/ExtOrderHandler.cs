@@ -28,7 +28,7 @@ internal class ExtOrderHandler {
 
         var job = new PPJob(jobName, order.OrderDate, products);
 
-        var filePath = _fileReader.GetAvailableFileName(outputDirectory, jobName, "ext");
+        var filePath = Path.Combine(outputDirectory, $"{_fileReader.RemoveInvalidPathCharacters(jobName)}.ext");
 
         var writer = new ExtWriter();
 
