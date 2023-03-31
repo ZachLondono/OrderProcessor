@@ -12,6 +12,14 @@ internal class JobSummary {
     public DateTime ReleaseDate { get; set; }
     public List<Supply> Supplies { get; set; } = new();
 
+    public string SpecialRequirements { get; set; } = string.Empty;
+
+    public decimal SubTotal { get; set; }
+    public decimal Shipping { get; set; }
+    public decimal SalesTax { get; set; }
+    public decimal Total { get; set; }
+
+    public bool ShowItemsInSummary { get; set; } = false;
     public List<CabinetGroup> Cabients { get; set; } = new();
     public List<ClosetPartGroup> ClosetParts { get; set; } = new();
     public List<DrawerBoxGroup> DrawerBoxes { get; set; } = new();

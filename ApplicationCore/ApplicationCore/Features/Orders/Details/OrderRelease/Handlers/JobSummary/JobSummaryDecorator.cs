@@ -40,24 +40,101 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                 .Section("Job Summary")
                 .Column(column => {
 
-                    foreach (var group in jobSummary.Cabients) {
-                        ComposeCabinetTable(column.Item(), group);
-                    }
+                    column.Item()
+                        .Row(row => {
 
-                    foreach (var group in jobSummary.ClosetParts) {
-                        ComposeClosetPartTable(column.Item(), group);
-                    }
+                            row.RelativeItem(1)
+                                .AlignCenter()
+                                .DefaultTextStyle(style => style.FontSize(12))
+                                .Table(table => {
 
-                    foreach (var group in jobSummary.DrawerBoxes) {
-                        ComposeDrawerBoxTable(column.Item(), group);
-                    }
+                                    table.ColumnsDefinition(column => {
+                                        column.ConstantColumn(90);
+                                        column.ConstantColumn(50);
+                                    });
 
-                    foreach (var group in jobSummary.Doors) {
-                        ComposeDoorTable(column.Item(), group);
-                    }
+                                    int cabQty = jobSummary.Cabients.Sum(p => p.Items.Sum(i => i.Qty));
+                                    int cpQty = jobSummary.ClosetParts.Sum(p => p.Items.Sum(i => i.Qty));
+                                    int doorQty = jobSummary.Doors.Sum(p => p.Items.Sum(i => i.Qty));
+                                    int drawerQty = jobSummary.DrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty));
 
-                    if (jobSummary.Supplies.Any()) {
-                        ComposeSuppliesTable(column.Item(), jobSummary.Supplies);
+                                    table.Cell().AlignRight().PaddingRight(5).Text("Cabinets:");
+                                    table.Cell().AlignCenter().Text(cabQty == 0 ? "-" : cabQty.ToString());
+
+                                    table.Cell().AlignRight().PaddingRight(5).Text("Closet Parts:");
+                                    table.Cell().AlignCenter().Text(cpQty == 0 ? "-" : cpQty.ToString());
+
+                                    table.Cell().AlignRight().PaddingRight(5).Text("MDF Doors:");
+                                    table.Cell().AlignCenter().Text(doorQty == 0 ? "-" : doorQty.ToString());
+
+                                    table.Cell().BorderBottom(0.5f).AlignRight().PaddingRight(5).Text("Drawer Boxes:");
+                                    table.Cell().BorderBottom(0.5f).AlignCenter().Text(drawerQty == 0 ? "-" : drawerQty.ToString());
+
+                                    table.Cell().AlignRight().PaddingRight(5).Text("Total:").Bold().FontSize(14);
+                                    table.Cell().AlignCenter().Text((cabQty + cpQty + doorQty + drawerQty).ToString()).Bold().FontSize(14);
+
+                                });
+
+                            row.RelativeItem(1)
+                                .AlignCenter()
+                                .DefaultTextStyle(style => style.FontSize(12))
+                                .Table(table => {
+
+                                    table.ColumnsDefinition(column => {
+                                        column.ConstantColumn(75);
+                                        column.ConstantColumn(75);
+                                    });
+
+                                    table.Cell().AlignRight().PaddingRight(5).Text("Sub Total:");
+                                    table.Cell().AlignCenter().Text($"${jobSummary.SubTotal:0.00}");
+
+                                    table.Cell().AlignRight().PaddingRight(5).Text("Shipping:");
+                                    table.Cell().AlignCenter().Text($"${jobSummary.Shipping:0.00}");
+
+                                    table.Cell().BorderBottom(0.5f).AlignRight().PaddingRight(5).Text("Sales Tax:");
+                                    table.Cell().BorderBottom(0.5f).AlignCenter().Text($"${jobSummary.SalesTax:0.00}");
+
+                                    table.Cell().AlignRight().PaddingRight(5).Text("Total:").Bold().FontSize(14);
+                                    table.Cell().AlignCenter().Text($"${jobSummary.Total:0.00}").Bold().FontSize(14);
+
+                                });
+
+                        });
+
+                    column.Item().PaddingLeft(10).PaddingTop(10).Text("Special Requirements").Italic().Bold().FontSize(16);
+                    column.Item()
+                            .Border(1)
+                            .BorderColor(Colors.Grey.Medium)
+                            .MinHeight(45)
+                            .Container()
+                            .Padding(5)
+                            .AlignCenter()
+                            .AlignMiddle()
+                            .Text(jobSummary.SpecialRequirements)
+                            .FontSize(10);
+
+                    column.Item().PaddingTop(20).PaddingBottom(20).Row(row => row.RelativeItem().LineHorizontal(1).LineColor(Colors.Grey.Medium));
+
+                    if (jobSummary.ShowItemsInSummary) {
+                        foreach (var group in jobSummary.Cabients) {
+                            ComposeCabinetTable(column.Item(), group);
+                        }
+
+                        foreach (var group in jobSummary.ClosetParts) {
+                            ComposeClosetPartTable(column.Item(), group);
+                        }
+
+                        foreach (var group in jobSummary.DrawerBoxes) {
+                            ComposeDrawerBoxTable(column.Item(), group);
+                        }
+
+                        foreach (var group in jobSummary.Doors) {
+                            ComposeDoorTable(column.Item(), group);
+                        }
+
+                        if (jobSummary.Supplies.Any()) {
+                            ComposeSuppliesTable(column.Item(), jobSummary.Supplies);
+                        }
                     }
 
                 });
@@ -69,7 +146,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                     x.DefaultTextStyle(x => x.FontSize(12));
 
                     x.Span("Page ");
-                    x.CurrentPageNumber();
+                    x.PageNumberWithinSection("Job Summary");
                     x.Span(" of ");
                     x.TotalPagesWithinSection("Job Summary");
 
@@ -210,6 +287,15 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             Comment = order.CustomerComment,
             ReleaseDate = DateTime.Now,
             Supplies = supplies,
+
+            SpecialRequirements = "",//order.Comment
+
+            SubTotal = order.SubTotal,
+            SalesTax = order.Tax,
+            Shipping = order.Shipping.Price,
+            Total = order.Total,
+
+            ShowItemsInSummary = false,
             
             Cabients = cabs,
             ClosetParts = cp,
@@ -612,6 +698,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             col.Item().Row(row => {
 
                 row.RelativeItem()
+                    .PaddingRight(10)
                      .Column(col => {
                          col.Item()
                              .Text($"{jobSummary.Number} {jobSummary.Name}")
@@ -635,8 +722,6 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             });
 
             col.Item().PaddingVertical(5).Text(jobSummary.Comment).FontSize(12);
-
-            col.Item().PaddingVertical(10).Row(row => row.RelativeItem().LineHorizontal(1).LineColor(Colors.Grey.Medium));
 
         });
 
