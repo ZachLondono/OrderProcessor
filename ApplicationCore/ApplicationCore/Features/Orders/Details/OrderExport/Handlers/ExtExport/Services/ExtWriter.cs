@@ -28,10 +28,11 @@ public class ExtWriter : IExtWriter {
     }
 
     private static Dictionary<string, string> GetRecord(JobDescriptor job) {
+
         var fields = new Dictionary<string, string>() {
             { "KEY", "XD" },
             { "LEVELID", job.LevelId.ToString() },
-            { "JOB", job.Job },
+            { "JOB", TruncateString(job.Job, 30) },
             { "DATE", job.Date.ToShortDateString() }
         };
 
@@ -58,11 +59,12 @@ public class ExtWriter : IExtWriter {
     }
 
     private static Dictionary<string, string> GetRecord(LevelDescriptor level) {
+
         var fields = new Dictionary<string, string>() {
             { "KEY", "LD" },
             { "LEVELID", level.LevelId.ToString() },
             { "PARENTID", level.ParentId.ToString() },
-            { "LEVELNAME", level.Name },
+            { "LEVELNAME", TruncateString(level.Name, 30) },
         };
 
         if (!string.IsNullOrEmpty(level.Catalog)) fields.Add("PCAT", level.Catalog);
@@ -84,7 +86,7 @@ public class ExtWriter : IExtWriter {
             { "DEPTH", "0" },
             { "QTY", product.Qty.ToString() },
             { "POS", product.Pos.ToString() },
-            { "CABCOM", product.Comment },
+            { "CABCOM", TruncateString(product.Comment, 60) },
             { "CABCOM2", product.ProductId.ToString() },
             { "SEQTEXT", product.SeqText }
         };
@@ -97,5 +99,7 @@ public class ExtWriter : IExtWriter {
 
         return values;
     }
+
+    private static string TruncateString(string str, int maxLength) => str.Length > maxLength ? str[..maxLength] : str;
 
 }
