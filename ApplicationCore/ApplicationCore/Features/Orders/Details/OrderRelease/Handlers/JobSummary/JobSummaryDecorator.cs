@@ -41,6 +41,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                 .Column(column => {
 
                     column.Item()
+                        .PaddingVertical(30)
                         .Row(row => {
 
                             row.RelativeItem(1)
