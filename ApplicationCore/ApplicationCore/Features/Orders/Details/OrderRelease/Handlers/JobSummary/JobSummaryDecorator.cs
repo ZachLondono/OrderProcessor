@@ -34,7 +34,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             page.Margin(1, Unit.Centimetre);
             page.DefaultTextStyle(x => x.FontSize(20));
 
-            page.Header().Element(e => ComposeHeader(e, jobSummary));
+            page.Header().ShowOnce().Element(e => ComposeHeader(e, jobSummary));
 
             page.Content()
                 .Section("Job Summary")
