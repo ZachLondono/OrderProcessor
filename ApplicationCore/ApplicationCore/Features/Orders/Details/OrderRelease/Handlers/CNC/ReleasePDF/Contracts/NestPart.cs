@@ -14,6 +14,7 @@ public class NestedPart {
     public Point Center { get; init; } = new Point(0, 0);
     public string ProductNumber { get; init; } = string.Empty;
     public Guid ProductId { get; init; } = Guid.Empty;
+    public string PartId { get; init; } = string.Empty;
     public bool IsRotated { get; init; } = false;
 
 }

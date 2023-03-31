@@ -126,6 +126,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                                                             Description = label.Fields.GetValueOrEmpty("Description"),
                                                                                             ProductNumber = label.Fields.GetValueOrEmpty("Cabinet Number"),
                                                                                             ProductId = productId,
+                                                                                            PartId = nestPart.partId,
                                                                                             ImageData = label.Fields.GetValueOrEmpty("Machining Picture"),
                                                                                             HasFace6 = false
                                                                                         };
