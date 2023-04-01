@@ -111,7 +111,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                                                     .Select(nestPart => {
                                                                                         var part = allParts[nestPart.partId];
                                                                                         var label = labels[part.LabelId];
-                                                                                        if (!Guid.TryParse(label.Fields.GetValueOrEmpty("ProductId"), out Guid productId)) {
+                                                                                        if (!Guid.TryParse(label.Fields.GetValueOrEmpty("Comment2"), out Guid productId)) {
                                                                                             productId = Guid.Empty;
                                                                                         }
                                                                                         return new NestedPart() {
@@ -193,7 +193,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
             return patternName;
         }
 
-        return patternName.Substring(0, idx);
+        return patternName[..idx];
 
     }
 
