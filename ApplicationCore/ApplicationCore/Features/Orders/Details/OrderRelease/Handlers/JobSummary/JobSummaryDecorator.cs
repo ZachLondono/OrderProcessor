@@ -82,7 +82,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                 .Table(table => {
 
                                     table.ColumnsDefinition(column => {
-                                        column.ConstantColumn(75);
+                                        column.ConstantColumn(65);
                                         column.ConstantColumn(75);
                                     });
 
@@ -111,12 +111,18 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                             .Padding(5)
                             .AlignCenter()
                             .AlignMiddle()
-                            .Text(jobSummary.SpecialRequirements)
+                            .Text(
+"""
+White Edge Banding.
+Paint Doors Melamine Match White.
+Trash cabinet has 1 full height door w/ drawer box. See picture bellow.
+"""
+)
                             .FontSize(10);
 
                     column.Item().PaddingTop(20).PaddingBottom(20).Row(row => row.RelativeItem().LineHorizontal(1).LineColor(Colors.Grey.Medium));
 
-                    if (jobSummary.ShowItemsInSummary) {
+                    if (!jobSummary.ShowItemsInSummary) {
                         foreach (var group in jobSummary.Cabients) {
                             ComposeCabinetTable(column.Item(), group);
                         }
@@ -379,9 +385,9 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
                         table.Cell().Element(defaultCellStyle).AlignLeft().Text(item.Description);
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width.AsInchFraction(0.015625), 10));
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height.AsInchFraction(0.015625), 10));
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth.AsInchFraction(0.015625), 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.FinLeft ? "X" : "");
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.FinRight ? "X" : "");
 
@@ -458,8 +464,8 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Sku);
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description);
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width.AsInchFraction(0.015625), 10));
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Length.AsInchFraction(0.015625), 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Length, 10));
 
                     }
 
@@ -534,8 +540,8 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description);
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width.AsInchFraction(0.015625), 10));
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height.AsInchFraction(0.015625), 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
 
                     }
 
@@ -619,9 +625,9 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description);
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width.AsInchFraction(0.015625), 10));
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height.AsInchFraction(0.015625), 10));
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth.AsInchFraction(0.015625), 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text((item.Logo ? "Y" : ""));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text((item.Scoop ? "Y" : ""));
 
@@ -728,7 +734,9 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
     }
 
-    private static void FormatFraction(TextDescriptor text, Fraction fraction, float fontSize) {
+    private static void FormatFraction(TextDescriptor text, Dimension dim, float fontSize) {
+
+        var fraction = dim.RoundToInchMultiple((double)1 / 64).AsInchFraction();
 
         if (fraction.N == 0) {
             text.Span("0").FontSize(fontSize);

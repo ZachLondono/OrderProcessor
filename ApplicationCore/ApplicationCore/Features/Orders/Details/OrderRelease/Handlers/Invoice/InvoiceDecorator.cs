@@ -253,9 +253,9 @@ internal class InvoiceDecorator : IInvoiceDecorator {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height.AsInchFraction(0.015625), 10));
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width.AsInchFraction(0.015625), 10));
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth.AsInchFraction(0.015625), 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.UnitPrice.ToString("0.00"));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text((item.UnitPrice * item.Qty).ToString("$0.00"));
                     }
@@ -326,8 +326,8 @@ internal class InvoiceDecorator : IInvoiceDecorator {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Length.AsInchFraction(0.015625), 10));
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width.AsInchFraction(0.015625), 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Length, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.UnitPrice.ToString("0.00"));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text((item.UnitPrice * item.Qty).ToString("$0.00"));
                     }
@@ -399,8 +399,8 @@ internal class InvoiceDecorator : IInvoiceDecorator {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height.AsInchFraction(0.015625), 10));
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width.AsInchFraction(0.015625), 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.UnitPrice.ToString("0.00"));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text((item.UnitPrice * item.Qty).ToString("$0.00"));
                     }
@@ -475,9 +475,9 @@ internal class InvoiceDecorator : IInvoiceDecorator {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height.AsInchFraction(0.015625), 10));
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width.AsInchFraction(0.015625), 10));
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth.AsInchFraction(0.015625), 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
 
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.UnitPrice.ToString("0.00"));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text((item.UnitPrice * item.Qty).ToString("$0.00"));
@@ -492,7 +492,9 @@ internal class InvoiceDecorator : IInvoiceDecorator {
 
     }
 
-    private static void FormatFraction(TextDescriptor text, Fraction fraction, float fontSize) {
+    private static void FormatFraction(TextDescriptor text, Dimension dim, float fontSize) {
+
+        var fraction = dim.RoundToInchMultiple((double)1/64).AsInchFraction();
 
         if (fraction.N == 0) {
             text.Span("0").FontSize(fontSize);
