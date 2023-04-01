@@ -3,7 +3,11 @@ namespace ApplicationCore.Features.Orders.Shared.Domain;
 
 public static class Extensions {
 
-    public static string GetFormatedFraction(this Dimension dimension) {
+    public static string GetFormatedFraction(this Dimension dimension, double roundingFactor = 0) {
+
+        if (roundingFactor != 0) {
+            dimension = dimension.RoundToInchMultiple(roundingFactor);
+        }
 
         var fraction = dimension.AsInchFraction();
 
