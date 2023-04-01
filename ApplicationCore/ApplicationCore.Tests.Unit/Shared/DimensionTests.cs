@@ -316,6 +316,55 @@ public class DimensionTests {
 
     }
 
+    [Theory]
+    [InlineData(0.015625, (double)1/16, 0)]          //   1/64 -> 0
+    [InlineData(0.03125, (double)1/16, 0.0625)]      //   2/64 -> 1/16
+    [InlineData(0.046875, (double)1/16, 0.0625)]     //   3/64 -> 1/16
+    [InlineData(0.0625, (double)1/16, 0.0625)]       //   4/64 -> 1/16
+    [InlineData(0.078125, (double)1/16, 0.0625)]     //   5/64 -> 1/16
+    [InlineData(0.09375, (double)1/16, 0.0625)]      //   6/64 -> 1/16
+    [InlineData(0.109375, (double)1/16, 0.125)]      //   7/64 -> 1/8
+    [InlineData(0.125, (double)1 /16, 0.125)]        //   8/64 -> 1/8
+    public void ManualTest(double raw, double denominator, double expected) {
+
+        // Arrange
+        var dim = Dimension.FromInches(raw);
+
+        // Act
+        dim = dim.RoundToInchMultiple(denominator);
+
+        // Assert
+        dim.AsInches().Should().Be(expected);
+
+
+    }
+
+    [Theory]
+    [InlineData(0.5, 0.015625, 1, 2)]
+    [InlineData(0.25, 0.015625, 1, 4)]
+    [InlineData(0.125, 0.015625, 1, 8)]
+    [InlineData(0.0625, 0.015625, 1, 16)]
+    [InlineData(0.03125, 0.015625, 1, 32)]
+    [InlineData(0.75, 0.015625, 3, 4)]
+    [InlineData(0.375, 0.015625, 3, 8)]
+    [InlineData(0.1875, 0.015625, 3, 16)]
+    [InlineData(0.09375, 0.015625, 3, 32)]
+    public void AsInchFraction_ShouldBeAccurate_WithLowerAccuracy(double inches, double accuracy, int numerator, int denominator) {
+
+        // Arrange
+        var dim = Dimension.FromInches(inches);
+
+        // Act
+        var result = dim.AsInchFraction(accuracy);
+
+        // Assert
+        Debug.WriteLine(result.ToString());
+        result.N.Should().Be(numerator);
+        result.D.Should().Be(denominator);
+
+
+    }
+
     [Fact]
     public void DifferentInstances_ShouldBeEqual_WhenValueIsEqual() {
 
