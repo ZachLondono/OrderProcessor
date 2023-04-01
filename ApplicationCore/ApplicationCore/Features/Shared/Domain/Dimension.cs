@@ -19,6 +19,14 @@ public readonly struct Dimension : IComparable {
         return $"{{{AsInches()}\",  {AsMillimeters()}mm}}";
     }
 
+    public Dimension RoundToInchMultiple(double factor) {
+
+        double roundedValue = Math.Round(AsInches() / (double) factor, MidpointRounding.AwayFromZero) * (double) factor;
+
+        return FromInches(roundedValue);
+
+    }
+
     public Fraction AsInchFraction(double accuracy = 0.0001) {
 
         // https://stackoverflow.com/questions/5124743/algorithm-for-simplifying-decimal-to-fractions/42085412#42085412
