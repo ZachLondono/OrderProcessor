@@ -42,19 +42,17 @@ internal class DovetailOrderHandler {
                             .SelectMany(p => p.GetDrawerBoxes(_factory.CreateDovetailDrawerBoxBuilder))
                             .GroupBy(b => b.DrawerBoxOptions.Assembled);
 
-        try {     
+        Application app = new() {
+            DisplayAlerts = false,
+            Visible = false
+        };
 
-            Application app = new() {
-                DisplayAlerts = false,
-                Visible = false
-            };
+        try {     
 
             foreach (var group in groups) {
 
                 var workbook = app.Workbooks.Open(template, ReadOnly: true);
-                //using var stream = _fileReader.OpenReadFileStream(template);
-                //var workbook = new XLWorkbook(stream);
-
+                
                 var data = MapData(order, customer?.Name ?? "", group);
                 WriteData(workbook, data);
 
@@ -62,6 +60,7 @@ internal class DovetailOrderHandler {
                 string finalPath = Path.GetFullPath(filename);
 
                 workbook.SaveAs2(finalPath);
+                workbook?.Close();
 
             }
 
@@ -70,6 +69,8 @@ internal class DovetailOrderHandler {
             _logger.LogError(ex, "Exception thrown while filling drawer box order");
 
         } finally {
+
+            app?.Quit();
 
             // Clean up COM objects, calling these twice ensures it is fully cleaned up.
             GC.Collect();
