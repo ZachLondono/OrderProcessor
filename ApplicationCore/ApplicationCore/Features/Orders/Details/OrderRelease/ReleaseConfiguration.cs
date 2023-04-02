@@ -2,7 +2,7 @@
 
 public class ReleaseConfiguration {
 
-    public string? CNCDataFilePath { get; set; }
+    public List<string> CNCDataFilePaths { get; set; } = new();
     public bool GenerateCNCRelease { get; set; }
     public bool GeneratePackingList { get; set; }
     public bool GenerateJobSummary { get; set; }

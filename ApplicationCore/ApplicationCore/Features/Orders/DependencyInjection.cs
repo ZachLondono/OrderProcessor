@@ -71,8 +71,9 @@ public static class DependencyInjection {
     }
 
     private static void AddReleaseServices(IServiceCollection services) {
-        services.AddTransient<IJobSummaryDecorator, JobSummaryDecorator>();
         services.AddTransient<ICNCReleaseDecorator, CNCReleaseDecorator>();
+        services.AddTransient<CNCReleaseDecoratorFactory>();
+        services.AddTransient<IJobSummaryDecorator, JobSummaryDecorator>();
         services.AddTransient<IInvoiceDecorator, InvoiceDecorator>();
         services.AddTransient<IPackingListDecorator, PackingListDecorator>();
         services.AddTransient<ReleaseService>();

@@ -2,6 +2,7 @@
 @using ApplicationCore.Features.Orders.Details.OrderRelease;
 @using static ApplicationCore.Features.Shared.Components.Button;
 @using ApplicationCore.Features.Orders.Shared.Domain;
+@using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Features.Shared.Components
 @using ApplicationCore.Features.Shared.Services;
@@ -12,7 +13,7 @@
 @inject OrderState OrderState
 
 @if (Configuration is null) {
-    <span>Loading...</span>    
+    <span>Loading release configuration...</span>
 } else {
 
     <div class="flex flex-col space-y-5">
@@ -45,8 +46,22 @@
                 <span class="text-gray-700">CNC Patterns</span>
             </CheckBox>
             @if (Configuration.GenerateCNCRelease) {
-                <div class="flex justify-center items-center mt-3">
-                    <Button OnClickAsync="ChooseCNCDataFile" Color="ButtonColor.Secondary">Select File</Button> <span class="text-sm px-3">@(string.IsNullOrWhiteSpace(Configuration.CNCDataFilePath) ? "No File Selected" : TruncateString(Configuration.CNCDataFilePath))</span>
+                <div class="mt-3">
+                    @if (_isReportLoadingFiles) {
+                        <span>Searching for files...</span>
+                    } else {
+                        <Button OnClickAsync="ChooseCNCDataFile" Color="ButtonColor.Secondary">+ Add File</Button>
+
+                        @if (Configuration.CNCDataFilePaths.Any()) {
+                            foreach (var file in Configuration.CNCDataFilePaths) {
+                                <div class="text-sm">
+                                    <Button OnClick="@(() => RemoveCNCDataFile(file))">X</Button>@TruncateString(file)
+                                </div>
+                            }
+                        } else {
+                            <div class="text-sm">No File Selected</div>
+                        }
+                    }
                 </div>
             }
 
@@ -119,39 +134,50 @@
     [CascadingParameter]
     public IModalService ModalService { get; set; } = default!;
 
-    public ReleaseConfiguration? Configuration { get; set; } = new();
+    public ReleaseConfiguration? Configuration { get; set; } = null;
     private string? _errorMessage = null;
+
+    private bool _isReportLoadingFiles = true;
 
     protected override async Task OnInitializedAsync() {
 
         var order = OrderState.Order;
-        if (order is null) return;
+        if (order is null) {
+            return;
+        }
+
+        await LoadConfiguration(order);
+        await LoadCNCReportFiles(order);
+
+    }
+
+    private async Task LoadConfiguration(Order order) {
 
         var vendor = await GetVendorByIdAsync(order.VendorId);
-        if (vendor is null) return;
+        if (vendor is null) {
+            return;
+        }
 
         Configuration = new() {
 
-            SendReleaseEmail = vendor.ReleaseProfile.SendReleaseEmail,
-            ReleaseEmailRecipients = vendor.ReleaseProfile.ReleaseEmailRecipients,
-            GenerateJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
-            GeneratePackingList = vendor.ReleaseProfile.GeneratePackingList,
-            IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
-            ReleaseOutputDirectory = vendor.ReleaseProfile.ReleaseOutputDirectory,
-            GenerateCNCRelease = false,
-            CNCDataFilePath = GetReportFile(order.Number, order.Name),
+                SendReleaseEmail = vendor.ReleaseProfile.SendReleaseEmail,
+                ReleaseEmailRecipients = vendor.ReleaseProfile.ReleaseEmailRecipients,
+                GenerateJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
+                GeneratePackingList = vendor.ReleaseProfile.GeneratePackingList,
+                IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
+                ReleaseOutputDirectory = vendor.ReleaseProfile.ReleaseOutputDirectory,
+                GenerateCNCRelease = false,
 
-            GenerateInvoice = vendor.ReleaseProfile.GenerateInvoice,
-            SendInvoiceEmail = vendor.ReleaseProfile.SendInvoiceEmail,
-            InvoiceEmailRecipients = vendor.ReleaseProfile.InvoiceEmailRecipients,
-            InvoiceOutputDirectory = vendor.ReleaseProfile.InvoiceOutputDirectory,
+                GenerateInvoice = vendor.ReleaseProfile.GenerateInvoice,
+                SendInvoiceEmail = vendor.ReleaseProfile.SendInvoiceEmail,
+                InvoiceEmailRecipients = vendor.ReleaseProfile.InvoiceEmailRecipients,
+                InvoiceOutputDirectory = vendor.ReleaseProfile.InvoiceOutputDirectory,
 
-            EmailSenderName = vendor.EmailSender.Name,
-            EmailSenderEmail = vendor.EmailSender.Email,
-            EmailSenderPassword = vendor.EmailSender.ProtectedPassword
+                EmailSenderName = vendor.EmailSender.Name,
+                EmailSenderEmail = vendor.EmailSender.Email,
+                EmailSenderPassword = vendor.EmailSender.ProtectedPassword
 
-        };
-
+            };
 
         var customer = await GetCustomerByIdAsync(order.CustomerId);
         if (customer is not null && customer.BillingContact.Email is string invoiceEmail) {
@@ -161,21 +187,31 @@
             else Configuration.InvoiceEmailRecipients = invoiceEmail;
 
         }
-
         StateHasChanged();
-
     }
 
-    private string GetReportFile(string number, string name) {
+    private async Task LoadCNCReportFiles(Order order) {
+        if (Configuration is null) return;
+        var files = await GetReportFiles(order.Number);
+        Configuration.CNCDataFilePaths.AddRange(files);
+        Configuration.GenerateCNCRelease = Configuration.CNCDataFilePaths.Any();
+        _isReportLoadingFiles = false;
+        StateHasChanged();
+    }
 
-        var filePath = Path.Combine("Y:\\CADCode\\Reports", $"{number} - {name}.xml");
+    private async Task<string[]> GetReportFiles(string number) {
+        return await Task.Run(() => {
+            try {
+                return Directory.GetFiles(@"Y:\CADCode\Reports\", $"{number}* - *.xml");
+            } catch {
+                return Array.Empty<string>();
+            }
+        });
+    }
 
-        if (File.Exists(filePath)) {
-            return filePath;
-        }
-
-        return "";
-
+    private void RemoveCNCDataFile(string filePath) {
+        Configuration?.CNCDataFilePaths.Remove(filePath);
+        StateHasChanged();
     }
 
     private async Task ChooseCNCDataFile() {
@@ -195,7 +231,7 @@
             return;
         }
 
-        Configuration.CNCDataFilePath = selectedPath;
+        Configuration.CNCDataFilePaths.Add(selectedPath);
         StateHasChanged();
 
     }

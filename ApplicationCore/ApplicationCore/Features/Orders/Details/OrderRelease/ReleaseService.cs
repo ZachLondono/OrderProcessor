@@ -26,15 +26,15 @@ public class ReleaseService {
     private readonly IFileReader _fileReader;
     private readonly IInvoiceDecorator _invoiceDecorator;
     private readonly IPackingListDecorator _packingListDecorator;
-    private readonly ICNCReleaseDecorator _cncReleaseDecorator;
+    private readonly CNCReleaseDecoratorFactory _cncReleaseDecoratorFactory;
     private readonly IJobSummaryDecorator _jobSummaryDecorator;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, IInvoiceDecorator invoiceDecorator, IPackingListDecorator packingListDecorator, ICNCReleaseDecorator cncReleaseDecorator, IJobSummaryDecorator jobSummaryDecorator, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, IInvoiceDecorator invoiceDecorator, IPackingListDecorator packingListDecorator, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, IJobSummaryDecorator jobSummaryDecorator, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync) {
         _fileReader = fileReader;
         _invoiceDecorator = invoiceDecorator;
         _packingListDecorator = packingListDecorator;
-        _cncReleaseDecorator = cncReleaseDecorator;
+        _cncReleaseDecoratorFactory = cncReleaseDecoratorFactory;
         _jobSummaryDecorator = jobSummaryDecorator;
         _logger = logger;
         _getCustomerByIdAsync = getCustomerByIdAsync;
@@ -78,9 +78,12 @@ public class ReleaseService {
             decorators.Add(_invoiceDecorator);
         }
 
-        if (configuration.GenerateCNCRelease && configuration.CNCDataFilePath is string filePath) {
-            _cncReleaseDecorator.ReportFilePath = filePath;
-            decorators.Add(_cncReleaseDecorator);
+        if (configuration.GenerateCNCRelease) {
+            configuration.CNCDataFilePaths
+                        .ForEach(filePath => {
+                            var decorator = _cncReleaseDecoratorFactory.Create(filePath);
+                            decorators.Add(decorator);
+                        });
         }
 
         var directories = (configuration.ReleaseOutputDirectory ?? "").Split(';').Where(s => !string.IsNullOrWhiteSpace(s));
