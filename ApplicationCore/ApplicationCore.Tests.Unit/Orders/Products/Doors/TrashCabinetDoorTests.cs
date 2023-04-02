@@ -1,8 +1,8 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.Shared;
 using ApplicationCore.Features.Shared.Domain;
 using FluentAssertions;
-using MoreLinq;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products.Doors;
 
