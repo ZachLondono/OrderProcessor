@@ -4,6 +4,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Services;
+using Microsoft.Extensions.Logging;
 using Microsoft.Office.Interop.Excel;
 
 namespace ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
@@ -13,20 +14,24 @@ internal class DovetailOrderHandler {
     private readonly IFileReader _fileReader;
     private readonly ComponentBuilderFactory _factory;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerById;
+    private readonly ILogger<DovetailOrderHandler> _logger;
 
-    public DovetailOrderHandler(IFileReader fileReader, ComponentBuilderFactory factory, CompanyDirectory.GetCustomerByIdAsync getCustomerById) {
+    public DovetailOrderHandler(IFileReader fileReader, ComponentBuilderFactory factory, CompanyDirectory.GetCustomerByIdAsync getCustomerById, ILogger<DovetailOrderHandler> logger) {
         _fileReader = fileReader;
         _factory = factory;
         _getCustomerById = getCustomerById;
+        _logger = logger;
     }
 
     public async Task Handle(Order order, string template, string outputDirectory) {
 
         if (!File.Exists(template)) {
+            _logger.LogInformation("Dovetail drawer box order tample file could not be found");
             return;
         }
 
         if (!Directory.Exists(outputDirectory)) {
+            _logger.LogInformation("Dovetail drawer box order output directory could not be found");
             return;
         }
 
@@ -60,8 +65,9 @@ internal class DovetailOrderHandler {
 
             }
 
-        } catch {
+        } catch (Exception ex) {
 
+            _logger.LogError(ex, "Exception thrown while filling drawer box order");
 
         } finally {
 
