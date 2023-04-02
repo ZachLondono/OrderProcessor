@@ -281,28 +281,28 @@ internal class DovetailOrderHandler {
         }
 
         public void WriteLineItem(DBOrder.LineItem lineItem) {
-            if (Line is not null) Line.Value = lineItem.Line ?? "";
-            if (Qty is not null) Qty.Value = lineItem.Qty ?? "";
-            if (Width is not null) Width.Value = lineItem.Width ?? "";
-            if (Height is not null) Height.Value = lineItem.Height ?? "";
-            if (Depth is not null) Depth.Value = lineItem.Depth ?? "";
-            if (A is not null) A.Value = lineItem.A ?? "";
-            if (B is not null) B.Value = lineItem.B ?? "";
-            if (C is not null) C.Value = lineItem.C ?? "";
-            if (Material is not null) Material.Value = lineItem.Material ?? "";
-            if (Bottom is not null) Bottom.Value = lineItem.Bottom ?? "";
-            if (Notch is not null) Notch.Value = lineItem.Notch ?? "";
-            if (Insert is not null) Insert.Value = lineItem.Insert ?? "";
-            if (Clips is not null) Clips.Value = lineItem.Clips ?? "";
-            if (MountingHoles is not null) MountingHoles.Value = lineItem.MountingHoles ?? "";
-            if (PostFinish is not null) PostFinish.Value = lineItem.PostFinish ?? "";
-            if (ScoopFront is not null) ScoopFront.Value = lineItem.ScoopFront ?? "";
-            if (Logo is not null) Logo.Value = lineItem.Logo ?? "";
-            if (LevelName is not null) LevelName.Value = lineItem.LevelName ?? "";
-            if (Note is not null) Note.Value = lineItem.Note ?? "";
-            if (Name is not null) Name.Value = lineItem.Name ?? "";
-            if (Description is not null) Description.Value = lineItem.Description ?? "";
-            if (UnitPrice is not null) UnitPrice.Value = lineItem.UnitPrice ?? "";
+            if (Line is not null) Line.Value = lineItem.Line?.ToString() ?? "";
+            if (Qty is not null) Qty.Value = lineItem.Qty?.ToString() ?? "";
+            if (Width is not null) Width.Value = lineItem.Width?.ToString() ?? "";
+            if (Height is not null) Height.Value = lineItem.Height?.ToString() ?? "";
+            if (Depth is not null) Depth.Value = lineItem.Depth?.ToString() ?? "";
+            if (A is not null) A.Value = lineItem.A?.ToString() ?? "";
+            if (B is not null) B.Value = lineItem.B?.ToString() ?? "";
+            if (C is not null) C.Value = lineItem.C?.ToString() ?? "";
+            if (Material is not null) Material.Value = lineItem.Material?.ToString() ?? "";
+            if (Bottom is not null) Bottom.Value = lineItem.Bottom?.ToString() ?? "";
+            if (Notch is not null) Notch.Value = lineItem.Notch?.ToString() ?? "";
+            if (Insert is not null) Insert.Value = lineItem.Insert?.ToString() ?? "";
+            if (Clips is not null) Clips.Value = lineItem.Clips?.ToString() ?? "";
+            if (MountingHoles is not null) MountingHoles.Value = lineItem.MountingHoles?.ToString() ?? "";
+            if (PostFinish is not null) PostFinish.Value = lineItem.PostFinish?.ToString() ?? "";
+            if (ScoopFront is not null) ScoopFront.Value = lineItem.ScoopFront?.ToString() ?? "";
+            if (Logo is not null) Logo.Value = lineItem.Logo?.ToString() ?? "";
+            if (LevelName is not null) LevelName.Value = lineItem.LevelName?.ToString() ?? "";
+            if (Note is not null) Note.Value = lineItem.Note?.ToString() ?? "";
+            if (Name is not null) Name.Value = lineItem.Name?.ToString() ?? "";
+            if (Description is not null) Description.Value = lineItem.Description?.ToString() ?? "";
+            if (UnitPrice is not null) UnitPrice.Value = lineItem.UnitPrice?.ToString() ?? "";
         }
 
     }
