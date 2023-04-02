@@ -183,6 +183,7 @@ internal class DovetailOrderHandler {
         ws.Range["ShippingInstructions"].Value = order.ShippingInstructions;
 
         WriteCompany(ws, order.Customer, "Customer");
+        ws.Range["CustomerPhone"].Value = order.Customer.Phone;
         WriteCompany(ws, order.Vendor, "Vendor");
         WriteCompany(ws, order.Supplier, "Supplier");
 
@@ -190,12 +191,11 @@ internal class DovetailOrderHandler {
 
     public static void WriteCompany(Worksheet ws, DBOrder.Company company, string prefix) {
         ws.Range[$"{prefix}Name"].Value = company.Name;
-        ws.Range[$"{prefix}Line1"].Value = company.Line1;
-        ws.Range[$"{prefix}Line2"].Value = company.Line2;
+        ws.Range[$"{prefix}Address1"].Value = company.Line1;
+        ws.Range[$"{prefix}Address2"].Value = company.Line2;
         ws.Range[$"{prefix}City"].Value = company.City;
         ws.Range[$"{prefix}State"].Value = company.State;
         ws.Range[$"{prefix}Zip"].Value = company.Zip;
-        ws.Range[$"{prefix}Phone"].Value = company.Phone;
     }
 
     public class DBOrder {
