@@ -4,13 +4,13 @@ using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using ApplicationCore.Features.Shared;
 using ApplicationCore.Features.Shared.Services;
 using ApplicationCore.Infrastructure.Data;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using MimeKit;
-using MoreLinq;
 using QuestPDF.Fluent;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease;

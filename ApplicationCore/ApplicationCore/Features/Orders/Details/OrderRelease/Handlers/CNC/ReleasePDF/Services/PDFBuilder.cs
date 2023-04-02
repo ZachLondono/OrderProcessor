@@ -2,8 +2,7 @@
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.PDFModels;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Styling;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using BarcodeLib;
-using MoreLinq;
+using ApplicationCore.Features.Shared;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;

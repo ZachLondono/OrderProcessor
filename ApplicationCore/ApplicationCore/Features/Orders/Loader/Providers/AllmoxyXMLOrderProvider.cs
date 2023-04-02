@@ -4,7 +4,6 @@ using System.Xml.Serialization;
 using ApplicationCore.Features.Orders.Loader.XMLValidation;
 using System.Text;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using MoreLinq;
 using ApplicationCore.Features.Orders.Loader.Dialog;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using System.Xml.Schema;
@@ -14,6 +13,7 @@ using CompanyAddress = ApplicationCore.Features.Companies.Contracts.ValueObjects
 using CompanyCustomer = ApplicationCore.Features.Companies.Contracts.Entities.Customer;
 using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using System.Xml;
+using ApplicationCore.Features.Shared;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 
