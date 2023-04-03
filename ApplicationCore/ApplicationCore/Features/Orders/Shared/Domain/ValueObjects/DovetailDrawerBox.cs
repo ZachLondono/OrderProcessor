@@ -5,9 +5,6 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
 public class DovetailDrawerBox {
 
-    public const string FINGER_JOINT_BIRCH = "Birch FJ";
-    public const string SOLID_BIRCH = "Birch CL";
-
     public int Qty { get; }
     public int ProductNumber { get; }
     public Dimension Height { get; }
@@ -70,23 +67,6 @@ public class DovetailDrawerBox {
             };
 
         }
-
-    }
-
-    public string GetMaterialFriendlyName() {
-
-        if (DrawerBoxOptions.FrontMaterial == DrawerBoxOptions.BackMaterial 
-            && DrawerBoxOptions.SideMaterial == DrawerBoxOptions.SideMaterial) {
-            return DrawerBoxOptions.FrontMaterial;
-        }
-
-        if (DrawerBoxOptions.FrontMaterial == DrawerBoxOptions.BackMaterial
-            && DrawerBoxOptions.FrontMaterial == FINGER_JOINT_BIRCH
-            && DrawerBoxOptions.SideMaterial == SOLID_BIRCH) {
-            return "Hybrid Birch";
-        }
-
-        return $"{DrawerBoxOptions.FrontMaterial} / {DrawerBoxOptions.BackMaterial} / {DrawerBoxOptions.SideMaterial}";
 
     }
 
