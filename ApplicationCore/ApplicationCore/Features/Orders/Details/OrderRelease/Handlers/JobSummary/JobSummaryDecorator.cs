@@ -181,7 +181,7 @@ Trash cabinet has 1 full height door w/ drawer box. See picture bellow.
                     .OfType<DovetailDrawerBoxProduct>()
                     .GroupBy(b => new DrawerBoxGroup() {
                         Room = b.Room,
-                        Material = b.DrawerBoxOptions.GetMaterialName(),
+                        Material = b.DrawerBoxOptions.GetMaterialFriendlyName(),
                         BottomMaterial = b.DrawerBoxOptions.BottomMaterial,
                         Clips = b.DrawerBoxOptions.Clips,
                         Notch = b.DrawerBoxOptions.Notches

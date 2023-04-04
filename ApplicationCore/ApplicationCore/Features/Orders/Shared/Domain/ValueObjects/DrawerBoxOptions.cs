@@ -4,6 +4,9 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
 public class DrawerBoxOptions {
 
+    public const string FINGER_JOINT_BIRCH = "Birch FJ";
+    public const string SOLID_BIRCH = "Birch CL";
+
     public string FrontMaterial { get; }
     public string BackMaterial { get; }
     public string SideMaterial { get; }
@@ -36,10 +39,17 @@ public class DrawerBoxOptions {
         FixedDivdersCounts = fixedDivdersCounts;
     }
 
-    public string GetMaterialName() {
-
-        if (FrontMaterial == BackMaterial && BackMaterial == SideMaterial) {
+    public string GetMaterialFriendlyName() {
+        
+        if (FrontMaterial == BackMaterial
+            && SideMaterial == SideMaterial) {
             return FrontMaterial;
+        }
+
+        if (FrontMaterial == BackMaterial
+            && FrontMaterial == FINGER_JOINT_BIRCH
+            && SideMaterial == SOLID_BIRCH) {
+            return "Hybrid Birch";
         }
 
         return $"{FrontMaterial} / {BackMaterial} / {SideMaterial}";

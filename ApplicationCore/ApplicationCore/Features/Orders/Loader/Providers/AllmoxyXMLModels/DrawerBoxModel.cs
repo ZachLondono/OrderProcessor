@@ -69,6 +69,11 @@ public class DovetailDrawerBoxModel : ProductModel {
 
         var labelFields = new Dictionary<string, string>();
 
+        if (Material == "Pre-Finished Birch")
+            Material = DrawerBoxOptions.SOLID_BIRCH;
+        else if (Material == "Economy Birch")
+            Material = DrawerBoxOptions.FINGER_JOINT_BIRCH;
+
         var options = new DrawerBoxOptions(Material, Material, Material, Bottom, Clips, Notch, Insert, LogoPosition.None);
 
         return DovetailDrawerBoxProduct.Create(unitPrice, Qty, string.Empty, GetProductNumber(), height, width, depth, Note, labelFields, options);

@@ -117,7 +117,7 @@ internal class DovetailOrderHandler {
                 A = "",
                 B = "",
                 C = "",
-                Material = b.DrawerBoxOptions.FrontMaterial,
+                Material = b.DrawerBoxOptions.GetMaterialFriendlyName(),
                 Bottom = b.DrawerBoxOptions.BottomMaterial,
                 Notch = b.DrawerBoxOptions.Notches,
                 Insert = b.DrawerBoxOptions.Accessory,
