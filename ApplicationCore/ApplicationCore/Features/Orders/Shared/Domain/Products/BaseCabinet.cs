@@ -127,7 +127,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
                                     .WithInnerCabinetWidth(InnerWidth, Drawers.Quantity, DrawerBoxOptions.SlideType)
                                     .WithDrawerFaceHeight(Drawers.FaceHeight)
                                     .WithQty(drawerQty)
-                                    .WithOptions(DrawerBoxOptions.DrawerBoxOptions)
+                                    .WithOptions(DrawerBoxOptions.GetDrawerBoxOptions())
                                     .WithProductNumber(ProductNumber)
                                     .Build();
 
@@ -144,7 +144,7 @@ internal class BaseCabinet : Cabinet, IPPProductContainer, IDrawerBoxContainer, 
                                     .WithInnerCabinetWidth(InnerWidth, Inside.RollOutBoxes.Blocks, DrawerBoxOptions.SlideType)
                                     .WithBoxHeight(boxHeight)
                                     .WithQty(rollOutQty)
-                                    .WithOptions(DrawerBoxOptions.DrawerBoxOptions)
+                                    .WithOptions(DrawerBoxOptions.GetDrawerBoxOptions())
                                     .WithProductNumber(ProductNumber)
                                     .Build();
 

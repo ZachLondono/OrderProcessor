@@ -114,7 +114,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
                                 .WithInnerCabinetWidth(insideWidth, Drawers.Quantity, DrawerBoxOptions.SlideType)
                                 .WithDrawerFaceHeight(Drawers.FaceHeight)
                                 .WithQty(drawerQty)
-                                .WithOptions(DrawerBoxOptions.DrawerBoxOptions)
+                                .WithOptions(DrawerBoxOptions.GetDrawerBoxOptions())
                                 .WithProductNumber(ProductNumber)
                                 .Build();
 

@@ -95,7 +95,7 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
                                     .WithInnerCabinetWidth(insideWidth, 1, DrawerBoxOptions.SlideType)
                                     .WithDrawerFaceHeight(height)
                                     .WithQty(Qty)
-                                    .WithOptions(DrawerBoxOptions.DrawerBoxOptions)
+                                    .WithOptions(DrawerBoxOptions.GetDrawerBoxOptions())
                                     .WithProductNumber(ProductNumber)
                                     .Build();
 

@@ -86,7 +86,7 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPP
                                 .WithInnerCabinetWidth(insideWidth, 1, DrawerBoxOptions.SlideType)
                                 .WithDrawerFaceHeight(DrawerFaceHeight)
                                 .WithQty(Qty)
-                                .WithOptions(DrawerBoxOptions.DrawerBoxOptions)
+                                .WithOptions(DrawerBoxOptions.GetDrawerBoxOptions())
                                 .WithProductNumber(ProductNumber)
                                 .Build();
 

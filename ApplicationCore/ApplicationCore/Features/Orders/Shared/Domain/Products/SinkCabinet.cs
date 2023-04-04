@@ -111,7 +111,7 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
                                 .WithInnerCabinetWidth(insideWidth, RollOutBoxes.Blocks, DrawerBoxOptions.SlideType)
                                 .WithBoxHeight(boxHeight)
                                 .WithQty(rollOutQty)
-                                .WithOptions(DrawerBoxOptions.DrawerBoxOptions)
+                                .WithOptions(DrawerBoxOptions.GetDrawerBoxOptions())
                                 .WithProductNumber(ProductNumber)
                                 .Build();
 
