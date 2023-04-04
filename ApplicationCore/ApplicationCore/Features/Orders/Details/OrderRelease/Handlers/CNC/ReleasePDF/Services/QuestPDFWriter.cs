@@ -79,7 +79,7 @@ internal class QuestPDFWriter : IReleasePDFWriter {
             pages.Add(new() {
                 Header = $"{job.JobName}  [{string.Join(',', releases.Select(r => r.MachineName))}]",
                 MachinePrograms = programs,
-                Subtitle = $"{material.Name} - {material.Width:0.00}x{material.Length:0.00}x{material.Thickness:0.00} (grained:{(material.IsGrained ? "yes" : "no")})",
+                Subtitle = $"{material.Name} - {material.Width:0.00}x{material.Length:0.00}x{material.Thickness:0.00}",
 
                 Footer = "footer",
                 ImageData = imageData,
@@ -109,7 +109,6 @@ internal class QuestPDFWriter : IReleasePDFWriter {
                     { "Width", mat.Key.Width.ToString("0.00") },
                     { "Length", mat.Key.Length.ToString("0.00") },
                     { "Thickness", mat.Key.Thickness.ToString("0.00") },
-                    { "Grained", mat.Key.IsGrained ? "yes" : "no" },
                 });
         }
 
