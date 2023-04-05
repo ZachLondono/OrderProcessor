@@ -59,9 +59,11 @@ public class BaseCabinetDrawerBoxTests {
     }
 
     [Theory]
-    [InlineData(457, DrawerSlideType.UnderMount, 409)]
-    [InlineData(457, DrawerSlideType.SideMount, 393)]
-    public void DrawerBoxWidthTest(double cabWidth, DrawerSlideType slideType, double expectedDrawerWidth) {
+    [InlineData(457, DrawerSlideType.UnderMount, 409, CabinetMaterialCore.ParticleBoard)]
+    [InlineData(457, DrawerSlideType.SideMount, 393, CabinetMaterialCore.ParticleBoard)]
+    [InlineData(457, DrawerSlideType.UnderMount, 411.8, CabinetMaterialCore.Plywood)]
+    [InlineData(457, DrawerSlideType.SideMount, 395.8, CabinetMaterialCore.Plywood)]
+    public void DrawerBoxWidthTest(double cabWidth, DrawerSlideType slideType, double expectedDrawerWidth, CabinetMaterialCore boxMatCore) {
 
         var cabinet = new BaseCabinetBuilder()
                             .WithDrawers(new() {
@@ -76,6 +78,8 @@ public class BaseCabinetDrawerBoxTests {
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithBoxMaterial(new("White", CabinetMaterialFinishType.Melamine, boxMatCore))
+                            .WithFinishMaterial(new("White", CabinetMaterialFinishType.Melamine, boxMatCore))
                             .Build();
 
         // Act

@@ -25,13 +25,7 @@ public abstract class Cabinet : IProduct {
     public string Comment { get; }
     public abstract string GetDescription();
 
-    public static CabinetConstruction Construction { get; set; } = new() {
-        TopThickness = Dimension.FromMillimeters(19),
-        BottomThickness = Dimension.FromMillimeters(19),
-        SideThickness = Dimension.FromMillimeters(19),
-        BackThickness = Dimension.FromMillimeters(13),
-        BackInset = Dimension.FromMillimeters(9)
-    };
+    public CabinetConstruction Construction { get; set; }
 
     public Dimension InnerWidth => Width - Construction.SideThickness * 2;
     public Dimension InnerDepth => Depth - (Construction.BackThickness + Construction.BackInset);
@@ -64,6 +58,23 @@ public abstract class Cabinet : IProduct {
         if (LeftSideType == CabinetSideType.IntegratedPanel || LeftSideType == CabinetSideType.AppliedPanel || RightSideType == CabinetSideType.IntegratedPanel || RightSideType == CabinetSideType.AppliedPanel)
             throw new InvalidOperationException("MDFDoorOptions are required when creating a cabinet side with a door");
 
+        Construction = boxMaterial.Core switch {
+            CabinetMaterialCore.ParticleBoard => new() {
+                TopThickness = Dimension.FromMillimeters(19),
+                BottomThickness = Dimension.FromMillimeters(19),
+                SideThickness = Dimension.FromMillimeters(19),  // Cabinets with plywood finished sides are still treated as having 19mm thick sides
+                BackThickness = Dimension.FromMillimeters(13),
+                BackInset = Dimension.FromMillimeters(9)
+            },
+            CabinetMaterialCore.Plywood => new() {
+                TopThickness = Dimension.FromMillimeters(17.6),
+                BottomThickness = Dimension.FromMillimeters(17.6),
+                SideThickness = Dimension.FromMillimeters(17.6),
+                BackThickness = Dimension.FromMillimeters(13),
+                BackInset = Dimension.FromMillimeters(9)
+            },
+            _ => throw new InvalidOperationException($"Unexpected cabinet material core type '{boxMaterial.Core}'"),
+        };
     }
 
     public abstract IEnumerable<Supply> GetSupplies();
