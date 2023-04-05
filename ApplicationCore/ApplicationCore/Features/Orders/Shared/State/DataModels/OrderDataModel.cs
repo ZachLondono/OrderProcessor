@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Companies.Contracts.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
@@ -10,6 +9,7 @@ public class OrderDataModel {
     public string Source { get; set; } = string.Empty;
     public string Number { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
+    public string Note { get; set; } = string.Empty;
     public Guid CustomerId { get; set; }
     public Guid VendorId { get; set; }
     public string CustomerComment { get; set; } = string.Empty;
@@ -83,6 +83,7 @@ public class OrderDataModel {
                 orders.id,
                 orders.number,
                 orders.name,
+                orders.note,
                 orders.customer_id AS CustomerId,
                 orders.vendor_id AS VendorId,
                 orders.customer_comment AS CustomerComment,
