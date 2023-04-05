@@ -49,9 +49,11 @@ public class BlindBaseCabinetDrawerBoxTests {
     }
 
     [Theory]
-    [InlineData(1067, DrawerSlideType.UnderMount, 384)]
-    [InlineData(1067, DrawerSlideType.SideMount, 368)]
-    public void DrawerBoxWidthTest(double cabWidth, DrawerSlideType slideType, double expectedDrawerWidth) {
+    [InlineData(1067, DrawerSlideType.UnderMount, 384, CabinetMaterialCore.ParticleBoard)]
+    [InlineData(1067, DrawerSlideType.SideMount, 368, CabinetMaterialCore.ParticleBoard)]
+    [InlineData(1067, DrawerSlideType.UnderMount, 386.8, CabinetMaterialCore.Plywood)]
+    [InlineData(1067, DrawerSlideType.SideMount, 370.8, CabinetMaterialCore.Plywood)]
+    public void DrawerBoxWidthTest(double cabWidth, DrawerSlideType slideType, double expectedDrawerWidth, CabinetMaterialCore boxMatCore) {
 
         var cabinet = new BlindBaseCabinetBuilder()
                             .WithDrawers(new() {
@@ -66,6 +68,8 @@ public class BlindBaseCabinetDrawerBoxTests {
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
+                            .WithBoxMaterial(new("White", CabinetMaterialFinishType.Melamine, boxMatCore))
+                            .WithFinishMaterial(new("White", CabinetMaterialFinishType.Melamine, boxMatCore))
                             .Build();
 
         // Act
