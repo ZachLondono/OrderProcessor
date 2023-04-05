@@ -113,7 +113,7 @@ public class DovetailDrawerBoxBuilder {
 
         var widthMM = (availableWidth / drawerCount - DrawerSlideWidthAdjustments[slideType]).AsMillimeters();
 
-        Width = Dimension.FromMillimeters(Math.Ceiling(widthMM));
+        Width = Dimension.FromMillimeters(Math.Round(widthMM, 2));
 
         return this;
     }
