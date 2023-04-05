@@ -62,6 +62,7 @@ internal class ExportService {
         if (configuration.FillMDFDoorOrder) {
             if (File.Exists(_options.MDFDoorTemplateFilePath)) {
 
+                OnProgressReport?.Invoke("Generating MDF Door Orders");
                 var files = await _doorOrderHandler.Handle(order, _options.MDFDoorTemplateFilePath, outputDir);
                 files.ForEach(f => OnFileGenerated?.Invoke(f));
 
@@ -77,6 +78,7 @@ internal class ExportService {
         if (configuration.FillDovetailOrder) {
             if (File.Exists(_options.DovetailTemplateFilePath)) {
 
+                OnProgressReport?.Invoke("Generating Dovetail Drawer Box Orders");
                 var files = await _dovetailOrderHandler.Handle(order, _options.DovetailTemplateFilePath, outputDir);
                 files.ForEach(f => OnFileGenerated?.Invoke(f));
 
@@ -90,12 +92,15 @@ internal class ExportService {
 
     private async Task GenerateEXT(ExportConfiguration configuration, Order order) {
         if (configuration.GenerateEXT) {
+
+            OnProgressReport?.Invoke("Generating EXT File");
             var file = await _extOrderHandler.Handle(order, EXT_OUTPUT_DIRECTORY);
             if (file is not null) {
                 OnFileGenerated?.Invoke(file);
             } else {
                 OnError?.Invoke($"Ext file was not generated");
             }
+
         } else {
             OnProgressReport?.Invoke("Not generating EXT file");
         }
