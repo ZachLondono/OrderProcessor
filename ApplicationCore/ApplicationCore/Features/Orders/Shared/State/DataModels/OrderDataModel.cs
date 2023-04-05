@@ -73,7 +73,9 @@ public class OrderDataModel {
             }
         };
 
-        return new Order(orderId, Source, Number, Name, CustomerId, VendorId, CustomerComment, OrderDate, shippingInfo, billing, Tax, PriceAdjustment, Rush, Info.AsReadOnly(), products, items);
+        var order = new Order(orderId, Source, Number, Name, CustomerId, VendorId, CustomerComment, OrderDate, shippingInfo, billing, Tax, PriceAdjustment, Rush, Info.AsReadOnly(), products, items);
+        order.Note = Note; // TODO: move to constructor
+        return order;
 
     }
 
