@@ -7,6 +7,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Shared.Services;
 using ApplicationCore.Features.Companies.Contracts;
+using System.Runtime.InteropServices;
 
 namespace ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
 
@@ -24,7 +25,7 @@ internal class DoorOrderHandler {
         _getCustomerByIdAsync = getCustomerByIdAsync;
     }
 
-    public async Task Handle(Order order, string template, string outputDirectory) {
+    public async Task<IEnumerable<string>> Handle(Order order, string template, string outputDirectory) {
 
         var doors = order.Products
                             .Where(p => p is IDoorContainer)
@@ -45,43 +46,35 @@ internal class DoorOrderHandler {
 
         if (!doors.Any()) {
             _logger.LogInformation("No doors in order, not filling door order");
-            return;
+            return Enumerable.Empty<string>();
         }
 
         if (!File.Exists(template)) {
             _logger.LogError("Door order template file does not exist, not filling door order");
-            return;
+            return Enumerable.Empty<string>();
         }
 
         if (!Directory.Exists(outputDirectory)) {
             _logger.LogError("Door order output directory does not exist, not filling door order");
-            return;
+            return Enumerable.Empty<string>();
         }
 
         try {
 
-            await GenerateOrderForms(order, doors, template, outputDirectory);
+            return await GenerateOrderForms(order, doors, template, outputDirectory);
 
         } catch (Exception ex) {
 
             _logger.LogError(ex, "Exception thrown while filling door order");
 
-        } finally {
-
-            // Clean up COM objects, calling these twice ensures it is fully cleaned up.
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
         }
 
 
-        return;
+        return Enumerable.Empty<string>();
 
     }
 
-    private async Task GenerateOrderForms(Order order, IEnumerable<MDFDoorComponent> doors, string template, string outputDirectory) {
+    private async Task<IEnumerable<string>> GenerateOrderForms(Order order, IEnumerable<MDFDoorComponent> doors, string template, string outputDirectory) {
 
         var groups = doors.GroupBy(d => new DoorStyleGroupKey() {
             Material = d.Door.Material,
@@ -98,46 +91,64 @@ internal class DoorOrderHandler {
             Visible = false
         };
 
+        List<string> filesGenerated = new();
+
         int index = 0;
+        var workbooks = app.Workbooks;
         foreach (var group in groups) {
 
             Workbook? workbook = null;
 
             try {
 
-                workbook = app.Workbooks.Open(template, ReadOnly: true);
+                workbook = workbooks.Open(template, ReadOnly: true);
 
                 string orderNumber = $"{order.Number}{(groups.Count() == 1 ? "" : $"-{++index}")}";
 
                 var customer = await _getCustomerByIdAsync(order.CustomerId);
                 var customerName = customer?.Name ?? "";
 
-                FillOrderSheet(order, customerName, group, workbook, orderNumber);
+                var worksheets = workbook.Worksheets;
+                Worksheet worksheet = worksheets["MDF"];
+                FillOrderSheet(order, customerName, group, worksheet, orderNumber);
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(worksheets);
 
                 string fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{orderNumber} - {order.Name} MDF DOORS", ".xlsm");
                 string finalPath = Path.GetFullPath(fileName);
 
                 workbook.SaveAs2(finalPath);
+                workbook?.Close(SaveChanges: false);
+                Marshal.ReleaseComObject(workbook);
+
+                filesGenerated.Add(finalPath);
 
             } catch (Exception ex) {
 
                 _logger.LogError(ex, "Exception thrown while filling door order group");
 
-            } finally {
-
-                workbook?.Close(SaveChanges: false);
-
             }
 
         }
 
-        app.Quit();
+        workbooks.Close();
+        app?.Quit();
+
+        Marshal.ReleaseComObject(workbooks);
+        Marshal.ReleaseComObject(app);
+
+        // Clean up COM objects, calling these twice ensures it is fully cleaned up.
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+
+        return filesGenerated;
 
     }
 
-    private static void FillOrderSheet(Order order, string customerName, IGrouping<DoorStyleGroupKey, MDFDoorComponent> doors, Workbook workbook, string orderNumber) {
+    private static void FillOrderSheet(Order order, string customerName, IGrouping<DoorStyleGroupKey, MDFDoorComponent> doors, Worksheet ws, string orderNumber) {
 
-        Worksheet ws = workbook.Worksheets["MDF"];
         ws.Range["OrderDate"].Value2 = order.OrderDate;
         ws.Range["Company"].Value2 = customerName;
         ws.Range["JobNumber"].Value2 = orderNumber;

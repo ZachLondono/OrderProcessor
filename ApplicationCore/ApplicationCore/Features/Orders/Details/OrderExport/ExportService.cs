@@ -3,8 +3,8 @@ using ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.State;
+using ApplicationCore.Features.Shared;
 using ApplicationCore.Features.Shared.Services;
-using ApplicationCore.Pages.CustomerDetails;
 using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.Orders.Details.OrderExport;
@@ -12,6 +12,11 @@ namespace ApplicationCore.Features.Orders.Details.OrderExport;
 internal class ExportService {
 
     private const string EXT_OUTPUT_DIRECTORY = @"C:\CP3\CPDATA";
+
+    public Action<string>? OnProgressReport;
+    public Action<string>? OnFileGenerated;
+    public Action<string>? OnError;
+    public Action<string>? OnActionComplete;
 
     private readonly OrderState _orderState;
     private readonly DoorOrderHandler _doorOrderHandler;
@@ -43,28 +48,62 @@ internal class ExportService {
         var customerName = await GetCustomerName(order.CustomerId);
         outputDir = ReplaceTokensInDirectory(customerName, outputDir);
 
+        await GenerateMDFOrders(configuration, order, outputDir);
+
+        await GenerateDovetailOrders(configuration, order, outputDir);
+
+        await GenerateEXT(configuration, order);
+
+        OnActionComplete?.Invoke("Export Complete");
+
+    }
+
+    private async Task GenerateMDFOrders(ExportConfiguration configuration, Order order, string outputDir) {
         if (configuration.FillMDFDoorOrder) {
-
             if (File.Exists(_options.MDFDoorTemplateFilePath)) {
-                await _doorOrderHandler.Handle(order, _options.MDFDoorTemplateFilePath, outputDir);
+
+                OnProgressReport?.Invoke("Generating MDF Door Orders");
+                var files = await _doorOrderHandler.Handle(order, _options.MDFDoorTemplateFilePath, outputDir);
+                files.ForEach(f => OnFileGenerated?.Invoke(f));
+
+            } else {
+                OnError?.Invoke($"Could not find MDF order template file '{_options.MDFDoorTemplateFilePath}'");
             }
-
+        } else {
+            OnProgressReport?.Invoke("Not generating MDF door order");
         }
+    }
 
+    private async Task GenerateDovetailOrders(ExportConfiguration configuration, Order order, string outputDir) {
         if (configuration.FillDovetailOrder) {
-
             if (File.Exists(_options.DovetailTemplateFilePath)) {
-                await _dovetailOrderHandler.Handle(order, _options.DovetailTemplateFilePath, outputDir);
+
+                OnProgressReport?.Invoke("Generating Dovetail Drawer Box Orders");
+                var files = await _dovetailOrderHandler.Handle(order, _options.DovetailTemplateFilePath, outputDir);
+                files.ForEach(f => OnFileGenerated?.Invoke(f));
+
+            } else {
+                OnError?.Invoke($"Could not find dovetail order template file '{_options.DovetailTemplateFilePath}'");
             }
-
+        } else {
+            OnProgressReport?.Invoke("Not filling dovetail drawer box order");
         }
+    }
 
+    private async Task GenerateEXT(ExportConfiguration configuration, Order order) {
         if (configuration.GenerateEXT) {
 
-            await _extOrderHandler.Handle(order, EXT_OUTPUT_DIRECTORY);
+            OnProgressReport?.Invoke("Generating EXT File");
+            var file = await _extOrderHandler.Handle(order, EXT_OUTPUT_DIRECTORY);
+            if (file is not null) {
+                OnFileGenerated?.Invoke(file);
+            } else {
+                OnError?.Invoke($"Ext file was not generated");
+            }
 
+        } else {
+            OnProgressReport?.Invoke("Not generating EXT file");
         }
-
     }
 
     public string ReplaceTokensInDirectory(string customerName, string outputDir) {
