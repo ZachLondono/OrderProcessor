@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.Companies.Contracts;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Features.Shared;
 using ApplicationCore.Features.Shared.Services;
@@ -47,9 +48,20 @@ internal class ExportService {
         var customerName = await GetCustomerName(order.CustomerId);
         outputDir = ReplaceTokensInDirectory(customerName, outputDir);
 
+        await GenerateMDFOrders(configuration, order, outputDir);
+
+        await GenerateDovetailOrders(configuration, order, outputDir);
+
+        await GenerateEXT(configuration, order);
+
+        OnActionComplete?.Invoke("Export Complete");
+
+    }
+
+    private async Task GenerateMDFOrders(ExportConfiguration configuration, Order order, string outputDir) {
         if (configuration.FillMDFDoorOrder) {
             if (File.Exists(_options.MDFDoorTemplateFilePath)) {
-                
+
                 var files = await _doorOrderHandler.Handle(order, _options.MDFDoorTemplateFilePath, outputDir);
                 files.ForEach(f => OnFileGenerated?.Invoke(f));
 
@@ -59,7 +71,9 @@ internal class ExportService {
         } else {
             OnProgressReport?.Invoke("Not generating MDF door order");
         }
+    }
 
+    private async Task GenerateDovetailOrders(ExportConfiguration configuration, Order order, string outputDir) {
         if (configuration.FillDovetailOrder) {
             if (File.Exists(_options.DovetailTemplateFilePath)) {
 
@@ -72,7 +86,9 @@ internal class ExportService {
         } else {
             OnProgressReport?.Invoke("Not filling dovetail drawer box order");
         }
+    }
 
+    private async Task GenerateEXT(ExportConfiguration configuration, Order order) {
         if (configuration.GenerateEXT) {
             var file = await _extOrderHandler.Handle(order, EXT_OUTPUT_DIRECTORY);
             if (file is not null) {
@@ -83,9 +99,6 @@ internal class ExportService {
         } else {
             OnProgressReport?.Invoke("Not generating EXT file");
         }
-
-        OnActionComplete?.Invoke("Export Complete");
-
     }
 
     public string ReplaceTokensInDirectory(string customerName, string outputDir) {
