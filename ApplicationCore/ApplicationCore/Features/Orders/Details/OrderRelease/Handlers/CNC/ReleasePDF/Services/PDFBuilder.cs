@@ -44,7 +44,7 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
 
     private static void BuildSummary(PageDescriptor page, CoverModel summary, PDFConfiguration config) {
 
-        page.Size(PageSizes.A4);
+        page.Size(PageSizes.Letter);
         page.Margin(2.54f, Unit.Centimetre);
         page.PageColor(Colors.White);
 
@@ -131,7 +131,7 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
 
     private static void BuildPage(PageDescriptor page, PageModel data, PDFConfiguration config, string sectionId) {
 
-        page.Size(PageSizes.A4);
+        page.Size(PageSizes.Letter);
         page.MarginHorizontal(2, Unit.Centimetre);
         page.PageColor(Colors.White);
 
