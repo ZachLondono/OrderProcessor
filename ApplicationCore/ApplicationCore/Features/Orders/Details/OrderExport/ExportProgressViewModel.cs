@@ -1,4 +1,6 @@
 ﻿
+using System.Diagnostics;
+
 namespace ApplicationCore.Features.Orders.Details.OrderExport;
 
 internal class ExportProgressViewModel {
@@ -29,6 +31,11 @@ internal class ExportProgressViewModel {
 
     public ExportProgressViewModel(ExportService service) {
         _service = service;
+
+        _service.OnProgressReport += (message) => OnMessagePublished?.Invoke(new(LogMessageType.Info, message));
+        _service.OnFileGenerated += (message) => OnMessagePublished?.Invoke(new(LogMessageType.FileCreated, message));
+        _service.OnError += (message) => OnMessagePublished?.Invoke(new(LogMessageType.Error, message));
+        _service.OnActionComplete += (message) => OnMessagePublished?.Invoke(new(LogMessageType.Success, message));
     }
 
     public async Task ExportOrder(ExportConfiguration configuration) {
@@ -48,6 +55,22 @@ internal class ExportProgressViewModel {
         Error,
         Success,
         FileCreated
+    }
+
+    private void OpenFile(string filePath) {
+
+        try {
+
+            var psi = new ProcessStartInfo {
+                FileName = filePath,
+                UseShellExecute = true
+            };
+            Process.Start(psi);
+
+        } catch (Exception ex) {
+            Debug.WriteLine(ex);
+        }
+
     }
 
 }
