@@ -36,11 +36,12 @@ public class Order {
         get => SubTotal + Tax + Shipping.Price;
     }
 
-    public Order(Guid id, string source, string number, string name, Guid customerId, Guid vendorId, string customerComment, DateTime orderDate, ShippingInfo shipping, BillingInfo billing, decimal tax, decimal priceAdjustment, bool rush, IReadOnlyDictionary<string, string> info, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> additionalItems) {
+    public Order(Guid id, string source, string number, string name, string note, Guid customerId, Guid vendorId, string customerComment, DateTime orderDate, ShippingInfo shipping, BillingInfo billing, decimal tax, decimal priceAdjustment, bool rush, IReadOnlyDictionary<string, string> info, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> additionalItems) {
         Id = id;
         Source = source;
         Number = number;
         Name = name;
+        Note = note;
         CustomerId = customerId;
         VendorId = vendorId;
         CustomerComment = customerComment;
@@ -55,8 +56,8 @@ public class Order {
         AdditionalItems = additionalItems;
     }
 
-    public static Order Create(string source, string number, string name, Guid customerId, Guid vendorId, string comment, DateTime orderDate, ShippingInfo shipping, BillingInfo billing, decimal tax, decimal priceAdjustment, bool rush, IReadOnlyDictionary<string, string> info, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> additionalItems, Guid? id = null) {
-        return new Order(id ?? Guid.NewGuid(), source, number, name, customerId, vendorId, comment, orderDate, shipping, billing, tax, priceAdjustment, rush, info, products, additionalItems);
+    public static Order Create(string source, string number, string name, string note, Guid customerId, Guid vendorId, string comment, DateTime orderDate, ShippingInfo shipping, BillingInfo billing, decimal tax, decimal priceAdjustment, bool rush, IReadOnlyDictionary<string, string> info, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> additionalItems, Guid? id = null) {
+        return new Order(id ?? Guid.NewGuid(), source, number, name, note, customerId, vendorId, comment, orderDate, shipping, billing, tax, priceAdjustment, rush, info, products, additionalItems);
     }
 
 }
