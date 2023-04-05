@@ -6,6 +6,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Office.Interop.Excel;
+using System.Runtime.InteropServices;
 
 namespace ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
 
@@ -48,20 +49,26 @@ internal class DovetailOrderHandler {
         };
 
         List<string> filesGenerated = new();
+        var workbooks = app.Workbooks;
         try {     
 
             foreach (var group in groups) {
 
-                var workbook = app.Workbooks.Open(template, ReadOnly: true);
+                Workbook workbook = workbooks.Open(template, ReadOnly: true);
                 
                 var data = MapData(order, customer?.Name ?? "", group);
-                WriteData(workbook, data);
+                var worksheets = workbook.Worksheets;
+                Worksheet worksheet = worksheets["Order"];
+                WriteData(worksheet, data);
+                Marshal.ReleaseComObject(worksheets);
+                Marshal.ReleaseComObject(worksheet);
 
                 var filename = _fileReader.GetAvailableFileName(outputDirectory, $"{order.Number} - {order.Name} Drawerboxes", ".xlsm");
                 string finalPath = Path.GetFullPath(filename);
 
                 workbook.SaveAs2(finalPath);
-                workbook?.Close();
+                workbook.Close(SaveChanges: false);
+                Marshal.ReleaseComObject(workbook);
 
                 filesGenerated.Add(finalPath);
 
@@ -71,17 +78,19 @@ internal class DovetailOrderHandler {
 
             _logger.LogError(ex, "Exception thrown while filling drawer box order");
 
-        } finally {
-
-            app?.Quit();
-
-            // Clean up COM objects, calling these twice ensures it is fully cleaned up.
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
         }
+
+        workbooks.Close();
+        app?.Quit();
+
+        Marshal.ReleaseComObject(workbooks);
+        Marshal.ReleaseComObject(app);
+
+        // Clean up COM objects, calling these twice ensures it is fully cleaned up.
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
 
         return filesGenerated;
 
@@ -140,9 +149,7 @@ internal class DovetailOrderHandler {
         };
     }
 
-    public static void WriteData(Workbook workbook, DBOrder order) {
-
-        var ws = workbook.Worksheets["Order"];
+    public static void WriteData(Worksheet ws, DBOrder order) {
 
         var cells = new LineItemCells() {
             Line = ws.Range["LineCol"],
@@ -177,6 +184,8 @@ internal class DovetailOrderHandler {
             cells.MoveToNextCellBellow();
 
         }
+
+        cells.ReleaseObjects();
 
         ws.Range["OrderNumber"].Value = order.OrderNumber;
         ws.Range["OrderDate"].Value = order.OrderDate;
@@ -344,6 +353,31 @@ internal class DovetailOrderHandler {
             if (Name is not null) Name.Value = lineItem.Name ?? "";
             if (Description is not null) Description.Value = lineItem.Description ?? "";
             if (UnitPrice is not null) UnitPrice.Value = lineItem.UnitPrice ?? "";
+        }
+
+        public void ReleaseObjects() {
+            if (Line is not null) Marshal.ReleaseComObject(Line);
+            if (Qty is not null) Marshal.ReleaseComObject(Qty);
+            if (Width is not null) Marshal.ReleaseComObject(Width);
+            if (Height is not null) Marshal.ReleaseComObject(Height);
+            if (Depth is not null) Marshal.ReleaseComObject(Depth);
+            if (A is not null) Marshal.ReleaseComObject(A);
+            if (B is not null) Marshal.ReleaseComObject(B);
+            if (C is not null) Marshal.ReleaseComObject(C);
+            if (Material is not null) Marshal.ReleaseComObject(Material);
+            if (Bottom is not null) Marshal.ReleaseComObject(Bottom);
+            if (Notch is not null) Marshal.ReleaseComObject(Notch);
+            if (Insert is not null) Marshal.ReleaseComObject(Insert);
+            if (Clips is not null) Marshal.ReleaseComObject(Clips);
+            if (MountingHoles is not null) Marshal.ReleaseComObject(MountingHoles);
+            if (PostFinish is not null) Marshal.ReleaseComObject(PostFinish);
+            if (ScoopFront is not null) Marshal.ReleaseComObject(ScoopFront);
+            if (Logo is not null) Marshal.ReleaseComObject(Logo);
+            if (LevelName is not null) Marshal.ReleaseComObject(LevelName);
+            if (Note is not null) Marshal.ReleaseComObject(Note);
+            if (Name is not null) Marshal.ReleaseComObject(Name);
+            if (Description is not null) Marshal.ReleaseComObject(Description);
+            if (UnitPrice is not null) Marshal.ReleaseComObject(UnitPrice);
         }
 
     }
