@@ -24,7 +24,7 @@ internal class DoorOrderHandler {
         _getCustomerByIdAsync = getCustomerByIdAsync;
     }
 
-    public async Task Handle(Order order, string template, string outputDirectory) {
+    public async Task<IEnumerable<string>> Handle(Order order, string template, string outputDirectory) {
 
         var doors = order.Products
                             .Where(p => p is IDoorContainer)
@@ -45,22 +45,22 @@ internal class DoorOrderHandler {
 
         if (!doors.Any()) {
             _logger.LogInformation("No doors in order, not filling door order");
-            return;
+            return Enumerable.Empty<string>();
         }
 
         if (!File.Exists(template)) {
             _logger.LogError("Door order template file does not exist, not filling door order");
-            return;
+            return Enumerable.Empty<string>();
         }
 
         if (!Directory.Exists(outputDirectory)) {
             _logger.LogError("Door order output directory does not exist, not filling door order");
-            return;
+            return Enumerable.Empty<string>();
         }
 
         try {
 
-            await GenerateOrderForms(order, doors, template, outputDirectory);
+            return await GenerateOrderForms(order, doors, template, outputDirectory);
 
         } catch (Exception ex) {
 
@@ -77,11 +77,11 @@ internal class DoorOrderHandler {
         }
 
 
-        return;
+        return Enumerable.Empty<string>();
 
     }
 
-    private async Task GenerateOrderForms(Order order, IEnumerable<MDFDoorComponent> doors, string template, string outputDirectory) {
+    private async Task<IEnumerable<string>> GenerateOrderForms(Order order, IEnumerable<MDFDoorComponent> doors, string template, string outputDirectory) {
 
         var groups = doors.GroupBy(d => new DoorStyleGroupKey() {
             Material = d.Door.Material,
@@ -97,6 +97,8 @@ internal class DoorOrderHandler {
             DisplayAlerts = false,
             Visible = false
         };
+
+        List<string> filesGenerated = new();
 
         int index = 0;
         foreach (var group in groups) {
@@ -119,6 +121,8 @@ internal class DoorOrderHandler {
 
                 workbook.SaveAs2(finalPath);
 
+                filesGenerated.Add(finalPath);
+
             } catch (Exception ex) {
 
                 _logger.LogError(ex, "Exception thrown while filling door order group");
@@ -132,6 +136,8 @@ internal class DoorOrderHandler {
         }
 
         app.Quit();
+
+        return filesGenerated;
 
     }
 

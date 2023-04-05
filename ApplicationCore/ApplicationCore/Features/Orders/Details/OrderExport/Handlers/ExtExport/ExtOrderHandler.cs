@@ -14,7 +14,7 @@ internal class ExtOrderHandler {
         _fileReader = fileReader;
     }
 
-    public Task Handle(Order order, string outputDirectory) {
+    public Task<string?> Handle(Order order, string outputDirectory) {
 
         var products = order.Products
                             .Where(p => p is IPPProductContainer)
@@ -47,7 +47,7 @@ internal class ExtOrderHandler {
             }
         }
 
-        return Task.CompletedTask;
+        return Task.FromResult<string?>(filePath);
 
     }
 
