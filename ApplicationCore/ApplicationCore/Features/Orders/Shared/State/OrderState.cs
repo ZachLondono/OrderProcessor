@@ -7,6 +7,7 @@ namespace ApplicationCore.Features.Orders.Shared.State;
 public class OrderState {
 
     public Order? Order { get; private set; }
+    public bool IsDirty { get; private set; }
 
     private readonly IBus _bus;
     private readonly ILogger<OrderState> _logger;
@@ -32,6 +33,18 @@ public class OrderState {
     public void ReplaceOrder(Order order) {
         Order = order;
         _logger.LogInformation("Current order replaced with order: {OrderId}", order.Id);
+    }
+
+    public void SetNote(string note) {
+        if (Order is null) return;
+        Order.Note = note;
+        IsDirty = true;
+    }
+
+    public async Task SaveChanges() {
+        if (Order is null || !IsDirty) return;
+        await _bus.Send(new SaveChanges.Command(Order));
+        IsDirty = false;
     }
 
 }

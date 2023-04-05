@@ -10,7 +10,6 @@ internal class JobSummary {
     public byte[] VendorLogo { get; set; } = Array.Empty<byte>();
     public string Comment { get; set; } = string.Empty;
     public DateTime ReleaseDate { get; set; }
-    public List<Supply> Supplies { get; set; } = new();
 
     public string SpecialRequirements { get; set; } = string.Empty;
 
@@ -24,5 +23,8 @@ internal class JobSummary {
     public List<ClosetPartGroup> ClosetParts { get; set; } = new();
     public List<DrawerBoxGroup> DrawerBoxes { get; set; } = new();
     public List<DoorGroup> Doors { get; set; } = new();
+
+    public bool ShowSuppliesInSummary { get; set; } = false;
+    public List<Supply> Supplies { get; set; } = new();
 
 }

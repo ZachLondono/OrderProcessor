@@ -27,7 +27,12 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
     public async Task Decorate(Order order, IDocumentContainer container) {
 
         var jobSummary = await GetJobSummaryModel(order);
+        ComposeJobSummary(container, jobSummary);
 
+    }
+
+    private static void ComposeJobSummary(IDocumentContainer container, JobSummary jobSummary) {
+        
         container.Page(page => {
 
             page.Size(PageSizes.Letter);
@@ -111,13 +116,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                             .Padding(5)
                             .AlignCenter()
                             .AlignMiddle()
-                            .Text(
-"""
-White Edge Banding.
-Paint Doors Melamine Match White.
-Trash cabinet has 1 full height door w/ drawer box. See picture bellow.
-"""
-)
+                            .Text(jobSummary.SpecialRequirements)
                             .FontSize(10);
 
                     column.Item().PaddingTop(20).PaddingBottom(20).Row(row => row.RelativeItem().LineHorizontal(1).LineColor(Colors.Grey.Medium));
@@ -138,10 +137,10 @@ Trash cabinet has 1 full height door w/ drawer box. See picture bellow.
                         foreach (var group in jobSummary.Doors) {
                             ComposeDoorTable(column.Item(), group);
                         }
+                    }
 
-                        if (jobSummary.Supplies.Any()) {
-                            ComposeSuppliesTable(column.Item(), jobSummary.Supplies);
-                        }
+                    if (jobSummary.ShowSuppliesInSummary && jobSummary.Supplies.Any()) {
+                        ComposeSuppliesTable(column.Item(), jobSummary.Supplies);
                     }
 
                 });
@@ -149,7 +148,7 @@ Trash cabinet has 1 full height door w/ drawer box. See picture bellow.
             page.Footer()
                 .AlignCenter()
                 .Text(x => {
-                    
+
                     x.DefaultTextStyle(x => x.FontSize(12));
 
                     x.Span("Page ");
@@ -160,9 +159,6 @@ Trash cabinet has 1 full height door w/ drawer box. See picture bellow.
                 });
 
         });
-
-        return;
-
     }
 
     private async Task<JobSummary> GetJobSummaryModel(Order order) {
@@ -293,9 +289,8 @@ Trash cabinet has 1 full height door w/ drawer box. See picture bellow.
             VendorLogo = vendor?.Logo ?? Array.Empty<byte>(),
             Comment = order.CustomerComment,
             ReleaseDate = DateTime.Now,
-            Supplies = supplies,
 
-            SpecialRequirements = "",//order.Comment
+            SpecialRequirements = order.Note,
 
             SubTotal = order.SubTotal,
             SalesTax = order.Tax,
@@ -303,11 +298,13 @@ Trash cabinet has 1 full height door w/ drawer box. See picture bellow.
             Total = order.Total,
 
             ShowItemsInSummary = false,
-            
             Cabients = cabs,
             ClosetParts = cp,
             Doors = doors,
-            DrawerBoxes = db
+            DrawerBoxes = db,
+
+            ShowSuppliesInSummary = false,
+            Supplies = supplies,
 
         };
 
@@ -766,6 +763,5 @@ Trash cabinet has 1 full height door w/ drawer box. See picture bellow.
         }
 
     }
-
 
 }

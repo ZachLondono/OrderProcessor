@@ -28,7 +28,7 @@ public partial class CreateNewOrder {
 
         public override async Task<Response<Order>> Handle(Command request) {
 
-            Order order = Order.Create(request.Source, request.Number, request.Name, request.CustomerId, request.VendorId, request.Comment, request.OrderDate, request.Shipping, request.Billing, request.Tax, request.PriceAdjustment, request.Rush, request.Info, request.Products, request.AdditionalItems, request.OrderId);
+            Order order = Order.Create(request.Source, request.Number, request.Name, string.Empty, request.CustomerId, request.VendorId, request.Comment, request.OrderDate, request.Shipping, request.Billing, request.Tax, request.PriceAdjustment, request.Rush, request.Info, request.Products, request.AdditionalItems, request.OrderId);
 
             using var connection = await _factory.CreateConnection();
 
@@ -81,6 +81,7 @@ public partial class CreateNewOrder {
                     source,
                     number,
                     name,
+                    note,
                     vendor_id,
                     customer_id,
                     customer_comment,
@@ -102,6 +103,7 @@ public partial class CreateNewOrder {
                     @Source,
                     @Number,
                     @Name,
+                    @Note,
                     @VendorId,
                     @CustomerId,
                     @CustomerComment,
@@ -124,6 +126,7 @@ public partial class CreateNewOrder {
                     order.Source,
                     order.Name,
                     order.Number,
+                    order.Note,
                     order.VendorId,
                     order.CustomerId,
                     order.CustomerComment,
