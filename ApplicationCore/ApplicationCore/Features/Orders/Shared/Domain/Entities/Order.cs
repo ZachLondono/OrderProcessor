@@ -22,6 +22,8 @@ public class Order {
     public IEnumerable<IProduct> Products { get; }
     public IEnumerable<AdditionalItem> AdditionalItems { get; }
 
+    public string Note { get; set; } = string.Empty;
+
     public decimal SubTotal {
         get => Products.Sum(b => b.Qty * b.UnitPrice) + AdditionalItems.Sum(i => i.Price);
     }
