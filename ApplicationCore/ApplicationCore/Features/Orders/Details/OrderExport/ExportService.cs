@@ -2,6 +2,7 @@
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport;
 using ApplicationCore.Features.Orders.Shared.State;
+using ApplicationCore.Features.Shared;
 using ApplicationCore.Features.Shared.Services;
 using Microsoft.Extensions.Options;
 
@@ -48,7 +49,10 @@ internal class ExportService {
 
         if (configuration.FillMDFDoorOrder) {
             if (File.Exists(_options.MDFDoorTemplateFilePath)) {
-                await _doorOrderHandler.Handle(order, _options.MDFDoorTemplateFilePath, outputDir);
+                
+                var files = await _doorOrderHandler.Handle(order, _options.MDFDoorTemplateFilePath, outputDir);
+                files.ForEach(f => OnFileGenerated?.Invoke(f));
+
             } else {
                 OnError?.Invoke($"Could not find MDF order template file '{_options.MDFDoorTemplateFilePath}'");
             }
@@ -58,7 +62,10 @@ internal class ExportService {
 
         if (configuration.FillDovetailOrder) {
             if (File.Exists(_options.DovetailTemplateFilePath)) {
-                await _dovetailOrderHandler.Handle(order, _options.DovetailTemplateFilePath, outputDir);
+
+                var files = await _dovetailOrderHandler.Handle(order, _options.DovetailTemplateFilePath, outputDir);
+                files.ForEach(f => OnFileGenerated?.Invoke(f));
+
             } else {
                 OnError?.Invoke($"Could not find dovetail order template file '{_options.DovetailTemplateFilePath}'");
             }
@@ -67,7 +74,12 @@ internal class ExportService {
         }
 
         if (configuration.GenerateEXT) {
-            await _extOrderHandler.Handle(order, EXT_OUTPUT_DIRECTORY);
+            var file = await _extOrderHandler.Handle(order, EXT_OUTPUT_DIRECTORY);
+            if (file is not null) {
+                OnFileGenerated?.Invoke(file);
+            } else {
+                OnError?.Invoke($"Ext file was not generated");
+            }
         } else {
             OnProgressReport?.Invoke("Not generating EXT file");
         }
