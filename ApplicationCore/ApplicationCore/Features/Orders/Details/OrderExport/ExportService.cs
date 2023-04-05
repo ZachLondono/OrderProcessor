@@ -1,10 +1,8 @@
 ﻿using ApplicationCore.Features.Companies.Contracts;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Features.Shared.Services;
-using ApplicationCore.Pages.CustomerDetails;
 using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.Orders.Details.OrderExport;
@@ -12,6 +10,11 @@ namespace ApplicationCore.Features.Orders.Details.OrderExport;
 internal class ExportService {
 
     private const string EXT_OUTPUT_DIRECTORY = @"C:\CP3\CPDATA";
+
+    public Action<string>? OnProgressReport;
+    public Action<string>? OnFileGenerated;
+    public Action<string>? OnError;
+    public Action<string>? OnActionComplete;
 
     private readonly OrderState _orderState;
     private readonly DoorOrderHandler _doorOrderHandler;
@@ -44,26 +47,32 @@ internal class ExportService {
         outputDir = ReplaceTokensInDirectory(customerName, outputDir);
 
         if (configuration.FillMDFDoorOrder) {
-
             if (File.Exists(_options.MDFDoorTemplateFilePath)) {
                 await _doorOrderHandler.Handle(order, _options.MDFDoorTemplateFilePath, outputDir);
+            } else {
+                OnError?.Invoke($"Could not find MDF order template file '{_options.MDFDoorTemplateFilePath}'");
             }
-
+        } else {
+            OnProgressReport?.Invoke("Not generating MDF door order");
         }
 
         if (configuration.FillDovetailOrder) {
-
             if (File.Exists(_options.DovetailTemplateFilePath)) {
                 await _dovetailOrderHandler.Handle(order, _options.DovetailTemplateFilePath, outputDir);
+            } else {
+                OnError?.Invoke($"Could not find dovetail order template file '{_options.DovetailTemplateFilePath}'");
             }
-
+        } else {
+            OnProgressReport?.Invoke("Not filling dovetail drawer box order");
         }
 
         if (configuration.GenerateEXT) {
-
             await _extOrderHandler.Handle(order, EXT_OUTPUT_DIRECTORY);
-
+        } else {
+            OnProgressReport?.Invoke("Not generating EXT file");
         }
+
+        OnActionComplete?.Invoke("Export Complete");
 
     }
 
