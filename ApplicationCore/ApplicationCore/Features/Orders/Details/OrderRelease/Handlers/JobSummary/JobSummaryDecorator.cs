@@ -137,10 +137,10 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         foreach (var group in jobSummary.Doors) {
                             ComposeDoorTable(column.Item(), group);
                         }
+                    }
 
-                        if (jobSummary.Supplies.Any()) {
-                            ComposeSuppliesTable(column.Item(), jobSummary.Supplies);
-                        }
+                    if (jobSummary.ShowSuppliesInSummary && jobSummary.Supplies.Any()) {
+                        ComposeSuppliesTable(column.Item(), jobSummary.Supplies);
                     }
 
                 });
@@ -289,7 +289,6 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             VendorLogo = vendor?.Logo ?? Array.Empty<byte>(),
             Comment = order.CustomerComment,
             ReleaseDate = DateTime.Now,
-            Supplies = supplies,
 
             SpecialRequirements = order.Note,
 
@@ -299,11 +298,13 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             Total = order.Total,
 
             ShowItemsInSummary = false,
-            
             Cabients = cabs,
             ClosetParts = cp,
             Doors = doors,
-            DrawerBoxes = db
+            DrawerBoxes = db,
+
+            ShowSuppliesInSummary = false,
+            Supplies = supplies,
 
         };
 
