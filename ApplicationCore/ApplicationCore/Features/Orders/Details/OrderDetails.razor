@@ -99,8 +99,8 @@
 
     <section class="mt-10" id="noteSection">
         <div>
-            <label for="note">Note</label>
-            <Button OnClickAsync="@SaveChangesAsync" Class="text-xs" Style="ButtonStyle.Text">Save</Button>
+            <label for="note" class="mr-3">Note</label>
+            <Button OnClickAsync="@SaveChangesAsync" Size="ButtonSize.XSmall" Style="ButtonStyle.Text">Save</Button>
         </div>
         <textarea id="note" placeholder="Order Note..." @bind="_note" class="w-full" />
     </section>
