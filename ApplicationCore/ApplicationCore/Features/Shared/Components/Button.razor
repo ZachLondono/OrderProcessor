@@ -28,11 +28,22 @@
     public ButtonRounded Rounded { get; set; } = ButtonRounded.All;
 
     [Parameter]
+    public ButtonSize Size { get; set; } = ButtonSize.Medium;
+
+    [Parameter]
     public string Type { get; set; } = "button";
 
     private string Classes() {
 
-        string baseClass = "font-semibold px-2 py-1.5";
+        string baseClass = "font-semibold";
+
+        string sizeClass = Size switch {
+            ButtonSize.XSmall => "text-xs p-1",
+            ButtonSize.Small => "text-sm p-1.5",
+            ButtonSize.Medium => "text-base px-2 py-1.5",
+            ButtonSize.Large => "text-lg px-2.5 py-2",
+            _ => ""
+        };
 
         string roundedClass = Rounded switch {
             ButtonRounded.Left => "rounded-l",
@@ -65,8 +76,15 @@
             _ => ""
         };
 
-        return $"{baseClass} {roundedClass} {styleClass} {Class}";
+        return $"{baseClass} {sizeClass} {roundedClass} {styleClass} {Class}";
 
+    }
+
+    public enum ButtonSize {
+        XSmall,
+        Small,
+        Medium,
+        Large
     }
 
     public enum ButtonStyle {
