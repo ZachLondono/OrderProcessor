@@ -5,7 +5,13 @@
     <h2>Current Version <span>@DataContext.CurrentVersion</span></h2>
     @if (DataContext.UsePreviewChannel) {
         <div>
-        <span class="px-2 py-1 font-semibold text-xs bg-cyan-500 text-white rounded-full shadow-sm">preview</span>
+            <span class="px-2 py-1 font-semibold text-xs bg-cyan-500 text-white rounded-full shadow-sm">preview</span>
+        </div>
+    }
+
+    @if (DataContext.Error is not null) {
+        <div class="text-red-700">
+            @DataContext.Error
         </div>
     }
 
