@@ -1,4 +1,6 @@
-﻿namespace ApplicationCore.Features.Updates;
+﻿using Microsoft.Extensions.Logging;
+
+namespace ApplicationCore.Features.Updates;
 
 internal class UpdatesDialogViewModel {
 
@@ -59,9 +61,11 @@ internal class UpdatesDialogViewModel {
     public Action? OnPropertyChanged { get; set; }
 
     private readonly ApplicationVersionService _versionService;
+    private readonly ILogger<UpdatesDialogViewModel> _logger;
 
-    public UpdatesDialogViewModel(ApplicationVersionService versionService) {
+    public UpdatesDialogViewModel(ApplicationVersionService versionService, ILogger<UpdatesDialogViewModel> logger) {
         _versionService = versionService;
+        _logger = logger;
     }
 
     public async Task CheckForUpdates() {
@@ -69,9 +73,11 @@ internal class UpdatesDialogViewModel {
         try { 
             CurrentVersion = await _versionService.GetCurrentVersion(InstallerUri);
             var newVersion = await _versionService.GetLatestVersion(InstallerUri);
+            _logger.LogInformation("Latest version available is {Version}", newVersion);
             _availableUpdate = newVersion == CurrentVersion ? null : newVersion;
-		} catch {
+		} catch (Exception ex) {
             Error = "Could not check if any updates are available";
+            _logger.LogError(ex, "Exception thrown while checking for updates");
         }
 		IsCheckingForUpdates = false;
     }
@@ -80,8 +86,10 @@ internal class UpdatesDialogViewModel {
         IsUpdateDownloading = true;
         try { 
             _updateInstallerFilePath = await _versionService.DownloadInstaller(InstallerUri);
-		} catch {
+            _logger.LogInformation("Update installer downloaded to {FilePath}", _updateInstallerFilePath);
+        } catch (Exception ex) {
             Error = "Could not download new update";
+            _logger.LogError(ex, "Exception thrown while downloading update installer");
         }
 		IsUpdateDownloading = false;
     }
