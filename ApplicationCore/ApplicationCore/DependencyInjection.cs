@@ -9,6 +9,7 @@ using ApplicationCore.Features.WorkOrders;
 using ApplicationCore.Features.Companies;
 using ApplicationCore.Features.Shared.Services;
 using ApplicationCore.Pages;
+using ApplicationCore.Features.Updates;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -31,7 +32,9 @@ public static class DependencyInjection {
 
         services.AddWorkOrders();
 
-        services.AddBlazoredModal();
+        services.AddUpdates();
+
+		services.AddBlazoredModal();
 
         services.AddPages();
 
