@@ -47,6 +47,15 @@ internal class UpdatesDialogViewModel {
         }
     }
 
+    private string? _error = null;
+    public string? Error {
+        get => _error;
+        private set {
+            _error = value;
+            OnPropertyChanged?.Invoke();
+        }
+    }
+
     public Action? OnPropertyChanged { get; set; }
 
     private readonly ApplicationVersionService _versionService;
@@ -57,16 +66,24 @@ internal class UpdatesDialogViewModel {
 
     public async Task CheckForUpdates() {
         IsCheckingForUpdates = true;
-        CurrentVersion = await _versionService.GetCurrentVersion(InstallerUri);
-        var newVersion = await _versionService.GetLatestVersion(InstallerUri);
-        _availableUpdate = newVersion == CurrentVersion ? null : newVersion;
-        IsCheckingForUpdates = false;
+        try { 
+            CurrentVersion = await _versionService.GetCurrentVersion(InstallerUri);
+            var newVersion = await _versionService.GetLatestVersion(InstallerUri);
+            _availableUpdate = newVersion == CurrentVersion ? null : newVersion;
+		} catch {
+            Error = "Could not check if any updates are available";
+        }
+		IsCheckingForUpdates = false;
     }
 
     public async Task DownloadUpdate() {
         IsUpdateDownloading = true;
-        _updateInstallerFilePath = await _versionService.DownloadInstaller(InstallerUri);
-        IsUpdateDownloading = false;
+        try { 
+            _updateInstallerFilePath = await _versionService.DownloadInstaller(InstallerUri);
+		} catch {
+            Error = "Could not download new update";
+        }
+		IsUpdateDownloading = false;
     }
 
     public void InstallUpdate() {
