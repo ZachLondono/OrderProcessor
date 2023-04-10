@@ -7,6 +7,9 @@ internal class UpdatesDialogViewModel {
     private const string RELEASE_INSTALLER_URI = "http://zacharylondono.com/release";
     private const string PREVIEW_INSTALLER_URI = "http://zacharylondono.com/preview";
 
+    /// <summary>
+    /// Uri to the directory where the app installer is located
+    /// </summary>
     private string InstallerUri { get => UsePreviewChannel ? PREVIEW_INSTALLER_URI : RELEASE_INSTALLER_URI; }
 
     public bool UsePreviewChannel { get; private set; } = true; // TODO: get preview flag from config file
@@ -18,6 +21,15 @@ internal class UpdatesDialogViewModel {
         get => _availableUpdate;
         private set {
             _availableUpdate = value;
+            OnPropertyChanged?.Invoke();
+        }
+    }
+
+    private string _latestReleaseNotes = string.Empty;
+    public string LatestReleaseNotes {
+        get => _latestReleaseNotes;
+        private set {
+            _latestReleaseNotes = value;
             OnPropertyChanged?.Invoke();
         }
     }
@@ -70,7 +82,8 @@ internal class UpdatesDialogViewModel {
 
     public async Task CheckForUpdates() {
         IsCheckingForUpdates = true;
-        try { 
+        try {
+            LatestReleaseNotes = await _versionService.GetReleaseNotes(InstallerUri);
             CurrentVersion = await _versionService.GetCurrentVersion(InstallerUri);
             var newVersion = await _versionService.GetLatestVersion(InstallerUri);
             _logger.LogInformation("Latest version available is {Version}", newVersion);
