@@ -180,7 +180,7 @@
 
 	private async Task OpenUpdatesDialog() {
 		var dialog = Modal.Show<UpdatesDialog>("Updates", new ModalOptions() {
-			Size = ModalSize.Small
+			Size = ModalSize.Automatic
 		});
 		_ = await dialog.Result;
 	}
