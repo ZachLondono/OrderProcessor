@@ -22,6 +22,9 @@ public static class DependencyInjection {
         services.AddMediatR(typeof(DependencyInjection));
 
         services.AddSingleton<IServiceProvider>(sp => sp);
+
+        services.AddHttpClient();
+
         services.AddTransient<IAccessDBConnectionFactory, AccessDBConnectionFactory>();
 
         services.AddTransient<NavigationService>();
