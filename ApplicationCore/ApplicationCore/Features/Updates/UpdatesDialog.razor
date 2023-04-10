@@ -2,15 +2,15 @@
 @inject UpdatesDialogViewModel DataContext
 
 <div class="grid grid-cols-1 justify-items-center">
-    <h2>Current Version <span>@DataContext.CurrentVersion</span></h2>
+    <h2>
+        Current Version <span>@DataContext.CurrentVersion</span>
     @if (DataContext.UsePreviewChannel) {
-        <div>
-            <span class="px-2 py-1 font-semibold text-xs bg-cyan-500 text-white rounded-full shadow-sm">preview</span>
-        </div>
+            <span class="px-2 py-1 ml-3 font-semibold text-xs bg-cyan-500 text-white rounded-full shadow-sm">preview</span>
     }
+    </h2>
 
     @if (DataContext.Error is not null) {
-        <div class="text-red-700 text-center">
+        <div class="text-red-700 text-center my-3">
             @DataContext.Error
         </div>
     }
@@ -25,17 +25,17 @@
 
     } else if (DataContext.IsUpdateReady) {
 
-        <div>Update is ready to install. (@DataContext.AvailableUpdate)</div>
+        <div class="mb-3">Update is ready to install. (@DataContext.AvailableUpdate)</div>
         <Button Style="Button.ButtonStyle.Contained" Color="Button.ButtonColor.Success" OnClick="DataContext.InstallUpdate">Install</Button>
 
     } else if (DataContext.AvailableUpdate is not null) {
 
-        <div>Update available. (@DataContext.AvailableUpdate)</div>
+        <div class="mb-3">Update available. (@DataContext.AvailableUpdate)</div>
         <Button Style="Button.ButtonStyle.Contained" Color="Button.ButtonColor.Success" OnClickAsync="DataContext.DownloadUpdate">Download</Button>
 
     } else {
     
-        <div>No updates available</div>
+        <div class="mb-3">No updates available</div>
         <Button Style="Button.ButtonStyle.Outline" Color="Button.ButtonColor.Secondary" OnClickAsync="DataContext.CheckForUpdates">Refresh</Button>
 
     }
