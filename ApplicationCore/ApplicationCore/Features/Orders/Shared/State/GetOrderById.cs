@@ -84,7 +84,7 @@ public class GetOrderById {
                 productData.AddRange(data.Cast<IProductDataModel>());
 
             } catch (Exception ex) {
-                _logger.LogError("Exception thrown while trying to read data for product type {Type} in order {OrderId} {Ex}", typeof(T), orderId, ex);
+                _logger.LogError(ex, "Exception thrown while trying to read data for product type {Type} in order {OrderId}", typeof(MDFDoorDataModel), orderId);
             }
 
         }
@@ -93,7 +93,7 @@ public class GetOrderById {
             try {
                 accumulator.Add(data.MapToProduct());
             } catch (Exception ex) {
-                _logger.LogError("Exception thrown while trying to map data to product {Ex}", ex);
+                _logger.LogError(ex, "Exception thrown while trying to map data to product");
             }
             return accumulator;
         }
