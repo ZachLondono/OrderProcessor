@@ -25,5 +25,4 @@ public class DoorFrame {
 
     public DoorFrame() { }
 
-
 }

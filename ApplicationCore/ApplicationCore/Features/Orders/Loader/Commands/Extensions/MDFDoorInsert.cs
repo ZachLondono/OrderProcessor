@@ -25,6 +25,8 @@ public partial class CreateNewOrder {
                 mdfdoor.FrameSize.RightStile,
             };
 
+            // TODO: save door orientation and additional openings
+
             await connection.ExecuteAsync("""
                     INSERT INTO mdf_door_products
                         (product_id,

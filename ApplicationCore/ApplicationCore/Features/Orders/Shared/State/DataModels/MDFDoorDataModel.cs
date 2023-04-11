@@ -70,7 +70,11 @@ internal class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuer
             RightStile = RightStile
         };
 
-        return new MDFDoorProduct(Id, UnitPrice, Room, Qty, ProductNumber, Type, Height, Width, Note, frameSize, Material, Thickness, FramingBead, EdgeDetail, PanelDetail, PanelDrop, PaintColor);
+        // TODO: read these values from the database
+        var orientation = DoorOrientation.Vertical;
+        var additionalOpenings = Array.Empty<AdditionalOpening>();
+
+        return new MDFDoorProduct(Id, UnitPrice, Room, Qty, ProductNumber, Type, Height, Width, Note, frameSize, Material, Thickness, FramingBead, EdgeDetail, PanelDetail, PanelDrop, orientation, additionalOpenings, PaintColor);
 
     }
 

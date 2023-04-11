@@ -312,8 +312,11 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
 
         }
 
+        // TODO: read these values from the workbook
+        var additionalOpenings = new AdditionalOpening[0];
+        var orientation = DoorOrientation.Vertical;
 
-        return MDFDoorProduct.Create(lineItem.UnitPrice, "", lineItem.Qty, lineItem.PartNumber, type, height, width, lineItem.Note, frame, lineItem.Material, thickness, header.Style, header.EdgeProfile, header.PanelDetail, panelDrop, header.Color);
+        return MDFDoorProduct.Create(lineItem.UnitPrice, "", lineItem.Qty, lineItem.PartNumber, type, height, width, lineItem.Note, frame, lineItem.Material, thickness, header.Style, header.EdgeProfile, header.PanelDetail, panelDrop, orientation, additionalOpenings, header.Color);
 
     }
 
