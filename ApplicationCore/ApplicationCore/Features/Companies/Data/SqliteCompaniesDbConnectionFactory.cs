@@ -11,7 +11,7 @@ namespace ApplicationCore.Features.Companies.Data;
 public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory {
 
     public const int DB_VERSION = 1;
-    private static SemaphoreSlim semaphore = new(1);
+    private static readonly SemaphoreSlim semaphore = new(1);
 
     private readonly IConfiguration _configuration;
     private readonly ILogger<SqliteCompaniesDbConnectionFactory> _logger;
