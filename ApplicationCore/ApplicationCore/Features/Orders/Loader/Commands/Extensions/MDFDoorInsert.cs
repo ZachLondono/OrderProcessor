@@ -23,9 +23,8 @@ public partial class CreateNewOrder {
                 mdfdoor.FrameSize.BottomRail,
                 mdfdoor.FrameSize.LeftStile,
                 mdfdoor.FrameSize.RightStile,
+                mdfdoor.Orientation
             };
-
-            // TODO: save door orientation and additional openings
 
             await connection.ExecuteAsync("""
                     INSERT INTO mdf_door_products
@@ -38,7 +37,8 @@ public partial class CreateNewOrder {
                         top_rail,
                         bottom_rail,
                         left_stile,
-                        right_stile)
+                        right_stile,
+                        orientation)
                     VALUES
                         (@ProductId,
                         @Room,
@@ -49,8 +49,31 @@ public partial class CreateNewOrder {
                         @TopRail,
                         @BottomRail,
                         @LeftStile,
-                        @RightStile);
+                        @RightStile,
+                        @Orientation);
                     """, parameters, trx);
+
+            if (mdfdoor.AdditionalOpenings.Any()) {
+                foreach (var opening in mdfdoor.AdditionalOpenings) {
+                    await connection.ExecuteAsync("""
+                        INSERT INTO mdf_door_openings 
+                            (id,
+                            product_id,
+                            opening,
+                            rail)
+                        VALUES
+                            (@Id,
+                            @ProductId,
+                            @Opening,
+                            @Rail);
+                       """, new {
+                            Id = Guid.NewGuid(),
+                            ProductId = mdfdoor.Id,
+                            Opening = opening.OpeningHeight,
+                            Rail = opening.RailWidth
+                        }, trx);
+                }
+            }
 
         }
 
