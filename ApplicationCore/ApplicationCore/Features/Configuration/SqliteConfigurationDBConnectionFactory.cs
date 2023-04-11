@@ -1,0 +1,80 @@
+﻿using ApplicationCore.Infrastructure.Data;
+using Dapper;
+using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
+using System.Data;
+
+namespace ApplicationCore.Features.Configuration;
+
+public class SqliteConfigurationDBConnectionFactory : IConfigurationDBConnectionFactory {
+
+    public const int DB_VERSION = 1;
+    private static readonly SemaphoreSlim semaphore = new(1);
+
+    private readonly ILogger<SqliteConfigurationDBConnectionFactory> _logger;
+
+    public SqliteConfigurationDBConnectionFactory(ILogger<SqliteConfigurationDBConnectionFactory> logger) {
+        _logger = logger;
+    }
+
+    public async Task<IDbConnection> CreateConnection() {
+
+        await semaphore.WaitAsync();
+
+        var datasource = "./configuration.sqlite";
+
+        var builder = new SqliteConnectionStringBuilder {
+            DataSource = datasource,
+            Pooling = false
+        };
+
+        var connection = new SqliteConnection(builder.ConnectionString);
+
+        if (File.Exists(datasource)) {
+
+            int dbVersion = await GetDatabaseVersion(connection);
+            if (dbVersion != DB_VERSION) {
+                throw new IncompatibleDatabaseVersion(dbVersion);
+            }
+
+        } else {
+
+            await InitilizeDatabase(connection);
+
+        }
+
+        semaphore.Release();
+
+        return connection;
+
+    }
+
+    private async Task InitilizeDatabase(SqliteConnection connection) {
+
+        var schemaPath = "./Schemas/configuration_schema.sql";
+
+        if (schemaPath is null) {
+            connection.Close();
+            throw new InvalidOperationException("Companies data base schema path is not set");
+        }
+
+        _logger.LogInformation("Initilizing companies database, version {DB_VERSION} from schema in file {FilePath}", DB_VERSION, schemaPath);
+
+        var schema = await File.ReadAllTextAsync(schemaPath);
+
+        await connection.OpenAsync();
+        var trx = await connection.BeginTransactionAsync();
+
+        await connection.ExecuteAsync(schema, trx);
+        await connection.ExecuteAsync($"PRAGMA SCHEMA_VERSION = {DB_VERSION};", trx);
+
+        await trx.CommitAsync();
+        await connection.CloseAsync();
+
+    }
+
+    private async Task<int> GetDatabaseVersion(SqliteConnection connection) {
+        return await connection.QuerySingleAsync<int>("PRAGMA schema_version;");
+    }
+
+}
