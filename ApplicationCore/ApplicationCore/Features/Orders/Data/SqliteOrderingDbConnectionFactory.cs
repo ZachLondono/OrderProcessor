@@ -10,7 +10,7 @@ namespace ApplicationCore.Features.Orders.Data;
 internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory {
 
     public const int DB_VERSION = 1;
-    private static SemaphoreSlim semaphore = new(1);
+    private static readonly SemaphoreSlim semaphore = new(1);
 
     private readonly IConfiguration _configuration;
     private readonly ILogger<SqliteOrderingDbConnectionFactory> _logger;
