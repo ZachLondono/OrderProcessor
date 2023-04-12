@@ -1,20 +1,25 @@
-﻿using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Configuration;
+﻿using ApplicationCore.Features.Configuration;
+using ApplicationCore.Infrastructure.Bus;
+using Microsoft.Data.Sqlite;
 using System.Data;
 
 namespace ApplicationCore.Features.WorkOrders.Data;
 
 internal class SqliteWorkOrdersDbConnectionFactory : IWorkOrdersDbConnectionFactory {
 
-    private readonly IConfiguration _configuration;
+    private readonly IBus _bus;
 
-    public SqliteWorkOrdersDbConnectionFactory(IConfiguration configuration) {
-        _configuration = configuration;
+    public SqliteWorkOrdersDbConnectionFactory(IBus bus) {
+        _bus = bus;
     }
 
-    public IDbConnection CreateConnection() {
+    public async Task<IDbConnection> CreateConnection() {
 
-        var datasource = _configuration.GetRequiredSection("WorkOrders").GetValue<string>("Data Source");
+        var result = await _bus.Send(new GetConfiguration.Query());
+        string? datasource = null;
+        result.OnSuccess(
+            appConfig => datasource = appConfig.WorkOrdersDBPath
+        );
 
         var builder = new SqliteConnectionStringBuilder {
             DataSource = datasource,

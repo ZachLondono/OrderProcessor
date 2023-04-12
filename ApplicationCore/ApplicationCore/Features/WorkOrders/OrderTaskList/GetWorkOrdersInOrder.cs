@@ -19,7 +19,7 @@ internal class GetWorkOrdersInOrder {
 
         public override async Task<Response<IEnumerable<WorkOrder>>> Handle(Query command) {
 
-            using var connection = _factory.CreateConnection();
+            using var connection = await _factory.CreateConnection();
 
             var data = await connection.QueryAsync<DataModel>(@"SELECT id, name, status FROM work_orders WHERE order_id = @OrderId", command);
 

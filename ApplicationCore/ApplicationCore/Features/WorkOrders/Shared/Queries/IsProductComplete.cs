@@ -18,7 +18,7 @@ internal class IsProductComplete {
 
         public override async Task<Response<bool>> Handle(Query query) {
 
-            using var connection = _factory.CreateConnection();
+            using var connection = await _factory.CreateConnection();
 
             const string sql = @"SELECT
 	                                (SELECT COUNT(*)
