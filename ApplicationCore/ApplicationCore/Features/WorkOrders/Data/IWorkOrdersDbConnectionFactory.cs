@@ -4,6 +4,6 @@ namespace ApplicationCore.Features.WorkOrders.Data;
 
 public interface IWorkOrdersDbConnectionFactory {
 
-    public IDbConnection CreateConnection();
+    public Task<IDbConnection> CreateConnection();
 
 }

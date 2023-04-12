@@ -18,7 +18,7 @@ internal class CreateWorkOrder {
 
         public override async Task<Response<WorkOrder>> Handle(Command command) {
 
-            using var connection = _factory.CreateConnection();
+            using var connection = await _factory.CreateConnection();
             connection.Open();
             var trx = connection.BeginTransaction();
 
