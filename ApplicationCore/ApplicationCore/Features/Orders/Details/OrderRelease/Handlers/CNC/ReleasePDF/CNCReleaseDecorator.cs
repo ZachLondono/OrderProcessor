@@ -115,6 +115,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                                                         }
                                                                                         return new NestedPart() {
                                                                                             Name = part.Name,
+                                                                                            FileName = label.Fields.GetValueOrEmpty("Filename"),
                                                                                             Width = Dimension.FromMillimeters(part.Width),
                                                                                             Length = Dimension.FromMillimeters(part.Length),
                                                                                             Center = new() {

@@ -65,7 +65,8 @@ internal class QuestPDFWriter : IReleasePDFWriter {
                         { "Name", part.Name },
                         { "Width", part.Width.AsMillimeters().ToString("0.00") },
                         { "Length", part.Length.AsMillimeters().ToString("0.00") },
-                        { "Description", part.Description }
+                        { "Description", part.Description },
+                        { "File Name", part.FileName }
                     });
             }
 

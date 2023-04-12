@@ -6,6 +6,7 @@ namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.Rele
 public class NestedPart {
 
     public string Name { get; init; } = string.Empty;
+    public string FileName { get; init; } = string.Empty;
     public bool HasFace6 { get; init; } = false;
     public string ImageData { get; init; } = string.Empty;
     public Dimension Width { get; init; } = Dimension.FromMillimeters(0);
