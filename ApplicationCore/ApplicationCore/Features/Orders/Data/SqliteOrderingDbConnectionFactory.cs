@@ -1,4 +1,6 @@
-﻿using ApplicationCore.Infrastructure.Data;
+﻿using ApplicationCore.Features.Configuration;
+using ApplicationCore.Infrastructure.Bus;
+using ApplicationCore.Infrastructure.Data;
 using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
@@ -13,10 +15,12 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
     private static readonly SemaphoreSlim semaphore = new(1);
 
     private readonly IConfiguration _configuration;
+    private readonly IBus _bus;
     private readonly ILogger<SqliteOrderingDbConnectionFactory> _logger;
 
-    public SqliteOrderingDbConnectionFactory(IConfiguration configuration, ILogger<SqliteOrderingDbConnectionFactory> logger) {
+    public SqliteOrderingDbConnectionFactory(IConfiguration configuration, IBus bus, ILogger<SqliteOrderingDbConnectionFactory> logger) {
         _configuration = configuration;
+        _bus = bus;
         _logger = logger;
     }
 
@@ -24,7 +28,11 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
 
         await semaphore.WaitAsync();
 
-        var datasource = _configuration.GetRequiredSection("Ordering").GetValue<string>("Data Source");
+        var result = await _bus.Send(new GetConfiguration.Query());
+        string? datasource = null;
+        result.OnSuccess(
+            appConfig => datasource = appConfig.OrderingDBPath
+        );
 
         var builder = new SqliteConnectionStringBuilder {
             DataSource = datasource,
