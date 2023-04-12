@@ -1,0 +1,49 @@
+﻿@using ApplicationCore.Features.Shared.Components
+@using ApplicationCore.Infrastructure.Bus;
+@inject ConfigurationEditorViewModel DataContext 
+
+<h3>Configuration</h3>
+
+
+@if (DataContext.ErrorMessage is not null) {
+    
+    <span>@DataContext.ErrorMessage</span>
+
+} else if (DataContext.Configuration is null) {
+
+    <span>Loading configuration...</span>
+    
+} else {
+    <EditForm Model="@DataContext.Configuration" OnSubmit="@DataContext.SaveChanges">
+    
+        <div>
+            <label>Ordering Database</label>
+            <InputText @bind-Value="DataContext.Configuration.OrderingDBPath" />
+        </div>
+    
+        <div>
+            <label>Companies Database</label>
+            <InputText @bind-Value="DataContext.Configuration.CompaniesDBPath" />
+        </div>
+    
+        <div>
+            <label>Work Orders Database</label>
+            <InputText @bind-Value="DataContext.Configuration.WorkOrdersDBPath" />
+        </div>
+
+        <div>
+            <Button type="submit">Save</Button>
+        </div>
+    
+    </EditForm>
+}
+
+@code {
+
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+        DataContext.OnPropertyChanged += StateHasChanged;
+        await DataContext.LoadConfiguration();
+    }
+
+}
