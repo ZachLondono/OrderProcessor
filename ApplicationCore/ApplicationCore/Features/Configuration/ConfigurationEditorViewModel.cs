@@ -39,6 +39,7 @@ internal class ConfigurationEditorViewModel {
     }
 
     public async Task SaveChanges() {
+        if (Configuration is null) return;
         var result = await _bus.Send(new UpdateConfiguration.Command(Configuration));
         result.OnError(error => ErrorMessage = $"{error.Title} - {error.Details}");
     }
