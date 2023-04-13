@@ -115,7 +115,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                                                         }
                                                                                         return new NestedPart() {
                                                                                             Name = part.Name,
-                                                                                            FileName = label.Fields.GetValueOrEmpty("Filename"),
+                                                                                            FileName = GetFileNameFromPartLabels(label),
                                                                                             Width = Dimension.FromMillimeters(part.Width),
                                                                                             Length = Dimension.FromMillimeters(part.Length),
                                                                                             Center = new() {
@@ -171,6 +171,21 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
         };
 
         return releasedJob;
+    }
+
+    private static string GetFileNameFromPartLabels(PartLabels? labels) {
+
+        if (labels is null) return string.Empty;
+
+        if (labels.Fields.TryGetValue("FileName", out string? fileName)) {
+            return fileName ?? string.Empty;
+        } 
+        if (labels.Fields.TryGetValue("Filename", out fileName)) {
+            return fileName ?? string.Empty;
+        }
+       
+        return fileName ?? string.Empty;
+
     }
 
     private static string GetMachineName(string scheduleName) {
