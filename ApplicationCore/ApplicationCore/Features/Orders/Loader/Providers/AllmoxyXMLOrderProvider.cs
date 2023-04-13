@@ -14,6 +14,7 @@ using CompanyCustomer = ApplicationCore.Features.Companies.Contracts.Entities.Cu
 using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using System.Xml;
 using ApplicationCore.Features.Shared;
+using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 
@@ -28,8 +29,8 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     public IOrderLoadingViewModel? OrderLoadingViewModel { get; set; }
 
-    public AllmoxyXMLOrderProvider(AllmoxyConfiguration configuration, AllmoxyClientFactory clientfactory, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync) {
-        _configuration = configuration;
+    public AllmoxyXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, AllmoxyClientFactory clientfactory, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync) {
+        _configuration = configuration.Value;
         _clientfactory = clientfactory;
         _validator = validator;
         _builderFactory = builderFactory;
