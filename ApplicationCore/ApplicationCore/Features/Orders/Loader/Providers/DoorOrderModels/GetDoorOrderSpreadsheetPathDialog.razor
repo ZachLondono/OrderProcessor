@@ -1,0 +1,29 @@
+﻿@using ApplicationCore.Features.Shared.Components
+@using static ApplicationCore.Features.Shared.Components.Button;
+
+<div>
+    <label class="block text-sm font-medium text-gray-700">File Path</label>
+    <input type="text" class="mt-1 w-full" @bind-value="FilePath" />
+</div>
+
+<div class="mt-12">
+    <Button Style="ButtonStyle.Text" Color="ButtonColor.Success" OnClickAsync="ReturnValue" Class="mt-3 float-right mr-3">Enter</Button>
+    <Button Style="ButtonStyle.Text" Color="ButtonColor.Secondary" OnClickAsync="Cancel" Class="mt-3 float-right">Cancel</Button>
+</div>
+
+@code {
+
+    [CascadingParameter]
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    public string FilePath { get; set; } = string.Empty;
+
+    public async Task ReturnValue() {
+        await BlazoredModal.CloseAsync(ModalResult.Ok(FilePath));
+    }
+
+    public async Task Cancel() {
+        await BlazoredModal.CancelAsync();
+    }
+
+}

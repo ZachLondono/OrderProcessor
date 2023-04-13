@@ -21,6 +21,7 @@ using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.Loader.Providers.DoorOrderModels;
 using ApplicationCore.Features.Orders.Loader.Providers;
+using ApplicationCore.Features.Orders.Loader.Providers.Dialog;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -97,6 +98,7 @@ public static class DependencyInjection {
     private static IServiceCollection AddViewModels(this IServiceCollection services)
         => services.AddTransient<OrderListViewModel>()
                     .AddTransient<ReleaseProgressViewModel>()
-                    .AddTransient<ExportProgressViewModel>();
+                    .AddTransient<ExportProgressViewModel>()
+                    .AddTransient<ChooseOrderProviderViewModel>();
 
 }

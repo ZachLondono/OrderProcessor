@@ -2,6 +2,7 @@
 @using ApplicationCore.Features.Orders
 @using ApplicationCore.Features.Orders.Loader
 @using ApplicationCore.Features.Orders.Loader.Dialog;
+@using ApplicationCore.Features.Orders.Loader.Providers.Dialog;
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Features.Shared.Services;
 @using ApplicationCore.Features.WorkOrders;
@@ -128,19 +129,18 @@
 
 		try {
 
-			var sourcePrompt = Modal.Show<GetAllmoxyOrderNumberDialog>("Enter Order Number");
-			var promptResult = await sourcePrompt.Result;
-
-			if (promptResult.Cancelled) {
+			var sourceTypePickerResult = await Modal.Show<ChooseOrderProviderDialog>("Choose Order Source").Result;
+			if (sourceTypePickerResult.Cancelled || sourceTypePickerResult.Data is not SourceConfig sourceConfig) {
 				return;
 			}
 
-			if (promptResult.Data is not string orderNumber || string.IsNullOrWhiteSpace(orderNumber)) {
+			var sourceDialogResult = await Modal.Show(sourceConfig.SourcePickerDialogType, sourceConfig.DialogTitle).Result;
+			if (sourceDialogResult.Data is not string orderNumber || string.IsNullOrWhiteSpace(orderNumber)) {
 				return;
 			}
 
 			var parameters = new ModalParameters() {
-				{ "SourceType", OrderSourceType.AllmoxyXML },
+				{ "SourceType", sourceConfig.SourceType },
 				{ "Source", orderNumber.Trim() }
 			};
 
@@ -149,8 +149,7 @@
 				HideHeader = true
 			};
 
-			var dialog = Modal.Show<LoadingOrderDialog>("Loading Allmoxy Order", parameters, options);
-			var result = await dialog.Result;
+			_ = await Modal.Show<LoadingOrderDialog>("Loading Order", parameters, options).Result;
 
 		} catch (Exception e) {
 
