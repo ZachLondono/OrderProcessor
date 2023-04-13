@@ -23,9 +23,9 @@ internal class CachedBusDecorator : IBus {
 
         if (typeof(TResponse) == typeof(Unit)) return await _bus.Send(request, cancellationToken);
 
-        if (_cachedResponses.ContainsKey(request)) {
+        if (_cachedResponses.TryGetValue(request, out CachedResponse? value)) {
 
-            var cachedResponse = _cachedResponses[request];
+            var cachedResponse = value;
 
             if (DateTime.Now - cachedResponse.RecievedTimestamp < TimeSpan.FromSeconds(_configuration.TimeAlive)) {
                 _logger.LogTrace("Returning cached response");
