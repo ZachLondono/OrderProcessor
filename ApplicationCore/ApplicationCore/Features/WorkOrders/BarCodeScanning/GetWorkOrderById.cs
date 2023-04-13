@@ -19,7 +19,7 @@ public class GetWorkOrderById {
 
         public override async Task<Response<WorkOrder>> Handle(Query query) {
 
-            using var connection = _factory.CreateConnection();
+            using var connection = await _factory.CreateConnection();
 
             DataModel? data = await connection.QuerySingleOrDefaultAsync<DataModel>(@"SELECT id, order_id AS OrderId, name, status FROM work_orders WHERE id = @Id", query);
 

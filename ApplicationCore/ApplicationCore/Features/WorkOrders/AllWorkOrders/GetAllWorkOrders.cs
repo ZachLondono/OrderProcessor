@@ -22,7 +22,7 @@ public class GetAllWorkOrders {
 
         public override async Task<Response<IEnumerable<Model>>> Handle(Query command) {
 
-            using var connection = _factory.CreateConnection();
+            using var connection = await _factory.CreateConnection();
 
             var workorders = await connection.QueryAsync<Model>(@"SELECT id, order_id As OrderId, name, status FROM work_orders");
 

@@ -1,26 +1,19 @@
-﻿using ApplicationCore.Features.Configuration;
-using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Infrastructure.Data;
+﻿using ApplicationCore.Infrastructure.Data;
 using Dapper;
 using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Data;
 
-namespace ApplicationCore.Features.Orders.Data;
+namespace ApplicationCore.Features.Configuration;
 
-internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory {
+public class SqliteConfigurationDBConnectionFactory : IConfigurationDBConnectionFactory {
 
     public const int DB_VERSION = 1;
     private static readonly SemaphoreSlim semaphore = new(1);
 
-    private readonly IConfiguration _configuration;
-    private readonly IBus _bus;
-    private readonly ILogger<SqliteOrderingDbConnectionFactory> _logger;
+    private readonly ILogger<SqliteConfigurationDBConnectionFactory> _logger;
 
-    public SqliteOrderingDbConnectionFactory(IConfiguration configuration, IBus bus, ILogger<SqliteOrderingDbConnectionFactory> logger) {
-        _configuration = configuration;
-        _bus = bus;
+    public SqliteConfigurationDBConnectionFactory(ILogger<SqliteConfigurationDBConnectionFactory> logger) {
         _logger = logger;
     }
 
@@ -28,11 +21,7 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
 
         await semaphore.WaitAsync();
 
-        var result = await _bus.Send(new GetConfiguration.Query());
-        string? datasource = null;
-        result.OnSuccess(
-            appConfig => datasource = appConfig.OrderingDBPath
-        );
+        var datasource = "./configuration.sqlite";
 
         var builder = new SqliteConnectionStringBuilder {
             DataSource = datasource,
@@ -62,13 +51,14 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
 
     private async Task InitilizeDatabase(SqliteConnection connection) {
 
-        var schemaPath = _configuration.GetRequiredSection("Schemas").GetValue<string>("Ordering");
+        var schemaPath = "./Schemas/configuration_schema.sql";
 
         if (schemaPath is null) {
-            throw new InvalidOperationException("Ordering data base schema path is not set");
+            connection.Close();
+            throw new InvalidOperationException("Companies data base schema path is not set");
         }
 
-        _logger.LogInformation("Initilizing ordering database, version {DB_VERSION} from schema in file {FilePath}", DB_VERSION, schemaPath);
+        _logger.LogInformation("Initilizing companies database, version {DB_VERSION} from schema in file {FilePath}", DB_VERSION, schemaPath);
 
         var schema = await File.ReadAllTextAsync(schemaPath);
 
@@ -78,8 +68,8 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
         await connection.ExecuteAsync(schema, trx);
         await connection.ExecuteAsync($"PRAGMA SCHEMA_VERSION = {DB_VERSION};", trx);
 
-        trx.Commit();
-        connection.Close();
+        await trx.CommitAsync();
+        await connection.CloseAsync();
 
     }
 

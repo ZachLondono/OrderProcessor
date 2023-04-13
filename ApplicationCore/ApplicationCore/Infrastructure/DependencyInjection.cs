@@ -16,7 +16,7 @@ public static class DependencyInjection {
         if (cacheConfig is null || !cacheConfig.UseLocalCache) {
             services.AddSingleton<IBus, MediatRBus>();
         } else {
-            services.AddSingleton(cacheConfig);
+            services.Configure<CacheConfiguration>(configuration.GetRequiredSection("Cache"));
             services.AddSingleton<MediatRBus>();
             services.AddSingleton<IBus, CachedBusDecorator>();
         }

@@ -1,23 +1,26 @@
-﻿using ApplicationCore.Infrastructure.Data;
+﻿using ApplicationCore.Features.Configuration;
+using ApplicationCore.Infrastructure.Bus;
+using ApplicationCore.Infrastructure.Data;
 using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Data;
-using System.Threading;
 
 namespace ApplicationCore.Features.Companies.Data;
 
 public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory {
 
     public const int DB_VERSION = 1;
-    private static SemaphoreSlim semaphore = new(1);
+    private static readonly SemaphoreSlim semaphore = new(1);
 
     private readonly IConfiguration _configuration;
+    private readonly IBus _bus;
     private readonly ILogger<SqliteCompaniesDbConnectionFactory> _logger;
 
-    public SqliteCompaniesDbConnectionFactory(IConfiguration configuration, ILogger<SqliteCompaniesDbConnectionFactory> logger) {
+    public SqliteCompaniesDbConnectionFactory(IConfiguration configuration, IBus bus, ILogger<SqliteCompaniesDbConnectionFactory> logger) {
         _configuration = configuration;
+        _bus = bus;
         _logger = logger;
 
     }
@@ -26,7 +29,15 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
 
         await semaphore.WaitAsync();
 
-        var datasource = _configuration.GetRequiredSection("Companies").GetValue<string>("Data Source");
+        var result = await _bus.Send(new GetConfiguration.Query());
+        string? datasource = null;
+        result.OnSuccess(
+            appConfig => datasource = appConfig.CompaniesDBPath
+        );
+
+        if (datasource is null) {
+            throw new InvalidOperationException("Could not find companies database data source");
+        }
 
         var builder = new SqliteConnectionStringBuilder {
             DataSource = datasource,
@@ -56,7 +67,7 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
 
     private async Task InitilizeDatabase(SqliteConnection connection) {
 
-        var schemaPath = _configuration.GetRequiredSection("Companies").GetValue<string>("Schema");
+        var schemaPath = _configuration.GetRequiredSection("Schemas").GetValue<string>("Companies");
 
         if (schemaPath is null) {
             connection.Close();

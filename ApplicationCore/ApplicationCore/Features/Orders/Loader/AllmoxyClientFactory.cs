@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.Loader.Rest;
+using Microsoft.Extensions.Options;
 using RestSharp;
 
 namespace ApplicationCore.Features.Orders.Loader;
@@ -8,8 +9,8 @@ public class AllmoxyClientFactory {
 
     private readonly AllmoxyCredentials _credentials;
 
-    public AllmoxyClientFactory(AllmoxyCredentials credentials) {
-        _credentials = credentials;
+    public AllmoxyClientFactory(IOptions<AllmoxyCredentials> credentials) {
+        _credentials = credentials.Value;
     }
 
     public IAllmoxyClient CreateClient() {
