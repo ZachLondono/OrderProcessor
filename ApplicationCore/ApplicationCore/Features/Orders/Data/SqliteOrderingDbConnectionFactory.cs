@@ -62,7 +62,7 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
 
     private async Task InitilizeDatabase(SqliteConnection connection) {
 
-        var schemaPath = _configuration.GetRequiredSection("Ordering").GetValue<string>("Schema");
+        var schemaPath = _configuration.GetRequiredSection("Schemas").GetValue<string>("Ordering");
 
         if (schemaPath is null) {
             throw new InvalidOperationException("Ordering data base schema path is not set");

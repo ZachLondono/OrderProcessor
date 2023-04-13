@@ -67,7 +67,7 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
 
     private async Task InitilizeDatabase(SqliteConnection connection) {
 
-        var schemaPath = _configuration.GetRequiredSection("Companies").GetValue<string>("Schema");
+        var schemaPath = _configuration.GetRequiredSection("Schemas").GetValue<string>("Companies");
 
         if (schemaPath is null) {
             connection.Close();
