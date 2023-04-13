@@ -2,22 +2,20 @@
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.PDFModels;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Styling;
+using Microsoft.Extensions.Options;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
 
 internal class QuestPDFWriter : IReleasePDFWriter {
 
-    private readonly IPDFConfigurationProvider _configProvider;
+    private readonly PDFConfiguration _config;
 
-    public QuestPDFWriter(IPDFConfigurationProvider configProvider) {
-        _configProvider = configProvider;
+    public QuestPDFWriter(IOptions<PDFConfiguration> config) {
+        _config = config.Value;
     }
 
     public IEnumerable<IDocumentDecorator> GenerateDecorators(ReleasedJob job) {
-
-        // TODO: validate configuration
-        var config = _configProvider.GetConfiguration();
 
         List<IDocumentDecorator> decorators = new();
 
@@ -28,7 +26,7 @@ internal class QuestPDFWriter : IReleasePDFWriter {
             CoverModel cover = CreateCover(job, group);
             List<PageModel> pages = CreatePages(job, group);
 
-            decorators.Add(new ReleasePDFDecorator(config, cover, pages));
+            decorators.Add(new ReleasePDFDecorator(_config, cover, pages));
 
         }
 

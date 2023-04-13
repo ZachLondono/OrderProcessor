@@ -81,7 +81,6 @@ public static class DependencyInjection {
 
     private static void AddExportServices(IServiceCollection services, IConfiguration configuration) {
         services.Configure<ExportOptions>(configuration.GetRequiredSection("ExportOptions"));
-
         services.AddTransient<ExportService>();
         services.AddTransient<DoorOrderHandler>();
         services.AddTransient<DovetailOrderHandler>();
@@ -91,13 +90,8 @@ public static class DependencyInjection {
 
     private static void AddOrderProviders(IServiceCollection services, IConfiguration configuration) {
         services.Configure<DoorOrderProviderOptions>(configuration.GetRequiredSection("DoorOrderProviderOptions"));
+        services.Configure<PDFConfiguration>(configuration.GetRequiredSection("ReleasePDFConfig"));
         services.AddTransient<DoorSpreadsheetOrderProvider>();
-
-        var cadcode = configuration.GetRequiredSection("CADCode");
-        var pdfconfig = cadcode.GetValue<string>("ReleasePDFConfig");
-        if (pdfconfig is null) throw new InvalidOperationException("Release PDF configuration was not found");
-        var jsonPDF = new JSONPDFConfigurationProvider(pdfconfig);
-        services.AddTransient<IPDFConfigurationProvider>(s => jsonPDF);
     }
 
     private static IServiceCollection AddViewModels(this IServiceCollection services)
