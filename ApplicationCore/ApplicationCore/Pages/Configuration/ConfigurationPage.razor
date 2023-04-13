@@ -1,7 +1,29 @@
 ﻿@page "/configuration"
+@using System.Diagnostics;
+@using ApplicationCore.Features.Shared.Components;
+@using static ApplicationCore.Features.Shared.Components.Button;
 
 <ApplicationCore.Features.Configuration.ConfigurationEditor />
 
+<div class="mt-5">
+    <Button Style="ButtonStyle.Text" OnClick="OpenConfigurationFile" Color="ButtonColor.Secondary" Size="ButtonSize.XSmall">Open Config File</Button>
+</div>
+
 @code {
+
+    private void OpenConfigurationFile() {
+
+        try {
+            
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.FileName = "appsettings.json";
+            psi.UseShellExecute = true;
+            Process.Start(psi);
+
+        } catch (Exception ex) {
+            Debug.WriteLine(ex);
+        }
+
+    }
 
 }
