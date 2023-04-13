@@ -11,20 +11,15 @@ internal static class DependencyInjection {
 
     public static IServiceCollection AddOrderLoading(this IServiceCollection services, IConfiguration configuration) {
 
+
+        services.Configure<AllmoxyCredentials>(configuration.GetRequiredSection("AllmoxyCredentials"));
+        services.Configure<AllmoxyConfiguration>(configuration.GetRequiredSection("AllmoxyConfiguration"));
+        services.Configure<ConstructionValues>(configuration.GetRequiredSection("DrawerBoxConstruction"));
+
         services.AddTransient<IOrderProviderFactory, OrderProviderFactory>();
-
-        var allmoxyCreds = configuration.GetRequiredSection("AllmoxyCredentials").Get<AllmoxyCredentials>();
-        services.AddSingleton<AllmoxyCredentials>(allmoxyCreds);
-
-        var allmoxyConfig = configuration.GetRequiredSection("AllmoxyConfiguration").Get<AllmoxyConfiguration>();
-        services.AddSingleton<AllmoxyConfiguration>(allmoxyConfig);
         services.AddTransient<AllmoxyXMLOrderProvider>();
         services.AddTransient<AllmoxyClientFactory>();
-
         services.AddTransient<IXMLValidator, XMLValidator>();
-
-        var constructionConfig = configuration.GetRequiredSection("DrawerBoxConstruction").Get<ConstructionValues>();
-        services.AddSingleton<ConstructionValues>(constructionConfig);
 
         return services;
 

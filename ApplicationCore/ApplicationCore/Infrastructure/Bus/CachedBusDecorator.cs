@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Infrastructure.Bus;
 
@@ -9,10 +10,10 @@ internal class CachedBusDecorator : IBus {
     private readonly Dictionary<IBaseDomainRequest, CachedResponse> _cachedResponses = new();
     private readonly CacheConfiguration _configuration;
 
-    public CachedBusDecorator(ILogger<CachedBusDecorator> logger, MediatRBus bus, CacheConfiguration configuration) {
+    public CachedBusDecorator(ILogger<CachedBusDecorator> logger, MediatRBus bus, IOptions<CacheConfiguration> configuration) {
         _logger = logger;
         _bus = bus;
-        _configuration = configuration;
+        _configuration = configuration.Value;
     }
 
     public Task Publish<TNotification>(TNotification notification, CancellationToken cancellationToken = default) where TNotification : IDomainNotification {
