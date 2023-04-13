@@ -46,6 +46,7 @@ public partial class App : Application {
     private static IConfiguration BuildConfiguration()
         => new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("Configuration/pdfconfig.json", optional: false, reloadOnChange: true)
                 .AddJsonFile("Configuration/credentials.json", optional: false, reloadOnChange: true)
                 .Build();
 
