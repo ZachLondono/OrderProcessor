@@ -1,4 +1,5 @@
-﻿using Microsoft.Office.Interop.Excel;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Excel;
+using Microsoft.Office.Interop.Excel;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.DoorOrderModels;
 
@@ -36,28 +37,28 @@ public class OrderHeader {
 
     public static OrderHeader ReadFromWorksheet(Worksheet sheet)
         => new() {
-            VendorName = sheet.Range["Vendor"].Value2,
-            CompanyName = sheet.Range["Company"].Value2,
-            Phone = sheet.Range["CustomerPhone"].Value2,
-            InvoiceFirstName = sheet.Range["CustomerInvoiceFirstName"].Value2,
-            InvoiceEmail = sheet.Range["CustomerInvoiceEmail"].Value2,
-            ConfirmationFirstName = sheet.Range["CustomerConfirmationFirstName"].Value2,
-            ConfirmationEmail = sheet.Range["CustomerConfirmationEmail"].Value2,
-            Address1 = sheet.Range["CustomerAddress1"].Value2,
-            Address2 = sheet.Range["CustomerAddress2"].Value2,
-            Units = sheet.Range["units"].Value2,
-            TrackingNumber = sheet.Range["JobNumber"].Value2,
-            JobName = sheet.Range["JobName"].Value2,
-            OrderDate = DateTime.FromOADate(sheet.Range["OrderDate"].Value2),
-            Freight = (decimal) sheet.Range["Freight"].Value2,
-            PanelDrop = sheet.Range["PanelDrop"].Value2,
-            Finish = sheet.Range["FinishOption"].Value2,
-            Color = sheet.Range["FinishColor"].Value2,
-            Style = sheet.Range["FramingBead"].Value2,
-            EdgeProfile = sheet.Range["EdgeDetail"].Value2,
-            PanelDetail = sheet.Range["PanelDetail"].Value2
+            VendorName = sheet.GetRangeValueOrDefault("Vendor", ""),
+            CompanyName = sheet.GetRangeValueOrDefault("Company", ""),
+            Phone = sheet.GetRangeValueOrDefault("CustomerPhone", ""),
+            InvoiceFirstName = sheet.GetRangeValueOrDefault("CustomerInvoiceFirstName", ""),
+            InvoiceEmail = sheet.GetRangeValueOrDefault("CustomerInvoiceEmail", ""),
+            ConfirmationFirstName = sheet.GetRangeValueOrDefault("CustomerConfirmationFirstName", ""),
+            ConfirmationEmail = sheet.GetRangeValueOrDefault("CustomerConfirmationEmail", ""),
+            Address1 = sheet.GetRangeValueOrDefault("CustomerAddress1", ""),
+            Address2 = sheet.GetRangeValueOrDefault("CustomerAddress2", ""),
+            Units = sheet.GetRangeValueOrDefault("units", ""),
+            TrackingNumber = sheet.GetRangeValueOrDefault("JobNumber", ""),
+            JobName = sheet.GetRangeValueOrDefault("JobName", ""),
+            Freight = sheet.GetRangeValueOrDefault("Freight", 0M),
+            PanelDrop = sheet.GetRangeValueOrDefault<double>("PanelDrop", 0),
+            Finish = sheet.GetRangeValueOrDefault("FinishOption",""),
+            Color = sheet.GetRangeValueOrDefault("FinishColor",""),
+            Style = sheet.GetRangeValueOrDefault("FramingBead",""),
+            EdgeProfile = sheet.GetRangeValueOrDefault("EdgeDetail",""),
+            PanelDetail = sheet.GetRangeValueOrDefault("PanelDetail",""),
+            OrderDate = DateTime.FromOADate(sheet.GetRangeValueOrDefault<double?>("OrderDate", null) ?? DateTime.Now.ToOADate()),
         };
-
+    
     public enum UnitType {
         Inches,
         Millimeters

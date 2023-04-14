@@ -1,4 +1,5 @@
-﻿using Microsoft.Office.Interop.Excel;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Excel;
+using Microsoft.Office.Interop.Excel;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.DoorOrderModels;
 
@@ -20,22 +21,22 @@ internal class LineItem {
     public required double Thickness { get; set; }
 
     public static LineItem ReadFromWorksheet(Worksheet sheet, int offset) {
-
+        // TODO: save references to ranges somewhere, don't try to find the range again every time
         return new() {
-            PartNumber = (int) sheet.Range["PartNumStart"].Offset[offset].Value2,
-            Description = sheet.Range["DescriptionStart"].Offset[offset].Value2,
-            Line = (int) sheet.Range["LineNumStart"].Offset[offset].Value2,
-            Qty = (int) sheet.Range["QtyStart"].Offset[offset].Value2,
-            Width = sheet.Range["WidthStart"].Offset[offset].Value2,
-            Height = sheet.Range["HeightStart"].Offset[offset].Value2,
-            Note = sheet.Range["NoteStart"].Offset[offset].Value2?.ToString() ?? "",
-            UnitPrice = (decimal) sheet.Range["UnitPriceStart"].Offset[offset].Value2,
-            LeftStile = sheet.Range["LeftStileStart"].Offset[offset].Value2,
-            RightStile = sheet.Range["RightStileStart"].Offset[offset].Value2,
-            TopRail = sheet.Range["TopRailStart"].Offset[offset].Value2,
-            BottomRail = sheet.Range["BottomRailStart"].Offset[offset].Value2,
-            Material  = sheet.Range["MaterialStart"].Offset[offset].Value2?.ToString() ?? "",
-            Thickness = sheet.Range["ThicknessStart"].Offset[offset].Value2
+            PartNumber = sheet.GetRangeOffsetValueOrDefault("PartNumStart", 0, offset),
+            Description = sheet.GetRangeOffsetValueOrDefault("DescriptionStart", string.Empty, offset),
+            Line = sheet.GetRangeOffsetValueOrDefault("LineNumStart", 0, offset),
+            Qty = sheet.GetRangeOffsetValueOrDefault("QtyStart", 0, offset),
+            Width = sheet.GetRangeOffsetValueOrDefault("WidthStart", 0d, offset),
+            Height = sheet.GetRangeOffsetValueOrDefault("HeightStart", 0d, offset),
+            Note = sheet.GetRangeOffsetValueOrDefault("NoteStart",string.Empty, offset),
+            UnitPrice = sheet.GetRangeOffsetValueOrDefault("UnitPriceStart", 0m, offset),
+            LeftStile = sheet.GetRangeOffsetValueOrDefault("LeftStileStart", 0d, offset),
+            RightStile = sheet.GetRangeOffsetValueOrDefault("RightStileStart", 0d, offset),
+            TopRail = sheet.GetRangeOffsetValueOrDefault("TopRailStart", 0d, offset),
+            BottomRail = sheet.GetRangeOffsetValueOrDefault("BottomRailStart", 0d, offset),
+            Material  = sheet.GetRangeOffsetValueOrDefault("MaterialStart", string.Empty, offset),
+            Thickness = sheet.GetRangeOffsetValueOrDefault("ThicknessStart", 0d, offset)
         };
 
     }
