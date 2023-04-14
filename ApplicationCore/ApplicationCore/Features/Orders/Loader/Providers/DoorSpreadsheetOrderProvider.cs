@@ -1,4 +1,7 @@
-﻿using ApplicationCore.Features.Orders.Loader.Dialog;
+﻿using ApplicationCore.Features.Companies.Contracts;
+using ApplicationCore.Features.Companies.Contracts.Entities;
+using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+using ApplicationCore.Features.Orders.Loader.Dialog;
 using ApplicationCore.Features.Orders.Loader.Providers.DoorOrderModels;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
@@ -8,6 +11,8 @@ using ApplicationCore.Features.Shared.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Office.Interop.Excel;
+using CustomerAddress = ApplicationCore.Features.Companies.Contracts.ValueObjects.Address;
+using OrderAddress = ApplicationCore.Features.Orders.Shared.Domain.ValueObjects.Address;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 
@@ -18,24 +23,28 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
     private readonly IFileReader _fileReader;
     private readonly DoorOrderProviderOptions _options;
     private readonly ILogger<DoorSpreadsheetOrderProvider> _logger;
+    private readonly CompanyDirectory.InsertCustomerAsync _insertCustomerAsync;
+    private readonly CompanyDirectory.GetCustomerIdByNameAsync _getCustomerByNamAsync;
 
-    public DoorSpreadsheetOrderProvider(IFileReader fileReader, IOptions<DoorOrderProviderOptions> options, ILogger<DoorSpreadsheetOrderProvider> logger) {
+    public DoorSpreadsheetOrderProvider(IFileReader fileReader, IOptions<DoorOrderProviderOptions> options, ILogger<DoorSpreadsheetOrderProvider> logger, CompanyDirectory.InsertCustomerAsync insertCustomerAsync, CompanyDirectory.GetCustomerIdByNameAsync getCustomerByNamAsync) {
         _fileReader = fileReader;
         _options = options.Value;
         _logger = logger;
+        _insertCustomerAsync = insertCustomerAsync;
+        _getCustomerByNamAsync = getCustomerByNamAsync;
     }
 
-    public Task<OrderData?> LoadOrderData(string source) {
+    public async Task<OrderData?> LoadOrderData(string source) {
 
         if (!_fileReader.DoesFileExist(source)) {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not access given filepath");
-            return Task.FromResult<OrderData?>(null);
+            return null;
         }
 
         var extension = Path.GetExtension(source);
         if (extension is null || (extension != ".xlsx" && extension != ".xlsm")) {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Given filepath is not an excel document");
-            return Task.FromResult<OrderData?>(null);
+            return null;
         }
 
         Application? app = null;
@@ -53,7 +62,7 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
 
             if (orderSheet is null) {
                 OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find MDF sheet in workbook");
-                return Task.FromResult<OrderData?>(null);
+                return null;
             }
 
             var header = OrderHeader.ReadFromWorksheet(orderSheet);
@@ -83,10 +92,11 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Info, $"{lines.Count} line items read from workbook");
 
             var vendorId = Guid.Parse(_options.VendorIds[header.VendorName]);
+            var customerId = await GetCustomerId(header);
 
-            var data = MapWorkbookData(header, lines, vendorId);
+            var data = MapWorkbookData(header, lines, vendorId, customerId ?? Guid.Empty);
 
-            return Task.FromResult<OrderData?>(data);
+            return data;
 
         } catch (Exception ex) {
 
@@ -105,13 +115,42 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
 
         }
 
-        return Task.FromResult<OrderData?>(null);
+        return null;
 
     }
 
-    public static OrderData MapWorkbookData(OrderHeader header, List<LineItem> items, Guid vendorId) {
+    private async Task<Guid?> GetCustomerId(OrderHeader header) {
 
-        Address address = ParseAddress(header);
+        Guid? result = await _getCustomerByNamAsync(header.CompanyName);
+
+        if (result is not null) {
+            return (Guid) result;
+        }
+
+        var address = ParseCompanyAddress(header.Address1, header.Address2);
+
+        var billingContact = new Contact() {
+            Name = header.InvoiceFirstName,
+            Phone = header.Phone, 
+            Email = header.InvoiceEmail 
+        };
+        
+        var shippingContact = new Contact() {
+            Name = header.ConfirmationFirstName,
+            Phone = header.Phone,
+            Email = header.ConfirmationEmail 
+        };
+
+        var customer = Customer.Create(header.CompanyName, string.Empty, shippingContact, address, billingContact, address);
+        await _insertCustomerAsync(customer);
+
+        return customer.Id;
+
+    }
+
+    public static OrderData MapWorkbookData(OrderHeader header, List<LineItem> items, Guid vendorId, Guid customerId) {
+
+        OrderAddress address = ParseOrderAddress(header.Address1, header.Address2);
 
         var units = header.GetUnitType();
 
@@ -122,7 +161,7 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
             OrderDate = header.OrderDate,
 
             VendorId = vendorId,
-            CustomerId = Guid.Empty,
+            CustomerId = customerId,
 
             Comment = string.Empty,
             AdditionalItems = new(),
@@ -151,7 +190,7 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
 
     }
 
-    private static Address ParseAddress(OrderHeader header) {
+    private static CustomerAddress ParseCompanyAddress(string address1, string address2) {
         
         string city = string.Empty;
         string state = string.Empty;
@@ -159,7 +198,7 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
 
         // This method will not work if there is no ',' between the city and state or if there is a ',' between the state and zip code
 
-        var splitA = header.Address2.Split(',');
+        var splitA = address2.Split(',');
         if (splitA.Any()) {
 
             city = splitA.First().Trim();
@@ -177,8 +216,43 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
 
         }
 
-        return new Address() {
-            Line1 = header.Address1,
+        return new CustomerAddress() {
+            Line1 = address1,
+            City = city,
+            State = state,
+            Zip = zip
+        };
+
+    }
+
+    private static OrderAddress ParseOrderAddress(string address1, string address2) {
+        
+        string city = string.Empty;
+        string state = string.Empty;
+        string zip = string.Empty;
+
+        // This method will not work if there is no ',' between the city and state or if there is a ',' between the state and zip code
+
+        var splitA = address2.Split(',');
+        if (splitA.Any()) {
+
+            city = splitA.First().Trim();
+
+            var splitB = splitA.Skip(1)
+                                .FirstOrDefault()?
+                                .Trim()
+                                .Split(' ')
+                                .Where(s => !string.IsNullOrWhiteSpace(s));
+
+            if (splitB is not null && splitB.Any()) {
+                state = splitB.First();
+                zip = splitB.Skip(1).FirstOrDefault() ?? string.Empty;
+            }
+
+        }
+
+        return new OrderAddress() {
+            Line1 = address1,
             City = city,
             State = state,
             Zip = zip
