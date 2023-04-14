@@ -1,5 +1,3 @@
-BEGIN TRANSACTION;
-
 CREATE TABLE work_orders (
 	id BLOB NOT NULL,
 	name TEXT NOT NULL,
@@ -14,5 +12,3 @@ CREATE TABLE work_order_products (
 	PRIMARY KEY (work_order_id, product_id),
 	FOREIGN KEY (work_order_id) REFERENCES work_orders
 );
-
-COMMIT;
