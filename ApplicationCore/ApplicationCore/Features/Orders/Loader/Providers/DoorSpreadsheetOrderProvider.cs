@@ -268,7 +268,7 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
         }
 
         DoorFrame frame;
-        Dimension height, width, thickness, panelDrop;
+        Dimension height, width, thickness, panelDrop, rail3, opening1, rail4, opening2;
         switch (units) {
 
             case OrderHeader.UnitType.Inches:
@@ -282,6 +282,10 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
                     TopRail = Dimension.FromInches(lineItem.TopRail),
                     BottomRail = Dimension.FromInches(lineItem.BottomRail),
                 };
+                rail3 = Dimension.FromInches(lineItem.Rail3);
+                opening1 = Dimension.FromInches(lineItem.Opening1);
+                rail4 = Dimension.FromInches(lineItem.Rail4);
+                opening2 = Dimension.FromInches(lineItem.Opening2);
                 break;
 
             case OrderHeader.UnitType.Millimeters:
@@ -295,6 +299,10 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
                     TopRail = Dimension.FromMillimeters(lineItem.TopRail),
                     BottomRail = Dimension.FromMillimeters(lineItem.BottomRail),
                 };
+                rail3 = Dimension.FromMillimeters(lineItem.Rail3);
+                opening1 = Dimension.FromMillimeters(lineItem.Opening1);
+                rail4 = Dimension.FromMillimeters(lineItem.Rail4);
+                opening2 = Dimension.FromMillimeters(lineItem.Opening2);
                 break;
 
             default:
@@ -308,13 +316,26 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
                     TopRail = Dimension.Zero,
                     BottomRail = Dimension.Zero,
                 };
+                rail3 = Dimension.Zero;
+                opening1 = Dimension.Zero;
+                rail4 = Dimension.Zero;
+                opening2 = Dimension.Zero;
                 break;
 
         }
 
-        // TODO: read these values from the workbook
-        var additionalOpenings = new AdditionalOpening[0];
-        var orientation = DoorOrientation.Vertical;
+        var additionalOpenings = new List<AdditionalOpening>();
+        if (lineItem.Opening1 > 0 && lineItem.Rail3 > 0) {
+            additionalOpenings.Add(new(rail3, opening1));
+        }
+        if (lineItem.Opening1 > 0 && lineItem.Rail3 > 0) {
+            additionalOpenings.Add(new(rail4, opening2));
+        }
+
+        var orientation = lineItem.Orientation.ToLower() switch{
+            "horizontal" => DoorOrientation.Horizontal,
+            "vertical" or _ => DoorOrientation.Vertical
+        };
 
         return MDFDoorProduct.Create(lineItem.UnitPrice, "", lineItem.Qty, lineItem.PartNumber, type, height, width, lineItem.Note, frame, lineItem.Material, thickness, header.Style, header.EdgeProfile, header.PanelDetail, panelDrop, orientation, additionalOpenings, header.Color);
 
