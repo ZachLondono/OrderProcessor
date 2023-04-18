@@ -528,7 +528,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         header.Cell().Element(headerCellStyle).Text("Qty");
                         header.Cell().Element(headerCellStyle).Text("Description");
                         header.Cell().Element(headerCellStyle).Text("Width");
-                        header.Cell().Element(headerCellStyle).Text("Length");
+                        header.Cell().Element(headerCellStyle).Text("Height");
 
                     });
 

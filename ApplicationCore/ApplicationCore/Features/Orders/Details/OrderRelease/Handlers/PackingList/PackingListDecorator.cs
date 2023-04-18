@@ -216,8 +216,8 @@ internal class PackingListDecorator : IPackingListDecorator {
                         header.Cell().Element(headerCellStyle).Text("#");
                         header.Cell().Element(headerCellStyle).Text("Qty");
                         header.Cell().Element(headerCellStyle).Text("Description");
-                        header.Cell().Element(headerCellStyle).Text("Height");
                         header.Cell().Element(headerCellStyle).Text("Width");
+                        header.Cell().Element(headerCellStyle).Text("Height");
                         header.Cell().Element(headerCellStyle).Text("Depth");
 
                     });
@@ -226,8 +226,8 @@ internal class PackingListDecorator : IPackingListDecorator {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
                     }
 
@@ -281,8 +281,8 @@ internal class PackingListDecorator : IPackingListDecorator {
                         header.Cell().Element(headerCellStyle).Text("#");
                         header.Cell().Element(headerCellStyle).Text("Qty");
                         header.Cell().Element(headerCellStyle).Text("Description");
-                        header.Cell().Element(headerCellStyle).Text("Length");
                         header.Cell().Element(headerCellStyle).Text("Width");
+                        header.Cell().Element(headerCellStyle).Text("Length");
 
                     });
 
@@ -290,8 +290,8 @@ internal class PackingListDecorator : IPackingListDecorator {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Length, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Length, 10));
                     }
 
                 });
@@ -345,8 +345,8 @@ internal class PackingListDecorator : IPackingListDecorator {
                         header.Cell().Element(headerCellStyle).Text("#");
                         header.Cell().Element(headerCellStyle).Text("Qty");
                         header.Cell().Element(headerCellStyle).Text("Description");
-                        header.Cell().Element(headerCellStyle).Text("Height");
                         header.Cell().Element(headerCellStyle).Text("Width");
+                        header.Cell().Element(headerCellStyle).Text("Height");
 
                     });
 
@@ -354,8 +354,8 @@ internal class PackingListDecorator : IPackingListDecorator {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
                     }
 
                 });
@@ -411,8 +411,8 @@ internal class PackingListDecorator : IPackingListDecorator {
                         header.Cell().Element(headerCellStyle).Text("#");
                         header.Cell().Element(headerCellStyle).Text("Qty");
                         header.Cell().Element(headerCellStyle).Text("Description");
-                        header.Cell().Element(headerCellStyle).Text("Height");
                         header.Cell().Element(headerCellStyle).Text("Width");
+                        header.Cell().Element(headerCellStyle).Text("Height");
                         header.Cell().Element(headerCellStyle).Text("Depth");
 
                     });
@@ -421,8 +421,8 @@ internal class PackingListDecorator : IPackingListDecorator {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
                     }
 
