@@ -16,6 +16,8 @@ internal class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuer
     public Dimension BottomRail { get; set; }
     public Dimension LeftStile { get; set; }
     public Dimension RightStile { get; set; }
+    public DoorOrientation Orientation { get; set; }
+    public AdditionalOpening[] AdditionalOpenings { get; set; } = Array.Empty<AdditionalOpening>();
 
     public string FramingBead { get; set; } = string.Empty;
     public string EdgeDetail { get; set; } = string.Empty;
@@ -44,6 +46,7 @@ internal class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuer
         	mdf_product.bottom_rail AS BottomRail,
         	mdf_product.left_stile AS LeftStile,
         	mdf_product.right_stile AS RightStile,
+            mdf_product.orientation AS Orientation,
 
         	mdf_config.framing_bead AS FramingBead,
         	mdf_config.edge_detail AS EdgeDetail,
@@ -61,6 +64,16 @@ internal class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuer
         WHERE products.order_id = @OrderId;
         """;
 
+    public static string GetAdditionalOpeningsQueryByProductId
+        =>
+        """
+        SELECT
+            opening AS OpeningHeight,
+            rail AS RailWidth,
+        FROM mdf_door_openings
+        WHERE product_id = @ProductId;
+        """;
+
     public IProduct MapToProduct() {
 
         var frameSize = new DoorFrame() {
@@ -70,7 +83,7 @@ internal class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuer
             RightStile = RightStile
         };
 
-        return new MDFDoorProduct(Id, UnitPrice, Room, Qty, ProductNumber, Type, Height, Width, Note, frameSize, Material, Thickness, FramingBead, EdgeDetail, PanelDetail, PanelDrop, PaintColor);
+        return new MDFDoorProduct(Id, UnitPrice, Room, Qty, ProductNumber, Type, Height, Width, Note, frameSize, Material, Thickness, FramingBead, EdgeDetail, PanelDetail, PanelDrop, Orientation, AdditionalOpenings, PaintColor);
 
     }
 

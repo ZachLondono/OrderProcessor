@@ -99,7 +99,18 @@ public class MDFDoorModel : ProductModel {
 
         Dimension thickness = Dimension.FromInches(0.75);
 
-        return MDFDoorProduct.Create(unitPrice, Room, Qty, GetProductNumber(), type, height, width, Note, frameSize, Material, thickness, FramingBead, EdgeProfile, PanelDetail, panelDrop, Finish);
+        var orientation = DoorOrientation.Vertical;
+
+        var additionalOpenings = new List<AdditionalOpening>();
+        if (Opening1 > 0) {
+            additionalOpenings.Add(new(Dimension.FromMillimeters(Rail3), Dimension.FromMillimeters(Opening1)));
+        }
+
+        if (Opening2 > 0) {
+            additionalOpenings.Add(new(Dimension.FromMillimeters(Rail4), Dimension.FromMillimeters(Opening2)));
+        }
+
+        return MDFDoorProduct.Create(unitPrice, Room, Qty, GetProductNumber(), type, height, width, Note, frameSize, Material, thickness, FramingBead, EdgeProfile, PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), Finish);
 
     }
 }

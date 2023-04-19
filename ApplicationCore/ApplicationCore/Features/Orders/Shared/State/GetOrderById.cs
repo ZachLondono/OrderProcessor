@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.Data;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.State.DataModels;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
@@ -56,7 +57,7 @@ public class GetOrderById {
             // add product data to list here
             await AddProductDataToCollection<ClosetPartDataModel>(productData, orderId, connection);
             await AddProductDataToCollection<DovetailDrawerBoxDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<MDFDoorDataModel>(productData, orderId, connection);
+            await AddMDFDoorProductDataToCollection(productData, orderId, connection);
 
             await AddProductDataToCollection<BaseCabinetDataModel>(productData, orderId, connection);
             await AddProductDataToCollection<WallCabinetDataModel>(productData, orderId, connection);
@@ -84,7 +85,32 @@ public class GetOrderById {
                 productData.AddRange(data.Cast<IProductDataModel>());
 
             } catch (Exception ex) {
-                _logger.LogError("Exception thrown while trying to read data for product type {Type} in order {OrderId} {Ex}", typeof(T), orderId, ex);
+                _logger.LogError(ex, "Exception thrown while trying to read data for product type {Type} in order {OrderId}", typeof(T), orderId);
+            }
+
+        }
+
+        private async Task AddMDFDoorProductDataToCollection(List<IProductDataModel> productData, Guid orderId, IDbConnection connection) {
+            
+            try {
+
+                var query = MDFDoorDataModel.GetQueryByOrderId;
+                var doors = await connection.QueryAsync<MDFDoorDataModel>(query, new { OrderId = orderId });
+
+                string openingsQuery = MDFDoorDataModel.GetAdditionalOpeningsQueryByProductId;
+                foreach (var door in doors) {
+                    var data = await connection.QueryAsync<AdditionalOpening>(openingsQuery, new { ProductId = door.Id });
+                    if (data is IEnumerable<AdditionalOpening> openings) {
+                        door.AdditionalOpenings = openings.ToArray();
+                    } else {
+                        door.AdditionalOpenings = Array.Empty<AdditionalOpening>();
+                    }
+                }
+
+                productData.AddRange(doors);
+
+            } catch (Exception ex) {
+                _logger.LogError(ex, "Exception thrown while trying to read data for product type {Type} in order {OrderId}", typeof(MDFDoorDataModel), orderId);
             }
 
         }
@@ -93,7 +119,7 @@ public class GetOrderById {
             try {
                 accumulator.Add(data.MapToProduct());
             } catch (Exception ex) {
-                _logger.LogError("Exception thrown while trying to map data to product {Ex}", ex);
+                _logger.LogError(ex, "Exception thrown while trying to map data to product");
             }
             return accumulator;
         }
