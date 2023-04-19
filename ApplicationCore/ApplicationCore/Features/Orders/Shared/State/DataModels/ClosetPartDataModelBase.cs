@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.State.DataModels;
@@ -13,6 +14,7 @@ internal class ClosetPartDataModel : ProductDataModelBase, IProductDataModel, IQ
     public string MaterialFinish { get; set; } = string.Empty;
     public ClosetMaterialCore MaterialCore { get; set; }
     public string? PaintColor { get; set; }
+    public PaintedSide PaintedSide { get; set; }
     public string EdgeBandingFinish { get; set; } = string.Empty;
     public string Comment { get; set; } = string.Empty;
     public IDictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
@@ -34,6 +36,7 @@ internal class ClosetPartDataModel : ProductDataModelBase, IProductDataModel, IQ
             closet_parts.material_finish AS MaterialFinish,
             closet_parts.material_core AS MaterialCore,
             closet_parts.paint_color AS PaintColor,
+            closet_parts.painted_side AS PaintedSide,
             closet_parts.edge_banding_finish AS EdgeBandingFinish,
             closet_parts.comment,
             closet_parts.parameters
@@ -47,7 +50,8 @@ internal class ClosetPartDataModel : ProductDataModelBase, IProductDataModel, IQ
         """;
 
     public IProduct MapToProduct() {
-        return new ClosetPart(Id, Qty, UnitPrice, ProductNumber, Room, Sku, Width, Length, new(MaterialFinish, MaterialCore, PaintColor), EdgeBandingFinish, Comment, Parameters.AsReadOnly());
+        ClosetPaint? paint = PaintColor is null ? null : new(PaintColor, PaintedSide);
+        return new ClosetPart(Id, Qty, UnitPrice, ProductNumber, Room, Sku, Width, Length, new(MaterialFinish, MaterialCore), paint, EdgeBandingFinish, Comment, Parameters.AsReadOnly());
     }
 
 }

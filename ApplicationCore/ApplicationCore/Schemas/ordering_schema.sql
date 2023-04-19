@@ -115,6 +115,7 @@ CREATE TABLE closet_parts (
 	material_finish TEXT NOT NULL,
 	material_core INTEGER NOT NULL,
 	paint_color TEXT,
+	painted_side INTEGER NOT NULL,
 	edge_banding_finish TEXT NOT NULL,
 	comment TEXT NOT NULL,
 	parameters TEXT NOT NULL,

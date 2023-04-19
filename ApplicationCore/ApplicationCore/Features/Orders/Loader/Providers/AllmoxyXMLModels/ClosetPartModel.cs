@@ -64,7 +64,9 @@ public class ClosetPartModel : ProductModel {
 
         string? paintColor = string.IsNullOrWhiteSpace(PaintColor) ? null : PaintColor;
 
-        ClosetMaterial material = new(MaterialFinish, core, paintColor);
+        ClosetMaterial material = new(MaterialFinish, core);
+        // TODO: get paint side from order data
+        ClosetPaint? paint = paintColor is null ? null : new(paintColor, PaintedSide.BothSides);
 
         Dimension width = Dimension.FromMillimeters(Width);
         Dimension length = Dimension.FromMillimeters(Length);
@@ -73,7 +75,7 @@ public class ClosetPartModel : ProductModel {
 
         IReadOnlyDictionary<string, string> parameters = Parameters.ToDictionary(p => p.Name, p => p.Value).AsReadOnly();
 
-        return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, SKU, width, length, material, EdgeBandColor, Comment, parameters);
+        return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, SKU, width, length, material, paint, EdgeBandColor, Comment, parameters);
 
     }
 
