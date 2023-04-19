@@ -337,7 +337,7 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
             "vertical" or _ => DoorOrientation.Vertical
         };
 
-        return MDFDoorProduct.Create(lineItem.UnitPrice, "", lineItem.Qty, lineItem.PartNumber, type, height, width, lineItem.Note, frame, lineItem.Material, thickness, header.Style, header.EdgeProfile, header.PanelDetail, panelDrop, orientation, additionalOpenings, header.Color);
+        return MDFDoorProduct.Create(lineItem.UnitPrice, "", lineItem.Qty, lineItem.PartNumber, type, height, width, lineItem.Note, frame, lineItem.Material, thickness, header.Style, header.EdgeProfile, header.PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), header.Color);
 
     }
 
