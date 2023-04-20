@@ -2,7 +2,10 @@
 
 public enum PaintedSide {
     None,
-    OneSide,
+    Top,
+    Bottom,
+    Left,
+    Right,
     Interior,
     Exterior,
     BothSides,
