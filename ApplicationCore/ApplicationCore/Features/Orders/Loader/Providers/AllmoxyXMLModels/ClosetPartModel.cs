@@ -4,6 +4,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using System.Xml.Serialization;
+using ClosetPaintedSide = ApplicationCore.Features.Orders.Shared.Domain.ValueObjects.PaintedSide;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
@@ -45,6 +46,9 @@ public class ClosetPartModel : ProductModel {
     [XmlElement("paintColor")]
     public string PaintColor { get; set; } = string.Empty;
 
+    [XmlElement("paintedSide")]
+    public string PaintedSide { get; set; } = string.Empty;
+
     [XmlElement("comment")]
     public string Comment { get; set; } = string.Empty;
 
@@ -62,11 +66,18 @@ public class ClosetPartModel : ProductModel {
             _ => throw new InvalidOperationException($"Unexpected material core type '{MaterialCore}'"),
         };
 
-        string? paintColor = string.IsNullOrWhiteSpace(PaintColor) ? null : PaintColor;
-
         ClosetMaterial material = new(MaterialFinish, core);
-        // TODO: get paint side from order data
-        ClosetPaint? paint = paintColor is null ? null : new(paintColor, PaintedSide.BothSides);
+
+        string? paintColor = string.IsNullOrWhiteSpace(PaintColor) ? null : PaintColor;
+        ClosetPaint? paint = null;
+        if (paintColor is not null)  {
+            if (Enum.TryParse(PaintedSide, out ClosetPaintedSide paintedSide)) {
+                paint = new(paintColor, paintedSide);
+            } else {
+                paint = new(paintColor, ClosetPaintedSide.Custom);
+            }
+
+        }
 
         Dimension width = Dimension.FromMillimeters(Width);
         Dimension length = Dimension.FromMillimeters(Length);
