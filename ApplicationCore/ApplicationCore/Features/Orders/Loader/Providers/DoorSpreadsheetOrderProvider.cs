@@ -154,6 +154,15 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
 
         var units = header.GetUnitType();
 
+        // Data read from Excel may still be null, even if the property is not nullable
+        ArgumentNullException.ThrowIfNull(header.JobName);
+        ArgumentNullException.ThrowIfNull(header.TrackingNumber);
+        ArgumentNullException.ThrowIfNull(header.OrderDate);
+        ArgumentNullException.ThrowIfNull(header.InvoiceEmail);
+        ArgumentNullException.ThrowIfNull(header.Phone);
+        ArgumentNullException.ThrowIfNull(header.ConfirmationFirstName);
+        ArgumentNullException.ThrowIfNull(header.Freight);
+
         return new OrderData() {
 
             Name = header.JobName,
@@ -262,6 +271,20 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
 
     public static IProduct MapLineItem(LineItem lineItem, OrderHeader header, OrderHeader.UnitType units) {
 
+        // Data read from excel may still be null, even if the property is not nullable
+        ArgumentNullException.ThrowIfNull(lineItem.Description);
+        ArgumentNullException.ThrowIfNull(lineItem.Height);
+        ArgumentNullException.ThrowIfNull(lineItem.Width);
+        ArgumentNullException.ThrowIfNull(lineItem.Thickness);
+        ArgumentNullException.ThrowIfNull(lineItem.LeftStile);
+        ArgumentNullException.ThrowIfNull(lineItem.RightStile);
+        ArgumentNullException.ThrowIfNull(lineItem.TopRail);
+        ArgumentNullException.ThrowIfNull(lineItem.BottomRail);
+        ArgumentNullException.ThrowIfNull(lineItem.Rail3);
+        ArgumentNullException.ThrowIfNull(lineItem.Rail4);
+        ArgumentNullException.ThrowIfNull(lineItem.Opening1);
+        ArgumentNullException.ThrowIfNull(lineItem.Opening2);
+
         DoorType type = DoorType.Door;
         if (lineItem.Description.Contains("Drawer") || lineItem.Description.Contains("Dwr")) {
             type = DoorType.DrawerFront;
@@ -336,6 +359,12 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
             "horizontal" => DoorOrientation.Horizontal,
             "vertical" or _ => DoorOrientation.Vertical
         };
+
+        ArgumentNullException.ThrowIfNull(lineItem.UnitPrice);
+        ArgumentNullException.ThrowIfNull(lineItem.Qty);
+        ArgumentNullException.ThrowIfNull(lineItem.PartNumber);
+        ArgumentNullException.ThrowIfNull(lineItem.Note);
+        ArgumentNullException.ThrowIfNull(lineItem.Material);
 
         return MDFDoorProduct.Create(lineItem.UnitPrice, "", lineItem.Qty, lineItem.PartNumber, type, height, width, lineItem.Note, frame, lineItem.Material, thickness, header.Style, header.EdgeProfile, header.PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), header.Color);
 
