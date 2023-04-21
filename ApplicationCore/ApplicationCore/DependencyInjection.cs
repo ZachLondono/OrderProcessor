@@ -39,6 +39,7 @@ public static class DependencyInjection {
         services.AddPages();
 
         services.AddSingleton<IFileReader, FileReader>();
+        services.AddSingleton<IFileWriter, FileWriter>();
 
         services.AddApplicationInfrastructure(configuration);
 
