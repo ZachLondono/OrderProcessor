@@ -9,7 +9,7 @@ internal static class WorkBookExtensions {
         try {
 
             if (sheet.Range[rngName].Value2 is T data) {
-                return data;
+                return data ?? defaultValue;
             } else {
                 return defaultValue;
             }
@@ -27,7 +27,7 @@ internal static class WorkBookExtensions {
         try {
 
             if (sheet.Range[rngName].Offset[rowOffset, colOffset].Value2 is T data) {
-                return data;
+                return data ?? defaultValue;
             } else {
                 return defaultValue;
             }
