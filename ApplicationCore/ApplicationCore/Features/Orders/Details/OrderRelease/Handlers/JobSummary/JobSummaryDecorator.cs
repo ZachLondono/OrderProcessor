@@ -121,7 +121,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
                     column.Item().PaddingTop(20).PaddingBottom(20).Row(row => row.RelativeItem().LineHorizontal(1).LineColor(Colors.Grey.Medium));
 
-                    if (!jobSummary.ShowItemsInSummary) {
+                    if (jobSummary.ShowItemsInSummary) {
                         foreach (var group in jobSummary.Cabients) {
                             ComposeCabinetTable(column.Item(), group);
                         }
