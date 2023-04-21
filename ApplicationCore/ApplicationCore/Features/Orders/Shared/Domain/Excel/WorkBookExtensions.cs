@@ -8,7 +8,11 @@ internal static class WorkBookExtensions {
 
         try {
 
-            return (T) sheet.Range[rngName].Value2;
+            if (sheet.Range[rngName].Value2 is T data) {
+                return data;
+            } else {
+                return defaultValue;
+            }
 
         } catch {
 
@@ -22,7 +26,11 @@ internal static class WorkBookExtensions {
 
         try {
 
-            return (T) sheet.Range[rngName].Offset[rowOffset, colOffset].Value2;
+            if (sheet.Range[rngName].Offset[rowOffset, colOffset].Value2 is T data) {
+                return data;
+            } else {
+                return defaultValue;
+            }
 
         } catch {
 
