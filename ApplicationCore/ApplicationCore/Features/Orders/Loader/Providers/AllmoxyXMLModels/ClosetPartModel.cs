@@ -4,6 +4,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using System.Xml.Serialization;
+using ClosetPaintedSide = ApplicationCore.Features.Orders.Shared.Domain.ValueObjects.PaintedSide;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 
@@ -45,6 +46,9 @@ public class ClosetPartModel : ProductModel {
     [XmlElement("paintColor")]
     public string PaintColor { get; set; } = string.Empty;
 
+    [XmlElement("paintedSide")]
+    public string PaintedSide { get; set; } = string.Empty;
+
     [XmlElement("comment")]
     public string Comment { get; set; } = string.Empty;
 
@@ -62,9 +66,18 @@ public class ClosetPartModel : ProductModel {
             _ => throw new InvalidOperationException($"Unexpected material core type '{MaterialCore}'"),
         };
 
-        string? paintColor = string.IsNullOrWhiteSpace(PaintColor) ? null : PaintColor;
+        ClosetMaterial material = new(MaterialFinish, core);
 
-        ClosetMaterial material = new(MaterialFinish, core, paintColor);
+        string? paintColor = string.IsNullOrWhiteSpace(PaintColor) ? null : PaintColor;
+        ClosetPaint? paint = null;
+        if (paintColor is not null)  {
+            if (Enum.TryParse(PaintedSide, out ClosetPaintedSide paintedSide)) {
+                paint = new(paintColor, paintedSide);
+            } else {
+                paint = new(paintColor, ClosetPaintedSide.Custom);
+            }
+
+        }
 
         Dimension width = Dimension.FromMillimeters(Width);
         Dimension length = Dimension.FromMillimeters(Length);
@@ -73,7 +86,7 @@ public class ClosetPartModel : ProductModel {
 
         IReadOnlyDictionary<string, string> parameters = Parameters.ToDictionary(p => p.Name, p => p.Value).AsReadOnly();
 
-        return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, SKU, width, length, material, EdgeBandColor, Comment, parameters);
+        return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, SKU, width, length, material, paint, EdgeBandColor, Comment, parameters);
 
     }
 

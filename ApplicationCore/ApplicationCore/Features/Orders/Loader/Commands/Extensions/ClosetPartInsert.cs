@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using Dapper;
 using System.Data;
 
@@ -19,7 +20,8 @@ public partial class CreateNewOrder {
                 Length = closetPart.Length,
                 MaterialFinish = closetPart.Material.Finish,
                 MaterialCore = closetPart.Material.Core,
-                PaintColor = closetPart.Material.PaintColor,
+                PaintColor = closetPart.Paint?.Color ?? null,
+                PaintedSide = closetPart.Paint?.Side ?? PaintedSide.None,
                 EdgeBandingFinish = closetPart.EdgeBandingColor,
                 Comment = closetPart.Comment,
                 Parameters = (IDictionary<string, string>)closetPart.Parameters
@@ -35,6 +37,7 @@ public partial class CreateNewOrder {
                         material_finish,
                         material_core,
                         paint_color,
+                        painted_side,
                         edge_banding_finish,
                         comment,
                         parameters)
@@ -47,6 +50,7 @@ public partial class CreateNewOrder {
                         @MaterialFinish,
                         @MaterialCore,
                         @PaintColor,
+                        @PaintedSide,
                         @EdgeBandingFinish,
                         @Comment,
                         @Parameters);

@@ -2,6 +2,7 @@
 
 internal class ClosetPartGroup {
 
+    // TODO: ADD Paint to group key
     public string Room { get; set; } = string.Empty;
     public string MaterialFinish { get; set; } = string.Empty;
     public string MaterialCore { get; set; } = string.Empty;

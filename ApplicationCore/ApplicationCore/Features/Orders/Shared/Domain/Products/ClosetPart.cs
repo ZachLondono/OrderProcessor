@@ -16,13 +16,14 @@ public class ClosetPart : IProduct, IPPProductContainer {
     public Dimension Width { get; }
     public Dimension Length { get; }
     public ClosetMaterial Material { get; }
+    public ClosetPaint? Paint { get; }
     public string EdgeBandingColor { get; }
     public string Comment { get; }
     public IReadOnlyDictionary<string, string> Parameters { get; }
 
     public string GetDescription() => $"Closet Part - {SKU}";
 
-    public ClosetPart(Guid id, int qty, decimal unitPrice, int productNumber, string room, string sku, Dimension width, Dimension length, ClosetMaterial material, string edgeBandingColor, string comment, IReadOnlyDictionary<string, string> parameters) {
+    public ClosetPart(Guid id, int qty, decimal unitPrice, int productNumber, string room, string sku, Dimension width, Dimension length, ClosetMaterial material, ClosetPaint? paint, string edgeBandingColor, string comment, IReadOnlyDictionary<string, string> parameters) {
         Id = id;
         Qty = qty;
         UnitPrice = unitPrice;
@@ -32,6 +33,7 @@ public class ClosetPart : IProduct, IPPProductContainer {
         Width = width;
         Length = length;
         Material = material;
+        Paint = paint;
         EdgeBandingColor = edgeBandingColor;
         Comment = comment;
         Parameters = parameters;

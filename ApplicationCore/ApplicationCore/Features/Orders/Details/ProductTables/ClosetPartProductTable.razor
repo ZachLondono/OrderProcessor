@@ -14,7 +14,8 @@
                 <th class="p-5">Length</th>
                 <th class="p-5">SKU</th>
                 <th class="p-5">Material</th>
-                <th class="p-5">Paint</th>
+                <th class="p-5">Paint Color</th>
+                <th class="p-5">Painted Side</th>
                 <th class="p-5">EB Color</th>
                 <th class="p-5">Room</th>
                 <th class="p-5">Unit $</th>
@@ -50,7 +51,8 @@
                     }
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.SKU</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.Material.Finish}/{row.Product.Material.Core}")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.Material.PaintColor ?? "N/A"}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.Paint?.Color ?? "N/A"}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.Paint?.Side.ToString() ?? "N/A"}")</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.EdgeBandingColor</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Room</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.UnitPrice.ToString("$0.00")</td>
