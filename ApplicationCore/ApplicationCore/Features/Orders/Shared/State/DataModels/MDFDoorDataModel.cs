@@ -69,7 +69,7 @@ internal class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuer
         """
         SELECT
             opening AS OpeningHeight,
-            rail AS RailWidth,
+            rail AS RailWidth
         FROM mdf_door_openings
         WHERE product_id = @ProductId;
         """;
