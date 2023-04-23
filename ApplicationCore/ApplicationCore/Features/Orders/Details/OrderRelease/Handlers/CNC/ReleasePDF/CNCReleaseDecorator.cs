@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using QuestPDF.Infrastructure;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Companies.Contracts;
+using ApplicationCore.Features.Tools.Contracts;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
 
@@ -14,21 +15,24 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
     private readonly IReleasePDFWriter _pdfService;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
+    private readonly CNCToolBox.GetToolCarousels _getToolCarousels;
 
     public string ReportFilePath { get; set; } = string.Empty;
 
-    public CNCReleaseDecorator(IReleasePDFWriter pdfService, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync) {
+    public CNCReleaseDecorator(IReleasePDFWriter pdfService, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, CNCToolBox.GetToolCarousels getToolCarousels) {
         _pdfService = pdfService;
         _getCustomerByIdAsync = getCustomerByIdAsync;
         _getVendorByIdAsync = getVendorByIdAsync;
+        _getToolCarousels = getToolCarousels;
     }
 
     public async Task Decorate(Order order, IDocumentContainer container) {
 
         var vendor = await _getVendorByIdAsync(order.VendorId);
         var customer = await _getCustomerByIdAsync(order.CustomerId);
+        var toolCarousels = await _getToolCarousels();
 
-        ReleasedJob? releasedJob = CreateReleasedJob(ReportFilePath, order.OrderDate, customer?.Name ?? "", vendor?.Name ?? "");
+        ReleasedJob? releasedJob = CreateReleasedJob(ReportFilePath, order.OrderDate, customer?.Name ?? "", vendor?.Name ?? "", toolCarousels);
 
         if (releasedJob is null) {
 
@@ -48,7 +52,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
 
     }
 
-    private static ReleasedJob? CreateReleasedJob(string reportFilePath, DateTime orderDate, string customerName, string vendorName) {
+    private static ReleasedJob? CreateReleasedJob(string reportFilePath, DateTime orderDate, string customerName, string vendorName, IEnumerable<ToolCarousel> toolCarousels) {
         XDocument xdoc = XDocument.Load(reportFilePath);
 
         if (xdoc.Root is null) {
@@ -81,10 +85,30 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
 
         var labels = job.Element("Manufacturing").Elements("Label").Select(PartLabels.FromXElement).ToDictionary(l => l.Id);
 
+        var operationGroups = job.Element("Manufacturing").Elements("OperationGroups").Select(OperationGroups.FromXElement);
+        var allToolNames = operationGroups.Where(g => g.MfgOrientationId is not null)
+                                        .SelectMany(g => g.ToolName)
+                                        .Distinct();
+
+        // TODO: get tools used by machine, so that they can be displayed individually if different
+        List<Tool> usedTools = new();
+        var allTools = toolCarousels.SelectMany(c => c.Tools).ToList();
+        foreach (var toolName in allToolNames) { 
+            
+            foreach (var tool in allTools) {
+               if (tool.Name == toolName || tool.AlternativeNames.Contains(toolName)) {
+                    usedTools.Add(tool);
+                    break;
+                } 
+            }
+
+        }
+
         List<MachineRelease> releases = patternSchedules
                                         .GroupBy(sched => GetMachineName(sched.Name))
                                         .Select(group => new MachineRelease() {
                                             MachineName = group.Key,
+                                            ToolTable = CreateMachineToolTable(group.Key, toolCarousels, allToolNames),
                                             MachineTableOrientation = GetTableOrientationFromMachineName(group.Key),
                                             Programs = group.SelectMany(group => group.Patterns)
                                                             .Select(pattern => {
@@ -171,6 +195,35 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
         };
 
         return releasedJob;
+    }
+
+    private static IReadOnlyDictionary<int, string> CreateMachineToolTable(string machineName, IEnumerable<ToolCarousel> toolCarousels, IEnumerable<string> usedToolNames) {
+
+        var toolTable = new Dictionary<int, string>();
+
+        var machineCarousel = toolCarousels.FirstOrDefault(c => c.MachineName == machineName);
+
+        if (machineCarousel is null) return toolTable;
+
+        for (int i = 0; i < machineCarousel.PositionCount; i++) {
+            toolTable[i + 1] = "";
+        }
+
+        foreach (var toolName in usedToolNames) {
+
+            foreach (var tool in machineCarousel.Tools) {
+
+                if (toolName == tool.Name || tool.AlternativeNames.Contains(toolName)) {
+                    toolTable[tool.Position] = tool.Name;
+                    break;
+                }
+
+            }
+
+        }
+
+        return toolTable;
+
     }
 
     private static string GetFileNameFromPartLabels(PartLabels? labels) {
