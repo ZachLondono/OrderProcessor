@@ -1,0 +1,96 @@
+﻿@using ApplicationCore.Features.Shared.Components
+@using System.Diagnostics;
+@using ApplicationCore.Features.Shared.Services;
+@inject ReleasePDFDialogViewModel DataContext
+@inject IFilePicker FilePicker 
+
+@if (DataContext.Error is not null) {
+    <span class="font-red-600">@DataContext.Error</span>    
+}
+
+@if (DataContext.IsGeneratingPDF) {
+
+    <p>Generating PDF...</p>
+
+} else if (DataContext.GeneratedFile is not null) {
+
+    <p>PDF Generated</p>
+    <a onclick="@(() => OpenFile(DataContext.GeneratedFile))" class="underline cursor-pointer">@DataContext.GeneratedFile</a> 
+
+} else {
+
+    <EditForm Model="@DataContext.Model">
+
+        <div>
+            <Button Color="Button.ButtonColor.Secondary" OnClickAsync="ChooseReportFile">Choose Report</Button>
+            <span>@DataContext.Model.ReportFilePath</span>
+        </div>
+
+        <div>
+            <label class="font-semibold">Customer</label>
+            <InputText @bind-Value="DataContext.Model.CustomerName" class="border" />
+        </div>
+
+        <div>
+            <label class="font-semibold">Vendor</label>
+            <InputText @bind-Value="DataContext.Model.VendorName" class="border" />
+        </div>
+
+        <div>
+            <label class="font-semibold">Order Date</label>
+            <InputDate @bind-Value="DataContext.Model.OrderDate" />
+        </div>
+
+        <div>
+            <label class="font-semibold">Output directory</label>
+            <InputText @bind-Value="DataContext.Model.OutputDirectory" class="border" />
+        </div>
+
+        <div>
+            <label class="font-semibold">File name</label>
+            <InputText @bind-Value="DataContext.Model.FileName" class="border" />
+        </div>
+    
+        <Button OnClickAsync="DataContext.GeneratePDF" Color="Button.ButtonColor.Primary">Generate PDF</Button>
+    
+    </EditForm>
+
+}
+
+@code {
+
+    protected override void OnInitialized() {
+        base.OnInitialized();
+        DataContext.OnPropertyChanged += StateHasChanged;
+    }
+
+    private async Task ChooseReportFile() {
+
+        string selectedPath = "";
+        bool wasPicked = await FilePicker.PickFileAsync("Select CADCode WS Report File", "C:\\", new("CADCode WS Report", "xml"), (file) => {
+            selectedPath = file;
+        });
+
+        if (wasPicked) {
+            DataContext.Model.ReportFilePath =  selectedPath;    
+        }
+
+    }
+
+    public void OpenFile(string filePath) {
+
+        try {
+
+            var psi = new ProcessStartInfo {
+                FileName = filePath,
+                UseShellExecute = true
+            };
+            Process.Start(psi);
+
+        } catch (Exception ex) {
+            Debug.WriteLine(ex);
+        }
+
+    }
+
+}

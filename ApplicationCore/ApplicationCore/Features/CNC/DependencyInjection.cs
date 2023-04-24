@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.CNC.Contracts;
 using ApplicationCore.Features.CNC.ReleasePDF;
 using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
+using ApplicationCore.Features.CNC.ReleasePDF.Dialog;
 using ApplicationCore.Features.CNC.ReleasePDF.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,7 @@ public static class DependencyInjection {
         services.AddTransient<IReleasePDFWriter, QuestPDFWriter>();
         services.AddTransient<ICNCReleaseDecorator, CNCReleaseDecorator>();
         services.Configure<PDFConfiguration>(configuration.GetRequiredSection("ReleasePDFConfig"));
+        services.AddTransient<ReleasePDFDialogViewModel>();
         return services;
 
     }
