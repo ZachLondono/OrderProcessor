@@ -1,6 +1,7 @@
 [
   {
     "machine_name": "ANDI STRATOS",
+    "tool_position_count": 10,
     "tools": [
       {
         "name": "POCKET44",
@@ -122,9 +123,7 @@
       {
         "name": "Sander",
         "position": 9,
-        "alternative_names": [
-          "109"
-        ]
+        "alternative_names": []
       }
     ]
   },
@@ -135,16 +134,12 @@
       {
         "name": "3-8Comp",
         "position": 1,
-        "alternative_names": [
-          "11"
-        ]
+        "alternative_names": []
       },
       {
         "name": "3-8Comp",
         "position": 1,
-        "alternative_names": [
-          "101"
-        ]
+        "alternative_names": []
       },
       {
         "name": "2MMRADIUS",
