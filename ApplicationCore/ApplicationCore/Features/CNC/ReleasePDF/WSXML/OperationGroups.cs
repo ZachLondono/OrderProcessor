@@ -11,7 +11,7 @@ internal record OperationGroups(string Id, string JobId, string? PartId, string?
         string? mfgOrientationId = null;
         foreach (var attr in element.Attributes()) {
 
-            if (attr.Name.LocalName == "PartId") {
+            if (attr.Name.LocalName == "PartID") {
                 partId = attr.Value;
                 break;
             } else if (attr.Name.LocalName == "MfgOrientationID") {
