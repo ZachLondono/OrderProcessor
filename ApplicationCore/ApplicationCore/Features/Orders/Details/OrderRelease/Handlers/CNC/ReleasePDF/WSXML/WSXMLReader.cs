@@ -9,6 +9,7 @@ namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.Rele
 internal partial class WSXMLParser {
 
     public static ReleasedJob? ParseWSXMLReport(string reportFilePath, DateTime orderDate, string customerName, string vendorName, IEnumerable<ToolCarousel> toolCarousels) {
+
         XDocument xdoc = XDocument.Load(reportFilePath);
 
         if (xdoc.Root is null) {
@@ -33,15 +34,23 @@ internal partial class WSXMLParser {
             return new Nest(item.AttributeValue("ID"), item.ElementValue("Name"), parts);
         }).ToList();
 
-        var patternScheduleItems = job.Element("Manufacturing").Elements("PatternSchedule");
+        var manufacturing = job.Element("Manufacturing");
+
+        if (manufacturing is null) {
+            Console.WriteLine("No manufacturing data found");
+            return null;            
+        }
+
+        var patternScheduleItems = manufacturing.Elements("PatternSchedule");
 
         var patternSchedules = patternScheduleItems.Select(PatternSchedule.FromXElement);
 
         var materials = job.Elements("Material").Select(MaterialRecord.FromXElement).ToDictionary(m => m.Id);
 
-        var labels = job.Element("Manufacturing").Elements("Label").Select(PartLabels.FromXElement).ToDictionary(l => l.Id);
+        var labels = manufacturing.Elements("Label").Select(PartLabels.FromXElement).ToDictionary(l => l.Id);
 
-        var operationGroups = job.Element("Manufacturing").Elements("OperationGroups").Select(OperationGroups.FromXElement);
+        var operationGroups = manufacturing.Elements("OperationGroups").Select(OperationGroups.FromXElement);
+
         var allToolNames = operationGroups.Where(g => g.MfgOrientationId is not null)
                                         .SelectMany(g => g.ToolName)
                                         .Distinct();
@@ -60,61 +69,70 @@ internal partial class WSXMLParser {
 
         }
 
+        string jobName = job.ElementValue("Name");
+
+        ReleasedJob releasedJob = MapDataToReleasedJob(orderDate, customerName, vendorName, toolCarousels, jobName, allParts, patternSchedules, materials, labels, allToolNames);
+
+        return releasedJob;
+
+    }
+
+    private static ReleasedJob MapDataToReleasedJob(DateTime orderDate, string customerName, string vendorName, IEnumerable<ToolCarousel> toolCarousels, string jobName, Dictionary<string, Part> allParts, IEnumerable<PatternSchedule> patternSchedules, Dictionary<string, MaterialRecord> materials, Dictionary<string, PartLabels> labels, IEnumerable<string> allToolNames) {
         List<MachineRelease> releases = patternSchedules
-                                        .GroupBy(sched => GetMachineName(sched.Name))
-                                        .Select(group => new MachineRelease() {
-                                            MachineName = group.Key,
-                                            ToolTable = CreateMachineToolTable(group.Key, toolCarousels, allToolNames),
-                                            MachineTableOrientation = GetTableOrientationFromMachineName(group.Key),
-                                            Programs = group.SelectMany(group => group.Patterns)
-                                                            .Select(pattern => {
-                                                                var material = materials[pattern.MaterialId];
-                                                                return new ReleasedProgram() {
-                                                                    Name = pattern.Name,
-                                                                    HasFace6 = false,
-                                                                    ImagePath = $"y:\\CADCode\\pix\\{GetImageFileName(pattern.Name)}.wmf",
-                                                                    Material = new() {
-                                                                        IsGrained = false,
-                                                                        Yield = 0,
-                                                                        Name = material.Name,
-                                                                        Width = material.YDim,
-                                                                        Length = material.XDim,
-                                                                        Thickness = material.ZDim
-                                                                    },
-                                                                    Parts = pattern.Parts
-                                                                                    .SelectMany(part => {
-                                                                                        List<(string partId, PatternPartLocation location)> points = new();
-                                                                                        part.Locations.ToList().ForEach(loc => points.Add((part.PartId, loc)));
-                                                                                        return points;
-                                                                                    })
-                                                                                    .Select(nestPart => {
-                                                                                        var part = allParts[nestPart.partId];
-                                                                                        var label = labels[part.LabelId];
-                                                                                        if (!Guid.TryParse(label.Fields.GetValueOrEmpty("Comment2"), out Guid productId)) {
-                                                                                            productId = Guid.Empty;
-                                                                                        }
-                                                                                        return new NestedPart() {
-                                                                                            Name = part.Name,
-                                                                                            FileName = GetFileNameFromPartLabels(label),
-                                                                                            Width = Dimension.FromMillimeters(part.Width),
-                                                                                            Length = Dimension.FromMillimeters(part.Length),
-                                                                                            Center = new() {
-                                                                                                X = nestPart.location.Insert.X + (nestPart.location.IsRotated ? part.Length : part.Width) / 2,
-                                                                                                Y = nestPart.location.Insert.Y + (nestPart.location.IsRotated ? part.Width : part.Length) / 2
-                                                                                            },
-                                                                                            IsRotated = nestPart.location.IsRotated,
-                                                                                            Description = label.Fields.GetValueOrEmpty("Description"),
-                                                                                            ProductNumber = label.Fields.GetValueOrEmpty("Cabinet Number"),
-                                                                                            ProductId = productId,
-                                                                                            PartId = nestPart.partId,
-                                                                                            ImageData = label.Fields.GetValueOrEmpty("Machining Picture"),
-                                                                                            HasFace6 = false
-                                                                                        };
-                                                                                    })
-                                                                                    .ToList()
-                                                                };
-                                                            })
-                                        }).ToList();
+                                                .GroupBy(sched => GetMachineName(sched.Name))
+                                                .Select(group => new MachineRelease() {
+                                                    MachineName = group.Key,
+                                                    ToolTable = CreateMachineToolTable(group.Key, toolCarousels, allToolNames),
+                                                    MachineTableOrientation = GetTableOrientationFromMachineName(group.Key),
+                                                    Programs = group.SelectMany(group => group.Patterns)
+                                                                    .Select(pattern => {
+                                                                        var material = materials[pattern.MaterialId];
+                                                                        return new ReleasedProgram() {
+                                                                            Name = pattern.Name,
+                                                                            HasFace6 = false,
+                                                                            ImagePath = $"y:\\CADCode\\pix\\{GetImageFileName(pattern.Name)}.wmf",
+                                                                            Material = new() {
+                                                                                IsGrained = false,
+                                                                                Yield = 0,
+                                                                                Name = material.Name,
+                                                                                Width = material.YDim,
+                                                                                Length = material.XDim,
+                                                                                Thickness = material.ZDim
+                                                                            },
+                                                                            Parts = pattern.Parts
+                                                                                            .SelectMany(part => {
+                                                                                                List<(string partId, PatternPartLocation location)> points = new();
+                                                                                                part.Locations.ToList().ForEach(loc => points.Add((part.PartId, loc)));
+                                                                                                return points;
+                                                                                            })
+                                                                                            .Select(nestPart => {
+                                                                                                var part = allParts[nestPart.partId];
+                                                                                                var label = labels[part.LabelId];
+                                                                                                if (!Guid.TryParse(label.Fields.GetValueOrEmpty("Comment2"), out Guid productId)) {
+                                                                                                    productId = Guid.Empty;
+                                                                                                }
+                                                                                                return new NestedPart() {
+                                                                                                    Name = part.Name,
+                                                                                                    FileName = GetFileNameFromPartLabels(label),
+                                                                                                    Width = Dimension.FromMillimeters(part.Width),
+                                                                                                    Length = Dimension.FromMillimeters(part.Length),
+                                                                                                    Center = new() {
+                                                                                                        X = nestPart.location.Insert.X + (nestPart.location.IsRotated ? part.Length : part.Width) / 2,
+                                                                                                        Y = nestPart.location.Insert.Y + (nestPart.location.IsRotated ? part.Width : part.Length) / 2
+                                                                                                    },
+                                                                                                    IsRotated = nestPart.location.IsRotated,
+                                                                                                    Description = label.Fields.GetValueOrEmpty("Description"),
+                                                                                                    ProductNumber = label.Fields.GetValueOrEmpty("Cabinet Number"),
+                                                                                                    ProductId = productId,
+                                                                                                    PartId = nestPart.partId,
+                                                                                                    ImageData = label.Fields.GetValueOrEmpty("Machining Picture"),
+                                                                                                    HasFace6 = false
+                                                                                                };
+                                                                                            })
+                                                                                            .ToList()
+                                                                        };
+                                                                    })
+                                                }).ToList();
 
         foreach (var machineRelease in releases) {
 
@@ -141,7 +159,7 @@ internal partial class WSXMLParser {
         }
 
         var releasedJob = new ReleasedJob() {
-            JobName = job.ElementValue("Name"),
+            JobName = jobName,
             OrderDate = orderDate,
             ReleaseDate = DateTime.Now,
             CustomerName = customerName,
@@ -149,7 +167,6 @@ internal partial class WSXMLParser {
             WorkOrderId = null,
             Releases = releases
         };
-
         return releasedJob;
     }
 
