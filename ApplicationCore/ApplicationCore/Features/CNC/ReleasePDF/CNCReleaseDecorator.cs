@@ -51,7 +51,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
     
     private static ReleasedJob MapDataToReleasedJob(WSXMLReport report, DateTime orderDate, string customerName, string vendorName, IEnumerable<ToolCarousel> toolCarousels) {
 
-        var allToolNames = report.OperationGroups.Where(g => g.MfgOrientationId is not null)
+        var allToolNames = report.OperationGroups.Where(g => g.PartId is not null)
                                         .SelectMany(g => g.ToolName)
                                         .Distinct();
 
