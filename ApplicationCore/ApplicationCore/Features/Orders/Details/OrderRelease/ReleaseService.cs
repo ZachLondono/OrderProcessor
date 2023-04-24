@@ -213,7 +213,10 @@ public class ReleaseService {
 
             foreach (var decorator in decorators) {
                 try {
-                    decorator.Decorate(order, doc);
+                    // TODO: refactor so that decorators work in two steps
+                    // Step 1: An async 'Initilize' step which will generate the internal state and can be awaiterd
+                    // Step 2: Actually create the document  
+                    decorator.Decorate(order, doc).Wait(); // This task needs to be run synchronsly or it will create a race condition
                 } catch (Exception ex) {
                     OnError?.Invoke($"Error adding pages to document '{name}' - '{ex.Message}'");
                 }
