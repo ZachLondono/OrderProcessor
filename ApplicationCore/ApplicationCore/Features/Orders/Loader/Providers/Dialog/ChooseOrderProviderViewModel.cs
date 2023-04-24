@@ -21,7 +21,7 @@ internal class ChooseOrderProviderViewModel {
                 SourceType = OrderSourceType.DoorOrder,
                 DialogTitle = "Enter Path to Door Order Spreadsheet",
                 SourcePickerDialogType = typeof(GetDoorOrderSpreadsheetPathDialog)
-            } 
+            }
         };
 
     }

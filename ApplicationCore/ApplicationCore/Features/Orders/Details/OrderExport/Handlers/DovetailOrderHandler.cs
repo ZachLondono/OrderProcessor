@@ -50,12 +50,12 @@ internal class DovetailOrderHandler {
 
         List<string> filesGenerated = new();
         var workbooks = app.Workbooks;
-        try {     
+        try {
 
             foreach (var group in groups) {
 
                 Workbook workbook = workbooks.Open(template, ReadOnly: true);
-                
+
                 var data = MapData(order, customer?.Name ?? "", group);
                 var worksheets = workbook.Worksheets;
                 Worksheet worksheet = worksheets["Order"];

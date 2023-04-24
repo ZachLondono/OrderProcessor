@@ -32,7 +32,7 @@ internal class ToolFileEditorViewModel {
 
     public ToolFileEditorViewModel(IBus bus) {
         _bus = bus;
-    }   
+    }
 
     public async Task LoadToolFile() {
 

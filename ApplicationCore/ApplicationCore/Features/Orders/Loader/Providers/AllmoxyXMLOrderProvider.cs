@@ -177,7 +177,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             return false;
 
         } catch (XmlException ex) {
-            
+
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Schema Error] XML schema is not valid L{ex.LineNumber} - {ex.Message}");
             return false;
 

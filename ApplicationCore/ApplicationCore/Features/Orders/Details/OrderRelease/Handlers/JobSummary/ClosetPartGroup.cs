@@ -14,7 +14,7 @@ internal class ClosetPartGroup {
     public class ClosetPartGroupComparer : IEqualityComparer<ClosetPartGroup> {
 
         bool IEqualityComparer<ClosetPartGroup>.Equals(ClosetPartGroup? x, ClosetPartGroup? y) {
-            
+
             if (x is null && y is null) return true;
             if (x is null || y is null) return false;
 

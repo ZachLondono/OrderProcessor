@@ -1,6 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Configuration;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
-using ApplicationCore.Features.Orders.Details.OrderExport;
+﻿using ApplicationCore.Features.Orders.Details.OrderExport;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Services;
@@ -8,7 +6,6 @@ using ApplicationCore.Features.Orders.Details.OrderRelease;
 using ApplicationCore.Features.Orders.Loader;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.State;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
 using ApplicationCore.Features.Orders.Data;
 using ApplicationCore.Features.Orders.List;
 using ApplicationCore.Infrastructure.Bus;
@@ -22,6 +19,11 @@ using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.Loader.Providers.DoorOrderModels;
 using ApplicationCore.Features.Orders.Loader.Providers;
 using ApplicationCore.Features.Orders.Loader.Providers.Dialog;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC;
+using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
+using ApplicationCore.Features.CNC.ReleasePDF.Services;
+using ApplicationCore.Features.CNC.ReleasePDF;
+using ApplicationCore.Features.CNC.Contracts;
 
 namespace ApplicationCore.Features.Orders;
 

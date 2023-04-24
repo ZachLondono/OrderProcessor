@@ -16,6 +16,8 @@ namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSumma
 
 internal class JobSummaryDecorator : IJobSummaryDecorator {
 
+    private JobSummary? _jobSummary = null;
+
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
 
@@ -24,15 +26,22 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
         _getCustomerByIdAsync = getCustomerByIdAsync;
     }
 
-    public async Task Decorate(Order order, IDocumentContainer container) {
+    public async Task AddData(Order order) {
+        _jobSummary = await GetJobSummaryModel(order);
+    }
 
-        var jobSummary = await GetJobSummaryModel(order);
-        ComposeJobSummary(container, jobSummary);
+    public void Decorate(IDocumentContainer container) {
+
+        if (_jobSummary is null) {
+            return;
+        }
+
+        ComposeJobSummary(container, _jobSummary);
 
     }
 
     private static void ComposeJobSummary(IDocumentContainer container, JobSummary jobSummary) {
-        
+
         container.Page(page => {
 
             page.Size(PageSizes.Letter);
@@ -233,7 +242,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                             BoxFinish = p.BoxMaterial.Finish,
                             FinishCore = p.FinishMaterial.Core.ToString(),
                             FinishFinish = p.FinishMaterial.Finish,
-                            Fronts = p.MDFDoorOptions is  null ? "Slab" : "MDF By Royal",
+                            Fronts = p.MDFDoorOptions is null ? "Slab" : "MDF By Royal",
                             Paint = p.FinishMaterial.PaintColor ?? ""
                         }, new CabinetGroupComparer())
                         .Select(g => {

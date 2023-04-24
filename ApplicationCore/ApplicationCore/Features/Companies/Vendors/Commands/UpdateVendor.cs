@@ -70,33 +70,33 @@ internal class UpdateVendor {
 
                 WHERE id = @Id;
                 """, new {
-                    vendor.Id,
-                    vendor.Name,
-                    vendor.Phone,
-                    vendor.Logo,
+                                vendor.Id,
+                                vendor.Name,
+                                vendor.Phone,
+                                vendor.Logo,
 
-                    vendor.ExportProfile.ExportDBOrder,
-                    vendor.ExportProfile.ExportMDFDoorOrder,
-                    vendor.ExportProfile.ExportExtFile,
-                    ExportOutputDirectory = vendor.ExportProfile.OutputDirectory,
+                                vendor.ExportProfile.ExportDBOrder,
+                                vendor.ExportProfile.ExportMDFDoorOrder,
+                                vendor.ExportProfile.ExportExtFile,
+                                ExportOutputDirectory = vendor.ExportProfile.OutputDirectory,
 
-                    ReleaseInvoice = vendor.ReleaseProfile.GenerateInvoice,
-                    ReleaseInvoiceOutputDirectory = vendor.ReleaseProfile.InvoiceOutputDirectory,
-                    ReleaseSendInvoiceEmail = vendor.ReleaseProfile.SendInvoiceEmail,
-                    ReleaseInvoiceEmailRecipients = vendor.ReleaseProfile.InvoiceEmailRecipients,
+                                ReleaseInvoice = vendor.ReleaseProfile.GenerateInvoice,
+                                ReleaseInvoiceOutputDirectory = vendor.ReleaseProfile.InvoiceOutputDirectory,
+                                ReleaseSendInvoiceEmail = vendor.ReleaseProfile.SendInvoiceEmail,
+                                ReleaseInvoiceEmailRecipients = vendor.ReleaseProfile.InvoiceEmailRecipients,
 
-                    ReleaseIncludeInvoice = vendor.ReleaseProfile.IncludeInvoice,
-                    ReleasePackingList = vendor.ReleaseProfile.GeneratePackingList,
-                    ReleaseJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
-                    ReleaseSendEmail = vendor.ReleaseProfile.SendReleaseEmail,
-                    vendor.ReleaseProfile.ReleaseEmailRecipients,
-                    vendor.ReleaseProfile.ReleaseOutputDirectory,
+                                ReleaseIncludeInvoice = vendor.ReleaseProfile.IncludeInvoice,
+                                ReleasePackingList = vendor.ReleaseProfile.GeneratePackingList,
+                                ReleaseJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
+                                ReleaseSendEmail = vendor.ReleaseProfile.SendReleaseEmail,
+                                vendor.ReleaseProfile.ReleaseEmailRecipients,
+                                vendor.ReleaseProfile.ReleaseOutputDirectory,
 
-                    EmailSenderName = vendor.EmailSender.Name,
-                    EmailSenderEmail = vendor.EmailSender.Email,
-                    EmailSenderPassword = vendor.EmailSender.ProtectedPassword
+                                EmailSenderName = vendor.EmailSender.Name,
+                                EmailSenderEmail = vendor.EmailSender.Email,
+                                EmailSenderPassword = vendor.EmailSender.ProtectedPassword
 
-                }, trx);
+                            }, trx);
 
         }
 

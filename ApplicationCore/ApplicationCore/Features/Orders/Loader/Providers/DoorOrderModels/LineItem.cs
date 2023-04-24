@@ -34,7 +34,7 @@ internal class LineItem {
             Qty = sheet.GetRangeOffsetValueOrDefault("QtyStart", 0, offset),
             Width = sheet.GetRangeOffsetValueOrDefault("WidthStart", 0d, offset),
             Height = sheet.GetRangeOffsetValueOrDefault("HeightStart", 0d, offset),
-            Note = sheet.GetRangeOffsetValueOrDefault("NoteStart",string.Empty, offset),
+            Note = sheet.GetRangeOffsetValueOrDefault("NoteStart", string.Empty, offset),
             UnitPrice = sheet.GetRangeOffsetValueOrDefault("UnitPriceStart", 0m, offset),
             LeftStile = sheet.GetRangeOffsetValueOrDefault("LeftStileStart", 0d, offset),
             RightStile = sheet.GetRangeOffsetValueOrDefault("RightStileStart", 0d, offset),
@@ -44,7 +44,7 @@ internal class LineItem {
             Rail3 = sheet.GetRangeOffsetValueOrDefault("Rail3Start", 0d, offset),
             Opening2 = sheet.GetRangeOffsetValueOrDefault("Opening1Start", 0d, offset),
             Rail4 = sheet.GetRangeOffsetValueOrDefault("Rail4Start", 0d, offset),
-            Material  = sheet.GetRangeOffsetValueOrDefault("MaterialStart", string.Empty, offset),
+            Material = sheet.GetRangeOffsetValueOrDefault("MaterialStart", string.Empty, offset),
             Thickness = sheet.GetRangeOffsetValueOrDefault("ThicknessStart", 0d, offset),
             Orientation = sheet.GetRangeOffsetValueOrDefault("OrientationStart", "Vertical", offset)
         };

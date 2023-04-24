@@ -78,7 +78,7 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
                     break;
                 }
 
-                try { 
+                try {
                     lines.Add(LineItem.ReadFromWorksheet(orderSheet, line));
                 } catch (Exception ex) {
 
@@ -124,21 +124,21 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
         Guid? result = await _getCustomerByNamAsync(header.CompanyName);
 
         if (result is not null) {
-            return (Guid) result;
+            return (Guid)result;
         }
 
         var address = ParseCompanyAddress(header.Address1, header.Address2);
 
         var billingContact = new Contact() {
             Name = header.InvoiceFirstName,
-            Phone = header.Phone, 
-            Email = header.InvoiceEmail 
+            Phone = header.Phone,
+            Email = header.InvoiceEmail
         };
-        
+
         var shippingContact = new Contact() {
             Name = header.ConfirmationFirstName,
             Phone = header.Phone,
-            Email = header.ConfirmationEmail 
+            Email = header.ConfirmationEmail
         };
 
         var customer = Customer.Create(header.CompanyName, string.Empty, shippingContact, address, billingContact, address);
@@ -200,7 +200,7 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
     }
 
     private static CustomerAddress ParseCompanyAddress(string address1, string address2) {
-        
+
         string city = string.Empty;
         string state = string.Empty;
         string zip = string.Empty;
@@ -235,7 +235,7 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
     }
 
     private static OrderAddress ParseOrderAddress(string address1, string address2) {
-        
+
         string city = string.Empty;
         string state = string.Empty;
         string zip = string.Empty;
@@ -355,7 +355,7 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
             additionalOpenings.Add(new(rail4, opening2));
         }
 
-        var orientation = lineItem.Orientation.ToLower() switch{
+        var orientation = lineItem.Orientation.ToLower() switch {
             "horizontal" => DoorOrientation.Horizontal,
             "vertical" or _ => DoorOrientation.Vertical
         };

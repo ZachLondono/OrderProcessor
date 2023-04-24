@@ -10,13 +10,13 @@ internal class UpdateConfiguration {
     public class Handler : CommandHandler<Command> {
 
         private readonly IConfigurationDBConnectionFactory _factory;
-        
+
         public Handler(IConfigurationDBConnectionFactory factory) {
             _factory = factory;
         }
 
         public override async Task<Response> Handle(Command command) {
-            
+
             using var connection = await _factory.CreateConnection();
 
             var rowsAffected = await connection.ExecuteAsync(
@@ -34,7 +34,7 @@ internal class UpdateConfiguration {
                     Title = "Configuration Not Updated",
                     Details = "No data was changed while trying to update configuration"
                 });
-            }  
+            }
 
             return Response.Success();
 

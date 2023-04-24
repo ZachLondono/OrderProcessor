@@ -15,7 +15,7 @@ internal class SetTools {
 
         public Handler(IFileWriter fileWriter) {
             _fileWriter = fileWriter;
-        } 
+        }
 
         public override async Task<Response> Handle(Command command) {
 

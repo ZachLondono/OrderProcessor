@@ -40,7 +40,7 @@ public class DrawerBoxOptions {
     }
 
     public string GetMaterialFriendlyName() {
-        
+
         if (FrontMaterial == BackMaterial
             && SideMaterial == SideMaterial) {
             return FrontMaterial;

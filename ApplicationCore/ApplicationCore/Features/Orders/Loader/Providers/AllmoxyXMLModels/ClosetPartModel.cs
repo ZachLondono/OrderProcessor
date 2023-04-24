@@ -70,7 +70,7 @@ public class ClosetPartModel : ProductModel {
 
         string? paintColor = string.IsNullOrWhiteSpace(PaintColor) ? null : PaintColor;
         ClosetPaint? paint = null;
-        if (paintColor is not null)  {
+        if (paintColor is not null) {
             if (Enum.TryParse(PaintedSide, out ClosetPaintedSide paintedSide)) {
                 paint = new(paintColor, paintedSide);
             } else {

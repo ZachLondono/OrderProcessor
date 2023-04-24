@@ -1,3 +1,10 @@
-﻿namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using ApplicationCore.Features.Shared;
 
-public interface IJobSummaryDecorator : IDocumentDecorator { }
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
+
+public interface IJobSummaryDecorator : IDocumentDecorator {
+
+    public Task AddData(Order order);
+
+}
