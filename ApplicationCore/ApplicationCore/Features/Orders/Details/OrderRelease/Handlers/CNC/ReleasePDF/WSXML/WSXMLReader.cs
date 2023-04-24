@@ -4,9 +4,9 @@ using ApplicationCore.Features.Shared.Domain;
 using ApplicationCore.Features.Tools.Contracts;
 using System.Xml.Linq;
 
-namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.WSXML;
 
-internal class WSXMLParser {
+internal partial class WSXMLParser {
 
     public static ReleasedJob? ParseWSXMLReport(string reportFilePath, DateTime orderDate, string customerName, string vendorName, IEnumerable<ToolCarousel> toolCarousels) {
         XDocument xdoc = XDocument.Load(reportFilePath);
@@ -49,13 +49,13 @@ internal class WSXMLParser {
         // TODO: get tools used by machine, so that they can be displayed individually if different
         List<Tool> usedTools = new();
         var allTools = toolCarousels.SelectMany(c => c.Tools).ToList();
-        foreach (var toolName in allToolNames) { 
-            
+        foreach (var toolName in allToolNames) {
+
             foreach (var tool in allTools) {
-               if (tool.Name == toolName || tool.AlternativeNames.Contains(toolName)) {
+                if (tool.Name == toolName || tool.AlternativeNames.Contains(toolName)) {
                     usedTools.Add(tool);
                     break;
-                } 
+                }
             }
 
         }
@@ -188,11 +188,11 @@ internal class WSXMLParser {
 
         if (labels.Fields.TryGetValue("FileName", out string? fileName)) {
             return fileName ?? string.Empty;
-        } 
+        }
         if (labels.Fields.TryGetValue("Filename", out fileName)) {
             return fileName ?? string.Empty;
         }
-       
+
         return fileName ?? string.Empty;
 
     }
@@ -220,104 +220,5 @@ internal class WSXMLParser {
         return patternName[..idx];
 
     }
-
-    private record Nest(string Id, string Name, IEnumerable<Part> Parts);
-
-    private record Part(string Id, string LabelId, string Name, double Width, double Length, IEnumerable<string> PatternScheduleIds) {
-        public static Part FromXElemnt(XElement element) => new(element.AttributeValue("ID"), element.AttributeValue("LabelID"), element.ElementValue("Name"), element.ElementDouble("FinishedLength"), element.ElementDouble("FinishedWidth"), element.AttributeValue("PatSchID").Split(' '));
-    }
-
-    private record PatternSchedule(string Id, string Name, IEnumerable<Pattern> Patterns) {
-        public static PatternSchedule FromXElement(XElement element) => new(element.AttributeValue("ID"), element.ElementValue("Name"), element.Elements("Pattern").Select(Pattern.FromXElement));
-    }
-
-    private record Pattern(string Id, string Name, string MaterialId, IEnumerable<PatternPart> Parts) {
-        public static Pattern FromXElement(XElement element) => new(element.AttributeValue("ID"), element.ElementValue("Name"), element.AttributeValue("MatID"), PatternPart.FromXEment(element));
-    }
-
-    private record PatternPart(string PartId, IEnumerable<PatternPartLocation> Locations) {
-        public static IEnumerable<PatternPart> FromXEment(XElement patternElement) {
-
-            return patternElement.Elements("NestPart")
-                            .GroupBy(nestPart => nestPart.AttributeValue("PartID"))
-                            .Select(group =>
-                                new PatternPart(group.Key,
-                                                group.Select(nestPart => {
-                                                    var insert = nestPart.Element("Insert");
-                                                    bool isRotated = nestPart.ElementValue("Rotation") == "90";
-
-                                                    return new PatternPartLocation(new Point() {
-                                                        X = insert.AttributeDouble("x"),
-                                                        Y = insert.AttributeDouble("y")
-                                                    }, isRotated);
-                                                }))
-                            );
-
-        }
-    }
-
-    private record PatternPartLocation(Point Insert, bool IsRotated);
-
-    private record MaterialRecord(string Id, string Name, double XDim, double YDim, double ZDim) {
-        public static MaterialRecord FromXElement(XElement element) => new(element.AttributeValue("ID"), element.ElementValue("Name"), element.ElementDouble("XDim"), element.ElementDouble("YDim"), element.ElementDouble("ZDim"));
-    }
-
-    private record PartLabels(string Id, Dictionary<string, string> Fields) {
-
-        public static PartLabels FromXElement(XElement element) {
-
-            Dictionary<string, string> fields = new();
-
-            string name = "";
-            foreach (var subelement in element.Descendants()) {
-
-                switch (subelement.Name.ToString()) {
-
-                    case "Name":
-                        name = subelement.Value;
-                        break;
-
-                    case "Value":
-                        fields.TryAdd(name, subelement.Value);
-                        name = "";
-                        break;
-
-                }
-
-            }
-
-            return new(element.AttributeValue("ID"), fields);
-
-        }
-
-    }
-
-    private record OperationGroups(string Id, string JobId, string? PartId, string? MfgOrientationId, IEnumerable<string> ToolName) {
-
-        public static OperationGroups FromXElement(XElement element) {
-
-            // An operation groups element should only contain either a `PartId`, if it is a single part program, or a `MfgOrientationId` if it is a nested part program
-            string? partId = null;
-            string? mfgOrientationId = null;
-            foreach (var attr in element.Attributes()) {
-
-                if (attr.Name.LocalName == "PartId") {
-                    partId = attr.Value;
-                    break;
-                } else if (attr.Name.LocalName == "MfgOrientationID") { 
-                    mfgOrientationId = attr.Value;
-                    break;
-                }
-
-            }
-
-            // `ToolName` elements may contain a single tool name or multiple comma seperated names
-            var toolNames = element.Elements("ToolName").SelectMany(e => e.Value.Split(','));
-
-            return new(element.AttributeValue("ID"), element.AttributeValue("JobId"), partId, mfgOrientationId, toolNames);
-
-        }
-
-    };
 
 }

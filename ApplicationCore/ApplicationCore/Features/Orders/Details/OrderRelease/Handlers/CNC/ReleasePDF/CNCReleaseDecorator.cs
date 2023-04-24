@@ -1,12 +1,10 @@
 ﻿using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Contracts;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.Services;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.Domain;
-using ApplicationCore.Features.Shared.Domain;
-using System.Xml.Linq;
 using QuestPDF.Infrastructure;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Companies.Contracts;
 using ApplicationCore.Features.Tools.Contracts;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF.WSXML;
 
 namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
 
