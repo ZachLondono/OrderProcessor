@@ -7,9 +7,9 @@ internal class ConfigurationEditorViewModel {
     public Action? OnPropertyChanged { get; set; }
 
     private AppConfiguration? _configuration = null;
-    public AppConfiguration? Configuration { 
+    public AppConfiguration? Configuration {
         get => _configuration;
-        private set { 
+        private set {
             _configuration = value;
             OnPropertyChanged?.Invoke();
         }

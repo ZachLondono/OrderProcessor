@@ -10,13 +10,13 @@ internal class GetConfiguration {
     public class Handler : QueryHandler<Query, AppConfiguration> {
 
         private readonly IConfigurationDBConnectionFactory _factory;
-        
+
         public Handler(IConfigurationDBConnectionFactory factory) {
             _factory = factory;
         }
 
         public override async Task<Response<AppConfiguration>> Handle(Query query) {
-            
+
             using var connection = await _factory.CreateConnection();
 
             var config = await connection.QuerySingleAsync<AppConfiguration>(

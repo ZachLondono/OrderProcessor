@@ -67,11 +67,11 @@ public partial class CreateNewOrder {
                             @Opening,
                             @Rail);
                        """, new {
-                            Id = Guid.NewGuid(),
-                            ProductId = mdfdoor.Id,
-                            Opening = opening.OpeningHeight,
-                            Rail = opening.RailWidth
-                        }, trx);
+                        Id = Guid.NewGuid(),
+                        ProductId = mdfdoor.Id,
+                        Opening = opening.OpeningHeight,
+                        Rail = opening.RailWidth
+                    }, trx);
                 }
             }
 

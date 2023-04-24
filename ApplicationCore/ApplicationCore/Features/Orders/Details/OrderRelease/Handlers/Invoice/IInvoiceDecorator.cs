@@ -1,3 +1,10 @@
-﻿namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using ApplicationCore.Features.Shared;
 
-public interface IInvoiceDecorator : IDocumentDecorator { }
+namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
+
+public interface IInvoiceDecorator : IDocumentDecorator {
+
+    public Task AddData(Order order);
+
+}

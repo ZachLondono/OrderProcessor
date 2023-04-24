@@ -111,7 +111,7 @@ internal class GetVendorById {
 
             public string EmailSenderName { get; set; } = string.Empty;
             public string EmailSenderEmail { get; set; } = string.Empty;
-            public string EmailSenderPassword { get; set;} = string.Empty;
+            public string EmailSenderPassword { get; set; } = string.Empty;
 
             public Vendor AsVendor() {
 

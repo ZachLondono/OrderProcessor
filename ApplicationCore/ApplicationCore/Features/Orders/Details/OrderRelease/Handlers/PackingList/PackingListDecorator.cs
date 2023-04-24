@@ -10,6 +10,8 @@ namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingL
 
 internal class PackingListDecorator : IPackingListDecorator {
 
+    private PackingList? _packingList = null;
+
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
 
@@ -18,9 +20,15 @@ internal class PackingListDecorator : IPackingListDecorator {
         _getVendorByIdAsync = getVendorByIdAsync;
     }
 
-    public async Task Decorate(Order order, IDocumentContainer container) {
+    public async Task AddData(Order order) {
+        _packingList = await CreatePackingListModel(order);
+    }
 
-        var packingList = await CreatePackingListModel(order);
+    public void Decorate(IDocumentContainer container) {
+
+        if (_packingList is null) {
+            return;
+        }
 
         container.Page(page => {
 
@@ -38,22 +46,22 @@ internal class PackingListDecorator : IPackingListDecorator {
                             .FontSize(36)
                             .Bold();
 
-                    ComposeHeader(column.Item(), packingList);
+                    ComposeHeader(column.Item(), _packingList);
 
-                    if (packingList.Cabinets.Any()) {
-                        ComposeCabinetTable(column.Item(), packingList.Cabinets);
+                    if (_packingList.Cabinets.Any()) {
+                        ComposeCabinetTable(column.Item(), _packingList.Cabinets);
                     }
 
-                    if (packingList.ClosetParts.Any()) {
-                        ComposeClosetPartTable(column.Item(), packingList.ClosetParts);
+                    if (_packingList.ClosetParts.Any()) {
+                        ComposeClosetPartTable(column.Item(), _packingList.ClosetParts);
                     }
 
-                    if (packingList.Doors.Any()) {
-                        ComposeDoorTable(column.Item(), packingList.Doors);
+                    if (_packingList.Doors.Any()) {
+                        ComposeDoorTable(column.Item(), _packingList.Doors);
                     }
 
-                    if (packingList.DrawerBoxes.Any()) {
-                        ComposeDrawerBoxTable(column.Item(), packingList.DrawerBoxes);
+                    if (_packingList.DrawerBoxes.Any()) {
+                        ComposeDrawerBoxTable(column.Item(), _packingList.DrawerBoxes);
                     }
 
                 });

@@ -101,7 +101,7 @@ public class PPJobConverter {
 
                 continue;
 
-            } else { 
+            } else {
 
                 int groupIdx = 0;
                 foreach (var group in room.Groups) {

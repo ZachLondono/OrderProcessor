@@ -91,7 +91,7 @@ public class GetOrderById {
         }
 
         private async Task AddMDFDoorProductDataToCollection(List<IProductDataModel> productData, Guid orderId, IDbConnection connection) {
-            
+
             try {
 
                 var query = MDFDoorDataModel.GetQueryByOrderId;

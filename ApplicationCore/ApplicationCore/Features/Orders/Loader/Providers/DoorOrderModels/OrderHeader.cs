@@ -51,14 +51,14 @@ public class OrderHeader {
             JobName = sheet.GetRangeValueOrDefault("JobName", ""),
             Freight = sheet.GetRangeValueOrDefault("Freight", 0M),
             PanelDrop = sheet.GetRangeValueOrDefault<double>("PanelDrop", 0),
-            Finish = sheet.GetRangeValueOrDefault("FinishOption",""),
-            Color = sheet.GetRangeValueOrDefault("FinishColor",""),
-            Style = sheet.GetRangeValueOrDefault("FramingBead",""),
-            EdgeProfile = sheet.GetRangeValueOrDefault("EdgeDetail",""),
-            PanelDetail = sheet.GetRangeValueOrDefault("PanelDetail",""),
+            Finish = sheet.GetRangeValueOrDefault("FinishOption", ""),
+            Color = sheet.GetRangeValueOrDefault("FinishColor", ""),
+            Style = sheet.GetRangeValueOrDefault("FramingBead", ""),
+            EdgeProfile = sheet.GetRangeValueOrDefault("EdgeDetail", ""),
+            PanelDetail = sheet.GetRangeValueOrDefault("PanelDetail", ""),
             OrderDate = DateTime.FromOADate(sheet.GetRangeValueOrDefault<double?>("OrderDate", null) ?? DateTime.Now.ToOADate()),
         };
-    
+
     public enum UnitType {
         Inches,
         Millimeters

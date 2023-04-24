@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Companies.Contracts;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC.ReleasePDF;
+using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
@@ -67,23 +67,25 @@ public class ReleaseService {
         List<IDocumentDecorator> decorators = new();
 
         if (configuration.GenerateJobSummary) {
+            await _jobSummaryDecorator.AddData(order);
             decorators.Add(_jobSummaryDecorator);
         }
 
         if (configuration.GeneratePackingList) {
+            await _packingListDecorator.AddData(order);
             decorators.Add(_packingListDecorator);
         }
 
         if (configuration.IncludeInvoiceInRelease) {
+            await _invoiceDecorator.AddData(order);
             decorators.Add(_invoiceDecorator);
         }
 
         if (configuration.GenerateCNCRelease) {
-            configuration.CNCDataFilePaths
-                        .ForEach(filePath => {
-                            var decorator = _cncReleaseDecoratorFactory.Create(filePath);
-                            decorators.Add(decorator);
-                        });
+            foreach (var filePath in configuration.CNCDataFilePaths) {
+                var decorator = await _cncReleaseDecoratorFactory.Create(filePath, order);
+                decorators.Add(decorator);
+            }
         }
 
         var directories = (configuration.ReleaseOutputDirectory ?? "").Split(';').Where(s => !string.IsNullOrWhiteSpace(s));
@@ -94,7 +96,7 @@ public class ReleaseService {
         }
 
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
-        try { 
+        try {
             filePaths = GeneratePDF(directories, order, decorators, "Release", customerName);
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate release PDF - '{ex.Message}'");
@@ -103,7 +105,7 @@ public class ReleaseService {
 
         if (filePaths.Any() && configuration.SendReleaseEmail && configuration.ReleaseEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending release email");
-            try { 
+            try {
                 await SendEmailAsync(recipients, $"RELEASED: {order.Number} {order.Name}", "Please see attached release", new string[] { filePaths.First() }, configuration);
             } catch (Exception ex) {
                 OnError?.Invoke($"Could not send email - '{ex.Message}'");
@@ -131,13 +133,14 @@ public class ReleaseService {
             isTemp = true;
         }
 
-        if (!invoiceDirectories.Any() ) {
+        if (!invoiceDirectories.Any()) {
             OnError?.Invoke("No output directory was specified for invoice pdf");
             return;
         }
 
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
-        try { 
+        try {
+            await _invoiceDecorator.AddData(order);
             filePaths = GeneratePDF(invoiceDirectories, order, new IDocumentDecorator[] { _invoiceDecorator }, "Invoice", customerName, isTemp);
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate invoice PDF - '{ex.Message}'");
@@ -146,7 +149,7 @@ public class ReleaseService {
 
         if (filePaths.Any() && configuration.SendInvoiceEmail && configuration.InvoiceEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending invoice email");
-            try { 
+            try {
                 await SendEmailAsync(recipients, $"INVOICE: {order.Number} {order.Name}", "Please see attached invoice", new string[] { filePaths.First() }, configuration);
             } catch (Exception ex) {
                 OnError?.Invoke($"Could not send invoice email - '{ex.Message}'");
@@ -203,7 +206,7 @@ public class ReleaseService {
     }
 
     private IEnumerable<string> GeneratePDF(IEnumerable<string> outputDirs, Order order, IEnumerable<IDocumentDecorator> decorators, string name, string customerName, bool isTemp = false) {
-        
+
         if (!decorators.Any()) {
             OnError?.Invoke($"There are no pages to add to the '{name}' document");
             return Enumerable.Empty<string>();
@@ -213,10 +216,7 @@ public class ReleaseService {
 
             foreach (var decorator in decorators) {
                 try {
-                    // TODO: refactor so that decorators work in two steps
-                    // Step 1: An async 'Initilize' step which will generate the internal state and can be awaiterd
-                    // Step 2: Actually create the document  
-                    decorator.Decorate(order, doc).Wait(); // This task needs to be run synchronsly or it will create a race condition
+                    decorator.Decorate(doc);
                 } catch (Exception ex) {
                     OnError?.Invoke($"Error adding pages to document '{name}' - '{ex.Message}'");
                 }
@@ -225,7 +225,7 @@ public class ReleaseService {
         });
 
         List<string> files = new();
-    
+
         foreach (var outputDir in outputDirs) {
 
             string dir = ReplaceTokensInDirectory(customerName, outputDir);
@@ -240,7 +240,7 @@ public class ReleaseService {
             document.GeneratePdf(filePath);
             files.Add(filePath);
 
-            if (!isTemp) { 
+            if (!isTemp) {
                 OnFileGenerated?.Invoke(Path.GetFullPath(filePath));
             }
 
@@ -257,10 +257,10 @@ public class ReleaseService {
 
     private async Task<string> GetCustomerName(Guid customerId) {
 
-        try { 
-            
+        try {
+
             var customer = await _getCustomerByIdAsync(customerId);
-            
+
             if (customer is null) {
                 return string.Empty;
             }

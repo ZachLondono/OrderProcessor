@@ -317,14 +317,14 @@ public class DimensionTests {
     }
 
     [Theory]
-    [InlineData(0.015625, (double)1/16, 0)]          //   1/64 -> 0
-    [InlineData(0.03125, (double)1/16, 0.0625)]      //   2/64 -> 1/16
-    [InlineData(0.046875, (double)1/16, 0.0625)]     //   3/64 -> 1/16
-    [InlineData(0.0625, (double)1/16, 0.0625)]       //   4/64 -> 1/16
-    [InlineData(0.078125, (double)1/16, 0.0625)]     //   5/64 -> 1/16
-    [InlineData(0.09375, (double)1/16, 0.0625)]      //   6/64 -> 1/16
-    [InlineData(0.109375, (double)1/16, 0.125)]      //   7/64 -> 1/8
-    [InlineData(0.125, (double)1 /16, 0.125)]        //   8/64 -> 1/8
+    [InlineData(0.015625, (double)1 / 16, 0)]          //   1/64 -> 0
+    [InlineData(0.03125, (double)1 / 16, 0.0625)]      //   2/64 -> 1/16
+    [InlineData(0.046875, (double)1 / 16, 0.0625)]     //   3/64 -> 1/16
+    [InlineData(0.0625, (double)1 / 16, 0.0625)]       //   4/64 -> 1/16
+    [InlineData(0.078125, (double)1 / 16, 0.0625)]     //   5/64 -> 1/16
+    [InlineData(0.09375, (double)1 / 16, 0.0625)]      //   6/64 -> 1/16
+    [InlineData(0.109375, (double)1 / 16, 0.125)]      //   7/64 -> 1/8
+    [InlineData(0.125, (double)1 / 16, 0.125)]        //   8/64 -> 1/8
     public void ManualTest(double raw, double denominator, double expected) {
 
         // Arrange

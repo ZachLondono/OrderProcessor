@@ -74,9 +74,9 @@ public class BaseCabinetSuppliesTests {
         }
 
         var cabinet = _builder.WithDrawers(new() {
-                                    Quantity = drawerQty,
-                                    FaceHeight = Dimension.FromMillimeters(157)
-                                })
+            Quantity = drawerQty,
+            FaceHeight = Dimension.FromMillimeters(157)
+        })
                                 .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount))
                                 .WithInside(new(0, new RollOutOptions(positions, true, RollOutBlockPosition.None), ShelfDepth.Default))
                                 .WithWidth(Dimension.FromMillimeters(500))
@@ -145,9 +145,9 @@ public class BaseCabinetSuppliesTests {
         }
 
         var cabinet = _builder.WithDrawers(new() {
-                                    Quantity = drawerQty,
-                                    FaceHeight = Dimension.FromMillimeters(157)
-                                })
+            Quantity = drawerQty,
+            FaceHeight = Dimension.FromMillimeters(157)
+        })
                                 .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.SideMount))
                                 .WithInside(new(0, new RollOutOptions(positions, true, RollOutBlockPosition.None), ShelfDepth.Default))
                                 .WithDoors(BaseCabinetDoors.TwoDoors())

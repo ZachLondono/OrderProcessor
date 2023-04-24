@@ -87,8 +87,8 @@ internal class EditVendorViewModel {
 
         byte[] logo = Array.Empty<byte>();
         try {
-            
-            if (File.Exists(Model.LogoFile)) { 
+
+            if (File.Exists(Model.LogoFile)) {
                 logo = File.ReadAllBytes(Model.LogoFile);
                 Model.Logo = logo;
             }

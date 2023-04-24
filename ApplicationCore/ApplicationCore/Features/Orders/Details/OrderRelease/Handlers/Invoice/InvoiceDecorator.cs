@@ -10,6 +10,8 @@ namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
 
 internal class InvoiceDecorator : IInvoiceDecorator {
 
+    private Invoice? invoice = null;
+
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
 
@@ -18,9 +20,15 @@ internal class InvoiceDecorator : IInvoiceDecorator {
         _getVendorByIdAsync = getVendorByIdAsync;
     }
 
-    public async Task Decorate(Order order, IDocumentContainer container) {
+    public async Task AddData(Order order) {
+        invoice = await CreateInvoiceModel(order);
+    }
 
-        var invoice = await CreateInvoiceModel(order);
+    public void Decorate(IDocumentContainer container) {
+
+        if (invoice is null) {
+            return;
+        }
 
         container.Page(page => {
 
@@ -494,7 +502,7 @@ internal class InvoiceDecorator : IInvoiceDecorator {
 
     private static void FormatFraction(TextDescriptor text, Dimension dim, float fontSize) {
 
-        var fraction = dim.RoundToInchMultiple((double)1/64).AsInchFraction();
+        var fraction = dim.RoundToInchMultiple((double)1 / 64).AsInchFraction();
 
         if (fraction.N == 0) {
             text.Span("0").FontSize(fontSize);

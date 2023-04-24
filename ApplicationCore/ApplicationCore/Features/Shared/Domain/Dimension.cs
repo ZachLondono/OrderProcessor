@@ -21,7 +21,7 @@ public readonly struct Dimension : IComparable {
 
     public Dimension RoundToInchMultiple(double factor) {
 
-        double roundedValue = Math.Round(AsInches() / (double) factor, MidpointRounding.AwayFromZero) * (double) factor;
+        double roundedValue = Math.Round(AsInches() / (double)factor, MidpointRounding.AwayFromZero) * (double)factor;
 
         return FromInches(roundedValue);
 
