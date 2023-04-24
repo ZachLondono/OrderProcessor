@@ -185,7 +185,9 @@
 	}
 
 	private async Task OpenCNCReleaseDialog() {
-		var dialog = Modal.Show<ReleasePDFDialog>("CNC Release PDF");
+		var dialog = Modal.Show<ReleasePDFDialog>("CNC Release PDF", new ModalOptions() {
+			DisableBackgroundCancel = true
+		});
 		_ = await dialog.Result;
 	}
 
