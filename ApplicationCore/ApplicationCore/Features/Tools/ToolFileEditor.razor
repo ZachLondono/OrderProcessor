@@ -1,0 +1,109 @@
+﻿@using ApplicationCore.Features.Shared.Components
+@using ApplicationCore.Features.Tools.Domain;
+@using static ApplicationCore.Features.Shared.Components.Button;
+@inject ToolFileEditorViewModel DataContext
+
+@if(DataContext.Error is not null) {
+    <div>
+        <span class="text-red-600 font-md font-bold">@DataContext.Error.Title</span>
+        <span class="text-red-600 font-sm">@DataContext.Error.Details</span>
+    </div>
+}
+
+@foreach (var map in DataContext.ToolMaps) {
+   
+    <EditForm Model="@map" class="mb-6">
+        <label class="font-bold">Machine</label>
+        <InputText @bind-Value="@map.MachineName" />
+        <br>
+        <label class="font-bold">Tool ct.</label>
+        <InputNumber @bind-Value="@map.ToolPositionCount" />
+        <br>
+        <Button OnClick="() => AddToolToMachine(map)" Size="ButtonSize.Small" Color="ButtonColor.Secondary">+ Tool</Button>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Position</th>
+                    <th>Name</th>
+                    <th>Alt. Names</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tool in map.Tools.OrderBy(t => t.Position)) {
+                    <tr>
+                        <td class="w-12">
+                            <Button Size="ButtonSize.XSmall" Color="ButtonColor.Secondary" OnClick="() => RemoveToolFromMachine(map,tool)">X</Button>
+                        </td>
+                        <td>
+                            <InputNumber class="w-12" @bind-Value="@tool.Position" />
+                        </td>
+                        <td>
+                            <InputText class=w-40 @bind-Value="@tool.Name" />
+                        </td>
+                        <td>
+                            @string.Join(',', tool.AlternativeNames)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </EditForm>
+    
+}
+
+<div>
+    <Button OnClickAsync="SaveChanges" Color="ButtonColor.Primary">Save</Button>
+    <Button OnClick="AddMachine" Color="ButtonColor.Secondary">+ Add Machine</Button>
+</div>
+<div>
+    <Button OnClick="OpenFile" Style="ButtonStyle.Text" Size="ButtonSize.XSmall">Open File</Button>
+</div>
+
+@code {
+
+
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+
+        DataContext.OnPropertyChanged += StateHasChanged;
+        await DataContext.LoadToolFile();
+    }
+
+    private void AddMachine() {
+
+        DataContext.ToolMaps.Add(new());
+        StateHasChanged();
+
+    }
+
+    private void AddToolToMachine(MachineToolMap map) {
+
+        map.Tools.Add(new() {
+            Name = "New Tool"
+        });
+        StateHasChanged();
+
+    }
+
+    private void RemoveToolFromMachine(MachineToolMap map, Tool tool) {
+
+        map.Tools.Remove(tool);
+        StateHasChanged();
+
+    }
+
+    private async Task SaveChanges() {
+
+        await DataContext.SaveToolFile();
+
+    }
+
+    private void OpenFile() {
+
+        ToolFileEditorViewModel.OpenFile(); 
+
+    }
+
+
+}

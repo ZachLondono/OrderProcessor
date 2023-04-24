@@ -10,6 +10,7 @@ using ApplicationCore.Features.Companies;
 using ApplicationCore.Features.Shared.Services;
 using ApplicationCore.Pages;
 using ApplicationCore.Features.Configuration;
+using ApplicationCore.Features.Tools;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -30,6 +31,8 @@ public static class DependencyInjection {
 
         services.AddOrdering(configuration);
 
+        services.AddToolEditor();
+
         services.AddWorkOrders();
 
         services.AddConfiguration();
@@ -39,6 +42,7 @@ public static class DependencyInjection {
         services.AddPages();
 
         services.AddSingleton<IFileReader, FileReader>();
+        services.AddSingleton<IFileWriter, FileWriter>();
 
         services.AddApplicationInfrastructure(configuration);
 
