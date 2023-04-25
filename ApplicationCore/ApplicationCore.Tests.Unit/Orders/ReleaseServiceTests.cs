@@ -22,16 +22,18 @@ public class ReleaseServiceTests {
     private readonly CNCReleaseDecoratorFactory _cncReleaseDecoratorFactory;
     private readonly IJobSummaryDecorator _jobSummaryDecorator;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
+    private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
 
     public ReleaseServiceTests() {
         _fileReader = new FileReader();
         _logger = Substitute.For<ILogger<ReleaseService>>();
         _invoiceDecorator = Substitute.For<IInvoiceDecorator>();
         _packingListDecorator = Substitute.For<IPackingListDecorator>();
-        var sp = Substitute.For<IServiceProvider>();
-        _cncReleaseDecoratorFactory = new CNCReleaseDecoratorFactory(sp);
-        _jobSummaryDecorator = Substitute.For<IJobSummaryDecorator>();
         _getCustomerByIdAsync = Substitute.For<CompanyDirectory.GetCustomerByIdAsync>();
+        _getVendorByIdAsync = Substitute.For<CompanyDirectory.GetVendorByIdAsync>();
+        var sp = Substitute.For<IServiceProvider>();
+        _cncReleaseDecoratorFactory = new CNCReleaseDecoratorFactory(sp, _getCustomerByIdAsync, _getVendorByIdAsync);
+        _jobSummaryDecorator = Substitute.For<IJobSummaryDecorator>();
 
         _sut = new ReleaseService(_logger, _fileReader, _invoiceDecorator, _packingListDecorator, _cncReleaseDecoratorFactory, _jobSummaryDecorator, _getCustomerByIdAsync);
     }

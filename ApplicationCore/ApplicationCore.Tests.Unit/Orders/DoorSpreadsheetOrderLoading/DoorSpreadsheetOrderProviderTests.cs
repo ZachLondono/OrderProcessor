@@ -128,7 +128,7 @@ public class DoorSpreadsheetOrderProviderTests {
         var items = new List<LineItem>();
 
         // Act
-        var order = DoorSpreadsheetOrderProvider.MapWorkbookData(header, items, Guid.Empty);
+        var order = DoorSpreadsheetOrderProvider.MapWorkbookData(header, items, Guid.Empty, Guid.Empty);
 
         // Assert
         order.Shipping.Address.Should().BeEquivalentTo(order.Billing.Address);
@@ -155,6 +155,11 @@ public class DoorSpreadsheetOrderProviderTests {
         BottomRail = 0,
         Material = "",
         Thickness = 0,
+        Opening1 = 0,
+        Opening2 = 0,
+        Rail3 = 0,
+        Rail4 = 0,
+        Orientation = "Horizontal"
     };
 
     private static OrderHeader CreateOrderHeader() => new() {
