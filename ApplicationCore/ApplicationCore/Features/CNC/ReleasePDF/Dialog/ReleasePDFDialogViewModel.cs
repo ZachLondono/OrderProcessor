@@ -54,7 +54,7 @@ internal class ReleasePDFDialogViewModel {
             return;
         }
 
-        if (Path.GetExtension(Model.ReportFilePath) != "xml") {
+        if (Path.GetExtension(Model.ReportFilePath) != ".xml") {
             Error = "Invalid WSXML file";
             return;
         }
