@@ -5,7 +5,7 @@
 @inject IFilePicker FilePicker 
 
 @if (DataContext.Error is not null) {
-    <span class="font-red-600">@DataContext.Error</span>    
+    <span class="text-red-600">@DataContext.Error</span>    
 }
 
 @if (DataContext.IsGeneratingPDF) {
