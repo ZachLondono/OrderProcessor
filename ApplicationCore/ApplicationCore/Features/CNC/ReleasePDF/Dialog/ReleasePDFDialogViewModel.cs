@@ -47,15 +47,44 @@ internal class ReleasePDFDialogViewModel {
 
     public async Task GeneratePDF() {
 
+        Error = null;
+
+        if (string.IsNullOrEmpty(Model.ReportFilePath)) {
+            Error = "WSXML report is required";
+            return;
+        }
+
+        if (Path.GetExtension(Model.ReportFilePath) != "xml") {
+            Error = "Invalid WSXML file";
+            return;
+        }
+
+        if (!File.Exists(Model.ReportFilePath)) {
+            Error = "Report file not found";
+            return;
+        }
+
+        if (!Directory.Exists(Model.OutputDirectory)) {
+            Error = "Output directory does not exist";
+            return;
+        }
+
         IsGeneratingPDF = true;
 
-        await _cncReleaseDecorator.LoadDataFromFile(Model.ReportFilePath, Model.OrderDate, Model.CustomerName, Model.VendorName);
+        try {
 
-        var doc = Document.Create(_cncReleaseDecorator.Decorate);
+            await _cncReleaseDecorator.LoadDataFromFile(Model.ReportFilePath, Model.OrderDate, Model.CustomerName, Model.VendorName);
 
-        var outputFilePath = _fileReader.GetAvailableFileName(Model.OutputDirectory, Model.FileName, "pdf"); 
-        doc.GeneratePdf(outputFilePath);
-        GeneratedFile = outputFilePath;
+            var doc = Document.Create(_cncReleaseDecorator.Decorate);
+
+            var outputFilePath = _fileReader.GetAvailableFileName(Model.OutputDirectory, Model.FileName, "pdf");
+            doc.GeneratePdf(outputFilePath);
+            GeneratedFile = outputFilePath;
+
+        } catch {
+            Error = "Failed to generate pdf";
+            GeneratedFile = null;
+        }
 
         IsGeneratingPDF = false;
 
