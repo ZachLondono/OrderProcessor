@@ -22,7 +22,12 @@
     <EditForm Model="@DataContext.Model">
 
         <div>
-            <InputFile @bind-Value="DataContext.Model.ReportFilePath" accept=".xml" />
+            <Button Color="Button.ButtonColor.Secondary" OnClickAsync="ChooseReportFile">Choose Report</Button>
+            @if (string.IsNullOrEmpty(DataContext.Model.ReportFilePath)) {
+                <span>None selected</span>
+            } else {
+                <span>@DataContext.Model.ReportFilePath</span>
+            }
         </div>
 
         <div class="mt-3">
@@ -50,7 +55,7 @@
             <InputText @bind-Value="DataContext.Model.FileName" class="border w-full" />
         </div>
     
-        <Button type="submit" OnClickAsync="DataContext.GeneratePDF" Color="Button.ButtonColor.Primary" class="mt-3">Generate PDF</Button>
+        <Button OnClickAsync="DataContext.GeneratePDF" Color="Button.ButtonColor.Primary" class="mt-3">Generate PDF</Button>
     
     </EditForm>
 
@@ -61,6 +66,20 @@
     protected override void OnInitialized() {
         base.OnInitialized();
         DataContext.OnPropertyChanged += StateHasChanged;
+    }
+
+    private async Task ChooseReportFile() {
+
+        string selectedPath = "";
+        bool wasPicked = await FilePicker.PickFileAsync("Select CADCode WS Report File", @"Y:\CADCode\Reports", new("CADCode WS Report", "xml"), (file) => {
+            selectedPath = file;
+        });
+
+        if (wasPicked) {
+            DataContext.Model.ReportFilePath =  selectedPath;
+            StateHasChanged();
+        }
+
     }
 
     public void OpenFile(string filePath) {
