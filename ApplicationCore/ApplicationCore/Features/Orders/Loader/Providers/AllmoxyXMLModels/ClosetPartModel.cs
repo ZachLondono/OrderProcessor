@@ -86,7 +86,9 @@ public class ClosetPartModel : ProductModel {
 
         IReadOnlyDictionary<string, string> parameters = Parameters.ToDictionary(p => p.Name, p => p.Value).AsReadOnly();
 
-        return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, SKU, width, length, material, paint, EdgeBandColor, Comment, parameters);
+        string edgeBandColor = EdgeBandColor == "Match" ? MaterialFinish : EdgeBandColor;
+
+        return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, SKU, width, length, material, paint, edgeBandColor, Comment, parameters);
 
     }
 
