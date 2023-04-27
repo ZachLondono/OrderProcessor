@@ -3,16 +3,21 @@
 @using ApplicationCore.Features.Shared.Components;
 @using static ApplicationCore.Features.Shared.Components.Button;
 
-<ApplicationCore.Features.Configuration.ConfigurationEditor />
-
-<div class="mt-5">
+<div class="mb-5">
     <Button Style="ButtonStyle.Text" OnClick="OpenConfigurationFile" Color="ButtonColor.Secondary" Size="ButtonSize.XSmall">Open Config File</Button>
 </div>
 
-<br />
-<br />
+<TabControl>
 
-<ApplicationCore.Features.Tools.ToolFileEditor />
+    <TabPage Title="Data">
+        <ApplicationCore.Features.Configuration.ConfigurationEditor />
+    </TabPage>
+    <TabPage Title="CNC Tools">
+        <ApplicationCore.Features.Tools.ToolFileEditor />
+    </TabPage>
+
+</TabControl>
+
 
 @code {
 
