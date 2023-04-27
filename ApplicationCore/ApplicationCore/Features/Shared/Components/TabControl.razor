@@ -1,0 +1,36 @@
+﻿<div role="group">
+
+    @foreach (var tabPage in _pages) {
+        <button class="mr-3 text-slate-600 rounded-full @GetButtonClass(tabPage)" @onclick="(() => ActivatePage(tabPage))">@tabPage.Title</button>
+    }
+
+</div>
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    public TabPage? ActivePage = null;
+
+    private List<TabPage> _pages = new();
+
+    public void AddPage(TabPage page) {
+        _pages.Add(page);
+        if (_pages.Count == 1) ActivePage = page;
+        StateHasChanged();
+    }
+
+    private void ActivatePage(TabPage page) {
+        ActivePage = page;
+    }
+
+    private string GetButtonClass(TabPage page) {
+        return ActivePage == page ? "text-slate-200 bg-primary" : "hover:text-slate-200 hover:bg-secondary";
+    }
+
+}
