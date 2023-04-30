@@ -1,42 +1,31 @@
-﻿using ApplicationCore.Infrastructure.Bus;
-using Dapper;
+﻿using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Infrastructure.Bus;
+using System.Text.Json;
 
 namespace ApplicationCore.Features.Configuration;
 
 internal class UpdateConfiguration {
 
-    public record Command(AppConfiguration Configuration) : ICommand;
+    public record Command(string FilePath, AppConfiguration Configuration) : ICommand;
 
     public class Handler : CommandHandler<Command> {
 
-        private readonly IConfigurationDBConnectionFactory _factory;
+        private readonly IFileWriter _fileWriter;
 
-        public Handler(IConfigurationDBConnectionFactory factory) {
-            _factory = factory;
+        public Handler(IFileWriter fileWriter) {
+            _fileWriter = fileWriter;
         }
 
         public override async Task<Response> Handle(Command command) {
 
-            using var connection = await _factory.CreateConnection();
+            var json = JsonSerializer.Serialize(command.Configuration, new JsonSerializerOptions() {
+                WriteIndented = true
+            });
 
-            var rowsAffected = await connection.ExecuteAsync(
-                """
-                UPDATE configuration 
-                SET 
-                    ordering_db_path = @OrderingDBPath,
-                    companies_db_path = @CompaniesDBPath,
-                    work_orders_db_path = @WorkOrdersDBPath
-                WHERE id = 1;
-                """, command.Configuration);
-
-            if (rowsAffected == 0) {
-                return Response.Error(new() {
-                    Title = "Configuration Not Updated",
-                    Details = "No data was changed while trying to update configuration"
-                });
-            }
+            await _fileWriter.OverwriteWriteContentInFileAsync(command.FilePath, json);
 
             return Response.Success();
+
 
         }
 

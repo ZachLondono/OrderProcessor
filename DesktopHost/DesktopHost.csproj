@@ -40,6 +40,12 @@
     <ProjectReference Include="..\ApplicationCore\ApplicationCore\ApplicationCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Configuration\data.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="(cd ../ &amp;&amp; tailwindcss.exe -i ./DesktopHost/Styles/input.css -o ./DesktopHost/wwwroot/css/app.css)" />
   </Target>

@@ -56,9 +56,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Schemas\configuration_schema.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Schemas\ordering_schema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -15,27 +15,24 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
     private static readonly SemaphoreSlim semaphore = new(1);
 
     private readonly IConfiguration _configuration;
-    private readonly IBus _bus;
     private readonly ILogger<SqliteCompaniesDbConnectionFactory> _logger;
+    private readonly AppConfiguration.GetConfiguration _getConfiguration;
 
-    public SqliteCompaniesDbConnectionFactory(IConfiguration configuration, IBus bus, ILogger<SqliteCompaniesDbConnectionFactory> logger) {
+    public SqliteCompaniesDbConnectionFactory(IConfiguration configuration, IBus bus, ILogger<SqliteCompaniesDbConnectionFactory> logger, AppConfiguration.GetConfiguration getConfiguration) {
         _configuration = configuration;
-        _bus = bus;
         _logger = logger;
-
+        _getConfiguration = getConfiguration;
     }
 
     public async Task<IDbConnection> CreateConnection() {
 
         await semaphore.WaitAsync();
 
-        var result = await _bus.Send(new GetConfiguration.Query());
-        string? datasource = null;
-        result.OnSuccess(
-            appConfig => datasource = appConfig.CompaniesDBPath
-        );
+        var result = await _getConfiguration();
+        string? datasource = result?.CompaniesDBPath ?? null;
 
         if (datasource is null) {
+            semaphore.Release();
             throw new InvalidOperationException("Could not find companies database data source");
         }
 

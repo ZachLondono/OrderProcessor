@@ -1,41 +1,37 @@
-﻿using ApplicationCore.Infrastructure.Bus;
-using Dapper;
+﻿using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Infrastructure.Bus;
+using System.Text.Json;
 
 namespace ApplicationCore.Features.Configuration;
 
 internal class GetConfiguration {
 
-    public record Query() : IQuery<AppConfiguration>;
+    public record Query(string FilePath) : IQuery<AppConfiguration>;
 
     public class Handler : QueryHandler<Query, AppConfiguration> {
 
-        private readonly IConfigurationDBConnectionFactory _factory;
+        private readonly IFileReader _fileReader;
 
-        public Handler(IConfigurationDBConnectionFactory factory) {
-            _factory = factory;
+        public Handler(IFileReader fileReader) {
+            _fileReader = fileReader;
         }
 
         public override async Task<Response<AppConfiguration>> Handle(Query query) {
 
-            using var connection = await _factory.CreateConnection();
+            using var stream = _fileReader.OpenReadFileStream(query.FilePath);
 
-            var config = await connection.QuerySingleAsync<AppConfiguration>(
-                """
-                SELECT
-                    ordering_db_path AS OrderingDBPath,
-                    companies_db_path AS CompaniesDBPath,
-                    work_orders_db_path AS WorkOrdersDBPath
-                FROM configuration;
-                """);
+            var data = await JsonSerializer.DeserializeAsync<AppConfiguration>(stream);
 
-            if (config is null) {
+            if (data == null) {
+
                 return Response<AppConfiguration>.Error(new() {
-                    Title = "Configuration Not Found",
-                    Details = "Configuration details where not found"
+                    Title = "Failed to load app configuration",
+                    Details = "No value was read from configuration file."
                 });
+
             }
 
-            return Response<AppConfiguration>.Success(config);
+            return Response<AppConfiguration>.Success(data);
 
         }
 
