@@ -4,7 +4,6 @@ using ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
 using ApplicationCore.Features.CNC.ReleasePDF.Styling;
 using ApplicationCore.Features.Shared;
 using Microsoft.Extensions.Options;
-using System.Diagnostics.CodeAnalysis;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF.Services;
 
@@ -173,49 +172,5 @@ internal class QuestPDFWriter : IReleasePDFWriter {
 
     private static string GetGuidAsBase64(Guid id) => Convert.ToBase64String(id.ToByteArray()).Replace("/", "-").Replace("+", "_").Replace("=", "");
 
-    private class ReleaseGroupComparer : IEqualityComparer<MachineRelease> {
-
-        public bool Equals(MachineRelease? x, MachineRelease? y) {
-
-            if (x is null && y is null) return true;
-            if (x is null || y is null) return false;
-
-            var xEnum = x.Programs.GetEnumerator();
-            var yEnum = y.Programs.GetEnumerator();
-
-            while (true) {
-
-                bool xResult = xEnum.MoveNext();
-                bool yResult = yEnum.MoveNext();
-
-                if (xResult != yResult) return false;
-                if (!xResult) break;
-
-                var xProg = xEnum.Current;
-                var yProg = yEnum.Current;
-
-                if (xProg.Material.Name != yProg.Material.Name) return false;
-                if (xProg.Material.Width != yProg.Material.Width) return false;
-                if (xProg.Material.Length != yProg.Material.Length) return false;
-                if (xProg.Material.Thickness != yProg.Material.Thickness) return false;
-
-                var xParts = xProg.Parts.GroupBy(p => p.Name).Select(g => new PartGroup(g.Key, g.Count()));
-                var yParts = yProg.Parts.GroupBy(p => p.Name).Select(g => new PartGroup(g.Key, g.Count()));
-
-                if (!xParts.All(yParts.Contains)) return false;
-
-            }
-
-            if (x.ToolTable.Keys.Count() == y.ToolTable.Keys.Count() && x.ToolTable.Keys.All(k => y.ToolTable.ContainsKey(k) && Equals(y.ToolTable[k], x.ToolTable[k]))) return true;
-
-            return false;
-
-        }
-
-        public int GetHashCode([DisallowNull] MachineRelease obj) => 0;
-
-        public record PartGroup(string Name, int Count);
-
-    }
-
 }
+
