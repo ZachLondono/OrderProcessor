@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Features.Tools.Domain;
+﻿using ApplicationCore.Features.CNC.Tools.Domain;
 using ApplicationCore.Infrastructure.Bus;
 using System.Diagnostics;
 
-namespace ApplicationCore.Features.Tools;
+namespace ApplicationCore.Features.CNC.Tools;
 
 internal class ToolFileEditorViewModel {
 

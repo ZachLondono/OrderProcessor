@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Tools.Contracts;
+﻿namespace ApplicationCore.Features.CNC.Tools.Contracts;
 
 public static class CNCToolBox {
 

@@ -1,5 +1,5 @@
 ﻿using QuestPDF.Infrastructure;
-using ApplicationCore.Features.Tools.Contracts;
+using ApplicationCore.Features.CNC.Tools.Contracts;
 using ApplicationCore.Features.CNC.ReleasePDF.Services;
 using ApplicationCore.Features.CNC.ReleasePDF.WSXML;
 using ApplicationCore.Features.CNC.Contracts;
