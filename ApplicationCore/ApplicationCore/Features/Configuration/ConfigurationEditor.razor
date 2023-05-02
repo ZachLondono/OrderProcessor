@@ -1,9 +1,7 @@
 ﻿@using ApplicationCore.Features.Shared.Components
 @using ApplicationCore.Infrastructure.Bus;
+@using static ApplicationCore.Features.Shared.Components.Button;
 @inject ConfigurationEditorViewModel DataContext 
-
-<h3>Configuration</h3>
-
 
 @if (DataContext.ErrorMessage is not null) {
     
@@ -38,12 +36,22 @@
     </EditForm>
 }
 
+<div>
+    <Button OnClick="OpenFile" Style="ButtonStyle.Text" Size="ButtonSize.XSmall">Open Data File</Button>
+</div>
+
 @code {
 
     protected override async Task OnInitializedAsync() {
         await base.OnInitializedAsync();
         DataContext.OnPropertyChanged += StateHasChanged;
         await DataContext.LoadConfiguration();
+    }
+
+    private void OpenFile() {
+
+        ConfigurationEditorViewModel.OpenFile(); 
+
     }
 
 }

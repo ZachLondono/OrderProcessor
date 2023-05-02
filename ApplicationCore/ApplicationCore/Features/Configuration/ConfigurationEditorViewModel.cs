@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Infrastructure.Bus;
+using System.Diagnostics;
 
 namespace ApplicationCore.Features.Configuration;
 
@@ -44,6 +45,20 @@ internal class ConfigurationEditorViewModel {
         if (Configuration is null) return;
         var result = await _bus.Send(new UpdateConfiguration.Command(FILE_PATH, Configuration));
         result.OnError(error => ErrorMessage = $"{error.Title} - {error.Details}");
+    }
+
+    public static void OpenFile() {
+        try {
+
+            var psi = new ProcessStartInfo {
+                FileName = Path.GetFullPath(FILE_PATH),
+                UseShellExecute = true
+            };
+            Process.Start(psi);
+
+        } catch (Exception ex) {
+            Debug.WriteLine(ex);
+        }
     }
 
 }
