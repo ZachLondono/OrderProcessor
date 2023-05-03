@@ -53,11 +53,21 @@ internal class QuestPDFWriter : IReleasePDFWriter {
 
             }
 
+            var face6FileNames = program.Parts
+                                        .Select(p => p.Face6FileName)
+                                        .Where(f => f is not null).Cast<string>();
+
+            var partGroups = program.Parts
+                                    .Where(p => !face6FileNames.Contains(p.FileName))
+                                    .OrderBy(p => p.ProductNumber)
+                                    .GroupBy(p => p.PartId);
+
+            bool containsFace6 = face6FileNames.Any();
+
             var partsTableContent = new List<Dictionary<string, string>>();
-            var partGroups = program.Parts.OrderBy(p => p.ProductNumber).GroupBy(p => p.PartId);
             foreach (var group in partGroups) {
                 var part = group.First();
-                partsTableContent.Add(new()  {
+                var fields = new Dictionary<string, string> {
                         { "Product", part.ProductNumber },
                         { "Qty", group.Count().ToString() },
                         { "Name", part.Name },
@@ -65,7 +75,9 @@ internal class QuestPDFWriter : IReleasePDFWriter {
                         { "Length", part.Length.AsMillimeters().ToString("0.00") },
                         { "Description", part.Description },
                         { "File Name", part.FileName }
-                    });
+                    };
+                if (containsFace6) fields.Add("Face 6", part.Face6FileName ?? "");
+                partsTableContent.Add(fields);
             }
 
             var material = program.Material;
