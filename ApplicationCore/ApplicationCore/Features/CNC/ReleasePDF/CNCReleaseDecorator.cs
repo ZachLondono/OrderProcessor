@@ -104,7 +104,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                                                                 }
                                                                                                 return new NestedPart() {
                                                                                                     Name = part.Name,
-                                                                                                    FileName = GetFileNameFromPartLabels(label),
+                                                                                                    FileName = part.Variables["Face5Filename"],
                                                                                                     Width = Dimension.FromMillimeters(part.Width),
                                                                                                     Length = Dimension.FromMillimeters(part.Length),
                                                                                                     Center = new() {
@@ -112,12 +112,13 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                                                                         Y = nestPart.location.Insert.Y + (nestPart.location.IsRotated ? part.Width : part.Length) / 2
                                                                                                     },
                                                                                                     IsRotated = nestPart.location.IsRotated,
-                                                                                                    Description = label.Fields.GetValueOrEmpty("Description"),
+                                                                                                    Description = part.Description,
                                                                                                     ProductNumber = label.Fields.GetValueOrEmpty("Cabinet Number"),
                                                                                                     ProductId = productId,
                                                                                                     PartId = nestPart.partId,
                                                                                                     ImageData = label.Fields.GetValueOrEmpty("Machining Picture"),
-                                                                                                    HasFace6 = false
+                                                                                                    HasFace6 = part.Variables.ContainsKey("Face6FileName"),
+                                                                                                    Face6FileName = part.Variables.ContainsKey("Face6FileName") ? part.Variables["Face6FileName"] : null
                                                                                                 };
                                                                                             })
                                                                                             .ToList()
