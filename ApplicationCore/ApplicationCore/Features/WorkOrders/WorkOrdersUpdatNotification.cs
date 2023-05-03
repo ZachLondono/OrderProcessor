@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.WorkOrders;
 
-public class WorkOrdersUpdatNotification : IUINotification {
+public class WorkOrdersUpdateNotification : IUINotification {
 
     public Guid WorkOrderId { get; set; }
 

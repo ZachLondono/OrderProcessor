@@ -3,7 +3,7 @@
 @using static ApplicationCore.Features.Shared.Components.Button;
 @using ApplicationCore.Infrastructure.UI;
 @using ApplicationCore.Features.WorkOrders.Shared;
-@inherits UIListenerComponent<WorkOrdersUpdatNotification>
+@inherits UIListenerComponent<WorkOrdersUpdateNotification>
 
 <table class="table-auto">
 
@@ -102,7 +102,7 @@
 
     }
 
-    public override void Handle(WorkOrdersUpdatNotification notification) {
+    public override void Handle(WorkOrdersUpdateNotification notification) {
 
         InvokeAsync(DataContext!.LoadWorkOrders);
 

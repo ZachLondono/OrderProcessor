@@ -99,7 +99,7 @@ public class OrderTaskListViewModel {
 
         );
 
-        _uiBus.Publish(new WorkOrdersUpdatNotification());
+        _uiBus.Publish(new WorkOrdersUpdateNotification());
 
     }
 
@@ -119,7 +119,7 @@ public class OrderTaskListViewModel {
         );
 
         OnPropertyChanged?.Invoke();
-        _uiBus.Publish(new WorkOrdersUpdatNotification());
+        _uiBus.Publish(new WorkOrdersUpdateNotification());
 
     }
 

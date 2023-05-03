@@ -24,7 +24,7 @@
 @using static ApplicationCore.Features.Orders.Details.ProductTables.CabinetProductTable;
 @using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 @using ApplicationCore.Features.WorkOrders.Contracts;
-@inherits UIListenerComponent<WorkOrdersUpdatNotification>
+@inherits UIListenerComponent<WorkOrdersUpdateNotification>
 @inject IBus Bus
 @inject OrderState OrderState
 @inject Manufacturing.IsProductComplete IsProductComplete
@@ -455,7 +455,7 @@
 
     }
 
-    public override void Handle(WorkOrdersUpdatNotification notification) {  
+    public override void Handle(WorkOrdersUpdateNotification notification) {  
 
         InvokeAsync(UpdateProductStatuses);
 
