@@ -10,7 +10,6 @@ using ApplicationCore.Features.Companies;
 using ApplicationCore.Features.Shared.Services;
 using ApplicationCore.Pages;
 using ApplicationCore.Features.Configuration;
-using ApplicationCore.Features.Tools;
 using ApplicationCore.Features.CNC;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
@@ -33,8 +32,6 @@ public static class DependencyInjection {
         services.AddOrdering(configuration);
 
         services.AddCNC(configuration);
-
-        services.AddToolEditor();
 
         services.AddWorkOrders();
 

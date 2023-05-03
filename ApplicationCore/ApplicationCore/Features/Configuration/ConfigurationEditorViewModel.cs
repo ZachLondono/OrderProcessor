@@ -1,9 +1,12 @@
 ﻿using ApplicationCore.Infrastructure.Bus;
+using System.Diagnostics;
 
 namespace ApplicationCore.Features.Configuration;
 
 internal class ConfigurationEditorViewModel {
 
+    public const string FILE_PATH = @"./Configuration/data.json";
+    
     public Action? OnPropertyChanged { get; set; }
 
     private AppConfiguration? _configuration = null;
@@ -31,7 +34,7 @@ internal class ConfigurationEditorViewModel {
     }
 
     public async Task LoadConfiguration() {
-        var result = await _bus.Send(new GetConfiguration.Query());
+        var result = await _bus.Send(new GetConfiguration.Query(FILE_PATH));
         result.Match(
             config => Configuration = config,
             error => ErrorMessage = $"{error.Title} - {error.Details}"
@@ -40,8 +43,22 @@ internal class ConfigurationEditorViewModel {
 
     public async Task SaveChanges() {
         if (Configuration is null) return;
-        var result = await _bus.Send(new UpdateConfiguration.Command(Configuration));
+        var result = await _bus.Send(new UpdateConfiguration.Command(FILE_PATH, Configuration));
         result.OnError(error => ErrorMessage = $"{error.Title} - {error.Details}");
+    }
+
+    public static void OpenFile() {
+        try {
+
+            var psi = new ProcessStartInfo {
+                FileName = Path.GetFullPath(FILE_PATH),
+                UseShellExecute = true
+            };
+            Process.Start(psi);
+
+        } catch (Exception ex) {
+            Debug.WriteLine(ex);
+        }
     }
 
 }

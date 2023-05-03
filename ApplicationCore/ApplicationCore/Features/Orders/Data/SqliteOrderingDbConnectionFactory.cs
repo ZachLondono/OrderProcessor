@@ -15,24 +15,26 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
     private static readonly SemaphoreSlim semaphore = new(1);
 
     private readonly IConfiguration _configuration;
-    private readonly IBus _bus;
     private readonly ILogger<SqliteOrderingDbConnectionFactory> _logger;
+    private readonly AppConfiguration.GetConfiguration _getConfiguration;
 
-    public SqliteOrderingDbConnectionFactory(IConfiguration configuration, IBus bus, ILogger<SqliteOrderingDbConnectionFactory> logger) {
+    public SqliteOrderingDbConnectionFactory(IConfiguration configuration, ILogger<SqliteOrderingDbConnectionFactory> logger, AppConfiguration.GetConfiguration getConfiguration) {
         _configuration = configuration;
-        _bus = bus;
         _logger = logger;
+        _getConfiguration = getConfiguration;
     }
 
     public async Task<IDbConnection> CreateConnection() {
 
         await semaphore.WaitAsync();
 
-        var result = await _bus.Send(new GetConfiguration.Query());
-        string? datasource = null;
-        result.OnSuccess(
-            appConfig => datasource = appConfig.OrderingDBPath
-        );
+        var result = await _getConfiguration();
+        string? datasource = result?.OrderingDBPath ?? null;
+
+        if (datasource is null) {
+            semaphore.Release();
+            throw new InvalidOperationException("Could not find companies database data source");
+        }
 
         var builder = new SqliteConnectionStringBuilder {
             DataSource = datasource,
@@ -45,6 +47,7 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
 
             int dbVersion = await GetDatabaseVersion(connection);
             if (dbVersion != DB_VERSION) {
+                semaphore.Release();
                 throw new IncompatibleDatabaseVersion(dbVersion);
             }
 

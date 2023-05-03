@@ -16,21 +16,25 @@ internal class SqliteWorkOrdersDbConnectionFactory : IWorkOrdersDbConnectionFact
 
     private readonly ILogger<SqliteWorkOrdersDbConnectionFactory> _logger;
     private readonly IConfiguration _configuration;
-    private readonly IBus _bus;
+    private readonly AppConfiguration.GetConfiguration _getConfiguration;
 
-    public SqliteWorkOrdersDbConnectionFactory(ILogger<SqliteWorkOrdersDbConnectionFactory> logger, IConfiguration configuration, IBus bus) {
+    public SqliteWorkOrdersDbConnectionFactory(ILogger<SqliteWorkOrdersDbConnectionFactory> logger, IConfiguration configuration, AppConfiguration.GetConfiguration getConfiguration) {
         _logger = logger;
         _configuration = configuration;
-        _bus = bus;
+        _getConfiguration = getConfiguration;
     }
 
     public async Task<IDbConnection> CreateConnection() {
 
-        var result = await _bus.Send(new GetConfiguration.Query());
-        string? datasource = null;
-        result.OnSuccess(
-            appConfig => datasource = appConfig.WorkOrdersDBPath
-        );
+        await semaphore.WaitAsync();
+
+        var result = await _getConfiguration();
+        string? datasource = result?.WorkOrdersDBPath ?? null;
+
+        if (datasource is null) {
+            semaphore.Release();
+            throw new InvalidOperationException("Could not find companies database data source");
+        }
 
         var builder = new SqliteConnectionStringBuilder {
             DataSource = datasource,
@@ -43,6 +47,7 @@ internal class SqliteWorkOrdersDbConnectionFactory : IWorkOrdersDbConnectionFact
 
             int dbVersion = await GetDatabaseVersion(connection);
             if (dbVersion != DB_VERSION) {
+                semaphore.Release();
                 throw new IncompatibleDatabaseVersion(dbVersion);
             }
 

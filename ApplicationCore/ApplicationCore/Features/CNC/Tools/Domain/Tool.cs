@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ApplicationCore.Features.Tools.Domain;
+namespace ApplicationCore.Features.CNC.Tools.Domain;
 
 internal class Tool {
 

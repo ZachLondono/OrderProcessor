@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Features.Tools.Contracts;
+﻿using ApplicationCore.Features.CNC.Tools.Contracts;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ApplicationCore.Features.Tools;
+namespace ApplicationCore.Features.CNC.Tools;
 
 public static class DepenencyInjection {
 

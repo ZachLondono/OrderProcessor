@@ -1,5 +1,5 @@
 ﻿@using ApplicationCore.Features.Shared.Components
-@using ApplicationCore.Features.Tools.Domain;
+@using ApplicationCore.Features.CNC.Tools.Domain;
 @using static ApplicationCore.Features.Shared.Components.Button;
 @inject ToolFileEditorViewModel DataContext
 
@@ -57,7 +57,7 @@
     <Button OnClick="AddMachine" Color="ButtonColor.Secondary">+ Add Machine</Button>
 </div>
 <div>
-    <Button OnClick="OpenFile" Style="ButtonStyle.Text" Size="ButtonSize.XSmall">Open File</Button>
+    <Button OnClick="OpenFile" Style="ButtonStyle.Text" Size="ButtonSize.XSmall">Open Tool File</Button>
 </div>
 
 @code {
@@ -104,6 +104,5 @@
         ToolFileEditorViewModel.OpenFile(); 
 
     }
-
 
 }
