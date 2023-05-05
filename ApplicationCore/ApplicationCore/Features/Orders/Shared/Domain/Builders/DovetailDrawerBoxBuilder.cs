@@ -51,9 +51,9 @@ public class DovetailDrawerBoxBuilder {
     public static Dimension[] UnderMountDrawerSlideDepths { get; set; } = new Dimension[] {
         Dimension.FromMillimeters(229),
         Dimension.FromMillimeters(305),
-        Dimension.FromMillimeters(381),
-        Dimension.FromMillimeters(457),
-        Dimension.FromMillimeters(533)
+        Dimension.FromMillimeters(380),
+        Dimension.FromMillimeters(450),
+        Dimension.FromMillimeters(550)
     };
 
     public DovetailDrawerBoxBuilder() {
