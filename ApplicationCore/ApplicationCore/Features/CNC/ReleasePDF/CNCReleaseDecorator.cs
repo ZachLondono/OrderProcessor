@@ -179,21 +179,6 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
 
     }
 
-    private static string GetFileNameFromPartLabels(PartLabels? labels) {
-
-        if (labels is null) return string.Empty;
-
-        if (labels.Fields.TryGetValue("FileName", out string? fileName)) {
-            return fileName ?? string.Empty;
-        }
-        if (labels.Fields.TryGetValue("Filename", out fileName)) {
-            return fileName ?? string.Empty;
-        }
-
-        return fileName ?? string.Empty;
-
-    }
-
     private static string GetMachineName(string scheduleName) {
 
         if (scheduleName.Contains("OMNITECH")) return "OMNITECH";
