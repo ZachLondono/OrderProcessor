@@ -16,7 +16,7 @@ public class DovetailDrawerBoxBuilder {
     public Dictionary<string, string> LabelFields { get; private set; }
 
     /// <summary>
-    /// Minium clearance between top of drawer box and top of drawer face
+    /// Minimum clearance between top of drawer box and top of drawer face
     /// </summary>
     public static Dimension VerticalClearance { get; set; } = Dimension.FromMillimeters(40);
 
