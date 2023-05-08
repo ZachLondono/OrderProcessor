@@ -166,7 +166,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
 
             foreach (var tool in machineCarousel.Tools) {
 
-                if (toolName == tool.Name || tool.AlternativeNames.Contains(toolName)) {
+                if (string.Equals(toolName, tool.Name, StringComparison.OrdinalIgnoreCase) || tool.AlternativeNames.Contains(toolName, StringComparer.OrdinalIgnoreCase)) {
                     toolTable[tool.Position] = tool.Name;
                     break;
                 }
