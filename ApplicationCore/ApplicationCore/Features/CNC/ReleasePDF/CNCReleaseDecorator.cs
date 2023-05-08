@@ -55,20 +55,6 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                         .SelectMany(g => g.ToolName)
                                         .Distinct();
 
-        // TODO: get tools used by machine, so that they can be displayed individually if different
-        List<Tool> usedTools = new();
-        var allTools = toolCarousels.SelectMany(c => c.Tools).ToList();
-        foreach (var toolName in allToolNames) {
-
-            foreach (var tool in allTools) {
-                if (tool.Name == toolName || tool.AlternativeNames.Contains(toolName)) {
-                    usedTools.Add(tool);
-                    break;
-                }
-            }
-
-        }
-
         List<MachineRelease> releases = report.PatternSchedules
                                                 .GroupBy(sched => GetMachineName(sched.Name))
                                                 .Select(group => new MachineRelease() {
