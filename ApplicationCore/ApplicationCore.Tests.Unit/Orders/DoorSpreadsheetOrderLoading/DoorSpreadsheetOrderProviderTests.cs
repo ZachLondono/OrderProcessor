@@ -128,7 +128,7 @@ public class DoorSpreadsheetOrderProviderTests {
         var items = new List<LineItem>();
 
         // Act
-        var order = DoorSpreadsheetOrderProvider.MapWorkbookData(header, items, Guid.Empty, Guid.Empty);
+        var order = DoorSpreadsheetOrderProvider.MapWorkbookData(header, "C:\\", items, Guid.Empty, Guid.Empty);
 
         // Assert
         order.Shipping.Address.Should().BeEquivalentTo(order.Billing.Address);

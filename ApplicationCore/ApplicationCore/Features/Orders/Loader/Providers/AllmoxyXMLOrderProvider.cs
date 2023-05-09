@@ -103,6 +103,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         OrderData? order = new() {
             Number = data.Number.ToString(),
             Name = data.Name,
+            WorkingDirectory = ".\\Output",                                         // TODO: Get default working directory from configuration file
             Comment = data.Description,
             Shipping = shipping,
             Billing = billing,

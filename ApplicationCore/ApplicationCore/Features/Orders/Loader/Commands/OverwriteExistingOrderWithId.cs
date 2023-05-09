@@ -9,7 +9,7 @@ namespace ApplicationCore.Features.Orders.Loader.Commands;
 
 public class OverwriteExistingOrderWithId {
 
-    public record Command(Guid ExistingId, string Source, string Number, string Name, Guid CustomerId, Guid VendorId, string Comment, DateTime OrderDate, ShippingInfo Shipping, BillingInfo Billing, decimal Tax, decimal PriceAdjustment, bool Rush, IReadOnlyDictionary<string, string> Info, IEnumerable<IProduct> Products, IEnumerable<AdditionalItem> AdditionalItems) : ICommand<Order>;
+    public record Command(Guid ExistingId, string Source, string Number, string Name, string WorkingDirectory, Guid CustomerId, Guid VendorId, string Comment, DateTime OrderDate, ShippingInfo Shipping, BillingInfo Billing, decimal Tax, decimal PriceAdjustment, bool Rush, IReadOnlyDictionary<string, string> Info, IEnumerable<IProduct> Products, IEnumerable<AdditionalItem> AdditionalItems) : ICommand<Order>;
 
     public class Handler : CommandHandler<Command, Order> {
 
@@ -45,7 +45,7 @@ public class OverwriteExistingOrderWithId {
                 });
             }
 
-            return await _bus.Send(new CreateNewOrder.Command(request.Source, request.Number, request.Name, request.CustomerId, request.VendorId, request.Comment, request.OrderDate, request.Shipping, request.Billing, request.Tax, request.PriceAdjustment, request.Rush, request.Info, request.Products, request.AdditionalItems, request.ExistingId));
+            return await _bus.Send(new CreateNewOrder.Command(request.Source, request.Number, request.Name, request.WorkingDirectory, request.CustomerId, request.VendorId, request.Comment, request.OrderDate, request.Shipping, request.Billing, request.Tax, request.PriceAdjustment, request.Rush, request.Info, request.Products, request.AdditionalItems, request.ExistingId));
 
         }
     }

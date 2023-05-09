@@ -45,7 +45,7 @@ public class LoadOrderCommand {
 
             try {
 
-                Response<Order> result = await _bus.Send(new CreateNewOrder.Command(request.Source, data.Number, data.Name, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Shipping, billing, data.Tax, data.PriceAdjustment, data.Rush, data.Info, data.Products, data.AdditionalItems));
+                Response<Order> result = await _bus.Send(new CreateNewOrder.Command(request.Source, data.Number, data.Name, data.WorkingDirectory, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Shipping, billing, data.Tax, data.PriceAdjustment, data.Rush, data.Info, data.Products, data.AdditionalItems));
                 return result;
 
             } catch (Exception ex) {

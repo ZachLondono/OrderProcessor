@@ -28,7 +28,7 @@ public class QueryMappingTests {
         };
 
         // Act
-        var order = model.AsDomainModel(orderId, boxes, items);
+        var order = model.ToDomainModel(orderId, boxes, items);
 
         // Assert
         order.Id.Should().Be(orderId);
@@ -51,7 +51,7 @@ public class QueryMappingTests {
         };
 
         // Act
-        var item = model.AsDomainModel();
+        var item = model.ToDomainModel();
 
         // Assert
         item.Id.Should().Be(model.Id);

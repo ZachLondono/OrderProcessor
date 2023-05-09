@@ -40,7 +40,7 @@ internal class UpdateVendor {
         private static async Task UpdateVendor(IDbConnection connection, IDbTransaction trx, Vendor vendor) {
 
             await connection.ExecuteAsync(
-                            """
+                """
                 UPDATE vendors
                 SET
                     name = @Name,
@@ -50,10 +50,8 @@ internal class UpdateVendor {
                     export_db_order = @ExportDBOrder,
                     export_mdf_door_order = @ExportMDFDoorOrder,
                     export_ext_file = @ExportExtFile,
-                    export_output_directory = @ExportOutputDirectory,
 
                     release_invoice = @ReleaseInvoice,
-                    release_invoice_output_directory = @ReleaseInvoiceOutputDirectory,
                     release_invoice_send_email = @ReleaseSendInvoiceEmail,
                     release_invoice_email_recipients = @ReleaseInvoiceEmailRecipients,
 
@@ -62,7 +60,6 @@ internal class UpdateVendor {
                     release_job_summary = @ReleaseJobSummary,
                     release_send_email = @ReleaseSendEmail,
                     release_email_recipients = @ReleaseEmailRecipients,
-                    release_output_directory = @ReleaseOutputDirectory,
 
                     email_sender_name = @EmailSenderName,
                     email_sender_email = @EmailSenderEmail,
@@ -70,33 +67,30 @@ internal class UpdateVendor {
 
                 WHERE id = @Id;
                 """, new {
-                                vendor.Id,
-                                vendor.Name,
-                                vendor.Phone,
-                                vendor.Logo,
-
-                                vendor.ExportProfile.ExportDBOrder,
-                                vendor.ExportProfile.ExportMDFDoorOrder,
-                                vendor.ExportProfile.ExportExtFile,
-                                ExportOutputDirectory = vendor.ExportProfile.OutputDirectory,
-
-                                ReleaseInvoice = vendor.ReleaseProfile.GenerateInvoice,
-                                ReleaseInvoiceOutputDirectory = vendor.ReleaseProfile.InvoiceOutputDirectory,
-                                ReleaseSendInvoiceEmail = vendor.ReleaseProfile.SendInvoiceEmail,
-                                ReleaseInvoiceEmailRecipients = vendor.ReleaseProfile.InvoiceEmailRecipients,
-
-                                ReleaseIncludeInvoice = vendor.ReleaseProfile.IncludeInvoice,
-                                ReleasePackingList = vendor.ReleaseProfile.GeneratePackingList,
-                                ReleaseJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
-                                ReleaseSendEmail = vendor.ReleaseProfile.SendReleaseEmail,
-                                vendor.ReleaseProfile.ReleaseEmailRecipients,
-                                vendor.ReleaseProfile.ReleaseOutputDirectory,
-
-                                EmailSenderName = vendor.EmailSender.Name,
-                                EmailSenderEmail = vendor.EmailSender.Email,
-                                EmailSenderPassword = vendor.EmailSender.ProtectedPassword
-
-                            }, trx);
+                    vendor.Id,
+                    vendor.Name,
+                    vendor.Phone,
+                    vendor.Logo,
+                
+                    vendor.ExportProfile.ExportDBOrder,
+                    vendor.ExportProfile.ExportMDFDoorOrder,
+                    vendor.ExportProfile.ExportExtFile,
+                
+                    ReleaseInvoice = vendor.ReleaseProfile.GenerateInvoice,
+                    ReleaseSendInvoiceEmail = vendor.ReleaseProfile.SendInvoiceEmail,
+                    ReleaseInvoiceEmailRecipients = vendor.ReleaseProfile.InvoiceEmailRecipients,
+                
+                    ReleaseIncludeInvoice = vendor.ReleaseProfile.IncludeInvoice,
+                    ReleasePackingList = vendor.ReleaseProfile.GeneratePackingList,
+                    ReleaseJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
+                    ReleaseSendEmail = vendor.ReleaseProfile.SendReleaseEmail,
+                    vendor.ReleaseProfile.ReleaseEmailRecipients,
+                
+                    EmailSenderName = vendor.EmailSender.Name,
+                    EmailSenderEmail = vendor.EmailSender.Email,
+                    EmailSenderPassword = vendor.EmailSender.ProtectedPassword
+                
+                }, trx);
 
         }
 
