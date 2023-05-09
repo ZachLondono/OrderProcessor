@@ -94,7 +94,9 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
             var vendorId = Guid.Parse(_options.VendorIds[header.VendorName]);
             var customerId = await GetCustomerId(header);
 
-            var data = MapWorkbookData(header, lines, vendorId, customerId ?? Guid.Empty);
+            var workingDirectory = Path.GetDirectoryName(source) ?? ".\\Output";
+
+            var data = MapWorkbookData(header, workingDirectory, lines, vendorId, customerId ?? Guid.Empty);
 
             return data;
 
@@ -148,7 +150,7 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
 
     }
 
-    public static OrderData MapWorkbookData(OrderHeader header, List<LineItem> items, Guid vendorId, Guid customerId) {
+    public static OrderData MapWorkbookData(OrderHeader header, string workingDirectory, List<LineItem> items, Guid vendorId, Guid customerId) {
 
         OrderAddress address = ParseOrderAddress(header.Address1, header.Address2);
 
@@ -168,6 +170,8 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
             Name = header.JobName,
             Number = header.TrackingNumber,
             OrderDate = header.OrderDate,
+
+            WorkingDirectory = workingDirectory,
 
             VendorId = vendorId,
             CustomerId = customerId,

@@ -97,12 +97,14 @@
         </div>
     </section>
 
-    <section class="mt-10" id="noteSection">
+    <section class="mt-10" id="editSection">
         <div>
             <label for="note" class="mr-3">Note</label>
-            <Button OnClickAsync="@SaveChangesAsync" Size="ButtonSize.XSmall" Style="ButtonStyle.Text">Save</Button>
+            <Button OnClickAsync="@SaveChangesAsync" Size="ButtonSize.XSmall" Style="ButtonStyle.Text" Disabled="!OrderState.IsDirty">Save</Button>
         </div>
-        <textarea id="note" placeholder="Order Note..." @bind="_note" class="w-full" />
+        <textarea id="note" placeholder="Order Note..." @onchange="((e) => OrderState.SetNote(e.Value?.ToString() ?? string.Empty))" value="@_note" class="w-full" />
+        <label for="wd">Working Directory</label>
+        <input type="text" id="wd" placeholder="C:/" @onchange="((e) => OrderState.SetWorkingDirectory(e.Value?.ToString() ?? string.Empty))" value="@_workingDirectory" class="w-full" />
     </section>
 
     <section class="mt-10" id="shipping">
@@ -296,6 +298,7 @@
     public List<MDFDoorRowModel> Doors { get; set; } = new();
 
     private string _note = string.Empty;
+    private string _workingDirectory = string.Empty;
     private string? _customerName = null;
     private string? _vendorName = null;
     private ReleaseProfile? _customReleaseProfile = null;
@@ -315,6 +318,7 @@
         }
 
         _note = OrderState.Order.Note;
+        _workingDirectory = OrderState.Order.WorkingDirectory;
 
         Cabinets = OrderState.Order
                             .Products
@@ -417,7 +421,7 @@
 
     private async Task ExportOrder() {
 
-        if (_isExporting == true) {
+        if (_isExporting == true || OrderState.Order is null) {
             return;
         }
 
@@ -425,7 +429,7 @@
 
         var dialog = Modal.Show<ExportSetupDialog>("Export Setup",
             new ModalParameters() {
-                { "VendorId", OrderState.Order?.VendorId ?? Guid.Empty }
+                { "Order", OrderState.Order }
             }, new ModalOptions() {
                 HideHeader = false,
                 HideCloseButton = true,
@@ -447,11 +451,14 @@
 
         try {
             OrderState.SetNote(_note);
+            OrderState.SetWorkingDirectory(_workingDirectory);
             await OrderState.SaveChanges();
         } catch (Exception ex) {
             Debug.WriteLine("Exception thrown while saving changes");
             Debug.WriteLine(ex);
         }
+
+        StateHasChanged();
 
     }
 

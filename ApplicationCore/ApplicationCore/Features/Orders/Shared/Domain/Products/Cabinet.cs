@@ -62,7 +62,7 @@ public abstract class Cabinet : IProduct {
             CabinetMaterialCore.ParticleBoard => new() {
                 TopThickness = Dimension.FromMillimeters(19),
                 BottomThickness = Dimension.FromMillimeters(19),
-                SideThickness = Dimension.FromMillimeters(19),  // Cabinets with plywood finished sides are still treated as having 19mm thick sides
+                SideThickness = Dimension.FromMillimeters(19),  // Cabinets with plywood finished sides (Crown Veneer) are still treated as having 19mm thick sides
                 BackThickness = Dimension.FromMillimeters(13),
                 BackInset = Dimension.FromMillimeters(9)
             },

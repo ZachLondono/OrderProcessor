@@ -34,4 +34,6 @@ public record OrderData {
 
     public required List<AdditionalItem> AdditionalItems { get; init; } = new();
 
+    public required string WorkingDirectory { get; init; }
+
 }

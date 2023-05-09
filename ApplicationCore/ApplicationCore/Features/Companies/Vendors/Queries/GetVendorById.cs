@@ -34,10 +34,8 @@ internal class GetVendorById {
                     vendors.export_db_order AS ExportDBOrder,
                     vendors.export_mdf_door_order AS ExportMDFDoorOrder,
                     vendors.export_ext_file AS ExportExtFile,
-                    vendors.export_output_directory AS ExportOutputDirectory,
 
                     vendors.release_invoice AS ReleaseInvoice,
-                    vendors.release_invoice_output_directory AS InvoiceOutputDirectory,
                     vendors.release_invoice_send_email AS SendInvoiceEmail,
                     vendors.release_invoice_email_recipients AS InvoiceEmailRecipients,
 
@@ -46,7 +44,6 @@ internal class GetVendorById {
                     vendors.release_include_invoice AS ReleaseIncludeInvoice,
                     vendors.release_send_email AS ReleaseSendEmail,
                     vendors.release_email_recipients AS ReleaseEmailRecipients,
-                    vendors.release_output_directory AS ReleaseOutputDirectory,
 
                     vendors.email_sender_name AS EmailSenderName,
                     vendors.email_sender_email AS EmailSenderEmail,
@@ -128,8 +125,7 @@ internal class GetVendorById {
                 var exportProfile = new ExportProfile() {
                     ExportDBOrder = ExportDBOrder,
                     ExportMDFDoorOrder = ExportMDFDoorOrder,
-                    ExportExtFile = ExportExtFile,
-                    OutputDirectory = ExportOutputDirectory,
+                    ExportExtFile = ExportExtFile
                 };
 
                 var releaseProfile = new ReleaseProfile() {
@@ -138,10 +134,8 @@ internal class GetVendorById {
                     GenerateJobSummary = ReleaseJobSummary,
                     SendReleaseEmail = ReleaseSendEmail,
                     ReleaseEmailRecipients = ReleaseEmailRecipients,
-                    ReleaseOutputDirectory = ReleaseOutputDirectory,
 
                     GenerateInvoice = ReleaseInvoice,
-                    InvoiceOutputDirectory = InvoiceOutputDirectory,
                     SendInvoiceEmail = SendInvoiceEmail,
                     InvoiceEmailRecipients = InvoiceEmailRecipients
                 };

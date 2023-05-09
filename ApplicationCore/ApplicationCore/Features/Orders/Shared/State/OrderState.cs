@@ -41,6 +41,12 @@ public class OrderState {
         IsDirty = true;
     }
 
+    public void SetWorkingDirectory(string workingDirectory) {
+        if (Order is null) return;  
+        Order.WorkingDirectory = workingDirectory;
+        IsDirty = true;
+    }
+
     public async Task SaveChanges() {
         if (Order is null || !IsDirty) return;
         await _bus.Send(new SaveChanges.Command(Order));

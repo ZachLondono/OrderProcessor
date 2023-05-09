@@ -11,6 +11,7 @@ internal class OrderBuilder {
     private string _number = string.Empty;
     private string _name = string.Empty;
     private string _note = string.Empty;
+    private string _workingDirectory = string.Empty;
     private Guid _customerId = Guid.NewGuid();
     private Guid _vendorId = Guid.NewGuid();
     private string _comment = string.Empty;
@@ -122,6 +123,6 @@ internal class OrderBuilder {
         return this;
     }
 
-    public Order Buid() => new(_id, _source, _number, _name, _note, _customerId, _vendorId, _comment, _orderDate, _shipping, _billing, _tax, _priceAdjustment, _rush, _info, _boxes, _items);
+    public Order Buid() => new(_id, _source, _number, _name, _note, _workingDirectory, _customerId, _vendorId, _comment, _orderDate, _shipping, _billing, _tax, _priceAdjustment, _rush, _info, _boxes, _items);
 
 }

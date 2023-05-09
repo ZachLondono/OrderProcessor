@@ -158,6 +158,9 @@
             return;
         }
 
+        string releaseDirectory = Path.Combine(order.WorkingDirectory, "CUTLISTS");
+        string invoiceDirectory = Path.Combine(order.WorkingDirectory, "Invoices");
+
         Configuration = new() {
 
                 SendReleaseEmail = vendor.ReleaseProfile.SendReleaseEmail,
@@ -165,13 +168,13 @@
                 GenerateJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
                 GeneratePackingList = vendor.ReleaseProfile.GeneratePackingList,
                 IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
-                ReleaseOutputDirectory = vendor.ReleaseProfile.ReleaseOutputDirectory,
+                ReleaseOutputDirectory = releaseDirectory,
                 GenerateCNCRelease = false,
 
                 GenerateInvoice = vendor.ReleaseProfile.GenerateInvoice,
                 SendInvoiceEmail = vendor.ReleaseProfile.SendInvoiceEmail,
                 InvoiceEmailRecipients = vendor.ReleaseProfile.InvoiceEmailRecipients,
-                InvoiceOutputDirectory = vendor.ReleaseProfile.InvoiceOutputDirectory,
+                InvoiceOutputDirectory = invoiceDirectory,
 
                 EmailSenderName = vendor.EmailSender.Name,
                 EmailSenderEmail = vendor.EmailSender.Email,

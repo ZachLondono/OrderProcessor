@@ -40,11 +40,11 @@ public class GetOrderById {
             }
 
             var itemData = await connection.QueryAsync<AdditionalItemDataModel>(AdditionalItemDataModel.GetQueryByOrderId(), request);
-            var items = itemData.Select(i => i.AsDomainModel());
+            var items = itemData.Select(i => i.ToDomainModel());
 
             var products = await GetProducts(request.OrderId, connection);
 
-            var order = orderData.AsDomainModel(request.OrderId, products, items);
+            var order = orderData.ToDomainModel(request.OrderId, products, items);
 
             return Response<Order>.Success(order);
 

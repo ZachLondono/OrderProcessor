@@ -21,10 +21,8 @@ CREATE TABLE vendors (
 	export_db_order INTEGER NOT NULL,
 	export_mdf_door_order INTEGER NOT NULL,
 	export_ext_file INTEGER NOT NULL,
-	export_output_directory TEXT NOT NULL,
 
 	release_invoice INTEGER NOT NULL,
-	release_invoice_output_directory TEXT NOT NULL,
 	release_invoice_send_email INTEGER NOT NULL,
 	release_invoice_email_recipients TEXT NOT NULL,
 
@@ -33,7 +31,6 @@ CREATE TABLE vendors (
 	release_job_summary INTEGER NOT NULL,
 	release_send_email INTEGER NOT NULL,
 	release_email_recipients TEXT NOT NULL,
-	release_output_directory TEXT NOT NULL,
 
 	email_sender_name TEXT NOT NULL,
 	email_sender_email TEXT NOT NULL,

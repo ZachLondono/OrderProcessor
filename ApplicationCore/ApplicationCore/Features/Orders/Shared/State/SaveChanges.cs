@@ -23,12 +23,15 @@ public class SaveChanges {
 
             const string sql = """
                                UPDATE orders
-                               SET note = @Note
+                               SET
+                                note = @Note,
+                                working_directory = @WorkingDirectory
                                WHERE id = @Id;
                                """;
 
             int rowsAffected = await connection.ExecuteAsync(sql, new {
                 command.Order.Note,
+                command.Order.WorkingDirectory,
                 command.Order.Id
             });
 
