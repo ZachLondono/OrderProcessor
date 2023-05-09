@@ -54,7 +54,7 @@ public class AllmoxyCabinetMappingTests {
         _sut.Cabinet.UnitPrice = input;
 
         // Act
-        var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
+        var builder = _sut.InitializeBuilder<TestBuilder, Cabinet>(new());
 
         // Assert
         builder.UnitPrice.Should().Be(expected);
@@ -71,7 +71,7 @@ public class AllmoxyCabinetMappingTests {
         _sut.Cabinet.Qty = input;
 
         // Act
-        var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
+        var builder = _sut.InitializeBuilder<TestBuilder, Cabinet>(new());
 
         // Assert
         builder.Qty.Should().Be(input);
@@ -87,7 +87,7 @@ public class AllmoxyCabinetMappingTests {
         _sut.Cabinet.Depth = 789;
 
         // Act
-        var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
+        var builder = _sut.InitializeBuilder<TestBuilder, Cabinet>(new());
 
         // Assert
         builder.Height.AsMillimeters().Should().Be(_sut.Cabinet.Height);
@@ -107,7 +107,7 @@ public class AllmoxyCabinetMappingTests {
         _sut.Cabinet.Assembled = input;
 
         // Act
-        var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
+        var builder = _sut.InitializeBuilder<TestBuilder, Cabinet>(new());
 
         // Assert
         builder.Assembled.Should().Be(expected);
@@ -121,7 +121,7 @@ public class AllmoxyCabinetMappingTests {
         _sut.Cabinet.Room = "Test Text";
 
         // Act
-        var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
+        var builder = _sut.InitializeBuilder<TestBuilder, Cabinet>(new());
 
         // Assert
         builder.Room.Should().Be(_sut.Cabinet.Room);
@@ -135,7 +135,7 @@ public class AllmoxyCabinetMappingTests {
         _sut.Cabinet.EdgeBandColor = "Test Text";
 
         // Act
-        var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
+        var builder = _sut.InitializeBuilder<TestBuilder, Cabinet>(new());
 
         // Assert
         builder.EdgeBandingColor.Should().Be(_sut.Cabinet.EdgeBandColor);
@@ -154,7 +154,7 @@ public class AllmoxyCabinetMappingTests {
         _sut.Cabinet.RightSide = input;
 
         // Act
-        var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
+        var builder = _sut.InitializeBuilder<TestBuilder, Cabinet>(new());
 
         // Assert
         builder.LeftSideType.Should().Be(expected);
@@ -176,7 +176,7 @@ public class AllmoxyCabinetMappingTests {
         _sut.Cabinet.FinishMaterial.Core = finishCore;
 
         // Act
-        var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
+        var builder = _sut.InitializeBuilder<TestBuilder, Cabinet>(new());
 
         // Assert
         builder.BoxMaterial.Core.Should().Be(expectedBoxCore);
@@ -193,7 +193,7 @@ public class AllmoxyCabinetMappingTests {
         _sut.Cabinet.FinishMaterial.Finish = "Finish2";
 
         // Act
-        var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
+        var builder = _sut.InitializeBuilder<TestBuilder, Cabinet>(new());
 
         // Assert
         builder.BoxMaterial.Finish.Should().Be(_sut.Cabinet.BoxMaterial.Finish);
@@ -217,7 +217,7 @@ public class AllmoxyCabinetMappingTests {
         };
 
         // Act
-        var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
+        var builder = _sut.InitializeBuilder<TestBuilder, Cabinet>(new());
 
         // Assert
         string color = _sut.Cabinet.BoxMaterial.Finish;
@@ -238,7 +238,7 @@ public class AllmoxyCabinetMappingTests {
         };
 
         // Act
-        var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
+        var builder = _sut.InitializeBuilder<TestBuilder, Cabinet>(new());
 
         // Assert
         builder.EdgeBandingColor.Should().Be(_sut.Cabinet.FinishMaterial.Finish);
@@ -262,7 +262,7 @@ public class AllmoxyCabinetMappingTests {
         };
 
         // Act
-        var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
+        var builder = _sut.InitializeBuilder<TestBuilder, Cabinet>(new());
 
         // Assert
         builder.EdgeBandingColor.Should().Be(_sut.Cabinet.BoxMaterial.Finish);
@@ -281,7 +281,7 @@ public class AllmoxyCabinetMappingTests {
         };
 
         // Act
-        var builder = _sut.InitilizeBuilder<TestBuilder, Cabinet>(new());
+        var builder = _sut.InitializeBuilder<TestBuilder, Cabinet>(new());
 
         // Assert
         builder.EdgeBandingColor.Should().Be(_sut.Cabinet.EdgeBandColor);

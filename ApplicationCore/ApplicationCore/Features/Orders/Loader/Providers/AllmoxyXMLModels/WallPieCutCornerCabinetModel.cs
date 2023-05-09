@@ -27,7 +27,7 @@ public class WallPieCutCornerCabinetModel : CabinetModelBase {
 
         var builder = builderFactory.CreateWallPieCutCornerCabinetBuilder();
 
-        return InitilizeBuilder<WallPieCutCornerCabinetBuilder, WallPieCutCornerCabinet>(builder)
+        return InitializeBuilder<WallPieCutCornerCabinetBuilder, WallPieCutCornerCabinet>(builder)
                     .WithRightWidth(Dimension.FromMillimeters(RightWidth))
                     .WithRightDepth(Dimension.FromMillimeters(RightDepth))
                     .WithAdjustableShelves(AdjShelfQty)

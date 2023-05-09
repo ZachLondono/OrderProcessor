@@ -29,7 +29,7 @@ public class WallDiagonalCornerCabinetModel : CabinetModelBase {
 
         var builder = builderFactory.CreateWallDiagonalCornerCabinetBuilder();
 
-        return InitilizeBuilder<WallDiagonalCornerCabinetBuilder, WallDiagonalCornerCabinet>(builder)
+        return InitializeBuilder<WallDiagonalCornerCabinetBuilder, WallDiagonalCornerCabinet>(builder)
                     .WithRightWidth(Dimension.FromMillimeters(RightWidth))
                     .WithRightDepth(Dimension.FromMillimeters(RightDepth))
                     .WithAdjustableShelves(AdjShelfQty)

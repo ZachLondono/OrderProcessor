@@ -27,7 +27,7 @@ public class BasePieCutCornerCabinetModel : CabinetModelBase {
 
         var builder = builderFactory.CreateBasePieCutCornerCabinetBuilder();
 
-        return InitilizeBuilder<BasePieCutCornerCabinetBuilder, BasePieCutCornerCabinet>(builder)
+        return InitializeBuilder<BasePieCutCornerCabinetBuilder, BasePieCutCornerCabinet>(builder)
                     .WithRightWidth(Dimension.FromMillimeters(RightWidth))
                     .WithRightDepth(Dimension.FromMillimeters(RightDepth))
                     .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))

@@ -63,7 +63,7 @@ public class BlindBaseCabinetModel : CabinetModelBase {
 
         var builder = builderFactory.CreateBlindBaseCabinetBuilder();
 
-        return InitilizeBuilder<BlindBaseCabinetBuilder, BlindBaseCabinet>(builder)
+        return InitializeBuilder<BlindBaseCabinetBuilder, BlindBaseCabinet>(builder)
                 .WithBlindSide(blindSide)
                 .WithBlindWidth(Dimension.FromMillimeters(BlindWidth))
                 .WithAdjustableShelves(AdjShelfQty)

@@ -71,7 +71,7 @@ public class BaseCabinetModel : CabinetModelBase {
 
         var builder = builderFactory.CreateBaseCabinetBuilder();
 
-        return InitilizeBuilder<BaseCabinetBuilder, BaseCabinet>(builder)
+        return InitializeBuilder<BaseCabinetBuilder, BaseCabinet>(builder)
                     .WithInside(inside)
                     .WithToeType(toeType)
                     .WithDoors(doors)

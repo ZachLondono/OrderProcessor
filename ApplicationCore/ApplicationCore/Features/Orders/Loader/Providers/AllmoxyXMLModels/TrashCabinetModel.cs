@@ -38,7 +38,7 @@ public class TrashCabinetModel : CabinetModelBase {
 
         var builder = builderFactory.CreateTrashCabinetBuilder();
 
-        return InitilizeBuilder<TrashCabinetBuilder, TrashCabinet>(builder)
+        return InitializeBuilder<TrashCabinetBuilder, TrashCabinet>(builder)
                 .WithDrawerFaceHeight(faceHeight)
                 .WithBoxOptions(boxOptions)
                 .WithToeType(toeType)

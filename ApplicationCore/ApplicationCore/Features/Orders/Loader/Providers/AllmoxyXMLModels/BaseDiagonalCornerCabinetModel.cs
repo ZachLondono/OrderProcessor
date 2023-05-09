@@ -29,7 +29,7 @@ public class BaseDiagonalCornerCabinetModel : CabinetModelBase {
 
         var builder = builderFactory.CreateBaseDiagonalCornerCabinetBuilder();
 
-        return InitilizeBuilder<BaseDiagonalCornerCabinetBuilder, BaseDiagonalCornerCabinet>(builder)
+        return InitializeBuilder<BaseDiagonalCornerCabinetBuilder, BaseDiagonalCornerCabinet>(builder)
                     .WithRightWidth(Dimension.FromMillimeters(RightWidth))
                     .WithRightDepth(Dimension.FromMillimeters(RightDepth))
                     .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))

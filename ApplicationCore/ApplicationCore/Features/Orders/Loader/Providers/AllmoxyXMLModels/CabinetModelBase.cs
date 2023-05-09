@@ -20,7 +20,7 @@ public abstract class CabinetModelBase : ProductModel {
 
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
-    public TBuilder InitilizeBuilder<TBuilder, TCabinet>(TBuilder builder) where TBuilder : CabinetBuilder<TCabinet> where TCabinet : Cabinet {
+    public TBuilder InitializeBuilder<TBuilder, TCabinet>(TBuilder builder) where TBuilder : CabinetBuilder<TCabinet> where TCabinet : Cabinet {
 
         CabinetMaterialCore boxCore = AllmoxyXMLOrderProviderHelpers.GetMaterialCore(Cabinet.BoxMaterial.Core);
         CabinetMaterialFinishType boxFinishType = AllmoxyXMLOrderProviderHelpers.GetMaterialFinishType(Cabinet.BoxMaterial.Type);

@@ -42,7 +42,7 @@ public class WallCabinetModel : CabinetModelBase {
 
         var builder = builderFactory.CreateWallCabinetBuilder();
 
-        return InitilizeBuilder<WallCabinetBuilder, WallCabinet>(builder)
+        return InitializeBuilder<WallCabinetBuilder, WallCabinet>(builder)
                     .WithDoors(doors)
                     .WithInside(inside)
                     .WithFinishBottom(finishBottom)
