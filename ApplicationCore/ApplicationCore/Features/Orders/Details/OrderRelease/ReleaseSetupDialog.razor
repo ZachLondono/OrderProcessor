@@ -158,8 +158,8 @@
             return;
         }
 
-        string releaseDirectory = Path.Combine(order.WorkingDirectory, "CUTLISTS");
-        string invoiceDirectory = Path.Combine(order.WorkingDirectory, "Invoices");
+        string releaseDirectory = order.WorkingDirectory;
+        string invoiceDirectory = order.WorkingDirectory;
 
         Configuration = new() {
 

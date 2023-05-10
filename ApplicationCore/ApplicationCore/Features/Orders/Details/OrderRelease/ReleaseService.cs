@@ -228,9 +228,9 @@ public class ReleaseService {
 
         foreach (var outputDir in outputDirs) {
 
-            string dir = ReplaceTokensInDirectory(customerName, outputDir);
+            string directory = ReplaceTokensInDirectory(customerName, outputDir);
 
-            string directory = Path.Combine(dir, _fileReader.RemoveInvalidPathCharacters($"{order.Number} {order.Name}"));
+            //string directory = Path.Combine(dir, _fileReader.RemoveInvalidPathCharacters($"{order.Number} {order.Name}"));
 
             if (!Directory.Exists(directory)) {
                 Directory.CreateDirectory(directory);
