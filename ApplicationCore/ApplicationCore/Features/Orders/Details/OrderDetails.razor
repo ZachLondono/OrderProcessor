@@ -450,8 +450,6 @@
     private async Task SaveChangesAsync() {
 
         try {
-            OrderState.SetNote(_note);
-            OrderState.SetWorkingDirectory(_workingDirectory);
             await OrderState.SaveChanges();
         } catch (Exception ex) {
             Debug.WriteLine("Exception thrown while saving changes");
