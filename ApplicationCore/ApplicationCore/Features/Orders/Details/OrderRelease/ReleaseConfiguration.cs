@@ -9,9 +9,11 @@ public class ReleaseConfiguration {
     public bool IncludeInvoiceInRelease { get; set; }
     public string? ReleaseEmailRecipients { get; set; }
     public bool SendReleaseEmail { get; set; }
+    public string? ReleaseFileName { get; set; }
     public string? ReleaseOutputDirectory { get; set; }
 
     public bool GenerateInvoice { get; set; }
+    public string? InvoiceFileName { get; set; }
     public string? InvoiceOutputDirectory { get; set; }
     public string? InvoiceEmailRecipients { get; set; }
     public bool SendInvoiceEmail { get; set; }

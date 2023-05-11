@@ -85,6 +85,11 @@
 
                 <br />
 
+                <label class="block text-sm font-medium text-gray-700">File Name</label>
+                <input type="text" class="mt-1 w-full" @bind="Configuration.ReleaseFileName" />
+
+                <br />
+
                 <label class="block text-sm font-medium text-gray-700">Output Directory</label>
                 <input type="text" class="mt-1 w-full" @bind="Configuration.ReleaseOutputDirectory" />
 
@@ -102,6 +107,11 @@
                 <span class="text-gray-700">Save Invoice PDF</span>
             </CheckBox>
             @if (Configuration.GenerateInvoice) {
+                <label class="block text-sm font-medium text-gray-700">File Name</label>
+                <input type="text" class="mt-1 w-full" @bind="Configuration.InvoiceFileName" />
+
+                <br />
+
                 <label class="block text-sm font-medium text-gray-700">Output Directory</label>
                 <input type="text" class="mt-1 w-full" @bind="Configuration.InvoiceOutputDirectory" />
             }
@@ -168,12 +178,14 @@
                 GenerateJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
                 GeneratePackingList = vendor.ReleaseProfile.GeneratePackingList,
                 IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
+                ReleaseFileName = $"{order.Number} RELEASE",
                 ReleaseOutputDirectory = releaseDirectory,
                 GenerateCNCRelease = false,
 
                 GenerateInvoice = vendor.ReleaseProfile.GenerateInvoice,
                 SendInvoiceEmail = vendor.ReleaseProfile.SendInvoiceEmail,
                 InvoiceEmailRecipients = vendor.ReleaseProfile.InvoiceEmailRecipients,
+                InvoiceFileName = $"{order.Number} INVOICE",
                 InvoiceOutputDirectory = invoiceDirectory,
 
                 EmailSenderName = vendor.EmailSender.Name,

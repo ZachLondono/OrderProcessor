@@ -95,9 +95,11 @@ public class ReleaseService {
             return;
         }
 
+        var filename = configuration.ReleaseFileName ?? $"{order.Number} RELEASE"; 
+
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
-            filePaths = GeneratePDF(directories, order, decorators, "Release", customerName);
+            filePaths = GeneratePDF(directories, order, decorators, filename, customerName);
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate release PDF - '{ex.Message}'");
             _logger.LogError(ex, "Exception thrown while trying to generate release pdf");
@@ -138,10 +140,12 @@ public class ReleaseService {
             return;
         }
 
+        var filename = configuration.InvoiceFileName ?? $"{order.Number} INVOICE"; 
+
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
             await _invoiceDecorator.AddData(order);
-            filePaths = GeneratePDF(invoiceDirectories, order, new IDocumentDecorator[] { _invoiceDecorator }, "Invoice", customerName, isTemp);
+            filePaths = GeneratePDF(invoiceDirectories, order, new IDocumentDecorator[] { _invoiceDecorator }, filename, customerName, isTemp);
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate invoice PDF - '{ex.Message}'");
             _logger.LogError(ex, "Exception thrown while trying to generate invoice pdf");
@@ -236,7 +240,7 @@ public class ReleaseService {
                 Directory.CreateDirectory(directory);
             }
 
-            var filePath = _fileReader.GetAvailableFileName(directory, $"{order.Number} {order.Name} - {name}", ".pdf");
+            var filePath = _fileReader.GetAvailableFileName(directory, name, ".pdf");
             document.GeneratePdf(filePath);
             files.Add(filePath);
 
