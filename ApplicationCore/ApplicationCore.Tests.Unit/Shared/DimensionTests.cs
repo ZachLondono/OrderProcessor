@@ -378,4 +378,79 @@ public class DimensionTests {
 
     }
 
+    [Fact]
+    public void Equals_Should_Work() {
+
+        // Arrange
+        var dimA = Dimension.FromInches(1);
+        var dimB = Dimension.FromInches(1);
+
+        // Assert
+        Assert.True(dimA == dimB);
+        Assert.True(dimA >= dimB);
+        Assert.True(dimA <= dimB);
+
+        Assert.True(dimB == dimA);
+        Assert.True(dimB >= dimA);
+        Assert.True(dimB <= dimA);
+
+    }
+
+    [Fact]
+    public void GreaterThan_Should_Work() {
+
+        // Arrange
+        var dimA = Dimension.FromInches(2);
+        var dimB = Dimension.FromInches(1);
+
+        // Assert
+        Assert.True(dimA >= dimB);
+        Assert.True(dimA > dimB);
+
+        Assert.False(dimB >= dimA);
+        Assert.False(dimB > dimA);
+
+    }
+
+    [Fact]
+    public void LessThan_Should_Work() {
+
+        // Arrange
+        var dimA = Dimension.FromInches(1);
+        var dimB = Dimension.FromInches(2);
+
+        // Assert
+        Assert.True(dimA <= dimB);
+        Assert.True(dimA < dimB);
+
+        Assert.False(dimB <= dimA);
+        Assert.False(dimB < dimA);
+
+    }
+
+    [Fact]
+    public void Sort_Should_Work() {
+
+        // Arrange
+        var dims = new List<Dimension>() {
+            Dimension.FromInches(3),
+            Dimension.FromInches(2),
+            Dimension.FromInches(1),
+            Dimension.FromInches(4),
+            Dimension.FromInches(0),
+        };
+
+        // Act
+        dims.Sort();
+
+        // Assert
+        Assert.True(dims.First() == Dimension.Zero);
+        Assert.True(dims.Skip(1).First() == Dimension.FromInches(1));
+        Assert.True(dims.Skip(2).First() == Dimension.FromInches(2));
+        Assert.True(dims.Skip(3).First() == Dimension.FromInches(3));
+        Assert.True(dims.Skip(4).First() == Dimension.FromInches(4));
+
+    }
+
+
 }

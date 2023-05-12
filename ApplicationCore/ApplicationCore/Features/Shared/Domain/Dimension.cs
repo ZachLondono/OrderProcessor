@@ -79,7 +79,7 @@ public readonly struct Dimension : IComparable {
             return 1;
         }
 
-        return dim.AsMillimeters().CompareTo(AsMillimeters());
+        return AsMillimeters().CompareTo(dim.AsMillimeters());
 
     }
 
@@ -139,11 +139,8 @@ public readonly struct Dimension : IComparable {
         return _mm.GetHashCode();
     }
 
-    public static bool operator <=(Dimension left, Dimension right) {
-        return left.CompareTo(right) <= 0;
-    }
+    public static bool operator <=(Dimension left, Dimension right) => left.AsMillimeters() <= right.AsMillimeters();
 
-    public static bool operator >=(Dimension left, Dimension right) {
-        return left.CompareTo(right) >= 0;
-    }
+    public static bool operator >=(Dimension left, Dimension right) => left.AsMillimeters() >= right.AsMillimeters();
+
 }
