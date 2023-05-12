@@ -102,9 +102,9 @@
             <label for="note" class="mr-3">Note</label>
             <Button OnClickAsync="@SaveChangesAsync" Size="ButtonSize.XSmall" Style="ButtonStyle.Text" Disabled="!OrderState.IsDirty">Save</Button>
         </div>
-        <textarea id="note" placeholder="Order Note..." @onchange="((e) => OrderState.SetNote(e.Value?.ToString() ?? string.Empty))" value="@_note" class="w-full" />
+        <textarea id="note" placeholder="Order Note..." class="w-full" @oninput="OnNoteChanged">@_note</textarea>
         <label for="wd">Working Directory</label>
-        <input type="text" id="wd" placeholder="C:/" @onchange="((e) => OrderState.SetWorkingDirectory(e.Value?.ToString() ?? string.Empty))" value="@_workingDirectory" class="w-full" />
+        <input type="text" id="wd" placeholder="C:/" class="w-full" @oninput="OnWorkingDirectoryChanged" value="@_workingDirectory" />
     </section>
 
     <section class="mt-10" id="shipping">
@@ -458,6 +458,16 @@
 
         StateHasChanged();
 
+    }
+
+    private void OnNoteChanged(ChangeEventArgs args) {
+        _note = args.Value?.ToString() ?? "";
+        OrderState.SetNote(_note);
+    }
+
+    private void OnWorkingDirectoryChanged(ChangeEventArgs args) {
+        _workingDirectory = args.Value?.ToString() ?? "";
+        OrderState.SetWorkingDirectory(_workingDirectory);
     }
 
     public override void Handle(WorkOrdersUpdateNotification notification) {  
