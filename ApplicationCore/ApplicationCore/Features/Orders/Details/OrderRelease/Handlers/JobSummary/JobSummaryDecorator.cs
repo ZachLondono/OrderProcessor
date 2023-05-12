@@ -68,7 +68,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                         column.ConstantColumn(50);
                                     });
 
-                                    int cabQty = jobSummary.Cabients.Sum(p => p.Items.Sum(i => i.Qty));
+                                    int cabQty = jobSummary.Cabinets.Sum(p => p.Items.Sum(i => i.Qty));
                                     int cpQty = jobSummary.ClosetParts.Sum(p => p.Items.Sum(i => i.Qty));
                                     int doorQty = jobSummary.Doors.Sum(p => p.Items.Sum(i => i.Qty));
                                     int drawerQty = jobSummary.DrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty));
@@ -131,7 +131,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                     column.Item().PaddingTop(20).PaddingBottom(20).Row(row => row.RelativeItem().LineHorizontal(1).LineColor(Colors.Grey.Medium));
 
                     if (jobSummary.ShowItemsInSummary) {
-                        foreach (var group in jobSummary.Cabients) {
+                        foreach (var group in jobSummary.Cabinets) {
                             ComposeCabinetTable(column.Item(), group);
                         }
 
@@ -307,7 +307,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             Total = order.Total,
 
             ShowItemsInSummary = false,
-            Cabients = cabs,
+            Cabinets = cabs,
             ClosetParts = cp,
             Doors = doors,
             DrawerBoxes = db,

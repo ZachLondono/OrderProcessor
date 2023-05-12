@@ -19,7 +19,7 @@ internal class JobSummary {
     public decimal Total { get; set; }
 
     public bool ShowItemsInSummary { get; set; } = false;
-    public List<CabinetGroup> Cabients { get; set; } = new();
+    public List<CabinetGroup> Cabinets { get; set; } = new();
     public List<ClosetPartGroup> ClosetParts { get; set; } = new();
     public List<DrawerBoxGroup> DrawerBoxes { get; set; } = new();
     public List<DoorGroup> Doors { get; set; } = new();
