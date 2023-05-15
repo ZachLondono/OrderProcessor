@@ -61,7 +61,6 @@ internal class ExportService {
     private async Task GenerateMDFOrders(ExportConfiguration configuration, Order order, string outputDir) {
         if (configuration.FillMDFDoorOrder) {
             if (File.Exists(_options.MDFDoorTemplateFilePath)) {
-
                 OnProgressReport?.Invoke("Generating MDF Door Orders");
                 var files = await _doorOrderHandler.Handle(order, _options.MDFDoorTemplateFilePath, outputDir);
                 files.ForEach(f => OnFileGenerated?.Invoke(f));
@@ -79,8 +78,11 @@ internal class ExportService {
             if (File.Exists(_options.DovetailTemplateFilePath)) {
 
                 OnProgressReport?.Invoke("Generating Dovetail Drawer Box Orders");
-                var files = await _dovetailOrderHandler.Handle(order, _options.DovetailTemplateFilePath, outputDir);
-                files.ForEach(f => OnFileGenerated?.Invoke(f));
+                var result = await _dovetailOrderHandler.Handle(order, _options.DovetailTemplateFilePath, outputDir);
+                result.GeneratedFiles.ForEach(f => OnFileGenerated?.Invoke(f));
+                if (result.Error is string error) {
+                    OnError?.Invoke(error);
+                }
 
             } else {
                 OnError?.Invoke($"Could not find dovetail order template file '{_options.DovetailTemplateFilePath}'");

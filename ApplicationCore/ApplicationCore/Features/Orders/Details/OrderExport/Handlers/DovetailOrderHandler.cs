@@ -24,16 +24,14 @@ internal class DovetailOrderHandler {
         _logger = logger;
     }
 
-    public async Task<IEnumerable<string>> Handle(Order order, string template, string outputDirectory) {
+    public async Task<DovetailOrderHandlerResult> Handle(Order order, string template, string outputDirectory) {
 
         if (!File.Exists(template)) {
-            _logger.LogInformation("Dovetail drawer box order tample file could not be found");
-            return Enumerable.Empty<string>();
+            return new(Enumerable.Empty<string>(), "Dovetail drawer box order template file could not be found");
         }
 
         if (!Directory.Exists(outputDirectory)) {
-            _logger.LogInformation("Dovetail drawer box order output directory could not be found");
-            return Enumerable.Empty<string>();
+            return new(Enumerable.Empty<string>(), "Dovetail drawer box order output directory could not be found");
         }
 
         var customer = await _getCustomerById(order.CustomerId);
@@ -49,6 +47,7 @@ internal class DovetailOrderHandler {
         };
 
         List<string> filesGenerated = new();
+        string? error = null;
         var workbooks = app.Workbooks;
         try {
 
@@ -77,6 +76,7 @@ internal class DovetailOrderHandler {
         } catch (Exception ex) {
 
             _logger.LogError(ex, "Exception thrown while filling drawer box order");
+            error = $"Error while generating drawer box order - {ex.Message}";
 
         }
 
@@ -92,7 +92,7 @@ internal class DovetailOrderHandler {
         GC.Collect();
         GC.WaitForPendingFinalizers();
 
-        return filesGenerated;
+        return new(filesGenerated, error);
 
     }
 
