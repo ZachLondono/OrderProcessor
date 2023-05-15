@@ -18,7 +18,7 @@ public class DovetailDrawerBoxBuilder {
     /// <summary>
     /// Minimum clearance between top of drawer box and top of drawer face
     /// </summary>
-    public static Dimension VerticalClearance { get; set; } = Dimension.FromMillimeters(40);
+    public static Dimension VerticalClearance { get; set; } = Dimension.FromMillimeters(41);
 
     /// <summary>
     /// The thickness of the divider between two horizontally adjacent drawer boxes
@@ -28,6 +28,7 @@ public class DovetailDrawerBoxBuilder {
     public static Dimension RollOutBlockThickness { get; set; } = Dimension.FromInches(1);
 
     public static List<Dimension> StdHeights { get; set; } = new() {
+        Dimension.FromMillimeters(57),
         Dimension.FromMillimeters(64),
         Dimension.FromMillimeters(86),
         Dimension.FromMillimeters(105),
@@ -44,7 +45,7 @@ public class DovetailDrawerBoxBuilder {
     };
 
     public static Dictionary<DrawerSlideType, Dimension> DrawerSlideDepthClearance { get; set; } = new() {
-        {  DrawerSlideType.UnderMount, Dimension.FromMillimeters(19) },
+        {  DrawerSlideType.UnderMount, Dimension.FromMillimeters(13) },
         {  DrawerSlideType.SideMount, Dimension.FromMillimeters(0) }
     };
 
@@ -149,7 +150,7 @@ public class DovetailDrawerBoxBuilder {
 
         if (slideType is DrawerSlideType.UnderMount) {
 
-            foreach (var depth in UnderMountDrawerSlideDepths.OrderBy(depth => depth)) {
+            foreach (var depth in UnderMountDrawerSlideDepths.OrderByDescending(depth => depth)) {
 
                 if (depth > innerCabinetDepth - clearance) {
                     continue;
