@@ -22,9 +22,8 @@ public class PPJobConverter {
                             new Room() {
                                 Name = group.Key,
 
-                                // products within the room are grouped together by MaterialGroupKey
-                                Groups = group.GroupBy(prod => new MaterialGroupKey(prod.Catalog, prod.MaterialType, prod.DoorType, prod.HardwareType, prod.FinishMaterials, prod.EBMaterials), new MaterialGroupKeyComparer())
-                                                .Select(group => new MaterialGroup() {
+                                Groups = group.GroupBy(prod => new ProductGroupKey(prod.Catalog, prod.MaterialType, prod.DoorType, prod.HardwareType, prod.FinishMaterials, prod.EBMaterials, prod.OverrideParameters), new ProductGroupKeyComparer())
+                                                .Select(group => new ProductGroup() {
                                                     Key = group.Key,
                                                     Products = group.ToList()
                                                 })
@@ -125,7 +124,7 @@ public class PPJobConverter {
     /// <summary>
     /// Adds a level descriptor for the group, a variable descriptor which holds the variables in the group key and the product descriptors for all products in the group.
     /// </summary>
-    private void AddGroupToWriter(MaterialGroup group, int parentId, int levelId, string name) {
+    private void AddGroupToWriter(ProductGroup group, int parentId, int levelId, string name) {
 
         var subLevel = new LevelDescriptor() {
             LevelId = levelId,
@@ -140,6 +139,7 @@ public class PPJobConverter {
         _writer.AddRecord(subLevel);
 
         AddMaterialVariablesToWriter(group.Key, subLevel.LevelId);
+        AddVariableOverridesToWriter(group.Key, subLevel.LevelId);
 
         foreach (var product in group.Products) {
             AddProductToWriter(product, subLevel.LevelId);
@@ -147,7 +147,7 @@ public class PPJobConverter {
 
     }
 
-    private void AddMaterialVariablesToWriter(MaterialGroupKey materials, int levelId) {
+    private void AddMaterialVariablesToWriter(ProductGroupKey materials, int levelId) {
 
         var overrides = new VariableOverride() {
             LevelId = levelId,
@@ -159,19 +159,23 @@ public class PPJobConverter {
 
     }
 
-    private void AddProductToWriter(PPProduct product, int parentLevelId) {
+    private void AddVariableOverridesToWriter(ProductGroupKey groupKey, int levelId) {
 
-        if (product.OverrideParameters.Any()) {
+        if (groupKey.OverrideParameters.Any()) {
 
             var overrides = new VariableOverride() {
-                LevelId = parentLevelId,
+                LevelId = levelId,
                 Units = PPUnits.Millimeters,
-                Parameters = product.OverrideParameters
+                Parameters = groupKey.OverrideParameters
             };
 
             _writer.AddRecord(overrides);
 
         }
+
+    }
+
+    private void AddProductToWriter(PPProduct product, int parentLevelId) {
 
         var prodRec = new ProductRecord() {
             Name = product.Name,
@@ -208,15 +212,15 @@ public class PPJobConverter {
 
     class Room {
         public required string Name { get; set; }
-        public required IEnumerable<MaterialGroup> Groups { get; set; }
+        public required IEnumerable<ProductGroup> Groups { get; set; }
     }
 
-    class MaterialGroup {
-        public required MaterialGroupKey Key { get; set; }
+    class ProductGroup {
+        public required ProductGroupKey Key { get; set; }
         public required IEnumerable<PPProduct> Products { get; set; }
     }
 
-    class MaterialGroupKey {
+    class ProductGroupKey {
 
         public string Catalog { get; }
         public string MaterialType { get; }
@@ -225,8 +229,9 @@ public class PPJobConverter {
         public IDictionary<string, PPMaterial> FinishMaterials { get; }
         public IDictionary<string, PPMaterial> EBMaterials { get; }
         public IDictionary<string, string> AllMaterials { get; }
+        public IDictionary<string, string> OverrideParameters { get; }
 
-        public MaterialGroupKey(string catalog, string materialType, string doorType, string hardwareType, IDictionary<string, PPMaterial> finishMaterials, IDictionary<string, PPMaterial> ebMaterials) {
+        public ProductGroupKey(string catalog, string materialType, string doorType, string hardwareType, IDictionary<string, PPMaterial> finishMaterials, IDictionary<string, PPMaterial> ebMaterials, IDictionary<string, string> overrideParameters) {
             Catalog = catalog;
             MaterialType = materialType;
             DoorType = doorType;
@@ -237,20 +242,23 @@ public class PPJobConverter {
             AllMaterials = new Dictionary<string, string>();
             FinishMaterials.ForEach(mat => AllMaterials.Add(mat.Key, mat.Value.ToString()));
             EBMaterials.ForEach(mat => AllMaterials.Add(mat.Key, mat.Value.ToString()));
+
+            OverrideParameters = overrideParameters;
         }
 
     }
 
-    class MaterialGroupKeyComparer : IEqualityComparer<MaterialGroupKey> {
-        public bool Equals(MaterialGroupKey? x, MaterialGroupKey? y) {
+    class ProductGroupKeyComparer : IEqualityComparer<ProductGroupKey> {
+        public bool Equals(ProductGroupKey? x, ProductGroupKey? y) {
             if (x is null || y is null) return false;
 
             if (x.Catalog != y.Catalog || x.MaterialType != y.MaterialType || x.DoorType != y.DoorType || x.HardwareType != y.HardwareType) return false;
-            if (AreDictionariesEquivalent(y.AllMaterials, x.AllMaterials)) return true;
-            return false;
+            if (!AreDictionariesEquivalent(y.AllMaterials, x.AllMaterials)) return false;
+            if (!AreDictionariesEquivalent(y.OverrideParameters, x.OverrideParameters)) return false;
+            return true;
         }
 
-        public int GetHashCode(MaterialGroupKey obj) => 0;
+        public int GetHashCode(ProductGroupKey obj) => 0;
     }
 
     class DictionaryValueComparer : IEqualityComparer<IDictionary<string, string>> {
