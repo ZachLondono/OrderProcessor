@@ -137,7 +137,12 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPP
             ["FinishedLeft"] = GetSideOption(LeftSideType),
             ["FinishedRight"] = GetSideOption(RightSideType),
             ["AppliedPanel"] = GetAppliedPanelOption(),
-            ["DrawerH1"] = DrawerFaceHeight.AsMillimeters().ToString()
+            ["DrawerH1"] = DrawerFaceHeight.AsMillimeters().ToString(),
+            ["TrashType"] = TrashPulloutConfiguration switch {
+                TrashPulloutConfiguration.OneCan => "1",
+                TrashPulloutConfiguration.TwoCans => "2",
+                _ => "0"
+            } 
         };
 
         return parameters;
