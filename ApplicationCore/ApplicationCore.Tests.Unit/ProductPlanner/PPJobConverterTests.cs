@@ -32,7 +32,7 @@ public class PPJobConverterTests {
 
         // Assert
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
-        _writer.ReceivedWithAnyArgs(1).AddRecord(Arg.Any<VariableOverride>());
+        _writer.ReceivedWithAnyArgs(1).AddRecord(Arg.Any<LevelVariableOverride>());
         _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "Lvl1"));
         _writer.ReceivedWithAnyArgs(products.Count).AddRecord(Arg.Any<ProductRecord>());
 
@@ -54,7 +54,7 @@ public class PPJobConverterTests {
 
         // Assert
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
-        _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<VariableOverride>());
+        _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<LevelVariableOverride>());
         _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<LevelDescriptor>());
         _writer.ReceivedWithAnyArgs(products.Count).AddRecord(Arg.Any<ProductRecord>());
 
@@ -76,7 +76,7 @@ public class PPJobConverterTests {
 
         // Assert
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
-        _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<VariableOverride>());
+        _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<LevelVariableOverride>());
         _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<LevelDescriptor>());
         _writer.ReceivedWithAnyArgs(products.Count).AddRecord(Arg.Any<ProductRecord>());
 
@@ -98,7 +98,7 @@ public class PPJobConverterTests {
 
         // Assert
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
-        _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<VariableOverride>());
+        _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<LevelVariableOverride>());
         _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<LevelDescriptor>());
         _writer.ReceivedWithAnyArgs(products.Count).AddRecord(Arg.Any<ProductRecord>());
 
@@ -120,7 +120,7 @@ public class PPJobConverterTests {
 
         // Assert
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
-        _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<VariableOverride>());
+        _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<LevelVariableOverride>());
         _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<LevelDescriptor>());
         _writer.ReceivedWithAnyArgs(products.Count).AddRecord(Arg.Any<ProductRecord>());
 
@@ -144,7 +144,7 @@ public class PPJobConverterTests {
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name" && j.LevelId == 0));
         _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "Room A" && l.LevelId == 1));
         _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "Room B" && l.LevelId == 2));
-        _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<VariableOverride>());
+        _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<LevelVariableOverride>());
         _writer.ReceivedWithAnyArgs(products.Count).AddRecord(Arg.Any<ProductRecord>());
 
     }
@@ -176,7 +176,7 @@ public class PPJobConverterTests {
         _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "1-Room B" && l.LevelId == 5 && l.ParentId == 4));
         _writer.Received(1).AddRecord(Arg.Is<LevelDescriptor>(l => l.Name == "2-Room B" && l.LevelId == 6 && l.ParentId == 4));
 
-        _writer.ReceivedWithAnyArgs(4).AddRecord(Arg.Any<VariableOverride>());
+        _writer.ReceivedWithAnyArgs(4).AddRecord(Arg.Any<LevelVariableOverride>());
 
         _writer.ReceivedWithAnyArgs(products.Count).AddRecord(Arg.Any<ProductRecord>());
 
@@ -199,8 +199,8 @@ public class PPJobConverterTests {
 
         // Assert
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
-        _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<VariableOverride>());
-        _writer.Received(1).AddRecord(Arg.Is<VariableOverride>(v => v.Parameters["Key1"] == "Value1"));
+        _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<LevelVariableOverride>());
+        _writer.Received(1).AddRecord(Arg.Is<LevelVariableOverride>(v => v.Parameters["Key1"] == "Value1"));
         _writer.ReceivedWithAnyArgs(1).AddRecord(Arg.Any<LevelDescriptor>());
         _writer.ReceivedWithAnyArgs(products.Count).AddRecord(Arg.Any<ProductRecord>());
 

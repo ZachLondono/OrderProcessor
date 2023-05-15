@@ -6,7 +6,7 @@ public interface IExtWriter {
     void AddRecord(JobDescriptor job);
     void AddRecord(LevelDescriptor level);
     void AddRecord(ProductRecord product);
-    void AddRecord(VariableOverride variables);
+    void AddRecord(LevelVariableOverride variables);
     void WriteFile(string filePath);
     void Clear();
 }

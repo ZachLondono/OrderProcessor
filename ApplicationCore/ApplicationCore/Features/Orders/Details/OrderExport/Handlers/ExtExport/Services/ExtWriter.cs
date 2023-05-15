@@ -9,7 +9,7 @@ public class ExtWriter : IExtWriter {
     private readonly List<Dictionary<string, string>> _records = new();
 
     public void AddRecord(JobDescriptor job) => _records.Add(GetRecord(job));
-    public void AddRecord(VariableOverride variables) => _records.Add(GetRecord(variables));
+    public void AddRecord(LevelVariableOverride variables) => _records.Add(GetRecord(variables));
     public void AddRecord(LevelDescriptor level) => _records.Add(GetRecord(level));
     public void AddRecord(ProductRecord product) => _records.Add(GetRecord(product));
 
@@ -44,9 +44,9 @@ public class ExtWriter : IExtWriter {
         return fields;
     }
 
-    private static Dictionary<string, string> GetRecord(VariableOverride variables) {
+    private static Dictionary<string, string> GetRecord(LevelVariableOverride variables) {
         var values = new Dictionary<string, string> {
-            { "KEY", "XV" },
+            { "KEY", "LV" },
             { "LEVELID", variables.LevelId.ToString() },
             { "UNT", ((int)variables.Units).ToString() }
         };

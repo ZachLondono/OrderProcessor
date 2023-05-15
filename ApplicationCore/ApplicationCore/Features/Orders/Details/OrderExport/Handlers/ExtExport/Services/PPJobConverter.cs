@@ -149,7 +149,7 @@ public class PPJobConverter {
 
     private void AddMaterialVariablesToWriter(ProductGroupKey materials, int levelId) {
 
-        var overrides = new VariableOverride() {
+        var overrides = new LevelVariableOverride() {
             LevelId = levelId,
             Units = PPUnits.Millimeters,
             Parameters = materials.AllMaterials
@@ -163,7 +163,7 @@ public class PPJobConverter {
 
         if (groupKey.OverrideParameters.Any()) {
 
-            var overrides = new VariableOverride() {
+            var overrides = new LevelVariableOverride() {
                 LevelId = levelId,
                 Units = PPUnits.Millimeters,
                 Parameters = groupKey.OverrideParameters
