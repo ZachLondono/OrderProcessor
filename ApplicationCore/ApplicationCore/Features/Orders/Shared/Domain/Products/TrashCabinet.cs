@@ -79,11 +79,8 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer, IPPP
 
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
-        var insideWidth = Width - Construction.SideThickness * 2;
-        var insideDepth = Depth - (Construction.BackThickness + Construction.BackInset);
-
-        var box = getBuilder().WithInnerCabinetDepth(insideDepth, DrawerBoxOptions.SlideType)
-                                .WithInnerCabinetWidth(insideWidth, 1, DrawerBoxOptions.SlideType)
+        var box = getBuilder().WithInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType)
+                                .WithInnerCabinetWidth(InnerWidth, 1, DrawerBoxOptions.SlideType)
                                 .WithDrawerFaceHeight(DrawerFaceHeight)
                                 .WithQty(Qty)
                                 .WithOptions(DrawerBoxOptions.GetDrawerBoxOptions())

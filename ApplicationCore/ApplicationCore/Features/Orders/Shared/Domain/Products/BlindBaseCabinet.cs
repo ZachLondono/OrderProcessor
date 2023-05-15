@@ -104,14 +104,10 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
             return Enumerable.Empty<DovetailDrawerBox>();
         }
 
-
-        var insideWidth = Width - Construction.SideThickness * 2 - BlindWidth;
-        var insideDepth = Depth - (Construction.BackThickness + Construction.BackInset);
-
         int drawerQty = Drawers.Quantity * Qty;
 
-        var box = getBuilder().WithInnerCabinetDepth(insideDepth, DrawerBoxOptions.SlideType)
-                                .WithInnerCabinetWidth(insideWidth, Drawers.Quantity, DrawerBoxOptions.SlideType)
+        var box = getBuilder().WithInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType)
+                                .WithInnerCabinetWidth(InnerWidth - BlindWidth, Drawers.Quantity, DrawerBoxOptions.SlideType)
                                 .WithDrawerFaceHeight(Drawers.FaceHeight)
                                 .WithQty(drawerQty)
                                 .WithOptions(DrawerBoxOptions.GetDrawerBoxOptions())

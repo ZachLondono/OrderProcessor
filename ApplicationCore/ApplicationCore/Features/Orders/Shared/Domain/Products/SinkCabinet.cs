@@ -102,13 +102,11 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
         }
 
-        var insideWidth = Width - Construction.SideThickness * 2;
-        var insideDepth = Depth - (Construction.BackThickness + Construction.BackInset);
         int rollOutQty = RollOutBoxes.Positions.Length * Qty;
         var boxHeight = Dimension.FromMillimeters(104);
 
-        var box = getBuilder().WithInnerCabinetDepth(insideDepth, DrawerBoxOptions.SlideType, true)
-                                .WithInnerCabinetWidth(insideWidth, RollOutBoxes.Blocks, DrawerBoxOptions.SlideType)
+        var box = getBuilder().WithInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, true)
+                                .WithInnerCabinetWidth(InnerWidth, RollOutBoxes.Blocks, DrawerBoxOptions.SlideType)
                                 .WithBoxHeight(boxHeight)
                                 .WithQty(rollOutQty)
                                 .WithOptions(DrawerBoxOptions.GetDrawerBoxOptions())

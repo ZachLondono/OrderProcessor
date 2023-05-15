@@ -84,15 +84,12 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
             return Enumerable.Empty<DovetailDrawerBox>();
         }
 
-        var insideWidth = Width - Construction.SideThickness * 2;
-        var insideDepth = Depth - (Construction.BackThickness + Construction.BackInset);
-
         var boxes = new List<DovetailDrawerBox>();
 
         foreach (var height in Drawers.FaceHeights) {
 
-            var box = getBuilder().WithInnerCabinetDepth(insideDepth, DrawerBoxOptions.SlideType)
-                                    .WithInnerCabinetWidth(insideWidth, 1, DrawerBoxOptions.SlideType)
+            var box = getBuilder().WithInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType)
+                                    .WithInnerCabinetWidth(InnerWidth, 1, DrawerBoxOptions.SlideType)
                                     .WithDrawerFaceHeight(height)
                                     .WithQty(Qty)
                                     .WithOptions(DrawerBoxOptions.GetDrawerBoxOptions())
