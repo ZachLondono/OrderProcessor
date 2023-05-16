@@ -25,7 +25,7 @@ public class PPJobConverterTests {
             CreateProduct(catalog:"catalog", materialType:"material", doorType:"door", hardwareType:"hardware")
         };
 
-        var job = new PPJob("Job Name", DateTime.Now, products);
+        var job = new PPJob("Job Name", DateTime.Now, "", products);
 
         // Act
         _sut.ConvertOrder(job);
@@ -47,7 +47,7 @@ public class PPJobConverterTests {
             CreateProduct(room:"Room B")
         };
 
-        var job = new PPJob("Job Name", DateTime.Now, products);
+        var job = new PPJob("Job Name", DateTime.Now, "", products);
 
         // Act
         _sut.ConvertOrder(job);
@@ -69,7 +69,7 @@ public class PPJobConverterTests {
             CreateProduct(materialType:"Mat Type B")
         };
 
-        var job = new PPJob("Job Name", DateTime.Now, products);
+        var job = new PPJob("Job Name", DateTime.Now, "", products);
 
         // Act
         _sut.ConvertOrder(job);
@@ -91,7 +91,7 @@ public class PPJobConverterTests {
             CreateProduct(doorType:"Door Type B")
         };
 
-        var job = new PPJob("Job Name", DateTime.Now, products);
+        var job = new PPJob("Job Name", DateTime.Now, "", products);
 
         // Act
         _sut.ConvertOrder(job);
@@ -113,7 +113,7 @@ public class PPJobConverterTests {
             CreateProduct(hardwareType:"Hardware Type B")
         };
 
-        var job = new PPJob("Job Name", DateTime.Now, products);
+        var job = new PPJob("Job Name", DateTime.Now, "", products);
 
         // Act
         _sut.ConvertOrder(job);
@@ -135,7 +135,7 @@ public class PPJobConverterTests {
             CreateProduct(room:"Room B", materialType:"Mat Type A")
         };
 
-        var job = new PPJob("Job Name", DateTime.Now, products);
+        var job = new PPJob("Job Name", DateTime.Now, "", products);
 
         // Act
         _sut.ConvertOrder(job);
@@ -160,7 +160,7 @@ public class PPJobConverterTests {
             CreateProduct(room:"Room B", materialType:"Mat Type A")
         };
 
-        var job = new PPJob("Job Name", DateTime.Now, products);
+        var job = new PPJob("Job Name", DateTime.Now, "", products);
 
         // Act
         _sut.ConvertOrder(job);
@@ -192,7 +192,7 @@ public class PPJobConverterTests {
             })
         };
 
-        var job = new PPJob("Job Name", DateTime.Now, products);
+        var job = new PPJob("Job Name", DateTime.Now, "", products);
 
         // Act
         _sut.ConvertOrder(job);

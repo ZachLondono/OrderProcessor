@@ -33,7 +33,8 @@ public class ExtWriter : IExtWriter {
             { "KEY", "XD" },
             { "LEVELID", job.LevelId.ToString() },
             { "JOB", TruncateString(job.Job, 30) },
-            { "DATE", job.Date.ToShortDateString() }
+            { "DATE", job.Date.ToShortDateString() },
+            { "INFO1", job.Info1 }
         };
 
         if (!string.IsNullOrEmpty(job.Catalog)) fields.Add("PCAT", job.Catalog);

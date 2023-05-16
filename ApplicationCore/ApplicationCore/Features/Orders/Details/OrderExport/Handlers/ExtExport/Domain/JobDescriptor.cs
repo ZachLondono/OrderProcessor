@@ -4,6 +4,7 @@ public record JobDescriptor {
     public required int LevelId { get; set; }
     public required string Job { get; set; }
     public required DateTime Date { get; set; }
+    public string Info1 { get; set; } = string.Empty;
     public required string Catalog { get; set; }
     public required string Materials { get; set; }
     public required string Fronts { get; set; }

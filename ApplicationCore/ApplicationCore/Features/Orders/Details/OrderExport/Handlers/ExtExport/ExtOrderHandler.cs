@@ -3,18 +3,21 @@ using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Contracts;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Services;
 using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Features.Companies.Contracts;
 
 namespace ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport;
 
 internal class ExtOrderHandler {
 
     private readonly IFileReader _fileReader;
+    private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
 
-    public ExtOrderHandler(IFileReader fileReader) {
+    public ExtOrderHandler(IFileReader fileReader, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync) {
         _fileReader = fileReader;
+        _getCustomerByIdAsync = getCustomerByIdAsync;
     }
 
-    public Task<string?> Handle(Order order, string outputDirectory) {
+    public async Task<string?> Handle(Order order, string outputDirectory) {
 
         var products = order.Products
                             .Where(p => p is IPPProductContainer)
@@ -26,7 +29,10 @@ internal class ExtOrderHandler {
         string jobName = $"{order.Number} - {order.Name}".Replace(".", "");
         if (jobName.Length > 30) jobName = jobName[..30];
 
-        var job = new PPJob(jobName, order.OrderDate, products);
+        var customer = await _getCustomerByIdAsync(order.CustomerId);
+        var customerName = customer?.Name ?? "";
+
+        var job = new PPJob(jobName, order.OrderDate, customerName, products);
 
         var filePath = Path.Combine(outputDirectory, $"{_fileReader.RemoveInvalidPathCharacters(jobName)}.ext");
 
@@ -47,7 +53,7 @@ internal class ExtOrderHandler {
             }
         }
 
-        return Task.FromResult<string?>(filePath);
+        return filePath;
 
     }
 

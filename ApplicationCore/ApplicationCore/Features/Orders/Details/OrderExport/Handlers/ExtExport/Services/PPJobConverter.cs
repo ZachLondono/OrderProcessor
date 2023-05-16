@@ -37,6 +37,7 @@ public class PPJobConverter {
             LevelId = jobId,
             Job = job.Name,
             Date = job.OrderDate,
+            Info1 = job.CustomerName,
             Catalog = "",
             Fronts = "",
             Hardware = "",
