@@ -17,6 +17,8 @@ namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSumma
 internal class JobSummaryDecorator : IJobSummaryDecorator {
 
     private JobSummary? _jobSummary = null;
+    private bool _showItems = false;
+    private bool _showSupplies = false;
 
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
@@ -26,7 +28,9 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
         _getCustomerByIdAsync = getCustomerByIdAsync;
     }
 
-    public async Task AddData(Order order) {
+    public async Task AddData(Order order, bool showItems, bool showSupplies) {
+        _showItems = showItems;
+        _showSupplies = showSupplies;
         _jobSummary = await GetJobSummaryModel(order);
     }
 
@@ -306,13 +310,13 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             Shipping = order.Shipping.Price,
             Total = order.Total,
 
-            ShowItemsInSummary = false,
+            ShowItemsInSummary = _showItems,
             Cabinets = cabs,
             ClosetParts = cp,
             Doors = doors,
             DrawerBoxes = db,
 
-            ShowSuppliesInSummary = false,
+            ShowSuppliesInSummary = _showSupplies,
             Supplies = supplies,
 
         };

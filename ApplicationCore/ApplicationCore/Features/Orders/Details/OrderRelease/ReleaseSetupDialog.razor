@@ -33,8 +33,23 @@
             <CheckBox @bind-IsChecked="Configuration.GenerateJobSummary">
                 <span class="text-gray-700">Job Summary</span>
             </CheckBox>
-            
-            <br />
+
+            @if(Configuration.GenerateJobSummary) {
+                <div class="ml-5">
+                    <div>
+                        <CheckBox @bind-IsChecked="Configuration.IncludeProductTablesInSummary">
+                            <span class="text-gray-700 text-sm">Include products table in summary</span>
+                        </CheckBox>
+                    </div>
+                    <div>
+                        <CheckBox @bind-IsChecked="Configuration.IncludeSuppliesInSummary">
+                            <span class="text-gray-700 text-sm">Include supplies in summary</span>
+                        </CheckBox>
+                    </div>
+                </div>
+            } else {
+                <br />
+            }
             
             <CheckBox @bind-IsChecked="Configuration.GeneratePackingList">
                 <span class="text-gray-700">Packing List</span>
@@ -176,6 +191,8 @@
                 SendReleaseEmail = vendor.ReleaseProfile.SendReleaseEmail,
                 ReleaseEmailRecipients = vendor.ReleaseProfile.ReleaseEmailRecipients,
                 GenerateJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
+                IncludeProductTablesInSummary = false,
+                IncludeSuppliesInSummary = false,
                 GeneratePackingList = vendor.ReleaseProfile.GeneratePackingList,
                 IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
                 ReleaseFileName = $"{order.Number} RELEASE",

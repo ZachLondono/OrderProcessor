@@ -5,6 +5,6 @@ namespace ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSumma
 
 public interface IJobSummaryDecorator : IDocumentDecorator {
 
-    public Task AddData(Order order);
+    public Task AddData(Order order, bool showItems, bool showSupplies);
 
 }

@@ -6,6 +6,8 @@ public class ReleaseConfiguration {
     public bool GenerateCNCRelease { get; set; }
     public bool GeneratePackingList { get; set; }
     public bool GenerateJobSummary { get; set; }
+    public bool IncludeProductTablesInSummary { get; set; }
+    public bool IncludeSuppliesInSummary { get; set; }
     public bool IncludeInvoiceInRelease { get; set; }
     public string? ReleaseEmailRecipients { get; set; }
     public bool SendReleaseEmail { get; set; }

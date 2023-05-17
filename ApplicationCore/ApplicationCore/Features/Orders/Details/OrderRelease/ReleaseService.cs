@@ -67,7 +67,7 @@ public class ReleaseService {
         List<IDocumentDecorator> decorators = new();
 
         if (configuration.GenerateJobSummary) {
-            await _jobSummaryDecorator.AddData(order);
+            await _jobSummaryDecorator.AddData(order, configuration.IncludeProductTablesInSummary, configuration.IncludeSuppliesInSummary);
             decorators.Add(_jobSummaryDecorator);
         }
 
