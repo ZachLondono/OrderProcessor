@@ -8,6 +8,8 @@ public class ExportConfiguration {
 
     public bool FillMDFDoorOrder { get; set; }
 
+    public string ExtJobName { get; set; } = string.Empty;
+
     public bool GenerateEXT { get; set; }
 
 }

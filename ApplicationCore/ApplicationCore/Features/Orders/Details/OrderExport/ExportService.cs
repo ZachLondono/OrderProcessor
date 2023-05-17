@@ -96,7 +96,8 @@ internal class ExportService {
         if (configuration.GenerateEXT) {
 
             OnProgressReport?.Invoke("Generating EXT File");
-            var file = await _extOrderHandler.Handle(order, EXT_OUTPUT_DIRECTORY);
+            string jobName = string.IsNullOrWhiteSpace(configuration.ExtJobName) ? $"{order.Number} - {order.Name}" : configuration.ExtJobName;
+            var file = await _extOrderHandler.Handle(order, jobName, EXT_OUTPUT_DIRECTORY);
             if (file is not null) {
                 OnFileGenerated?.Invoke(file);
             } else {

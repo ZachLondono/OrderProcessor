@@ -17,7 +17,7 @@ internal class ExtOrderHandler {
         _getCustomerByIdAsync = getCustomerByIdAsync;
     }
 
-    public async Task<string?> Handle(Order order, string outputDirectory) {
+    public async Task<string?> Handle(Order order, string jobName, string outputDirectory) {
 
         var products = order.Products
                             .Where(p => p is IPPProductContainer)
@@ -26,7 +26,7 @@ internal class ExtOrderHandler {
                             .ToList();
 
 
-        string jobName = $"{order.Number} - {order.Name}".Replace(".", "");
+        jobName = jobName.Replace(".", "");
         if (jobName.Length > 30) jobName = jobName[..30];
 
         var customer = await _getCustomerByIdAsync(order.CustomerId);

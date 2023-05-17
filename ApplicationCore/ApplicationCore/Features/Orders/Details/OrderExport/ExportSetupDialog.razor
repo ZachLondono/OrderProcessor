@@ -45,6 +45,12 @@
             <CheckBox @bind-IsChecked="Configuration.GenerateEXT">
                 <span class="text-gray-700">Generate EXT File</span>
             </CheckBox>
+            @if(Configuration.GenerateEXT) {
+                <div class="ml-3">
+                    <label class="ml-2 text-sm">Job Name</label>                
+                    <input type="text" class="mt-1 w-full" @bind="@Configuration.ExtJobName" />
+                </div>
+            }
         </section>
 
         <section>
@@ -83,6 +89,7 @@
             FillDovetailOrder = vendor.ExportProfile.ExportDBOrder,
             FillMDFDoorOrder = vendor.ExportProfile.ExportMDFDoorOrder,
             GenerateEXT = vendor.ExportProfile.ExportExtFile,
+            ExtJobName = $"{Order.Number} - {Order.Name}",
             OutputDirectory = Order.WorkingDirectory
 
         };
