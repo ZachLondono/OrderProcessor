@@ -108,7 +108,7 @@ public class ReleaseService {
         if (filePaths.Any() && configuration.SendReleaseEmail && configuration.ReleaseEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending release email");
             try {
-                await SendEmailAsync(recipients, $"RELEASED: {order.Number} {order.Name}", "Please see attached release", new string[] { filePaths.First() }, configuration);
+                await SendEmailAsync(recipients, $"RELEASED: {order.Number} {customerName}", "Please see attached release", new string[] { filePaths.First() }, configuration);
             } catch (Exception ex) {
                 OnError?.Invoke($"Could not send email - '{ex.Message}'");
                 _logger.LogError(ex, "Exception thrown while trying to send release email");
@@ -154,7 +154,7 @@ public class ReleaseService {
         if (filePaths.Any() && configuration.SendInvoiceEmail && configuration.InvoiceEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending invoice email");
             try {
-                await SendEmailAsync(recipients, $"INVOICE: {order.Number} {order.Name}", "Please see attached invoice", new string[] { filePaths.First() }, configuration);
+                await SendEmailAsync(recipients, $"INVOICE: {order.Number} {customerName}", "Please see attached invoice", new string[] { filePaths.First() }, configuration);
             } catch (Exception ex) {
                 OnError?.Invoke($"Could not send invoice email - '{ex.Message}'");
                 _logger.LogError(ex, "Exception thrown while trying to send invoice email");
