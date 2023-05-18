@@ -6,6 +6,7 @@
 @using ApplicationCore.Features.Shared.Services;
 @inject IFilePicker FilePicker
 @inject CompanyDirectory.GetVendorByIdAsync GetVendorByIdAsync
+@inject ExportService Service
 
 @if (Configuration is null) {
     <span>Loading...</span>    

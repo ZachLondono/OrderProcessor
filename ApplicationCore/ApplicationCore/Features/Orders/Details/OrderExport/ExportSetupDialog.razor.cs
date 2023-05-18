@@ -1,5 +1,6 @@
 ﻿
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using ApplicationCore.Features.Shared.Components.ProgressModal;
 using Blazored.Modal;
 using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
@@ -59,7 +60,7 @@ public partial class ExportSetupDialog {
         }
 
         var parameters = new ModalParameters() {
-            { "Configuration",  Configuration }
+            { "ActionRunner",  new ExportActionRunner(Service, Configuration) }
         };
 
         var options = new ModalOptions() {
@@ -69,11 +70,33 @@ public partial class ExportSetupDialog {
                 Size = ModalSize.Large
             };
 
-        var dialog = ModalService.Show<ExportProgressDialog>("Order Export Progress", parameters, options);
+        var dialog = ModalService.Show<ProgressModal>("Order Export Progress", parameters, options);
 
+        // Wait for the progress dialog to close
         _ = await dialog.Result;
 
+        // Close the setup modal 
         await ModalInstance.CloseAsync();
+
+    }
+
+    class ExportActionRunner : IActionRunner {
+
+        private readonly ExportService _exportService;
+        private readonly ExportConfiguration _configuration;
+
+        public ExportActionRunner(ExportService exportService, ExportConfiguration configuration) {
+            _exportService = exportService;
+            _configuration = configuration;
+            _exportService.OnProgressReport += (msg) => PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, msg));
+            _exportService.OnError += (msg) => PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, msg));
+            _exportService.OnFileGenerated += (msg) => PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, msg));
+            _exportService.OnActionComplete += (msg) => PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Success, msg));
+        }
+
+        public Action<ProgressLogMessage>? PublishProgressMessage { get; set; }
+
+        public async Task Run() => await _exportService.Export(_configuration);
 
     }
 

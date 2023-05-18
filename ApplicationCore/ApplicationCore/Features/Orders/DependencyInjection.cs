@@ -93,7 +93,6 @@ public static class DependencyInjection {
     private static IServiceCollection AddViewModels(this IServiceCollection services)
         => services.AddTransient<OrderListViewModel>()
                     .AddTransient<ReleaseProgressViewModel>()
-                    .AddTransient<ExportProgressViewModel>()
                     .AddTransient<ChooseOrderProviderViewModel>();
 
 }
