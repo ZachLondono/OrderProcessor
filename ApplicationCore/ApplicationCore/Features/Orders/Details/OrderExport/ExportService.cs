@@ -63,9 +63,11 @@ internal class ExportService {
         if (configuration.FillMDFDoorOrder) {
             if (File.Exists(_options.MDFDoorTemplateFilePath)) {
                 OnProgressReport?.Invoke("Generating MDF Door Orders");
-                var files = await _doorOrderHandler.Handle(order, _options.MDFDoorTemplateFilePath, outputDir);
-                files.ForEach(f => OnFileGenerated?.Invoke(f));
-
+                var result = await _doorOrderHandler.Handle(order, _options.MDFDoorTemplateFilePath, outputDir);
+                result.GeneratedFiles.ForEach(f => OnFileGenerated?.Invoke(f));
+                if (result.Error is string error) {
+                    OnError?.Invoke(error);
+                }
             } else {
                 OnError?.Invoke($"Could not find MDF order template file '{_options.MDFDoorTemplateFilePath}'");
             }

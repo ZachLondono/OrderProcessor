@@ -25,7 +25,7 @@ internal class DoorOrderHandler {
         _getCustomerByIdAsync = getCustomerByIdAsync;
     }
 
-    public async Task<IEnumerable<string>> Handle(Order order, string template, string outputDirectory) {
+    public async Task<DoorOrderHandlerResult> Handle(Order order, string template, string outputDirectory) {
 
         var doors = order.Products
                             .Where(p => p is IDoorContainer)
@@ -45,18 +45,15 @@ internal class DoorOrderHandler {
                             .ToList();
 
         if (!doors.Any()) {
-            _logger.LogInformation("No doors in order, not filling door order");
-            return Enumerable.Empty<string>();
+            return new(Enumerable.Empty<string>(), "No doors in order, not filling door order");
         }
 
         if (!File.Exists(template)) {
-            _logger.LogError("Door order template file does not exist, not filling door order");
-            return Enumerable.Empty<string>();
+            return new(Enumerable.Empty<string>(), "Door order template file does not exist, not filling door order");
         }
 
         if (!Directory.Exists(outputDirectory)) {
-            _logger.LogError("Door order output directory does not exist, not filling door order");
-            return Enumerable.Empty<string>();
+            return new(Enumerable.Empty<string>(), "Door order output directory does not exist, not filling door order");
         }
 
         try {
@@ -66,15 +63,13 @@ internal class DoorOrderHandler {
         } catch (Exception ex) {
 
             _logger.LogError(ex, "Exception thrown while filling door order");
+            return new(Enumerable.Empty<string>(), $"Exception thrown while filling door order - {ex.Message}");
 
         }
 
-
-        return Enumerable.Empty<string>();
-
     }
 
-    private async Task<IEnumerable<string>> GenerateOrderForms(Order order, IEnumerable<MDFDoorComponent> doors, string template, string outputDirectory) {
+    private async Task<DoorOrderHandlerResult> GenerateOrderForms(Order order, IEnumerable<MDFDoorComponent> doors, string template, string outputDirectory) {
 
         var groups = doors.GroupBy(d => new DoorStyleGroupKey() {
             Material = d.Door.Material,
@@ -95,6 +90,7 @@ internal class DoorOrderHandler {
 
         int index = 0;
         var workbooks = app.Workbooks;
+        bool wasExceptionThrown = false;
         foreach (var group in groups) {
 
             Workbook? workbook = null;
@@ -126,6 +122,7 @@ internal class DoorOrderHandler {
             } catch (Exception ex) {
 
                 _logger.LogError(ex, "Exception thrown while filling door order group");
+                wasExceptionThrown = true;
 
             }
 
@@ -143,7 +140,8 @@ internal class DoorOrderHandler {
         GC.Collect();
         GC.WaitForPendingFinalizers();
 
-        return filesGenerated;
+        string? error = wasExceptionThrown ? "An error occurred while trying to write one or more door orders" : null;
+        return new(filesGenerated, error);
 
     }
 
