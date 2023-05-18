@@ -83,6 +83,7 @@ public static class DependencyInjection {
         services.AddTransient<DovetailOrderHandler>();
         services.AddTransient<ExtOrderHandler>();
         services.AddTransient<IExtWriter, ExtWriter>();
+        services.AddTransient<ExportWidgetViewModel>();
     }
 
     private static void AddOrderProviders(IServiceCollection services, IConfiguration configuration) {
@@ -92,7 +93,6 @@ public static class DependencyInjection {
 
     private static IServiceCollection AddViewModels(this IServiceCollection services)
         => services.AddTransient<OrderListViewModel>()
-                    .AddTransient<ReleaseProgressViewModel>()
                     .AddTransient<ChooseOrderProviderViewModel>();
 
 }

@@ -427,7 +427,7 @@
 
         _isExporting = true;
 
-        var dialog = Modal.Show<ExportSetupDialog>("Export Setup",
+        var dialog = Modal.Show<OrderExportWidget>("Export Setup",
             new ModalParameters() {
                 { "Order", OrderState.Order }
             }, new ModalOptions() {

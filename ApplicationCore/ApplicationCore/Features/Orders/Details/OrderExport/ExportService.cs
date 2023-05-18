@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.Orders.Details.OrderExport;
 
+// TODO: Merge ExportService and ExportWidgetViewModel
 internal class ExportService {
 
     private const string EXT_OUTPUT_DIRECTORY = @"C:\CP3\CPDATA";
