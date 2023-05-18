@@ -6,6 +6,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Features.Shared;
 using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.Orders.Details.OrderExport;
@@ -20,17 +21,17 @@ internal class ExportService {
     public Action<string>? OnError;
     public Action<string>? OnActionComplete;
 
+    private readonly IBus _bus;
     private readonly OrderState _orderState;
-    private readonly DoorOrderHandler _doorOrderHandler;
     private readonly DovetailOrderHandler _dovetailOrderHandler;
     private readonly ExtOrderHandler _extOrderHandler;
     private readonly ExportOptions _options;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly IFileReader _fileReader;
 
-    public ExportService(OrderState orderState, DoorOrderHandler doorOrderHandler, DovetailOrderHandler dovetailOrderHandler, ExtOrderHandler extOrderHandler, IOptions<ExportOptions> options, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IFileReader fileReader) {
+    public ExportService(IBus bus, OrderState orderState, DovetailOrderHandler dovetailOrderHandler, ExtOrderHandler extOrderHandler, IOptions<ExportOptions> options, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IFileReader fileReader) {
+        _bus = bus;
         _orderState = orderState;
-        _doorOrderHandler = doorOrderHandler;
         _dovetailOrderHandler = dovetailOrderHandler;
         _extOrderHandler = extOrderHandler;
         _options = options.Value;
@@ -61,20 +62,30 @@ internal class ExportService {
     }
 
     private async Task GenerateMDFOrders(ExportConfiguration configuration, Order order, string outputDir) {
-        if (configuration.FillMDFDoorOrder) {
-            if (File.Exists(_options.MDFDoorTemplateFilePath)) {
-                OnProgressReport?.Invoke("Generating MDF Door Orders");
-                var result = await _doorOrderHandler.Handle(order, _options.MDFDoorTemplateFilePath, outputDir);
+
+        if (!configuration.FillMDFDoorOrder) {
+            OnProgressReport?.Invoke("Not generating MDF door order");
+            return;
+        }
+
+        if (!File.Exists(_options.MDFDoorTemplateFilePath)) {
+            OnError?.Invoke($"Could not find MDF order template file '{_options.MDFDoorTemplateFilePath}'");
+        }
+
+        OnProgressReport?.Invoke("Generating MDF Door Orders");
+
+        var response = await _bus.Send(new ExportDoorOrder.Command(order, _options.MDFDoorTemplateFilePath, outputDir));
+
+        response.Match(
+            result => {
                 result.GeneratedFiles.ForEach(f => OnFileGenerated?.Invoke(f));
                 if (result.Error is string error) {
                     OnError?.Invoke(error);
                 }
-            } else {
-                OnError?.Invoke($"Could not find MDF order template file '{_options.MDFDoorTemplateFilePath}'");
-            }
-        } else {
-            OnProgressReport?.Invoke("Not generating MDF door order");
-        }
+            },
+            error => OnError?.Invoke($"{error.Title} - {error.Details}")
+        );
+
     }
 
     private async Task GenerateDovetailOrders(ExportConfiguration configuration, Order order, string outputDir) {

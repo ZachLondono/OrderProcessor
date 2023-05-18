@@ -79,9 +79,6 @@ public static class DependencyInjection {
     private static void AddExportServices(IServiceCollection services, IConfiguration configuration) {
         services.Configure<ExportOptions>(configuration.GetRequiredSection("ExportOptions"));
         services.AddTransient<ExportService>();
-        services.AddTransient<DoorOrderHandler>();
-        services.AddTransient<DovetailOrderHandler>();
-        services.AddTransient<ExtOrderHandler>();
         services.AddTransient<IExtWriter, ExtWriter>();
         services.AddTransient<ExportWidgetViewModel>();
     }
