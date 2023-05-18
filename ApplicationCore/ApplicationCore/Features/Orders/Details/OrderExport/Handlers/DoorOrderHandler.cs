@@ -164,9 +164,34 @@ internal class DoorOrderHandler {
 
         ws.Range["units"].Value2 = "Metric (mm)";
 
-        int offset = 1;
+        var data = CreateMainDoorData(doors);
+        WriteRectangularArray(ws, CreateRectangularArray(data), "A", 16, "G");
 
-        var data = doors.Select(d => new dynamic[] {
+        var frameData = CreateFrameData(doors);
+        WriteRectangularArray(ws, CreateRectangularArray(frameData), "P", 16, "S");
+
+        var ids = CreateIdData(doors);
+        WriteRectangularArray(ws, CreateRectangularArray(ids), "BJ", 16, "BJ");
+
+    }
+
+    private static dynamic[][] CreateIdData(IGrouping<DoorStyleGroupKey, MDFDoorComponent> doors) {
+        return doors.Select(d => new dynamic[] { d.ProductId.ToString() }).ToArray();
+    }
+
+    private static dynamic[][] CreateFrameData(IGrouping<DoorStyleGroupKey, MDFDoorComponent> doors) {
+        return doors.Select(d => new dynamic[] {
+                                d.Door.FrameSize.LeftStile,
+                                d.Door.FrameSize.RightStile,
+                                d.Door.FrameSize.TopRail,
+                                d.Door.FrameSize.BottomRail
+                            })
+                            .ToArray();
+    }
+
+    private static dynamic[][] CreateMainDoorData(IGrouping<DoorStyleGroupKey, MDFDoorComponent> doors) {
+        int offset = 1;
+        return doors.Select(d => new dynamic[] {
                             d.Door.ProductNumber,
                             d.Door.Type switch {
                                 DoorType.Door => "Door",
@@ -180,16 +205,10 @@ internal class DoorOrderHandler {
                             d.Door.Note
                         })
                         .ToArray();
+    }
 
-        var rows = CreateRectangularArray(data);
-        var outputRng = ws.Range[$"A16:G{15 + rows.GetLength(0)}"];
-        outputRng.Value2 = rows;
-
-        var ids = doors.Select(d => new dynamic[] { d.ProductId.ToString() }).ToArray();
-        rows = CreateRectangularArray(ids);
-        var idsRng = ws.Range[$"BJ16:BJ{15 + rows.GetLength(0)}"];
-        idsRng.Value2 = rows;
-
+    private static void WriteRectangularArray(Worksheet ws, dynamic[,] rows, string colStart, int rowStart, string colEnd) {
+        ws.Range[$"{colStart}{rowStart}:{colEnd}{rowStart - 1 + rows.GetLength(0)}"].Value2 = rows;
     }
 
     private static dynamic[,] CreateRectangularArray(IList<dynamic>[] arrays) {
