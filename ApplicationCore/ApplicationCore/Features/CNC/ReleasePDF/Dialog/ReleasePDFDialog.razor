@@ -22,7 +22,7 @@
     <EditForm Model="@DataContext.Model">
 
         <div>
-            <Button Color="Button.ButtonColor.Secondary" OnClickAsync="ChooseReportFile">Choose Report</Button>
+            <Button Color="Button.ButtonColor.Secondary" OnClick="ChooseReportFile">Choose Report</Button>
             @if (string.IsNullOrEmpty(DataContext.Model.ReportFilePath)) {
                 <span>None selected</span>
             } else {
@@ -68,19 +68,11 @@
         DataContext.OnPropertyChanged += StateHasChanged;
     }
 
-    private async Task ChooseReportFile() {
-
-        string selectedPath = "";
-        bool wasPicked = await FilePicker.PickFileAsync("Select CADCode WS Report File", @"Y:\CADCode\Reports", new("CADCode WS Report", "xml"), (file) => {
-            selectedPath = file;
+    private void ChooseReportFile()
+        => FilePicker.PickFile("Select CADCode WS Report File", @"Y:\CADCode\Reports", new("CADCode WS Report", "xml"), (fileName) => {
+            DataContext.Model.ReportFilePath = fileName;
+            InvokeAsync(StateHasChanged);
         });
-
-        if (wasPicked) {
-            DataContext.Model.ReportFilePath =  selectedPath;
-            StateHasChanged();
-        }
-
-    }
 
     public void OpenFile(string filePath) {
 

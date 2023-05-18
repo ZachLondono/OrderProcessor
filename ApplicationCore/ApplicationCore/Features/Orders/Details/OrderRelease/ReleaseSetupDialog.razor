@@ -65,7 +65,7 @@
                     @if (_isReportLoadingFiles) {
                         <span>Searching for files...</span>
                     } else {
-                        <Button OnClickAsync="ChooseCNCDataFile" Color="ButtonColor.Secondary">+ Add File</Button>
+                        <Button OnClick="ChooseCNCDataFile" Color="ButtonColor.Secondary">+ Add File</Button>
 
                         @if (Configuration.CNCDataFilePaths.Any()) {
                             foreach (var file in Configuration.CNCDataFilePaths) {
@@ -246,43 +246,11 @@
         StateHasChanged();
     }
 
-    private async Task ChooseCNCDataFile() {
-
-        if (Configuration is null) return;
-
-        var waitingDialog = ShowLoadingDialog("Waiting", "Select Report File.");
-
-        string selectedPath = "";
-        bool wasPicked = await FilePicker.PickFileAsync("Select CADCode WS Report File", "C:\\", new("CADCode WS Report", "xml"), (file) => {
-            selectedPath = file;
-        });
-
-        waitingDialog.Close();
-
-        if (!wasPicked || selectedPath == "") {
-            return;
-        }
-
-        Configuration.CNCDataFilePaths.Add(selectedPath);
-        StateHasChanged();
-
-    }
-    
-    private IModalReference ShowLoadingDialog(string title, string message) {
-
-        var options = new ModalOptions() {
-                HideHeader = true,
-                HideCloseButton = true,
-                DisableBackgroundCancel = true
-            };
-
-        return ModalService.Show<InformationDialog>("", options: options, parameters: new ModalParameters {
-            { "Type", InformationDialog.MessageType.Information },
-            { "Title", title},
-            { "Details", message }
-        });
-
-    }
+    private void ChooseCNCDataFile()
+        => FilePicker.PickFile("Select CADCode WS Report File", "C:\\", new("CADCode WS Report", "xml"), (fileName) => {
+                Configuration?.CNCDataFilePaths.Add(fileName);
+                InvokeAsync(StateHasChanged);
+            });
 
     private string TruncateString(string value) {
 

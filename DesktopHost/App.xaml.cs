@@ -54,7 +54,7 @@ public partial class App : Application {
         var services = new ServiceCollection()
                             .AddMediatR(typeof(MainWindow))
                             .AddApplicationCoreServices(configuration)
-                            .AddSingleton<IFilePicker, WPFDialogFilePicker>()
+                            .AddSingleton<IFilePicker, FilePicker>()
                             .AddSingleton<IMessageBoxService, WPFMessageBox>()
                             .AddSingleton(configuration)
                             .AddLogging(ConfigureLogging);

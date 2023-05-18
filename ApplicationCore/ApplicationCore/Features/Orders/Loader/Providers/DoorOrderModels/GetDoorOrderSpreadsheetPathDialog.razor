@@ -4,7 +4,7 @@
 @inject IFilePicker FilePicker 
 
 <div>
-    <Button OnClickAsync="ChooseFile" disabled="@_isPickingFile">Select File</Button>
+    <Button OnClick="ChooseFile">Select File</Button>
     @if (string.IsNullOrEmpty(FilePath)) {
        <span>No file chosen...</span> 
     } else {
@@ -22,8 +22,11 @@
     [CascadingParameter]
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
-    private bool _isPickingFile = false;
     public string FilePath { get; set; } = string.Empty;
+
+    protected override void OnInitialized() {
+        ChooseFile();
+    }
 
     public async Task ReturnValue() {
         await BlazoredModal.CloseAsync(ModalResult.Ok(FilePath));
@@ -33,15 +36,10 @@
         await BlazoredModal.CancelAsync();
     }
 
-    public async Task ChooseFile() {
-        _isPickingFile = true;
-        StateHasChanged();
-        await FilePicker.PickFileAsync("Picke door order file", "ReleasePDFDecorator", new("Door order file",".xlsm"), 
-        (filepath) => {
-            FilePath = filepath;
+    public void ChooseFile()
+        => FilePicker.PickFile("Pick door order file", "ReleasePDFDecorator", new("Door order file", ".xlsm"), (fileName) => {
+            FilePath = fileName;
+            InvokeAsync(StateHasChanged);
         });
-        _isPickingFile = false;
-        StateHasChanged();
-    }
 
 }
