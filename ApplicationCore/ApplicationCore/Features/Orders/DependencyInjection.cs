@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Features.Orders.Details.OrderExport;
-using ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport;
 using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Services;
 using ApplicationCore.Features.Orders.Details.OrderRelease;
@@ -20,6 +19,8 @@ using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Dapper;
+using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.DovetailOrderExport;
+using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.DoorOrderExport;
 
 namespace ApplicationCore.Features.Orders;
 

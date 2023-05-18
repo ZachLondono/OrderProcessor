@@ -1,5 +1,4 @@
-﻿
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace ApplicationCore.Features.Orders.Details.OrderExport;
 

@@ -9,7 +9,7 @@ using ApplicationCore.Features.Shared.Services;
 using ApplicationCore.Features.Companies.Contracts;
 using System.Runtime.InteropServices;
 
-namespace ApplicationCore.Features.Orders.Details.OrderExport.Handlers;
+namespace ApplicationCore.Features.Orders.Details.OrderExport.Handlers.DoorOrderExport;
 
 internal class DoorOrderHandler {
 
