@@ -247,12 +247,12 @@
     }
 
     private void ChooseCNCDataFile()
-        => FilePicker.PickFile(new() {
+        => FilePicker.PickFiles(new() {
             Title = "Select CADCode WS Report File",
             InitialDirectory = @"Y:\CADCode\Reports", 
             Filter = new("CADCode WS Report", "xml")
-        }, (fileName) => {
-            Configuration?.CNCDataFilePaths.Add(fileName);
+        }, (fileNames) => {
+            Configuration?.CNCDataFilePaths.AddRange(fileNames);
             InvokeAsync(StateHasChanged);
         });
 
