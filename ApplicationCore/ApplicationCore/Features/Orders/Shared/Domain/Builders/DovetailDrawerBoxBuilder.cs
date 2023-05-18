@@ -45,10 +45,13 @@ public class DovetailDrawerBoxBuilder {
     };
 
     public static Dictionary<DrawerSlideType, Dimension> DrawerSlideDepthClearance { get; set; } = new() {
-        {  DrawerSlideType.UnderMount, Dimension.FromMillimeters(13) },
+        {  DrawerSlideType.UnderMount, Dimension.FromMillimeters(19) },
         {  DrawerSlideType.SideMount, Dimension.FromMillimeters(0) }
     };
 
+    /// <summary>
+    /// Theses dimensions represent the Hettich 'Nominal' slide length (the drawer length)
+    /// </summary>
     public static Dimension[] UnderMountDrawerSlideDepths { get; set; } = new Dimension[] {
         Dimension.FromMillimeters(250),
         Dimension.FromMillimeters(280),
@@ -57,6 +60,11 @@ public class DovetailDrawerBoxBuilder {
         Dimension.FromMillimeters(450),
         Dimension.FromMillimeters(550)
     };
+
+    /// <summary>
+    /// Additional setback for roll out drawer boxes ensures that the drawer box does not hit the door in front of it
+    /// </summary>
+    public static Dimension RollOutSetBack { get; set; } = Dimension.FromMillimeters(2);
 
     public DovetailDrawerBoxBuilder() {
         Qty = 0;
@@ -148,6 +156,8 @@ public class DovetailDrawerBoxBuilder {
     public static Dimension GetDrawerBoxDepthFromInnerCabinetDepth(Dimension innerCabinetDepth, DrawerSlideType slideType, bool isRollOut = false) {
 
         var clearance = DrawerSlideDepthClearance[slideType];
+
+        if (isRollOut) clearance += RollOutSetBack;
 
         if (slideType is DrawerSlideType.UnderMount) {
 
