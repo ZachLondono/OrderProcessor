@@ -37,7 +37,10 @@
     }
 
     public void ChooseFile()
-        => FilePicker.PickFile("Pick door order file", "ReleasePDFDecorator", new("Door order file", ".xlsm"), (fileName) => {
+        => FilePicker.PickFile(new() {
+            Title = "Open door order file",
+            Filter = new("Door order file", ".xlsm")
+        }, (fileName) => {
             FilePath = fileName;
             InvokeAsync(StateHasChanged);
         });

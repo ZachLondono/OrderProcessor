@@ -7,7 +7,7 @@ namespace DesktopHost.Dialogs;
 
 public class FilePicker : IFilePicker {
 
-    public void PickFile(string title, string directory, FilePickerFilter filter, Action<string> onFilePicked) {
+    public void PickFile(FilePickerOptions options, Action<string> onFilePicked) {
         
         /*
          * Show a modal dialog after the current event handler is completed, to avoid potential reentrancy caused by running a nested message loop in the WebView2 event handler.
@@ -21,15 +21,15 @@ public class FilePicker : IFilePicker {
                 .Current?
                 .Post((_) => {
 
-                    if (!Directory.Exists(directory)) {
-                        directory = Directory.GetCurrentDirectory();
+                    if (!string.IsNullOrWhiteSpace(options.InitialDirectory) && !Directory.Exists(options.InitialDirectory)) {
+                        options.InitialDirectory = string.Empty;
                     }
         
                     var dialog = new OpenFileDialog {
-                        InitialDirectory = directory,
+                        InitialDirectory = options.InitialDirectory,
                         Multiselect = false,
-                        Title = title,
-                        Filter = filter.ToFilterString()
+                        Title = options.Title,
+                        Filter = options.Filter.ToFilterString(),
                     };
         
                     bool? result = dialog.ShowDialog();

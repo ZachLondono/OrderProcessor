@@ -2,8 +2,15 @@
 
 public record FilePickerFilter(string Description, string Extension) {
 
+    private bool _noFilter = false;
+
+    public static FilePickerFilter NoFilter
+        => new("", "") {
+            _noFilter = true
+        };
+
     public string ToFilterString() {
-        return $"{Description}|*{Extension}";
+        return _noFilter ? "" : $"{Description}|*{Extension}";
     }
 
 }

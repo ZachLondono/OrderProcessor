@@ -2,6 +2,6 @@
 
 public interface IFilePicker {
 
-    public void PickFile(string title, string directory, FilePickerFilter filter, Action<string> onFilePicked);
+    public void PickFile(FilePickerOptions options, Action<string> onFilePicked);
 
 }

@@ -69,7 +69,11 @@
     }
 
     private void ChooseReportFile()
-        => FilePicker.PickFile("Select CADCode WS Report File", @"Y:\CADCode\Reports", new("CADCode WS Report", "xml"), (fileName) => {
+        => FilePicker.PickFile(new() {
+            Title = "Select CADCode WS Report File",
+            InitialDirectory = @"Y:\CADCode\Reports", 
+            Filter = new("CADCode WS Report", "xml"),
+        }, (fileName) => {
             DataContext.Model.ReportFilePath = fileName;
             InvokeAsync(StateHasChanged);
         });
