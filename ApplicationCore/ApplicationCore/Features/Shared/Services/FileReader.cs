@@ -30,10 +30,10 @@ public class FileReader : IFileReader {
 
     public async Task<string> ReadFileContentsAsync(string filePath) => await File.ReadAllTextAsync(filePath);
 
-    public string RemoveInvalidPathCharacters(string input) {
+    public string RemoveInvalidPathCharacters(string input, char replacement = '_') {
 
         foreach (char c in Path.GetInvalidFileNameChars()) {
-            input = input.Replace(c, '_');
+            input = input.Replace(c, replacement);
         }
 
         return input;
