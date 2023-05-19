@@ -6,4 +6,6 @@ public class ExportOptions {
 
     public string MDFDoorTemplateFilePath { get; set; } = string.Empty;
 
+    public string EXTOutputDirectory { get; set; } = string.Empty;
+
 }

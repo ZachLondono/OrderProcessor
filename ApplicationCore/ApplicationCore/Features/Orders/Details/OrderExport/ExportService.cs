@@ -14,8 +14,6 @@ namespace ApplicationCore.Features.Orders.Details.OrderExport;
 // TODO: Merge ExportService and ExportWidgetViewModel
 internal class ExportService {
 
-    private const string EXT_OUTPUT_DIRECTORY = @"C:\CP3\CPDATA";
-
     public Action<string>? OnProgressReport;
     public Action<string>? OnFileGenerated;
     public Action<string>? OnError;
@@ -50,7 +48,7 @@ internal class ExportService {
 
         await GenerateDovetailOrders(configuration, order, outputDir);
 
-        await GenerateEXT(configuration, order);
+        await GenerateEXT(configuration, order, _options.EXTOutputDirectory);
 
         OnActionComplete?.Invoke("Export Complete");
 
@@ -112,13 +110,13 @@ internal class ExportService {
 
     }
 
-    private async Task GenerateEXT(ExportConfiguration configuration, Order order) {
+    private async Task GenerateEXT(ExportConfiguration configuration, Order order, string outputDir) {
 
         if (!configuration.GenerateEXT) {
             OnProgressReport?.Invoke("Not generating EXT file");
         }
 
-        if (!Directory.Exists(configuration.OutputDirectory)) {
+        if (!Directory.Exists(outputDir)) {
             OnError?.Invoke("EXT output directory does not exist");
             return;
         }
@@ -126,7 +124,7 @@ internal class ExportService {
         OnProgressReport?.Invoke("Generating EXT File");
         string jobName = string.IsNullOrWhiteSpace(configuration.ExtJobName) ? $"{order.Number} - {order.Name}" : configuration.ExtJobName;
 
-        var response = await _bus.Send(new ExportEXT.Command(order, jobName, EXT_OUTPUT_DIRECTORY));
+        var response = await _bus.Send(new ExportEXT.Command(order, jobName, outputDir));
 
         response.Match(
             file => OnFileGenerated?.Invoke(file),
