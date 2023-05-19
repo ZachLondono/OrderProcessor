@@ -23,16 +23,14 @@ internal class ExportService {
 
     private readonly IBus _bus;
     private readonly OrderState _orderState;
-    private readonly DovetailOrderHandler _dovetailOrderHandler;
     private readonly ExtOrderHandler _extOrderHandler;
     private readonly ExportOptions _options;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly IFileReader _fileReader;
 
-    public ExportService(IBus bus, OrderState orderState, DovetailOrderHandler dovetailOrderHandler, ExtOrderHandler extOrderHandler, IOptions<ExportOptions> options, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IFileReader fileReader) {
+    public ExportService(IBus bus, OrderState orderState, ExtOrderHandler extOrderHandler, IOptions<ExportOptions> options, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IFileReader fileReader) {
         _bus = bus;
         _orderState = orderState;
-        _dovetailOrderHandler = dovetailOrderHandler;
         _extOrderHandler = extOrderHandler;
         _options = options.Value;
         _getCustomerByIdAsync = getCustomerByIdAsync;
@@ -90,22 +88,31 @@ internal class ExportService {
     }
 
     private async Task GenerateDovetailOrders(ExportConfiguration configuration, Order order, string outputDir) {
-        if (configuration.FillDovetailOrder) {
-            if (File.Exists(_options.DovetailTemplateFilePath)) {
 
-                OnProgressReport?.Invoke("Generating Dovetail Drawer Box Orders");
-                var result = await _dovetailOrderHandler.Handle(order, _options.DovetailTemplateFilePath, outputDir);
+        if (!configuration.FillDovetailOrder) {
+            OnProgressReport?.Invoke("Not filling dovetail drawer box order");
+            return;
+        }
+
+        if (!File.Exists(_options.DovetailTemplateFilePath)) {
+            OnError?.Invoke($"Could not find dovetail order template file '{_options.DovetailTemplateFilePath}'");
+            return;
+        }
+
+        OnProgressReport?.Invoke("Generating Dovetail Drawer Box Orders");
+
+        var response = await _bus.Send(new ExportDovetailOrder.Command(order, _options.DovetailTemplateFilePath, outputDir));
+
+        response.Match(
+            result => {
                 result.GeneratedFiles.ForEach(f => OnFileGenerated?.Invoke(f));
                 if (result.Error is string error) {
                     OnError?.Invoke(error);
                 }
+            },
+            error => OnError?.Invoke($"{error.Title} - {error.Details}")
+        );
 
-            } else {
-                OnError?.Invoke($"Could not find dovetail order template file '{_options.DovetailTemplateFilePath}'");
-            }
-        } else {
-            OnProgressReport?.Invoke("Not filling dovetail drawer box order");
-        }
     }
 
     private async Task GenerateEXT(ExportConfiguration configuration, Order order) {
