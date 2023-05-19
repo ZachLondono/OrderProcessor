@@ -23,15 +23,13 @@ internal class ExportService {
 
     private readonly IBus _bus;
     private readonly OrderState _orderState;
-    private readonly ExtOrderHandler _extOrderHandler;
     private readonly ExportOptions _options;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly IFileReader _fileReader;
 
-    public ExportService(IBus bus, OrderState orderState, ExtOrderHandler extOrderHandler, IOptions<ExportOptions> options, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IFileReader fileReader) {
+    public ExportService(IBus bus, OrderState orderState, IOptions<ExportOptions> options, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IFileReader fileReader) {
         _bus = bus;
         _orderState = orderState;
-        _extOrderHandler = extOrderHandler;
         _options = options.Value;
         _getCustomerByIdAsync = getCustomerByIdAsync;
         _fileReader = fileReader;
@@ -45,9 +43,8 @@ internal class ExportService {
 
         var order = _orderState.Order;
 
-        var outputDir = configuration.OutputDirectory;
         var customerName = await GetCustomerName(order.CustomerId);
-        outputDir = ReplaceTokensInDirectory(customerName, outputDir);
+        var outputDir = ReplaceTokensInDirectory(customerName, configuration.OutputDirectory);
 
         await GenerateMDFOrders(configuration, order, outputDir);
 
@@ -116,20 +113,26 @@ internal class ExportService {
     }
 
     private async Task GenerateEXT(ExportConfiguration configuration, Order order) {
-        if (configuration.GenerateEXT) {
 
-            OnProgressReport?.Invoke("Generating EXT File");
-            string jobName = string.IsNullOrWhiteSpace(configuration.ExtJobName) ? $"{order.Number} - {order.Name}" : configuration.ExtJobName;
-            var file = await _extOrderHandler.Handle(order, jobName, EXT_OUTPUT_DIRECTORY);
-            if (file is not null) {
-                OnFileGenerated?.Invoke(file);
-            } else {
-                OnError?.Invoke($"Ext file was not generated");
-            }
-
-        } else {
+        if (!configuration.GenerateEXT) {
             OnProgressReport?.Invoke("Not generating EXT file");
         }
+
+        if (!Directory.Exists(configuration.OutputDirectory)) {
+            OnError?.Invoke("EXT output directory does not exist");
+            return;
+        }
+
+        OnProgressReport?.Invoke("Generating EXT File");
+        string jobName = string.IsNullOrWhiteSpace(configuration.ExtJobName) ? $"{order.Number} - {order.Name}" : configuration.ExtJobName;
+
+        var response = await _bus.Send(new ExportEXT.Command(order, jobName, EXT_OUTPUT_DIRECTORY));
+
+        response.Match(
+            file => OnFileGenerated?.Invoke(file),
+            error => OnError?.Invoke($"{error.Title} - {error.Details}")
+        );
+
     }
 
     public string ReplaceTokensInDirectory(string customerName, string outputDir) {
