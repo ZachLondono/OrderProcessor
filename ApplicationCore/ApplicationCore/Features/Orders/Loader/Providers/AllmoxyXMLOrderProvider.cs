@@ -15,6 +15,7 @@ using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using System.Xml;
 using ApplicationCore.Features.Shared;
 using Microsoft.Extensions.Options;
+using ApplicationCore.Features.Shared.Services;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 
@@ -26,16 +27,18 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
     private readonly ProductBuilderFactory _builderFactory;
     private readonly GetCustomerIdByAllmoxyIdAsync _getCustomerIdByAllmoxyIdAsync;
     private readonly InsertCustomerAsync _insertCustomerAsync;
+    private readonly IFileReader _fileReader;
 
     public IOrderLoadingViewModel? OrderLoadingViewModel { get; set; }
 
-    public AllmoxyXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, AllmoxyClientFactory clientfactory, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync) {
+    public AllmoxyXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, AllmoxyClientFactory clientfactory, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader) {
         _configuration = configuration.Value;
         _clientfactory = clientfactory;
         _validator = validator;
         _builderFactory = builderFactory;
         _getCustomerIdByAllmoxyIdAsync = getCustomerIdByAllmoxyIdAsync;
         _insertCustomerAsync = insertCustomerAsync;
+        _fileReader = fileReader;
     }
 
     public async Task<OrderData?> LoadOrderData(string source) {
@@ -61,6 +64,15 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find order information in given data");
             return null;
         }
+        
+        string workingDirectory = Path.Combine(@"R:\Job Scans\Allmoxy", _fileReader.RemoveInvalidPathCharacters($"{data.Number} - {data.Customer.Company} - {data.Name}", ' '));
+
+        if (!Directory.Exists(workingDirectory)) {
+            Directory.CreateDirectory(workingDirectory);
+        }
+
+        string dataFile = Path.Combine(workingDirectory, "Incoming.xml");
+        File.WriteAllText(dataFile, exportXML);
 
         ShippingInfo shipping = new() {
             Contact = data.Shipping.Attn,
@@ -103,7 +115,7 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         OrderData? order = new() {
             Number = data.Number.ToString(),
             Name = data.Name,
-            WorkingDirectory = ".\\Output",                                         // TODO: Get default working directory from configuration file
+            WorkingDirectory = workingDirectory,                                         // TODO: Get default working directory from configuration file
             Comment = data.Description,
             Shipping = shipping,
             Billing = billing,
