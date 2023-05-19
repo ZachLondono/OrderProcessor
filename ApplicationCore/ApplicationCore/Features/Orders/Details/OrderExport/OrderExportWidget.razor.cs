@@ -11,7 +11,7 @@ namespace ApplicationCore.Features.Orders.Details.OrderExport;
 public partial class OrderExportWidget {
 
     [Parameter]
-    public Order? Order { get; set; }
+    public Order? Order { get; set; } = null;
 
     [CascadingParameter]
     private BlazoredModalInstance ModalInstance { get; set; } = default!;
