@@ -77,12 +77,13 @@ public static class DependencyInjection {
         services.Configure<ExportOptions>(configuration.GetRequiredSection("ExportOptions"));
         services.AddTransient<ExportService>();
         services.AddTransient<IExtWriter, ExtWriter>();
-        services.AddTransient<ExportWidgetViewModel>();
+        services.AddTransient<OrderExportWidgetViewModel>();
     }
 
     private static void AddOrderProviders(IServiceCollection services, IConfiguration configuration) {
         services.Configure<DoorOrderProviderOptions>(configuration.GetRequiredSection("DoorOrderProviderOptions"));
         services.AddTransient<DoorSpreadsheetOrderProvider>();
+        services.AddTransient<OrderReleaseWidgetViewModel>();
     }
 
     private static IServiceCollection AddViewModels(this IServiceCollection services)

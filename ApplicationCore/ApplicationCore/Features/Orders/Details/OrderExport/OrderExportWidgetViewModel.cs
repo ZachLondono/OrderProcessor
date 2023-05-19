@@ -5,7 +5,7 @@ using Blazored.Modal;
 namespace ApplicationCore.Features.Orders.Details.OrderExport;
 
 // TODO: Merge ExportService and ExportWidgetViewModel
-internal class ExportWidgetViewModel {
+internal class OrderExportWidgetViewModel {
 
     public Action? OnPropertyChanged { get; set; } = null;
 
@@ -21,7 +21,7 @@ internal class ExportWidgetViewModel {
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly ExportService _service;
 
-    public ExportWidgetViewModel(CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, ExportService service) {
+    public OrderExportWidgetViewModel(CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, ExportService service) {
         _getVendorByIdAsync = getVendorByIdAsync;
         _service = service;
     }

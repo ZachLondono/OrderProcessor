@@ -6,7 +6,7 @@
 @using ApplicationCore.Features.Shared.Services;
 @using Microsoft.Extensions.Logging;
 @inject IFilePicker FilePicker
-@inject ExportWidgetViewModel DataContext
+@inject OrderExportWidgetViewModel DataContext
 @inject ILogger<OrderExportWidget> Logger
 
 @if (DataContext.Configuration is null) {
