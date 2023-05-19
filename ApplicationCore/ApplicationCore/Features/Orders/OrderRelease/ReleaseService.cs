@@ -203,8 +203,10 @@ public class ReleaseService {
         client.Connect(configuration.EmailServerHost, configuration.EmailServerPort, SecureSocketOptions.Auto);
         client.Authenticate(configuration.EmailSenderEmail, UserDataProtection.Unprotect(configuration.EmailSenderPassword));
 
+        client.MessageSent += (_, _) => OnActionComplete?.Invoke("Email sent");
+
         var response = await client.SendAsync(message);
-        _logger.LogInformation("Response from email client - '@Response'", response);
+        _logger.LogInformation("Response from email client - '{Response}'", response);
         await client.DisconnectAsync(true);
 
     }
