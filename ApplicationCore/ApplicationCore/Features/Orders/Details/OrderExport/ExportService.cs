@@ -70,6 +70,7 @@ internal class ExportService {
 
         if (!File.Exists(_options.MDFDoorTemplateFilePath)) {
             OnError?.Invoke($"Could not find MDF order template file '{_options.MDFDoorTemplateFilePath}'");
+            return;
         }
 
         OnProgressReport?.Invoke("Generating MDF Door Orders");

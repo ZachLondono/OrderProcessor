@@ -13,11 +13,11 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products;
 
 namespace ApplicationCore.Features.Orders.Details.OrderExport.Handlers.DoorOrderExport;
 
-internal class ExportDoorOrder {
+public class ExportDoorOrder {
 
     public record Command(Order Order, string TemplateFilePath, string OutputDirectory) : ICommand<DoorOrderExportResult>;
 
-    public class Handler {
+    public class Handler : CommandHandler<Command, DoorOrderExportResult> {
 
         private readonly ILogger<ExportDoorOrder> _logger;
         private readonly IFileReader _fileReader;
@@ -31,7 +31,7 @@ internal class ExportDoorOrder {
             _getCustomerByIdAsync = getCustomerByIdAsync;
         }
 
-        public async Task<Response<DoorOrderExportResult>> Handle(Command command) {
+        public override async Task<Response<DoorOrderExportResult>> Handle(Command command) {
 
             var doors = command.Order.Products
                                 .Where(p => p is IDoorContainer)
