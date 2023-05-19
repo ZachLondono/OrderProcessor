@@ -399,14 +399,16 @@
 
     private async Task ReleaseOrder() {
 
-        if (_isReleasing == true) {
+        if (_isReleasing == true || OrderState.Order is null) {
             return;
         }
 
         _isReleasing = true;
 
-        var dialog = Modal.Show<ReleaseSetupDialog>("Release Setup",
-            new ModalOptions() {
+        var dialog = Modal.Show<OrderReleaseWidget>("Release Setup",
+            new ModalParameters() {
+                { "Order", OrderState.Order }
+            }, new ModalOptions() {
                 HideHeader = true,
                 HideCloseButton = true,
                 DisableBackgroundCancel = true,
