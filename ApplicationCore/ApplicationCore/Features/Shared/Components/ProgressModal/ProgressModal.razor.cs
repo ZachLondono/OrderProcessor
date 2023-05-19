@@ -7,7 +7,13 @@ namespace ApplicationCore.Features.Shared.Components.ProgressModal;
 public partial class ProgressModal {
 
     [Parameter]
-    public IActionRunner? ActionRunner { get; set; } 
+    public IActionRunner? ActionRunner { get; set; }
+
+    [Parameter]
+    public string InProgressTitle { get; set; } = "Processing...";
+
+    [Parameter]
+    public string CompleteTitle { get; set; } = "Process Complete";
 
     [CascadingParameter]
     private BlazoredModalInstance? BlazoredModal { get; set; }

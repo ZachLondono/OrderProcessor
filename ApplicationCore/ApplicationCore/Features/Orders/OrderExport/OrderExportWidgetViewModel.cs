@@ -44,7 +44,9 @@ internal class OrderExportWidgetViewModel {
 
     public ModalParameters CreateExportProgressModalParameters() {
         return new ModalParameters() {
-            { "ActionRunner",  new ExportActionRunner(_service, Configuration) }
+            { "ActionRunner",  new ExportActionRunner(_service, Configuration) },
+            { "InProgressTitle", "Exporting Order..." },
+            { "CompleteTitle", "Export Complete" }
         };
     }
 

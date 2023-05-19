@@ -59,7 +59,10 @@ public class OrderReleaseWidgetViewModel {
         invoiceEmailRecipients = vendor.ReleaseProfile.InvoiceEmailRecipients;
         invoiceEmailRecipients = await AddCustomerInvoiceEmailRecipients(order.CustomerId, invoiceEmailRecipients);
 
-        string releaseDirectory = order.WorkingDirectory;
+        string releaseDirectory = @"X:\_CUTLISTS  Incoming";
+        if (order.WorkingDirectory != string.Empty) {
+            releaseDirectory += ";" + order.WorkingDirectory;
+        }
         string invoiceDirectory = order.WorkingDirectory;
 
         Configuration = new ReleaseConfiguration() {
@@ -95,7 +98,9 @@ public class OrderReleaseWidgetViewModel {
 
     public ModalParameters CreateReleaseProgressModalParameters(Order order) {
         return new ModalParameters() {
-            { "ActionRunner",  new ReleaseActionRunner(_service, order, Configuration) }
+            { "ActionRunner",  new ReleaseActionRunner(_service, order, Configuration) },
+            { "InProgressTitle", "Releasing Order..." },
+            { "CompleteTitle", "Release Complete" }
         };
     }
 
