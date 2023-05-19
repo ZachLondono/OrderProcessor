@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Details.OrderExport.Handlers.ExtExport.Contracts;
+﻿using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Contracts;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain;
 

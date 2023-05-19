@@ -1,9 +1,9 @@
 ﻿using ApplicationCore.Features.Companies.Contracts;
-using ApplicationCore.Features.Orders.Details.OrderRelease;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.CNC;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.Invoice;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.JobSummary;
-using ApplicationCore.Features.Orders.Details.OrderRelease.Handlers.PackingList;
+using ApplicationCore.Features.Orders.OrderRelease;
+using ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
+using ApplicationCore.Features.Orders.OrderRelease.Handlers.Invoice;
+using ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
+using ApplicationCore.Features.Orders.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Features.Shared.Services;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;

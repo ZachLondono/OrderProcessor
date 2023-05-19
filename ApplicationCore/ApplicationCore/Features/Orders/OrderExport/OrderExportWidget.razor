@@ -1,0 +1,61 @@
+﻿@using ApplicationCore.Features.Companies.Contracts;
+@using ApplicationCore.Features.Orders.OrderExport;
+@using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+@using ApplicationCore.Features.Shared.Components
+@using static ApplicationCore.Features.Shared.Components.Button;
+@using ApplicationCore.Features.Shared.Services;
+@using Microsoft.Extensions.Logging;
+@inject IFilePicker FilePicker
+@inject OrderExportWidgetViewModel DataContext
+@inject ILogger<OrderExportWidget> Logger
+
+@if (DataContext.Configuration is null) {
+    <span>Loading...</span>    
+} else {
+
+    <div class="flex flex-col space-y-5">
+
+        @if(_errorMessage is not null) {
+            <section>
+                <span class="text-red-600">@_errorMessage</span>
+            </section>
+        }
+
+        <section>
+            <CheckBox @bind-IsChecked="DataContext.Configuration.FillDovetailOrder">
+                <span class="text-gray-700">Fill Dovetail DB order</span>
+            </CheckBox>
+            
+            <br />
+            
+            <CheckBox @bind-IsChecked="DataContext.Configuration.FillMDFDoorOrder">
+                <span class="text-gray-700">Fill MDF Door order</span>
+            </CheckBox>
+            
+            <br />
+            
+            <label class="block text-sm font-medium text-gray-700">Output directory</label>
+            <input type="text" class="mt-1 w-full" @bind="DataContext.Configuration.OutputDirectory" />
+        </section>
+
+        <hr />
+
+        <section>
+            <CheckBox @bind-IsChecked="DataContext.Configuration.GenerateEXT">
+                <span class="text-gray-700">Generate EXT File</span>
+            </CheckBox>
+            @if(DataContext.Configuration.GenerateEXT) {
+                <div class="ml-3">
+                    <label class="ml-2 text-sm">Job Name</label>                
+                    <input type="text" class="mt-1 w-full" @bind="DataContext.Configuration.ExtJobName" />
+                </div>
+            }
+        </section>
+
+        <section>
+            <Button Color="ButtonColor.Primary" Style="ButtonStyle.Text" OnClickAsync="ShowExportProgressModal">Export</Button>
+            <Button Color="ButtonColor.Secondary" Style="ButtonStyle.Text" OnClickAsync="Cancel">Cancel</Button>
+        </section>
+
+    </div>
+}
