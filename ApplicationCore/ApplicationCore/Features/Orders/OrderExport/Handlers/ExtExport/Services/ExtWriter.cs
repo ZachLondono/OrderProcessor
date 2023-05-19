@@ -87,8 +87,8 @@ public class ExtWriter : IExtWriter {
             { "DEPTH", "0" },
             { "QTY", product.Qty.ToString() },
             { "POS", product.Pos.ToString() },
-            { "CABCOM", TruncateString(product.Comment, 60) },
-            { "CABCOM2", product.ProductId.ToString() },
+            { "CABCOM", TruncateString(product.Comment.Replace(',', ';'), 60) },
+            { "CABCOM2", "" },
             { "SEQTEXT", product.SeqText }
         };
 
