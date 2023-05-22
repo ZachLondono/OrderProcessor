@@ -1,7 +1,7 @@
-﻿@using ApplicationCore.Features.Orders.Shared.State;
+﻿@using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+@using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Features.Shared.Components
 @using static ApplicationCore.Features.Shared.Components.Button;
-@inject OrderState OrderState
 
 <Button Type="button" OnClickAsync="ReleaseOrder" Disabled="_isReleasing" Class="flex justify-center items-center h-10 w-36" Color="ButtonColor.Secondary">
     @if (_isReleasing) {
@@ -18,11 +18,14 @@
     [CascadingParameter]
     public IModalService Modal { get; set; } = default!;
 
+    [Parameter]
+    public Order? Order { get; set; } = null;
+
     private bool _isReleasing = false;
 
     private async Task ReleaseOrder() {
 
-        if (_isReleasing == true || OrderState.Order is null) {
+        if (_isReleasing == true || Order is null) {
             return;
         }
 
@@ -30,7 +33,7 @@
 
         var dialog = Modal.Show<OrderReleaseModal>("Release Setup",
             new ModalParameters() {
-                { "Order", OrderState.Order }
+                { "Order", Order }
             }, new ModalOptions() {
                 HideHeader = true,
                 HideCloseButton = true,
