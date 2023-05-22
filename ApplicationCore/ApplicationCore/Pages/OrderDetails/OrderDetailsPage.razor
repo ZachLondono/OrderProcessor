@@ -1,15 +1,35 @@
 ﻿@page "/orders/details"
 @using ApplicationCore.Features.Orders.Details
 @using ApplicationCore.Features.Orders.Shared.State;
-@using ApplicationCore.Features.WorkOrders;
-@using ApplicationCore.Infrastructure;
+@using ApplicationCore.Features.Shared.Components
+@using ApplicationCore.Features.WorkOrders.OrderTaskList
+@using static ApplicationCore.Features.Shared.Components.Button;
 @inject OrderDetailsPageViewModel DataContext
 @inject OrderState OrderState
 
 <div>
 
     <section id="orderDetails">
-        <OrderDetails ViewModel="DataContext" />
+        <OrderDetails ViewModel="DataContext">
+            <Button Type="button" OnClickAsync="ExportOrder" Disabled="_isExporting" Class="flex justify-center items-center h-10 w-36 mb-4" Color="ButtonColor.Secondary">
+                @if (_isExporting) {
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                }
+                Export
+            </Button>
+            <Button Type="button" OnClickAsync="ReleaseOrder" Disabled="_isReleasing" Class="flex justify-center items-center h-10 w-36" Color="ButtonColor.Secondary">
+                @if (_isReleasing) {
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                }
+                Release
+            </Button>
+        </OrderDetails>
     </section>
 
     <section id="workOrders" class="mt-12">
@@ -17,14 +37,3 @@
     </section>
 
 </div>
-
-
-@code {
-
-    protected override void OnInitialized() {
-        
-        DataContext.OnPropertyChanged += () => StateHasChanged();
-
-    }
-
-}

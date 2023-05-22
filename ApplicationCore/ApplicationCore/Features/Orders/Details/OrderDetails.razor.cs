@@ -1,9 +1,7 @@
 ﻿using ApplicationCore.Features.Companies.Contracts.ValueObjects;
-using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Shared;
 using ApplicationCore.Features.WorkOrders;
-using Blazored.Modal;
 using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
@@ -15,6 +13,9 @@ using static ApplicationCore.Features.Orders.Details.ProductTables.MDFDoorProduc
 namespace ApplicationCore.Features.Orders.Details;
 
 public partial class OrderDetails {
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 
     [CascadingParameter]
     public IModalService Modal { get; set; } = default!;
@@ -34,9 +35,6 @@ public partial class OrderDetails {
     private ReleaseProfile? _customReleaseProfile = null;
 
     private bool _useInches = false;
-
-    private bool _isReleasing = false;
-    private bool _isExporting = false;
 
     protected override async Task OnInitializedAsync() {
 
@@ -125,54 +123,6 @@ public partial class OrderDetails {
 
     public void OpenVendorPage(Guid companyId) {
         NavigationService.NavigateToVendorPage(companyId);
-    }
-
-    private async Task ReleaseOrder() {
-
-        if (_isReleasing == true || OrderState.Order is null) {
-            return;
-        }
-
-        _isReleasing = true;
-
-        var dialog = Modal.Show<OrderReleaseWidget>("Release Setup",
-            new ModalParameters() {
-                { "Order", OrderState.Order }
-            }, new ModalOptions() {
-                HideHeader = true,
-                HideCloseButton = true,
-                DisableBackgroundCancel = true,
-                Size = ModalSize.Medium
-            });
-
-        _ = await dialog.Result;
-
-        _isReleasing = false;
-
-    }
-
-    private async Task ExportOrder() {
-
-        if (_isExporting == true || OrderState.Order is null) {
-            return;
-        }
-
-        _isExporting = true;
-
-        var dialog = Modal.Show<OrderExportWidget>("Export Setup",
-            new ModalParameters() {
-                { "Order", OrderState.Order }
-            }, new ModalOptions() {
-                HideHeader = false,
-                HideCloseButton = true,
-                DisableBackgroundCancel = true,
-                Size = ModalSize.Medium
-            });
-
-        _ = await dialog.Result;
-
-        _isExporting = false;
-
     }
 
     private void ToggleUnits() {
