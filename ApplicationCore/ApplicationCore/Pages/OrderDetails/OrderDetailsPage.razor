@@ -4,20 +4,19 @@
 @using ApplicationCore.Features.Orders.OrderRelease
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Features.WorkOrders.OrderTaskList
-@inject OrderDetailsPageViewModel DataContext
 @inject OrderState OrderState
 
 <div>
 
     <section id="orderDetails">
-        <OrderDetails ViewModel="DataContext">
+        <OrderDetails>
             <OrderExportWidget Order="OrderState.Order" />
             <OrderReleaseWidget Order="OrderState.Order" />
         </OrderDetails>
     </section>
 
     <section id="workOrders" class="mt-12">
-        <OrderTaskList OrderId="@OrderState.Order?.Id" />
+        <OrderTaskList OrderId="OrderState.Order?.Id" />
     </section>
 
 </div>

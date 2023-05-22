@@ -20,9 +20,6 @@ public partial class OrderDetails {
     [CascadingParameter]
     public IModalService Modal { get; set; } = default!;
 
-    [Parameter]
-    public IOrderDetailsPageViewModel? ViewModel { get; set; }
-
     public List<CabinetRowModel> Cabinets { get; set; } = new();
     public List<ClosetPartRowModel> ClosetParts { get; set; } = new();
     public List<DovetailDrawerBoxRowModel> DrawerBoxes { get; set; } = new();
@@ -32,7 +29,6 @@ public partial class OrderDetails {
     private string _workingDirectory = string.Empty;
     private string? _customerName = null;
     private string? _vendorName = null;
-    private ReleaseProfile? _customReleaseProfile = null;
 
     private bool _useInches = false;
 
@@ -40,10 +36,11 @@ public partial class OrderDetails {
 
         if (OrderState.Order is null) return;
 
-        if (ViewModel is not null) {
-            _vendorName = await ViewModel.GetVendorName(OrderState.Order.VendorId);
-            _customerName = await ViewModel.GetCustomerName(OrderState.Order.CustomerId);
-        }
+        var vendor = await GetVendorByIdAsync(OrderState.Order.VendorId);
+        var customer = await GetCustomerByIdAsync(OrderState.Order.VendorId);
+
+        _vendorName = vendor?.Name ?? "";
+        _customerName = customer?.Name ?? "";
 
         _note = OrderState.Order.Note;
         _workingDirectory = OrderState.Order.WorkingDirectory;
@@ -99,20 +96,6 @@ public partial class OrderDetails {
 
             product.IsComplete = await IsProductComplete(OrderState.Order.Id, product.Product.Id);
 
-        }
-
-    }
-
-    private async Task LoadReleaseProfile() {
-
-        if (OrderState.Order is null || _customReleaseProfile is not null) return;
-
-        if (ViewModel is not null) {
-            _customReleaseProfile = await ViewModel.GetVendorReleaseProfile(OrderState.Order.VendorId);
-        }
-
-        if (_customReleaseProfile is null) {
-            _ = await Modal.OpenInformationDialog("Could not Load Release Settings", "", InformationDialog.MessageType.Warning);
         }
 
     }

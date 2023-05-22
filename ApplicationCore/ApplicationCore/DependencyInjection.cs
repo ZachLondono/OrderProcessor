@@ -8,7 +8,6 @@ using ApplicationCore.Features.Orders;
 using ApplicationCore.Features.WorkOrders;
 using ApplicationCore.Features.Companies;
 using ApplicationCore.Features.Shared.Services;
-using ApplicationCore.Pages;
 using ApplicationCore.Features.Configuration;
 using ApplicationCore.Features.CNC;
 using ApplicationCore.Features.Shared.Components.ProgressModal;
@@ -38,8 +37,6 @@ public static class DependencyInjection {
         services.AddConfiguration();
 
         services.AddBlazoredModal();
-
-        services.AddPages();
 
         services.AddSingleton<IFileReader, FileReader>();
         services.AddSingleton<IFileWriter, FileWriter>();
