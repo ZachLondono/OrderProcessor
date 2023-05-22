@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.OrderExport;
 
-public partial class OrderExportWidget {
+public partial class OrderExportModal {
 
     [Parameter]
     public Order? Order { get; set; } = null;

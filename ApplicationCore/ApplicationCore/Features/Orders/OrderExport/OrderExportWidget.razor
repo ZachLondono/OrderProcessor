@@ -1,61 +1,46 @@
-﻿@using ApplicationCore.Features.Companies.Contracts;
-@using ApplicationCore.Features.Orders.OrderExport;
-@using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿@using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Features.Shared.Components
 @using static ApplicationCore.Features.Shared.Components.Button;
-@using ApplicationCore.Features.Shared.Services;
-@using Microsoft.Extensions.Logging;
-@inject IFilePicker FilePicker
-@inject OrderExportWidgetViewModel DataContext
-@inject ILogger<OrderExportWidget> Logger
+@inject OrderState OrderState
 
-@if (DataContext.Configuration is null) {
-    <span>Loading...</span>    
-} else {
+<Button Type="button" OnClickAsync="ExportOrder" Disabled="_isExporting" Class="flex justify-center items-center h-10 w-36 mb-4" Color="ButtonColor.Secondary">
+    @if (_isExporting) {
+        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+    }
+    Export
+</Button>
 
-    <div class="flex flex-col space-y-5">
+@code {
+   
+    [CascadingParameter]
+    public IModalService Modal { get; set; } = default!;
 
-        @if(_errorMessage is not null) {
-            <section>
-                <span class="text-red-600">@_errorMessage</span>
-            </section>
+    private bool _isExporting = false;
+
+    private async Task ExportOrder() {
+
+        if (_isExporting == true || OrderState.Order is null) {
+            return;
         }
 
-        <section>
-            <CheckBox @bind-IsChecked="DataContext.Configuration.FillDovetailOrder">
-                <span class="text-gray-700">Fill Dovetail DB order</span>
-            </CheckBox>
-            
-            <br />
-            
-            <CheckBox @bind-IsChecked="DataContext.Configuration.FillMDFDoorOrder">
-                <span class="text-gray-700">Fill MDF Door order</span>
-            </CheckBox>
-            
-            <br />
-            
-            <label class="block text-sm font-medium text-gray-700">Output directory</label>
-            <input type="text" class="mt-1 w-full" @bind="DataContext.Configuration.OutputDirectory" />
-        </section>
+        _isExporting = true;
 
-        <hr />
+        var dialog = Modal.Show<OrderExportModal>("Export Setup",
+            new ModalParameters() {
+                { "Order", OrderState.Order }
+            }, new ModalOptions() {
+                HideHeader = false,
+                HideCloseButton = true,
+                DisableBackgroundCancel = true,
+                Size = ModalSize.Medium
+            });
 
-        <section>
-            <CheckBox @bind-IsChecked="DataContext.Configuration.GenerateEXT">
-                <span class="text-gray-700">Generate EXT File</span>
-            </CheckBox>
-            @if(DataContext.Configuration.GenerateEXT) {
-                <div class="ml-3">
-                    <label class="ml-2 text-sm">Job Name</label>                
-                    <input type="text" class="mt-1 w-full" @bind="DataContext.Configuration.ExtJobName" />
-                </div>
-            }
-        </section>
+        _ = await dialog.Result;
 
-        <section>
-            <Button Color="ButtonColor.Primary" Style="ButtonStyle.Text" OnClickAsync="ShowExportProgressModal">Export</Button>
-            <Button Color="ButtonColor.Secondary" Style="ButtonStyle.Text" OnClickAsync="Cancel">Cancel</Button>
-        </section>
+        _isExporting = false;
 
-    </div>
+    }
 }

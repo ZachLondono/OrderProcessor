@@ -4,7 +4,7 @@ using Blazored.Modal;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
-public class OrderReleaseWidgetViewModel {
+public class OrderReleaseModalViewModel {
 
     public Action? OnPropertyChanged { get; set; }
     
@@ -39,7 +39,7 @@ public class OrderReleaseWidgetViewModel {
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly ReleaseService _service;
 
-    public OrderReleaseWidgetViewModel(CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, ReleaseService service) {
+    public OrderReleaseModalViewModel(CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, ReleaseService service) {
         _getVendorByIdAsync = getVendorByIdAsync;
         _getCustomerByIdAsync = getCustomerByIdAsync;
         _service = service;

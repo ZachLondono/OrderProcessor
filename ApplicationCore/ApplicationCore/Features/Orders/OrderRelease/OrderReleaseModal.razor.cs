@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
-public partial class OrderReleaseWidget {
+public partial class OrderReleaseModal {
 
     [Parameter]
     public Order? Order { get; set; } = null;
