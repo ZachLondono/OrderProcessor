@@ -33,14 +33,14 @@ public class ExportDovetailOrder {
 
             if (!File.Exists(command.TemplateFilePath)) {
                 return Response<DovetailOrderExportResult>.Error(new() {
-                    Title = "",
+                    Title = "Could not generate dovetail order",
                     Details = "Dovetail drawer box order template file could not be found"
                 });
             }
 
             if (!Directory.Exists(command.OutputDirectory)) {
                 return Response<DovetailOrderExportResult>.Error(new() {
-                    Title = "",
+                    Title = "Could not generate dovetail order",
                     Details = "Dovetail drawer box order output directory could not be found"
                 });
             }
