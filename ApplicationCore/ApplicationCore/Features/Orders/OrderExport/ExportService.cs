@@ -72,7 +72,11 @@ internal class ExportService {
 
         response.Match(
             result => {
-                result.GeneratedFiles.ForEach(f => OnFileGenerated?.Invoke(f));
+                if (result.GeneratedFiles.Any()) {
+                    result.GeneratedFiles.ForEach(f => OnFileGenerated?.Invoke(f));
+                } else {
+                    OnError?.Invoke("No MDF door order files generated");
+                }
                 if (result.Error is string error) {
                     OnError?.Invoke(error);
                 }
@@ -100,7 +104,11 @@ internal class ExportService {
 
         response.Match(
             result => {
-                result.GeneratedFiles.ForEach(f => OnFileGenerated?.Invoke(f));
+                if (result.GeneratedFiles.Any()) {
+                    result.GeneratedFiles.ForEach(f => OnFileGenerated?.Invoke(f));
+                } else {
+                    OnError?.Invoke("No dovetail order files generated");
+                }
                 if (result.Error is string error) {
                     OnError?.Invoke(error);
                 }
