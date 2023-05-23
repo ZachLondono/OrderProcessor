@@ -1,6 +1,4 @@
-﻿using ApplicationCore.Features.Companies.Contracts.ValueObjects;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Shared;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.WorkOrders;
 using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
