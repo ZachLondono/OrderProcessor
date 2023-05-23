@@ -114,6 +114,7 @@ internal class ExportService {
 
         if (!configuration.GenerateEXT) {
             OnProgressReport?.Invoke("Not generating EXT file");
+            return;
         }
 
         if (!Directory.Exists(outputDir)) {
