@@ -41,7 +41,8 @@ public class GetOrderList {
                                 customer_id AS CustomerId,
                                 vendor_id AS VendorId,
                                 (select SUM(qty) from products where products.order_id=orders.id) AS ItemCount
-                            FROM orders{filter};";
+                            FROM orders{filter}
+                            ORDER BY order_date DESC;";
 
             var items = await connection.QueryAsync<OrderListItem>(query, request);
 
