@@ -1,13 +1,33 @@
 ﻿@page "/orders/list"
 @using ApplicationCore.Features.Orders.List
+@inject OrderListPageViewModel DataContext 
 
 <h1 class="text-3xl mb-2 dark:text-white">Orders</h1>
 
 <section>
-    <h2 class="text-lg  mb-2 dark:text-gray-300">All orders</h2>
-    <OrderList />
+    <div class="flex flex-row space-x-5">
+        <input type="text" placeholder="Search" @oninput="OnSearchTermChange" />
+
+        <div class="grid grid-cols-1">
+            <label class="text-xs">Vendors</label>
+            <select @bind="DataContext.VendorId" class="border">
+                <option value="@Guid.Empty" selected>All</option>
+                @foreach (var vendor in DataContext.Vendors) {
+                   <option value="@vendor.Id">@vendor.Name</option> 
+                }
+            </select>
+        </div>
+
+        <div class="grid grid-cols-1">
+            <label class="text-xs">Customers</label>
+            <select @bind="DataContext.CustomerId" class="border">
+                <option value="@Guid.Empty" selected>All</option>
+                @foreach (var customer in DataContext.Customers) {
+                   <option value="@customer.Id">@customer.Name</option> 
+                }
+            </select>
+        </div>
+    </div>
+    <OrderList SearchTerm="@DataContext.SearchTerm" VendorId="DataContext.VendorId" CustomerId="DataContext.CustomerId" />
 </section>
 
-@code {
-
-}

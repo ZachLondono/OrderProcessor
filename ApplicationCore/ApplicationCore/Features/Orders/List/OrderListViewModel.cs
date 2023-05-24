@@ -66,12 +66,12 @@ public class OrderListViewModel {
         await _navigationService.NavigateToOrderPage(orderId);
     }
 
-    public async Task LoadOrders(Guid? customerId, Guid? vendorId) {
+    public async Task LoadOrders(Guid? customerId, Guid? vendorId, string? searchTerm) {
 
         IsLoading = true;
         HasError = false;
 
-        var response = await _bus.Send(new GetOrderList.Query(customerId, vendorId));
+        var response = await _bus.Send(new GetOrderList.Query(customerId, vendorId, searchTerm));
         response.Match(
             orders => {
                 Orders = orders;

@@ -83,16 +83,23 @@
     [Parameter]
     public Guid? VendorId { get; set; }
 
+    [Parameter]
+    public string? SearchTerm { get; set; }
+
     [CascadingParameter]
     public IModalService ModalService { get; set; } = default!;
 
-    protected override async Task OnInitializedAsync() {
+    protected override void OnInitialized() {
 
         if (ViewModel is null) {
             return;
         }
 
         ViewModel.OnPropertyChanged += () => StateHasChanged();
+
+    }
+
+    protected override async Task OnParametersSetAsync() {
 
         await LoadOrders();
 
@@ -102,7 +109,7 @@
 
         try {
 
-            await ViewModel.LoadOrders(CustomerId, VendorId);
+            await ViewModel.LoadOrders(CustomerId, VendorId, SearchTerm);
             ViewModel.HasError = false;
 
         } catch (IncompatibleDatabaseVersion ex) {
