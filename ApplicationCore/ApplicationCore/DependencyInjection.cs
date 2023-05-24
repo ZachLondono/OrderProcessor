@@ -11,6 +11,7 @@ using ApplicationCore.Features.Shared.Services;
 using ApplicationCore.Features.Configuration;
 using ApplicationCore.Features.CNC;
 using ApplicationCore.Features.Shared.Components.ProgressModal;
+using ApplicationCore.Pages.OrderList;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -37,6 +38,8 @@ public static class DependencyInjection {
         services.AddConfiguration();
 
         services.AddBlazoredModal();
+
+        services.AddOrderListPage();
 
         services.AddSingleton<IFileReader, FileReader>();
         services.AddSingleton<IFileWriter, FileWriter>();

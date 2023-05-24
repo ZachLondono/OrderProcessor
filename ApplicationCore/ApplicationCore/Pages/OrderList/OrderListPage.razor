@@ -1,22 +1,18 @@
 ﻿@page "/orders/list"
-@using ApplicationCore.Features.Companies.Customers.List;
-@using ApplicationCore.Features.Companies.Vendors.List;
 @using ApplicationCore.Features.Orders.List
-@using ApplicationCore.Infrastructure.Bus;
-@inject IBus Bus
+@inject OrderListPageViewModel DataContext 
 
 <h1 class="text-3xl mb-2 dark:text-white">Orders</h1>
 
 <section>
-    <h2 class="text-lg  mb-2 dark:text-gray-300">All orders</h2>
     <div class="flex flex-row space-x-5">
         <input type="text" placeholder="Search" @oninput="OnSearchTermChange" />
 
         <div class="grid grid-cols-1">
             <label class="text-xs">Vendors</label>
-            <select @bind="_vendorId" class="border">
+            <select @bind="DataContext.VendorId" class="border">
                 <option value="@Guid.Empty" selected>All</option>
-                @foreach (var vendor in _vendors) {
+                @foreach (var vendor in DataContext.Vendors) {
                    <option value="@vendor.Id">@vendor.Name</option> 
                 }
             </select>
@@ -24,50 +20,14 @@
 
         <div class="grid grid-cols-1">
             <label class="text-xs">Customers</label>
-            <select @bind="_customerId" class="border">
+            <select @bind="DataContext.CustomerId" class="border">
                 <option value="@Guid.Empty" selected>All</option>
-                @foreach (var customer in _customers) {
+                @foreach (var customer in DataContext.Customers) {
                    <option value="@customer.Id">@customer.Name</option> 
                 }
             </select>
         </div>
     </div>
-    <OrderList SearchTerm="@_searchTerm" VendorId="_vendorId" CustomerId="@_customerId" />
+    <OrderList SearchTerm="@DataContext.SearchTerm" VendorId="DataContext.VendorId" CustomerId="DataContext.CustomerId" />
 </section>
 
-@code {
-
-    public string? _searchTerm = null;
-    public Guid? _vendorId = null;
-    public Guid? _customerId = null;
-
-    public List<VendorListItem> _vendors = new();
-    public List<CustomerListItem> _customers = new();
-
-    public void OnSearchTermChange(ChangeEventArgs args) {
-
-        if (args.Value is string val) {
-            _searchTerm = val;
-        } else {
-            _searchTerm = null;
-        }
-
-    }
-
-    protected override async Task OnInitializedAsync() {
-
-        var vendorsResponse = await Bus.Send(new GetAllVendors.Query());
-        var customersResponse = await Bus.Send(new GetAllCustomers.Query());
-
-        vendorsResponse.OnSuccess(
-            vendors => _vendors.AddRange(vendors)
-        );
-
-        customersResponse.OnSuccess(
-            customers => _customers.AddRange(customers)
-        );
-
-    }
-
-
-}
