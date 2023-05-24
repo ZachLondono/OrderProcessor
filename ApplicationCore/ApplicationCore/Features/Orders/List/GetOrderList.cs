@@ -6,7 +6,9 @@ namespace ApplicationCore.Features.Orders.List;
 
 public class GetOrderList {
 
-    public record Query(Guid? CustomerId, Guid? VendorId) : IQuery<IEnumerable<OrderListItem>>;
+    public record Query(Guid? CustomerId = null, Guid? VendorId = null, string? SearchTerm = null) : IQuery<IEnumerable<OrderListItem>> {
+        public string ModifiedSearchTerm => $"%{SearchTerm}%"; // % is a wildcard in SQLITE
+    }
 
     public class Handler : QueryHandler<Query, IEnumerable<OrderListItem>> {
 
@@ -21,11 +23,14 @@ public class GetOrderList {
             using var connection = await _factory.CreateConnection();
 
             List<string> filters = new();
-            if (request.VendorId is not null) {
+            if (request.VendorId is not null && request.VendorId != Guid.Empty) {
                 filters.Add("vendor_id = @VendorId");
             }
-            if (request.CustomerId is not null) {
+            if (request.CustomerId is not null && request.CustomerId != Guid.Empty) {
                 filters.Add("customer_id = @CustomerId");
+            }
+            if (request.SearchTerm is not null) {
+                filters.Add($"(name LIKE @ModifiedSearchTerm OR number LIKE @ModifiedSearchTerm)");
             }
 
             string filter = "";
