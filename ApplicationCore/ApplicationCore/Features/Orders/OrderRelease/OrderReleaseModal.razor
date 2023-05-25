@@ -54,11 +54,16 @@
                 <span class="text-gray-700">CNC Patterns</span>
             </CheckBox>
             @if (DataContext.Configuration.GenerateCNCRelease) {
-                <div class="mt-3">
-                    @if (DataContext.IsReportLoadingFiles) {
-                        <span>Searching for files...</span>
-                    } else {
-                        <Button OnClick="ChooseCNCDataFile" Color="ButtonColor.Secondary">+ Add File</Button>
+                @if (DataContext.IsReportLoadingFiles) {
+                    <span class="mt-3">Searching for files...</span>
+                } else {
+                    <div class="mt-3">
+                        <div class="">
+                            <Button OnClick="ChooseCNCDataFile" Color="ButtonColor.Secondary">+ Add File</Button>
+                            <CheckBox @bind-IsChecked="DataContext.Configuration.CopyCNCReportToWorkingDirectory">
+                                <span class="text-gray-700 text-sm">Copy to working directory</span>
+                            </CheckBox>
+                        </div>
 
                         @if (DataContext.Configuration.CNCDataFilePaths.Any()) {
                             foreach (var file in DataContext.Configuration.CNCDataFilePaths) {
@@ -69,8 +74,8 @@
                         } else {
                             <div class="text-sm">No File Selected</div>
                         }
-                    }
-                </div>
+                    </div>
+                }
             }
 
             @if (DataContext.Configuration.GenerateJobSummary || DataContext.Configuration.GeneratePackingList || DataContext.Configuration.GenerateCNCRelease) {

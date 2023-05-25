@@ -91,6 +91,11 @@ public class ReleaseService {
 
                 var decorator = await _cncReleaseDecoratorFactory.Create(filePath, order);
                 decorators.Add(decorator);
+
+                if (configuration.CopyCNCReportToWorkingDirectory) {
+                    CopyReportToWorkingDirectory(order, filePath);
+                }
+
             }
         }
 
@@ -123,6 +128,12 @@ public class ReleaseService {
             OnProgressReport?.Invoke("Not sending release email");
         }
 
+    }
+
+    private void CopyReportToWorkingDirectory(Order order, string filePath) {
+        string fileName = Path.GetFileNameWithoutExtension(filePath);
+        string destFileName = _fileReader.GetAvailableFileName(order.WorkingDirectory, fileName, "xml");
+        File.Copy(filePath, destFileName);
     }
 
     private async Task Invoicing(Order order, ReleaseConfiguration configuration, string customerName) {

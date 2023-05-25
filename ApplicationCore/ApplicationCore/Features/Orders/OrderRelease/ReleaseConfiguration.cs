@@ -4,6 +4,7 @@ public class ReleaseConfiguration {
 
     public List<string> CNCDataFilePaths { get; set; } = new();
     public bool GenerateCNCRelease { get; set; }
+    public bool CopyCNCReportToWorkingDirectory { get; set; }
     public bool GeneratePackingList { get; set; }
     public bool GenerateJobSummary { get; set; }
     public bool IncludeProductTablesInSummary { get; set; }

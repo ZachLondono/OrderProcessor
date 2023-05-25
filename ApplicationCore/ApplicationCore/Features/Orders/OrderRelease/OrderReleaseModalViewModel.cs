@@ -77,6 +77,7 @@ public class OrderReleaseModalViewModel {
             ReleaseFileName = $"{order.Number} CUTLIST",
             ReleaseOutputDirectory = releaseDirectory,
             GenerateCNCRelease = false,
+            CopyCNCReportToWorkingDirectory = true,
 
             GenerateInvoice = vendor.ReleaseProfile.GenerateInvoice,
             SendInvoiceEmail = vendor.ReleaseProfile.SendInvoiceEmail,
