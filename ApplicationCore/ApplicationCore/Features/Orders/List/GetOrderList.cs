@@ -6,8 +6,12 @@ namespace ApplicationCore.Features.Orders.List;
 
 public class GetOrderList {
 
-    public record Query(Guid? CustomerId = null, Guid? VendorId = null, string? SearchTerm = null) : IQuery<IEnumerable<OrderListItem>> {
+    public record Query(Guid? CustomerId = null, Guid? VendorId = null, string? SearchTerm = null, int Page = 0, int PageSize = 0) : IQuery<IEnumerable<OrderListItem>> {
+
         public string ModifiedSearchTerm => $"%{SearchTerm}%"; // % is a wildcard in SQLITE
+
+        public int CurrentPageStart => (Page - 1) * PageSize;
+
     }
 
     public class Handler : QueryHandler<Query, IEnumerable<OrderListItem>> {
@@ -22,33 +26,26 @@ public class GetOrderList {
 
             using var connection = await _factory.CreateConnection();
 
-            List<string> filters = new();
-            if (request.VendorId is not null && request.VendorId != Guid.Empty) {
-                filters.Add("vendor_id = @VendorId");
-            }
-            if (request.CustomerId is not null && request.CustomerId != Guid.Empty) {
-                filters.Add("customer_id = @CustomerId");
-            }
-            if (request.SearchTerm is not null) {
-                filters.Add($"(name LIKE @ModifiedSearchTerm OR number LIKE @ModifiedSearchTerm)");
-            }
+            var queryFilter = new OrderListQueryFilterBuilder() {
+                SearchTerm = request.SearchTerm,
+                CustomerId = request.CustomerId,
+                VendorId = request.VendorId,
+                Page = request.Page,
+                PageSize = request.PageSize,
+            }.GetQueryFilter();
 
-            string filter = "";
-            if (filters.Any()) {
-                filter += " WHERE " + string.Join(" AND ", filters.ToArray());
-            }
-
-            string query = $@"SELECT
-                                id,
-                                name,
-                                number,
-                                order_date AS OrderDate,
-                                customer_id AS CustomerId,
-                                vendor_id AS VendorId,
-                                (select SUM(qty) from products where products.order_id=orders.id) AS ItemCount
-                            FROM orders{filter}
-                            ORDER BY order_date DESC;";
-
+            var query = $"""
+                        SELECT
+                            id,
+                            name,
+                            number,
+                            order_date AS OrderDate,
+                            customer_id AS CustomerId,
+                            vendor_id AS VendorId,
+                            (select SUM(qty) from products where products.order_id=orders.id) AS ItemCount
+                        FROM orders{queryFilter};
+                        """;
+            
             var items = await connection.QueryAsync<OrderListItem>(query, request);
 
             return new(items);

@@ -5,7 +5,8 @@
 @using ApplicationCore.Features.Shared.Components;
 @using static ApplicationCore.Features.Shared.Components.Button;
 @using ApplicationCore.Infrastructure.Data;
-@inject OrderListViewModel ViewModel
+@using System.Diagnostics;
+@inject OrderListViewModel DataContext
 
 <table class="w-full table-auto">
 
@@ -20,7 +21,7 @@
         </tr>
     </thead>
 
-    @if (ViewModel is null || ViewModel.IsLoading) {
+    @if (DataContext.IsLoading) {
 
         <tr>
             <td colspan="6" class="text-center">
@@ -28,42 +29,42 @@
             </td>
         </tr>
 
-    } else if (ViewModel.HasError) {
+    } else if (DataContext.HasError) {
 
         <tr>
             <td colspan="6" class="text-center">
-                <div class="my-5 text-red-600 text-lg">Error loading orders [@ViewModel.ErrorMessage]</div>
-                <Button Type="button" OnClickAsync="LoadOrders"  Color="ButtonColor.Primary" Disabled="@ViewModel.IsLoading">Refresh</Button>
+                <div class="my-5 text-red-600 text-lg">Error loading orders [@DataContext.ErrorMessage]</div>
+                <Button Type="button" OnClickAsync="LoadOrders"  Color="ButtonColor.Primary" Disabled="@DataContext.IsLoading">Refresh</Button>
             </td>
         </tr>
 
-    } else if (ViewModel.Orders is null) {
+    } else if (DataContext.Orders is null) {
 
         <tr>
             <td colspan="6" class="text-center">
                 <div class="my-5 text-gray-500 text-lg">Could not load orders</div>
-                <Button Type="button" OnClickAsync="LoadOrders"  Color="ButtonColor.Primary" Disabled="@ViewModel.IsLoading">Refresh</Button>
+                <Button Type="button" OnClickAsync="LoadOrders"  Color="ButtonColor.Primary" Disabled="@DataContext.IsLoading">Refresh</Button>
             </td>
         </tr>
 
-    } else if (!ViewModel.Orders.Any()) {
+    } else if (!DataContext.Orders.Any()) {
 
         <tr>
             <td colspan="6" class="text-center">
                 <div class="my-5 text-gray-500 text-lg">No orders to display.</div>
-                <Button Type="button" OnClickAsync="LoadOrders"  Color="ButtonColor.Primary" Disabled="@ViewModel.IsLoading">Refresh</Button>
+                <Button Type="button" OnClickAsync="LoadOrders"  Color="ButtonColor.Primary" Disabled="@DataContext.IsLoading">Refresh</Button>
             </td>
         </tr>
 
     } else {
 
         <tbody>
-            @foreach(var order in ViewModel.Orders) {
+            @foreach(var order in DataContext.Orders) {
                 <tr class="justify-center hover:bg-slate-200 dark:hover:bg-slate-500 cursor-pointer">
                     <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await SelectOrder(order.Id)">@order.Number</td>
                     <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await SelectOrder(order.Id)">@order.Name</td>
-                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white hover:underline" @onclick="() => ViewModel.OpenCustomerPage(order.CustomerId)">@order.CustomerName</td>
-                    <td class="p-5 whitespace-nowrap border-b hover:text-underline dark:border-slate-500 dark:text-white hover:underline" @onclick="() => ViewModel.OpenVendorPage(order.VendorId)">@order.VendorName</td>
+                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white hover:underline" @onclick="() => DataContext.OpenCustomerPage(order.CustomerId)">@order.CustomerName</td>
+                    <td class="p-5 whitespace-nowrap border-b hover:text-underline dark:border-slate-500 dark:text-white hover:underline" @onclick="() => DataContext.OpenVendorPage(order.VendorId)">@order.VendorName</td>
                     <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await SelectOrder(order.Id)">@order.ItemCount</td>
                     <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await SelectOrder(order.Id)">@order.OrderDate.ToShortDateString()</td>
                 </tr>
@@ -73,7 +74,14 @@
     }
 
 </table>
-
+@if (!DataContext.IsLoading && !DataContext.HasError && DataContext.Orders is not null && DataContext.Orders.Any()) {
+    <div class="my-3">
+        <span>@DataContext.TotalOrderCount @(DataContext.TotalOrderCount == 1 ? "order" : "orders")</span>
+        <div class="float-right">
+            <Pagination PageCount="DataContext.PageCount" OnPageSelected="async (i) => await UpdatePage(i)" />
+        </div>
+    </div>
+}
 
 @code {
 
@@ -89,32 +97,39 @@
     [CascadingParameter]
     public IModalService ModalService { get; set; } = default!;
 
-    protected override void OnInitialized() {
+    private int _page = 1;
 
-        if (ViewModel is null) {
+    protected override async Task OnInitializedAsync() {
+
+        if (DataContext is null) {
             return;
         }
 
-        ViewModel.OnPropertyChanged += () => StateHasChanged();
+        DataContext.OnPropertyChanged += () => StateHasChanged();
+        await DataContext.InitializeAsync();
 
     }
 
     protected override async Task OnParametersSetAsync() {
-
         await LoadOrders();
+        Debug.WriteLine("Parameters Set");
+    }
 
+    private async Task UpdatePage(int page) {
+        _page = page;
+        await LoadOrders();
     }
 
     private async Task LoadOrders() {
 
         try {
 
-            await ViewModel.LoadOrders(CustomerId, VendorId, SearchTerm);
-            ViewModel.HasError = false;
+            await DataContext.LoadOrders(CustomerId, VendorId, SearchTerm, _page);
+            DataContext.HasError = false;
 
         } catch (IncompatibleDatabaseVersion ex) {
 
-            ViewModel.ErrorMessage = ex.Message;
+            DataContext.ErrorMessage = ex.Message;
 
             await ModalService.OpenErrorDialog(new() {
                     Title = "Could not load orders",
@@ -123,7 +138,7 @@
 
         } catch (Exception ex) {
 
-            ViewModel.ErrorMessage = ex.Message;
+            DataContext.ErrorMessage = ex.Message;
 
             await ModalService.OpenErrorDialog(new() {
                     Title = "Could not load orders",
@@ -137,7 +152,7 @@
     private async Task SelectOrder(Guid orderId) {
 
         try {
-            await ViewModel.OpenOrder(orderId);
+            await DataContext.OpenOrder(orderId);
         } catch (Exception ex) {
 
             await ModalService.OpenErrorDialog(new() {

@@ -48,6 +48,33 @@ public class OrderListViewModel {
         }
     }
 
+    private int _pageCount = 0;
+    public int PageCount {
+        get => _pageCount;
+        set {
+            _pageCount = value;
+            OnPropertyChanged?.Invoke();
+        }
+    }
+
+    private int _pageSize = 10;
+    public int PageSize {
+        get => _pageSize;
+        set {
+            _pageSize = value;
+            OnPropertyChanged?.Invoke();
+        }
+    }
+
+    private int _totalOrderCount = 0;
+    public int TotalOrderCount {
+        get => _totalOrderCount;
+        set {
+            _totalOrderCount = value;
+            OnPropertyChanged?.Invoke();
+        }
+    }
+
     private readonly ILogger<OrderListViewModel> _logger;
     private readonly IBus _bus;
     private readonly NavigationService _navigationService;
@@ -62,16 +89,25 @@ public class OrderListViewModel {
         _getCustomerById = getCustomerById;
     }
 
+    public async Task InitializeAsync() {
+        var response = await _bus.Send(new GetOrderCount.Query());
+        response.OnSuccess(
+            totalOrders => {
+                TotalOrderCount = totalOrders;
+                PageCount = (int) Math.Ceiling((float)totalOrders / (float)PageSize);
+            });
+    }
+
     public async Task OpenOrder(Guid orderId) {
         await _navigationService.NavigateToOrderPage(orderId);
     }
 
-    public async Task LoadOrders(Guid? customerId, Guid? vendorId, string? searchTerm) {
+    public async Task LoadOrders(Guid? customerId, Guid? vendorId, string? searchTerm, int page) {
 
         IsLoading = true;
         HasError = false;
 
-        var response = await _bus.Send(new GetOrderList.Query(customerId, vendorId, searchTerm));
+        var response = await _bus.Send(new GetOrderList.Query(customerId, vendorId, searchTerm, page, PageSize));
         response.Match(
             orders => {
                 Orders = orders;
