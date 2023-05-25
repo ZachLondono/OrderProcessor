@@ -8,6 +8,7 @@
                     Rounded="ButtonRounded.Left"
                     Class="px-1.5"
                     Disabled="@(CurrentPage <= 1)"
+                    Color="ButtonColor.Secondary"
                     OnClick="SelectPrevPage">
                     &laquo
              </Button>
@@ -18,6 +19,7 @@
                         Style="@(pageNum == CurrentPage ? ButtonStyle.Contained : ButtonStyle.Outline)"
                         Rounded="ButtonRounded.None"
                         OnClick="(() => SelectPage(pageNum))"
+                        Color="ButtonColor.Secondary"
                         Class="px-1.5">
                         @pageNum
                 </Button>
@@ -29,6 +31,7 @@
                     Rounded="ButtonRounded.Right"
                     Class="px-1.5"
                     Disabled="@(CurrentPage >= PageCount)"
+                    Color="ButtonColor.Secondary"
                     OnClick="SelectNextPage">
                     &raquo
              </Button>
