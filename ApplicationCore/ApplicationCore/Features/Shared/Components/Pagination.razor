@@ -1,0 +1,68 @@
+﻿@using static ApplicationCore.Features.Shared.Components.Button;
+
+<nav>
+    <ul>
+        <li class="inline-block">
+            <Button Size="ButtonSize.XSmall"
+                    Style="ButtonStyle.Outline"
+                    Rounded="ButtonRounded.Left"
+                    Class="px-1.5"
+                    Disabled="@(CurrentPage <= 1)"
+                    OnClick="SelectPrevPage">
+                    &laquo
+             </Button>
+        </li>
+        @foreach (var pageNum in Enumerable.Range(1, PageCount)) {
+            <li class="inline-block">
+                <Button Size="ButtonSize.XSmall"
+                        Style="@(pageNum == CurrentPage ? ButtonStyle.Contained : ButtonStyle.Outline)"
+                        Rounded="ButtonRounded.None"
+                        OnClick="(() => SelectPage(pageNum))"
+                        Class="px-1.5">
+                        @pageNum
+                </Button>
+            </li>
+        }
+        <li class="inline-block">
+            <Button Size="ButtonSize.XSmall"
+                    Style="ButtonStyle.Outline"
+                    Rounded="ButtonRounded.Right"
+                    Class="px-1.5"
+                    Disabled="@(CurrentPage >= PageCount)"
+                    OnClick="SelectNextPage">
+                    &raquo
+             </Button>
+        </li>
+    </ul>
+</nav>
+
+@code {
+
+    [Parameter]
+    public int PageCount { get; set; }
+
+    [Parameter]
+    public Action<int>? OnPageSelected { get; set; }
+
+    [Parameter]
+    public int CurrentPage { get; set; } = 1;
+
+    private void SelectPage(int pageNum) {
+        CurrentPage = pageNum;
+        OnPageSelected?.Invoke(CurrentPage);
+        StateHasChanged();
+    }
+
+    private void SelectNextPage() {
+        ++CurrentPage;
+        OnPageSelected?.Invoke(CurrentPage);
+        StateHasChanged();
+    }
+
+    private void SelectPrevPage() {
+        --CurrentPage;
+        OnPageSelected?.Invoke(CurrentPage);
+        StateHasChanged();
+    }
+
+}
