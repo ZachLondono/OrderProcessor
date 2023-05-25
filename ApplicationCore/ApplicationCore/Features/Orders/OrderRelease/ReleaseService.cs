@@ -83,6 +83,12 @@ public class ReleaseService {
 
         if (configuration.GenerateCNCRelease) {
             foreach (var filePath in configuration.CNCDataFilePaths) {
+
+                if (Path.GetExtension(filePath) != ".xml") {
+                    OnError?.Invoke("CADCode report file is an invalid file type");
+                    continue;
+                }
+
                 var decorator = await _cncReleaseDecoratorFactory.Create(filePath, order);
                 decorators.Add(decorator);
             }
