@@ -10,6 +10,13 @@ public class OrderListViewModel {
     public Action? OnPropertyChanged { get; set; }
 
     private IEnumerable<OrderListItem>? _orders = null;
+    private bool _isLoading = false;
+    private bool _hasError = false;
+    private string? _errorMessage = null;
+    private int _pageCount = 0;
+    private int _pageSize = 10;
+    private int _totalOrderCount = 0;
+
     public IEnumerable<OrderListItem>? Orders {
         get => _orders;
         set {
@@ -18,7 +25,6 @@ public class OrderListViewModel {
         }
     }
 
-    private bool _isLoading = false;
     public bool IsLoading {
         get => _isLoading;
         set {
@@ -27,7 +33,6 @@ public class OrderListViewModel {
         }
     }
 
-    private bool _hasError = false;
     public bool HasError {
         get => _hasError;
         set {
@@ -38,7 +43,6 @@ public class OrderListViewModel {
         }
     }
 
-    private string? _errorMessage = null;
     public string? ErrorMessage {
         get => _errorMessage;
         set {
@@ -48,7 +52,6 @@ public class OrderListViewModel {
         }
     }
 
-    private int _pageCount = 0;
     public int PageCount {
         get => _pageCount;
         set {
@@ -57,7 +60,6 @@ public class OrderListViewModel {
         }
     }
 
-    private int _pageSize = 10;
     public int PageSize {
         get => _pageSize;
         set {
@@ -66,7 +68,6 @@ public class OrderListViewModel {
         }
     }
 
-    private int _totalOrderCount = 0;
     public int TotalOrderCount {
         get => _totalOrderCount;
         set {
@@ -74,6 +75,8 @@ public class OrderListViewModel {
             OnPropertyChanged?.Invoke();
         }
     }
+
+    public int Page { get; set; } = 1;
 
     private readonly ILogger<OrderListViewModel> _logger;
     private readonly IBus _bus;
@@ -89,25 +92,23 @@ public class OrderListViewModel {
         _getCustomerById = getCustomerById;
     }
 
-    public async Task InitializeAsync() {
-        var response = await _bus.Send(new GetOrderCount.Query());
-        response.OnSuccess(
-            totalOrders => {
-                TotalOrderCount = totalOrders;
-                PageCount = (int) Math.Ceiling((float)totalOrders / (float)PageSize);
-            });
-    }
-
     public async Task OpenOrder(Guid orderId) {
         await _navigationService.NavigateToOrderPage(orderId);
     }
 
-    public async Task LoadOrders(Guid? customerId, Guid? vendorId, string? searchTerm, int page) {
+    public async Task LoadOrders(Guid? customerId, Guid? vendorId, string? searchTerm) {
 
         IsLoading = true;
         HasError = false;
 
-        var response = await _bus.Send(new GetOrderList.Query(customerId, vendorId, searchTerm, page, PageSize));
+        var countResponse = await _bus.Send(new GetOrderCount.Query(customerId, vendorId, searchTerm));
+        countResponse.OnSuccess(
+            totalOrders => {
+                TotalOrderCount = totalOrders;
+                PageCount = (int) Math.Ceiling((float)totalOrders / (float)PageSize);
+            });
+
+        var response = await _bus.Send(new GetOrderList.Query(customerId, vendorId, searchTerm, Page, PageSize));
         response.Match(
             orders => {
                 Orders = orders;

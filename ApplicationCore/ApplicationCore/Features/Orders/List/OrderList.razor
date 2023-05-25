@@ -78,7 +78,7 @@
     <div class="my-3">
         <span>@DataContext.TotalOrderCount @(DataContext.TotalOrderCount == 1 ? "order" : "orders")</span>
         <div class="float-right">
-            <Pagination PageCount="DataContext.PageCount" OnPageSelected="async (i) => await UpdatePage(i)" />
+            <Pagination PageCount="DataContext.PageCount" OnPageSelected="async (i) => await UpdatePage(i)" CurrentPage="DataContext.Page" />
         </div>
     </div>
 }
@@ -86,7 +86,7 @@
 @code {
 
     [Parameter]
-    public Guid? CustomerId { get; set; }
+    public Guid? CustomerId { get; set; } 
 
     [Parameter]
     public Guid? VendorId { get; set; }
@@ -97,26 +97,23 @@
     [CascadingParameter]
     public IModalService ModalService { get; set; } = default!;
 
-    private int _page = 1;
-
-    protected override async Task OnInitializedAsync() {
+    protected override void OnInitialized() {
 
         if (DataContext is null) {
             return;
         }
 
         DataContext.OnPropertyChanged += () => StateHasChanged();
-        await DataContext.InitializeAsync();
 
     }
 
     protected override async Task OnParametersSetAsync() {
+        DataContext.Page = 1;
         await LoadOrders();
-        Debug.WriteLine("Parameters Set");
     }
 
     private async Task UpdatePage(int page) {
-        _page = page;
+        DataContext.Page = page;
         await LoadOrders();
     }
 
@@ -124,7 +121,7 @@
 
         try {
 
-            await DataContext.LoadOrders(CustomerId, VendorId, SearchTerm, _page);
+            await DataContext.LoadOrders(CustomerId, VendorId, SearchTerm);
             DataContext.HasError = false;
 
         } catch (IncompatibleDatabaseVersion ex) {

@@ -6,7 +6,11 @@ namespace ApplicationCore.Features.Orders.List;
 
 public class GetOrderCount {
 
-    public record Query(Guid? CustomerId = null, Guid? VendorId = null, string? SearchTerm = null) : IQuery<int>;
+    public record Query(Guid? CustomerId = null, Guid? VendorId = null, string? SearchTerm = null) : IQuery<int> {
+
+        public string ModifiedSearchTerm => $"%{SearchTerm}%"; // % is a wildcard in SQLITE
+
+    }
 
     public class Handler : QueryHandler<Query, int> {
 
