@@ -33,10 +33,12 @@ internal class CreateCustomerViewModel {
         _bus = bus;
     }
 
-    public async Task Submit() {
+    public async Task<Guid> Submit() {
 
         Error = null;
         IsLoading = true;
+
+        Guid newCustomerId = Guid.Empty;
 
         try {
 
@@ -45,6 +47,8 @@ internal class CreateCustomerViewModel {
             var response = await _bus.Send(new InsertCustomer.Command(customer, Model.AllmoxyId));
 
             response.OnError(error => Error = error);
+
+            newCustomerId = customer.Id;
 
         } catch (Exception ex) {
 
@@ -55,8 +59,9 @@ internal class CreateCustomerViewModel {
 
         }
 
-
         IsLoading = false;
+
+        return newCustomerId;
 
     }
 

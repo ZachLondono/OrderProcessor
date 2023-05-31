@@ -22,4 +22,6 @@ public class NavigationService {
 
     public void NavigateToVendorPage(Guid vendorId) => _navigationManager.NavigateTo($"/vendors/{vendorId}", true);
 
+    public void NavigateToOrderListPage() => _navigationManager.NavigateTo($"/orders/list", true);
+
 }

@@ -1,5 +1,7 @@
 ﻿@using ApplicationCore.Features.Shared.Components
+@using ApplicationCore.Features.Shared.Services;
 @inject CreateCustomerViewModel DataContext
+@inject NavigationService NavigationService
 
 @if (DataContext.Error is not null) {
     
@@ -19,7 +21,7 @@
 
     <h3>New Customer</h3>
 
-    <EditForm Model="DataContext.Model" OnValidSubmit="DataContext.Submit" class="flex flex-col space-y-5 overflow-x-hidden">
+    <EditForm Model="DataContext.Model" OnValidSubmit="SubmitForm" class="flex flex-col space-y-5 overflow-x-hidden">
 
         <DataAnnotationsValidator />
         <ValidationSummary />
@@ -46,6 +48,15 @@
     protected override Task OnInitializedAsync() {
         DataContext.OnPropertyChanged += StateHasChanged;
         return base.OnInitializedAsync();
+    }
+
+    private async Task SubmitForm() {
+
+        var customerId = await DataContext.Submit();
+        if (customerId != Guid.Empty) {
+            NavigationService.NavigateToCustomerPage(customerId);
+        }
+
     }
 
 }

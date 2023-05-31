@@ -15,7 +15,7 @@
 @using ApplicationCore.Infrastructure.Bus;
 @inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
-@inject NavigationManager NavigationManager
+@inject NavigationService NavigationService 
 @inject OrderState OrderState
 @inject IBus Bus
 @inject IFilePicker FilePicker
@@ -171,12 +171,10 @@
 	}
 
 	private async Task CreateCustomer() {
-		var options = new ModalOptions() {
+		var dialog = Modal.Show<CreateCustomerDialog>("", new ModalOptions() {
 			HideHeader = true
-		};
-		var dialog = Modal.Show<CreateCustomerDialog>("", options);
-		var result = await dialog.Result;
-		if (result.Confirmed) NavigationManager.NavigateTo("/customers/details", true);
+		});
+		_ = await dialog.Result;
 	}
 
 	private async Task OpenBarCodeDialog() {
