@@ -1,10 +1,11 @@
 ﻿@using ApplicationCore.Features.Orders.Loader.Providers;
 @using ApplicationCore.Features.Orders.Shared.State;
+@using ApplicationCore.Features.Shared.Services;
 @using ApplicationCore.Infrastructure;
 @using ApplicationCore.Features.Shared.Components
 @using ApplicationCore.Infrastructure.Bus;
 @using static ApplicationCore.Features.Shared.Components.Button
-@inject NavigationManager NavigationManager
+@inject NavigationService NavigationService
 @inject OrderState OrderState
 @inject IBus Bus
 @inject IJSRuntime JSRuntime
@@ -94,9 +95,11 @@
 
     [Parameter]
     public OrderSourceType SourceType { get; set; }
+
     [Parameter]
     public string Source { get; set; } = string.Empty;
 
+    private Guid? _orderId = null;
     private State _state = State.Loading;
     private List<OrderLoadMessage> _messages = new();
     private ElementReference _messagebox;
@@ -110,7 +113,7 @@
         data.Match(
             order => {
 
-                OrderState.ReplaceOrder(order);
+                _orderId = order.Id;
                 _state = State.Complete;
 
             },
@@ -145,7 +148,9 @@
 
     private async Task OpenOrderDetails() {
         await BlazoredModal.CloseAsync();
-        NavigationManager.NavigateTo("/orders/details", true);
+        if (_orderId is Guid orderId) {
+            await NavigationService.NavigateToOrderPage(orderId);
+        }
     }
 
     private enum State {
