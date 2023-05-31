@@ -43,6 +43,7 @@ internal class ReleasePDFDialogViewModel {
     public ReleasePDFDialogViewModel(ICNCReleaseDecorator cncReleaseDecorator, IFileReader fileReader) {
         _cncReleaseDecorator = cncReleaseDecorator;
         _fileReader = fileReader;
+        Model.OutputDirectory = @"R:\Door Orders\Door Programs";
     }
 
     public async Task GeneratePDF() {
