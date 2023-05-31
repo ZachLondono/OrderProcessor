@@ -3,7 +3,7 @@
 @using ApplicationCore.Features.Shared.Components
 @using static ApplicationCore.Features.Shared.Components.Button;
 
-<Button Type="button" OnClickAsync="ExportOrder" Disabled="_isExporting" Class="flex justify-center items-center h-10 w-36 mb-4" Color="ButtonColor.Secondary">
+<Button Type="button" OnClickAsync="ExportOrder" Disabled="_isExporting" Class="flex justify-center items-center h-10 w-36" Color="ButtonColor.Secondary">
     @if (_isExporting) {
         <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
