@@ -73,6 +73,12 @@
                 ButtonStyle.Contained => "border border-1 border-green-600 hover:border-green-500 text-white bg-green-600 hover:bg-green-500 active:bg-green-300 focus-visible:bg-green-400 shadow-md hover:shadow-lg hover:active:shadow-xl disabled:bg-gray-400 disabled:pointer-events-none",
                 _ => ""
             },
+            ButtonColor.Danger => Style switch {
+                ButtonStyle.Text => "text-red-600 hover:bg-red-50 active:bg-red-200 focus-visible:bg-red-100 disabled:text-gray-400 disabled:pointer-events-none",
+                ButtonStyle.Outline => "border border-1 border-red-600 hover:border-red-700 text-red-600 hover:bg-red-50 active:bg-red-200 focus-visible:bg-red-100 disabled:text-gray-400 disabled:border-gray-400 disabled:pointer-events-none",
+                ButtonStyle.Contained => "border border-1 border-red-600 hover:border-red-500 text-white bg-red-600 hover:bg-red-500 active:bg-red-300 focus-visible:bg-red-400 shadow-md hover:shadow-lg hover:active:shadow-xl disabled:bg-gray-400 disabled:pointer-events-none",
+                _ => ""
+            },
             _ => ""
         };
 
@@ -97,6 +103,7 @@
         Primary,
         Secondary,
         Success,
+        Danger
     }
 
     public enum ButtonRounded {
