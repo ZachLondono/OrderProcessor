@@ -7,6 +7,7 @@ namespace ApplicationCore.Tests.Unit.Orders.CreatingNewOrder;
 
 internal class TestOrderingConnectionFactory : IOrderingDbConnectionFactory {
 
+    private TestOrderingConnection? _connection = null;
     private readonly string _schemaFilePath;
 
     public TestOrderingConnectionFactory(string schemaFilePath) {
@@ -15,13 +16,19 @@ internal class TestOrderingConnectionFactory : IOrderingDbConnectionFactory {
 
     public Task<IDbConnection> CreateConnection() {
 
-        var schema = File.ReadAllText(_schemaFilePath);
+        if (_connection is null) {
 
-        var connection = new SqliteConnection("Data Source=:memory:");
+            var schema = File.ReadAllText(_schemaFilePath);
 
-        connection.Execute(schema);
+            var connection = new SqliteConnection("Data Source=:memory:");
 
-        return Task.FromResult((IDbConnection)connection);
+            _connection = new(connection);
+
+            _connection.Execute(schema);
+
+        }
+
+        return Task.FromResult((IDbConnection) _connection);
 
     }
 

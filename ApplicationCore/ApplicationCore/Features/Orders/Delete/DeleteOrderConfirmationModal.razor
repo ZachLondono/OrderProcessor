@@ -1,0 +1,50 @@
+﻿@using ApplicationCore.Features.Shared.Components
+@using static ApplicationCore.Features.Shared.Components.Button;
+@inject DeleteOrderConfirmationModalViewModel DataContext
+
+<div class="mb-5">
+    @if (DataContext.Error is not null) {
+        <div class="text-red-600">
+            <p>@DataContext.Error.Title</p>
+            <p class="text-xs">@DataContext.Error.Details</p>
+        </div>
+    } else {
+        <h2>Are you sure you want to delete order <b>@DataContext.OrderNumber</b>?</h2>
+    }
+</div>
+
+<div class="grid grid-cols-2 space-x-5">
+    <Button OnClickAsync="Cancel" Color="ButtonColor.Secondary">Cancel</Button>
+    <Button OnClickAsync="Confirm" Color="ButtonColor.Danger" Disabled="@(DataContext.IsDeleting || DataContext.Error is not null)">Delete</Button>
+</div>
+
+@code {
+
+    [Parameter]
+    public Guid OrderId { get; set; }
+
+    [CascadingParameter]
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    protected override void OnInitialized() {
+        DataContext.OnPropertyChanged += StateHasChanged;
+    }
+
+    protected override async Task OnParametersSetAsync() {
+        await DataContext.InitializeAsync(OrderId);
+    }
+
+    private async Task Confirm() {
+        bool wasDeleted = await DataContext.ConfirmDelete();
+
+        if (wasDeleted) {
+            await BlazoredModal.CloseAsync();
+            return;
+        } 
+    }
+
+    private async Task Cancel() {
+        await BlazoredModal.CloseAsync();        
+    }
+
+}

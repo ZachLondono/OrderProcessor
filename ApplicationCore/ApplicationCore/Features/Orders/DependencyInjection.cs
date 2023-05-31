@@ -18,6 +18,7 @@ using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Dapper;
+using ApplicationCore.Features.Orders.Delete;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -28,10 +29,6 @@ public static class DependencyInjection {
         services.AddViewModels();
 
         services.AddTransient<IOrderingDbConnectionFactory, SqliteOrderingDbConnectionFactory>();
-
-        SqlMapper.AddTypeHandler(new ToeTypeTypeHandler());
-        SqlMapper.AddTypeHandler(new SqliteFixedDivdersCountsTypeHandler());
-        SqlMapper.AddTypeHandler(new SqliteUBoxDimensionTypeHandler());
 
         services.AddOrderLoading(configuration);
         services.AddSingleton<ProductBuilderFactory>();
@@ -88,6 +85,7 @@ public static class DependencyInjection {
 
     private static IServiceCollection AddViewModels(this IServiceCollection services)
         => services.AddTransient<OrderListViewModel>()
-                    .AddTransient<ChooseOrderProviderViewModel>();
+                    .AddTransient<ChooseOrderProviderViewModel>()
+                    .AddTransient<DeleteOrderConfirmationModalViewModel>();
 
 }

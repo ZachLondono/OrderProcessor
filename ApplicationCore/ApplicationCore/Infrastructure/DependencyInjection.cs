@@ -1,7 +1,5 @@
 ﻿using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Infrastructure.Data;
 using ApplicationCore.Infrastructure.UI;
-using Dapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,17 +21,11 @@ public static class DependencyInjection {
 
         services.AddSingleton<IUIBus, UIBus>();
 
-        SqlMapper.RemoveTypeMap(typeof(decimal));
-        SqlMapper.AddTypeHandler(new SqliteDecimalTypeHandler());
-        SqlMapper.AddTypeHandler(new SqliteDimensionTypeHandler());
-        SqlMapper.AddTypeHandler(new SqliteDictionaryEnumerableTypeHandler());
-        SqlMapper.AddTypeHandler(new SqliteGuidTypeHandler());
-        SqlMapper.AddTypeHandler(new DimensionArrayTypeHandler());
-        SqlMapper.RemoveTypeMap(typeof(Guid));
-        SqlMapper.RemoveTypeMap(typeof(Guid?));
+        SqlMapping.AddSqlMaps();
 
         return services;
 
     }
+
 
 }

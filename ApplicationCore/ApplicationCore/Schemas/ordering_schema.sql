@@ -192,8 +192,8 @@ CREATE TABLE mdf_door_openings (
 	product_id BLOB NOT NULL,
 	opening REAL NOT NULL,
 	rail REAL NOT NULL,
-	PRIMARY KEY (id),
-	FOREIGN KEY (product_id) REFERENCES mdf_door_products(id) ON DELETE CASCADE
+	PRIMARY KEY (id)
+	--FOREIGN KEY (product_id) REFERENCES mdf_door_products(id) ON DELETE CASCADE
 );
 
 CREATE TABLE base_cabinets (

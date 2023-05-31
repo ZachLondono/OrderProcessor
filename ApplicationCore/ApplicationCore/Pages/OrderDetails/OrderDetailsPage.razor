@@ -1,17 +1,23 @@
 ﻿@page "/orders/details"
+@using ApplicationCore.Features.Orders.Delete
 @using ApplicationCore.Features.Orders.Details
 @using ApplicationCore.Features.Orders.OrderExport
 @using ApplicationCore.Features.Orders.OrderRelease
 @using ApplicationCore.Features.Orders.Shared.State;
+@using ApplicationCore.Features.Shared.Services;
 @using ApplicationCore.Features.WorkOrders.OrderTaskList
 @inject OrderState OrderState
+@inject NavigationService Nav
 
 <div>
 
     <section id="orderDetails">
         <OrderDetails>
-            <OrderExportWidget Order="OrderState.Order" />
-            <OrderReleaseWidget Order="OrderState.Order" />
+            <div class="flex flex-col space-y-5">
+                <OrderExportWidget Order="OrderState.Order" />
+                <OrderReleaseWidget Order="OrderState.Order" />
+                <OrderDeleteWidget OrderId="OrderState.Order?.Id ?? Guid.Empty" OnOrderDeleted="OnOrderDeleted" />
+            </div>
         </OrderDetails>
     </section>
 
@@ -20,3 +26,11 @@
     </section>
 
 </div>
+
+@code {
+
+    public void OnOrderDeleted() {
+        Nav.NavigateToOrderListPage();
+    }
+
+}
