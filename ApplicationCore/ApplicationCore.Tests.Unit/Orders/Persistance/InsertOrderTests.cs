@@ -115,7 +115,8 @@ public class OrderTests {
         bool rush = false;
         Dictionary<string, string> info = new();
         List<IProduct> products = new() {
-            new DovetailDrawerBoxProduct(Guid.NewGuid(), 0M, 1, "", 1, Dimension.FromInches(4.125), Dimension.FromInches(21), Dimension.FromInches(21), "", new Dictionary<string, string>(), new("MatA", "MatB", "MatC", "MatD", "Clips", "Notches", "Accessory", LogoPosition.None))
+            new DovetailDrawerBoxProduct(Guid.NewGuid(), 0M, 1, "", 1, Dimension.FromInches(4.125), Dimension.FromInches(21), Dimension.FromInches(21), "", new Dictionary<string, string>(), new("MatA", "MatB", "MatC", "MatD", "Clips", "Notches", "Accessory", LogoPosition.None)),
+            new MDFDoorProduct(Guid.NewGuid(), 0M, "", 1, 1, DoorType.Door, Dimension.FromInches(12), Dimension.FromInches(12), "", new(Dimension.FromInches(2)), "MDF", Dimension.FromInches(0.75), "Shaker", "Square", "Flat", Dimension.FromInches(0.5), DoorOrientation.Vertical, new AdditionalOpening[] { new(Dimension.FromInches(1), Dimension.FromInches(1)) }, "Yellow")
         };
         List<AdditionalItem> items = new() {
             new(Guid.NewGuid(), "ABC", 123M),
