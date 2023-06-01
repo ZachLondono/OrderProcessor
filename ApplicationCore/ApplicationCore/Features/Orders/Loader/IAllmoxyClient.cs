@@ -2,6 +2,6 @@
 
 public interface IAllmoxyClient : IDisposable {
 
-    public string GetExport(string orderNumber, int index);
+    public Task<string> GetExportAsync(string orderNumber, int index);
 
 }

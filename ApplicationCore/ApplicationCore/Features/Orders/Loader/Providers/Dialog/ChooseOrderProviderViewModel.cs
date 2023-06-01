@@ -11,15 +11,21 @@ internal class ChooseOrderProviderViewModel {
 
         SourceConfigs = new List<SourceConfig>() {
             new() {
-                Name = "Allmoxy",
-                SourceType = OrderSourceType.AllmoxyXML,
+                Name = "Allmoxy Web",
+                SourceType = OrderSourceType.AllmoxyWebXML,
                 DialogTitle = "Enter Allmoxy Order Number",
                 SourcePickerDialogType = typeof(GetAllmoxyOrderNumberDialog)
             },
-             new() {
+            new() {
+                Name = "Allmoxy File",
+                SourceType = OrderSourceType.AllmoxyFileXML,
+                DialogTitle = "Select Allmoxy Order File",
+                SourcePickerDialogType = typeof(GetAllmoxyOrderFilePathDialog)
+            },
+            new() {
                 Name = "Door Spreadsheet",
                 SourceType = OrderSourceType.DoorOrder,
-                DialogTitle = "Enter Path to Door Order Spreadsheet",
+                DialogTitle = "Select Door Order Spreadsheet",
                 SourcePickerDialogType = typeof(GetDoorOrderSpreadsheetPathDialog)
             }
         };

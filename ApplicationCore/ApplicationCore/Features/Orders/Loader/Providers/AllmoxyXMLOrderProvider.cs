@@ -19,10 +19,9 @@ using ApplicationCore.Features.Shared.Services;
 
 namespace ApplicationCore.Features.Orders.Loader.Providers;
 
-internal class AllmoxyXMLOrderProvider : IOrderProvider {
+internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 
     private readonly AllmoxyConfiguration _configuration;
-    private readonly AllmoxyClientFactory _clientfactory;
     private readonly IXMLValidator _validator;
     private readonly ProductBuilderFactory _builderFactory;
     private readonly GetCustomerIdByAllmoxyIdAsync _getCustomerIdByAllmoxyIdAsync;
@@ -31,9 +30,8 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     public IOrderLoadingViewModel? OrderLoadingViewModel { get; set; }
 
-    public AllmoxyXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, AllmoxyClientFactory clientfactory, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader) {
+    public AllmoxyXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader) {
         _configuration = configuration.Value;
-        _clientfactory = clientfactory;
         _validator = validator;
         _builderFactory = builderFactory;
         _getCustomerIdByAllmoxyIdAsync = getCustomerIdByAllmoxyIdAsync;
@@ -41,16 +39,11 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         _fileReader = fileReader;
     }
 
+    protected abstract Task<string> GetExportXMLFromSource(string source);
+
     public async Task<OrderData?> LoadOrderData(string source) {
 
-        // Load order to a string
-        string exportXML;
-        try {
-            exportXML = _clientfactory.CreateClient().GetExport(source, 6);
-        } catch (Exception ex) {
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not load order data from Allmoxy: {ex.Message}");
-            return null;
-        }
+        var exportXML = await GetExportXMLFromSource(source);
 
         // Validate data
         if (!ValidateData(exportXML)) {
@@ -67,12 +60,16 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
         
         string workingDirectory = Path.Combine(@"R:\Job Scans\Allmoxy", _fileReader.RemoveInvalidPathCharacters($"{data.Number} - {data.Customer.Company} - {data.Name}", ' '));
 
-        if (!Directory.Exists(workingDirectory)) {
-            Directory.CreateDirectory(workingDirectory);
+        bool workingDirExists = Directory.Exists(workingDirectory);
+        if (!workingDirExists) {
+            var dirInfo = Directory.CreateDirectory(workingDirectory);
+            workingDirExists = dirInfo.Exists;
         }
 
-        string dataFile = Path.Combine(workingDirectory, "Incoming.xml");
-        File.WriteAllText(dataFile, exportXML);
+        if (workingDirExists) {
+            string dataFile = _fileReader.GetAvailableFileName(workingDirectory, "Incoming", ".xml");
+            await File.WriteAllTextAsync(dataFile, exportXML);
+        }
 
         ShippingInfo shipping = new() {
             Contact = data.Shipping.Attn,
@@ -229,12 +226,13 @@ internal class AllmoxyXMLOrderProvider : IOrderProvider {
 
     }
 
-    private static OrderModel? DeserializeData(string xmlString) {
+    private static OrderModel? DeserializeData(string exportXML) {
         var serializer = new XmlSerializer(typeof(OrderModel));
-        using var reader = new StringReader(xmlString);
+        var reader = new StringReader(exportXML);
         if (serializer.Deserialize(reader) is OrderModel data) {
             return data;
         }
         return null;
     }
+
 }

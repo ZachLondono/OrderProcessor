@@ -17,7 +17,8 @@ internal static class DependencyInjection {
         services.Configure<ConstructionValues>(configuration.GetRequiredSection("DrawerBoxConstruction"));
 
         services.AddTransient<IOrderProviderFactory, OrderProviderFactory>();
-        services.AddTransient<AllmoxyXMLOrderProvider>();
+        services.AddTransient<AllmoxyWebXMLOrderProvider>();
+        services.AddTransient<AllmoxyFileXMLOrderProvider>();
         services.AddTransient<AllmoxyClientFactory>();
         services.AddTransient<IXMLValidator, XMLValidator>();
 
