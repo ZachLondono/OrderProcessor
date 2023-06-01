@@ -10,7 +10,7 @@ public class RestClientWrapper : IRestClient {
         _client = client;
     }
 
-    public RestResponse Execute(RestRequest request) => _client.Execute(request);
+    public Task<RestResponse> ExecuteAsync(RestRequest request) => _client.ExecuteAsync(request);
 
     public void Dispose() => _client.Dispose();
 

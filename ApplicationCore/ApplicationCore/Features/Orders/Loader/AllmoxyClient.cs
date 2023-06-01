@@ -24,16 +24,16 @@ internal class AllmoxyClient : IAllmoxyClient {
         _client = client;
     }
 
-    public string GetExport(string orderNumber, int index) => GetExport(orderNumber, index, 0);
+    public Task<string> GetExportAsync(string orderNumber, int index) => GetExportAsync(orderNumber, index, 0);
 
-    private string GetExport(string orderNumber, int index, int tries) {
+    private async Task<string> GetExportAsync(string orderNumber, int index, int tries) {
 
         if (tries > MAX_RETRIES) {
             throw new InvalidOperationException("Could not log in to Allmoxy");
         }
 
         var request = new RestRequest($"orders/export_partlist/{orderNumber}/{index}/", Method.Get);
-        RestResponse response = _client.Execute(request);
+        RestResponse response = await _client.ExecuteAsync(request);
 
         switch (response.ContentType) {
             case NOT_LOGGED_IN_CONTENT_TYPE:
@@ -47,7 +47,7 @@ internal class AllmoxyClient : IAllmoxyClient {
                 }
 
                 LogIn();
-                return GetExport(orderNumber, index, ++tries);
+                return await GetExportAsync(orderNumber, index, ++tries);
 
             case EXPORT_CONTENT_TYPE:
                 if (response.Content is null) {
@@ -61,15 +61,15 @@ internal class AllmoxyClient : IAllmoxyClient {
 
     }
 
-    private void LogIn() {
+    private async Task LogIn() {
 
-        _ = _client.Execute(new RestRequest("/", Method.Get));
+        _ = await _client.ExecuteAsync(new RestRequest("/", Method.Get));
 
         var request = new RestRequest("public/login/", Method.Post);
         request.AddHeader("Content-Type", LOG_IN_FORM_CONTENT_TYPE);
         request.AddParameter("username", _username);
         request.AddParameter("password", _password);
-        _ = _client.Execute(request);
+        _ = await _client.ExecuteAsync(request);
 
     }
 
