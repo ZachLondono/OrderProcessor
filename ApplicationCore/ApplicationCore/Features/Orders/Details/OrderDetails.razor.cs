@@ -35,7 +35,7 @@ public partial class OrderDetails {
         if (OrderState.Order is null) return;
 
         var vendor = await GetVendorByIdAsync(OrderState.Order.VendorId);
-        var customer = await GetCustomerByIdAsync(OrderState.Order.VendorId);
+        var customer = await GetCustomerByIdAsync(OrderState.Order.CustomerId);
 
         _vendorName = vendor?.Name ?? "";
         _customerName = customer?.Name ?? "";
