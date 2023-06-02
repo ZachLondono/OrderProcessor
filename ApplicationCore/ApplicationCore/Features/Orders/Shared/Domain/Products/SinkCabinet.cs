@@ -1,12 +1,11 @@
-﻿using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Contracts;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDrawerBoxContainer {
+internal class SinkCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
 
     public ToeType ToeType { get; }
     public HingeSide HingeSide { get; }
@@ -53,11 +52,6 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         ToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes, CabinetDrawerBoxOptions drawerBoxOptions)
                         => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, toeType, hingeSide, doorQty, falseDrawerQty, drawerFaceHeight, adjustableShelves, shelfDepth, rollOutBoxes, drawerBoxOptions);
-
-    public IEnumerable<PPProduct> GetPPProducts() {
-        string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Id, Qty, Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), GetManualOverrideParameters());
-    }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
@@ -160,9 +154,9 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
     }
 
-    private string GetProductName() => $"S{DoorQty}D{FalseDrawerQty}FD";
+    protected override string GetProductSku() => $"S{DoorQty}D{FalseDrawerQty}FD";
 
-    private Dictionary<string, string> GetParameters() {
+    protected override IDictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {
             { "ProductW", Width.AsMillimeters().ToString() },
             { "ProductH", Height.AsMillimeters().ToString() },
@@ -190,7 +184,7 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
         return parameters;
     }
 
-    private Dictionary<string, string> GetOverrideParameters() {
+    protected override IDictionary<string, string> GetParameterOverrides() {
 
         var parameters = new Dictionary<string, string>();
         if (ToeType.PSIParameter != "2") {
@@ -218,7 +212,7 @@ internal class SinkCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
     }
 
-    public Dictionary<string, string> GetManualOverrideParameters() {
+    protected override IDictionary<string, string> GetManualOverrideParameters() {
 
         var parameters = new Dictionary<string, string>();
 

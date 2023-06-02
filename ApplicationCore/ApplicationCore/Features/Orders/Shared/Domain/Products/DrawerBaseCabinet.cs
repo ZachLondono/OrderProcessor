@@ -1,18 +1,19 @@
-﻿using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Contracts;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDrawerBoxContainer {
+internal class DrawerBaseCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
+
+    // TODO: add option for no doors
 
     public ToeType ToeType { get; }
     public VerticalDrawerBank Drawers { get; }
     public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
 
-    public override string GetDescription() => $"{Drawers.FaceHeights.Count()} Drawer Cabinet";
+    public override string GetDescription() => $"{Drawers.FaceHeights.Length} Drawer Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
@@ -43,12 +44,6 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
         Drawers = drawers;
         ToeType = toeType;
         DrawerBoxOptions = drawerBoxOptions;
-    }
-
-    public IEnumerable<PPProduct> GetPPProducts() {
-        // TODO: add option for no doors
-        string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Id, Qty, Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new Dictionary<string, string>());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
@@ -130,12 +125,12 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
 
     }
 
-    private string GetProductName() {
+    protected override string GetProductSku() {
         if (!Drawers.FaceHeights.Any()) return "DB1D";
-        return $"DB{Drawers.FaceHeights.Count()}D";
+        return $"DB{Drawers.FaceHeights.Length}D";
     }
 
-    private Dictionary<string, string> GetParameters() {
+    protected override IDictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {
             { "ProductW", Width.AsMillimeters().ToString() },
             { "ProductH", Height.AsMillimeters().ToString() },
@@ -155,7 +150,7 @@ internal class DrawerBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer,
 
     }
 
-    private Dictionary<string, string> GetOverrideParameters() {
+    protected override IDictionary<string, string> GetParameterOverrides() {
 
         var parameters = new Dictionary<string, string>();
         if (ToeType.PSIParameter != "2") {

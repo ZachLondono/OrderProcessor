@@ -1,12 +1,11 @@
-﻿using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Contracts;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorContainer {
+internal class BaseDiagonalCornerCabinet : Cabinet, IDoorContainer {
 
     public Dimension RightWidth { get; }
     public Dimension RightDepth { get; }
@@ -50,18 +49,6 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         Dimension rightWidth, Dimension rightDepth, ToeType toeType, int adjShelfQty, HingeSide hingeSide, int doorQty)
                         => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, toeType, adjShelfQty, hingeSide, doorQty);
-
-    public IEnumerable<PPProduct> GetPPProducts() {
-        string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
-
-        string sku = DoorQty switch {
-            1 => "BC1D-M",
-            2 => "BC2D-M",
-            _ => "BC1D-M"
-        };
-
-        yield return new PPProduct(Id, Qty, Room, sku, ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new Dictionary<string, string>());
-    }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
@@ -126,7 +113,20 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
 
     }
 
-    private Dictionary<string, string> GetParameters() {
+    private string GetHingeSideOption() => HingeSide switch {
+        HingeSide.NotApplicable => "0",
+        HingeSide.Left => "1",
+        HingeSide.Right => "0",
+        _ => "0"
+    };
+
+    protected override string GetProductSku() => DoorQty switch {
+            1 => "BC1D-M",
+            2 => "BC2D-M",
+            _ => "BC1D-M"
+        };
+
+    protected override IDictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {
             { "ProductW", Width.AsMillimeters().ToString() },
             { "ProductWRight", RightWidth.AsMillimeters().ToString() },
@@ -147,7 +147,7 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
         return parameters;
     }
 
-    private Dictionary<string, string> GetOverrideParameters() {
+    protected override IDictionary<string, string> GetParameterOverrides() {
 
         var parameters = new Dictionary<string, string>();
         if (ToeType.PSIParameter != "2") {
@@ -159,12 +159,5 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IPPProductContainer, IDoorCo
 
         return parameters;
     }
-
-    private string GetHingeSideOption() => HingeSide switch {
-        HingeSide.NotApplicable => "0",
-        HingeSide.Left => "1",
-        HingeSide.Right => "0",
-        _ => "0"
-    };
 
 }

@@ -1,12 +1,11 @@
-﻿using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Contracts;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
+internal class BlindWallCabinet : Cabinet, IDoorContainer {
 
     public BlindCabinetDoors Doors { get; }
     public int AdjustableShelves { get; }
@@ -47,11 +46,6 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         BlindWidth = blindWidth;
         ExtendedDoor = extendedDoor;
 
-    }
-
-    public IEnumerable<PPProduct> GetPPProducts() {
-        string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Id, Qty, Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), new Dictionary<string, string>());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
@@ -99,11 +93,11 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
 
     }
 
-    private string GetProductName() {
+    protected override string GetProductSku() {
         return $"WB{Doors.Quantity}D{GetBlindSideLetter()}";
     }
 
-    private Dictionary<string, string> GetParameters() {
+    protected override IDictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {
             { "ProductW", Width.AsMillimeters().ToString() },
             { "ProductH", Height.AsMillimeters().ToString() },
@@ -125,7 +119,7 @@ internal class BlindWallCabinet : Cabinet, IPPProductContainer, IDoorContainer {
         return parameters;
     }
 
-    private Dictionary<string, string> GetParameterOverrides() {
+    protected override IDictionary<string, string> GetParameterOverrides() {
 
         var parameters = new Dictionary<string, string>();
 

@@ -1,12 +1,11 @@
-﻿using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Contracts;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDrawerBoxContainer {
+internal class BlindBaseCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
 
     public BlindCabinetDoors Doors { get; }
     public HorizontalDrawerBank Drawers { get; }
@@ -54,14 +53,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
         DrawerBoxOptions = drawerBoxOptions;
     }
 
-    public IEnumerable<PPProduct> GetPPProducts() {
-        string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Id, Qty, Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), GetManualOverrideParameters());
-    }
-
-    private string GetProductName() {
-        return $"BB{Doors.Quantity}D{GetDrawerCountSkuPart()}{GetBlindSideLetter()}";
-    }
+    protected override string GetProductSku() => $"BB{Doors.Quantity}D{GetDrawerCountSkuPart()}{GetBlindSideLetter()}";
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
@@ -164,7 +156,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
 
     }
 
-    private Dictionary<string, string> GetParameters() {
+    protected override IDictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {
             { "ProductW", Width.AsMillimeters().ToString() },
             { "ProductH", Height.AsMillimeters().ToString() },
@@ -182,7 +174,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
         return parameters;
     }
 
-    private Dictionary<string, string> GetParameterOverrides() {
+    protected override IDictionary<string, string> GetParameterOverrides() {
 
         var parameters = new Dictionary<string, string>();
 
@@ -207,7 +199,7 @@ internal class BlindBaseCabinet : Cabinet, IPPProductContainer, IDoorContainer, 
 
     }
 
-    public Dictionary<string, string> GetManualOverrideParameters() {
+    protected override IDictionary<string, string> GetManualOverrideParameters() {
 
         var parameters = new Dictionary<string, string>();
 
