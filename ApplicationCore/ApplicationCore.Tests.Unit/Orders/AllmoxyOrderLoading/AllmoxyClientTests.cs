@@ -31,9 +31,9 @@ public class AllmoxyClientTests {
             Content = expectedContent
         };
 
-        _client.Execute(Arg.Any<RestRequest>()).ReturnsForAnyArgs(response);
+        _client.ExecuteAsync(Arg.Any<RestRequest>()).ReturnsForAnyArgs(Task.FromResult(response));
 
-        var export = _sut.GetExport(orderNumber, index);
+        var export = _sut.GetExportAsync(orderNumber, index).Result;
 
         export.Should().BeEquivalentTo(expectedContent);
 
@@ -52,9 +52,9 @@ public class AllmoxyClientTests {
             Content = expectedContent
         };
 
-        _client.Execute(Arg.Any<RestRequest>()).ReturnsForAnyArgs(response);
+        _client.ExecuteAsync(Arg.Any<RestRequest>()).ReturnsForAnyArgs(Task.FromResult(response));
 
-        var action = () => _sut.GetExport(orderNumber, index);
+        var action = () => _sut.GetExportAsync(orderNumber, index).Result;
 
         action.Should()
             .Throw<InvalidOperationException>()
@@ -75,9 +75,9 @@ public class AllmoxyClientTests {
             Content = expectedContent
         };
 
-        _client.Execute(Arg.Any<RestRequest>()).ReturnsForAnyArgs(response);
+        _client.ExecuteAsync(Arg.Any<RestRequest>()).ReturnsForAnyArgs(Task.FromResult(response));
 
-        var action = () => _sut.GetExport(orderNumber, index);
+        var action = () => _sut.GetExportAsync(orderNumber, index).Result;
 
         action.Should()
             .Throw<InvalidOperationException>()
@@ -95,9 +95,9 @@ public class AllmoxyClientTests {
             ContentType = AllmoxyClient.NOT_LOGGED_IN_CONTENT_TYPE
         };
 
-        _client.Execute(Arg.Any<RestRequest>()).ReturnsForAnyArgs(response);
+        _client.ExecuteAsync(Arg.Any<RestRequest>()).ReturnsForAnyArgs(Task.FromResult(response));
 
-        var action = () => _sut.GetExport(orderNumber, index);
+        var action = () => _sut.GetExportAsync(orderNumber, index).Result;
 
         action.Should()
             .Throw<InvalidOperationException>()
@@ -116,9 +116,9 @@ public class AllmoxyClientTests {
             StatusCode = System.Net.HttpStatusCode.OK
         };
 
-        _client.Execute(Arg.Any<RestRequest>()).ReturnsForAnyArgs(response);
+        _client.ExecuteAsync(Arg.Any<RestRequest>()).ReturnsForAnyArgs(Task.FromResult(response));
 
-        var action = () => _sut.GetExport(orderNumber, index);
+        var action = () => _sut.GetExportAsync(orderNumber, index).Result;
 
         action.Should()
             .Throw<InvalidOperationException>()
@@ -137,9 +137,9 @@ public class AllmoxyClientTests {
             Content = null
         };
 
-        _client.Execute(Arg.Any<RestRequest>()).ReturnsForAnyArgs(response);
+        _client.ExecuteAsync(Arg.Any<RestRequest>()).ReturnsForAnyArgs(Task.FromResult(response));
 
-        var action = () => _sut.GetExport(orderNumber, index);
+        var action = () => _sut.GetExportAsync(orderNumber, index).Result;
 
         action.Should()
             .Throw<InvalidOperationException>()
@@ -148,7 +148,7 @@ public class AllmoxyClientTests {
     }
 
     [Fact]
-    public void ShouldCallClientDipose_WhenDisposeCalled() {
+    public void ShouldCallClientDispose_WhenDisposeCalled() {
 
         _sut.Dispose();
 
