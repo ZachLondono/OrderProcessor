@@ -27,18 +27,18 @@ internal class BaseCabinet : Cabinet, IDrawerBoxContainer, IDoorContainer {
 
     public static BaseCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         BaseCabinetDoors doors, ToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside, CabinetDrawerBoxOptions drawerBoxOptions) {
-        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, toeType, drawers, inside, drawerBoxOptions);
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, toeType, drawers, inside, drawerBoxOptions);
     }
 
     internal BaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         BaseCabinetDoors doors, ToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside, CabinetDrawerBoxOptions drawerBoxOptions)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (doors.Quantity > 2 || doors.Quantity < 0)
             throw new InvalidOperationException("Invalid number of doors");

@@ -27,10 +27,8 @@ public abstract class CabinetModelBase : ProductModel {
         CabinetMaterialCore finishCore = AllmoxyXMLOrderProviderHelpers.GetFinishedSideMaterialCore(Cabinet.FinishMaterial.Core, boxCore);
         CabinetMaterialFinishType finishFinishType = AllmoxyXMLOrderProviderHelpers.GetMaterialFinishType(Cabinet.FinishMaterial.Type);
 
-        MDFDoorOptions? mdfOptions = null;
-        if (Cabinet.Fronts.Type != "Slab") mdfOptions = new("MDF", Dimension.FromInches(0.75), Cabinet.Fronts.Style, "Eased", "Flat", Dimension.Zero, Cabinet.Fronts.Color);
-
         // When the finished sides are painted, the finished sides will be made out of the same material as the rest of the box and then painted over.
+        // This can be done because when ordering a cabinet the finished sides can either be specified to be plywood OR they can be specified to be painted. So if the customer wants a plywood cabinet with painted sides then the box must be made of plywood as well.
         // So if the finish sides are painted, set the finished sides material's 'Finish' property to that of the box material.
         // In this case the finished sides material finish data should have a placeholder value such as 'match' to signify that it should match the box material. 
         string finishColor = (finishFinishType == CabinetMaterialFinishType.Paint ? Cabinet.BoxMaterial.Finish : Cabinet.FinishMaterial.Finish);
@@ -39,6 +37,20 @@ public abstract class CabinetModelBase : ProductModel {
         CabinetFinishMaterial finishMaterial = new(finishColor, finishFinishType, finishCore, finishPaintColor);
         CabinetSideType leftSideType = AllmoxyXMLOrderProviderHelpers.GetCabinetSideType(Cabinet.LeftSide);
         CabinetSideType rightSideType = AllmoxyXMLOrderProviderHelpers.GetCabinetSideType(Cabinet.RightSide);
+
+        MDFDoorOptions? mdfOptions = null;
+        CabinetSlabDoorMaterial? slabDoorMaterial = null;
+        if (Cabinet.Fronts.Type == "MDF") {
+            // TODO: if Cabinet.Fronts.Color == "Match Finish" then the finished sides must be painted
+            mdfOptions = new("MDF", Dimension.FromInches(0.75), Cabinet.Fronts.Style, "Eased", "Flat", Dimension.Zero, Cabinet.Fronts.Color);
+
+            // If the door is an MDF door the finish type cannot be a melamine or veneer that 
+            if (Cabinet.Fronts.FinishType == "mela" || Cabinet.Fronts.FinishType == "veneer") {
+                throw new InvalidOperationException("Invalid combination of door finish and door type");
+            }
+        } else {
+            slabDoorMaterial = GetSlabDoorMaterial(Cabinet.Fronts, boxMaterial, finishMaterial);
+        }
 
         string edgeBandingColor;
         if (Cabinet.EdgeBandColor == "Match Finish") {
@@ -58,6 +70,7 @@ public abstract class CabinetModelBase : ProductModel {
                                     .WithProductNumber(GetProductNumber())
                                     .WithBoxMaterial(boxMaterial)
                                     .WithFinishMaterial(finishMaterial)
+                                    .WithSlabDoorMaterial(slabDoorMaterial)
                                     .WithLeftSideType(leftSideType)
                                     .WithRightSideType(rightSideType)
                                     .WithEdgeBandingColor(edgeBandingColor)
@@ -70,5 +83,24 @@ public abstract class CabinetModelBase : ProductModel {
                                     .WithComment(Cabinet.Comment);
 
     }
+
+    // TODO: move to AllmoxyXMLOrderProviderHelpers class
+    public static CabinetSlabDoorMaterial? GetSlabDoorMaterial(CabinetFrontsModel cabFronts, CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial) {
+
+        if (cabFronts.Style == "None" || cabFronts.Type != "Slab") return null;
+
+        CabinetMaterialFinishType doorFinishType = cabFronts.FinishType == "match" ? finishMaterial.FinishType : AllmoxyXMLOrderProviderHelpers.GetMaterialFinishType(cabFronts.FinishType);
+
+        // This is the default door material - to be used only when door is mdf. TODO: find a way to represent 'Buyout/MDF' for cabinet doors - maybe set this to null. Then when setting the door style, if this property is null set the style to buyout. That would allow actual buyout doors, as well as no doors, if MDFOptions is null as well as SlabDoorMaterial - an additional "ByOutDoorOptions" property would be needed at that point
+
+        var slabMaterialFinish = (cabFronts.FinishType == "match" || doorFinishType == CabinetMaterialFinishType.Paint) ? finishMaterial.Finish : cabFronts.Color;
+        var slabMaterialCore = AllmoxyXMLOrderProviderHelpers.GetSlabDoorMaterialCoreFromFinishType(cabFronts.FinishType, finishMaterial.Core);
+        var slabDoorPaint = cabFronts.FinishType == "match" ? finishMaterial.PaintColor : (doorFinishType == CabinetMaterialFinishType.Paint ? cabFronts.Color : null);
+
+        return new(slabMaterialFinish, doorFinishType, slabMaterialCore, slabDoorPaint);
+        
+    }
+
+    
 
 }

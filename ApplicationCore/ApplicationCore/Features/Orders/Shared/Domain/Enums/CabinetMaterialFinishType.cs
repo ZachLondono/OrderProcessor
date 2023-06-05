@@ -3,5 +3,6 @@
 public enum CabinetMaterialFinishType {
     Melamine,
     Veneer,
-    Paint
+    Paint,
+    None
 }

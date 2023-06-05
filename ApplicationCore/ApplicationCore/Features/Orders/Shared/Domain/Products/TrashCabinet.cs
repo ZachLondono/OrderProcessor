@@ -24,10 +24,10 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer  {
 
     public TrashCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, CabinetDrawerBoxOptions drawerBoxOptions, ToeType toeType)
-        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
+        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
         DrawerFaceHeight = drawerFaceHeight;
         TrashPulloutConfiguration = trashPulloutConfiguration;
         DrawerBoxOptions = drawerBoxOptions;
@@ -36,10 +36,10 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer  {
 
     public static TrashCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, CabinetDrawerBoxOptions drawerBoxOptions, ToeType toeType)
-        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, drawerFaceHeight, trashPulloutConfiguration, drawerBoxOptions, toeType);
+        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, drawerFaceHeight, trashPulloutConfiguration, drawerBoxOptions, toeType);
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 

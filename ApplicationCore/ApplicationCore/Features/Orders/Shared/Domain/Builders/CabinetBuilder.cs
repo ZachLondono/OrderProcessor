@@ -16,6 +16,7 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
     public Dimension Depth { get; private set; }
     public CabinetMaterial BoxMaterial { get; private set; }
     public CabinetFinishMaterial FinishMaterial { get; private set; }
+    public CabinetSlabDoorMaterial? SlabDoorMaterial { get; private set; }
     public MDFDoorOptions? MDFDoorOptions { get; private set; }
     public string EdgeBandingColor { get; private set; }
     public CabinetSideType LeftSideType { get; set; }
@@ -33,6 +34,7 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
         Depth = Dimension.Zero;
         BoxMaterial = new(string.Empty, CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard);
         FinishMaterial = new(string.Empty, CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard, null);
+        SlabDoorMaterial = new(string.Empty, CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard, null);
         MDFDoorOptions = null;
         EdgeBandingColor = string.Empty;
         LeftSideType = CabinetSideType.Unfinished;
@@ -82,6 +84,11 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
 
     public CabinetBuilder<TCabinet> WithFinishMaterial(CabinetFinishMaterial finishMaterial) {
         FinishMaterial = finishMaterial;
+        return this;
+    }
+
+    public CabinetBuilder<TCabinet> WithSlabDoorMaterial(CabinetSlabDoorMaterial? slabDoorMaterial) {
+        SlabDoorMaterial = slabDoorMaterial;
         return this;
     }
 

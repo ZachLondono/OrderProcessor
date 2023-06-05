@@ -28,10 +28,10 @@ internal class WallDiagonalCornerCabinet : Cabinet, IDoorContainer {
 
     internal WallDiagonalCornerCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfOptions, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         Dimension rightWidth, Dimension rightDepth, int adjShelfQty, HingeSide hingeSide, int doorQty, Dimension extendedDoor)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (leftSideType == CabinetSideType.AppliedPanel || leftSideType == CabinetSideType.AppliedPanel)
             throw new InvalidOperationException("Wall cabinet cannot have applied panel sides");
@@ -49,10 +49,10 @@ internal class WallDiagonalCornerCabinet : Cabinet, IDoorContainer {
 
     public static WallDiagonalCornerCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfOptions, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         Dimension rightWidth, Dimension rightDepth, int adjShelfQty, HingeSide hingeSide, int doorQty, Dimension extendedDoor)
-                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfOptions, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, adjShelfQty, hingeSide, doorQty, extendedDoor);
+                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfOptions, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, adjShelfQty, hingeSide, doorQty, extendedDoor);
 
     protected override string GetProductSku() => DoorQty switch {
             1 => "WC1D-M",

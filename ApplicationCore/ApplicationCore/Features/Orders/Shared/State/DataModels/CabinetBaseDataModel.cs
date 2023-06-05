@@ -23,6 +23,12 @@ internal abstract class CabinetDataModelBase : ProductDataModelBase {
     public string Comment { get; set; } = string.Empty;
     public string Room { get; set; } = string.Empty;
 
+    public bool ContainsSlabDoors { get; set; }
+    public CabinetMaterialCore SlabDoorCore { get; set; }
+    public string? SlabDoorFinish { get; set; }
+    public CabinetMaterialFinishType SlabDoorFinishType { get; set; }
+    public string? SlabDoorPaint { get; set; }
+
     public bool ContainsMDFDoor { get; set; }
     public string? FramingBead { get; set; }
     public string? EdgeDetail { get; set; }
@@ -35,5 +41,11 @@ internal abstract class CabinetDataModelBase : ProductDataModelBase {
     protected MDFDoorOptions? GetMDFDoorConfiguration() {
         if (!ContainsMDFDoor) return null;
         return new(Material ?? "", Thickness ?? Dimension.Zero, FramingBead ?? "", EdgeDetail ?? "", PanelDetail ?? "", PanelDrop ?? Dimension.Zero, PaintColor);
+    }
+
+    protected CabinetSlabDoorMaterial? GetSlabDoorMaterial() {
+        if (!ContainsSlabDoors) return null;
+        if (SlabDoorFinish is null) throw new InvalidOperationException("Slab door finish is missing");
+        return new CabinetSlabDoorMaterial(SlabDoorFinish, SlabDoorFinishType, SlabDoorCore, SlabDoorPaint);
     }
 }
