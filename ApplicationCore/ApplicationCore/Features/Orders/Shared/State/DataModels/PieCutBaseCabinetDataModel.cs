@@ -21,7 +21,7 @@ internal class PieCutBaseCabinetDataModel : CabinetDataModelBase, IProductDataMo
         var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
-        return new BasePieCutCornerCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
+        return new BasePieCutCornerCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             RightWidth, RightDepth, ToeType, AdjShelfQty, HingeSide);
 
     }
@@ -43,6 +43,11 @@ internal class PieCutBaseCabinetDataModel : CabinetDataModelBase, IProductDataMo
            	    cabinets.finish_material_core AS FinishMatCore,
            	    cabinets.finish_material_finish AS FinishMatFinish,
            	    cabinets.finish_material_paint AS FinishMatPaint,
+                cabinets.slab_door_core IS NOT NULL AS ContainsSlabDoors,
+                cabinets.slab_door_core AS SlabDoorCore,
+                cabinets.slab_door_finish AS SlabDoorFinish,
+                cabinets.slab_door_finish_type AS SlabDoorFinishType,
+                cabinets.slab_door_paint AS SlabDoorPaint,
            	    cabinets.edge_banding_finish As EdgeBandColor,
            	    cabinets.left_side_type AS LeftSideType,
            	    cabinets.right_side_type AS RightSideType,

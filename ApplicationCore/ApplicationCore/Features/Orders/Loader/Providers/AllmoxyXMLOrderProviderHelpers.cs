@@ -37,10 +37,19 @@ internal static class AllmoxyXMLOrderProviderHelpers {
         _ => throw new InvalidOperationException($"Unrecognized material core '{name}'")
     };
 
+    public static CabinetMaterialCore GetSlabDoorMaterialCoreFromFinishType(string finishType, CabinetMaterialCore cabFinishCore) => finishType switch {
+        "match" or "paint" => cabFinishCore,
+        "mela" => CabinetMaterialCore.ParticleBoard,
+        "veneer" => CabinetMaterialCore.Plywood,
+        _ => throw new InvalidOperationException("Unexpected cabinet door finish type")
+        // "laminate" => cabBoxCore?? cabFinishCore??
+    };
+
     public static CabinetMaterialFinishType GetMaterialFinishType(string name) => name switch {
         "mela" => CabinetMaterialFinishType.Melamine,
         "veneer" => CabinetMaterialFinishType.Veneer,
         "paint" => CabinetMaterialFinishType.Paint,
+        "none" => CabinetMaterialFinishType.None,
         _ => throw new InvalidOperationException($"Unrecognized material finish type '{name}'")
     };
 

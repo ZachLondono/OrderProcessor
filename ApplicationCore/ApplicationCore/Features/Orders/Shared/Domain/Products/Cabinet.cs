@@ -5,7 +5,7 @@ using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-public abstract class Cabinet : IProduct {
+public abstract class Cabinet : IProduct, IPPProductContainer {
 
     public Guid Id { get; }
     public int Qty { get; }
@@ -18,6 +18,7 @@ public abstract class Cabinet : IProduct {
     public Dimension Depth { get; }
     public CabinetMaterial BoxMaterial { get; }
     public CabinetFinishMaterial FinishMaterial { get; }
+    public CabinetSlabDoorMaterial? SlabDoorMaterial { get; }
     public MDFDoorOptions? MDFDoorOptions { get; init; }
     public string EdgeBandingColor { get; }
     public CabinetSideType RightSideType { get; }
@@ -32,7 +33,7 @@ public abstract class Cabinet : IProduct {
 
     public Cabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                 Dimension height, Dimension width, Dimension depth,
-                CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
+                CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                 CabinetSideType rightSideType, CabinetSideType leftSideType, string comment) {
 
         Id = id;
@@ -46,6 +47,7 @@ public abstract class Cabinet : IProduct {
         Depth = depth;
         BoxMaterial = boxMaterial;
         FinishMaterial = finishMaterial;
+        SlabDoorMaterial = slabDoorMaterial;
         MDFDoorOptions = mdfDoorOptions;
         EdgeBandingColor = edgeBandingColor;
         RightSideType = rightSideType;
@@ -99,9 +101,7 @@ public abstract class Cabinet : IProduct {
     protected Dictionary<string, PPMaterial> GetFinishMaterials() {
         string finishMaterial = GetFinishMaterialType(FinishMaterial.Core);
         string boxMaterial = GetFinishMaterialType(BoxMaterial.Core);
-        return new Dictionary<string, PPMaterial> {
-            ["F_Door"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),
-            ["F_DoorBack"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),
+        var materials =  new Dictionary<string, PPMaterial> {
             ["F_Exp_SemiExp"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),
             ["F_Exp_Unseen"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),
             ["F_Exposed"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),
@@ -109,9 +109,20 @@ public abstract class Cabinet : IProduct {
             ["F_SemiExp_Unseen"] = new PPMaterial(boxMaterial, BoxMaterial.Finish),
             ["F_SemiExposed"] = new PPMaterial(boxMaterial, BoxMaterial.Finish)
         };
+
+        if (SlabDoorMaterial is not null) {
+            string doorMaterial = GetFinishMaterialType(SlabDoorMaterial.Core);
+            materials.Add("F_Door", new PPMaterial(doorMaterial, SlabDoorMaterial.Finish));
+            materials.Add("F_DoorBack", new PPMaterial(doorMaterial, SlabDoorMaterial.Finish));
+        }
+
+        return materials;
     }
 
-    private static string GetFinishMaterialType(CabinetMaterialCore material) => material switch {
+    /// <summary>
+    /// Returns the ProductPlanner finish "Material" value for a given material core
+    /// </summary>
+    private static string GetFinishMaterialType(CabinetMaterialCore core) => core switch {
         CabinetMaterialCore.ParticleBoard => "Mela",
         CabinetMaterialCore.Plywood => "Veneer",
         _ => "Mela"
@@ -128,11 +139,17 @@ public abstract class Cabinet : IProduct {
         };
     }
 
-    private static string GetEBMaterialType(CabinetMaterialCore material) => material switch {
+    private static string GetEBMaterialType(CabinetMaterialCore core) => core switch {
         CabinetMaterialCore.ParticleBoard => "PVC",
         CabinetMaterialCore.Plywood => "Veneer",
         _ => "PVC"
     };
+
+    /// <summary>
+    /// Returns the ProductPlanner value for "Door/Drawer Front" Style. 
+    /// 'Buyout' style means that the doors will not be cut listed buy ProductPlanner. This is for applications where the doors are being ordered from another vendor or the doors are being manufactured using some other method outside of ProductPlanner (MDF doors).
+    /// </summary>
+    protected string GetDoorType() => (SlabDoorMaterial is not null) ? "Slab" : "Buyout";
 
     protected static string GetSideOption(CabinetSideType side) => side switch {
         CabinetSideType.AppliedPanel => "0",
@@ -151,5 +168,14 @@ public abstract class Cabinet : IProduct {
             return "3";
         } else return "0";
     }
+
+    public IEnumerable<PPProduct> GetPPProducts() {
+        yield return new PPProduct(Id, Qty, Room, GetProductSku(), ProductNumber, "Royal2", GetMaterialType(), GetDoorType(), "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), GetManualOverrideParameters());
+    }
+
+    protected abstract string GetProductSku();
+    protected virtual IDictionary<string, string> GetParameters() => new Dictionary<string, string>();
+    protected virtual IDictionary<string, string> GetParameterOverrides() => new Dictionary<string, string>();
+    protected virtual IDictionary<string, string> GetManualOverrideParameters() => new Dictionary<string, string>();
 
 }

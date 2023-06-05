@@ -13,4 +13,7 @@ public class CabinetFrontsModel {
     [XmlElement("color")]
     public string Color { get; set; } = string.Empty;
 
+    [XmlElement("finish_type")]
+    public string FinishType { get; set; } = string.Empty;
+
 }

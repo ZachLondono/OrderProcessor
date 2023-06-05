@@ -1,12 +1,11 @@
-﻿using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Contracts;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDrawerBoxContainer {
+internal class TallCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
 
     public TallCabinetDoors Doors { get; }
     public ToeType ToeType { get; }
@@ -28,18 +27,18 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
     public static TallCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         TallCabinetDoors doors, ToeType toeType, TallCabinetInside inside, CabinetDrawerBoxOptions drawerBoxOptions) {
-        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, toeType, inside, drawerBoxOptions);
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, toeType, inside, drawerBoxOptions);
     }
 
     internal TallCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         TallCabinetDoors doors, ToeType toeType, TallCabinetInside inside, CabinetDrawerBoxOptions drawerBoxOptions)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (doors.UpperQuantity > 2 || doors.UpperQuantity < 0 || doors.LowerQuantity > 2 || doors.LowerQuantity < 0)
             throw new InvalidOperationException("Invalid number of doors");
@@ -55,11 +54,6 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
         Inside = inside;
         DrawerBoxOptions = drawerBoxOptions;
 
-    }
-
-    public IEnumerable<PPProduct> GetPPProducts() {
-        string doorType = (MDFDoorOptions is null) ? "Slab" : "Buyout";
-        yield return new PPProduct(Id, Qty, Room, GetProductName(), ProductNumber, "Royal2", GetMaterialType(), doorType, "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetOverrideParameters(), new Dictionary<string, string>());
     }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
@@ -188,13 +182,13 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
 
     }
 
-    private string GetProductName() {
+    protected override string GetProductSku() {
         string name = $"T{Doors.LowerQuantity + Doors.UpperQuantity}D";
         if (Doors.UpperQuantity != 0) name += "2S";
         return name;
     }
 
-    private Dictionary<string, string> GetParameters() {
+    protected override IDictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {
             { "ProductW", Width.AsMillimeters().ToString() },
             { "ProductH", Height.AsMillimeters().ToString() },
@@ -222,7 +216,7 @@ internal class TallCabinet : Cabinet, IPPProductContainer, IDoorContainer, IDraw
         return parameters;
     }
 
-    private Dictionary<string, string> GetOverrideParameters() {
+    protected override IDictionary<string, string> GetParameterOverrides() {
 
         var parameters = new Dictionary<string, string>();
         if (ToeType.PSIParameter != "2") {
