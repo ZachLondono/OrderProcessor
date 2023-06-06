@@ -14,14 +14,12 @@
     <TabPage Title="CNC Tools">
         <ApplicationCore.Features.CNC.Tools.ToolFileEditor />
     </TabPage>
-    <TabPage Title="Allmoxy Schema">
-        <div>
-            <Button Style="ButtonStyle.Text" OnClick="OpenAllmoxySchema" Color="ButtonColor.Secondary" Size="ButtonSize.XSmall">Open Allmoxy Schema File</Button>
-        </div>
-    </TabPage>
     <TabPage Title="Other">
         <div>
-            <Button Style="ButtonStyle.Text" OnClick="OpenConfigurationFile" Color="ButtonColor.Secondary" Size="ButtonSize.XSmall">Open Config File</Button>
+            <Button Style="ButtonStyle.Link" OnClick="OpenAllmoxySchema" Color="ButtonColor.Secondary" Size="ButtonSize.XSmall">Open Allmoxy Schema File</Button>
+        </div>
+        <div>
+            <Button Style="ButtonStyle.Link" OnClick="OpenConfigurationFile" Color="ButtonColor.Secondary" Size="ButtonSize.XSmall">Open Config File</Button>
         </div>
     </TabPage>
 
