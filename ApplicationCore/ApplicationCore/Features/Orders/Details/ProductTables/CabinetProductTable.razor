@@ -16,6 +16,8 @@
                 <th class="p-5">Box Material</th>
                 <th class="p-5">Fin Material</th>
                 <th class="p-5">Fin Paint</th>
+                <th class="p-5">Door Material</th>
+                <th class="p-5">Door Paint</th>
                 <th class="p-5">EB Color</th>
                 <th class="p-5">Left</th>
                 <th class="p-5">Right</th>
@@ -54,9 +56,11 @@
                         <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Width.AsMillimeters().ToString("0.00")</td>
                         <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Depth.AsMillimeters().ToString("0.00")</td>
                     }
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.BoxMaterial.Finish}/{row.Product.BoxMaterial.Core}")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.FinishMaterial.Finish}/{row.Product.FinishMaterial.Core}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.BoxMaterial.Finish}/{row.Product.BoxMaterial.FinishType}/{row.Product.BoxMaterial.Core}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.FinishMaterial.Finish}/{row.Product.FinishMaterial.FinishType}/{row.Product.FinishMaterial.Core}")</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.FinishMaterial.PaintColor ?? "N/A"}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.SlabDoorMaterial?.Finish}/{row.Product.SlabDoorMaterial?.FinishType}/{row.Product.SlabDoorMaterial?.Core}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.SlabDoorMaterial?.PaintColor ?? "N/A"}")</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.EdgeBandingColor</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.LeftSideType.ToString()</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.RightSideType.ToString()</td>
