@@ -133,7 +133,7 @@ internal class ExportService {
         OnProgressReport?.Invoke("Generating EXT File");
         string jobName = string.IsNullOrWhiteSpace(configuration.ExtJobName) ? $"{order.Number} - {order.Name}" : configuration.ExtJobName;
 
-        var response = await _bus.Send(new ExportEXT.Command(order, jobName, outputDir));
+        var response = await _bus.Send(new ExportEXT.Command(order, jobName.Trim(), outputDir));
 
         response.Match(
             file => OnFileGenerated?.Invoke(file),
