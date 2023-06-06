@@ -1,7 +1,10 @@
 ﻿@page "/configuration"
 @using System.Diagnostics;
+@using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
 @using ApplicationCore.Features.Shared.Components;
+@using Microsoft.Extensions.Options;
 @using static ApplicationCore.Features.Shared.Components.Button;
+@inject IOptions<AllmoxyConfiguration> AllmoxyConfig
 
 <TabControl>
 
@@ -10,6 +13,11 @@
     </TabPage>
     <TabPage Title="CNC Tools">
         <ApplicationCore.Features.CNC.Tools.ToolFileEditor />
+    </TabPage>
+    <TabPage Title="Allmoxy Schema">
+        <div>
+            <Button Style="ButtonStyle.Text" OnClick="OpenAllmoxySchema" Color="ButtonColor.Secondary" Size="ButtonSize.XSmall">Open Allmoxy Schema File</Button>
+        </div>
     </TabPage>
     <TabPage Title="Other">
         <div>
@@ -24,16 +32,25 @@
 @code {
 
     private void OpenConfigurationFile() {
+        OpenFile("appsettings.json");
+    }
 
+    private void OpenAllmoxySchema() {
+        var config = AllmoxyConfig.Value;
+        var filePath = Path.GetFullPath(config.SchemaFilePath);
+        OpenFile(filePath);
+    }
+
+    private void OpenFile(string filePath) {
         try {
-            
+
             ProcessStartInfo psi = new ProcessStartInfo();
-            psi.FileName = "appsettings.json";
+            psi.FileName = filePath;
             psi.UseShellExecute = true;
             Process.Start(psi);
 
         } catch (Exception ex) {
-            Debug.WriteLine(ex);
+            Debug.WriteLine(ex);    
         }
 
     }
