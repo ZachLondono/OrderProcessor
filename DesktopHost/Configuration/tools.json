@@ -11,9 +11,7 @@
       {
         "name": "3-8Comp",
         "position": 1,
-        "alternative_names": [
-          "101"
-        ]
+        "alternative_names": []
       },
       {
         "name": "2MMRADIUS",
@@ -162,6 +160,11 @@
         "alternative_names": []
       },
       {
+        "name": "POCKET44",
+        "position": 3,
+        "alternative_names": []
+      },
+      {
         "name": "1-2Dado",
         "position": 3,
         "alternative_names": []
@@ -229,6 +232,11 @@
       {
         "name": "3-8RAD",
         "position": 6,
+        "alternative_names": []
+      },
+      {
+        "name": "SANDER",
+        "position": 7,
         "alternative_names": []
       },
       {
