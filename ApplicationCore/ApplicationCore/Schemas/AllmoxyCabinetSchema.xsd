@@ -1,0 +1,476 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:simpleType name="materialCore">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="match" />
+      <xs:enumeration value="pb" />
+      <xs:enumeration value="ply" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="materialFinishType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="mela" />
+      <xs:enumeration value="veneer" />
+      <xs:enumeration value="paint" />
+      <xs:enumeration value="none" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="paintedSideType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="Top" />
+      <xs:enumeration value="Bottom" />
+      <xs:enumeration value="Left" />
+      <xs:enumeration value="Right" />
+      <xs:enumeration value="Interior" />
+      <xs:enumeration value="Exterior" />
+      <xs:enumeration value="BothSides" />
+      <xs:enumeration value="Custom" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="cabinet">
+    <xs:sequence>
+      <xs:element name="qty" type="xs:unsignedByte" />
+      <xs:element name="width" type="xs:decimal" />
+      <xs:element name="height" type="xs:decimal" />
+      <xs:element name="depth" type="xs:decimal" />
+      <xs:element name="leftSide" type="xs:string" />
+      <xs:element name="rightSide" type="xs:string" />
+      <xs:element name="assembled" type="xs:string" />
+      <xs:element name="unitPrice" type="xs:string" />
+      <xs:element name="room" type="xs:string" />
+      <xs:element name="comment" type="xs:string" />
+      <xs:element name="boxMaterial">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="core" type="materialCore" />
+            <xs:element name="type" type="materialFinishType" />
+            <xs:element name="finish" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="finishMaterial">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="core" type="materialCore" />
+            <xs:element name="type" type="materialFinishType" />
+            <xs:element name="finish" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="fronts">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="type" type="xs:string" />
+            <xs:element name="style" type="xs:string" />
+            <xs:element name="color" type="xs:string" />
+            <xs:element name="finish_type" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="edgeBandColor" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="order">
+    <xs:complexType>
+      <xs:sequence>
+        
+        <xs:element name="number" type="xs:unsignedShort" />
+        <xs:element name="name" type="xs:string" />
+        <xs:element name="orderDate" />
+        <xs:element name="note" type="xs:string" />
+        <xs:element name="description" type="xs:string" />
+        
+        <xs:element name="customer">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="id" type="xs:unsignedByte" use="required" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="shipping">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="method" type="xs:string" />
+              <xs:element name="date" type="xs:string" />
+              <xs:element name="tax" type="xs:decimal" />
+              <xs:element name="instructions" type="xs:string" />
+              <xs:element name="attention" type="xs:string" />
+              <xs:element name="address">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="line1" />
+                    <xs:element name="line2" />
+                    <xs:element name="line3" />
+                    <xs:element name="city" />
+                    <xs:element name="state" />
+                    <xs:element name="zip" />
+                    <xs:element name="country" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="invoice">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="preadjustment" type="xs:string" />
+              <xs:element name="adjustment" type="xs:string" />
+              <xs:element name="subtotal" type="xs:string" />
+              <xs:element name="tax" type="xs:string" />
+              <xs:element name="shipping" type="xs:string" />
+              <xs:element name="total" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="products">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:choice maxOccurs="unbounded">
+
+                <xs:element name="trashCabinet">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="cabinet" type="cabinet" />
+                      <xs:element name="toeType" type="xs:string" />
+                      <xs:element name="drawerMaterial" type="xs:string" />
+                      <xs:element name="drawerSlide" type="xs:string" />
+                      <xs:element name="drawerFaceHeight" type="xs:decimal" />
+                      <xs:element name="trashPulloutQty" type="xs:integer" />
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:element name="blindBaseCabinet">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="cabinet" type="cabinet" />
+                      <xs:element name="toeType" type="xs:string" />
+                      <xs:element name="hingeSide" type="xs:string" />
+                      <xs:element name="blindSide" type="xs:string" />
+                      <xs:element name="blindWidth" type="xs:decimal" />
+                      <xs:element name="doorQty" type="xs:integer" />
+                      <xs:element name="drawerQty" type="xs:integer" />
+                      <xs:element name="drawerFaceHeight" type="xs:decimal" />
+                      <xs:element name="drawerMaterial" type="xs:string" />
+                      <xs:element name="drawerSlide" type="xs:string" />
+                      <xs:element name="adjShelfQty" type="xs:integer" />
+                      <xs:element name="shelfDepth" type="xs:string" />
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:element name="blindWallCabinet">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="cabinet" type="cabinet" />
+                      <xs:element name="hingeSide" type="xs:string" />
+                      <xs:element name="blindSide" type="xs:string" />
+                      <xs:element name="blindWidth" type="xs:decimal" />
+                      <xs:element name="doorQty" type="xs:integer" />
+                      <xs:element name="adjShelfQty" type="xs:integer" />
+                      <xs:element name="extendDoorDown" type="xs:decimal" />
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:element name="sinkCabinet">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="cabinet" type="cabinet" />
+                      <xs:element name="rollOuts">
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element name="rollOutPos1" type="xs:string" />
+                            <xs:element name="rollOutBlocks" type="xs:string" />
+                          </xs:sequence>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element name="toeType" type="xs:string" />
+                      <xs:element name="hingeSide" type="xs:string" />
+                      <xs:element name="doorQty" type="xs:integer" />
+                      <xs:element name="drawerQty" type="xs:integer" />
+                      <xs:element name="drawerFaceHeight" type="xs:decimal" />
+                      <xs:element name="drawerMaterial" type="xs:string" />
+                      <xs:element name="drawerSlide" type="xs:string" />
+                      <xs:element name="adjShelfQty" type="xs:integer" />
+                      <xs:element name="shelfDepth" type="xs:string" />
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:element name="wallDiagonalCabinet">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="cabinet" type="cabinet" />
+                      <xs:element name="rightWidth" type="xs:decimal" />
+                      <xs:element name="rightDepth" type="xs:decimal" />
+                      <xs:element name="hingeSide" type="xs:string" />
+                      <xs:element name="doorQty" type="xs:integer" />
+                      <xs:element name="adjShelfQty" type="xs:integer" />
+                      <xs:element name="extendDoorDown" type="xs:decimal" />
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:element name="baseDiagonalCabinet">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="cabinet" type="cabinet" />
+                      <xs:element name="rightWidth" type="xs:decimal" />
+                      <xs:element name="rightDepth" type="xs:decimal" />
+                      <xs:element name="toeType" type="xs:string" />
+                      <xs:element name="hingeSide" type="xs:string" />
+                      <xs:element name="doorQty" type="xs:integer" />
+                      <xs:element name="adjShelfQty" type="xs:integer" />
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:element name="wallPieCutCabinet">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="cabinet" type="cabinet" />
+                      <xs:element name="rightWidth" type="xs:decimal" />
+                      <xs:element name="rightDepth" type="xs:decimal" />
+                      <xs:element name="hingeSide" type="xs:string" />
+                      <xs:element name="adjShelfQty" type="xs:integer" />
+                      <xs:element name="extendDoorDown" type="xs:decimal" />
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:element name="basePieCutCabinet">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="cabinet" type="cabinet" />
+                      <xs:element name="rightWidth" type="xs:decimal" />
+                      <xs:element name="rightDepth" type="xs:decimal" />
+                      <xs:element name="toeType" type="xs:string" />
+                      <xs:element name="hingeSide" type="xs:string" />
+                      <xs:element name="adjShelfQty" type="xs:integer" />
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:element name="drawerBaseCabinet">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="cabinet" type="cabinet" />
+                      <xs:element name="toeType" type="xs:string" />
+                      <xs:element name="drawerMaterial" type="xs:string" />
+                      <xs:element name="drawerSlide" type="xs:string" />
+                      <xs:element name="drawerQty" type="xs:integer" />
+                      <xs:element name="drawerFace1" type="xs:decimal" />
+                      <xs:element name="drawerFace2" type="xs:decimal" />
+                      <xs:element name="drawerFace3" type="xs:decimal" />
+                      <xs:element name="drawerFace4" type="xs:decimal" />
+                      <xs:element name="drawerFace5" type="xs:decimal" />
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:element name="baseCabinet">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="cabinet" type="cabinet" />
+                      <xs:element name="rollOuts">
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element name="rollOutPos1" type="xs:string" />
+                            <xs:element name="rollOutPos2" type="xs:string" />
+                            <xs:element name="rollOutPos3" type="xs:string" />
+                            <xs:element name="rollOutBlocks" type="xs:string" />
+                          </xs:sequence>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element name="toeType" type="xs:string" />
+                      <xs:element name="hingeSide" type="xs:string" />
+                      <xs:element name="doorQty" type="xs:integer" />
+                      <xs:element name="drawerQty" type="xs:integer" />
+                      <xs:element name="drawerFaceHeight" type="xs:decimal" />
+                      <xs:element name="drawerMaterial" type="xs:string" />
+                      <xs:element name="drawerSlide" type="xs:string" />
+                      <xs:element name="adjShelfQty" type="xs:integer" />
+                      <xs:element name="shelfDepth" type="xs:string" />
+                      <xs:element name="vertDivQty" type="xs:integer" />
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:element name="tallCabinet">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="cabinet" type="cabinet" />
+                      <xs:element name="rollOuts">
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element name="rollOutPos1" type="xs:string" />
+                            <xs:element name="rollOutPos2" type="xs:string" />
+                            <xs:element name="rollOutPos3" type="xs:string" />
+                            <xs:element name="rollOutPos4" type="xs:string" />
+                            <xs:element name="rollOutPos5" type="xs:string" />
+                            <xs:element name="rollOutBlocks" type="xs:string" />
+                          </xs:sequence>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element name="toeType" type="xs:string" />
+                      <xs:element name="drawerMaterial" type="xs:string" />
+                      <xs:element name="drawerSlide" type="xs:string" />
+                      <xs:element name="adjShelfQty" type="xs:integer" />
+                      <xs:element name="upperAdjShelfQty" type="xs:integer" />
+                      <xs:element name="vertDivQty" type="xs:integer" />
+                      <xs:element name="upperVertDivQty" type="xs:integer" />
+                      <xs:element name="hingeSide" type="xs:string" />
+                      <xs:element name="lowerDoorQty" type="xs:integer" />
+                      <xs:element name="upperDoorQty" type="xs:integer" />
+                      <xs:element name="lowerDoorHeight" type="xs:decimal" />
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:element name="wallCabinet">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="cabinet" type="cabinet" />
+                      <xs:element name="hingeSide" type="xs:string" />  
+                      <xs:element name="doorQty" type="xs:integer" />
+                      <xs:element name="adjShelfQty" type="xs:integer" />
+                      <xs:element name="vertDivQty" type="xs:integer" />
+                      <xs:element name="extendDoorDown" type="xs:decimal" />
+                      <xs:element name="finishedBottom" type="xs:string" />
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:element name="closetPart">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="unitPrice" type="xs:string" />
+                      <xs:element name="sku" type="xs:string" />
+                      <xs:element name="width" type="xs:decimal" />
+                      <xs:element name="length" type="xs:decimal" />
+                      <xs:element name="qty" type="xs:integer" />
+                      <xs:element name="materialFinish" type="xs:string" />
+                      <xs:element name="materialCore" type="xs:string" />
+                      <xs:element name="paintColor" type="xs:string" />
+                      <xs:element name="paintedSide" type="paintedSideType" />
+                      <xs:element name="edgeBandColor" type="xs:string" />
+                      <xs:element name="comment" type="xs:string" />
+                      <xs:element name="room" type="xs:string" />
+                      <xs:element name="parameters">
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element name="entry" maxOccurs="unbounded" minOccurs="0">
+                              <xs:complexType>
+                                  <xs:sequence>
+                                      <xs:element name="name" type="xs:string"  />
+                                      <xs:element name="value" type="xs:string" />
+                                  </xs:sequence>
+                              </xs:complexType>
+                            </xs:element>
+                          </xs:sequence>
+                        </xs:complexType>
+                      </xs:element>
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:element name="mdfDoor">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="qty" type="xs:integer" />
+                      <xs:element name="unitPrice" type="xs:string"/>
+                      <xs:element name="room" type="xs:string"/>
+                      <xs:element name="width" type="xs:decimal" />
+                      <xs:element name="height" type="xs:decimal" />
+                      <xs:element name="topRail" type="xs:decimal" />
+                      <xs:element name="botRail" type="xs:decimal" />
+                      <xs:element name="rightStile" type="xs:decimal" />
+                      <xs:element name="leftStile" type="xs:decimal" />
+                      <xs:element name="rail3" type="xs:decimal" />
+                      <xs:element name="rail4" type="xs:decimal" />
+                      <xs:element name="opening1" type="xs:decimal" />
+                      <xs:element name="opening2" type="xs:decimal" />
+                      <xs:element name="frameOnly" type="xs:string" />
+                      <xs:element name="comment" type="xs:string" />
+                      <xs:element name="framingBead" type="xs:string" />
+                      <xs:element name="edgeProfile" type="xs:string" />
+                      <xs:element name="panelDetail" type="xs:string" />
+                      <xs:element name="material" type="xs:string" />
+                      <xs:element name="finish" type="xs:string" />
+                      <xs:element name="customPanelDrop" type="xs:string" />
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:element name="dovetailDrawerBox">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="comments" type="xs:string" />
+                      <xs:element name="material" type="xs:string" />
+                      <xs:element name="bottom" type="xs:string" />
+                      <xs:element name="clips" type="xs:string" />
+                      <xs:element name="notch" type="xs:string" />
+                      <xs:element name="insert" type="xs:string" />
+                      <xs:element name="unitPrice" type="xs:string" />
+                      <xs:element name="qty" type="xs:integer" />
+                      <xs:element name="logo" type="xs:string" />
+                      <xs:element name="scoop" type="xs:string" />
+                      <xs:element name="note" type="xs:string" />
+                      <xs:element name="height" type="xs:decimal" />
+                      <xs:element name="width" type="xs:decimal" />
+                      <xs:element name="depth" type="xs:decimal" />
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+              </xs:choice>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -46,6 +46,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Schemas\AllmoxyCabinetSchema.xsd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Schemas\ordering_schema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
