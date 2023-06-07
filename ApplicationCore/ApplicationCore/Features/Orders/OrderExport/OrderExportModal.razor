@@ -35,7 +35,7 @@
             <br />
             
             <label class="block text-sm font-medium text-gray-700">Output directory</label>
-            <input type="text" class="mt-1 w-full" @bind="DataContext.Configuration.OutputDirectory" />
+            <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.OutputDirectory" />
         </section>
 
         <hr />
@@ -47,7 +47,7 @@
             @if(DataContext.Configuration.GenerateEXT) {
                 <div class="ml-3">
                     <label class="ml-2 text-sm">Job Name</label>                
-                    <input type="text" class="mt-1 w-full" @bind="DataContext.Configuration.ExtJobName" />
+                    <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.ExtJobName" />
                 </div>
             }
         </section>

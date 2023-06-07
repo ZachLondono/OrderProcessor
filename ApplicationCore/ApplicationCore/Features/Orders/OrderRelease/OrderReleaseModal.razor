@@ -93,18 +93,18 @@
                 </CheckBox>
                 @if (DataContext.Configuration.SendReleaseEmail) {
                     <label class="block text-sm font-medium text-gray-700">Email Recipients</label>
-                    <input type="text" class="mt-1 w-full" @bind="DataContext.Configuration.ReleaseEmailRecipients" />
+                    <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.ReleaseEmailRecipients" />
                 }
 
                 <br />
 
                 <label class="block text-sm font-medium text-gray-700">File Name</label>
-                <input type="text" class="mt-1 w-full" @bind="DataContext.Configuration.ReleaseFileName" />
+                <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.ReleaseFileName" />
 
                 <br />
 
                 <label class="block text-sm font-medium text-gray-700">Output Directory</label>
-                <input type="text" class="mt-1 w-full" @bind="DataContext.Configuration.ReleaseOutputDirectory" />
+                <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.ReleaseOutputDirectory" />
 
             }
 
@@ -121,12 +121,12 @@
             </CheckBox>
             @if (DataContext.Configuration.GenerateInvoice) {
                 <label class="block text-sm font-medium text-gray-700">File Name</label>
-                <input type="text" class="mt-1 w-full" @bind="DataContext.Configuration.InvoiceFileName" />
+                <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.InvoiceFileName" />
 
                 <br />
 
                 <label class="block text-sm font-medium text-gray-700">Output Directory</label>
-                <input type="text" class="mt-1 w-full" @bind="DataContext.Configuration.InvoiceOutputDirectory" />
+                <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.InvoiceOutputDirectory" />
             }
 
             <br />
@@ -136,7 +136,7 @@
             </CheckBox>
             @if (DataContext.Configuration.SendInvoiceEmail) {
                 <label class="block text-sm font-medium text-gray-700">Email Recipients</label>
-                <input type="text" class="mt-1 w-full" @bind="DataContext.Configuration.InvoiceEmailRecipients"/>
+                <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.InvoiceEmailRecipients"/>
             }
 
         </section>
