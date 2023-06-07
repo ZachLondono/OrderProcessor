@@ -147,9 +147,9 @@ public class ExportDoorOrder {
 
                     if (workbook is not null) {
                         workbook.Close(SaveChanges: false);
-                }
+                    }
 
-            }
+                }
 
             }
 
@@ -204,12 +204,11 @@ public class ExportDoorOrder {
 
         private static dynamic[][] CreateFrameData(IGrouping<DoorStyleGroupKey, MDFDoorComponent> doors) {
             return doors.Select(d => new dynamic[] {
-                                d.Door.FrameSize.LeftStile,
-                                d.Door.FrameSize.RightStile,
-                                d.Door.FrameSize.TopRail,
-                                d.Door.FrameSize.BottomRail
-                            })
-                                .ToArray();
+                                d.Door.FrameSize.LeftStile.AsMillimeters(),
+                                d.Door.FrameSize.RightStile.AsMillimeters(),
+                                d.Door.FrameSize.TopRail.AsMillimeters(),
+                                d.Door.FrameSize.BottomRail.AsMillimeters()
+                            }).ToArray();
         }
 
         private static dynamic[][] CreateMainDoorData(IGrouping<DoorStyleGroupKey, MDFDoorComponent> doors) {
@@ -226,8 +225,7 @@ public class ExportDoorOrder {
                             d.Door.Width.AsMillimeters(),
                             d.Door.Height.AsMillimeters(),
                             d.Door.Note
-                        })
-                            .ToArray();
+                        }).ToArray();
         }
 
         private static void WriteRectangularArray(Worksheet ws, dynamic[,] rows, string colStart, int rowStart, string colEnd) {
