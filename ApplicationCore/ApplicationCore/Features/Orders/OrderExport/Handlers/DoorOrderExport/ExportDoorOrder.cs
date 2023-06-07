@@ -145,7 +145,11 @@ public class ExportDoorOrder {
                     _logger.LogError(ex, "Exception thrown while filling door order group");
                     wasExceptionThrown = true;
 
+                    if (workbook is not null) {
+                        workbook.Close(SaveChanges: false);
                 }
+
+            }
 
             }
 
