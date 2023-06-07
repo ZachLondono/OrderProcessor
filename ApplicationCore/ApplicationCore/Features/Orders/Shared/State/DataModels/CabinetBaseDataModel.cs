@@ -21,7 +21,6 @@ internal abstract class CabinetDataModelBase : ProductDataModelBase {
     public CabinetSideType RightSideType { get; set; }
     public bool Assembled { get; set; }
     public string Comment { get; set; } = string.Empty;
-    public string Room { get; set; } = string.Empty;
 
     public bool ContainsSlabDoors { get; set; }
     public CabinetMaterialCore SlabDoorCore { get; set; }
