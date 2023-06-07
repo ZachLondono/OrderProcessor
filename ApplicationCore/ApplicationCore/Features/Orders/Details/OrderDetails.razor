@@ -236,33 +236,47 @@
             <span>No products in order</span>
         } else {
 
-            if (DrawerBoxes.Any()) {
-                <section class="mt-5">
-                    <h3>Drawer Boxes</h3>
-                    <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@DrawerBoxes" />
-                </section>
-            }
+            foreach (var room in Rooms) {
 
-            if (Cabinets.Any()) {
-                <section class="mt-5">
-                    <h3>Cabinets</h3>
-                    <CabinetProductTable UseInches="@_useInches" Cabinets="@Cabinets" />
-                </section>
-            }
+                <div class="@((Rooms.Count > 1 || Rooms.First().Name != string.Empty) ? "bg-slate-100" : "")">
+                    @if (Rooms.Count > 1 || Rooms.First().Name != string.Empty) {
+                        <input type="text" placeholder="Room @(Rooms.IndexOf(room) + 1)" @bind-value="room.Name" class="bg-transparent font-bold text-xl pl-3 pt-3"/>
+                    }
+                    <div class="@((Rooms.Count > 1 || Rooms.First().Name != string.Empty) ? "pl-5" : "")">
+                        @if (room.DovetailDrawerBoxes.Any()) {
+                            <section class="mt-5">
+                                <h3>Drawer Boxes</h3>
+                                <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@room.DovetailDrawerBoxes" />
+                            </section>
+                        }
+    
+                        @if (room.Cabinets.Any()) {
+                            <section class="mt-5">
+                                <h3>Cabinets</h3>
+                                <CabinetProductTable UseInches="@_useInches" Cabinets="@room.Cabinets" />
+                            </section>
+                        }
+    
+                        @if (room.ClosetParts.Any()) {
+                            <section class="mt-5">
+                                <h3>Closet Parts</h3>
+                                <ClosetPartProductTable UseInches="@_useInches" ClosetParts="@room.ClosetParts" />
+                            </section>
+                        }
+    
+                        @if (room.MDFDoors.Any()) {
+                            <section class="mt-5">
+                                <h3>MDF Doors</h3>
+                                <MDFDoorProductTable UseInches="@_useInches" MDFDoors="@room.MDFDoors" />
+                            </section>
+                        }
+                    </div>
+                </div>
+    
+                @if (Rooms.Count > 1 || Rooms.First().Name != string.Empty) {
+                    <hr class="my-5"/>
+                }
 
-            if (ClosetParts.Any()) {
-                <section class="mt-5">
-                    <h3>Closet Parts</h3>
-                    <ClosetPartProductTable UseInches="@_useInches" ClosetParts="@ClosetParts" />
-                </section>
-            }
-
-            if (Doors.Any()) {
-                <section class="mt-5">
-                    <h3>MDF Doors</h3>
-                    <MDFDoorProductTable UseInches="@_useInches" MDFDoors="@Doors" />
-                </section>
-      
             }
 
         }

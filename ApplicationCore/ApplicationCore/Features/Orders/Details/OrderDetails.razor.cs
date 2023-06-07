@@ -18,10 +18,7 @@ public partial class OrderDetails {
     [CascadingParameter]
     public IModalService Modal { get; set; } = default!;
 
-    public List<CabinetRowModel> Cabinets { get; set; } = new();
-    public List<ClosetPartRowModel> ClosetParts { get; set; } = new();
-    public List<DovetailDrawerBoxRowModel> DrawerBoxes { get; set; } = new();
-    public List<MDFDoorRowModel> Doors { get; set; } = new();
+    public List<Room> Rooms { get; set; } = new();
 
     private string _note = string.Empty;
     private string _workingDirectory = string.Empty;
@@ -43,29 +40,11 @@ public partial class OrderDetails {
         _note = OrderState.Order.Note;
         _workingDirectory = OrderState.Order.WorkingDirectory;
 
-        Cabinets = OrderState.Order
-                            .Products
-                            .OfType<Cabinet>()
-                            .Select(cab => new CabinetRowModel(cab))
-                            .ToList();
-
-        ClosetParts = OrderState.Order
-                                .Products
-                                .OfType<ClosetPart>()
-                                .Select(cp => new ClosetPartRowModel(cp))
-                                .ToList();
-
-        DrawerBoxes = OrderState.Order
-                                .Products
-                                .OfType<DovetailDrawerBoxProduct>()
-                                .Select(db => new DovetailDrawerBoxRowModel(db))
-                                .ToList();
-
-        Doors = OrderState.Order
-                        .Products
-                        .OfType<MDFDoorProduct>()
-                        .Select(door => new MDFDoorRowModel(door))
-                        .ToList();
+        Rooms = OrderState.Order
+                    .Products
+                    .GroupBy(p => p.Room)
+                    .Select(Room.FromGrouping)
+                    .ToList();
 
         await UpdateProductStatuses();
 
@@ -77,10 +56,12 @@ public partial class OrderDetails {
             return;
         }
 
-        await UpdateProducts(Cabinets);
-        await UpdateProducts(ClosetParts);
-        await UpdateProducts(DrawerBoxes);
-        await UpdateProducts(Doors);
+        foreach (var room in Rooms) {
+            await UpdateProducts(room.Cabinets);
+            await UpdateProducts(room.ClosetParts);
+            await UpdateProducts(room.DovetailDrawerBoxes);
+            await UpdateProducts(room.MDFDoors);
+        }
 
         StateHasChanged();
 
@@ -149,7 +130,5 @@ public partial class OrderDetails {
         }
 
     }
-
-
 
 }
