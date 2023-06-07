@@ -46,6 +46,7 @@ internal class BlindBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBas
            	    products.qty,
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
+           	    products.room,
 
            	    cabinets.height,
            	    cabinets.width,
@@ -67,7 +68,6 @@ internal class BlindBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBas
            	    cabinets.right_side_type AS RightSideType,
            	    cabinets.assembled,
            	    cabinets.comment,
-           	    cabinets.room,
 
                 blind_base_cabinets.toe_type AS ToeType,
                 blind_base_cabinets.blind_side AS BlindSide,

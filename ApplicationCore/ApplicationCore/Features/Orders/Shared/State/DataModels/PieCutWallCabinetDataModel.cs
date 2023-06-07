@@ -32,6 +32,7 @@ internal class PieCutWallCabinetDataModel : CabinetDataModelBase, IProductDataMo
            	    products.qty,
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
+           	    products.room,
 
            	    cabinets.height,
            	    cabinets.width,
@@ -53,7 +54,6 @@ internal class PieCutWallCabinetDataModel : CabinetDataModelBase, IProductDataMo
            	    cabinets.right_side_type AS RightSideType,
            	    cabinets.assembled,
            	    cabinets.comment,
-           	    cabinets.room,
 
            	    pie_cut_wall_cabinets.right_width AS RightWidth,
                 pie_cut_wall_cabinets.right_depth AS RightDepth,

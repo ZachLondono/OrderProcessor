@@ -63,13 +63,13 @@ CREATE TABLE products (
 	qty INTEGER NOT NULL,
 	unit_price REAL NOT NULL,
 	product_number INTEGER NOT NULL,
+	room TEXT NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
 CREATE TABLE mdf_door_products (
 	product_id BLOB NOT NULL,
-	room TEXT NOT NULL,
 	note TEXT NOT NULL,
 	height REAL NOT NULL,
 	width REAL NOT NULL,
@@ -96,7 +96,6 @@ CREATE TABLE dovetail_drawer_products (
 	depth REAL NOT NULL,
 	note TEXT NOT NULL,
 	label_fields TEXT NOT NULL,
-	room TEXT NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
 	FOREIGN KEY (product_id) REFERENCES drawer_box_configs(id)
@@ -109,7 +108,6 @@ END;
 
 CREATE TABLE closet_parts (
 	product_id BLOB NOT NULL,
-	room TEXT NOT NULL,
 	sku TEXT NOT NULL,
 	width REAL NOT NULL,
 	length REAL NOT NULL,
@@ -145,7 +143,6 @@ CREATE TABLE cabinets (
 	right_side_type INTEGER NOT NULL,
 	assembled INTEGER NOT NULL,
 	comment TEXT NOT NULL,
-	room TEXT NOT NULL,
 	mdf_config_id BLOB,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,

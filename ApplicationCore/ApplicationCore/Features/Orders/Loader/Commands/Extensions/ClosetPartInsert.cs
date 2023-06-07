@@ -14,7 +14,6 @@ public partial class CreateNewOrder {
 
             var parameters = new {
                 ProductId = closetPart.Id,
-                Room = closetPart.Room,
                 Sku = closetPart.SKU,
                 Width = closetPart.Width,
                 Length = closetPart.Length,
@@ -30,7 +29,6 @@ public partial class CreateNewOrder {
             await connection.ExecuteAsync("""
                     INSERT INTO closet_parts
                         (product_id,
-                        room,
                         sku,
                         width,
                         length,
@@ -43,7 +41,6 @@ public partial class CreateNewOrder {
                         parameters)
                     VALUES
                         (@ProductId,
-                        @Room,
                         @Sku,
                         @Width,
                         @Length,

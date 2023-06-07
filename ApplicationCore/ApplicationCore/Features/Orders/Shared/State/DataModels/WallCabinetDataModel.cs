@@ -35,6 +35,7 @@ internal class WallCabinetDataModel : CabinetDataModelBase, IProductDataModel, I
            	    products.qty,
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
+           	    products.room,
 
            	    cabinets.height,
            	    cabinets.width,
@@ -56,7 +57,6 @@ internal class WallCabinetDataModel : CabinetDataModelBase, IProductDataModel, I
            	    cabinets.right_side_type AS RightSideType,
            	    cabinets.assembled,
            	    cabinets.comment,
-           	    cabinets.room,
 
            	    wall_cabinets.door_qty AS DoorQty,
            	    wall_cabinets.hinge_side AS HingeSide,

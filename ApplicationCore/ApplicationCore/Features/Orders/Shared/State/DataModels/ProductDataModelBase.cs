@@ -6,4 +6,6 @@ internal abstract class ProductDataModelBase {
     public int Qty { get; set; }
     public decimal UnitPrice { get; set; }
     public int ProductNumber { get; set; }
+    public string Room { get; set; } = string.Empty;
+
 }

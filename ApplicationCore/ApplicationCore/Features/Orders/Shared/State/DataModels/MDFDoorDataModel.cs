@@ -7,7 +7,6 @@ namespace ApplicationCore.Features.Orders.Shared.State.DataModels;
 
 internal class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQueryableProductDataModel {
 
-    public string Room { get; set; } = string.Empty;
     public string Note { get; set; } = string.Empty;
     public Dimension Height { get; set; }
     public Dimension Width { get; set; }
@@ -36,8 +35,8 @@ internal class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuer
             products.qty,
             products.unit_price AS UnitPrice,
             products.product_number AS ProductNumber,
+        	products.room,
 
-        	mdf_product.room,
         	mdf_product.note,
         	mdf_product.height,
         	mdf_product.width,

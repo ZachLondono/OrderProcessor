@@ -8,6 +8,7 @@ public interface IProduct {
     public int Qty { get; }
     public decimal UnitPrice { get; }
     public int ProductNumber { get; }
+    public string Room { get; }
 
     public string GetDescription();
     public IEnumerable<Supply> GetSupplies();

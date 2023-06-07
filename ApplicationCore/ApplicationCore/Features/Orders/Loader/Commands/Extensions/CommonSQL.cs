@@ -16,14 +16,15 @@ public partial class CreateNewOrder {
                 Qty = product.Qty,
                 product.UnitPrice,
                 product.ProductNumber,
+                Room = product.Room,
             };
 
             await connection.ExecuteAsync(
                 """
                 INSERT INTO products
-                    (id, order_id, qty, unit_price, product_number)
+                    (id, order_id, qty, unit_price, product_number, room)
                 VALUES
-                    (@Id, @OrderId, @Qty, @UnitPrice, @ProductNumber);
+                    (@Id, @OrderId, @Qty, @UnitPrice, @ProductNumber, @Room);
                 """, parameters, trx);
 
         }
@@ -49,7 +50,6 @@ public partial class CreateNewOrder {
                 CabRightSideType = cabinet.RightSideType,
                 CabAssembled = cabinet.Assembled,
                 CabComment = cabinet.Comment,
-                CabRoom = cabinet.Room,
                 MDFConfigId = mdfConfigId
             };
 
@@ -74,7 +74,6 @@ public partial class CreateNewOrder {
                     right_side_type,
                     assembled,
                     comment,
-                    room,
                     mdf_config_id)
                 VALUES
                     (@ProductId,
@@ -95,7 +94,6 @@ public partial class CreateNewOrder {
                     @CabRightSideType,
                     @CabAssembled,
                     @CabComment,
-                    @CabRoom,
                     @MDFConfigId);
                 """, parameters, trx);
 

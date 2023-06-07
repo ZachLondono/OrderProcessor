@@ -33,6 +33,7 @@ internal class TrashCabinetDataModel : CabinetDrawerBoxContainerDataModelBase, I
            	    products.qty,
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
+           	    products.room,
 
            	    cabinets.height,
            	    cabinets.width,
@@ -54,7 +55,6 @@ internal class TrashCabinetDataModel : CabinetDrawerBoxContainerDataModelBase, I
            	    cabinets.right_side_type AS RightSideType,
            	    cabinets.assembled,
            	    cabinets.comment,
-           	    cabinets.room,
 
            	    trash_cabinets.toe_type AS ToeType,
                 trash_cabinets.trash_config AS TrashConfig,

@@ -7,7 +7,6 @@ namespace ApplicationCore.Features.Orders.Shared.State.DataModels;
 
 internal class ClosetPartDataModel : ProductDataModelBase, IProductDataModel, IQueryableProductDataModel {
 
-    public string Room { get; set; } = string.Empty;
     public string Sku { get; set; } = string.Empty;
     public Dimension Width { get; set; }
     public Dimension Length { get; set; }
@@ -28,8 +27,8 @@ internal class ClosetPartDataModel : ProductDataModelBase, IProductDataModel, IQ
         	products.qty,
         	products.unit_price AS UnitPrice,
         	products.product_number AS ProductNumber,
+            products.room,
 
-            closet_parts.room,
             closet_parts.sku,
             closet_parts.width,
             closet_parts.length,

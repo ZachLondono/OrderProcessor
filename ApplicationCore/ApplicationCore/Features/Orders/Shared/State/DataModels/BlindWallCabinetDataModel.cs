@@ -37,6 +37,7 @@ internal class BlindWallCabinetDataModel : CabinetDataModelBase, IProductDataMod
            	    products.qty,
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
+           	    products.room,
 
            	    cabinets.height,
            	    cabinets.width,
@@ -58,7 +59,6 @@ internal class BlindWallCabinetDataModel : CabinetDataModelBase, IProductDataMod
            	    cabinets.right_side_type AS RightSideType,
            	    cabinets.assembled,
            	    cabinets.comment,
-           	    cabinets.room,
 
                 blind_wall_cabinets.blind_side AS BlindSide,
                 blind_wall_cabinets.blind_width AS BlindWidth,
