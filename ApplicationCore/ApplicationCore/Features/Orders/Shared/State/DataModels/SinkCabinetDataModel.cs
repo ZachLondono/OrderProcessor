@@ -15,6 +15,11 @@ internal class SinkCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
     public Dimension DrawerFaceHeight { get; set; }
     public int AdjShelfQty { get; set; }
     public ShelfDepth ShelfDepth { get; set; }
+    public bool TiltFront { get; set; }
+    public bool ContainsScoopSides { get; set; }
+    public double? ScoopDepth { get; set; }
+    public double? ScoopFromFront { get; set; }
+    public double? ScoopFromBack { get; set; }
 
     public IProduct MapToProduct() {
 
@@ -26,8 +31,16 @@ internal class SinkCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
         var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
+        ScoopSides? scoops = null;
+        if (ContainsScoopSides) {
+            if (ScoopDepth is null || ScoopFromFront is null || ScoopFromBack is null) {
+                throw new NullReferenceException("One or more sink scoop dimensions are null");
+            }
+            scoops = new(Dimension.FromMillimeters((double) ScoopDepth), Dimension.FromMillimeters((double) ScoopFromFront), Dimension.FromMillimeters((double) ScoopFromBack));
+        }
+
         return new SinkCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
-            ToeType, HingeSide, DoorQty, FalseDrawerQty, DrawerFaceHeight, AdjShelfQty, ShelfDepth, rollOuts, dbOptions);
+            ToeType, HingeSide, DoorQty, FalseDrawerQty, DrawerFaceHeight, AdjShelfQty, ShelfDepth, rollOuts, dbOptions, TiltFront, scoops);
 
     }
 
@@ -70,6 +83,11 @@ internal class SinkCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
             sink_cabinets.drawer_face_height AS DrawerFaceHeight,
             sink_cabinets.adj_shelf_qty AS AdjShelfQty,
             sink_cabinets.shelf_depth AS ShelfDepth,
+            sink_cabinets.tilt_front AS TiltFront,
+            sink_cabinets.scoop_sides AS ContainsScoopSides,
+            sink_cabinets.scoop_depth AS ScoopDepth,
+            sink_cabinets.scoop_from_front AS ScoopFromFront,
+            sink_cabinets.scoop_from_back AS ScoopFromBack,
 
             db_config.material AS DBMaterial,
             db_config.slide_type AS DBSlideType,

@@ -39,6 +39,21 @@ public class SinkCabinetModel : CabinetModelBase {
     [XmlElement("rollOuts")]
     public RollOuts RollOuts { get; set; } = new();
 
+    [XmlElement("tiltFront")]
+    public string TiltFront { get; set; } = string.Empty;
+
+    [XmlElement("scoopSides")]
+    public string ScoopSides { get; set; } = string.Empty;
+
+    [XmlElement("scoopDepth")]
+    public double ScoopDepth { get; set; }
+
+    [XmlElement("scoopFromFront")]
+    public double ScoopFromFront { get; set; }
+
+    [XmlElement("scoopFromBack")]
+    public double ScoopFromBack { get; set; }  
+
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
         Dimension[] rollOutBoxPositions = AllmoxyXMLOrderProviderHelpers.GetRollOutPositions(RollOuts.Pos1, RollOuts.Pos2, RollOuts.Pos3, RollOuts.Pos4, RollOuts.Pos5);
@@ -50,6 +65,13 @@ public class SinkCabinetModel : CabinetModelBase {
         var rollOutOptions = new RollOutOptions(rollOutBoxPositions, scoopFront, rollOutBlocks);
 
         var shelfDepth = AllmoxyXMLOrderProviderHelpers.GetShelfDepth(ShelfDepth);
+
+        bool tiltFront = (TiltFront == "Yes");
+
+        ScoopSides? scoops = null;
+        if (ScoopSides == "Yes") {
+            scoops = new(Dimension.FromMillimeters(ScoopDepth), Dimension.FromMillimeters(ScoopFromFront), Dimension.FromMillimeters(ScoopFromBack));
+        }
 
         var builder = builderFactory.CreateSinkCabinetBuilder();
 
@@ -63,6 +85,8 @@ public class SinkCabinetModel : CabinetModelBase {
                     .WithAdjustableShelves(AdjShelfQty)
                     .WithShelfDepth(shelfDepth)
                     .WithBoxOptions(boxOptions)
+                    .WithTiltFront(tiltFront)
+                    .WithScoops(scoops)
                     .Build();
     }
 

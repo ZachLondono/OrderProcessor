@@ -273,6 +273,11 @@ CREATE TABLE sink_cabinets (
 	rollout_block_type INTEGER NOT NULL,
 	rollout_scoop_front INTEGER NOT NULL,
 	db_config_id BLOB NOT NULL,
+	tilt_front INTEGER NOT NULL,
+	scoop_sides INTEGER NOT NULL,
+	scoop_depth REAL,
+	scoop_from_front REAL,
+	scoop_from_back REAL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
 	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)

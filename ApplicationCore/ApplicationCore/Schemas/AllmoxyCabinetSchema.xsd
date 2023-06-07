@@ -212,6 +212,11 @@
                       <xs:element name="drawerSlide" type="xs:string" />
                       <xs:element name="adjShelfQty" type="xs:integer" />
                       <xs:element name="shelfDepth" type="xs:string" />
+                      <xs:element name="tiltFront" type="xs:string" />
+                      <xs:element name="scoopSides" type="xs:string" />
+                      <xs:element name="scoopDepth" type="xs:decimal" />
+                      <xs:element name="scoopFromFront" type="xs:decimal" />
+                      <xs:element name="scoopFromBack" type="xs:decimal" />
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />

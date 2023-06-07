@@ -16,6 +16,8 @@ internal class SinkCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
     public ShelfDepth ShelfDepth { get; }
     public RollOutOptions RollOutBoxes { get; }
     public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
+    public bool TiltFront { get; }
+    public ScoopSides? Scoops { get; }
 
     public override string GetDescription() => "Sink Cabinet";
 
@@ -33,7 +35,7 @@ internal class SinkCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        ToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes, CabinetDrawerBoxOptions drawerBoxOptions)
+                        ToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes, CabinetDrawerBoxOptions drawerBoxOptions, bool tiltFront, ScoopSides? scoops)
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
         ToeType = toeType;
         HingeSide = hingeSide;
@@ -44,14 +46,16 @@ internal class SinkCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
         ShelfDepth = shelfDepth;
         RollOutBoxes = rollOutBoxes;
         DrawerBoxOptions = drawerBoxOptions;
+        TiltFront = tiltFront;
+        Scoops = scoops;
     }
 
     public static SinkCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        ToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes, CabinetDrawerBoxOptions drawerBoxOptions)
-                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, toeType, hingeSide, doorQty, falseDrawerQty, drawerFaceHeight, adjustableShelves, shelfDepth, rollOutBoxes, drawerBoxOptions);
+                        ToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes, CabinetDrawerBoxOptions drawerBoxOptions, bool tiltFront, ScoopSides? scoops)
+                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, toeType, hingeSide, doorQty, falseDrawerQty, drawerFaceHeight, adjustableShelves, shelfDepth, rollOutBoxes, drawerBoxOptions, tiltFront, scoops);
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
@@ -166,6 +170,8 @@ internal class SinkCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
             { "ShelfQ", AdjustableShelves.ToString() },
             { "PulloutBlockType", GetRollOutBlockOption() },
             { "AppliedPanel", GetAppliedPanelOption() },
+            { "TiltFront", TiltFront ? "1" : "0" },
+            { "_SinkScoopYN", Scoops is not null ? "1" : "0" }
         };
 
         int posNum = 1;
@@ -179,6 +185,12 @@ internal class SinkCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
 
         if (FalseDrawerQty != 0) {
             parameters.Add("DrawerH1", DrawerFaceHeight.AsMillimeters().ToString());
+        }
+
+        if (Scoops is not null) {
+            parameters.Add("_SinkScoopFrontD", Scoops.FromFront.AsMillimeters().ToString());
+            parameters.Add("_SinkScoopBackD", Scoops.FromBack.AsMillimeters().ToString());
+            parameters.Add("_SinkScoopDepth", Scoops.Depth.AsMillimeters().ToString());
         }
 
         return parameters;

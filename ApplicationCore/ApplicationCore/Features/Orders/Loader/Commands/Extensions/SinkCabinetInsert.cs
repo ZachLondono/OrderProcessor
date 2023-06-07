@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Shared.Domain;
 using Dapper;
 using System.Data;
 
@@ -34,7 +35,12 @@ public partial class CreateNewOrder {
                 RolloutConfigPositions = cabinet.RollOutBoxes.Positions,
                 RolloutConfigBlockType = cabinet.RollOutBoxes.Blocks,
                 RolloutConfigScoopFront = cabinet.RollOutBoxes.ScoopFront,
-                DBConfigId = dbConfigId
+                DBConfigId = dbConfigId,
+                TiltFront = cabinet.TiltFront,
+                ScoopSides = cabinet.Scoops is not null,
+                ScoopDepth = (Dimension?) (cabinet.Scoops is null ? null : cabinet.Scoops.Depth),
+                ScoopFromBack = (Dimension?) (cabinet.Scoops is null ? null : cabinet.Scoops.FromBack),
+                ScoopFromFront = (Dimension?) (cabinet.Scoops is null ? null : cabinet.Scoops.FromFront),
             };
 
             await connection.ExecuteAsync("""
@@ -50,7 +56,12 @@ public partial class CreateNewOrder {
                         rollout_positions,
                         rollout_block_type,
                         rollout_scoop_front,
-                        db_config_id)
+                        db_config_id,
+                        tilt_front,
+                        scoop_sides,
+                        scoop_depth,
+                        scoop_from_front,
+                        scoop_from_back)
                     VALUES
                         (@ProductId,
                         @ToeType,
@@ -63,7 +74,12 @@ public partial class CreateNewOrder {
                         @RolloutConfigPositions,
                         @RolloutConfigBlockType,
                         @RolloutConfigScoopFront,
-                        @DBConfigId);
+                        @DBConfigId,
+                        @TiltFront,
+                        @ScoopSides,
+                        @ScoopDepth,
+                        @ScoopFromBack,
+                        @ScoopFromFront);
                     """, parameters, trx);
 
         }
