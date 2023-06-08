@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Loader.Providers.AllmoxyXMLModels;
-using ApplicationCore.Features.Orders.Loader.XMLValidation;
+﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.XMLValidation;
+using ApplicationCore.Features.Orders.OrderLoading.Providers.AllmoxyXMLModels;
 using ApplicationCore.Features.Shared.Services;
 using FluentAssertions;
 using NSubstitute;

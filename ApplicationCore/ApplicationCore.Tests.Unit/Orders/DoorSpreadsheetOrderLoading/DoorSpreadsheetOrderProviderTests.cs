@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Loader.Providers;
-using ApplicationCore.Features.Orders.Loader.Providers.DoorOrderModels;
+﻿using ApplicationCore.Features.Orders.OrderLoading.LoadDoorSpreadsheetOrderData;
+using ApplicationCore.Features.Orders.OrderLoading.LoadDoorSpreadsheetOrderData.DoorOrderModels;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using FluentAssertions;

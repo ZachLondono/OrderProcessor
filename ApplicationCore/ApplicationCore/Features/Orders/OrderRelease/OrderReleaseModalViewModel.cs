@@ -7,7 +7,7 @@ namespace ApplicationCore.Features.Orders.OrderRelease;
 public class OrderReleaseModalViewModel {
 
     public Action? OnPropertyChanged { get; set; }
-    
+
     public bool IsLoadingConfiguration {
         get => _isLoadingConfiguration;
         set {
@@ -90,7 +90,7 @@ public class OrderReleaseModalViewModel {
             EmailSenderPassword = vendor.EmailSender.ProtectedPassword
 
         };
-        
+
         IsLoadingConfiguration = false;
 
         await LoadCNCReportFiles(order);

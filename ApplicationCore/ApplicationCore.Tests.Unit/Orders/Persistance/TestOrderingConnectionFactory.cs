@@ -28,7 +28,7 @@ internal class TestOrderingConnectionFactory : IOrderingDbConnectionFactory {
 
         }
 
-        return Task.FromResult((IDbConnection) _connection);
+        return Task.FromResult((IDbConnection)_connection);
 
     }
 

@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Loader;
-using ApplicationCore.Features.Orders.Loader.Providers;
+﻿using ApplicationCore.Features.Orders.OrderLoading;
+using ApplicationCore.Features.Orders.OrderLoading.Models;
 using FluentAssertions;
 using NSubstitute;
 

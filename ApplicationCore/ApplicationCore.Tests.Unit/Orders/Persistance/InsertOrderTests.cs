@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Data;
 using ApplicationCore.Features.Orders.Delete;
-using ApplicationCore.Features.Orders.Loader.Commands;
+using ApplicationCore.Features.Orders.OrderLoading.Commands;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
@@ -147,7 +147,7 @@ public class OrderTests {
         var sut = new DeleteOrder.Handler(_factory);
         var deleteResult = sut.Handle(new(newOrder.Id)).Result;
         deleteResult.OnError(e => Assert.Fail("Handler returned error"));
-        
+
         // Assert
         var connection = _factory.CreateConnection().Result;
 

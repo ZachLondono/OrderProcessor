@@ -106,7 +106,7 @@ public class ReleaseService {
             return;
         }
 
-        var filename = configuration.ReleaseFileName ?? $"{order.Number} RELEASE"; 
+        var filename = configuration.ReleaseFileName ?? $"{order.Number} RELEASE";
 
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
@@ -157,7 +157,7 @@ public class ReleaseService {
             return;
         }
 
-        var filename = configuration.InvoiceFileName ?? $"{order.Number} INVOICE"; 
+        var filename = configuration.InvoiceFileName ?? $"{order.Number} INVOICE";
 
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
@@ -260,11 +260,11 @@ public class ReleaseService {
                 if (!Directory.Exists(directory)) {
                     Directory.CreateDirectory(directory);
                 }
-    
+
                 var filePath = _fileReader.GetAvailableFileName(directory, name, ".pdf");
                 document.GeneratePdf(filePath);
                 files.Add(filePath);
-    
+
                 if (!isTemp) {
                     OnFileGenerated?.Invoke(Path.GetFullPath(filePath));
                 }

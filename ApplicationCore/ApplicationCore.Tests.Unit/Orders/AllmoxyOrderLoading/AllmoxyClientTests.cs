@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Loader;
-using ApplicationCore.Features.Orders.Loader.Rest;
+﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyWebOrderData;
+using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyWebOrderData.Rest;
 using FluentAssertions;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
