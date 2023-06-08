@@ -121,10 +121,10 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IDoorContainer {
     };
 
     protected override string GetProductSku() => DoorQty switch {
-            1 => "BC1D-M",
-            2 => "BC2D-M",
-            _ => "BC1D-M"
-        };
+        1 => "BC1D-M",
+        2 => "BC2D-M",
+        _ => "BC1D-M"
+    };
 
     protected override IDictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {

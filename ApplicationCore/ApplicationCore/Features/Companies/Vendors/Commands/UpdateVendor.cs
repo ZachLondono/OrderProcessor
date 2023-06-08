@@ -71,25 +71,25 @@ internal class UpdateVendor {
                     vendor.Name,
                     vendor.Phone,
                     vendor.Logo,
-                
+
                     vendor.ExportProfile.ExportDBOrder,
                     vendor.ExportProfile.ExportMDFDoorOrder,
                     vendor.ExportProfile.ExportExtFile,
-                
+
                     ReleaseInvoice = vendor.ReleaseProfile.GenerateInvoice,
                     ReleaseSendInvoiceEmail = vendor.ReleaseProfile.SendInvoiceEmail,
                     ReleaseInvoiceEmailRecipients = vendor.ReleaseProfile.InvoiceEmailRecipients,
-                
+
                     ReleaseIncludeInvoice = vendor.ReleaseProfile.IncludeInvoice,
                     ReleasePackingList = vendor.ReleaseProfile.GeneratePackingList,
                     ReleaseJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
                     ReleaseSendEmail = vendor.ReleaseProfile.SendReleaseEmail,
                     vendor.ReleaseProfile.ReleaseEmailRecipients,
-                
+
                     EmailSenderName = vendor.EmailSender.Name,
                     EmailSenderEmail = vendor.EmailSender.Email,
                     EmailSenderPassword = vendor.EmailSender.ProtectedPassword
-                
+
                 }, trx);
 
         }

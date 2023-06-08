@@ -42,7 +42,7 @@ public class OrderState {
     }
 
     public void SetWorkingDirectory(string workingDirectory) {
-        if (Order is null) return;  
+        if (Order is null) return;
         Order.WorkingDirectory = workingDirectory;
         IsDirty = true;
     }

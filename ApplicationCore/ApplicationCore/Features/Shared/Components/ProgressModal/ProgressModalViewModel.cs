@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace ApplicationCore.Features.Shared.Components.ProgressModal;
 
 public class ProgressModalViewModel {
-    
+
     public Action? OnPropertyChanged { get; set; }
 
     public bool InProgress {
@@ -26,7 +26,7 @@ public class ProgressModalViewModel {
     private bool _inProgress;
     private bool _isComplete;
     private readonly ILogger<ProgressModalViewModel> _logger;
-    
+
     public ProgressModalViewModel(ILogger<ProgressModalViewModel> logger) {
         _logger = logger;
     }

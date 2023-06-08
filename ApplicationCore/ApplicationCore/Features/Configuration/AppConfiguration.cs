@@ -14,5 +14,5 @@ public class AppConfiguration {
     public string WorkOrdersDBPath { get; set; } = string.Empty;
 
     public delegate Task<AppConfiguration?> GetConfiguration();
-    
+
 }

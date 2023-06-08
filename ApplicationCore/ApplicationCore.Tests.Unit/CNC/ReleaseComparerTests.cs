@@ -81,7 +81,7 @@ public class ReleaseComparerTests {
                         Thickness = 1,
                         Yield = 1
                     }
-                }        
+                }
             }
         };
 
@@ -105,7 +105,7 @@ public class ReleaseComparerTests {
                         Thickness = 1,
                         Yield = 1
                     }
-                }        
+                }
             }
         };
 
@@ -116,7 +116,7 @@ public class ReleaseComparerTests {
         result.Should().BeTrue();
 
     }
-    
+
     [Fact]
     public void ShouldReturnTrue_WhenComparingObjectsWhichOnlyDifferInNameAndOrientation() {
 
@@ -141,7 +141,7 @@ public class ReleaseComparerTests {
                         Thickness = 1,
                         Yield = 1
                     }
-                }        
+                }
             }
         };
 
@@ -165,7 +165,7 @@ public class ReleaseComparerTests {
                         Thickness = 1,
                         Yield = 1
                     }
-                }        
+                }
             }
         };
 
@@ -176,7 +176,7 @@ public class ReleaseComparerTests {
         result.Should().BeTrue();
 
     }
- 
+
     [Fact]
     public void ShouldReturnFalse_WhenObjectsContainDifferentToolsInTheSamePosition() {
 
@@ -202,7 +202,7 @@ public class ReleaseComparerTests {
         result.Should().BeFalse();
 
     }
- 
+
     [Fact]
     public void ShouldReturnTrue_WhenObjectsContainDifferentNumberOfToolSlots() {
 
@@ -230,7 +230,7 @@ public class ReleaseComparerTests {
         result.Should().BeTrue();
 
     }
- 
+
     [Theory]
     [InlineData("A", "B", "", "C", "A", "B", "", "")]
     [InlineData("A", "B", "", "", "A", "B", "", "C")]
@@ -242,7 +242,7 @@ public class ReleaseComparerTests {
                 [1] = a1,
                 [2] = a2,
                 [3] = a3,
-                [4] = a4 
+                [4] = a4
             }.AsReadOnly()
         };
 
@@ -268,7 +268,7 @@ public class ReleaseComparerTests {
 
         // Arrange
         MachineRelease? a = new() {
-           Programs = new List<ReleasedProgram>() {
+            Programs = new List<ReleasedProgram>() {
                 new(),
                 new(),
                 new()
@@ -276,7 +276,7 @@ public class ReleaseComparerTests {
         };
 
         MachineRelease? b = new() {
-           Programs = new List<ReleasedProgram>() {
+            Programs = new List<ReleasedProgram>() {
                 new(),
             }
         };
@@ -294,7 +294,7 @@ public class ReleaseComparerTests {
 
         // Arrange
         MachineRelease? a = new() {
-           Programs = new List<ReleasedProgram>() {
+            Programs = new List<ReleasedProgram>() {
                 new() {
                     Material = new() {
                         Name = "A"
@@ -304,7 +304,7 @@ public class ReleaseComparerTests {
         };
 
         MachineRelease? b = new() {
-           Programs = new List<ReleasedProgram>() {
+            Programs = new List<ReleasedProgram>() {
                 new() {
                     Material = new() {
                         Name = "A"
@@ -333,7 +333,7 @@ public class ReleaseComparerTests {
 
         // Arrange
         MachineRelease? a = new() {
-           Programs = new List<ReleasedProgram>() {
+            Programs = new List<ReleasedProgram>() {
                 new() {
                     Material = new() {
                         Name = name1,
@@ -347,7 +347,7 @@ public class ReleaseComparerTests {
         };
 
         MachineRelease? b = new() {
-           Programs = new List<ReleasedProgram>() {
+            Programs = new List<ReleasedProgram>() {
                 new() {
                     Material = new() {
                         Name = name2,
@@ -373,7 +373,7 @@ public class ReleaseComparerTests {
 
         // Arrange
         MachineRelease? a = new() {
-           Programs = new List<ReleasedProgram>() {
+            Programs = new List<ReleasedProgram>() {
                 new() {
                    Parts = new List<NestedPart>() {
                        new()
@@ -383,13 +383,13 @@ public class ReleaseComparerTests {
         };
 
         MachineRelease? b = new() {
-           Programs = new List<ReleasedProgram>() {
+            Programs = new List<ReleasedProgram>() {
                 new() {
                    Parts = new List<NestedPart>() {
                        new(),
                        new(),
                        new()
-                   } 
+                   }
                 }
             }
         };

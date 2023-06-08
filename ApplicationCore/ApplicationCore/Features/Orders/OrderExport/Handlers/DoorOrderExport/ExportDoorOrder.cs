@@ -78,13 +78,13 @@ public class ExportDoorOrder {
 
         private IEnumerable<MDFDoorComponent> SelectDoorsFromProduct(IProduct p) {
             try {
-            
+
                 return ((IDoorContainer)p).GetDoors(_factory.CreateMDFDoorBuilder)
                                                 .Select(d => new MDFDoorComponent() {
                                                     ProductId = p.Id,
                                                     Door = d
                                                 });
-            
+
             } catch {
                 return Enumerable.Empty<MDFDoorComponent>();
             }

@@ -27,7 +27,7 @@ internal partial class WSXMLParser {
         var allParts = job.Elements("Item")
                            .Where(item => item.ElementValue("Note") == "Nested blocknest")
                            .Where(nest => nest.Elements("Part").Any())
-                           .SelectMany(item => 
+                           .SelectMany(item =>
                                 item.Elements("Part")
                                             .Select(Part.FromXElemnt)
                                             .ToList())

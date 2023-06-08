@@ -114,7 +114,7 @@ public partial class OrderDetails {
         OrderState.SetWorkingDirectory(_workingDirectory);
     }
 
-    public override void Handle(WorkOrdersUpdateNotification notification) {  
+    public override void Handle(WorkOrdersUpdateNotification notification) {
 
         InvokeAsync(UpdateProductStatuses);
 
@@ -125,7 +125,7 @@ public partial class OrderDetails {
         public T Product { get; init; }
         public bool IsComplete { get; set; } = false;
 
-        public ProductRowModel(T product ) {
+        public ProductRowModel(T product) {
             Product = product;
         }
 

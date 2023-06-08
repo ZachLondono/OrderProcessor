@@ -5,7 +5,7 @@ using ApplicationCore.Features.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer  {
+internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
 
     public Dimension DrawerFaceHeight { get; set; }
     public TrashPulloutConfiguration TrashPulloutConfiguration { get; set; }
@@ -138,7 +138,7 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer  {
                 TrashPulloutConfiguration.OneCan => "1",
                 TrashPulloutConfiguration.TwoCans => "2",
                 _ => "0"
-            } 
+            }
         };
 
         return parameters;

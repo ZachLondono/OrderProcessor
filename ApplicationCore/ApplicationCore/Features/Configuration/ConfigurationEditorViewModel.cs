@@ -6,7 +6,7 @@ namespace ApplicationCore.Features.Configuration;
 internal class ConfigurationEditorViewModel {
 
     public const string FILE_PATH = @"./Configuration/data.json";
-    
+
     public Action? OnPropertyChanged { get; set; }
 
     private AppConfiguration? _configuration = null;

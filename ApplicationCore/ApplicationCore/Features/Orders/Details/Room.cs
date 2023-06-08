@@ -9,7 +9,7 @@ namespace ApplicationCore.Features.Orders.Details;
 public class Room {
 
     public required string Name { get; set; }
-    public required List<CabinetRowModel> Cabinets { get; init; } 
+    public required List<CabinetRowModel> Cabinets { get; init; }
     public required List<ClosetPartRowModel> ClosetParts { get; init; }
     public required List<DovetailDrawerBoxRowModel> DovetailDrawerBoxes { get; init; }
     public required List<MDFDoorRowModel> MDFDoors { get; init; }
@@ -31,7 +31,7 @@ public class Room {
                                 .Select(db => new DovetailDrawerBoxRowModel(db))
                                 .ToList();
 
-        var doors = productGrouping 
+        var doors = productGrouping
                         .OfType<MDFDoorProduct>()
                         .Select(door => new MDFDoorRowModel(door))
                         .ToList();

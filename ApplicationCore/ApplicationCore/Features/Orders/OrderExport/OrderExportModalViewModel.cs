@@ -27,7 +27,7 @@ internal class OrderExportModalViewModel {
     }
 
     public async Task LoadConfiguration(Order order) {
-        
+
         var vendor = await _getVendorByIdAsync(order.VendorId);
 
         if (vendor is null) return;

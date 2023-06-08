@@ -105,7 +105,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
     protected Dictionary<string, PPMaterial> GetFinishMaterials() {
         string finishMaterial = GetFinishMaterialType(FinishMaterial.Core);
         string boxMaterial = GetFinishMaterialType(BoxMaterial.Core);
-        var materials =  new Dictionary<string, PPMaterial> {
+        var materials = new Dictionary<string, PPMaterial> {
             ["F_Exp_SemiExp"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),
             ["F_Exp_Unseen"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),
             ["F_Exposed"] = new PPMaterial(finishMaterial, FinishMaterial.Finish),

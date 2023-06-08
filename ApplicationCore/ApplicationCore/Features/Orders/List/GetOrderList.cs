@@ -45,7 +45,7 @@ public class GetOrderList {
                             (select SUM(qty) from products where products.order_id=orders.id) AS ItemCount
                         FROM orders{queryFilter};
                         """;
-            
+
             var items = await connection.QueryAsync<OrderListItem>(query, request);
 
             return new(items);

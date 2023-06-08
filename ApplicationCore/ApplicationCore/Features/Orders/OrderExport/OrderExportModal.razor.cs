@@ -1,5 +1,4 @@
-﻿
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Shared.Components.ProgressModal;
 using Blazored.Modal;
 using Blazored.Modal.Services;
@@ -35,7 +34,7 @@ public partial class OrderExportModal {
             _errorMessage = "Error occurred while trying to load configuration";
             Logger.LogError(ex, "Exception thrown while trying to load export configuration for order {OrderId}", Order.Id);
         }
-        
+
         StateHasChanged();
 
     }
@@ -51,11 +50,11 @@ public partial class OrderExportModal {
         var parameters = DataContext.CreateExportProgressModalParameters();
 
         var options = new ModalOptions() {
-                HideHeader = true,
-                HideCloseButton = true,
-                DisableBackgroundCancel = true,
-                Size = ModalSize.Large
-            };
+            HideHeader = true,
+            HideCloseButton = true,
+            DisableBackgroundCancel = true,
+            Size = ModalSize.Large
+        };
 
         var dialog = ModalService.Show<ProgressModal>("Order Export Progress", parameters, options);
 

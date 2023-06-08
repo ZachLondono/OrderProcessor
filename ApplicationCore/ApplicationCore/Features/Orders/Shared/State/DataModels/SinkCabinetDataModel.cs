@@ -36,7 +36,7 @@ internal class SinkCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
             if (ScoopDepth is null || ScoopFromFront is null || ScoopFromBack is null) {
                 throw new NullReferenceException("One or more sink scoop dimensions are null");
             }
-            scoops = new(Dimension.FromMillimeters((double) ScoopDepth), Dimension.FromMillimeters((double) ScoopFromFront), Dimension.FromMillimeters((double) ScoopFromBack));
+            scoops = new(Dimension.FromMillimeters((double)ScoopDepth), Dimension.FromMillimeters((double)ScoopFromFront), Dimension.FromMillimeters((double)ScoopFromBack));
         }
 
         return new SinkCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,

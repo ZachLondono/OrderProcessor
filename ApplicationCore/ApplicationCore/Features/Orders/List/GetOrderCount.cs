@@ -28,7 +28,7 @@ public class GetOrderCount {
                 SearchTerm = request.SearchTerm,
                 CustomerId = request.CustomerId,
                 VendorId = request.VendorId,
-            
+
             }.GetQueryFilter();
 
             var query = $"""

@@ -58,7 +58,7 @@ public class DeleteOrderConfirmationModalViewModel {
             error => Error = error
         );
 
-    } 
+    }
 
     public async Task<bool> ConfirmDelete() {
 

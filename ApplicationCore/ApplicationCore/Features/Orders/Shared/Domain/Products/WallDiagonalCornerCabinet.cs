@@ -55,10 +55,10 @@ internal class WallDiagonalCornerCabinet : Cabinet, IDoorContainer {
                         => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfOptions, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, adjShelfQty, hingeSide, doorQty, extendedDoor);
 
     protected override string GetProductSku() => DoorQty switch {
-            1 => "WC1D-M",
-            2 => "WC2D-M",
-            _ => "WC1D-M"
-        };
+        1 => "WC1D-M",
+        2 => "WC2D-M",
+        _ => "WC1D-M"
+    };
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 

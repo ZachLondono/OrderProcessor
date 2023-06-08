@@ -105,7 +105,7 @@ public class OrderListViewModel {
         countResponse.OnSuccess(
             totalOrders => {
                 TotalOrderCount = totalOrders;
-                PageCount = (int) Math.Ceiling((float)totalOrders / (float)PageSize);
+                PageCount = (int)Math.Ceiling((float)totalOrders / (float)PageSize);
             });
 
         var response = await _bus.Send(new GetOrderList.Query(customerId, vendorId, searchTerm, Page, PageSize));

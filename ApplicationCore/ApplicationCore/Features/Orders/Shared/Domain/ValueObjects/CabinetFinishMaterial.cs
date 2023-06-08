@@ -35,7 +35,7 @@ public record CabinetFinishMaterial {
         Finish = matFinish,
         FinishType = CabinetMaterialFinishType.Paint,
         Core = CabinetMaterialCore.ParticleBoard,
-        PaintColor = paintColor 
+        PaintColor = paintColor
     };
 
     public static CabinetFinishMaterial UnPaintedVeneerPly(string finish) => new() {
@@ -49,7 +49,7 @@ public record CabinetFinishMaterial {
         Finish = matFinish,
         FinishType = CabinetMaterialFinishType.Paint,
         Core = CabinetMaterialCore.Plywood,
-        PaintColor = paintColor 
+        PaintColor = paintColor
     };
 
 }
