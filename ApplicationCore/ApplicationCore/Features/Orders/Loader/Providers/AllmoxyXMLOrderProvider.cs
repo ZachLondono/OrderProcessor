@@ -59,12 +59,7 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
         }
         
         string workingDirectory = Path.Combine(@"R:\Job Scans\Allmoxy", _fileReader.RemoveInvalidPathCharacters($"{data.Number} - {data.Customer.Company} - {data.Name}", ' '));
-
-        bool workingDirExists = Directory.Exists(workingDirectory);
-        if (!workingDirExists) {
-            var dirInfo = Directory.CreateDirectory(workingDirectory);
-            workingDirExists = dirInfo.Exists;
-        }
+        bool workingDirExists = TryToCreateWorkingDirectory(workingDirectory);
 
         if (workingDirExists) {
             string dataFile = _fileReader.GetAvailableFileName(workingDirectory, "Incoming", ".xml");
@@ -128,6 +123,23 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
         };
 
         return order;
+
+    }
+
+    private bool TryToCreateWorkingDirectory(string workingDirectory) {
+
+        if (Directory.Exists(workingDirectory)) {
+            return true;
+        }
+
+            try {
+                var dirInfo = Directory.CreateDirectory(workingDirectory);
+            return dirInfo.Exists;
+            } catch (Exception ex) {
+                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
+            }
+
+        return false;
 
     }
 
