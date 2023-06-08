@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Companies.Contracts;
+﻿using ApplicationCore.Features.CNC.Contracts;
+using ApplicationCore.Features.Companies.Contracts;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
@@ -81,6 +82,7 @@ public class ReleaseService {
             decorators.Add(_invoiceDecorator);
         }
 
+        List<ReleasedJob> releases = new();
         if (configuration.GenerateCNCRelease) {
             foreach (var filePath in configuration.CNCDataFilePaths) {
 
@@ -89,8 +91,11 @@ public class ReleaseService {
                     continue;
                 }
 
-                var decorator = await _cncReleaseDecoratorFactory.Create(filePath, order);
+                var (decorator, jobData) = await _cncReleaseDecoratorFactory.Create(filePath, order);
                 decorators.Add(decorator);
+                if (jobData is not null) {
+                    releases.Add(jobData);
+                }
 
                 if (configuration.CopyCNCReportToWorkingDirectory) {
                     CopyReportToWorkingDirectory(order, filePath);

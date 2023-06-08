@@ -20,14 +20,15 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
         _getToolCarousels = getToolCarousels;
     }
 
-    public async Task LoadDataFromFile(string reportFilePath, DateTime orderDate, string customerName, string vendorName) {
+    public async Task<ReleasedJob?> LoadDataFromFile(string reportFilePath, DateTime orderDate, string customerName, string vendorName) {
 
         var toolCarousels = await _getToolCarousels();
         var report = WSXMLParser.ParseWSXMLReport(reportFilePath);
         if (report is null) {
-            return;
+            return null;
         }
         _jobData = MapDataToReleasedJob(report, orderDate, customerName, vendorName, toolCarousels);
+        return _jobData;
 
     }
 

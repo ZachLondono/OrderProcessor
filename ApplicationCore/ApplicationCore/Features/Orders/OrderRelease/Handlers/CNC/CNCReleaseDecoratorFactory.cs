@@ -17,7 +17,7 @@ public class CNCReleaseDecoratorFactory {
         _getVendorByIdAsync = getVendorByIdAsync;
     }
 
-    public async Task<ICNCReleaseDecorator> Create(string reportFilePath, Order order) {
+    public async Task<(ICNCReleaseDecorator, ReleasedJob?)> Create(string reportFilePath, Order order) {
 
         var customer = await _getCustomerByIdAsync(order.CustomerId);
         var vendor = await _getVendorByIdAsync(order.VendorId);
@@ -26,8 +26,8 @@ public class CNCReleaseDecoratorFactory {
         string vendorName = vendor?.Name ?? "";
 
         var decorator = _serviceProvider.GetRequiredService<ICNCReleaseDecorator>();
-        await decorator.LoadDataFromFile(reportFilePath, order.OrderDate, customerName, vendorName);
-        return decorator;
+        var job = await decorator.LoadDataFromFile(reportFilePath, order.OrderDate, customerName, vendorName);
+        return (decorator, job);
 
     }
 
