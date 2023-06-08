@@ -146,22 +146,10 @@ internal class QuestPDFWriter : IReleasePDFWriter {
             Content = partsTableContent
         };
 
-        var toolTableContent = new List<Dictionary<string, string>>();
-        var row = new Dictionary<string, string>();
-        bool hasTools = false;
-        foreach (var pos in releases.First().ToolTable.Keys.OrderBy(p => p)) {
-            row.Add(pos.ToString(), releases.First().ToolTable[pos]);
-            if (!string.IsNullOrWhiteSpace(releases.First().ToolTable[pos])) hasTools = true;
-        }
-        toolTableContent.Add(row);
-
-        var toolTable = new Table() {
-            Title = "Tools Used",
-            Content = toolTableContent
-        };
+        var toolTables = CreateToolTables(releases);
 
         var tables = new List<Table>();
-        if (hasTools) tables.Add(toolTable);
+        tables.AddRange(toolTables);
         tables.Add(materialTable);
         tables.Add(partsTable);
 
@@ -183,6 +171,41 @@ internal class QuestPDFWriter : IReleasePDFWriter {
     }
 
     private static string GetGuidAsBase64(Guid id) => Convert.ToBase64String(id.ToByteArray()).Replace("/", "-").Replace("+", "_").Replace("=", "");
+
+    private static List<Table> CreateToolTables(IEnumerable<MachineRelease> releases) {
+
+        List<Table> toolTables = new();
+
+        foreach (var release in releases) {
+
+            bool hasTools = false;
+
+            var toolTableContent = new List<Dictionary<string, string>>();
+            var row = new Dictionary<string, string>();
+
+            foreach (var pos in release.ToolTable.Keys.OrderBy(p => p)) {
+                row.Add(pos.ToString(), release.ToolTable[pos]);
+                if (!string.IsNullOrWhiteSpace(release.ToolTable[pos])) {
+                    hasTools = true;
+                }
+            }
+
+            toolTableContent.Add(row);
+    
+            var toolTable = new Table() {
+                Title = $"{release.MachineName} Tools Used",
+                Content = toolTableContent
+            };
+
+            if (hasTools) {
+                toolTables.Add(toolTable);
+            }
+
+        }
+
+        return toolTables;
+
+    }
 
 }
 

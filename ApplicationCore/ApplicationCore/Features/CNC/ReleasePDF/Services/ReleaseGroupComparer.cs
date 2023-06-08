@@ -46,29 +46,16 @@ public class ReleaseGroupComparer : IEqualityComparer<MachineRelease> {
 
         }
 
-
         // Both tool tables must _similar_ but do not need to be _exactly_ the same.
-        // Both tool tables must have the same tools in the same positions, but if one has extra empty tool positions that are not present on the other table, that is fine
-        foreach (var position in x.ToolTable.Keys) {
-
-            var tool = x.ToolTable[position];
-
-            if (tool == string.Empty) {
-
-                if (y.ToolTable.TryGetValue(position, out string? yTool)) {
-                    if (yTool != string.Empty) {
-                        return false;
-                    }
-                }
-
-            } else if (y.ToolTable.TryGetValue(position, out string? yTool)) {
-
-                if (tool != yTool) return false;
-
-            } else return false;
-
+        // Both tool tables must have the same tools but the positions which they are in does not matter
+        var xToolNames = x.ToolTable.Values.Where(tn => tn != string.Empty).Select(tn => tn.ToLower()).Distinct().ToList();
+        var yToolNames = y.ToolTable.Values.Where(tn => tn != string.Empty).Select(tn => tn.ToLower()).Distinct().ToList();
+        if (xToolNames.Count != yToolNames.Count) return false;
+        foreach (var toolName in xToolNames) {
+            if (!yToolNames.Contains(toolName)) {
+                return false;
+            }
         }
-
 
         return true;
 
