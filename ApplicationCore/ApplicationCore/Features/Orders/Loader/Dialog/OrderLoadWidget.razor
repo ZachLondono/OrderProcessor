@@ -6,12 +6,11 @@
 @using ApplicationCore.Infrastructure.Bus;
 @using static ApplicationCore.Features.Shared.Components.Button
 @inject NavigationService NavigationService
-@inject OrderState OrderState
-@inject IBus Bus
 @inject IJSRuntime JSRuntime
-@implements IOrderLoadingViewModel
+@inject OrderLoadWidgetViewModel DataContext
 
-@switch (_state) {
+@switch (DataContext.State) {
+
     case State.Loading:
 
         <div class="text-center mb-4 font-bold text-blue-700">Loading Order...</div>
@@ -23,7 +22,7 @@
 
     case State.Complete:
 
-        <div class="text-center mb-2 font-bold text-green-500">Order @(OrderState.Order?.Number ?? "") Loaded</div>
+        <div class="text-center mb-2 font-bold text-green-500">Order Loaded</div>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto h-14 w-14 text-green-700">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
@@ -38,11 +37,10 @@
         break;
 
     default:
-        <!-- Empty -->
         break;
 }
 
-@if (_messages.Any()) {
+@if (DataContext.Messages.Any()) {
 
     <div class="my-5 shadow-md max-h-48 w-full overflow-x-hidden overflow-y-scroll p-1.5 border border-gray-200" @ref="_messagebox">
         <table class="w-full border-collapse text-xs">
@@ -52,7 +50,7 @@
                 </td>
             </tr>
 
-            @foreach (var message in _messages) {
+            @foreach (var message in DataContext.Messages) {
                 <tr class="border-b border-gray-100">
                     <td class="w-4">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4">
@@ -82,11 +80,10 @@
 
 }
 
-@if (_state == State.Complete) {
+@if (DataContext.State == State.Complete) {
     <Button Style="ButtonStyle.Text" Color="ButtonColor.Success" OnClickAsync="OpenOrderDetails" Class="mt-3 float-right mr-3">Open Order</Button>
 }
-<Button Style="ButtonStyle.Text" Color="ButtonColor.Secondary" Disabled="@(_state != State.Complete && _state != State.Error)" OnClickAsync="CloseDialog" Class="mt-3 float-right">Close</Button>
-
+<Button Style="ButtonStyle.Text" Color="ButtonColor.Secondary" Disabled="@(DataContext.State != State.Complete && DataContext.State != State.Error)" OnClickAsync="CloseDialog" Class="mt-3 float-right">Close</Button>
 
 @code {
 
@@ -99,45 +96,19 @@
     [Parameter]
     public string Source { get; set; } = string.Empty;
 
-    private Guid? _orderId = null;
-    private State _state = State.Loading;
-    private List<OrderLoadMessage> _messages = new();
     private ElementReference _messagebox;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender) {
-
-        if (!firstRender) return;
-
-        var data = await Bus.Send(new LoadOrderCommand.Command(SourceType, Source, this));
-
-        data.Match(
-            order => {
-
-                _orderId = order.Id;
-                _state = State.Complete;
-
-            },
-            error => {
-
-                _messages.Add(new OrderLoadMessage() {
-                    Severity = MessageSeverity.Error,
-                    Message = error.Title + " - " + error.Details
-                });
-                _state = State.Error;
-
-            }
-        );
-
-        StateHasChanged();
-
+    protected override void OnInitialized() {
+        DataContext.OnPropertyChanged += StateHasChanged;
+        DataContext.OnMessageAdded += OnMessageAdded;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (!firstRender) return;
+        await DataContext.LoadOrderFromSourceAsync(SourceType, Source);
+    }
 
-    public void AddLoadingMessage(MessageSeverity severity, string message) {
-        _messages.Add(new() {
-            Severity = severity,
-            Message = message
-        });
+    private void OnMessageAdded() {
         InvokeAsync(StateHasChanged);
         JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
     }
@@ -148,16 +119,10 @@
 
     private async Task OpenOrderDetails() {
         await BlazoredModal.CloseAsync();
-        if (_orderId is Guid orderId) {
-            await NavigationService.NavigateToOrderPage(orderId);
+        if (DataContext.LoadedOrderId == Guid.Empty) {
+            return;
         }
-    }
-
-    private enum State {
-        Unknown,
-        Loading,
-        Complete,
-        Error
+        await NavigationService.NavigateToOrderPage(DataContext.LoadedOrderId);
     }
 
 }

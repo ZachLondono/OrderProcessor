@@ -18,7 +18,7 @@ namespace ApplicationCore.Features.Orders.Loader.Providers;
 
 internal class DoorSpreadsheetOrderProvider : IOrderProvider {
 
-    public IOrderLoadingViewModel? OrderLoadingViewModel { get; set; }
+    public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
 
     private readonly IFileReader _fileReader;
     private readonly DoorOrderProviderOptions _options;

@@ -28,7 +28,7 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
     private readonly InsertCustomerAsync _insertCustomerAsync;
     private readonly IFileReader _fileReader;
 
-    public IOrderLoadingViewModel? OrderLoadingViewModel { get; set; }
+    public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
 
     public AllmoxyXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader) {
         _configuration = configuration.Value;
@@ -57,7 +57,7 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find order information in given data");
             return null;
         }
-        
+
         string workingDirectory = Path.Combine(@"R:\Job Scans\Allmoxy", _fileReader.RemoveInvalidPathCharacters($"{data.Number} - {data.Customer.Company} - {data.Name}", ' '));
         bool workingDirExists = TryToCreateWorkingDirectory(workingDirectory);
 
@@ -132,12 +132,12 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
             return true;
         }
 
-            try {
-                var dirInfo = Directory.CreateDirectory(workingDirectory);
+        try {
+            var dirInfo = Directory.CreateDirectory(workingDirectory);
             return dirInfo.Exists;
-            } catch (Exception ex) {
-                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
-            }
+        } catch (Exception ex) {
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
+        }
 
         return false;
 

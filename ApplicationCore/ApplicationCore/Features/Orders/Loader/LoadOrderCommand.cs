@@ -9,21 +9,19 @@ namespace ApplicationCore.Features.Orders.Loader;
 
 public class LoadOrderCommand {
 
-    public record Command(OrderSourceType SourceType, string Source, IOrderLoadingViewModel? OrderLoadingViewModel = null) : ICommand<Order>;
+    public record Command(OrderSourceType SourceType, string Source, IOrderLoadWidgetViewModel? OrderLoadingViewModel = null) : ICommand<OrderData?>;
 
-    public class Handler : CommandHandler<Command, Order> {
+    public class Handler : CommandHandler<Command, OrderData?> {
 
         private readonly IOrderProviderFactory _factory;
-        private readonly IBus _bus;
 
-        public Handler(IOrderProviderFactory factory, IBus bus) {
+        public Handler(IOrderProviderFactory factory) {
             _factory = factory;
-            _bus = bus;
         }
 
-        public override async Task<Response<Order>> Handle(Command request) {
+        public override async Task<Response<OrderData?>> Handle(Command request) {
 
-            var provider = _factory.GetOrderProvider(request.SourceType);
+            IOrderProvider provider = _factory.GetOrderProvider(request.SourceType);
             provider.OrderLoadingViewModel = request.OrderLoadingViewModel;
 
             OrderData? data = await provider.LoadOrderData(request.Source);
@@ -37,25 +35,7 @@ public class LoadOrderCommand {
 
             }
 
-            var billing = new BillingInfo() {
-                InvoiceEmail = null,
-                PhoneNumber = "",
-                Address = new()
-            };
-
-            try {
-
-                Response<Order> result = await _bus.Send(new CreateNewOrder.Command(request.Source, data.Number, data.Name, data.WorkingDirectory, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Shipping, billing, data.Tax, data.PriceAdjustment, data.Rush, data.Info, data.Products, data.AdditionalItems));
-                return result;
-
-            } catch (Exception ex) {
-
-                return Response<Order>.Error(new() {
-                    Title = "Could not create new order",
-                    Details = ex.Message
-                });
-
-            }
+            return Response<OrderData?>.Success(data);
 
         }
 
