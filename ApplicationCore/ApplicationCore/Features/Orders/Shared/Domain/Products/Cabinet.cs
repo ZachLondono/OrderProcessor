@@ -11,7 +11,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
     public int Qty { get; }
     public decimal UnitPrice { get; }
     public int ProductNumber { get; }
-    public string Room { get; }
+    public string Room { get; set; }
     public bool Assembled { get; }
     public Dimension Height { get; }
     public Dimension Width { get; }

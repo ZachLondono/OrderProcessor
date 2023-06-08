@@ -11,7 +11,7 @@ public class ClosetPart : IProduct, IPPProductContainer {
     public int Qty { get; }
     public decimal UnitPrice { get; }
     public int ProductNumber { get; }
-    public string Room { get; }
+    public string Room { get; set; }
     public string SKU { get; }
     public Dimension Width { get; }
     public Dimension Length { get; }

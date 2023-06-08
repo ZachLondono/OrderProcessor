@@ -9,7 +9,7 @@ public class MDFDoorProduct : MDFDoor, IProduct, IDoorContainer {
 
     public Guid Id { get; }
     public decimal UnitPrice { get; }
-    public string Room { get; }
+    public string Room { get; set; }
     public string GetDescription() => "MDF Door";
 
     public MDFDoorProduct(Guid id, decimal unitPrice, string room, int qty, int productNumber, DoorType type, Dimension height, Dimension width, string note, DoorFrame frameSize, string material, Dimension thickness, string framingBead, string edgeDetail, string panelDetail, Dimension panelDrop, DoorOrientation orientation, AdditionalOpening[] additionalOpenings, string? paintColor)

@@ -8,7 +8,7 @@ public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDrawerBoxC
 
     public Guid Id { get; }
     public decimal UnitPrice { get; }
-    public string Room { get; }
+    public string Room { get; set; }
 
     public string GetDescription() {
 
