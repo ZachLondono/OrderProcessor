@@ -255,6 +255,8 @@ public class ReleaseService {
 
             //string directory = Path.Combine(dir, _fileReader.RemoveInvalidPathCharacters($"{order.Number} {order.Name}"));
 
+            try {
+
             if (!Directory.Exists(directory)) {
                 Directory.CreateDirectory(directory);
             }
@@ -266,6 +268,12 @@ public class ReleaseService {
             if (!isTemp) {
                 OnFileGenerated?.Invoke(Path.GetFullPath(filePath));
             }
+
+            } catch (Exception ex) {
+
+                OnError?.Invoke($"Exception throw while trying to write file to directory '{directory}' - {ex.Message}");
+
+        }
 
         }
 
