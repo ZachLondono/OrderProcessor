@@ -57,7 +57,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
         if (boxMaterial.Core == CabinetMaterialCore.Plywood && finishMaterial.Core == CabinetMaterialCore.ParticleBoard)
             throw new InvalidOperationException("Cannot create cabinet with plywood box and particle board finished side");
 
-        if (LeftSideType == CabinetSideType.IntegratedPanel || LeftSideType == CabinetSideType.AppliedPanel || RightSideType == CabinetSideType.IntegratedPanel || RightSideType == CabinetSideType.AppliedPanel)
+        if (MDFDoorOptions is null && (LeftSideType == CabinetSideType.IntegratedPanel || LeftSideType == CabinetSideType.AppliedPanel || RightSideType == CabinetSideType.IntegratedPanel || RightSideType == CabinetSideType.AppliedPanel))
             throw new InvalidOperationException("MDFDoorOptions are required when creating a cabinet side with a door");
 
         Construction = boxMaterial.Core switch {
