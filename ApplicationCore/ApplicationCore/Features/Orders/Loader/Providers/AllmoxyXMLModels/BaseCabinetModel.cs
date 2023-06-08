@@ -44,12 +44,11 @@ public class BaseCabinetModel : CabinetModelBase {
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
-        bool hingeLeft = (HingeSide == "Left");
         BaseCabinetDoors doors = DoorQty switch {
             0 => BaseCabinetDoors.NoDoors(),
-            1 => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right),
+            1 => new(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide)),
             2 => new(),
-            _ => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right)
+            _ => new(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide))
         };
 
         HorizontalDrawerBank drawers = new() {

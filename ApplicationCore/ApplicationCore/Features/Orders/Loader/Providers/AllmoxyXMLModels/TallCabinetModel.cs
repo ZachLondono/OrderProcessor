@@ -56,7 +56,7 @@ public class TallCabinetModel : CabinetModelBase {
         } else inside = new(UpperAdjShelfQty, LowerAdjShelfQty, UpperVerticalDividerQty, LowerVerticalDividerQty);
 
         TallCabinetDoors doors;
-        HingeSide hingeSide = LowerDoorQty == 1 ? ((HingeSide == "Left") ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right) : Shared.Domain.Enums.HingeSide.NotApplicable;
+        HingeSide hingeSide = LowerDoorQty == 1 ? AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide) : Shared.Domain.Enums.HingeSide.NotApplicable;
         if (LowerDoorQty == 0) {
             doors = TallCabinetDoors.NoDoors();
         } else if (UpperDoorQty != 0) {

@@ -61,8 +61,8 @@ public class ClosetPartModel : ProductModel {
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
         ClosetMaterialCore core = MaterialCore switch {
-            "pb" => ClosetMaterialCore.ParticleBoard,
-            "ply" => ClosetMaterialCore.Plywood,
+            AllmoxyXMLOrderProviderHelpers.PARTICLE_BOARD_CORE_CODE => ClosetMaterialCore.ParticleBoard,
+            AllmoxyXMLOrderProviderHelpers.PLYWOOD_CORE_CODE => ClosetMaterialCore.Plywood,
             _ => throw new InvalidOperationException($"Unexpected material core type '{MaterialCore}'"),
         };
 

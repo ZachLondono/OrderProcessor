@@ -28,17 +28,16 @@ public class WallCabinetModel : CabinetModelBase {
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
-        bool hingeLeft = (HingeSide == "Left");
         Dimension doorExtendDown = Dimension.FromMillimeters(ExtendDoorDown);
         WallCabinetDoors doors = DoorQty switch {
             0 => WallCabinetDoors.NoDoors(),
-            1 => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right, doorExtendDown),
+            1 => new(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide), doorExtendDown),
             2 => new(Shared.Domain.Enums.HingeSide.NotApplicable, doorExtendDown),
-            _ => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right, doorExtendDown)
+            _ => new(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide), doorExtendDown)
         };
 
         WallCabinetInside inside = new(AdjShelfQty, VerticalDividerQty);
-        bool finishBottom = (FinishedBottom == "Yes");
+        bool finishBottom = (FinishedBottom == AllmoxyXMLOrderProviderHelpers.XML_BOOL_TRUE);
 
         var builder = builderFactory.CreateWallCabinetBuilder();
 

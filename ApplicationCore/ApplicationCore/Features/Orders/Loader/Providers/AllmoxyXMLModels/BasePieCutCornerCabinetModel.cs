@@ -32,7 +32,7 @@ public class BasePieCutCornerCabinetModel : CabinetModelBase {
                     .WithRightDepth(Dimension.FromMillimeters(RightDepth))
                     .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
                     .WithAdjustableShelves(AdjShelfQty)
-                    .WithHingeSide((HingeSide == "Left") ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right)
+                    .WithHingeSide(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide))
                     .Build();
 
     }

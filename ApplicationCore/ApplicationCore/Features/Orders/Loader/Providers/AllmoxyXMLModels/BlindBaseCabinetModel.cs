@@ -43,11 +43,10 @@ public class BlindBaseCabinetModel : CabinetModelBase {
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
-        bool hingeLeft = (HingeSide == "Left");
         BlindCabinetDoors doors = DoorQty switch {
-            1 => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right),
+            1 => new(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide)),
             2 => new(Shared.Domain.Enums.HingeSide.NotApplicable),
-            _ => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right)
+            _ => new(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide))
         };
 
         HorizontalDrawerBank drawers = new() {
@@ -57,20 +56,16 @@ public class BlindBaseCabinetModel : CabinetModelBase {
 
         var boxOptions = new CabinetDrawerBoxOptions(AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial), AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide));
 
-        var blindSide = (BlindSide == "Left" ? Shared.Domain.Enums.BlindSide.Left : Shared.Domain.Enums.BlindSide.Right);
-
-        var shelfDepth = AllmoxyXMLOrderProviderHelpers.GetShelfDepth(ShelfDepth);
-
         var builder = builderFactory.CreateBlindBaseCabinetBuilder();
 
         return InitializeBuilder<BlindBaseCabinetBuilder, BlindBaseCabinet>(builder)
-                .WithBlindSide(blindSide)
+                .WithBlindSide(AllmoxyXMLOrderProviderHelpers.GetBlindSide(BlindSide))
                 .WithBlindWidth(Dimension.FromMillimeters(BlindWidth))
                 .WithAdjustableShelves(AdjShelfQty)
                 .WithDrawers(drawers)
                 .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
                 .WithDoors(doors)
-                .WithShelfDepth(shelfDepth)
+                .WithShelfDepth(AllmoxyXMLOrderProviderHelpers.GetShelfDepth(ShelfDepth))
                 .WithBoxOptions(boxOptions)
                 .Build();
 

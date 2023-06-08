@@ -66,10 +66,10 @@ public class SinkCabinetModel : CabinetModelBase {
 
         var shelfDepth = AllmoxyXMLOrderProviderHelpers.GetShelfDepth(ShelfDepth);
 
-        bool tiltFront = (TiltFront == "Yes");
+        bool tiltFront = (TiltFront == AllmoxyXMLOrderProviderHelpers.XML_BOOL_TRUE);
 
         ScoopSides? scoops = null;
-        if (ScoopSides == "Yes") {
+        if (ScoopSides == AllmoxyXMLOrderProviderHelpers.XML_BOOL_TRUE) {
             scoops = new(Dimension.FromMillimeters(ScoopDepth), Dimension.FromMillimeters(ScoopFromFront), Dimension.FromMillimeters(ScoopFromBack));
         }
 
@@ -78,7 +78,7 @@ public class SinkCabinetModel : CabinetModelBase {
         return InitializeBuilder<SinkCabinetBuilder, SinkCabinet>(builder)
                     .WithRollOutBoxes(rollOutOptions)
                     .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
-                    .WithHingeSide((HingeSide == "Left") ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right)
+                    .WithHingeSide(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide))
                     .WithDoorQty(DoorQty)
                     .WithFalseDrawerQty(DrawerQty)
                     .WithDrawerFaceHeight(Dimension.FromMillimeters(DrawerFaceHeight))

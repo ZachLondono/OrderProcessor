@@ -29,11 +29,10 @@ public class BlindWallCabinetModel : CabinetModelBase {
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
-        bool hingeLeft = (HingeSide == "Left");
         BlindCabinetDoors doors = DoorQty switch {
-            1 => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right),
+            1 => new(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide)),
             2 => new(Shared.Domain.Enums.HingeSide.NotApplicable),
-            _ => new(hingeLeft ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right)
+            _ => new(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide))
         };
 
         var builder = builderFactory.CreateBlindWallCabinetBuilder();
@@ -41,7 +40,7 @@ public class BlindWallCabinetModel : CabinetModelBase {
         return InitializeBuilder<BlindWallCabinetBuilder, BlindWallCabinet>(builder)
                     .WithDoors(doors)
                     .WithAdjustableShelves(AdjShelfQty)
-                    .WithBlindSide(BlindSide == "Left" ? Shared.Domain.Enums.BlindSide.Left : Shared.Domain.Enums.BlindSide.Right)
+                    .WithBlindSide(AllmoxyXMLOrderProviderHelpers.GetBlindSide(BlindSide))
                     .WithBlindWidth(Dimension.FromMillimeters(BlindWidth))
                     .WithExtendedDoor(Dimension.FromMillimeters(ExtendDoorDown))
                     .Build();

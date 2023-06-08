@@ -31,7 +31,7 @@ public class WallPieCutCornerCabinetModel : CabinetModelBase {
                     .WithRightWidth(Dimension.FromMillimeters(RightWidth))
                     .WithRightDepth(Dimension.FromMillimeters(RightDepth))
                     .WithAdjustableShelves(AdjShelfQty)
-                    .WithHingeSide((HingeSide == "Left") ? Shared.Domain.Enums.HingeSide.Left : Shared.Domain.Enums.HingeSide.Right)
+                    .WithHingeSide(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide))
                     .WithExtendedDoor(Dimension.FromMillimeters(ExtendDoorDown))
                     .Build();
 
