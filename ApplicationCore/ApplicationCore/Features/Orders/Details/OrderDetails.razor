@@ -240,7 +240,10 @@
 
                 <div class="@((Rooms.Count > 1 || Rooms.First().Name != string.Empty) ? "bg-slate-100" : "")">
                     @if (Rooms.Count > 1 || Rooms.First().Name != string.Empty) {
-                        <input type="text" placeholder="Room @(Rooms.IndexOf(room) + 1)" @bind-value="room.Name" class="bg-transparent font-bold text-xl pl-3 pt-3"/>
+                        <input type="text" placeholder="Room @(Rooms.IndexOf(room) + 1)" @oninput="a => OnRoomNameChanged(a, room)" value="@room.Name" class="bg-transparent font-bold text-xl pl-3 pt-3"/>
+                        <div class="pl-3">
+                            <Button OnClickAsync="() => SaveRoomNameChange(room)" Size="ButtonSize.XSmall" Style="ButtonStyle.Text" Disabled="!room.IsDirty">Save</Button>
+                        </div>
                     }
                     <div class="@((Rooms.Count > 1 || Rooms.First().Name != string.Empty) ? "pl-5" : "")">
                         @if (room.DovetailDrawerBoxes.Any()) {

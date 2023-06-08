@@ -1,12 +1,9 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Features.WorkOrders;
 using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
-using static ApplicationCore.Features.Orders.Details.ProductTables.CabinetProductTable;
-using static ApplicationCore.Features.Orders.Details.ProductTables.ClosetPartProductTable;
-using static ApplicationCore.Features.Orders.Details.ProductTables.DovetailDrawerBoxProductTable;
-using static ApplicationCore.Features.Orders.Details.ProductTables.MDFDoorProductTable;
 
 namespace ApplicationCore.Features.Orders.Details;
 
@@ -112,6 +109,31 @@ public partial class OrderDetails {
     private void OnWorkingDirectoryChanged(ChangeEventArgs args) {
         _workingDirectory = args.Value?.ToString() ?? "";
         OrderState.SetWorkingDirectory(_workingDirectory);
+    }
+
+    private async Task SaveRoomNameChange(Room room) {
+
+        if (!room.IsDirty) return;
+
+        foreach (var product in room.Products) {
+
+            try {
+                product.Room = room.Name;
+                await Bus.Send(new UpdateProduct.Command(product));
+            } catch (Exception ex) {
+                Debug.Write("Exception thrown while saving product room name change");
+                Debug.WriteLine(ex);
+            }
+
+        }
+
+        room.IsDirty = false;
+        StateHasChanged();
+
+    }
+
+    private void OnRoomNameChanged(ChangeEventArgs args, Room room) {
+        room.Name = args.Value?.ToString() ?? "";
     }
 
     public override void Handle(WorkOrdersUpdateNotification notification) {

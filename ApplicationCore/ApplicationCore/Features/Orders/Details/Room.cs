@@ -8,42 +8,49 @@ namespace ApplicationCore.Features.Orders.Details;
 
 public class Room {
 
-    public required string Name { get; set; }
-    public required List<CabinetRowModel> Cabinets { get; init; }
-    public required List<ClosetPartRowModel> ClosetParts { get; init; }
-    public required List<DovetailDrawerBoxRowModel> DovetailDrawerBoxes { get; init; }
-    public required List<MDFDoorRowModel> MDFDoors { get; init; }
+    private string _name;
 
-    public static Room FromGrouping(IGrouping<string, IProduct> productGrouping) {
+    public string Name {
+        get => _name;
+        set {
+            _name = value;
+            IsDirty = true;
+        }
+    }
+    public List<IProduct> Products { get; init; }
+    public bool IsDirty { get; set; }
 
-        var cabinets = productGrouping
-                            .OfType<Cabinet>()
-                            .Select(cab => new CabinetRowModel(cab))
-                            .ToList();
+    public List<CabinetRowModel> Cabinets { get; private set; }
+    public List<ClosetPartRowModel> ClosetParts { get; private set; }
+    public List<DovetailDrawerBoxRowModel> DovetailDrawerBoxes { get; private set; }
+    public List<MDFDoorRowModel> MDFDoors { get; private set; }
 
-        var closetParts = productGrouping
-                                .OfType<ClosetPart>()
-                                .Select(cp => new ClosetPartRowModel(cp))
-                                .ToList();
+    public Room(string name, List<IProduct> products) {
 
-        var drawerBoxes = productGrouping
-                                .OfType<DovetailDrawerBoxProduct>()
-                                .Select(db => new DovetailDrawerBoxRowModel(db))
-                                .ToList();
+        _name = name;
+        Products = products;
 
-        var doors = productGrouping
-                        .OfType<MDFDoorProduct>()
+        Cabinets = products.OfType<Cabinet>()
+                          .Select(cab => new CabinetRowModel(cab))
+                          .ToList();
+
+        ClosetParts = products.OfType<ClosetPart>()
+                              .Select(cp => new ClosetPartRowModel(cp))
+                              .ToList();
+
+        DovetailDrawerBoxes = products.OfType<DovetailDrawerBoxProduct>()
+                                  .Select(db => new DovetailDrawerBoxRowModel(db))
+                                  .ToList();
+
+        MDFDoors = products.OfType<MDFDoorProduct>()
                         .Select(door => new MDFDoorRowModel(door))
                         .ToList();
 
-        return new() {
-            Name = productGrouping.Key,
-            Cabinets = cabinets,
-            ClosetParts = closetParts,
-            DovetailDrawerBoxes = drawerBoxes,
-            MDFDoors = doors
-        };
 
+    }
+
+    public static Room FromGrouping(IGrouping<string, IProduct> productGrouping) {
+        return new(productGrouping.Key, productGrouping.ToList()); 
     }
 
 }
