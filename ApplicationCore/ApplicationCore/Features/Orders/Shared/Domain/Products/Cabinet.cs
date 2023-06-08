@@ -60,6 +60,10 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
         if (MDFDoorOptions is null && (LeftSideType == CabinetSideType.IntegratedPanel || LeftSideType == CabinetSideType.AppliedPanel || RightSideType == CabinetSideType.IntegratedPanel || RightSideType == CabinetSideType.AppliedPanel))
             throw new InvalidOperationException("MDFDoorOptions are required when creating a cabinet side with a door");
 
+        // Right now it is valid for both SlabDoorMaterial and MDFDoorOptions to both be non-null because a cabinet can have slab doors and an applied/integrated side panel
+        // When Buy out doors are added as an option to cabinets the invariant must be maintained that a cabinet does not have both buy out doors and slab doors
+        // if (SlabDoorMaterial is not null && MDFDoorOptions is not null)
+
         Construction = boxMaterial.Core switch {
             CabinetMaterialCore.ParticleBoard => new() {
                 TopThickness = Dimension.FromMillimeters(19),
