@@ -110,7 +110,7 @@ public class ReleaseService {
 
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
-            filePaths = GeneratePDF(directories, order, decorators, filename, customerName);
+            filePaths = GeneratePDF(directories, decorators, filename, customerName);
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate release PDF - '{ex.Message}'");
             _logger.LogError(ex, "Exception thrown while trying to generate release pdf");
@@ -162,7 +162,7 @@ public class ReleaseService {
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
             await _invoiceDecorator.AddData(order);
-            filePaths = GeneratePDF(invoiceDirectories, order, new IDocumentDecorator[] { _invoiceDecorator }, filename, customerName, isTemp);
+            filePaths = GeneratePDF(invoiceDirectories, new IDocumentDecorator[] { _invoiceDecorator }, filename, customerName, isTemp);
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate invoice PDF - '{ex.Message}'");
             _logger.LogError(ex, "Exception thrown while trying to generate invoice pdf");
@@ -228,7 +228,7 @@ public class ReleaseService {
 
     }
 
-    private IEnumerable<string> GeneratePDF(IEnumerable<string> outputDirs, Order order, IEnumerable<IDocumentDecorator> decorators, string name, string customerName, bool isTemp = false) {
+    private IEnumerable<string> GeneratePDF(IEnumerable<string> outputDirs, IEnumerable<IDocumentDecorator> decorators, string name, string customerName, bool isTemp = false) {
 
         if (!decorators.Any()) {
             OnError?.Invoke($"There are no pages to add to the '{name}' document");
@@ -257,23 +257,23 @@ public class ReleaseService {
 
             try {
 
-            if (!Directory.Exists(directory)) {
-                Directory.CreateDirectory(directory);
-            }
-
-            var filePath = _fileReader.GetAvailableFileName(directory, name, ".pdf");
-            document.GeneratePdf(filePath);
-            files.Add(filePath);
-
-            if (!isTemp) {
-                OnFileGenerated?.Invoke(Path.GetFullPath(filePath));
-            }
+                if (!Directory.Exists(directory)) {
+                    Directory.CreateDirectory(directory);
+                }
+    
+                var filePath = _fileReader.GetAvailableFileName(directory, name, ".pdf");
+                document.GeneratePdf(filePath);
+                files.Add(filePath);
+    
+                if (!isTemp) {
+                    OnFileGenerated?.Invoke(Path.GetFullPath(filePath));
+                }
 
             } catch (Exception ex) {
 
                 OnError?.Invoke($"Exception throw while trying to write file to directory '{directory}' - {ex.Message}");
 
-        }
+            }
 
         }
 
@@ -300,7 +300,7 @@ public class ReleaseService {
 
         } catch (Exception ex) {
 
-            _logger.LogError(ex, "Exception thrown while getting cutomer name");
+            _logger.LogError(ex, "Exception thrown while getting customer name");
             return string.Empty;
 
         }
