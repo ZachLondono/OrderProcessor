@@ -1,5 +1,6 @@
 ﻿@using ApplicationCore.Features.Orders.Shared.Domain.Products;
 @using ApplicationCore.Features.Orders.Shared.Domain;
+@using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 @using ApplicationCore.Features.Shared.Components
 @using static ApplicationCore.Features.Orders.Details.OrderDetails;
 
@@ -16,7 +17,7 @@
                 <th class="p-5">Box Material</th>
                 <th class="p-5">Fin Material</th>
                 <th class="p-5">Fin Paint</th>
-                <th class="p-5">Door Material</th>
+                <th class="p-5">Doors</th>
                 <th class="p-5">Door Paint</th>
                 <th class="p-5">EB Color</th>
                 <th class="p-5">Left</th>
@@ -59,8 +60,8 @@
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.BoxMaterial.Finish}/{row.Product.BoxMaterial.FinishType}/{row.Product.BoxMaterial.Core}")</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.FinishMaterial.Finish}/{row.Product.FinishMaterial.FinishType}/{row.Product.FinishMaterial.Core}")</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.FinishMaterial.PaintColor ?? "N/A"}")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.SlabDoorMaterial?.Finish}/{row.Product.SlabDoorMaterial?.FinishType}/{row.Product.SlabDoorMaterial?.Core}")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.SlabDoorMaterial?.PaintColor ?? "N/A"}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(GetDoorMaterialStyle(row.Product))</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(GetDoorPaint(row.Product))</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.EdgeBandingColor</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.LeftSideType.ToString()</td>
                     <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.RightSideType.ToString()</td>
@@ -84,6 +85,42 @@
 
     public class CabinetRowModel : ProductRowModel<Cabinet> {
         public CabinetRowModel(Cabinet product) : base(product) { }
+    }
+
+    public string GetDoorMaterialStyle(Cabinet cabinet) {
+
+        if (cabinet.SlabDoorMaterial is null && cabinet.MDFDoorOptions is null) {
+            return "N/A";
+        }
+
+        if (cabinet.SlabDoorMaterial is CabinetSlabDoorMaterial slabMaterial) {
+            return $"{slabMaterial.Finish}/{slabMaterial.FinishType}/{slabMaterial.Core}";
+        }
+
+        if (cabinet.MDFDoorOptions is MDFDoorOptions mdfDoorOptions) {
+            return $"{mdfDoorOptions.Material} {mdfDoorOptions.FramingBead}";
+        }
+
+        return "Unknown/Buyout";
+
+    }
+
+    public string GetDoorPaint(Cabinet cabinet) {
+
+        if (cabinet.SlabDoorMaterial is null && cabinet.MDFDoorOptions is null) {
+            return "N/A";
+        }
+
+        if (cabinet.SlabDoorMaterial is CabinetSlabDoorMaterial slabMaterial) {
+            return $"{slabMaterial.PaintColor ?? "N/A"}";
+        }
+
+        if (cabinet.MDFDoorOptions is MDFDoorOptions mdfDoorOptions) {
+            return $"{mdfDoorOptions.PaintColor ?? "N/A"}";
+        }
+
+        return "Unknown/Buyout";
+
     }
 
 }
