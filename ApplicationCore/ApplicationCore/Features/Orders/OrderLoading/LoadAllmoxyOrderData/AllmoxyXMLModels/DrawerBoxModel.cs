@@ -58,6 +58,9 @@ public class DovetailDrawerBoxModel : ProductModel {
     [XmlElement("depth")]
     public double Depth { get; set; }
 
+    [XmlElement("room")]
+    public string Room { get; set; } = string.Empty;
+
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {

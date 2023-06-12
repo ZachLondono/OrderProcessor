@@ -465,6 +465,7 @@
                       <xs:element name="height" type="xs:decimal" />
                       <xs:element name="width" type="xs:decimal" />
                       <xs:element name="depth" type="xs:decimal" />
+                      <xs:element name="room" type="xs:string" />
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
