@@ -111,7 +111,9 @@ public class MDFDoorModel : ProductModel {
             additionalOpenings.Add(new(Dimension.FromMillimeters(Rail4), Dimension.FromMillimeters(Opening2)));
         }
 
-        return MDFDoorProduct.Create(unitPrice, Room, Qty, GetProductNumber(), type, height, width, Note, frameSize, Material, thickness, FramingBead, EdgeProfile, PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), Finish);
+        string room = Room == "folder_name" ? string.Empty : Room;
+
+        return MDFDoorProduct.Create(unitPrice, room, Qty, GetProductNumber(), type, height, width, Note, frameSize, Material, thickness, FramingBead, EdgeProfile, PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), Finish);
 
     }
 }
