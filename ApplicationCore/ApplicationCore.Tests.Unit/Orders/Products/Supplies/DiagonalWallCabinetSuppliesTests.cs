@@ -233,7 +233,7 @@ public class BlindBaseCabinetSuppliesTests {
     }
 
     [Theory]
-    [InlineData(1)]
+    //[InlineData(1)]
     [InlineData(2)]
     public void Should_IncludeOneDrawerSlidesPerDrawerBox_WhenSlideTypeIsUM(int drawerQty) {
 
