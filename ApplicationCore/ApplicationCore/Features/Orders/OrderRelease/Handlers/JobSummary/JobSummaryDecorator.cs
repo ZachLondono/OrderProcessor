@@ -246,7 +246,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                             BoxFinish = p.BoxMaterial.Finish,
                             FinishCore = p.FinishMaterial.Core.ToString(),
                             FinishFinish = p.FinishMaterial.Finish,
-                            Fronts = p.MDFDoorOptions is null ? "Slab" : "MDF By Royal",
+                            Fronts = p.SlabDoorMaterial is not null ? $"Slab - {p.SlabDoorMaterial.Finish}" : "MDF By Royal",
                             Paint = p.FinishMaterial.PaintColor ?? ""
                         }, new CabinetGroupComparer())
                         .Select(g => {
