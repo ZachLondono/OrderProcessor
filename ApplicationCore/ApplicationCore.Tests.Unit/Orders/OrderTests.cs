@@ -11,7 +11,7 @@ public class OrderTests {
     public void Total_Should_EqualAllItems() {
 
         // Arrange
-        var boxes = new List<DovetailDrawerBoxProduct>() {
+        var boxes = new List<IProduct>() {
             new DrawerBoxBuilder().WithUnitPrice(45.45M).WithQty(2).Build(),
             new DrawerBoxBuilder().WithUnitPrice(16.54M).WithQty(3).Build()
         };
@@ -36,8 +36,8 @@ public class OrderTests {
                             .WithShipping(shipping)
                             .WithPriceAdjustment(priceAdjustment)
                             .WithItems(items)
-                            .WithBoxes(boxes)
-                            .Buid();
+                            .WithProducts(boxes)
+                            .Build();
 
         // Act
         var subtotal = order.SubTotal;

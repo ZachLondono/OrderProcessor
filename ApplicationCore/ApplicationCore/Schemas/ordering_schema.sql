@@ -87,6 +87,7 @@ CREATE TABLE mdf_door_products (
 CREATE TRIGGER remove_mdf_door_config AFTER DELETE ON mdf_door_products
 BEGIN
 	DELETE FROM mdf_door_configs WHERE id = OLD.product_id;
+	DELETE FROM mdf_door_openings WHERE product_id = OLD.product_id;
 END;
 
 CREATE TABLE dovetail_drawer_products (
@@ -196,7 +197,6 @@ CREATE TABLE mdf_door_openings (
 	opening REAL NOT NULL,
 	rail REAL NOT NULL,
 	PRIMARY KEY (id)
-	--FOREIGN KEY (product_id) REFERENCES mdf_door_products(id) ON DELETE CASCADE
 );
 
 CREATE TABLE base_cabinets (

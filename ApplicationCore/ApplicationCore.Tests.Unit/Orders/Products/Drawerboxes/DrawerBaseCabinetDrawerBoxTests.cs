@@ -1,21 +1,13 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.Orders.Products.Drawerboxes;
+namespace ApplicationCore.Tests.Unit.Orders.Products.DrawerBoxes;
 
+[Collection("DrawerBoxBuilder")]
 public class DrawerBaseCabinetDrawerBoxTests {
-
-    private readonly Func<DovetailDrawerBoxBuilder> _dovetailDBBuilderFactory;
-
-    public DrawerBaseCabinetDrawerBoxTests() {
-
-        _dovetailDBBuilderFactory = () => new();
-
-    }
 
     [Theory]
     [InlineData(0, 1, 0)]
@@ -48,7 +40,7 @@ public class DrawerBaseCabinetDrawerBoxTests {
 
 
         // Act
-        var drawers = cabinet.GetDrawerBoxes(_dovetailDBBuilderFactory);
+        var drawers = cabinet.GetDrawerBoxes(new DBBuilderFactoryFactory().CreateBuilderFactory());
 
         // Assert
         drawers.Sum(d => d.Qty).Should().Be(expectedDrawerCount);
@@ -77,7 +69,7 @@ public class DrawerBaseCabinetDrawerBoxTests {
                             .Build();
 
         // Act
-        var drawers = cabinet.GetDrawerBoxes(_dovetailDBBuilderFactory);
+        var drawers = cabinet.GetDrawerBoxes(new DBBuilderFactoryFactory().CreateBuilderFactory());
 
         // Assert
         drawers.Should().NotBeEmpty();
@@ -103,7 +95,7 @@ public class DrawerBaseCabinetDrawerBoxTests {
                             .Build();
 
         // Act
-        var drawers = cabinet.GetDrawerBoxes(_dovetailDBBuilderFactory);
+        var drawers = cabinet.GetDrawerBoxes(new DBBuilderFactoryFactory().CreateBuilderFactory());
 
         // Assert
         drawers.Should().NotBeEmpty();
@@ -137,7 +129,13 @@ public class DrawerBaseCabinetDrawerBoxTests {
                             .Build();
 
         // Act
-        var drawers = cabinet.GetDrawerBoxes(_dovetailDBBuilderFactory);
+        var drawers = cabinet.GetDrawerBoxes(new DBBuilderFactoryFactory().CreateBuilderFactory(() => {
+            DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+                Dimension.FromMillimeters(533),
+                Dimension.FromMillimeters(457),
+                Dimension.FromMillimeters(305),
+            };
+        }));
 
         // Assert
         drawers.Should().NotBeEmpty();

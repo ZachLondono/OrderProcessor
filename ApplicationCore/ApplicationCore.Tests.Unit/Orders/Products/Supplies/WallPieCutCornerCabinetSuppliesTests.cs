@@ -5,6 +5,7 @@ using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products.Supplies;
 
+[Collection("DrawerBoxBuilder")]
 public class WallPieCutCornerCabinetSuppliesTests {
 
     private readonly WallPieCutCornerCabinetBuilder _builder;

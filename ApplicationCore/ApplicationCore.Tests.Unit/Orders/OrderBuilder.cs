@@ -23,7 +23,7 @@ internal class OrderBuilder {
     private bool _rush = false;
     private Dictionary<string, string> _info = new();
     private List<AdditionalItem> _items = new();
-    private List<DovetailDrawerBoxProduct> _boxes = new();
+    private List<IProduct> _products = new();
 
     public OrderBuilder() {
 
@@ -108,8 +108,8 @@ internal class OrderBuilder {
         return this;
     }
 
-    public OrderBuilder WithBoxes(List<DovetailDrawerBoxProduct> boxes) {
-        _boxes = boxes;
+    public OrderBuilder WithProducts(List<IProduct> products) {
+        _products = products;
         return this;
     }
 
@@ -123,6 +123,6 @@ internal class OrderBuilder {
         return this;
     }
 
-    public Order Buid() => new(_id, _source, _number, _name, _note, _workingDirectory, _customerId, _vendorId, _comment, _orderDate, _shipping, _billing, _tax, _priceAdjustment, _rush, _info, _boxes, _items);
+    public Order Build() => new(_id, _source, _number, _name, _note, _workingDirectory, _customerId, _vendorId, _comment, _orderDate, _shipping, _billing, _tax, _priceAdjustment, _rush, _info, _products, _items);
 
 }

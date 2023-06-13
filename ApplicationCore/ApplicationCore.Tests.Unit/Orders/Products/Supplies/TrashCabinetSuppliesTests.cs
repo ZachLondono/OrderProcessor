@@ -4,10 +4,10 @@ using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using FluentAssertions;
-using Microsoft.Data.Sqlite;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products.Supplies;
 
+[Collection("DrawerBoxBuilder")]
 public class TrashCabinetSuppliesTests {
 
     private readonly TrashCabinetBuilder _builder;
@@ -110,6 +110,9 @@ public class TrashCabinetSuppliesTests {
                                 .WithDepth(Dimension.FromMillimeters(500))
                                 .Build();
         var expectedSupply = Supply.UndermountSlide(cabinet.Qty, Dimension.FromMillimeters(457));
+        DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+            Dimension.FromMillimeters(457)
+        };
 
         // Act
         var supplies = cabinet.GetSupplies();
