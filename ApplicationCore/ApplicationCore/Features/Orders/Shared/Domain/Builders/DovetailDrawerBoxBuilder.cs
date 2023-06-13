@@ -45,7 +45,7 @@ public class DovetailDrawerBoxBuilder {
     };
 
     public static Dictionary<DrawerSlideType, Dimension> DrawerSlideDepthClearance { get; set; } = new() {
-        {  DrawerSlideType.UnderMount, Dimension.FromMillimeters(19) },
+        {  DrawerSlideType.UnderMount, Dimension.FromMillimeters(10) },
         {  DrawerSlideType.SideMount, Dimension.FromMillimeters(0) }
     };
 
@@ -93,15 +93,19 @@ public class DovetailDrawerBoxBuilder {
     }
 
     public DovetailDrawerBoxBuilder WithDrawerFaceHeight(Dimension faceHeight) {
+        Height = GetDrawerBoxHeightFromDrawerFaceHeight(faceHeight);
+        return this;
+    }
 
-        foreach (var height in StdHeights.OrderBy(height => height)) {
+    public static Dimension GetDrawerBoxHeightFromDrawerFaceHeight(Dimension faceHeight) {
+
+        foreach (var height in StdHeights.OrderByDescending(height => height)) {
 
             if (height > faceHeight - VerticalClearance) {
                 continue;
             }
 
-            Height = height;
-            return this;
+            return height;
 
         }
 
@@ -115,17 +119,28 @@ public class DovetailDrawerBoxBuilder {
     }
 
     public DovetailDrawerBoxBuilder WithInnerCabinetWidth(Dimension innerCabinetWidth, int drawerCount, DrawerSlideType slideType) {
+        Width = GetDrawerBoxWidthFromInnerCabinetWidth(innerCabinetWidth, drawerCount, slideType);
+        return this;
+    }
+
+    /// <summary>
+    /// Calculates the width of a drawer box inside of a cabinet
+    /// </summary>
+    /// <param name="innerCabinetWidth">The inside width of the cabinet</param>
+    /// <param name="adjacentDrawerCount">The number of horizontally adjacent drawer boxes</param>
+    /// <param name="slideType">The Type of drawer slides used</param>
+    /// <returns>The width of the drawer box</returns>
+    public static Dimension GetDrawerBoxWidthFromInnerCabinetWidth(Dimension innerCabinetWidth, int adjacentDrawerCount, DrawerSlideType slideType) {
 
         // Between each drawer box there are 2 dividers
-        int dividerCount = (drawerCount - 1) * 2;
+        int dividerCount = (adjacentDrawerCount - 1) * 2;
 
         Dimension availableWidth = innerCabinetWidth - dividerCount * DividerThickness;
 
-        var widthMM = (availableWidth / drawerCount - DrawerSlideWidthAdjustments[slideType]).AsMillimeters();
+        var widthMM = (availableWidth / adjacentDrawerCount - DrawerSlideWidthAdjustments[slideType]).AsMillimeters();
 
-        Width = Dimension.FromMillimeters(Math.Round(widthMM, 2));
+        return Dimension.FromMillimeters(Math.Round(widthMM, 2));
 
-        return this;
     }
 
     public DovetailDrawerBoxBuilder WithInnerCabinetWidth(Dimension innerCabinetWidth, RollOutBlockPosition rollOutPositions, DrawerSlideType slideType) {
