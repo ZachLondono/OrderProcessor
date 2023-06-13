@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Features.Configuration;
-using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Infrastructure.Data;
 using Dapper;
 using Microsoft.Data.Sqlite;
@@ -18,7 +17,7 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
     private readonly ILogger<SqliteCompaniesDbConnectionFactory> _logger;
     private readonly AppConfiguration.GetConfiguration _getConfiguration;
 
-    public SqliteCompaniesDbConnectionFactory(IConfiguration configuration, IBus bus, ILogger<SqliteCompaniesDbConnectionFactory> logger, AppConfiguration.GetConfiguration getConfiguration) {
+    public SqliteCompaniesDbConnectionFactory(IConfiguration configuration, ILogger<SqliteCompaniesDbConnectionFactory> logger, AppConfiguration.GetConfiguration getConfiguration) {
         _configuration = configuration;
         _logger = logger;
         _getConfiguration = getConfiguration;
