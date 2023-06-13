@@ -52,7 +52,7 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
 
         } else {
 
-            await InitilizeDatabase(connection);
+            await InitializeDatabase(connection);
 
         }
 
@@ -62,7 +62,7 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
 
     }
 
-    private async Task InitilizeDatabase(SqliteConnection connection) {
+    private async Task InitializeDatabase(SqliteConnection connection) {
 
         var schemaPath = _configuration.GetRequiredSection("Schemas").GetValue<string>("Companies");
 
@@ -71,7 +71,7 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
             throw new InvalidOperationException("Companies data base schema path is not set");
         }
 
-        _logger.LogInformation("Initilizing companies database, version {DB_VERSION} from schema in file {FilePath}", DB_VERSION, schemaPath);
+        _logger.LogInformation("Initializing companies database, version {DB_VERSION} from schema in file {FilePath}", DB_VERSION, schemaPath);
 
         var schema = await File.ReadAllTextAsync(schemaPath);
 
