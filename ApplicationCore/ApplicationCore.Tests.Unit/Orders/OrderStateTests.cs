@@ -29,7 +29,7 @@ public class OrderStateTests {
     public void ReplaceOrder_ShouldSetOrder_AndResetIsDirty() {
 
         // Arrange
-        var order = new OrderBuilder().Buid();
+        var order = new OrderBuilder().Build();
 
         // Act
         _sut.ReplaceOrder(order);
@@ -43,7 +43,7 @@ public class OrderStateTests {
     public void LoadOrder_ShouldCallGetOrder() {
 
         // Arrange
-        var order = new OrderBuilder().Buid();
+        var order = new OrderBuilder().Build();
         var query = new GetOrderById.Query(order.Id);
         var response = new Response<Order>(order);
         _bus.Send(query).Returns(response);
