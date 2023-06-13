@@ -46,6 +46,11 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 
         var exportXML = await GetExportXMLFromSource(source);
 
+        if (exportXML == string.Empty) {
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "No order data found");
+            return null;
+        } 
+
         // Validate data
         if (!ValidateData(exportXML)) {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Order data was not valid");
