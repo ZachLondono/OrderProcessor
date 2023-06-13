@@ -28,50 +28,58 @@
                 <th class="p-5">Ext. $</th>
             </tr>
         </thead>
-        <tbody>
             @foreach (var row in Cabinets) {
-                <tr>
-                    <td>
-                        @if (row.IsComplete) {
-                            <ToolTip UnderLine="false" Text="Complete" Offset="ToolTip.OffsetSide.Right">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-600">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </ToolTip>
+                <tbody class="hover:bg-blue-500/10">
+                    <tr>
+                        <td>
+                            @if (row.IsComplete) {
+                                <ToolTip UnderLine="false" Text="Complete" Offset="ToolTip.OffsetSide.Right">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-600">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </ToolTip>
+                            } else {
+                                <ToolTip UnderLine="false" Text="Incomplete" Offset="ToolTip.OffsetSide.Right">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-red-600">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </ToolTip>
+                            }
+                        </td>
+                        <td class="@row.CellClass">@row.Product.ProductNumber</td>
+                        <td class="@row.CellClass">@row.Product.Qty</td>
+                        @if (UseInches) {
+                            <td class="@row.CellClass">@((MarkupString)row.Product.Height.GetFormatedFraction())"</td>
+                            <td class="@row.CellClass">@((MarkupString)row.Product.Width.GetFormatedFraction())"</td>
+                            <td class="@row.CellClass">@((MarkupString)row.Product.Depth.GetFormatedFraction())"</td>
                         } else {
-                            <ToolTip UnderLine="false" Text="Incomplete" Offset="ToolTip.OffsetSide.Right">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-red-600">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </ToolTip>
+                            <td class="@row.CellClass">@row.Product.Height.AsMillimeters().ToString("0.00")</td>
+                            <td class="@row.CellClass">@row.Product.Width.AsMillimeters().ToString("0.00")</td>
+                            <td class="@row.CellClass">@row.Product.Depth.AsMillimeters().ToString("0.00")</td>
                         }
-                    </td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.ProductNumber</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Qty</td>
-                    @if (UseInches) {
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.Product.Height.GetFormatedFraction())"</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.Product.Width.GetFormatedFraction())"</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.Product.Depth.GetFormatedFraction())"</td>
-                    } else {
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Height.AsMillimeters().ToString("0.00")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Width.AsMillimeters().ToString("0.00")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Depth.AsMillimeters().ToString("0.00")</td>
+                        <td class="@row.CellClass">@($"{row.Product.BoxMaterial.Finish}/{row.Product.BoxMaterial.FinishType}/{row.Product.BoxMaterial.Core}")</td>
+                        <td class="@row.CellClass">@($"{row.Product.FinishMaterial.Finish}/{row.Product.FinishMaterial.FinishType}/{row.Product.FinishMaterial.Core}")</td>
+                        <td class="@row.CellClass">@($"{row.Product.FinishMaterial.PaintColor ?? "N/A"}")</td>
+                        <td class="@row.CellClass">@(GetDoorMaterialStyle(row.Product))</td>
+                        <td class="@row.CellClass">@(GetDoorPaint(row.Product))</td>
+                        <td class="@row.CellClass">@row.Product.EdgeBandingColor</td>
+                        <td class="@row.CellClass">@row.Product.LeftSideType.ToString()</td>
+                        <td class="@row.CellClass">@row.Product.RightSideType.ToString()</td>
+                        <td class="@row.CellClass">@(row.Product.Assembled ? "Yes" : "No")</td>
+                        <td class="@row.CellClass">@row.Product.Room</td>
+                        <td class="@row.CellClass">@row.Product.UnitPrice.ToString("$0.00")</td>
+                        <td class="@row.CellClass">@((row.Product.UnitPrice * row.Product.Qty).ToString("$0.00"))</td>
+                    </tr>
+
+                    @if(row.Product.Comment != string.Empty) {
+                        <tr>
+                            <td class="p-5 font-bold border-b text-red-500" colspan="18">
+                                @row.Product.Comment
+                            </td>
+                        </tr>
                     }
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.BoxMaterial.Finish}/{row.Product.BoxMaterial.FinishType}/{row.Product.BoxMaterial.Core}")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.FinishMaterial.Finish}/{row.Product.FinishMaterial.FinishType}/{row.Product.FinishMaterial.Core}")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.FinishMaterial.PaintColor ?? "N/A"}")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(GetDoorMaterialStyle(row.Product))</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(GetDoorPaint(row.Product))</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.EdgeBandingColor</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.LeftSideType.ToString()</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.RightSideType.ToString()</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@(row.Product.Assembled ? "Yes" : "No")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Room</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.UnitPrice.ToString("$0.00")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((row.Product.UnitPrice * row.Product.Qty).ToString("$0.00"))</td>
-                </tr>
+                </tbody>
             }
-        </tbody>
     </table>
 </div>
 
@@ -84,7 +92,13 @@
     public bool UseInches { get; set; }
 
     public class CabinetRowModel : ProductRowModel<Cabinet> {
-        public CabinetRowModel(Cabinet product) : base(product) { }
+
+        public string CellClass;
+
+        public CabinetRowModel(Cabinet product) : base(product) {
+            CellClass = $"whitespace-nowrap p-5 text-center {(product.Comment != string.Empty ? "" : "border-b")}";
+        }
+
     }
 
     public string GetDoorMaterialStyle(Cabinet cabinet) {
