@@ -118,6 +118,66 @@ public class ReleaseComparerTests {
     }
 
     [Fact]
+    public void ShouldReturnFalse_WhenOnlyOneObjectContainsFace6Machining() {
+
+        // Arrange
+        MachineRelease? a = new() {
+            MachineName = "Machine Name",
+            MachineTableOrientation = Features.CNC.Domain.TableOrientation.Standard,
+            ToolTable = new Dictionary<int, string>() {
+                [1] = "A",
+                [2] = "B",
+            }.AsReadOnly(),
+            Programs = new List<ReleasedProgram>() {
+                new() {
+                    HasFace6 = true,
+                    ImagePath = "path/to/image",
+                    Name = "A",
+                    Material = new() {
+                        Name = "A",
+                        IsGrained = true,
+                        Width = 1,
+                        Length = 1,
+                        Thickness = 1,
+                        Yield = 1
+                    }
+                }
+            }
+        };
+
+        MachineRelease? b = new() {
+            MachineName = "Machine Name",
+            MachineTableOrientation = Features.CNC.Domain.TableOrientation.Standard,
+            ToolTable = new Dictionary<int, string>() {
+                [1] = "A",
+                [2] = "B",
+            }.AsReadOnly(),
+            Programs = new List<ReleasedProgram>() {
+                new() {
+                    HasFace6 = false,
+                    ImagePath = "path/to/image",
+                    Name = "A",
+                    Material = new() {
+                        Name = "A",
+                        IsGrained = true,
+                        Width = 1,
+                        Length = 1,
+                        Thickness = 1,
+                        Yield = 1
+                    }
+                }
+            }
+        };
+
+        // Act
+        var result = _sut.Equals(a, b);
+
+        // Assert
+        result.Should().BeFalse();
+
+    }
+
+    [Fact]
     public void ShouldReturnTrue_WhenComparingObjectsWhichOnlyDifferInNameAndOrientation() {
 
         // Arrange
@@ -178,7 +238,7 @@ public class ReleaseComparerTests {
     }
 
     [Fact]
-    public void ShouldReturnFalse_WhenObjectsContainDifferentToolsInTheSamePosition() {
+    public void ShouldReturnTrue_WhenObjectsContainDifferentToolsInTheSamePosition() {
 
         // Arrange
         MachineRelease? a = new() {
@@ -192,6 +252,36 @@ public class ReleaseComparerTests {
             ToolTable = new Dictionary<int, string>() {
                 [1] = "A",
                 [2] = "B",
+            }.AsReadOnly()
+        };
+
+        // Act
+        var result = _sut.Equals(a, b);
+
+        // Assert
+        result.Should().BeTrue();
+
+    }
+
+    [Theory]
+    [InlineData("A", "B", "A", "")]
+    [InlineData("A", "", "A", "B")]
+    [InlineData("A", "B", "A", "C")]
+    [InlineData("A", "C", "A", "B")]
+    public void ShouldReturnFalse_WhenOneObjectContainsToolThatOtherDoesNot(string a1, string a2, string b1, string b2) {
+
+        // Arrange
+        MachineRelease? a = new() {
+            ToolTable = new Dictionary<int, string>() {
+                [1] = a1,
+                [2] = a2
+            }.AsReadOnly()
+        };
+
+        MachineRelease? b = new() {
+            ToolTable = new Dictionary<int, string>() {
+                [1] = b1,
+                [2] = b2,
             }.AsReadOnly()
         };
 
