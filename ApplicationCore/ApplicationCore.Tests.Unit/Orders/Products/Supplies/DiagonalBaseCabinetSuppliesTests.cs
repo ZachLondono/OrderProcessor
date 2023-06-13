@@ -6,6 +6,7 @@ using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products.Supplies;
 
+[Collection("DrawerBoxBuilder")]
 public class DiagonalBaseCabinetSuppliesTests {
 
     private readonly BaseDiagonalCornerCabinetBuilder _builder;

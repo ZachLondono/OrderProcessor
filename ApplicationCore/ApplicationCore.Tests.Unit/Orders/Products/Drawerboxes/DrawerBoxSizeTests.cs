@@ -3,8 +3,9 @@ using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Shared.Domain;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.Orders.Products.Drawerboxes;
+namespace ApplicationCore.Tests.Unit.Orders.Products.DrawerBoxes;
 
+[Collection("DrawerBoxBuilder")]
 public class DrawerBoxSizeTests {
 
     [Theory]

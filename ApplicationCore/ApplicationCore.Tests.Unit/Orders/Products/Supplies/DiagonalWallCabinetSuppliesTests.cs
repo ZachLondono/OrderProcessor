@@ -7,6 +7,7 @@ using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products.Supplies;
 
+[Collection("DrawerBoxBuilder")]
 public class DiagonalWallCabinetSuppliesTests {
 
     private readonly WallDiagonalCornerCabinetBuilder _builder;
@@ -249,6 +250,9 @@ public class BlindBaseCabinetSuppliesTests {
                                 .Build();
 
         Supply expectedSupplyA = Supply.UndermountSlide(cabinet.Qty * drawerQty, Dimension.FromMillimeters(457));
+        DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+            Dimension.FromMillimeters(457)
+        };
 
         // Act
         var supplies = cabinet.GetSupplies();
@@ -277,7 +281,10 @@ public class BlindBaseCabinetSuppliesTests {
                                 .WithQty(2)
                                 .Build();
 
-        Supply expectedSupplyA = Supply.SidemountSlide(0, Dimension.FromMillimeters(457.2));
+        Supply expectedSupplyA = Supply.SidemountSlide(cabinet.Qty * drawerQty, Dimension.FromMillimeters(457));
+        DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+            Dimension.FromMillimeters(457)
+        };
 
         // Act
         var supplies = cabinet.GetSupplies();

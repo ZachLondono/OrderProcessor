@@ -7,6 +7,7 @@ using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products.Supplies;
 
+[Collection("DrawerBoxBuilder")]
 public class BaseCabinetSuppliesTests {
 
     private readonly BaseCabinetBuilder _builder;
@@ -123,6 +124,10 @@ public class BaseCabinetSuppliesTests {
 
         Supply expectedSupplyA = Supply.UndermountSlide(cabinet.Qty * drawerQty, Dimension.FromMillimeters(457));
 
+        DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+            Dimension.FromMillimeters(457)
+        };
+
         // Act
         var supplies = cabinet.GetSupplies();
 
@@ -145,9 +150,9 @@ public class BaseCabinetSuppliesTests {
         }
 
         var cabinet = _builder.WithDrawers(new() {
-            Quantity = drawerQty,
-            FaceHeight = Dimension.FromMillimeters(157)
-        })
+                                    Quantity = drawerQty,
+                                    FaceHeight = Dimension.FromMillimeters(157)
+                                })
                                 .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.SideMount))
                                 .WithInside(new(0, new RollOutOptions(positions, true, RollOutBlockPosition.None), ShelfDepth.Default))
                                 .WithDoors(BaseCabinetDoors.TwoDoors())
@@ -157,16 +162,13 @@ public class BaseCabinetSuppliesTests {
                                 .WithQty(2)
                                 .Build();
 
-        // TODO: WHY ARE THERE TWO DIFFERENT VALUES HERE, Why would roll outs have different slide lengths??
-        Supply expectedSupplyA = Supply.SidemountSlide(0, Dimension.FromMillimeters(457.2));
-        Supply expectedSupplyB = Supply.SidemountSlide(0, Dimension.FromMillimeters(450));
+        Supply expectedSupplyA = Supply.SidemountSlide(cabinet.Qty * (drawerQty + rollOutQty), Dimension.FromMillimeters(450));
 
         // Act
         var supplies = cabinet.GetSupplies();
 
         // Assert
-        supplies.Where(s => s.Name == expectedSupplyA.Name).Sum(s => s.Qty).Should().Be(cabinet.Qty * drawerQty);
-        supplies.Where(s => s.Name == expectedSupplyB.Name).Sum(s => s.Qty).Should().Be(cabinet.Qty * rollOutQty);
+        supplies.Where(s => s.Name == expectedSupplyA.Name).Sum(s => s.Qty).Should().Be(cabinet.Qty * (drawerQty + rollOutQty));
 
     }
 

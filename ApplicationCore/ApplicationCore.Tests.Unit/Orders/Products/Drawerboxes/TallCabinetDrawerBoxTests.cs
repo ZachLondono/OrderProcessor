@@ -5,17 +5,10 @@ using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.Orders.Products.Drawerboxes;
+namespace ApplicationCore.Tests.Unit.Orders.Products.DrawerBoxes;
 
+[Collection("DrawerBoxBuilder")]
 public class TallCabinetDrawerBoxTests {
-
-    private readonly Func<DovetailDrawerBoxBuilder> _dovetailDBBuilderFactory;
-
-    public TallCabinetDrawerBoxTests() {
-
-        _dovetailDBBuilderFactory = () => new();
-
-    }
 
     [Theory]
     [InlineData(0, 1, 0)]
@@ -44,7 +37,7 @@ public class TallCabinetDrawerBoxTests {
 
 
         // Act
-        var drawers = cabinet.GetDrawerBoxes(_dovetailDBBuilderFactory);
+        var drawers = cabinet.GetDrawerBoxes(new DBBuilderFactoryFactory().CreateBuilderFactory());
 
         // Assert
         drawers.Sum(d => d.Qty).Should().Be(expectedDrawerCount);
@@ -73,7 +66,7 @@ public class TallCabinetDrawerBoxTests {
                             .Build();
 
         // Act
-        var drawers = cabinet.GetDrawerBoxes(_dovetailDBBuilderFactory);
+        var drawers = cabinet.GetDrawerBoxes(new DBBuilderFactoryFactory().CreateBuilderFactory());
 
         // Assert
         drawers.Should().NotBeEmpty();
@@ -105,7 +98,13 @@ public class TallCabinetDrawerBoxTests {
                             .Build();
 
         // Act
-        var drawers = cabinet.GetDrawerBoxes(_dovetailDBBuilderFactory);
+        var drawers = cabinet.GetDrawerBoxes(new DBBuilderFactoryFactory().CreateBuilderFactory(() => {
+            DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+                Dimension.FromMillimeters(533),
+                Dimension.FromMillimeters(457),
+                Dimension.FromMillimeters(305),
+            };
+        }));
 
         // Assert
         drawers.Should().NotBeEmpty();

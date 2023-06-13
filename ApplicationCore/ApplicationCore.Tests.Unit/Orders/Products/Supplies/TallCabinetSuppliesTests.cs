@@ -7,6 +7,7 @@ using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products.Supplies;
 
+[Collection("DrawerBoxBuilder")]
 public class TallCabinetSuppliesTests {
 
     private readonly TallCabinetBuilder _builder;
@@ -80,6 +81,9 @@ public class TallCabinetSuppliesTests {
                                 .Build();
 
         Supply expectedSupply = Supply.UndermountSlide(cabinet.Qty * rollOutQty, Dimension.FromMillimeters(457));
+        DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+            Dimension.FromMillimeters(457)
+        };
 
         // Act
         var supplies = cabinet.GetSupplies();

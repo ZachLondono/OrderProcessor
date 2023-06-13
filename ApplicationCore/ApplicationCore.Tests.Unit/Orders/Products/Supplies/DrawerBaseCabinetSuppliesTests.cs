@@ -7,6 +7,7 @@ using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products.Supplies;
 
+[Collection("DrawerBoxBuilder")]
 public class DrawerBaseCabinetSuppliesTests {
 
     private readonly DrawerBaseCabinetBuilder _builder;
@@ -40,6 +41,9 @@ public class DrawerBaseCabinetSuppliesTests {
                                 .Build();
         Supply expectedSupplyA = Supply.DrawerPull(cabinet.Qty * drawerQty);
         Supply expectedSupplyB = Supply.SidemountSlide(cabinet.Qty * drawerQty, Dimension.FromMillimeters(457));
+        DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+            Dimension.FromMillimeters(457)
+        };
 
         // Act
         var supplies = cabinet.GetSupplies();
@@ -63,15 +67,19 @@ public class DrawerBaseCabinetSuppliesTests {
             faceHeights[i] = Dimension.FromMillimeters(157);
         }
         var cabinet = _builder.WithDrawers(new() {
-            FaceHeights = faceHeights
-        })
+                                    FaceHeights = faceHeights
+                                })
                                 .WithWidth(Dimension.FromMillimeters(500))
                                 .WithHeight(Dimension.FromMillimeters(157 * drawerQty + 10))
                                 .WithDepth(Dimension.FromMillimeters(500))
                                 .WithQty(2)
                                 .Build();
+
         Supply expectedSupplyA = Supply.DrawerPull(cabinet.Qty * drawerQty);
         Supply expectedSupplyB = Supply.UndermountSlide(cabinet.Qty * drawerQty, Dimension.FromMillimeters(457));
+        DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+            Dimension.FromMillimeters(457)
+        };
 
         // Act
         var supplies = cabinet.GetSupplies();
