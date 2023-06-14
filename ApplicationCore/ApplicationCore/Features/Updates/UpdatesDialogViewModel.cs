@@ -12,7 +12,7 @@ internal class UpdatesDialogViewModel {
     /// </summary>
     private string InstallerUri { get => UsePreviewChannel ? PREVIEW_INSTALLER_URI : RELEASE_INSTALLER_URI; }
 
-    public bool UsePreviewChannel { get; private set; } = true; // TODO: get preview flag from config file
+    public bool UsePreviewChannel { get; private set; } = false; // TODO: get preview flag from config file
 
     public Version CurrentVersion { get; private set; } = new("0.0.0.0");
 
