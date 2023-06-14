@@ -6,11 +6,11 @@ $ClassName = $args[0]
 $Version = $args[1]
 
 $contents = @"
-namespace ApplicationCore.Schemas
+namespace ApplicationCore.Schemas;
 
 internal static class $($ClassName) {
 	internal const int SCHEMA_VERSION = $($Version);
 }
 "@
 
-Out-File -FilePath "./$($ClassName).cs" -InputObject $contents 
+Out-File -FilePath "$($PSScriptRoot)\$($ClassName).cs" -InputObject $contents 
