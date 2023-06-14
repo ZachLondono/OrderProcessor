@@ -1,4 +1,6 @@
-﻿@using ApplicationCore.Features.Shared.Components
+﻿@using ApplicationCore.Features.Companies.Data;
+@using ApplicationCore.Features.Orders.Data;
+@using ApplicationCore.Features.Shared.Components
 @inject UpdatesDialogViewModel DataContext
 
 <div class="grid grid-cols-1 justify-items-center">
@@ -8,6 +10,10 @@
             <span class="px-2 py-1 ml-3 font-semibold text-xs bg-cyan-500 text-white rounded-full shadow-sm">preview</span>
         }
     </h2>
+    <div class="text-xs mt-3">
+        <div>Ordering schema <span class="font-bold">@SqliteOrderingDbConnectionFactory.DB_VERSION</span></div>
+        <div>Companies schema <span class="font-bold">@SqliteCompaniesDbConnectionFactory.DB_VERSION</span></div>
+    </div>
 
     @if (DataContext.Error is not null) {
         <div class="text-red-700 text-center my-3">
