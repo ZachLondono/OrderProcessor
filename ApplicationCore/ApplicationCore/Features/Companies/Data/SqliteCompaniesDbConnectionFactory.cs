@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Configuration;
 using ApplicationCore.Infrastructure.Data;
+using ApplicationCore.Schemas;
 using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
@@ -10,7 +11,6 @@ namespace ApplicationCore.Features.Companies.Data;
 
 public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory {
 
-    public const int DB_VERSION = 1;
     private static readonly SemaphoreSlim semaphore = new(1);
 
     private readonly IConfiguration _configuration;
@@ -45,7 +45,7 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
         if (File.Exists(datasource)) {
 
             int dbVersion = await GetDatabaseVersion(connection);
-            if (dbVersion != DB_VERSION) {
+            if (dbVersion != CompaniesSchemaVersion.SCHEMA_VERSION) {
                 throw new IncompatibleDatabaseVersion(dbVersion);
             }
 
@@ -70,7 +70,7 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
             throw new InvalidOperationException("Companies data base schema path is not set");
         }
 
-        _logger.LogInformation("Initializing companies database, version {DB_VERSION} from schema in file {FilePath}", DB_VERSION, schemaPath);
+        _logger.LogInformation("Initializing companies database, version {SCHEMA_VERSION} from schema in file {FilePath}", CompaniesSchemaVersion.SCHEMA_VERSION, schemaPath);
 
         var schema = await File.ReadAllTextAsync(schemaPath);
 
@@ -78,7 +78,7 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
         var trx = await connection.BeginTransactionAsync();
 
         await connection.ExecuteAsync(schema, trx);
-        await connection.ExecuteAsync($"PRAGMA SCHEMA_VERSION = {DB_VERSION};", trx);
+        await connection.ExecuteAsync($"PRAGMA SCHEMA_VERSION = {CompaniesSchemaVersion.SCHEMA_VERSION};", trx);
 
         await trx.CommitAsync();
         await connection.CloseAsync();

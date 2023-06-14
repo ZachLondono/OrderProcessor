@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.Configuration;
-using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Infrastructure.Data;
+using ApplicationCore.Schemas;
 using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
@@ -11,7 +11,6 @@ namespace ApplicationCore.Features.Orders.Data;
 
 internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory {
 
-    public const int DB_VERSION = 1;
     private static readonly SemaphoreSlim semaphore = new(1);
 
     private readonly IConfiguration _configuration;
@@ -46,14 +45,14 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
         if (File.Exists(datasource)) {
 
             int dbVersion = await GetDatabaseVersion(connection);
-            if (dbVersion != DB_VERSION) {
+            if (dbVersion != OrderingSchemaVersion.SCHEMA_VERSION) {
                 semaphore.Release();
                 throw new IncompatibleDatabaseVersion(dbVersion);
             }
 
         } else {
 
-            await InitilizeDatabase(connection);
+            await InitializeDatabase(connection);
 
         }
 
@@ -63,7 +62,7 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
 
     }
 
-    private async Task InitilizeDatabase(SqliteConnection connection) {
+    private async Task InitializeDatabase(SqliteConnection connection) {
 
         var schemaPath = _configuration.GetRequiredSection("Schemas").GetValue<string>("Ordering");
 
@@ -71,7 +70,7 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
             throw new InvalidOperationException("Ordering data base schema path is not set");
         }
 
-        _logger.LogInformation("Initilizing ordering database, version {DB_VERSION} from schema in file {FilePath}", DB_VERSION, schemaPath);
+        _logger.LogInformation("Initializing ordering database, version {SCHEMA_VERSION} from schema in file {FilePath}", OrderingSchemaVersion.SCHEMA_VERSION, schemaPath);
 
         var schema = await File.ReadAllTextAsync(schemaPath);
 
@@ -79,7 +78,7 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
         var trx = await connection.BeginTransactionAsync();
 
         await connection.ExecuteAsync(schema, trx);
-        await connection.ExecuteAsync($"PRAGMA SCHEMA_VERSION = {DB_VERSION};", trx);
+        await connection.ExecuteAsync($"PRAGMA SCHEMA_VERSION = {OrderingSchemaVersion.SCHEMA_VERSION};", trx);
 
         trx.Commit();
         connection.Close();
