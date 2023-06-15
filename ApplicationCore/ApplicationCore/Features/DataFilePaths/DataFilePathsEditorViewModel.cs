@@ -5,12 +5,12 @@ using System.Diagnostics;
 
 namespace ApplicationCore.Features.Configuration;
 
-internal class ConfigurationEditorViewModel {
+internal class DataFilePathsEditorViewModel {
 
     public Action? OnPropertyChanged { get; set; }
 
-    private AppConfiguration? _configuration = null;
-    public AppConfiguration? Configuration {
+    private DataFilePaths? _configuration = null;
+    public DataFilePaths? Configuration {
         get => _configuration;
         private set {
             _configuration = value;
@@ -30,13 +30,13 @@ internal class ConfigurationEditorViewModel {
     private readonly IBus _bus;
     private readonly string _filePath;
 
-    public ConfigurationEditorViewModel(IBus bus, IOptions<ConfigurationFiles> fileOptions) {
+    public DataFilePathsEditorViewModel(IBus bus, IOptions<ConfigurationFiles> fileOptions) {
         _bus = bus;
         _filePath = fileOptions.Value.DataConfigFile;
     }
 
     public async Task LoadConfiguration() {
-        var result = await _bus.Send(new GetConfiguration.Query(_filePath));
+        var result = await _bus.Send(new GetDataFilePaths.Query(_filePath));
         result.Match(
             config => Configuration = config,
             error => ErrorMessage = $"{error.Title} - {error.Details}"
@@ -45,7 +45,7 @@ internal class ConfigurationEditorViewModel {
 
     public async Task SaveChanges() {
         if (Configuration is null) return;
-        var result = await _bus.Send(new UpdateConfiguration.Command(_filePath, Configuration));
+        var result = await _bus.Send(new UpdateDataFilePaths.Command(_filePath, Configuration));
         result.OnError(error => ErrorMessage = $"{error.Title} - {error.Details}");
     }
 

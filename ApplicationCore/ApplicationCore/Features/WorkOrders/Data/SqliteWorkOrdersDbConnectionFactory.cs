@@ -16,9 +16,9 @@ internal class SqliteWorkOrdersDbConnectionFactory : IWorkOrdersDbConnectionFact
 
     private readonly ILogger<SqliteWorkOrdersDbConnectionFactory> _logger;
     private readonly IConfiguration _configuration;
-    private readonly AppConfiguration.GetConfiguration _getConfiguration;
+    private readonly DataFilePaths.GetConfiguration _getConfiguration;
 
-    public SqliteWorkOrdersDbConnectionFactory(ILogger<SqliteWorkOrdersDbConnectionFactory> logger, IConfiguration configuration, AppConfiguration.GetConfiguration getConfiguration) {
+    public SqliteWorkOrdersDbConnectionFactory(ILogger<SqliteWorkOrdersDbConnectionFactory> logger, IConfiguration configuration, DataFilePaths.GetConfiguration getConfiguration) {
         _logger = logger;
         _configuration = configuration;
         _getConfiguration = getConfiguration;

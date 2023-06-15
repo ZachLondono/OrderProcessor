@@ -16,9 +16,9 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
 
     private readonly IConfiguration _configuration;
     private readonly ILogger<SqliteOrderingDbConnectionFactory> _logger;
-    private readonly AppConfiguration.GetConfiguration _getConfiguration;
+    private readonly DataFilePaths.GetConfiguration _getConfiguration;
 
-    public SqliteOrderingDbConnectionFactory(IConfiguration configuration, ILogger<SqliteOrderingDbConnectionFactory> logger, AppConfiguration.GetConfiguration getConfiguration) {
+    public SqliteOrderingDbConnectionFactory(IConfiguration configuration, ILogger<SqliteOrderingDbConnectionFactory> logger, DataFilePaths.GetConfiguration getConfiguration) {
         _configuration = configuration;
         _logger = logger;
         _getConfiguration = getConfiguration;

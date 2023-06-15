@@ -15,9 +15,9 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
 
     private readonly IConfiguration _configuration;
     private readonly ILogger<SqliteCompaniesDbConnectionFactory> _logger;
-    private readonly AppConfiguration.GetConfiguration _getConfiguration;
+    private readonly DataFilePaths.GetConfiguration _getConfiguration;
 
-    public SqliteCompaniesDbConnectionFactory(IConfiguration configuration, ILogger<SqliteCompaniesDbConnectionFactory> logger, AppConfiguration.GetConfiguration getConfiguration) {
+    public SqliteCompaniesDbConnectionFactory(IConfiguration configuration, ILogger<SqliteCompaniesDbConnectionFactory> logger, DataFilePaths.GetConfiguration getConfiguration) {
         _configuration = configuration;
         _logger = logger;
         _getConfiguration = getConfiguration;

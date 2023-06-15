@@ -4,20 +4,16 @@
 @using ApplicationCore.Features.Shared.Components;
 @using Microsoft.Extensions.Options;
 @using static ApplicationCore.Features.Shared.Components.Button;
-@inject IOptions<AllmoxyConfiguration> AllmoxyConfig
 
 <TabControl>
 
     <TabPage Title="Data">
-        <ApplicationCore.Features.Configuration.ConfigurationEditor />
+        <ApplicationCore.Features.Configuration.DataFilePathsEditor />
     </TabPage>
     <TabPage Title="CNC Tools">
         <ApplicationCore.Features.CNC.Tools.ToolFileEditor />
     </TabPage>
-    <TabPage Title="Other">
-        <div>
-            <Button Style="ButtonStyle.Link" OnClick="OpenAllmoxySchema" Color="ButtonColor.Secondary" Size="ButtonSize.XSmall">Open Allmoxy Schema File</Button>
-        </div>
+    <TabPage Title="App Settings">
         <div>
             <Button Style="ButtonStyle.Link" OnClick="OpenAppSettingsFile" Color="ButtonColor.Secondary" Size="ButtonSize.XSmall">Open App Settings File</Button>
         </div>
@@ -31,12 +27,6 @@
 
     private void OpenAppSettingsFile() {
         OpenFile("appsettings.json");
-    }
-
-    private void OpenAllmoxySchema() {
-        var config = AllmoxyConfig.Value;
-        var filePath = Path.GetFullPath(config.SchemaFilePath);
-        OpenFile(filePath);
     }
 
     private void OpenFile(string filePath) {

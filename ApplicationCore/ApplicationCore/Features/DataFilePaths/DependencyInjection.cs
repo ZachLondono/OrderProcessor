@@ -9,18 +9,18 @@ public static class DependencyInjection {
 
     public static IServiceCollection AddConfiguration(this IServiceCollection services) {
 
-        services.AddTransient<AppConfiguration.GetConfiguration>(s => {
+        services.AddTransient<DataFilePaths.GetConfiguration>(s => {
             var bus = s.GetRequiredService<IBus>();
             var options = s.GetRequiredService<IOptions<ConfigurationFiles>>();
             return async () => {
-                var result = await bus.Send(new GetConfiguration.Query(options.Value.DataConfigFile));
+                var result = await bus.Send(new GetDataFilePaths.Query(options.Value.DataConfigFile));
                 return result.Match(
                     config => config,
-                    error => (AppConfiguration?)null);
+                    error => (DataFilePaths?)null);
             };
         });
 
-        return services.AddTransient<ConfigurationEditorViewModel>();
+        return services.AddTransient<DataFilePathsEditorViewModel>();
     }
 
 }

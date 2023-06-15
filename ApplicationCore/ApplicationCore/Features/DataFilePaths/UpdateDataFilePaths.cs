@@ -4,9 +4,9 @@ using System.Text.Json;
 
 namespace ApplicationCore.Features.Configuration;
 
-internal class UpdateConfiguration {
+internal class UpdateDataFilePaths {
 
-    public record Command(string FilePath, AppConfiguration Configuration) : ICommand;
+    public record Command(string FilePath, DataFilePaths Configuration) : ICommand;
 
     public class Handler : CommandHandler<Command> {
 
