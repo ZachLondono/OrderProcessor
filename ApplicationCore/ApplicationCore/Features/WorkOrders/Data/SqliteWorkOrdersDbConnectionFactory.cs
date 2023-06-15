@@ -1,11 +1,10 @@
-﻿using ApplicationCore.Features.Configuration;
-using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Infrastructure.Data;
+﻿using ApplicationCore.Shared.Data;
 using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Data;
+using GetDataFilePaths = ApplicationCore.Shared.Data.DataFilePaths.GetConfiguration;
 
 namespace ApplicationCore.Features.WorkOrders.Data;
 
@@ -16,9 +15,9 @@ internal class SqliteWorkOrdersDbConnectionFactory : IWorkOrdersDbConnectionFact
 
     private readonly ILogger<SqliteWorkOrdersDbConnectionFactory> _logger;
     private readonly IConfiguration _configuration;
-    private readonly DataFilePaths.GetConfiguration _getConfiguration;
+    private readonly GetDataFilePaths _getConfiguration;
 
-    public SqliteWorkOrdersDbConnectionFactory(ILogger<SqliteWorkOrdersDbConnectionFactory> logger, IConfiguration configuration, DataFilePaths.GetConfiguration getConfiguration) {
+    public SqliteWorkOrdersDbConnectionFactory(ILogger<SqliteWorkOrdersDbConnectionFactory> logger, IConfiguration configuration, GetDataFilePaths getConfiguration) {
         _logger = logger;
         _configuration = configuration;
         _getConfiguration = getConfiguration;

@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Shared.Domain;
+﻿namespace ApplicationCore.Shared.Domain;
 
 public readonly struct Fraction {
 

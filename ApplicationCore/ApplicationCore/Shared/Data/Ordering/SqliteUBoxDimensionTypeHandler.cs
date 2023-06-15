@@ -1,10 +1,10 @@
 ﻿using System.Data;
 using System.Text.Json;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Features.Shared.Domain;
+using ApplicationCore.Shared.Domain;
 using Dapper;
 
-namespace ApplicationCore.Features.Shared.Data.Ordering;
+namespace ApplicationCore.Shared.Data.Ordering;
 
 public class SqliteUBoxDimensionTypeHandler : SqlMapper.TypeHandler<UBoxDimensions?> {
 

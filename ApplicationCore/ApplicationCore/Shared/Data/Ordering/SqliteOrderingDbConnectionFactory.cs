@@ -1,11 +1,12 @@
-﻿using ApplicationCore.Infrastructure.Data;
+﻿using ApplicationCore.Shared.Data;
+using ApplicationCore.Shared.Data.Ordering;
 using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Data;
 
-namespace ApplicationCore.Features.Shared.Data.Ordering;
+namespace ApplicationCore.Shared.Data.Ordering;
 
 internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory {
 

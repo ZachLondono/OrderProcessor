@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.WorkOrders.Data;
 using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Infrastructure.Data;
+using ApplicationCore.Shared.Data;
 using Dapper;
 
 namespace ApplicationCore.Features.WorkOrders.Shared.Commands;

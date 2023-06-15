@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Shared.Data.Companies;
+﻿using ApplicationCore.Shared.Data.Companies;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 

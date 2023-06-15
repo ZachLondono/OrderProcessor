@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Shared.Domain;
+﻿using ApplicationCore.Shared.Domain;
 using ApplicationCore.Features.WorkOrders.Shared;
 using ApplicationCore.Features.WorkOrders.Shared.Commands;
 using ApplicationCore.Infrastructure.Bus;

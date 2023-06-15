@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Features.Orders.Data;
-using ApplicationCore.Infrastructure.Data;
+﻿using ApplicationCore.Shared.Data.Ordering;
+using ApplicationCore.Shared.Data.TypeHandlers;
 using Dapper;
 
-namespace ApplicationCore.Infrastructure;
+namespace ApplicationCore.Shared.Data;
 
 public static class SqlMapping {
 
@@ -20,7 +20,7 @@ public static class SqlMapping {
 
     public static void AddOrderingSqlMap() {
         SqlMapper.AddTypeHandler(new ToeTypeTypeHandler());
-        SqlMapper.AddTypeHandler(new SqliteFixedDivdersCountsTypeHandler());
+        SqlMapper.AddTypeHandler(new SqliteFixedDividersCountsTypeHandler());
         SqlMapper.AddTypeHandler(new SqliteUBoxDimensionTypeHandler());
     }
 

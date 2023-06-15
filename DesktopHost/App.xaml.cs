@@ -6,11 +6,10 @@ using ApplicationCore;
 using MediatR;
 using System;
 using System.Windows;
-using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Shared.Services;
 using DesktopHost.Error;
 using Serilog;
 using System.Windows.Threading;
-using System.Diagnostics;
 
 namespace DesktopHost;
 
@@ -34,7 +33,7 @@ public partial class App : Application {
 
             new ErrorWindow {
                 DataContext = new ErrorWindowViewModel() {
-                    Title = "Error Initilizing Application",
+                    Title = "Error Initializing Application",
                     Message = ex.Message
                 }
             }.Show();

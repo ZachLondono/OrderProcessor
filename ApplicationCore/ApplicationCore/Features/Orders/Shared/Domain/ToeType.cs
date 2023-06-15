@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Shared.Domain;
+﻿using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain;
 

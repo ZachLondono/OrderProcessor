@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Shared.Domain;
+using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products.DrawerBoxes;
 

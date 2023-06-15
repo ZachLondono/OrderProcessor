@@ -1,8 +1,8 @@
-﻿namespace ApplicationCore.Features.Shared.Services;
+﻿namespace ApplicationCore.Shared.Services;
 
 public interface IMessageBoxService {
 
-    // TODO: create seperate methods for different message boxes (ie. error, informaiton, Yes/No)
+    // TODO: create separate methods for different message boxes (ie. error, information, Yes/No)
 
     public void OpenDialog(string text, string caption);
 

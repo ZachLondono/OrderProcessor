@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using Dapper;
 
-namespace ApplicationCore.Infrastructure.Data;
+namespace ApplicationCore.Shared.Data.TypeHandlers;
 
 public class SqliteGuidTypeHandler : SqlMapper.TypeHandler<Guid> {
     public override void SetValue(IDbDataParameter parameter, Guid guid) {

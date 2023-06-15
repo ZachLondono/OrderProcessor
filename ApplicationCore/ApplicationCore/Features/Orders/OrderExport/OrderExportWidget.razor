@@ -1,7 +1,7 @@
 ﻿@using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 @using ApplicationCore.Features.Orders.Shared.State;
-@using ApplicationCore.Features.Shared.Components
-@using static ApplicationCore.Features.Shared.Components.Button;
+@using ApplicationCore.Shared.Components
+@using static ApplicationCore.Shared.Components.Button;
 
 <Button Type="button" OnClickAsync="ExportOrder" Disabled="_isExporting" Class="flex justify-center items-center h-10 w-36" Color="ButtonColor.Secondary">
     @if (_isExporting) {

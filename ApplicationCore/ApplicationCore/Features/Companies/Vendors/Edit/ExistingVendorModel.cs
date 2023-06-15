@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Companies.Contracts.ValueObjects;
-using ApplicationCore.Infrastructure.Data;
+using ApplicationCore.Shared.Data;
 using System.ComponentModel.DataAnnotations;
 
 namespace ApplicationCore.Features.Companies.Vendors.Edit;

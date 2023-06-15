@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Companies.Contracts;
-using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Shared.Services;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Logging;
 

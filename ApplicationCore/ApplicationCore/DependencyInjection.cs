@@ -3,16 +3,18 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.CompilerServices;
 using Blazored.Modal;
-using ApplicationCore.Infrastructure;
 using ApplicationCore.Features.Orders;
 using ApplicationCore.Features.WorkOrders;
 using ApplicationCore.Features.Companies;
-using ApplicationCore.Features.Shared.Services;
-using ApplicationCore.Features.Configuration;
+using ApplicationCore.Shared.Services;
 using ApplicationCore.Features.CNC;
-using ApplicationCore.Features.Shared.Components.ProgressModal;
+using ApplicationCore.Shared.Components.ProgressModal;
 using ApplicationCore.Pages.OrderList;
-using ApplicationCore.Features.Shared.Settings;
+using ApplicationCore.Shared.Data;
+using ApplicationCore.Shared.Bus;
+using ApplicationCore.Infrastructure.UI;
+using ApplicationCore.Shared.Settings;
+using ApplicationCore.Features.DataFilePaths;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -49,7 +51,10 @@ public static class DependencyInjection {
 
         services.Configure<ConfigurationFiles>(configuration.GetRequiredSection("ConfigurationFiles"));
 
-        services.AddApplicationInfrastructure(configuration);
+        services.AddBus(configuration);
+        services.AddSingleton<IUIBus, UIBus>();
+
+        SqlMapping.AddSqlMaps();
 
         return services;
 

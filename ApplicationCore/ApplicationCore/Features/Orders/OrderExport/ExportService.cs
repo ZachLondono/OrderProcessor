@@ -4,8 +4,8 @@ using ApplicationCore.Features.Orders.OrderExport.Handlers.DovetailOrderExport;
 using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.State;
-using ApplicationCore.Features.Shared;
-using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Shared;
+using ApplicationCore.Shared.Services;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Options;
 

@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Shared;
+﻿using ApplicationCore.Shared;
 
 namespace ApplicationCore.Features.CNC.Contracts;
 

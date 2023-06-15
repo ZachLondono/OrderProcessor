@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Shared;
+﻿namespace ApplicationCore.Shared;
 
 internal static class LinqExtensions {
 

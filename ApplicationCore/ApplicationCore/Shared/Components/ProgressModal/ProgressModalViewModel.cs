@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using ApplicationCore.Shared.Components.ProgressModal;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-namespace ApplicationCore.Features.Shared.Components.ProgressModal;
+namespace ApplicationCore.Shared.Components.ProgressModal;
 
 public class ProgressModalViewModel {
 

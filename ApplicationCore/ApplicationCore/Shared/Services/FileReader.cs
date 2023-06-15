@@ -1,10 +1,10 @@
-﻿namespace ApplicationCore.Features.Shared.Services;
+﻿namespace ApplicationCore.Shared.Services;
 
 public class FileReader : IFileReader {
 
     public bool DoesFileExist(string filePath) => File.Exists(filePath);
 
-    public string GetAvailableFileName(string direcotry, string filename, string fileExtension = "") {
+    public string GetAvailableFileName(string directory, string filename, string fileExtension = "") {
 
         int index = 1;
 
@@ -14,11 +14,11 @@ public class FileReader : IFileReader {
             fileExtension = fileExtension[1..];
         }
 
-        string filepath = Path.Combine(direcotry, $"{filename}{(fileExtension == string.Empty ? "" : $".{fileExtension}")}");
+        string filepath = Path.Combine(directory, $"{filename}{(fileExtension == string.Empty ? "" : $".{fileExtension}")}");
 
         while (DoesFileExist(filepath)) {
 
-            filepath = Path.Combine(direcotry, $"{filename} ({index++}).{fileExtension}");
+            filepath = Path.Combine(directory, $"{filename} ({index++}).{fileExtension}");
 
         }
 

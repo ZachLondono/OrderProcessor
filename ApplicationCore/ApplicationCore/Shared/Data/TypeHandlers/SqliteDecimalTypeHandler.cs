@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using Dapper;
 
-namespace ApplicationCore.Infrastructure.Data;
+namespace ApplicationCore.Shared.Data.TypeHandlers;
 
 public class SqliteDecimalTypeHandler : SqlMapper.TypeHandler<decimal> {
 
@@ -10,7 +10,7 @@ public class SqliteDecimalTypeHandler : SqlMapper.TypeHandler<decimal> {
     }
 
     public override decimal Parse(object value) {
-        // This is neccessary, otherwise whole number values are read as doubles from SQLite database and throws an invalid cast exception when trying to cast to decimal
+        // This is necessary, otherwise whole number values are read as doubles from SQLite database and throws an invalid cast exception when trying to cast to decimal
         return Convert.ToDecimal(value);
     }
 

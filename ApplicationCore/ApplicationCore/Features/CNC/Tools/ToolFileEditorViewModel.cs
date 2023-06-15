@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.CNC.Tools.Domain;
-using ApplicationCore.Features.Shared.Settings;
 using ApplicationCore.Infrastructure.Bus;
+using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 

@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Infrastructure.Data;
+﻿using ApplicationCore.Shared.Data;
 
 namespace ApplicationCore.Features.Companies.Contracts.ValueObjects;
 

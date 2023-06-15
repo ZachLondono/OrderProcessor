@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ApplicationCore.Infrastructure.Data;
+namespace ApplicationCore.Shared.Data;
 
 public class UserDataProtection {
 

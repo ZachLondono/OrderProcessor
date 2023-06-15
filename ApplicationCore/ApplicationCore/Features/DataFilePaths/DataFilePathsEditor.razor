@@ -1,6 +1,7 @@
-﻿@using ApplicationCore.Features.Shared.Components
+﻿@using ApplicationCore.Features.Configuration;
+@using ApplicationCore.Shared.Components
 @using ApplicationCore.Infrastructure.Bus;
-@using static ApplicationCore.Features.Shared.Components.Button;
+@using static ApplicationCore.Shared.Components.Button;
 @inject DataFilePathsEditorViewModel DataContext 
 
 @if (DataContext.ErrorMessage is not null) {

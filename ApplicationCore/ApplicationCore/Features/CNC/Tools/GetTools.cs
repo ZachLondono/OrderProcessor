@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Shared.Services;
+﻿using ApplicationCore.Shared.Services;
 using ApplicationCore.Features.CNC.Tools.Domain;
 using ApplicationCore.Infrastructure.Bus;
 using System.Text.Json;

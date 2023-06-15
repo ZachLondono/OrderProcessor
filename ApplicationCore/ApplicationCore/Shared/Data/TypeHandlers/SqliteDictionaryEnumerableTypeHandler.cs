@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Dapper;
 
-namespace ApplicationCore.Infrastructure.Data;
+namespace ApplicationCore.Shared.Data.TypeHandlers;
 
 public class SqliteDictionaryEnumerableTypeHandler : SqlMapper.TypeHandler<IDictionary<string, string>> {
 

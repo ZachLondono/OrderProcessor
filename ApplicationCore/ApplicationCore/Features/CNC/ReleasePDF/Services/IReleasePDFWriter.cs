@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.CNC.Contracts;
-using ApplicationCore.Features.Shared;
+using ApplicationCore.Shared;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF.Services;
 

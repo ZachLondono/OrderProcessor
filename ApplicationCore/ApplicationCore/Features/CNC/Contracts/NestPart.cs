@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.CNC.Domain;
-using ApplicationCore.Features.Shared.Domain;
+using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.CNC.Contracts;
 

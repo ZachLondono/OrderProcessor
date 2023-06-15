@@ -1,3 +1,3 @@
-﻿namespace ApplicationCore.Features.Shared.Components.ProgressModal;
+﻿namespace ApplicationCore.Shared.Components.ProgressModal;
 
 public record ProgressLogMessage(ProgressLogMessageType Type, string Message);

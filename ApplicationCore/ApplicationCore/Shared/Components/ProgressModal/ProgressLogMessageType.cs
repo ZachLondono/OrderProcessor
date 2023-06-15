@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Shared.Components.ProgressModal;
+﻿namespace ApplicationCore.Shared.Components.ProgressModal;
 
 public enum ProgressLogMessageType {
     Info,

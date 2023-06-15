@@ -1,13 +1,12 @@
 ﻿using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Infrastructure.UI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ApplicationCore.Infrastructure;
+namespace ApplicationCore.Shared.Bus;
 
 public static class DependencyInjection {
 
-    public static IServiceCollection AddApplicationInfrastructure(this IServiceCollection services, IConfiguration configuration) {
+    public static IServiceCollection AddBus(this IServiceCollection services, IConfiguration configuration) {
 
         var cacheConfig = configuration.GetRequiredSection("Cache").Get<CacheConfiguration>();
 
@@ -18,10 +17,6 @@ public static class DependencyInjection {
             services.AddSingleton<MediatRBus>();
             services.AddSingleton<IBus, CachedBusDecorator>();
         }
-
-        services.AddSingleton<IUIBus, UIBus>();
-
-        SqlMapping.AddSqlMaps();
 
         return services;
 

@@ -1,9 +1,9 @@
 ﻿using ApplicationCore.Infrastructure.Bus;
 using Blazored.Modal;
 using Blazored.Modal.Services;
-using static ApplicationCore.Features.Shared.InformationDialog;
+using static ApplicationCore.Shared.InformationDialog;
 
-namespace ApplicationCore.Features.Shared;
+namespace ApplicationCore.Shared;
 
 internal static class ModalExtensions {
 
@@ -24,7 +24,7 @@ internal static class ModalExtensions {
 
     }
 
-    public static Task<ModalResult> OpenErrorDialog(this IModalService modal, Error error, ModalSize? size = null) => OpenInformationDialog(modal, error.Title, error.Details, MessageType.Error, size);
-    public static Task<ModalResult> OpenErrorDialog(this IModalService modal, Error error) => OpenInformationDialog(modal, error.Title, error.Details, MessageType.Error, null);
+    public static Task<ModalResult> OpenErrorDialog(this IModalService modal, Error error, ModalSize? size = null) => modal.OpenInformationDialog(error.Title, error.Details, MessageType.Error, size);
+    public static Task<ModalResult> OpenErrorDialog(this IModalService modal, Error error) => modal.OpenInformationDialog(error.Title, error.Details, MessageType.Error, null);
 
 }

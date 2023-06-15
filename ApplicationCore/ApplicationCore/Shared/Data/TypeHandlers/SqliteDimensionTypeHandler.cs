@@ -1,8 +1,8 @@
 ﻿using System.Data;
-using ApplicationCore.Features.Shared.Domain;
+using ApplicationCore.Shared.Domain;
 using Dapper;
 
-namespace ApplicationCore.Infrastructure.Data;
+namespace ApplicationCore.Shared.Data.TypeHandlers;
 
 public class SqliteDimensionTypeHandler : SqlMapper.TypeHandler<Dimension> {
     public override void SetValue(IDbDataParameter parameter, Dimension dimension) {

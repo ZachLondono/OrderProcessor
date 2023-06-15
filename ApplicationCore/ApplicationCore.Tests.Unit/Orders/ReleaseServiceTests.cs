@@ -4,7 +4,7 @@ using ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.PackingList;
-using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Shared.Services;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;

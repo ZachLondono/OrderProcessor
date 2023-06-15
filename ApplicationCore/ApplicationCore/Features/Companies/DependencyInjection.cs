@@ -5,7 +5,7 @@ using ApplicationCore.Features.Companies.Customers.List;
 using ApplicationCore.Features.Companies.Vendors;
 using ApplicationCore.Features.Companies.Vendors.Edit;
 using ApplicationCore.Features.Companies.Vendors.List;
-using ApplicationCore.Features.Shared.Data.Companies;
+using ApplicationCore.Shared.Data.Companies;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationCore.Features.Companies;

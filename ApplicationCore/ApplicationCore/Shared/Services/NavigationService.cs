@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.Shared.State;
 using Microsoft.AspNetCore.Components;
 
-namespace ApplicationCore.Features.Shared.Services;
+namespace ApplicationCore.Shared.Services;
 
 public class NavigationService {
 

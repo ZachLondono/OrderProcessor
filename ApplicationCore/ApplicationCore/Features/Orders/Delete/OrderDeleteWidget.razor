@@ -1,5 +1,5 @@
-﻿@using ApplicationCore.Features.Shared.Components
-@using static ApplicationCore.Features.Shared.Components.Button;
+﻿@using ApplicationCore.Shared.Components
+@using static ApplicationCore.Shared.Components.Button;
 
 <Button Type="button" OnClickAsync="DeleteOrder" Disabled="_isDeleting" Class="flex justify-center items-center h-10 w-36" Color="ButtonColor.Secondary">
     @if (_isDeleting) {

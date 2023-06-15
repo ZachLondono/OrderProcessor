@@ -3,7 +3,7 @@ using ApplicationCore.Features.Orders.OrderLoading.Dialog;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using static ApplicationCore.Features.Companies.Contracts.CompanyDirectory;
 using Microsoft.Extensions.Options;
-using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Shared.Services;
 using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.XMLValidation;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyFileOrderData;

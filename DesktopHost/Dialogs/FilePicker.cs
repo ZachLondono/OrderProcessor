@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Shared.Services;
+﻿using ApplicationCore.Shared.Services;
 using Microsoft.Win32;
 using System;
 using System.IO;

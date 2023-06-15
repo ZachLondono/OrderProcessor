@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Shared.Services;
+﻿using ApplicationCore.Shared.Services;
 using System.Windows;
 
 namespace DesktopHost.Dialogs;

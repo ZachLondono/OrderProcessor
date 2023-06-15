@@ -1,12 +1,12 @@
-﻿using ApplicationCore.Features.Shared.Services;
-using ApplicationCore.Infrastructure.Bus;
+﻿using ApplicationCore.Infrastructure.Bus;
+using ApplicationCore.Shared.Services;
 using System.Text.Json;
 
-namespace ApplicationCore.Features.Configuration;
+namespace ApplicationCore.Features.DataFilePaths;
 
 internal class UpdateDataFilePaths {
 
-    public record Command(string FilePath, DataFilePaths Configuration) : ICommand;
+    public record Command(string FilePath, Shared.Data.DataFilePaths Configuration) : ICommand;
 
     public class Handler : CommandHandler<Command> {
 

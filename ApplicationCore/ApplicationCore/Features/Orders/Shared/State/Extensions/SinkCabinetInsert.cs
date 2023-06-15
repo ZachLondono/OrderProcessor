@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Shared.Domain;
+using ApplicationCore.Shared.Domain;
 using Dapper;
 using System.Data;
 

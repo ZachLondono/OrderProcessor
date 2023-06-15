@@ -12,9 +12,9 @@ using CompanyAddress = ApplicationCore.Features.Companies.Contracts.ValueObjects
 using CompanyCustomer = ApplicationCore.Features.Companies.Contracts.Entities.Customer;
 using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using System.Xml;
-using ApplicationCore.Features.Shared;
+using ApplicationCore.Shared;
 using Microsoft.Extensions.Options;
-using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Shared.Services;
 using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.XMLValidation;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
 

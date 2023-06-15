@@ -1,6 +1,6 @@
 ﻿using QuestPDF.Infrastructure;
 
-namespace ApplicationCore.Features.Shared;
+namespace ApplicationCore.Shared;
 
 public interface IDocumentDecorator {
 

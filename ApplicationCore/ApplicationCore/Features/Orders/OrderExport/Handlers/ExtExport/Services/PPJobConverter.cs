@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Contracts;
 using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Domain;
-using ApplicationCore.Features.Shared;
+using ApplicationCore.Shared;
 
 namespace ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Services;
 

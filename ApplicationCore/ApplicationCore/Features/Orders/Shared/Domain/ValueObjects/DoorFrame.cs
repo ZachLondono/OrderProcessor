@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Shared.Domain;
+﻿using ApplicationCore.Shared.Domain;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;

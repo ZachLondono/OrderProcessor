@@ -1,9 +1,9 @@
 ﻿using System.Data;
 using System.Text.Json;
-using ApplicationCore.Features.Shared.Domain;
+using ApplicationCore.Shared.Domain;
 using Dapper;
 
-namespace ApplicationCore.Infrastructure.Data;
+namespace ApplicationCore.Shared.Data.TypeHandlers;
 
 public class DimensionArrayTypeHandler : SqlMapper.TypeHandler<Dimension[]> {
 

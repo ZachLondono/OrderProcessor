@@ -1,8 +1,9 @@
-﻿using Blazored.Modal;
+﻿using ApplicationCore.Shared.Components.ProgressModal;
+using Blazored.Modal;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace ApplicationCore.Features.Shared.Components.ProgressModal;
+namespace ApplicationCore.Shared.Components.ProgressModal;
 
 public partial class ProgressModal {
 

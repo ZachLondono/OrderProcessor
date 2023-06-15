@@ -2,7 +2,7 @@
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Contracts;
 using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Services;
-using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Shared.Services;
 using ApplicationCore.Features.Companies.Contracts;
 using ApplicationCore.Infrastructure.Bus;
 

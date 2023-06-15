@@ -3,15 +3,15 @@ using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Features.Shared.Domain;
-using ApplicationCore.Infrastructure;
+using ApplicationCore.Shared.Domain;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using ApplicationCore.Features.Orders.Shared.State;
-using ApplicationCore.Features.Shared.Data.Ordering;
+using ApplicationCore.Shared.Data.Ordering;
+using ApplicationCore.Shared.Data;
 
 namespace ApplicationCore.Tests.Unit.Orders.CreatingNewOrder;
 

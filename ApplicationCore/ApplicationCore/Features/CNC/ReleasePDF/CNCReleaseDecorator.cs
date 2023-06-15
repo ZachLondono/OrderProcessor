@@ -4,7 +4,7 @@ using ApplicationCore.Features.CNC.ReleasePDF.Services;
 using ApplicationCore.Features.CNC.ReleasePDF.WSXML;
 using ApplicationCore.Features.CNC.Contracts;
 using ApplicationCore.Features.CNC.Domain;
-using ApplicationCore.Features.Shared.Domain;
+using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF;
 

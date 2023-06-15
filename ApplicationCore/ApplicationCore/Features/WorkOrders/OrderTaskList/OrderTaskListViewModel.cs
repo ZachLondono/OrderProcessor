@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Shared;
+﻿using ApplicationCore.Shared;
 using ApplicationCore.Features.WorkOrders.Shared;
 using ApplicationCore.Features.WorkOrders.Shared.Commands;
 using ApplicationCore.Infrastructure.Bus;

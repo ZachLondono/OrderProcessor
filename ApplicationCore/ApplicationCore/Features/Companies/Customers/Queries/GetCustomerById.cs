@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.Companies.Contracts.Entities;
 using ApplicationCore.Features.Companies.Contracts.ValueObjects;
-using ApplicationCore.Features.Shared.Data.Companies;
+using ApplicationCore.Shared.Data.Companies;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 

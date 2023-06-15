@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.CNC.Tools.Contracts;
-using ApplicationCore.Features.Shared.Settings;
 using ApplicationCore.Infrastructure.Bus;
+using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 

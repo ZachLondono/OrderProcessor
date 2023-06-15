@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Shared.Components.ProgressModal;
+﻿using ApplicationCore.Shared.Components.ProgressModal;
 
 namespace ApplicationCore.Features.Orders.OrderExport;
 

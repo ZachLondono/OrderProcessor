@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.Shared.Data.Ordering;
+﻿using ApplicationCore.Shared.Data.Ordering;
 
-namespace ApplicationCore.Infrastructure.Data;
+namespace ApplicationCore.Shared.Data;
 
 public class IncompatibleDatabaseVersion : Exception {
     public int FoundVersion { get; set; }

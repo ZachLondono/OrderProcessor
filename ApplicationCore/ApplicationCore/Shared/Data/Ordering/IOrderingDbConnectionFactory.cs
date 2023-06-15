@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace ApplicationCore.Features.Shared.Data.Ordering;
+namespace ApplicationCore.Shared.Data.Ordering;
 
 public interface IOrderingDbConnectionFactory {
 

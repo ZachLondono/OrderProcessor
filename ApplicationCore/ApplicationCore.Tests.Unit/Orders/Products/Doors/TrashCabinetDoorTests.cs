@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Features.Shared;
-using ApplicationCore.Features.Shared.Domain;
+using ApplicationCore.Shared;
+using ApplicationCore.Shared.Domain;
 using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products.Doors;

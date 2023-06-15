@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace ApplicationCore.Features.Shared.Data.Companies;
+namespace ApplicationCore.Shared.Data.Companies;
 
 public interface ICompaniesDbConnectionFactory {
 

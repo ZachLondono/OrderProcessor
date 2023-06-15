@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ApplicationCore.Features.Shared.Data;
+namespace ApplicationCore.Shared.Data;
 
 public class DataFilePaths {
 

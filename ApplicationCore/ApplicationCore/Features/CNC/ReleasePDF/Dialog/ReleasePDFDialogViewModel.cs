@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.CNC.Contracts;
-using ApplicationCore.Features.Shared.Services;
+using ApplicationCore.Shared.Services;
 using QuestPDF.Fluent;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF.Dialog;

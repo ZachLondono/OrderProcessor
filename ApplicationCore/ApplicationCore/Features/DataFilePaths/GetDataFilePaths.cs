@@ -1,14 +1,14 @@
-﻿using ApplicationCore.Features.Shared.Services;
-using ApplicationCore.Infrastructure.Bus;
+﻿using ApplicationCore.Infrastructure.Bus;
+using ApplicationCore.Shared.Services;
 using System.Text.Json;
 
-namespace ApplicationCore.Features.Configuration;
+namespace ApplicationCore.Features.DataFilePaths;
 
 internal class GetDataFilePaths {
 
-    public record Query(string FilePath) : IQuery<DataFilePaths>;
+    public record Query(string FilePath) : IQuery<Shared.Data.DataFilePaths>;
 
-    public class Handler : QueryHandler<Query, DataFilePaths> {
+    public class Handler : QueryHandler<Query, Shared.Data.DataFilePaths> {
 
         private readonly IFileReader _fileReader;
 
@@ -16,22 +16,22 @@ internal class GetDataFilePaths {
             _fileReader = fileReader;
         }
 
-        public override async Task<Response<DataFilePaths>> Handle(Query query) {
+        public override async Task<Response<Shared.Data.DataFilePaths>> Handle(Query query) {
 
             using var stream = _fileReader.OpenReadFileStream(query.FilePath);
 
-            var data = await JsonSerializer.DeserializeAsync<DataFilePaths>(stream);
+            var data = await JsonSerializer.DeserializeAsync<Shared.Data.DataFilePaths>(stream);
 
             if (data == null) {
 
-                return Response<DataFilePaths>.Error(new() {
+                return Response<Shared.Data.DataFilePaths>.Error(new() {
                     Title = "Failed to load app configuration",
                     Details = "No value was read from configuration file."
                 });
 
             }
 
-            return Response<DataFilePaths>.Success(data);
+            return Response<Shared.Data.DataFilePaths>.Success(data);
 
         }
 
