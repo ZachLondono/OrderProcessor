@@ -19,7 +19,7 @@
             <Button Style="ButtonStyle.Link" OnClick="OpenAllmoxySchema" Color="ButtonColor.Secondary" Size="ButtonSize.XSmall">Open Allmoxy Schema File</Button>
         </div>
         <div>
-            <Button Style="ButtonStyle.Link" OnClick="OpenConfigurationFile" Color="ButtonColor.Secondary" Size="ButtonSize.XSmall">Open Config File</Button>
+            <Button Style="ButtonStyle.Link" OnClick="OpenAppSettingsFile" Color="ButtonColor.Secondary" Size="ButtonSize.XSmall">Open App Settings File</Button>
         </div>
     </TabPage>
 
@@ -29,7 +29,7 @@
 
 @code {
 
-    private void OpenConfigurationFile() {
+    private void OpenAppSettingsFile() {
         OpenFile("appsettings.json");
     }
 

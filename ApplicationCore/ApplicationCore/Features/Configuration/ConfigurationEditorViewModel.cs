@@ -1,11 +1,11 @@
-﻿using ApplicationCore.Infrastructure.Bus;
+﻿using ApplicationCore.Features.Shared.Settings;
+using ApplicationCore.Infrastructure.Bus;
+using Microsoft.Extensions.Options;
 using System.Diagnostics;
 
 namespace ApplicationCore.Features.Configuration;
 
 internal class ConfigurationEditorViewModel {
-
-    public const string FILE_PATH = @"./Configuration/data.json";
 
     public Action? OnPropertyChanged { get; set; }
 
@@ -28,13 +28,15 @@ internal class ConfigurationEditorViewModel {
     }
 
     private readonly IBus _bus;
+    private readonly string _filePath;
 
-    public ConfigurationEditorViewModel(IBus bus) {
+    public ConfigurationEditorViewModel(IBus bus, IOptions<ConfigurationFiles> fileOptions) {
         _bus = bus;
+        _filePath = fileOptions.Value.DataConfigFile;
     }
 
     public async Task LoadConfiguration() {
-        var result = await _bus.Send(new GetConfiguration.Query(FILE_PATH));
+        var result = await _bus.Send(new GetConfiguration.Query(_filePath));
         result.Match(
             config => Configuration = config,
             error => ErrorMessage = $"{error.Title} - {error.Details}"
@@ -43,15 +45,15 @@ internal class ConfigurationEditorViewModel {
 
     public async Task SaveChanges() {
         if (Configuration is null) return;
-        var result = await _bus.Send(new UpdateConfiguration.Command(FILE_PATH, Configuration));
+        var result = await _bus.Send(new UpdateConfiguration.Command(_filePath, Configuration));
         result.OnError(error => ErrorMessage = $"{error.Title} - {error.Details}");
     }
 
-    public static void OpenFile() {
+    public void OpenFile() {
         try {
 
             var psi = new ProcessStartInfo {
-                FileName = Path.GetFullPath(FILE_PATH),
+                FileName = Path.GetFullPath(_filePath),
                 UseShellExecute = true
             };
             Process.Start(psi);

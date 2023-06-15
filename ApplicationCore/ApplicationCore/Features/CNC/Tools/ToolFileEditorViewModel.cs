@@ -1,14 +1,15 @@
 ﻿using ApplicationCore.Features.CNC.Tools.Domain;
+using ApplicationCore.Features.Shared.Settings;
 using ApplicationCore.Infrastructure.Bus;
+using Microsoft.Extensions.Options;
 using System.Diagnostics;
 
 namespace ApplicationCore.Features.CNC.Tools;
 
 internal class ToolFileEditorViewModel {
 
-    public const string FILE_PATH = @"./Configuration/tools.json";
-
     private readonly IBus _bus;
+    private readonly string _filePath;
 
     private List<MachineToolMap> _toolMaps = new();
     public List<MachineToolMap> ToolMaps {
@@ -30,15 +31,16 @@ internal class ToolFileEditorViewModel {
 
     public Action? OnPropertyChanged { get; set; }
 
-    public ToolFileEditorViewModel(IBus bus) {
+    public ToolFileEditorViewModel(IBus bus, IOptions<ConfigurationFiles> fileOptions) {
         _bus = bus;
+        _filePath = fileOptions.Value.ToolConfigFile;
     }
 
     public async Task LoadToolFile() {
 
         try {
 
-            var result = await _bus.Send(new GetTools.Query(FILE_PATH));
+            var result = await _bus.Send(new GetTools.Query(_filePath));
 
             result.Match(
                tools => ToolMaps = new(tools),
@@ -48,7 +50,7 @@ internal class ToolFileEditorViewModel {
 
             Error = new() {
                 Title = "Failed to Load Data",
-                Details = $"Exception thrown while trying to retreive tool data from file : {ex.Message}"
+                Details = $"Exception thrown while trying to retrieve tool data from file : {ex.Message}"
             };
 
         }
@@ -58,7 +60,7 @@ internal class ToolFileEditorViewModel {
     public async Task SaveToolFile() {
 
         try {
-            var result = await _bus.Send(new SetTools.Command(FILE_PATH, ToolMaps));
+            var result = await _bus.Send(new SetTools.Command(_filePath, ToolMaps));
 
             result.OnError(
                 error => Error = error);
@@ -74,11 +76,11 @@ internal class ToolFileEditorViewModel {
 
     }
 
-    public static void OpenFile() {
+    public void OpenFile() {
         try {
 
             var psi = new ProcessStartInfo {
-                FileName = Path.GetFullPath(FILE_PATH),
+                FileName = Path.GetFullPath(_filePath),
                 UseShellExecute = true
             };
             Process.Start(psi);

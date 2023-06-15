@@ -12,6 +12,7 @@ using ApplicationCore.Features.Configuration;
 using ApplicationCore.Features.CNC;
 using ApplicationCore.Features.Shared.Components.ProgressModal;
 using ApplicationCore.Pages.OrderList;
+using ApplicationCore.Features.Shared.Settings;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -45,6 +46,8 @@ public static class DependencyInjection {
         services.AddSingleton<IFileWriter, FileWriter>();
 
         services.AddTransient<ProgressModalViewModel>();
+
+        services.Configure<ConfigurationFiles>(configuration.GetRequiredSection("ConfigurationFiles"));
 
         services.AddApplicationInfrastructure(configuration);
 

@@ -1,10 +1,12 @@
 ﻿using ApplicationCore.Features.CNC.Tools.Contracts;
+using ApplicationCore.Features.Shared.Settings;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.CNC.Tools;
 
-public static class DepenencyInjection {
+public static class DependencyInjection {
 
     public static IServiceCollection AddToolEditor(this IServiceCollection services) {
 
@@ -13,8 +15,9 @@ public static class DepenencyInjection {
         services.AddTransient<CNCToolBox.GetToolCarousels>(s => {
 
             var bus = s.GetRequiredService<IBus>();
+            var options = s.GetRequiredService<IOptions<ConfigurationFiles>>();
             return async () => {
-                var result = await bus.Send(new GetTools.Query(ToolFileEditorViewModel.FILE_PATH));
+                var result = await bus.Send(new GetTools.Query(options.Value.ToolConfigFile));
 
                 return result.Match(
                    toolMap => toolMap.Select(map => new ToolCarousel() {
