@@ -11,24 +11,13 @@
     <script src="js/dropdowns.js"></script>
 
     <script type="application/javascript">
-        function toggleDarkMode() {
-            let key = "dark";
-            if (document.documentElement.classList.contains(key)) {
-                document.documentElement.classList.remove(key);
-            } else {
-                document.documentElement.classList.add(key);
-            }
-        }
-    </script>
-
-    <script type="application/javascript">
         function scrollToEnd(scrollarea) {
             scrollarea.scrollTop = scrollarea.scrollHeight;
         }
     </script>
 </head>
 
-<body class="dark:bg-slate-800">
+<body>
     <div id="app">
         <div class="flex justify-center">
             <svg class="animate-spin h-12 w-12 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

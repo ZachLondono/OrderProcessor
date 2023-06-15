@@ -59,13 +59,13 @@
 
         <tbody>
             @foreach(var order in DataContext.Orders) {
-                <tr class="justify-center hover:bg-slate-200 dark:hover:bg-slate-500 cursor-pointer">
-                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await SelectOrder(order.Id)">@order.Number</td>
-                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white" @onclick="async () => await SelectOrder(order.Id)">@order.Name</td>
-                    <td class="p-5 whitespace-nowrap border-b dark:border-slate-500 dark:text-white hover:underline" @onclick="() => DataContext.OpenCustomerPage(order.CustomerId)">@order.CustomerName</td>
-                    <td class="p-5 whitespace-nowrap border-b hover:text-underline dark:border-slate-500 dark:text-white hover:underline" @onclick="() => DataContext.OpenVendorPage(order.VendorId)">@order.VendorName</td>
-                    <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await SelectOrder(order.Id)">@order.ItemCount</td>
-                    <td class="p-5 whitespace-nowrap text-center border-b dark:border-slate-500 dark:text-white" @onclick="async () => await SelectOrder(order.Id)">@order.OrderDate.ToShortDateString()</td>
+                <tr class="justify-center hover:bg-slate-200 cursor-pointer">
+                    <td class="p-5 whitespace-nowrap border-b" @onclick="async () => await SelectOrder(order.Id)">@order.Number</td>
+                    <td class="p-5 whitespace-nowrap border-b" @onclick="async () => await SelectOrder(order.Id)">@order.Name</td>
+                    <td class="p-5 whitespace-nowrap border-b hover:underline" @onclick="() => DataContext.OpenCustomerPage(order.CustomerId)">@order.CustomerName</td>
+                    <td class="p-5 whitespace-nowrap border-b hover:text-underline hover:underline" @onclick="() => DataContext.OpenVendorPage(order.VendorId)">@order.VendorName</td>
+                    <td class="p-5 whitespace-nowrap text-center border-b" @onclick="async () => await SelectOrder(order.Id)">@order.ItemCount</td>
+                    <td class="p-5 whitespace-nowrap text-center border-b" @onclick="async () => await SelectOrder(order.Id)">@order.OrderDate.ToShortDateString()</td>
                 </tr>
             }
         </tbody>

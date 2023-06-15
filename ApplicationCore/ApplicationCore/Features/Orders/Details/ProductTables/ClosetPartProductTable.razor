@@ -6,7 +6,7 @@
 <div class="overflow-x-auto rounded-md">
     <table class="table-auto">
         <thead class="border-b border-slate-300">
-            <tr class="dark:bg-slate-700 dark:text-gray-500">
+            <tr>
                 <th></th>
                 <th class="p-5">#</th>
                 <th class="p-5">Qty</th>
@@ -40,23 +40,23 @@
                             </ToolTip>
                         }
                     </td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.ProductNumber</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Qty</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.ProductNumber</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.Qty</td>
                     @if (UseInches) {
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.Product.Width.GetFormatedFraction())"</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((MarkupString)row.Product.Length.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.Product.Width.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.Product.Length.GetFormatedFraction())"</td>
                     } else {
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Width.AsMillimeters().ToString("0.00")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Length.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.Width.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.Length.AsMillimeters().ToString("0.00")</td>
                     }
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.SKU</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.Material.Finish}/{row.Product.Material.Core}")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.Paint?.Color ?? "N/A"}")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@($"{row.Product.Paint?.Side.ToString() ?? "N/A"}")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.EdgeBandingColor</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.Room</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@row.Product.UnitPrice.ToString("$0.00")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center dark:border-slate-500 dark:text-white">@((row.Product.UnitPrice * row.Product.Qty).ToString("$0.00"))</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.SKU</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@($"{row.Product.Material.Finish}/{row.Product.Material.Core}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@($"{row.Product.Paint?.Color ?? "N/A"}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@($"{row.Product.Paint?.Side.ToString() ?? "N/A"}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.EdgeBandingColor</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.Room</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.UnitPrice.ToString("$0.00")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@((row.Product.UnitPrice * row.Product.Qty).ToString("$0.00"))</td>
                 </tr>
             }
         </tbody>

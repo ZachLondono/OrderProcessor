@@ -36,19 +36,19 @@
     
     <section id="summary">
         <div class="mb-4">
-            <label id="number" class="text-lg w-24 inline-block dark:text-gray-400">Number</label>
-            <span class="text-xl w-64 border-b-2 border-gray-400 dark:text-white">@OrderState.Order.Number</span>
+            <label id="number" class="text-lg w-24 inline-block">Number</label>
+            <span class="text-xl w-64 border-b-2 border-gray-400">@OrderState.Order.Number</span>
             @if (OrderState.Order.Rush) {
                 <span class="p-2 text-white font-bold bg-red-500">RUSH</span>
             }
         </div>
         <div>
-            <label id="name" class="text-lg w-24 inline-block dark:text-gray-400">Name</label>
-            <span class="text-xl w-64 border-b-2 border-gray-400 dark:text-white">@OrderState.Order.Name</span>
+            <label id="name" class="text-lg w-24 inline-block">Name</label>
+            <span class="text-xl w-64 border-b-2 border-gray-400">@OrderState.Order.Name</span>
         </div>
         <div>
-            <label id="orderdate" class="text-md w-24 inline-block dark:text-gray-400">Order Date</label>
-            <span class="text-lg dark:text-white">@OrderState.Order.OrderDate.ToShortDateString()</span>
+            <label id="orderdate" class="text-md w-24 inline-block">Order Date</label>
+            <span class="text-lg">@OrderState.Order.OrderDate.ToShortDateString()</span>
         </div>
     </section>
 
@@ -59,23 +59,23 @@
     <section class="mt-10" id="companyInfo">
         <div>
             @if (_customerName is not null) {
-                <label id="customer" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Customer</label>
-                <span class="text-lg hover:underline cursor-pointer dark:text-white h-5 align-middle" @onclick="() => OpenCustomerPage(OrderState.Order.CustomerId)">@_customerName</span>
+                <label id="customer" class="text-md w-24 inline-block h-5 align-middle">Customer</label>
+                <span class="text-lg hover:underline cursor-pointer h-5 align-middle" @onclick="() => OpenCustomerPage(OrderState.Order.CustomerId)">@_customerName</span>
             } else {
                 <span>No customer info</span>
             }
         </div>
         <div>
             @if(_vendorName is not null) {
-                <label id="vendor" class="text-md w-24 inline-block dark:text-gray-400 h-5 align-middle">Vendor</label>
-                <span class="text-lg hover:underline cursor-pointer dark:text-white h-5 align-middle" @onclick="() => OpenVendorPage(OrderState.Order.VendorId)">@_vendorName</span>
+                <label id="vendor" class="text-md w-24 inline-block h-5 align-middle">Vendor</label>
+                <span class="text-lg hover:underline cursor-pointer h-5 align-middle" @onclick="() => OpenVendorPage(OrderState.Order.VendorId)">@_vendorName</span>
             } else {
                 <span>No vendor info</span>
             }
         </div>
         <div>
-            <label id="comment" class="text-md w-24 inline-block dark:text-gray-400">Comment</label>
-            <span class="text-lg dark:text-white">@OrderState.Order.CustomerComment</span>
+            <label id="comment" class="text-md w-24 inline-block">Comment</label>
+            <span class="text-lg">@OrderState.Order.CustomerComment</span>
         </div>
     </section>
 
@@ -92,57 +92,57 @@
     <section class="mt-10" id="shipping">
 
         <div>
-            <label id="shippingmethod" class="text-md w-24 inline-block dark:text-gray-400">Method</label>
-            <span class="text-lg dark:text-white">@OrderState.Order.Shipping.Method</span>
+            <label id="shippingmethod" class="text-md w-24 inline-block">Method</label>
+            <span class="text-lg">@OrderState.Order.Shipping.Method</span>
         </div>
 
         <div>
-            <label id="shippingcontact" class="text-md w-24 inline-block dark:text-gray-400">Contact</label>
-            <span class="text-lg dark:text-white">@OrderState.Order.Shipping.Contact</span>
+            <label id="shippingcontact" class="text-md w-24 inline-block">Contact</label>
+            <span class="text-lg">@OrderState.Order.Shipping.Contact</span>
         </div>
 
         <div>
-            <label id="shippingphone" class="text-md w-24 inline-block dark:text-gray-400">Phone</label>
-            <span class="text-lg dark:text-white">@OrderState.Order.Shipping.PhoneNumber</span>
+            <label id="shippingphone" class="text-md w-24 inline-block">Phone</label>
+            <span class="text-lg">@OrderState.Order.Shipping.PhoneNumber</span>
         </div>
 
 
         <div>
-            <h3 class="text-md w-24 inline-block dark:text-gray-400">Address</h3>
+            <h3 class="text-md w-24 inline-block">Address</h3>
             <div class="ml-5">
                 <div>
-                    <label id="shippingline1" class="text-sm w-24 inline-block dark:text-gray-400">Line 1</label>
-                    <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Line1</span>
+                    <label id="shippingline1" class="text-sm w-24 inline-block">Line 1</label>
+                    <span class="text-md">@OrderState.Order.Shipping.Address.Line1</span>
                 </div>
 
                 <div>
-                    <label id="shippingline2" class="text-sm w-24 inline-block dark:text-gray-400">Line 2</label>
-                    <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Line2</span>
+                    <label id="shippingline2" class="text-sm w-24 inline-block">Line 2</label>
+                    <span class="text-md">@OrderState.Order.Shipping.Address.Line2</span>
                 </div>
 
                 <div>
-                    <label id="shippingline3" class="text-sm w-24 inline-block dark:text-gray-400">Line 3</label>
-                    <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Line3</span>
+                    <label id="shippingline3" class="text-sm w-24 inline-block">Line 3</label>
+                    <span class="text-md">@OrderState.Order.Shipping.Address.Line3</span>
                 </div>
 
                 <div>
-                    <label id="shippingcity" class="text-sm w-24 inline-block dark:text-gray-400">City</label>
-                    <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.City</span>
+                    <label id="shippingcity" class="text-sm w-24 inline-block">City</label>
+                    <span class="text-md">@OrderState.Order.Shipping.Address.City</span>
                 </div>
 
                 <div>
-                    <label id="shippingstate" class="text-sm w-24 inline-block dark:text-gray-400">State</label>
-                    <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.State</span>
+                    <label id="shippingstate" class="text-sm w-24 inline-block">State</label>
+                    <span class="text-md">@OrderState.Order.Shipping.Address.State</span>
                 </div>
 
                 <div>
-                    <label id="shippingzip" class="text-sm w-24 inline-block dark:text-gray-400">Zip</label>
-                    <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Zip</span>
+                    <label id="shippingzip" class="text-sm w-24 inline-block">Zip</label>
+                    <span class="text-md">@OrderState.Order.Shipping.Address.Zip</span>
                 </div>
 
                 <div>
-                    <label id="shippingcountry" class="text-sm w-24 inline-block dark:text-gray-400">Country</label>
-                    <span class="text-md dark:text-white">@OrderState.Order.Shipping.Address.Country</span>
+                    <label id="shippingcountry" class="text-sm w-24 inline-block">Country</label>
+                    <span class="text-md">@OrderState.Order.Shipping.Address.Country</span>
                 </div>
             </div>
         </div>
@@ -151,30 +151,30 @@
 
     <section class="mt-10" id="prices">
         <div>
-            <label id="subtotal" class="text-md w-24 inline-block dark:text-gray-400">Sub Total</label>
-            <span class="text-lg dark:text-white">$@(OrderState.Order.SubTotal.ToString("0.00"))</span>
+            <label id="subtotal" class="text-md w-24 inline-block">Sub Total</label>
+            <span class="text-lg">$@(OrderState.Order.SubTotal.ToString("0.00"))</span>
         </div>
         @if(OrderState.Order.PriceAdjustment != 0M) {
             <div>
-                <label id="subtotal" class="text-md w-24 inline-block dark:text-gray-400">Price Adj.</label>
-                <span class="text-lg dark:text-white">$@(OrderState.Order.PriceAdjustment.ToString("0.00"))</span>
+                <label id="subtotal" class="text-md w-24 inline-block">Price Adj.</label>
+                <span class="text-lg">$@(OrderState.Order.PriceAdjustment.ToString("0.00"))</span>
             </div>
             <div>
-                <label id="subtotal" class="text-md w-24 inline-block dark:text-gray-400">Net Total</label>
-                <span class="text-lg dark:text-white">$@(OrderState.Order.AdjustedSubTotal.ToString("0.00"))</span>
+                <label id="subtotal" class="text-md w-24 inline-block">Net Total</label>
+                <span class="text-lg">$@(OrderState.Order.AdjustedSubTotal.ToString("0.00"))</span>
             </div>
         }
         <div>
-            <label id="tax" class="text-md w-24 inline-block dark:text-gray-400">Tax</label>
-            <span class="text-lg dark:text-white">$@(OrderState.Order.Tax.ToString("0.00"))</span>
+            <label id="tax" class="text-md w-24 inline-block">Tax</label>
+            <span class="text-lg">$@(OrderState.Order.Tax.ToString("0.00"))</span>
         </div>
         <div>
-            <label id="shipping" class="text-md w-24 inline-block dark:text-gray-400">Shipping</label>
-            <span class="text-lg dark:text-white">$@(OrderState.Order.Shipping.Price.ToString("0.00"))</span>
+            <label id="shipping" class="text-md w-24 inline-block">Shipping</label>
+            <span class="text-lg">$@(OrderState.Order.Shipping.Price.ToString("0.00"))</span>
         </div>
         <div>
-            <label id="totalprice" class="text-md w-24 inline-block dark:text-gray-400">Total Price</label>
-            <span class="text-lg dark:text-white">$@(OrderState.Order.Total.ToString("0.00"))</span>
+            <label id="totalprice" class="text-md w-24 inline-block">Total Price</label>
+            <span class="text-lg">$@(OrderState.Order.Total.ToString("0.00"))</span>
         </div>
     </section>
 
@@ -182,16 +182,16 @@
         <section class="mt-10" id="dynamicValues">
             <table>
                 <thead class="border-b border-slate-300">
-                    <tr class="dark:bg-slate-700 dark:text-gray-500">
+                    <tr>
                         <th class="px-3">Name</th>
                         <th class="px-3">Value</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in OrderState.Order.Info) {
-                        <tr class="border-b dark:border-slate-500">
-                            <td class="px-3 font-medium dark:text-gray-400">@item.Key</td>
-                            <td class="px-3 dark:text-white">@item.Value</td>
+                        <tr class="border-b">
+                            <td class="px-3 font-medium">@item.Key</td>
+                            <td class="px-3">@item.Value</td>
 		                </tr>
                     }
                 </tbody>
@@ -203,7 +203,7 @@
         <section class="mt-10" id="additionalItems">
 		    <table class="table-auto">
 			    <thead class="border-b border-slate-300">
-                    <tr class="dark:bg-slate-700 dark:text-gray-500">
+                    <tr>
 					    <th class="px-3">Description</th>
 					    <th class="px-3">Price</th>
 				    </tr>
@@ -211,8 +211,8 @@
 			    <tbody>
                     @foreach (var item in OrderState.Order.AdditionalItems) {
                         <tr>
-                            <td class="px-3 border-b font-medium dark:border-slate-500 dark:text-gray-400">@item.Description</td>
-                            <td class="px-3 border-b dark:border-slate-500 dark:text-white">$@item.Price.ToString("0.00")</td>
+                            <td class="px-3 border-b font-medium">@item.Description</td>
+                            <td class="px-3 border-b">$@item.Price.ToString("0.00")</td>
 				        </tr>
                     }
 			    </tbody>
@@ -222,11 +222,11 @@
 
     <section class="mt-10" id="products">
         <header>
-            <h3 class="dark:text-gray-400">Products (@OrderState.Order.Products.Sum(b => b.Qty))</h3>
+            <h3>Products (@OrderState.Order.Products.Sum(b => b.Qty))</h3>
         </header>
         <div class="my-2">
-            <button disabled="@_useInches" @onclick="ToggleUnits" class="btn-secondary dark:disabled:bg-sky-500 disabled:bg-sky-500 px-3.5 py-1 rounded-r-none rounded-l-md w-14 transition ease-in-out duration-300">in</button><!--
-         --><button disabled="@(!_useInches)" @onclick="ToggleUnits" class="btn-secondary dark:disabled:bg-sky-500 disabled:bg-sky-500 px-3.5 py-1 rounded-l-none rounded-r-md w-14 transition ease-in-out duration-300">mm</button>
+            <button disabled="@_useInches" @onclick="ToggleUnits" class="btn-secondary px-3.5 py-1 rounded-r-none rounded-l-md w-14 transition ease-in-out duration-300">in</button><!--
+         --><button disabled="@(!_useInches)" @onclick="ToggleUnits" class="btn-secondary px-3.5 py-1 rounded-l-none rounded-r-md w-14 transition ease-in-out duration-300">mm</button>
 		</div>
         @if (OrderState.Order.Products.Count() == 0) {
             <span>No products in order</span>
