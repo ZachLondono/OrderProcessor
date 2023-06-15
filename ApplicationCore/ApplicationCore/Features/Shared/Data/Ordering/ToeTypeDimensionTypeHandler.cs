@@ -2,7 +2,7 @@
 using Dapper;
 using System.Data;
 
-namespace ApplicationCore.Features.Orders.Data;
+namespace ApplicationCore.Features.Shared.Data.Ordering;
 
 public class ToeTypeTypeHandler : SqlMapper.TypeHandler<ToeType> {
     public override void SetValue(IDbDataParameter parameter, ToeType toetype) {

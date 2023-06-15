@@ -2,10 +2,10 @@
 using ApplicationCore.Features.Companies.Customers.Create;
 using ApplicationCore.Features.Companies.Customers.Edit;
 using ApplicationCore.Features.Companies.Customers.List;
-using ApplicationCore.Features.Companies.Data;
 using ApplicationCore.Features.Companies.Vendors;
 using ApplicationCore.Features.Companies.Vendors.Edit;
 using ApplicationCore.Features.Companies.Vendors.List;
+using ApplicationCore.Features.Shared.Data.Companies;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationCore.Features.Companies;

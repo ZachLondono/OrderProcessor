@@ -4,7 +4,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Shared.Domain;
 using Dapper;
 
-namespace ApplicationCore.Features.Orders.Data;
+namespace ApplicationCore.Features.Shared.Data.Ordering;
 
 public class SqliteUBoxDimensionTypeHandler : SqlMapper.TypeHandler<UBoxDimensions?> {
 

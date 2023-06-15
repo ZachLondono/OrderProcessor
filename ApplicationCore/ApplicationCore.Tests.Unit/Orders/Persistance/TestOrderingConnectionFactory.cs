@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Data;
+﻿using ApplicationCore.Features.Shared.Data.Ordering;
 using Dapper;
 using Microsoft.Data.Sqlite;
 using System.Data;

@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Data;
+﻿using ApplicationCore.Features.Shared.Data.Ordering;
 
 namespace ApplicationCore.Infrastructure.Data;
 

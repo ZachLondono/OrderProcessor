@@ -3,9 +3,9 @@ using System.Text.Json;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using Dapper;
 
-namespace ApplicationCore.Features.Orders.Data;
+namespace ApplicationCore.Features.Shared.Data.Ordering;
 
-public class SqliteFixedDivdersCountsTypeHandler : SqlMapper.TypeHandler<FixedDivdersCounts?> {
+public class SqliteFixedDividersCountsTypeHandler : SqlMapper.TypeHandler<FixedDivdersCounts?> {
 
     public override FixedDivdersCounts? Parse(object value) {
         var val = JsonSerializer.Deserialize<FixedDivdersCounts>((string)value);

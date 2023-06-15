@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Data;
+﻿using ApplicationCore.Features.Shared.Data.Ordering;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 

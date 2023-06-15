@@ -1,12 +1,11 @@
-﻿using ApplicationCore.Features.Configuration;
-using ApplicationCore.Infrastructure.Data;
+﻿using ApplicationCore.Infrastructure.Data;
 using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Data;
 
-namespace ApplicationCore.Features.Companies.Data;
+namespace ApplicationCore.Features.Shared.Data.Companies;
 
 public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory {
 

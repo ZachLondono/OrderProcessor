@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Data;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using ApplicationCore.Features.Shared.Data.Ordering;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 

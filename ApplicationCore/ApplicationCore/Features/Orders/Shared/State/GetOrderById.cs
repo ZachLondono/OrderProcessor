@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Features.Orders.Data;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.State.DataModels;
+using ApplicationCore.Features.Shared.Data.Ordering;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 using Microsoft.Extensions.Logging;
