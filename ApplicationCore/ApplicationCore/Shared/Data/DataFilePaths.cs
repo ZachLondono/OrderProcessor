@@ -10,9 +10,6 @@ public class DataFilePaths {
     [JsonPropertyName("companies_db_path")]
     public string CompaniesDBPath { get; set; } = string.Empty;
 
-    [JsonPropertyName("work_orders_db_path")]
-    public string WorkOrdersDBPath { get; set; } = string.Empty;
-
     public delegate Task<DataFilePaths?> GetConfiguration();
 
 }

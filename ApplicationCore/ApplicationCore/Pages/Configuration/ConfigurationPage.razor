@@ -1,5 +1,7 @@
 ﻿@page "/configuration"
 @using System.Diagnostics;
+@using ApplicationCore.Features.CNC.Tools
+@using ApplicationCore.Features.DataFilePaths
 @using ApplicationCore.Features.Orders.OrderLoading.Providers.AllmoxyXMLModels;
 @using ApplicationCore.Shared.Components;
 @using Microsoft.Extensions.Options;
@@ -8,10 +10,10 @@
 <TabControl>
 
     <TabPage Title="Data">
-        <ApplicationCore.Features.Configuration.DataFilePathsEditor />
+        <DataFilePathsEditor />
     </TabPage>
     <TabPage Title="CNC Tools">
-        <ApplicationCore.Features.CNC.Tools.ToolFileEditor />
+        <ToolFileEditor />
     </TabPage>
     <TabPage Title="App Settings">
         <div>

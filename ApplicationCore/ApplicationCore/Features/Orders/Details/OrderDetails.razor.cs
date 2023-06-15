@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.State;
-using ApplicationCore.Features.WorkOrders;
 using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
@@ -42,37 +41,6 @@ public partial class OrderDetails {
                     .GroupBy(p => p.Room)
                     .Select(Room.FromGrouping)
                     .ToList();
-
-        await UpdateProductStatuses();
-
-    }
-
-    private async Task UpdateProductStatuses() {
-
-        if (OrderState.Order is null) {
-            return;
-        }
-
-        foreach (var room in Rooms) {
-            await UpdateProducts(room.Cabinets);
-            await UpdateProducts(room.ClosetParts);
-            await UpdateProducts(room.DovetailDrawerBoxes);
-            await UpdateProducts(room.MDFDoors);
-        }
-
-        StateHasChanged();
-
-    }
-
-    private async Task UpdateProducts<T>(IEnumerable<ProductRowModel<T>> products) where T : IProduct {
-
-        if (OrderState.Order is null) return;
-
-        foreach (var product in products) {
-
-            product.IsComplete = await IsProductComplete(OrderState.Order.Id, product.Product.Id);
-
-        }
 
     }
 
@@ -132,14 +100,8 @@ public partial class OrderDetails {
 
     }
 
-    private void OnRoomNameChanged(ChangeEventArgs args, Room room) {
+    private static void OnRoomNameChanged(ChangeEventArgs args, Room room) {
         room.Name = args.Value?.ToString() ?? "";
-    }
-
-    public override void Handle(WorkOrdersUpdateNotification notification) {
-
-        InvokeAsync(UpdateProductStatuses);
-
     }
 
     public abstract class ProductRowModel<T> where T : IProduct {

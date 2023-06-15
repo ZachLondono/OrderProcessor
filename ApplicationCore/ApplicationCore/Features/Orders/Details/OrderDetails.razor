@@ -7,7 +7,6 @@
 @using ApplicationCore.Features.Orders.OrderRelease
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Shared.Services;
-@using ApplicationCore.Features.WorkOrders;
 @using ApplicationCore.Infrastructure
 @using System.Diagnostics
 @using ApplicationCore.Shared.Components
@@ -24,11 +23,8 @@
 @using static ApplicationCore.Features.Orders.Details.ProductTables.ClosetPartProductTable;
 @using static ApplicationCore.Features.Orders.Details.ProductTables.CabinetProductTable;
 @using ApplicationCore.Features.Companies.Contracts.ValueObjects;
-@using ApplicationCore.Features.WorkOrders.Contracts;
-@inherits UIListenerComponent<WorkOrdersUpdateNotification>
 @inject IBus Bus
 @inject OrderState OrderState
-@inject Manufacturing.IsProductComplete IsProductComplete
 @inject IFilePicker FilePicker
 @inject NavigationService NavigationService
 @inject CompanyDirectory.GetVendorByIdAsync GetVendorByIdAsync 

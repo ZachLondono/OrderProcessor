@@ -153,11 +153,8 @@ internal class QuestPDFWriter : IReleasePDFWriter {
         tables.Add(materialTable);
         tables.Add(partsTable);
 
-        string workIdStr = job.WorkOrderId is null ? "" : GetGuidAsBase64((Guid)job.WorkOrderId);
-
         var cover = new CoverModel() {
             Title = $"{job.JobName}  [{string.Join(',', releases.Select(r => r.MachineName))}]",
-            WorkOrderId = workIdStr,
             Info = new Dictionary<string, string>() {
                     {"Vendor", job.VendorName },
                     {"Customer", job.CustomerName },

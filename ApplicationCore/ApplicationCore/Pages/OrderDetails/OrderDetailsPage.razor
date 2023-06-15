@@ -5,7 +5,6 @@
 @using ApplicationCore.Features.Orders.OrderRelease
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Shared.Services;
-@using ApplicationCore.Features.WorkOrders.OrderTaskList
 @inject OrderState OrderState
 @inject NavigationService Nav
 
@@ -19,10 +18,6 @@
                 <OrderDeleteWidget OrderId="OrderState.Order?.Id ?? Guid.Empty" OnOrderDeleted="OnOrderDeleted" />
             </div>
         </OrderDetails>
-    </section>
-
-    <section id="workOrders" class="mt-12">
-        <OrderTaskList OrderId="OrderState.Order?.Id" />
     </section>
 
 </div>

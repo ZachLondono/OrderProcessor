@@ -142,7 +142,6 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
             ReleaseDate = DateTime.Now,
             CustomerName = customerName,
             VendorName = vendorName,
-            WorkOrderId = null,
             Releases = releases
         };
 

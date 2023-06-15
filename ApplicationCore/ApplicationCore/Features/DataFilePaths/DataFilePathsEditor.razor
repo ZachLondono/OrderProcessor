@@ -6,6 +6,7 @@
 
 @if (DataContext.ErrorMessage is not null) {
     
+    <span>Error</span>
     <span>@DataContext.ErrorMessage</span>
 
 } else if (DataContext.Configuration is null) {
@@ -23,11 +24,6 @@
         <div>
             <label>Companies Database</label>
             <InputText @bind-Value="DataContext.Configuration.CompaniesDBPath" />
-        </div>
-    
-        <div>
-            <label>Work Orders Database</label>
-            <InputText @bind-Value="DataContext.Configuration.WorkOrdersDBPath" />
         </div>
 
         <div>

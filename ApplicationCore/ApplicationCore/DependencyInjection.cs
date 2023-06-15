@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.CompilerServices;
 using Blazored.Modal;
 using ApplicationCore.Features.Orders;
-using ApplicationCore.Features.WorkOrders;
 using ApplicationCore.Features.Companies;
 using ApplicationCore.Shared.Services;
 using ApplicationCore.Features.CNC;
@@ -35,8 +34,6 @@ public static class DependencyInjection {
         services.AddOrdering(configuration);
 
         services.AddCNC(configuration);
-
-        services.AddWorkOrders();
 
         services.AddConfiguration();
 

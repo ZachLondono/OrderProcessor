@@ -52,22 +52,6 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
 
                 col.Item().AlignCenter().Text(summary.Title).WithStyle(pageHeaderStyle);
 
-                /*if (summary.WorkOrderId != "") {
-
-                    var barcode = new Barcode();
-                    var img = barcode.Encode(TYPE.CODE128B, summary.WorkOrderId, 300, 50);
-
-                    using var ms = new MemoryStream();
-                    img.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                    var imgdata = ms.ToArray();
-
-                    col.Item()
-                        .AlignCenter()
-                        .PaddingVertical(5)
-                        .Width(2, Unit.Inch)
-                        .Image(imgdata);
-                }*/
-
             });
 
         page.Content().Column(c => {
