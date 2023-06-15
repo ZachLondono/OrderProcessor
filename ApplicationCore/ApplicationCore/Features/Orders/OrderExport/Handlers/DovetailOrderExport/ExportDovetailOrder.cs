@@ -52,7 +52,7 @@ public class ExportDovetailOrder {
                                 .SelectMany(p => p.GetDrawerBoxes(_factory.CreateDovetailDrawerBoxBuilder))
                                 .GroupBy(b => b.DrawerBoxOptions.Assembled);
 
-            Application app = new() {
+            Microsoft.Office.Interop.Excel.Application app = new() {
                 DisplayAlerts = false,
                 Visible = false
             };

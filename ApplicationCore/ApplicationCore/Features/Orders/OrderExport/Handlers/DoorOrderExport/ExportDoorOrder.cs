@@ -102,7 +102,7 @@ public class ExportDoorOrder {
                 FinishColor = d.Door.PaintColor ?? ""
             });
 
-            Application app = new() {
+            Microsoft.Office.Interop.Excel.Application app = new() {
                 DisplayAlerts = false,
                 Visible = false
             };

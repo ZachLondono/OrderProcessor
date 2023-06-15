@@ -46,13 +46,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Schemas\AllmoxyCabinetSchema.xsd">
+    <None Update="Application\Schemas\AllmoxyCabinetSchema.xsd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Schemas\ordering_schema.sql">
+    <None Update="Application\Schemas\ordering_schema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Schemas\companies_schema.sql">
+    <None Update="Application\Schemas\companies_schema.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

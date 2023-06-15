@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using ApplicationCore;
 using MediatR;
 using System;
 using System.Windows;
@@ -10,6 +9,7 @@ using ApplicationCore.Shared.Services;
 using DesktopHost.Error;
 using Serilog;
 using System.Windows.Threading;
+using ApplicationCore.Application;
 
 namespace DesktopHost;
 

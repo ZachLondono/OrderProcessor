@@ -17,7 +17,7 @@ using ApplicationCore.Features.DataFilePaths;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
-namespace ApplicationCore;
+namespace ApplicationCore.Application;
 
 public static class DependencyInjection {
 
@@ -25,7 +25,7 @@ public static class DependencyInjection {
 
         services.AddMediatR(typeof(DependencyInjection));
 
-        services.AddSingleton<IServiceProvider>(sp => sp);
+        services.AddSingleton(sp => sp);
 
         services.AddTransient<NavigationService>();
 

@@ -19,7 +19,7 @@ public class OrderTests {
 
     private readonly InsertOrder.Handler _sut;
     private readonly ILogger<InsertOrder.Handler> _logger = Substitute.For<ILogger<InsertOrder.Handler>>();
-    private readonly IOrderingDbConnectionFactory _factory = new TestOrderingConnectionFactory("./Schemas/ordering_schema.sql");
+    private readonly IOrderingDbConnectionFactory _factory = new TestOrderingConnectionFactory("./Application/Schemas/ordering_schema.sql");
     private readonly IBus _bus = Substitute.For<IBus>();
 
     public OrderTests() {

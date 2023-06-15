@@ -48,7 +48,7 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
             return null;
         }
 
-        Application? app = null;
+        Microsoft.Office.Interop.Excel.Application? app = null;
         Workbook? workbook = null;
 
         try {
