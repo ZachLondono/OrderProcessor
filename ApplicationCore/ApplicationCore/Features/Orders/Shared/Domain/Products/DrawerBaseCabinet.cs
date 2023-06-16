@@ -46,6 +46,8 @@ internal class DrawerBaseCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer 
         DrawerBoxOptions = drawerBoxOptions;
     }
 
+    public bool ContainsDoors() => MDFDoorOptions is not null;
+
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
         if (MDFDoorOptions is null) {
@@ -72,6 +74,8 @@ internal class DrawerBaseCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer 
         return doors;
 
     }
+
+    public bool ContainsDrawerBoxes() => Drawers.FaceHeights.Any();
 
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 

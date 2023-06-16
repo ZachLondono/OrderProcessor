@@ -49,6 +49,8 @@ internal class WallPieCutCornerCabinet : Cabinet, IDoorContainer {
                         Dimension rightWidth, Dimension rightDepth, int adjustableShelves, HingeSide hingeSide, Dimension extendedDoor)
     => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, adjustableShelves, hingeSide, extendedDoor);
 
+    public bool ContainsDoors() => MDFDoorOptions is not null;
+
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
         if (MDFDoorOptions is null) {

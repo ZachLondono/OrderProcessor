@@ -41,6 +41,8 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
                         Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, CabinetDrawerBoxOptions drawerBoxOptions, ToeType toeType)
         => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, drawerFaceHeight, trashPulloutConfiguration, drawerBoxOptions, toeType);
 
+    public bool ContainsDoors() => MDFDoorOptions is not null;
+
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
         if (MDFDoorOptions is null) {
@@ -70,6 +72,8 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
         return doors;
 
     }
+
+    public bool ContainsDrawerBoxes() => true;
 
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 

@@ -45,6 +45,8 @@ internal class BasePieCutCornerCabinet : Cabinet, IDoorContainer {
                         Dimension rightWidth, Dimension rightDepth, ToeType toeType, int adjustableShelves, HingeSide hingeSide)
     => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, toeType, adjustableShelves, hingeSide);
 
+    public bool ContainsDoors() => MDFDoorOptions is not null;
+
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
         if (MDFDoorOptions is null) {

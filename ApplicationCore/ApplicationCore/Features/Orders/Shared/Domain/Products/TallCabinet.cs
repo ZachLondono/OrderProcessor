@@ -56,6 +56,8 @@ internal class TallCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
 
     }
 
+    public bool ContainsDoors() => MDFDoorOptions is not null;
+
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
         if (MDFDoorOptions is null) {
@@ -96,6 +98,8 @@ internal class TallCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
 
         return doors;
     }
+
+    public bool ContainsDrawerBoxes() => Inside.RollOutBoxes.Any();
 
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 

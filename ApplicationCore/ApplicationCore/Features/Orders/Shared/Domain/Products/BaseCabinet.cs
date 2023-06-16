@@ -74,6 +74,8 @@ internal class BaseCabinet : Cabinet, IDrawerBoxContainer, IDoorContainer {
         DrawerBoxOptions = drawerBoxOptions;
     }
 
+    public bool ContainsDoors() => MDFDoorOptions is not null;
+
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
         if (MDFDoorOptions is null) {
@@ -109,11 +111,13 @@ internal class BaseCabinet : Cabinet, IDrawerBoxContainer, IDoorContainer {
 
     }
 
+    public bool ContainsDrawerBoxes() => Drawers.Any() || Inside.RollOutBoxes.Any();
+
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
         List<DovetailDrawerBox> boxes = new();
 
-        if (Drawers.Quantity > 0) {
+        if (Drawers.Any()) {
 
             int drawerQty = Drawers.Quantity * Qty;
 
@@ -129,7 +133,7 @@ internal class BaseCabinet : Cabinet, IDrawerBoxContainer, IDoorContainer {
 
         }
 
-        if (Inside.RollOutBoxes.Qty > 0) {
+        if (Inside.RollOutBoxes.Any()) {
 
             int rollOutQty = Inside.RollOutBoxes.Qty * Qty;
             var boxHeight = Dimension.FromMillimeters(104);
