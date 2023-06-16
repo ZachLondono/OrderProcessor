@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Companies.Contracts;
+using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using Blazored.Modal;
 
@@ -32,10 +33,25 @@ internal class OrderExportModalViewModel {
 
         if (vendor is null) return;
 
+        bool containsMDFDoors = order.Products
+                                        .Where(p => p is IDoorContainer)
+                                        .Cast<IDoorContainer>()
+                                        .Any(p => p.ContainsDoors());
+
+        bool containsDBs = order.Products
+                                .Where(p => p is IDrawerBoxContainer)
+                                .Cast<IDrawerBoxContainer>()
+                                .Any(p => p.ContainsDrawerBoxes());
+
+        bool containsPPs = order.Products
+                                .Where(p => p is IPPProductContainer)
+                                .Cast<IPPProductContainer>()
+                                .Any(p => p.ContainsPPProducts());
+
         Configuration = new() {
-            FillDovetailOrder = vendor.ExportProfile.ExportDBOrder,
-            FillMDFDoorOrder = vendor.ExportProfile.ExportMDFDoorOrder,
-            GenerateEXT = vendor.ExportProfile.ExportExtFile,
+            FillDovetailOrder = vendor.ExportProfile.ExportDBOrder && containsMDFDoors,
+            FillMDFDoorOrder = vendor.ExportProfile.ExportMDFDoorOrder && containsDBs,
+            GenerateEXT = vendor.ExportProfile.ExportExtFile && containsPPs,
             ExtJobName = $"{order.Number} - {order.Name}",
             OutputDirectory = order.WorkingDirectory
         };
