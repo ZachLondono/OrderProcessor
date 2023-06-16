@@ -173,6 +173,8 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
         } else return "0";
     }
 
+    public bool ContainsPPProducts() => true;
+
     public IEnumerable<PPProduct> GetPPProducts() {
         yield return new PPProduct(Id, Qty, Room, GetProductSku(), ProductNumber, "Royal2", GetMaterialType(), GetDoorType(), "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), GetManualOverrideParameters());
     }

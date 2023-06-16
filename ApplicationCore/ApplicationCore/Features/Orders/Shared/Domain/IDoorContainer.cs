@@ -10,4 +10,6 @@ internal interface IDoorContainer {
 
     IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder);
 
+    bool ContainsDoors();
+
 }

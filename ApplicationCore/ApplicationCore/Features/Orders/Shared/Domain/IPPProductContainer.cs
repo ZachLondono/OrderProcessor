@@ -6,4 +6,6 @@ internal interface IPPProductContainer {
 
     IEnumerable<PPProduct> GetPPProducts();
 
+    bool ContainsPPProducts();
+
 }

@@ -39,6 +39,8 @@ public class ClosetPart : IProduct, IPPProductContainer {
         Parameters = parameters;
     }
 
+    public bool ContainsPPProducts() => true;
+
     public IEnumerable<PPProduct> GetPPProducts() {
 
         (string materialType, string finishMaterial, string ebMaterial) = Material.Core switch {

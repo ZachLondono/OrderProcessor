@@ -53,6 +53,8 @@ public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDrawerBoxC
         return new(Guid.NewGuid(), unitPrice, qty, room, productNumber, height, width, depth, note, labelFields, options);
     }
 
+    public bool ContainsDrawerBoxes() => true;
+
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) { yield return this; }
 
     public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();

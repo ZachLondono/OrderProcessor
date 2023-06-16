@@ -50,6 +50,8 @@ internal class WallCabinet : Cabinet, IDoorContainer {
 
     }
 
+    public bool ContainsDoors() => MDFDoorOptions is not null;
+
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
         if (MDFDoorOptions is null) {

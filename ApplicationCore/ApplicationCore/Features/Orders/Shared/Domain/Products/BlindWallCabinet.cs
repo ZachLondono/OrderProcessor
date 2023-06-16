@@ -48,6 +48,8 @@ internal class BlindWallCabinet : Cabinet, IDoorContainer {
 
     }
 
+    public bool ContainsDoors() => MDFDoorOptions is not null;
+
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
         if (MDFDoorOptions is null) {

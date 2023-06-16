@@ -22,6 +22,8 @@ public class MDFDoorProduct : MDFDoor, IProduct, IDoorContainer {
     public static MDFDoorProduct Create(decimal unitPrice, string room, int qty, int productNumber, DoorType type, Dimension height, Dimension width, string note, DoorFrame frameSize, string material, Dimension thickness, string framingBead, string edgeDetail, string panelDetail, Dimension panelDrop, DoorOrientation orientation, AdditionalOpening[] additionalOpenings, string? paintColor)
         => new(Guid.NewGuid(), unitPrice, room, qty, productNumber, type, height, width, note, frameSize, material, thickness, framingBead, edgeDetail, panelDetail, panelDrop, orientation, additionalOpenings, paintColor);
 
+    public bool ContainsDoors() => true;
+
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) { yield return this; }
 
     public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();

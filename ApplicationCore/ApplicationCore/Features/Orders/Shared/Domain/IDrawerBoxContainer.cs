@@ -10,4 +10,6 @@ internal interface IDrawerBoxContainer {
 
     IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder);
 
+    bool ContainsDrawerBoxes();
+
 }

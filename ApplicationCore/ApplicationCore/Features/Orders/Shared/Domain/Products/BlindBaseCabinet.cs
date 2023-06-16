@@ -55,6 +55,8 @@ internal class BlindBaseCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
 
     protected override string GetProductSku() => $"BB{Doors.Quantity}D{GetDrawerCountSkuPart()}{GetBlindSideLetter()}";
 
+    public bool ContainsDoors() => MDFDoorOptions is not null;
+
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
         if (MDFDoorOptions is null) {
@@ -90,9 +92,11 @@ internal class BlindBaseCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
 
     }
 
+    public bool ContainsDrawerBoxes() => Drawers.Any();
+
     public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
-        if (Drawers.Quantity == 0) {
+        if (!Drawers.Any()) {
             return Enumerable.Empty<DovetailDrawerBox>();
         }
 
