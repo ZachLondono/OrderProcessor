@@ -1,11 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Contracts;
 using ApplicationCore.Infrastructure.Bus;
-using ClosedXML;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ApplicationCore.Features.Orders.Delete;
 
