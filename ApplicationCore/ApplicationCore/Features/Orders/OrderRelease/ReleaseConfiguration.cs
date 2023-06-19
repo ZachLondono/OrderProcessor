@@ -12,6 +12,7 @@ public class ReleaseConfiguration {
     public bool IncludeInvoiceInRelease { get; set; }
     public string? ReleaseEmailRecipients { get; set; }
     public bool SendReleaseEmail { get; set; }
+    public bool IncludeSummaryInEmailBody { get; set; }
     public string? ReleaseFileName { get; set; }
     public string? ReleaseOutputDirectory { get; set; }
 
