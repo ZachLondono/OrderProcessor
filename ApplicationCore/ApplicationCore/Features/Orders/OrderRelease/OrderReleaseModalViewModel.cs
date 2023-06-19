@@ -68,6 +68,7 @@ public class OrderReleaseModalViewModel {
         Configuration = new ReleaseConfiguration() {
 
             SendReleaseEmail = vendor.ReleaseProfile.SendReleaseEmail,
+            IncludeSummaryInEmailBody = false,
             ReleaseEmailRecipients = vendor.ReleaseProfile.ReleaseEmailRecipients,
             GenerateJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
             IncludeProductTablesInSummary = false,

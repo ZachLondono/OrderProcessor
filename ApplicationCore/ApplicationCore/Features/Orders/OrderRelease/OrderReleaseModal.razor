@@ -57,8 +57,8 @@
                 @if (DataContext.IsReportLoadingFiles) {
                     <span class="mt-3">Searching for files...</span>
                 } else {
-                    <div class="mt-3">
-                        <div class="">
+                    <div class="mt-3 ml-3">
+                        <div>
                             <Button OnClick="ChooseCNCDataFile" Color="ButtonColor.Secondary">+ Add File</Button>
                             <CheckBox @bind-IsChecked="DataContext.Configuration.CopyCNCReportToWorkingDirectory">
                                 <span class="text-gray-700 text-sm">Copy to working directory</span>
@@ -92,8 +92,13 @@
                     <span class="text-gray-700">Send Email</span>
                 </CheckBox>
                 @if (DataContext.Configuration.SendReleaseEmail) {
-                    <label class="block text-sm font-medium text-gray-700">Email Recipients</label>
-                    <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.ReleaseEmailRecipients" />
+                    <div class="ml-3">
+                        <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeSummaryInEmailBody">
+                            <span class="text-gray-700 text-sm">Include summary</span>
+                        </CheckBox>
+                        <label class="block text-sm font-medium text-gray-700">Email Recipients</label>
+                        <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.ReleaseEmailRecipients" />
+                    </div>
                 }
 
                 <br />

@@ -124,7 +124,8 @@ public class ReleaseService {
         if (filePaths.Any() && configuration.SendReleaseEmail && configuration.ReleaseEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending release email");
             try {
-                await SendEmailAsync(recipients, $"RELEASED: {order.Number} {customerName}", "Please see attached release", new string[] { filePaths.First() }, configuration);
+                string body = GenerateEmailBody(configuration.IncludeSummaryInEmailBody, releases);
+                await SendEmailAsync(recipients, $"RELEASED: {order.Number} {customerName}", body, new string[] { filePaths.First() }, configuration);
             } catch (Exception ex) {
                 OnError?.Invoke($"Could not send email - '{ex.Message}'");
                 _logger.LogError(ex, "Exception thrown while trying to send release email");
@@ -132,6 +133,76 @@ public class ReleaseService {
         } else {
             OnProgressReport?.Invoke("Not sending release email");
         }
+
+    }
+
+    private string GenerateEmailBody(bool includeReleaseSummary, List<ReleasedJob> jobs) {
+
+        string body = "Please see attached release";
+
+        if (!includeReleaseSummary) {
+            return body;
+        }
+
+
+        // TODO: generate the data to create a table of required materials in a similar way to the QuestPDFWriter
+        foreach (var job in jobs) {
+
+            var usedMaterials = job.Releases
+                                    .First()
+                                    .Programs
+                                    .Select(p => p.Material)
+                                    .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained));
+
+
+            string tableHeader =
+                $"""
+
+                <br />
+                <br />
+
+                <table style="border: 1px solid black;">
+                    <caption><b>{job.JobName} Materials</b></caption>
+                    <thead>
+                        <tr style="border: 1px solid black; border-collapse: collapse;">
+                            <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Qty</th>
+                            <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Name</th>
+                            <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Width</th>
+                            <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Length</th>
+                            <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Thickness</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                """;
+
+            string tableBody = "";
+            foreach (var materialGroup in usedMaterials) {
+                tableBody += 
+                    $"""
+                            <tr style="border: 1px solid black; border-collapse: collapse;">
+                                <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{materialGroup.Count()}</td>
+                                <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{materialGroup.Key.Name}</td>
+                                <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{materialGroup.Key.Width}</td>
+                                <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{materialGroup.Key.Length}</td>
+                                <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{materialGroup.Key.Thickness}</td>
+                            </tr>
+                    """;
+
+            }
+
+            string tableFooter =
+                """
+                    </tbody>
+                <table>
+                """;
+
+            body += tableHeader + tableBody + tableFooter;
+           
+        }
+
+        return body;
 
     }
 
@@ -198,7 +269,9 @@ public class ReleaseService {
 
         var message = new MimeMessage();
 
-        recipients.Split(';').Where(s => !string.IsNullOrWhiteSpace(s)).ForEach(r => message.To.Add(new MailboxAddress(r, r)));
+        recipients.Split(';')
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .ForEach(r => message.To.Add(new MailboxAddress(r, r)));
 
         if (message.To.Count == 0) {
             OnError?.Invoke("No email recipients specified");
@@ -210,12 +283,12 @@ public class ReleaseService {
             return;
         }
 
-
         message.From.Add(new MailboxAddress(configuration.EmailSenderName, configuration.EmailSenderEmail));
         message.Subject = subject;
 
         var builder = new BodyBuilder {
-            TextBody = body
+            TextBody = body,
+            HtmlBody = body
         };
         attachments.Where(_fileReader.DoesFileExist).ForEach(att => builder.Attachments.Add(att));
 
