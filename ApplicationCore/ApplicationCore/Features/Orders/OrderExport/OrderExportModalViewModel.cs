@@ -54,8 +54,8 @@ internal class OrderExportModalViewModel {
                                 .Any(p => p.ContainsCNCParts());
 
         Configuration = new() {
-            FillDovetailOrder = vendor.ExportProfile.ExportDBOrder && containsMDFDoors,
-            FillMDFDoorOrder = vendor.ExportProfile.ExportMDFDoorOrder && containsDBs,
+            FillDovetailOrder = vendor.ExportProfile.ExportDBOrder && containsDBs,
+            FillMDFDoorOrder = vendor.ExportProfile.ExportMDFDoorOrder && containsMDFDoors,
             GenerateEXT = vendor.ExportProfile.ExportExtFile && containsPPs,
             GenerateCSV = containsCNC,
             CsvJobName = $"{order.Number} - {order.Name}",
