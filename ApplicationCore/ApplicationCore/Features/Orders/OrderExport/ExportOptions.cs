@@ -8,4 +8,6 @@ public class ExportOptions {
 
     public string EXTOutputDirectory { get; set; } = string.Empty;
 
+    public string CSVOutputDirectory { get; set; } = string.Empty;
+
 }

@@ -12,4 +12,8 @@ public class ExportConfiguration {
 
     public bool GenerateEXT { get; set; }
 
+    public string CsvJobName { get; set; } = string.Empty;
+
+    public bool GenerateCSV { get; set; }
+
 }

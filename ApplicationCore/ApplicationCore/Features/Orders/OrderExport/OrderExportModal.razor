@@ -53,6 +53,18 @@
         </section>
 
         <section>
+            <CheckBox @bind-IsChecked="DataContext.Configuration.GenerateCSV">
+                <span class="text-gray-700">Generate CSV File</span>
+            </CheckBox>
+            @if(DataContext.Configuration.GenerateCSV) {
+                <div class="ml-3">
+                    <label class="ml-2 text-sm">Job Name</label>                
+                    <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.CsvJobName" />
+                </div>
+            }
+        </section>
+
+        <section>
             <Button Color="ButtonColor.Primary" Style="ButtonStyle.Text" OnClickAsync="ShowExportProgressModal">Export</Button>
             <Button Color="ButtonColor.Secondary" Style="ButtonStyle.Text" OnClickAsync="Cancel">Cancel</Button>
         </section>
