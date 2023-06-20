@@ -58,6 +58,7 @@ internal class OrderExportModalViewModel {
             FillMDFDoorOrder = vendor.ExportProfile.ExportMDFDoorOrder && containsDBs,
             GenerateEXT = vendor.ExportProfile.ExportExtFile && containsPPs,
             GenerateCSV = containsCNC,
+            CsvJobName = $"{order.Number} - {order.Name}",
             ExtJobName = $"{order.Number} - {order.Name}",
             OutputDirectory = order.WorkingDirectory
         };
