@@ -32,6 +32,14 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="drillingType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="finished left" />
+      <xs:enumeration value="finished right" />
+      <xs:enumeration value="drilled through" />
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:complexType name="cabinet">
     <xs:sequence>
       <xs:element name="qty" type="xs:unsignedByte" />
@@ -412,6 +420,35 @@
                           </xs:sequence>
                         </xs:complexType>
                       </xs:element>
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:element name="customDrillingVerticalPanel">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="unitPrice" type="xs:string" />
+                      <xs:element name="width" type="xs:decimal" />
+                      <xs:element name="length" type="xs:decimal" />
+                      <xs:element name="qty" type="xs:integer" />
+                      <xs:element name="materialFinish" type="xs:string" />
+                      <xs:element name="materialCore" type="xs:string" />
+                      <xs:element name="paintColor" type="xs:string" />
+                      <xs:element name="paintedSide" type="paintedSideType" />
+                      <xs:element name="edgeBandColor" type="xs:string" />
+                      <xs:element name="comment" type="xs:string" />
+                      <xs:element name="room" type="xs:string" />
+                      <xs:element name="drillingType" type="drillingType" />
+                      <xs:element name="extendBack" type="xs:decimal" />
+                      <xs:element name="extendFront" type="xs:decimal" />
+                      <xs:element name="holeDimensionFromBottom" type="xs:decimal" />
+                      <xs:element name="holeDimensionFromTop" type="xs:decimal" />
+                      <xs:element name="transitionHoleDimensionFromBottom" type="xs:decimal" />
+                      <xs:element name="transitionHoleDimensionFromTop" type="xs:decimal" />
+                      <xs:element name="bottomNotchDepth" type="xs:decimal" />
+                      <xs:element name="bottomNotchHeight" type="xs:decimal" />
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />

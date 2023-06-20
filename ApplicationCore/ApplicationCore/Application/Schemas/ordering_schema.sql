@@ -123,6 +123,29 @@ CREATE TABLE closet_parts (
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
+CREATE TABLE custom_drilled_vertical_panels (
+	product_id BLOB NOT NULL,
+	width REAL NOT NULL,
+	length REAL NOT NULL,
+	material_finish TEXT NOT NULL,
+	material_core INTEGER NOT NULL,
+	paint_color TEXT,
+	painted_side INTEGER NOT NULL,
+	edge_banding_finish TEXT NOT NULL,
+	comment TEXT NOT NULL,
+	drilling_type INTEGER NOT NULL,
+	extend_back REAL NOT NULL,
+	extend_front REAL NOT NULL,
+	hole_dim_from_bottom REAL NOT NULL,
+	hole_dim_from_top REAL NOT NULL,
+	trans_hole_dim_from_bottom REAL NOT NULL,
+	trans_hole_dim_from_top REAL NOT NULL,
+	bottom_notch_depth REAL NOT NULL,
+	bottom_notch_height REAL NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
 CREATE TABLE cabinets (
 	product_id BLOB NOT NULL,
 	height REAL NOT NULL,

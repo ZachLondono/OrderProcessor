@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using static ApplicationCore.Features.Orders.Details.ProductTables.CabinetProductTable;
 using static ApplicationCore.Features.Orders.Details.ProductTables.ClosetPartProductTable;
+using static ApplicationCore.Features.Orders.Details.ProductTables.CustomVerticalPanelProductTable;
 using static ApplicationCore.Features.Orders.Details.ProductTables.DovetailDrawerBoxProductTable;
 using static ApplicationCore.Features.Orders.Details.ProductTables.MDFDoorProductTable;
 
@@ -22,6 +23,7 @@ public class Room {
 
     public List<CabinetRowModel> Cabinets { get; private set; }
     public List<ClosetPartRowModel> ClosetParts { get; private set; }
+    public List<CustomVerticalPanelRowModel> CustomDrilledVerticalPanels { get; private set; }
     public List<DovetailDrawerBoxRowModel> DovetailDrawerBoxes { get; private set; }
     public List<MDFDoorRowModel> MDFDoors { get; private set; }
 
@@ -37,6 +39,10 @@ public class Room {
         ClosetParts = products.OfType<ClosetPart>()
                               .Select(cp => new ClosetPartRowModel(cp))
                               .ToList();
+
+        CustomDrilledVerticalPanels = products.OfType<CustomDrilledVerticalPanel>()
+                                            .Select(cp => new CustomVerticalPanelRowModel(cp))
+                                            .ToList();
 
         DovetailDrawerBoxes = products.OfType<DovetailDrawerBoxProduct>()
                                   .Select(db => new DovetailDrawerBoxRowModel(db))

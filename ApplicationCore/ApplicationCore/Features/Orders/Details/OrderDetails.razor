@@ -261,6 +261,14 @@
                             </section>
                         }
     
+                        @if (room.CustomDrilledVerticalPanels.Any()) {
+                            <section class="mt-5">
+                                <h3>Closet Parts</h3>
+                                <CustomVerticalPanelProductTable UseInches="@_useInches" CustomParts="@room.CustomDrilledVerticalPanels" />
+                            </section>
+                        }
+    
+
                         @if (room.MDFDoors.Any()) {
                             <section class="mt-5">
                                 <h3>MDF Doors</h3>

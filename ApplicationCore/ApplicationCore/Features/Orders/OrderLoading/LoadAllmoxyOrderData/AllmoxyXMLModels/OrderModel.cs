@@ -44,6 +44,7 @@ public class OrderModel {
     [XmlArrayItem("blindWallCabinet", typeof(BlindWallCabinetModel))]
     [XmlArrayItem("trashCabinet", typeof(TrashCabinetModel))]
     [XmlArrayItem("closetPart", typeof(ClosetPartModel))]
+    [XmlArrayItem("customDrillingVerticalPanel", typeof(CustomDrillingVerticalPanelModel))]
     [XmlArrayItem("mdfDoor", typeof(MDFDoorModel))]
     [XmlArrayItem("dovetailDrawerBox", typeof(DovetailDrawerBoxModel))]
     public List<ProductModel> Products { get; set; } = new();
