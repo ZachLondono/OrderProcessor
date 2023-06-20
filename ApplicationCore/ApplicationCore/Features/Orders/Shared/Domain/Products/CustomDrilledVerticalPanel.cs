@@ -71,9 +71,9 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             SKU = "PE";
         }
 
-        if (holeDimensionFromBottom == Dimension.Zero && holeDimensionFromTop == Dimension.Zero) {
+        if ((holeDimensionFromBottom == Dimension.Zero && holeDimensionFromTop == Dimension.Zero) || (transitionHoleDimensionFromBottom == Dimension.Zero && transitionHoleDimensionFromTop == Dimension.Zero)) {
             _requiresCustomDrilling = false;
-        } else if (transitionHoleDimensionFromBottom != Dimension.Zero && transitionHoleDimensionFromTop != Dimension.Zero) {
+        } else {
             _requiresCustomDrilling = true;
         }
 
