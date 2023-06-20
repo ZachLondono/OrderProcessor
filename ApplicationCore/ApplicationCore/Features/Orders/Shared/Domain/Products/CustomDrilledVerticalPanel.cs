@@ -2,6 +2,7 @@
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
+using CADCodeProxy.Enums;
 using CADCodeProxy.Machining;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
@@ -38,6 +39,8 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     private static Dimension HoleDiameter = Dimension.FromMillimeters(5);
     private static Dimension StoppedDepth = Dimension.FromMillimeters(16.5);
     private static Dimension DrillThroughDepth = Dimension.FromMillimeters(26);
+    private static string CutOutTool = "3-8Comp";
+    private static Dimension PanelThickness = Dimension.FromMillimeters(19.05);
 
     public string GetDescription() => "Closet Part - Custom Drilled Vertical Panel";
 
@@ -82,6 +85,11 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
         if ((HoleDimensionFromTop != Dimension.Zero || HoleDimensionFromBottom != Dimension.Zero)
             && (TransitionHoleDimensionFromTop > HoleDimensionFromTop || TransitionHoleDimensionFromBottom > HoleDimensionFromBottom)) {
             throw new ArgumentException("Invalid parameters - requires flipping part");
+        }
+
+        if ((BottomNotchDepth != Dimension.Zero && BottomNotchHeight == Dimension.Zero)
+            || (BottomNotchDepth == Dimension.Zero && BottomNotchHeight != Dimension.Zero)) {
+            throw new ArgumentException("Invalid notch dimensions");
         }
 
     }
@@ -143,6 +151,8 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
         List<IToken> tokens = new();
 
+        // TODO: shift over holes that overlap base notch
+
         if (Width > Dimension.FromInches(12)) {
             Dimension depth = DrillingType == ClosetVerticalDrillingType.DrilledThrough ? DrillThroughDepth : StoppedDepth;
             tokens.Add(new Bore(HoleDiameter.AsMillimeters(),
@@ -179,7 +189,6 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
                 tokens.AddRange(CreateTwoRowsOfHoles(GetValidHolePositionFromBottom(HoleDimensionFromBottom),
                                                     end,
                                                     StoppedDepth));
-
             }
         }
 
@@ -193,6 +202,25 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             tokens.AddRange(CreateTwoRowsOfHoles(GetValidHolePositionFromBottom(TransitionHoleDimensionFromBottom),
                                                 Dimension.Zero,
                                                 DrillThroughDepth));
+        }
+
+        if (BottomNotchHeight > Dimension.Zero && BottomNotchHeight > Dimension.Zero) {
+            tokens.Add(new Route() {
+                ToolName = CutOutTool,
+                StartDepth = PanelThickness.AsMillimeters(),
+                EndDepth = PanelThickness.AsMillimeters(),
+                Offset = Offset.Right,
+                Start = new((Width - BottomNotchDepth).AsMillimeters(),0),
+                End = new((Width - BottomNotchDepth).AsMillimeters(),BottomNotchHeight.AsMillimeters())
+            });
+            tokens.Add(new Route() {
+                ToolName = CutOutTool,
+                StartDepth = PanelThickness.AsMillimeters(),
+                EndDepth = PanelThickness.AsMillimeters(),
+                Offset = Offset.Right,
+                Start = new((Width - BottomNotchDepth).AsMillimeters(),BottomNotchHeight.AsMillimeters()),
+                End = new(Width.AsMillimeters(),BottomNotchHeight.AsMillimeters())
+            });
         }
 
         var part = new Part() {
