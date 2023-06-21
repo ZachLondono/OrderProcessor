@@ -243,19 +243,41 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
     private IToken[] CreateTwoRowsOfHoles(Dimension startPosition, Dimension endPosition, Dimension depth) {
 
-        var tokenA = new MultiBore(HoleDiameter.AsMillimeters(),
+        List<IToken> tokens = new() {
+            new MultiBore(HoleDiameter.AsMillimeters(),
                                     new((HolesOffEdge + ExtendFront).AsMillimeters(), startPosition.AsMillimeters()),
                                     new((HolesOffEdge + ExtendFront).AsMillimeters(), endPosition.AsMillimeters()),
                                     HoleSpacing.AsMillimeters(),
-                                    depth.AsMillimeters());
+                            depth.AsMillimeters())
+        };
 
-        var tokenB = new MultiBore(HoleDiameter.AsMillimeters(),
+        if (BottomNotchHeight == Dimension.Zero || endPosition > BottomNotchHeight) {
+            tokens.Add(new MultiBore(HoleDiameter.AsMillimeters(),
                                     new((Width - HolesOffEdge - ExtendBack).AsMillimeters(), startPosition.AsMillimeters()),
                                     new((Width - HolesOffEdge - ExtendBack).AsMillimeters(), endPosition.AsMillimeters()),
                                     HoleSpacing.AsMillimeters(),
-                                    depth.AsMillimeters());
+                                        depth.AsMillimeters()));
+        } else if (startPosition < BottomNotchHeight) {
+            tokens.Add(new MultiBore(HoleDiameter.AsMillimeters(),
+                                        new((Width - HolesOffEdge - ExtendBack - BottomNotchDepth).AsMillimeters(), startPosition.AsMillimeters()),
+                                        new((Width - HolesOffEdge - ExtendBack - BottomNotchDepth).AsMillimeters(), endPosition.AsMillimeters()),
+                                        HoleSpacing.AsMillimeters(),
+                                        depth.AsMillimeters()));
+        } else {
+            tokens.Add(new MultiBore(HoleDiameter.AsMillimeters(),
+                                        new((Width - HolesOffEdge - ExtendBack).AsMillimeters(), startPosition.AsMillimeters()),
+                                        new((Width - HolesOffEdge - ExtendBack).AsMillimeters(), BottomNotchHeight.AsMillimeters()),
+                                        HoleSpacing.AsMillimeters(),
+                                        depth.AsMillimeters()));
+            tokens.Add(new MultiBore(HoleDiameter.AsMillimeters(),
+                                        new((Width - HolesOffEdge - ExtendBack - BottomNotchDepth).AsMillimeters(), GetValidHolePositionFromBottom(BottomNotchHeight).AsMillimeters()),
+                                        new((Width - HolesOffEdge - ExtendBack - BottomNotchDepth).AsMillimeters(), endPosition.AsMillimeters()),
+                                        HoleSpacing.AsMillimeters(),
+                                        depth.AsMillimeters()));
+        }
 
-        return new IToken[] { tokenA, tokenB };
+        return tokens.ToArray();
+
     }
 
     private Dimension GetValidHolePositionFromTop(Dimension maxSpaceFromTop) {
@@ -266,7 +288,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
         double holeIndex = Math.Floor(((maxSpaceFromTop - HolesOffTop) / HoleSpacing).AsMillimeters());
 
-        return Length - (Dimension.FromMillimeters(holeIndex) * HoleSpacing + HolesOffTop);
+        return (Dimension.FromMillimeters(holeIndex) * HoleSpacing + HolesOffTop);
 
     }
 
