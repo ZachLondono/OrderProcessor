@@ -8,6 +8,9 @@ using ApplicationCore.Shared;
 using ApplicationCore.Shared.Services;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Options;
+using CADCodeProxy.Machining;
+using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.CSVTokens;
 
 namespace ApplicationCore.Features.Orders.OrderExport;
 
@@ -49,6 +52,8 @@ internal class ExportService {
         await GenerateDovetailOrders(configuration, order, outputDir);
 
         await GenerateEXT(configuration, order, _options.EXTOutputDirectory);
+
+        await GenerateCSV(configuration, order, _options.CSVOutputDirectory);
 
         OnActionComplete?.Invoke("Export Complete");
 
@@ -134,6 +139,47 @@ internal class ExportService {
         string jobName = string.IsNullOrWhiteSpace(configuration.ExtJobName) ? $"{order.Number} - {order.Name}" : configuration.ExtJobName;
 
         var response = await _bus.Send(new ExportEXT.Command(order, jobName.Trim(), outputDir));
+
+        response.Match(
+            file => OnFileGenerated?.Invoke(file),
+            error => OnError?.Invoke($"{error.Title} - {error.Details}")
+        );
+
+    }
+
+    private async Task GenerateCSV(ExportConfiguration configuration, Order order, string outputDir) {
+
+        if (!configuration.GenerateCSV) {
+            OnProgressReport?.Invoke("Not generating CSV file");
+            return;
+        }
+
+        if (!Directory.Exists(outputDir)) {
+            OnError?.Invoke("CSV output directory does not exist");
+            return;
+        }
+
+        var parts = order.Products
+            .Where(p => p is ICNCPartContainer)
+            .Cast<ICNCPartContainer>()
+            .SelectMany(p => p.GetParts())
+            .ToArray();
+
+        if (!parts.Any()) {
+            OnError?.Invoke("No parts in order to write to CSV");
+            return;
+        }
+        
+        OnProgressReport?.Invoke("Generating CSV file");
+
+        string jobName = string.IsNullOrWhiteSpace(configuration.CsvJobName) ? $"{order.Number} - {order.Name}" : configuration.CsvJobName;
+
+        var batch = new Batch() {
+            Name = jobName,
+            Parts = parts
+        };
+
+        var response = await _bus.Send(new WriteTokensToCSV.Command(batch, outputDir));
 
         response.Match(
             file => OnFileGenerated?.Invoke(file),

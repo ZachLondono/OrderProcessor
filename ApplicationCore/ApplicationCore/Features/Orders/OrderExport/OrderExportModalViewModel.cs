@@ -48,10 +48,17 @@ internal class OrderExportModalViewModel {
                                 .Cast<IPPProductContainer>()
                                 .Any(p => p.ContainsPPProducts());
 
+        bool containsCNC = order.Products
+                                .Where(p => p is ICNCPartContainer)
+                                .Cast<ICNCPartContainer>()
+                                .Any(p => p.ContainsCNCParts());
+
         Configuration = new() {
-            FillDovetailOrder = vendor.ExportProfile.ExportDBOrder && containsMDFDoors,
-            FillMDFDoorOrder = vendor.ExportProfile.ExportMDFDoorOrder && containsDBs,
+            FillDovetailOrder = vendor.ExportProfile.ExportDBOrder && containsDBs,
+            FillMDFDoorOrder = vendor.ExportProfile.ExportMDFDoorOrder && containsMDFDoors,
             GenerateEXT = vendor.ExportProfile.ExportExtFile && containsPPs,
+            GenerateCSV = containsCNC,
+            CsvJobName = $"{order.Number} - {order.Name}",
             ExtJobName = $"{order.Number} - {order.Name}",
             OutputDirectory = order.WorkingDirectory
         };
