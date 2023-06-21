@@ -74,7 +74,10 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             SKU = "PE";
         }
 
-        if ((holeDimensionFromBottom == Dimension.Zero && holeDimensionFromTop == Dimension.Zero) || (transitionHoleDimensionFromBottom == Dimension.Zero && transitionHoleDimensionFromTop == Dimension.Zero)) {
+        if (((holeDimensionFromBottom == Dimension.Zero && holeDimensionFromTop == Dimension.Zero)
+            || (transitionHoleDimensionFromBottom == Dimension.Zero && transitionHoleDimensionFromTop == Dimension.Zero))
+            // PSI does not handle custom drilling w/ bottom notch correctly 
+            && !((holeDimensionFromBottom != Dimension.Zero || holeDimensionFromTop != Dimension.Zero || transitionHoleDimensionFromBottom != Dimension.Zero || transitionHoleDimensionFromTop != Dimension.Zero) && BottomNotchHeight != Dimension.Zero)) {
             _requiresCustomDrilling = false;
         } else {
             _requiresCustomDrilling = true;
