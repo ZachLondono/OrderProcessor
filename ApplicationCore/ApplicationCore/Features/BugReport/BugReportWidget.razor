@@ -1,0 +1,98 @@
+﻿@using ApplicationCore.Shared.Components
+@using ApplicationCore.Shared.Data;
+@using ApplicationCore.Shared.Services;
+@using ApplicationCore.Shared.Settings;
+@using MailKit.Net.Smtp;
+@using MailKit.Security;
+@using Microsoft.Extensions.Options;
+@using MimeKit;
+@using static ApplicationCore.Shared.Components.Button;
+@inject IOptions<Email> EmailOptions
+@inject IFileReader FileReader
+
+@if (_isSent) {
+    
+    <div>
+        <span>Bug report sent.</span>
+        <small>@_response</small>
+    </div>
+    <Button OnClickAsync="CloseModal">Close</Button>
+
+} else if (_isSending) {
+
+    <span>Sending bug report...</span>
+    
+} else {
+    <div>
+        <label>Description</label>
+        <div>
+            <textarea placeholder="Describe what happened" @bind="_bugDescription" class="w-full"/>
+        </div>
+    </div>
+    <Button OnClickAsync="CloseModal" Color="ButtonColor.Secondary">Cancel</Button>
+    <Button OnClick="() => _isSending = true" OnClickAsync="SendBugReport" Disabled="_isSending">Send</Button>
+}
+
+@code {
+
+    [CascadingParameter]
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    private bool _isSent = false;
+    private bool _isSending = false;
+    private string _response = "";
+    private string _bugDescription = "";
+
+    private async Task SendBugReport() {
+
+        // TODO: NotSupportedException is being thrown somewhere in this method. Also UI does not update right away
+
+        _isSending = true;
+        _ = InvokeAsync(StateHasChanged);
+
+        var settings = EmailOptions.Value;
+
+        string recipientName = "Zach";
+        string recipientEmail = "zach@royalcabinet.com";
+        string subject = $"BUG REPORT";
+        string defaultBody = "No description provided.";
+        string pathToLogs = ".\\logs.db";
+
+        var stream = FileReader.OpenReadFileStream(pathToLogs);
+        var attachment = new MimePart ("Logs", "db") {
+            Content = new MimeContent(stream),
+            ContentDisposition = new ContentDisposition (ContentDisposition.Attachment),
+            ContentTransferEncoding = ContentEncoding.Base64,
+            FileName = Path.GetFileName (pathToLogs)
+        };
+
+        var builder = new BodyBuilder{
+            TextBody = _bugDescription == string.Empty ? defaultBody : _bugDescription
+        };
+        builder.Attachments.Add(attachment);
+        var body = builder.ToMessageBody();
+
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress(settings.SenderName, settings.SenderEmail));
+        message.To.Add(new MailboxAddress(recipientName, recipientEmail));
+        message.Subject = subject;
+        message.Body = body;
+
+        using var client = new SmtpClient();
+        client.Connect(settings.Host, settings.Port, SecureSocketOptions.Auto);
+        client.Authenticate(settings.SenderEmail, UserDataProtection.Unprotect(settings.ProtectedPassword));
+
+        _response = await client.SendAsync(message);
+        await client.DisconnectAsync(true);
+
+        _isSending = false;
+        _isSent = true;
+        _ = InvokeAsync(StateHasChanged);
+
+    }
+
+    private async Task CloseModal() {
+        await BlazoredModal.CloseAsync();        
+    }
+
+}

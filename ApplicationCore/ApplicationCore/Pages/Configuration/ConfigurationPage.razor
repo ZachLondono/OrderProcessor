@@ -4,6 +4,7 @@
 @using ApplicationCore.Features.DataFilePaths
 @using ApplicationCore.Features.Orders.OrderLoading.Providers.AllmoxyXMLModels;
 @using ApplicationCore.Shared.Components;
+@using ApplicationCore.Shared.Data;
 @using Microsoft.Extensions.Options;
 @using static ApplicationCore.Shared.Components.Button;
 
@@ -19,6 +20,18 @@
         <div>
             <Button Style="ButtonStyle.Link" OnClick="OpenAppSettingsFile" Color="ButtonColor.Secondary" Size="ButtonSize.XSmall">Open App Settings File</Button>
         </div>
+        <section class="mt-12">
+            <div>
+                <label>Password Util</label>
+                <input type="password" @bind-value="@_clearPassword" class="input-text" />
+            </div>
+            <Button OnClick="ProtectPassword">Protect</Button>
+            @if (_protectedPassword != string.Empty) {
+                <div class="mt-3 p-3 w-2/3 bg-slate-300 rounded-md break-words">
+                    @_protectedPassword           
+                </div>
+            }
+        </section>
     </TabPage>
 
 </TabControl>
@@ -26,6 +39,9 @@
 <hr class="my-5" />
 
 @code {
+
+    private string _clearPassword = "";
+    private string _protectedPassword = "";
 
     private void OpenAppSettingsFile() {
         OpenFile("appsettings.json");
@@ -43,6 +59,11 @@
             Debug.WriteLine(ex);    
         }
 
+    }
+
+    private void ProtectPassword() {
+        _protectedPassword = UserDataProtection.Protect(_clearPassword);
+        StateHasChanged();
     }
 
 }
