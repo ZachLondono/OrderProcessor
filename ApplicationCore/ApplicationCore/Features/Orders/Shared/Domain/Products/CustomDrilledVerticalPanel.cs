@@ -236,6 +236,8 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             Qty = Qty,
             PrimaryFace = new() {
                 ProgramName = $"{SKU}{ProductNumber}",
+                IsRotated = true,
+                IsMirrored = DrillingType == ClosetVerticalDrillingType.FinishedRight,
                 Tokens = tokens.ToArray()
             }
         };
@@ -248,17 +250,17 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
         List<IToken> tokens = new() {
             new MultiBore(HoleDiameter.AsMillimeters(),
-                                    new((HolesOffEdge + ExtendFront).AsMillimeters(), startPosition.AsMillimeters()),
-                                    new((HolesOffEdge + ExtendFront).AsMillimeters(), endPosition.AsMillimeters()),
-                                    HoleSpacing.AsMillimeters(),
+                            new((HolesOffEdge + ExtendFront).AsMillimeters(), startPosition.AsMillimeters()),
+                            new((HolesOffEdge + ExtendFront).AsMillimeters(), endPosition.AsMillimeters()),
+                            HoleSpacing.AsMillimeters(),
                             depth.AsMillimeters())
         };
 
         if (BottomNotchHeight == Dimension.Zero || endPosition > BottomNotchHeight) {
             tokens.Add(new MultiBore(HoleDiameter.AsMillimeters(),
-                                    new((Width - HolesOffEdge - ExtendBack).AsMillimeters(), startPosition.AsMillimeters()),
-                                    new((Width - HolesOffEdge - ExtendBack).AsMillimeters(), endPosition.AsMillimeters()),
-                                    HoleSpacing.AsMillimeters(),
+                                        new((Width - HolesOffEdge - ExtendBack).AsMillimeters(), startPosition.AsMillimeters()),
+                                        new((Width - HolesOffEdge - ExtendBack).AsMillimeters(), endPosition.AsMillimeters()),
+                                        HoleSpacing.AsMillimeters(),
                                         depth.AsMillimeters()));
         } else if (startPosition < BottomNotchHeight) {
             tokens.Add(new MultiBore(HoleDiameter.AsMillimeters(),
