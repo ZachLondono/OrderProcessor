@@ -5,7 +5,9 @@
 @using static ApplicationCore.Shared.Components.Button;
 @using ApplicationCore.Shared.Data;
 @using System.Diagnostics;
+@using Microsoft.Extensions.Logging;
 @inject OrderListViewModel DataContext
+@inject ILogger<OrderList> Logger
 
 <table class="w-full table-auto">
 
@@ -125,21 +127,25 @@
 
         } catch (IncompatibleDatabaseVersion ex) {
 
+            Logger.LogWarning(ex, "Tried to load orders from an incompatable database version");
+
             DataContext.ErrorMessage = ex.Message;
 
             await ModalService.OpenErrorDialog(new() {
-                    Title = "Could not load orders",
-                    Details = ex.Message
+                    Title = "Could not Load Order List",
+                    Details = $"Database version is incompatable with application version. Make sure application is up to date and database is the correct version for the application.<br><br><small>Error Message:<br>{ex.Message}</small>"
                 }, ModalSize.Automatic);
 
         } catch (Exception ex) {
 
+            Logger.LogError(ex, "Exception thrown while loading order list");
+
             DataContext.ErrorMessage = ex.Message;
 
             await ModalService.OpenErrorDialog(new() {
                     Title = "Could not load orders",
-                    Details = $"An exception was thrown while trying to load orders <br><br><br> {ex.Message} <br><br> {ex.StackTrace}"
-                }, ModalSize.ExtraLarge);
+                    Details = $"An exception was thrown while trying to load orders<br><br><small>Error Message:<br>{ex.Message}</small>"
+                }, ModalSize.Automatic);
 
         }
 
@@ -149,12 +155,26 @@
 
         try {
             await DataContext.OpenOrder(orderId);
+        } catch (IncompatibleDatabaseVersion ex) {
+
+            Logger.LogWarning(ex, "Tried to load orders from an incompatable database version");
+
+            DataContext.ErrorMessage = ex.Message;
+
+            await ModalService.OpenErrorDialog(new() {
+                    Title = "Could not Load Order",
+                    Details = $"Database version is incompatable with application version. Make sure application is up to date and database is the correct version for the application.<br><br><small>Error Message:<br>{ex.Message}</small>"
+                }, ModalSize.Automatic);
+
         } catch (Exception ex) {
+
+            Logger.LogError(ex, "Exception thrown while trying to open order details page");
 
             await ModalService.OpenErrorDialog(new() {
                     Title = "Error Opening Order",
-                    Details = $"An exception was thrown while trying to open the order <br><br><br> {ex.Message} <br><br> {ex.StackTrace}"
-            }, ModalSize.ExtraLarge);
+                    Details = $"An error occurred while trying to open order.<br><br><small>Error Message:<br>{ex.Message}</small>"
+            }, ModalSize.Automatic);
+
 
         }
 
