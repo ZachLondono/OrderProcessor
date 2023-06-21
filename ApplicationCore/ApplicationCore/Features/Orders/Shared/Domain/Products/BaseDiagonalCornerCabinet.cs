@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Exceptions;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
@@ -39,7 +40,7 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IDoorContainer {
         HingeSide = hingeSide;
         DoorQty = doorQty;
 
-        if (DoorQty > 2 || DoorQty < 1) throw new InvalidOperationException("Invalid number of doors");
+        if (DoorQty > 2 || DoorQty < 1) throw new InvalidProductOptionsException("Invalid number of doors");
 
     }
 

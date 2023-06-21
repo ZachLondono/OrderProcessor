@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Exceptions;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
@@ -39,10 +40,10 @@ internal class WallCabinet : Cabinet, IDoorContainer {
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (leftSideType == CabinetSideType.AppliedPanel || rightSideType == CabinetSideType.AppliedPanel)
-            throw new InvalidOperationException("Wall cabinet cannot have applied panel sides");
+            throw new InvalidProductOptionsException("Wall cabinet cannot have applied panel sides");
 
         if (doors.Quantity > 2 || doors.Quantity < 0)
-            throw new InvalidOperationException("Invalid number of doors");
+            throw new InvalidProductOptionsException("Invalid number of doors");
 
         Doors = doors;
         Inside = inside;

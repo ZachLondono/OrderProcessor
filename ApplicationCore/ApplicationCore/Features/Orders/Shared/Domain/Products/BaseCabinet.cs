@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Exceptions;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
@@ -41,29 +42,29 @@ internal class BaseCabinet : Cabinet, IDrawerBoxContainer, IDoorContainer {
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (doors.Quantity > 2 || doors.Quantity < 0)
-            throw new InvalidOperationException("Invalid number of doors");
+            throw new InvalidProductOptionsException("Invalid number of doors");
 
         if (doors.Quantity == 1 && drawers.Quantity > 1)
-            throw new InvalidOperationException("Base cabinet cannot have more than 1 drawer if it only has 1 door");
+            throw new InvalidProductOptionsException("Base cabinet cannot have more than 1 drawer if it only has 1 door");
 
         if (drawers.Quantity > 2)
-            throw new InvalidOperationException("Base cabinet cannot have more than 2 drawers");
+            throw new InvalidProductOptionsException("Base cabinet cannot have more than 2 drawers");
 
         if (drawers.FaceHeight > Height)
-            throw new InvalidOperationException("Invalid drawer face size");
+            throw new InvalidProductOptionsException("Invalid drawer face size");
 
         if (drawers.Quantity != 0 && drawers.FaceHeight == Dimension.Zero)
-            throw new InvalidOperationException("Invalid drawer face size");
+            throw new InvalidProductOptionsException("Invalid drawer face size");
 
         if (drawers.Quantity == 0 && inside.RollOutBoxes.Positions.Length > 3)
-            throw new InvalidOperationException("Base cabinet cannot have more than 3 roll out drawer boxes");
+            throw new InvalidProductOptionsException("Base cabinet cannot have more than 3 roll out drawer boxes");
 
         if (drawers.Quantity > 1 && inside.RollOutBoxes.Positions.Length > 2)
-            throw new InvalidOperationException("Base cabinet with drawer face cannot have more than 2 roll out drawer boxes");
+            throw new InvalidProductOptionsException("Base cabinet with drawer face cannot have more than 2 roll out drawer boxes");
 
         foreach (var position in inside.RollOutBoxes.Positions) {
             if (position < Dimension.Zero || position > Height - drawers.FaceHeight) {
-                throw new InvalidOperationException("Roll out box position {position} is invalid for cabinet size");
+                throw new InvalidProductOptionsException("Roll out box position {position} is invalid for cabinet size");
             }
         }
 

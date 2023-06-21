@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Exceptions;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
@@ -33,7 +34,7 @@ internal class WallPieCutCornerCabinet : Cabinet, IDoorContainer {
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (leftSideType == CabinetSideType.AppliedPanel || leftSideType == CabinetSideType.AppliedPanel)
-            throw new InvalidOperationException("Wall cabinet cannot have applied panel sides");
+            throw new InvalidProductOptionsException("Wall cabinet cannot have applied panel sides");
 
         RightWidth = rightWidth;
         RightDepth = rightDepth;

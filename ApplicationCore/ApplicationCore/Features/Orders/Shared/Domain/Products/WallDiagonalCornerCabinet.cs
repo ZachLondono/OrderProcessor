@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Exceptions;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
@@ -34,7 +35,7 @@ internal class WallDiagonalCornerCabinet : Cabinet, IDoorContainer {
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (leftSideType == CabinetSideType.AppliedPanel || leftSideType == CabinetSideType.AppliedPanel)
-            throw new InvalidOperationException("Wall cabinet cannot have applied panel sides");
+            throw new InvalidProductOptionsException("Wall cabinet cannot have applied panel sides");
 
         RightWidth = rightWidth;
         RightDepth = rightDepth;
@@ -43,7 +44,7 @@ internal class WallDiagonalCornerCabinet : Cabinet, IDoorContainer {
         DoorQty = doorQty;
         ExtendedDoor = extendedDoor;
 
-        if (DoorQty > 2 || DoorQty < 1) throw new InvalidOperationException("Invalid number of doors");
+        if (DoorQty > 2 || DoorQty < 1) throw new InvalidProductOptionsException("Invalid number of doors");
 
     }
 

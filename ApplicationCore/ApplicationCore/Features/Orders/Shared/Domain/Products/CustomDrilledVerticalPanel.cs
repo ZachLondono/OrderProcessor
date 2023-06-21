@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Contracts;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Exceptions;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 using CADCodeProxy.Enums;
@@ -87,12 +88,12 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
         // If holes from top OR holes from bottom is not zero than BOTH transition holes from top must be less than or equal to holes from top and transition holes from bottom must be less than or equal to holes from bottom
         if ((HoleDimensionFromTop != Dimension.Zero || HoleDimensionFromBottom != Dimension.Zero)
             && (TransitionHoleDimensionFromTop > HoleDimensionFromTop || TransitionHoleDimensionFromBottom > HoleDimensionFromBottom)) {
-            throw new ArgumentException("Invalid parameters - requires flipping part");
+            throw new InvalidProductOptionsException("Invalid hole dimensions, transition holes cannot exceed standard holes without flipping panel");
         }
 
         if ((BottomNotchDepth != Dimension.Zero && BottomNotchHeight == Dimension.Zero)
             || (BottomNotchDepth == Dimension.Zero && BottomNotchHeight != Dimension.Zero)) {
-            throw new ArgumentException("Invalid notch dimensions");
+            throw new InvalidProductOptionsException("Invalid notch dimensions");
         }
 
     }
@@ -299,7 +300,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
         if (length < s_holesOffTop || maxSpaceFromBottom > length - s_holesOffTop || s_holeSpacing == Dimension.Zero) {
             return Dimension.Zero;
-    }
+        }
 
         double holeIndex = Math.Ceiling(((length - maxSpaceFromBottom - s_holesOffTop) / s_holeSpacing).AsMillimeters());
 

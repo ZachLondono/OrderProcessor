@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Exceptions;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
@@ -41,11 +42,11 @@ internal class TallCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (doors.UpperQuantity > 2 || doors.UpperQuantity < 0 || doors.LowerQuantity > 2 || doors.LowerQuantity < 0)
-            throw new InvalidOperationException("Invalid number of doors");
+            throw new InvalidProductOptionsException("Invalid number of doors");
 
         foreach (var position in inside.RollOutBoxes.Positions) {
             if (position < Dimension.Zero || position > height) {
-                throw new InvalidOperationException("Roll out box position {position} is invalid for cabinet size");
+                throw new InvalidProductOptionsException("Roll out box position {position} is invalid for cabinet size");
             }
         }
 

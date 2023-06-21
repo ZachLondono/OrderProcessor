@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Exceptions;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
@@ -39,7 +40,7 @@ internal class DrawerBaseCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer 
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (drawers.FaceHeights.Count() > 5)
-            throw new InvalidOperationException("Invalid number of drawers");
+            throw new InvalidProductOptionsException("Invalid number of drawers");
 
         Drawers = drawers;
         ToeType = toeType;

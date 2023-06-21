@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Contracts;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Exceptions;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
@@ -55,10 +56,10 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
         Comment = comment;
 
         if (boxMaterial.Core == CabinetMaterialCore.Plywood && finishMaterial.Core == CabinetMaterialCore.ParticleBoard)
-            throw new InvalidOperationException("Cannot create cabinet with plywood box and particle board finished side");
+            throw new InvalidProductOptionsException("Cannot create cabinet with plywood box and particle board finished side");
 
         if (MDFDoorOptions is null && (LeftSideType == CabinetSideType.IntegratedPanel || LeftSideType == CabinetSideType.AppliedPanel || RightSideType == CabinetSideType.IntegratedPanel || RightSideType == CabinetSideType.AppliedPanel))
-            throw new InvalidOperationException("MDFDoorOptions are required when creating a cabinet side with a door");
+            throw new InvalidProductOptionsException("MDFDoorOptions are required when creating a cabinet side with a door");
 
         // Right now it is valid for both SlabDoorMaterial and MDFDoorOptions to both be non-null because a cabinet can have slab doors and an applied/integrated side panel
         // When Buy out doors are added as an option to cabinets the invariant must be maintained that a cabinet does not have both buy out doors and slab doors
@@ -79,7 +80,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
                 BackThickness = Dimension.FromMillimeters(13),
                 BackInset = Dimension.FromMillimeters(9)
             },
-            _ => throw new InvalidOperationException($"Unexpected cabinet material core type '{boxMaterial.Core}'"),
+            _ => throw new InvalidProductOptionsException($"Unexpected cabinet material core type '{boxMaterial.Core}'"),
         };
     }
 
