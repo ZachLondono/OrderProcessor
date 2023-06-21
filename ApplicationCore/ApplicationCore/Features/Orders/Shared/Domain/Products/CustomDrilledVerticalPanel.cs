@@ -33,14 +33,14 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     public Dimension BottomNotchHeight { get; }
 
     private bool _requiresCustomDrilling;
-    private static Dimension HoleSpacing = Dimension.FromMillimeters(32);
-    private static Dimension HolesOffEdge = Dimension.FromMillimeters(37);
-    private static Dimension HolesOffTop = Dimension.FromMillimeters(9.5);
-    private static Dimension HoleDiameter = Dimension.FromMillimeters(5);
-    private static Dimension StoppedDepth = Dimension.FromMillimeters(16.5);
-    private static Dimension DrillThroughDepth = Dimension.FromMillimeters(26);
-    private static string CutOutTool = "3-8Comp";
-    private static Dimension PanelThickness = Dimension.FromMillimeters(19.05);
+    private static readonly Dimension s_holeSpacing = Dimension.FromMillimeters(32);
+    private static readonly Dimension s_holesOffEdge = Dimension.FromMillimeters(37);
+    private static readonly Dimension s_holesOffTop = Dimension.FromMillimeters(9.5);
+    private static readonly Dimension s_holeDiameter = Dimension.FromMillimeters(5);
+    private static readonly Dimension s_stoppedDepth = Dimension.FromMillimeters(16.5);
+    private static readonly Dimension s_drillThroughDepth = Dimension.FromMillimeters(26);
+    private static readonly string s_cutOutTool = "3-8Comp";
+    private static readonly Dimension s_panelThickness = Dimension.FromMillimeters(19.05);
 
     public string GetDescription() => "Closet Part - Custom Drilled Vertical Panel";
 
@@ -154,72 +154,70 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
         List<IToken> tokens = new();
 
-        // TODO: shift over holes that overlap base notch
-
         if (Width > Dimension.FromInches(12)) {
-            Dimension depth = DrillingType == ClosetVerticalDrillingType.DrilledThrough ? DrillThroughDepth : StoppedDepth;
-            tokens.Add(new Bore(HoleDiameter.AsMillimeters(),
-                                new((Width - Dimension.FromInches(12) + HolesOffEdge).AsMillimeters(), (Length - HolesOffTop).AsMillimeters()),
+            Dimension depth = DrillingType == ClosetVerticalDrillingType.DrilledThrough ? s_drillThroughDepth : s_stoppedDepth;
+            tokens.Add(new Bore(s_holeDiameter.AsMillimeters(),
+                                new((Width - Dimension.FromInches(12) + s_holesOffEdge).AsMillimeters(), (Length - s_holesOffTop).AsMillimeters()),
                                 depth.AsMillimeters()));
         }
 
         if (HoleDimensionFromBottom == Dimension.Zero && HoleDimensionFromTop == Dimension.Zero) {
-            Dimension stoppedStartHeight = Length - HolesOffTop - TransitionHoleDimensionFromTop;
+            Dimension stoppedStartHeight = Length - s_holesOffTop - TransitionHoleDimensionFromTop;
             Dimension stoppedEndHeight = TransitionHoleDimensionFromBottom;
             if (stoppedStartHeight > stoppedEndHeight) {
                 tokens.AddRange(CreateTwoRowsOfHoles(GetValidHolePositionFromTop(stoppedStartHeight),
                                                     stoppedEndHeight,
-                                                    StoppedDepth));
+                                                    s_stoppedDepth));
             } 
         } else {
             if (HoleDimensionFromTop > Dimension.Zero) {
                 Dimension transEnd = GetValidHolePositionFromTop(TransitionHoleDimensionFromTop);
-                Dimension start = Length - HolesOffTop;
+                Dimension start = Length - s_holesOffTop;
                 if (transEnd > Dimension.Zero) {
-                    start =  transEnd - HoleSpacing;
+                    start =  transEnd - s_holeSpacing;
                 }
                 tokens.AddRange(CreateTwoRowsOfHoles(start,
                                                     Length - HoleDimensionFromTop,
-                                                    StoppedDepth));
+                                                    s_stoppedDepth));
             }
             
             if (HoleDimensionFromBottom > Dimension.Zero) {
-                Dimension transStart = GetValidHolePositionFromBottom(TransitionHoleDimensionFromBottom);
+                Dimension transStart = GetValidHolePositionFromBottom(Length, TransitionHoleDimensionFromBottom);
                 Dimension end = transStart;
                 if (transStart > Dimension.Zero) {
-                    end += HoleSpacing;
+                    end += s_holeSpacing;
                 }
-                tokens.AddRange(CreateTwoRowsOfHoles(GetValidHolePositionFromBottom(HoleDimensionFromBottom),
+                tokens.AddRange(CreateTwoRowsOfHoles(GetValidHolePositionFromBottom(Length, HoleDimensionFromBottom),
                                                     end,
-                                                    StoppedDepth));
+                                                    s_stoppedDepth));
             }
         }
 
         if (TransitionHoleDimensionFromTop > Dimension.Zero) {
-             tokens.AddRange(CreateTwoRowsOfHoles(Length - HolesOffTop,
+             tokens.AddRange(CreateTwoRowsOfHoles(Length - s_holesOffTop,
                                                 Length - TransitionHoleDimensionFromTop,
-                                                DrillThroughDepth));
+                                                s_drillThroughDepth));
         }
         
         if (TransitionHoleDimensionFromBottom > Dimension.Zero) {
-            tokens.AddRange(CreateTwoRowsOfHoles(GetValidHolePositionFromBottom(TransitionHoleDimensionFromBottom),
+            tokens.AddRange(CreateTwoRowsOfHoles(GetValidHolePositionFromBottom(Length, TransitionHoleDimensionFromBottom),
                                                 Dimension.Zero,
-                                                DrillThroughDepth));
+                                                s_drillThroughDepth));
         }
 
         if (BottomNotchHeight > Dimension.Zero && BottomNotchHeight > Dimension.Zero) {
             tokens.Add(new Route() {
-                ToolName = CutOutTool,
-                StartDepth = PanelThickness.AsMillimeters(),
-                EndDepth = PanelThickness.AsMillimeters(),
+                ToolName = s_cutOutTool,
+                StartDepth = s_panelThickness.AsMillimeters(),
+                EndDepth = s_panelThickness.AsMillimeters(),
                 Offset = Offset.Right,
                 Start = new((Width - BottomNotchDepth).AsMillimeters(),0),
                 End = new((Width - BottomNotchDepth).AsMillimeters(),BottomNotchHeight.AsMillimeters())
             });
             tokens.Add(new Route() {
-                ToolName = CutOutTool,
-                StartDepth = PanelThickness.AsMillimeters(),
-                EndDepth = PanelThickness.AsMillimeters(),
+                ToolName = s_cutOutTool,
+                StartDepth = s_panelThickness.AsMillimeters(),
+                EndDepth = s_panelThickness.AsMillimeters(),
                 Offset = Offset.Right,
                 Start = new((Width - BottomNotchDepth).AsMillimeters(),BottomNotchHeight.AsMillimeters()),
                 End = new(Width.AsMillimeters(),BottomNotchHeight.AsMillimeters())
@@ -229,7 +227,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
         var part = new Part() {
             Width = Width.AsMillimeters(),
             Length = Length.AsMillimeters(),
-            Thickness = 19,
+            Thickness = s_panelThickness.AsMillimeters(),
             Material = $"{Material.Finish} Mela {Material.Core}",
             Name = "Custom Vertical Panel",
             IsGrained = true,
@@ -249,35 +247,35 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     private IToken[] CreateTwoRowsOfHoles(Dimension startPosition, Dimension endPosition, Dimension depth) {
 
         List<IToken> tokens = new() {
-            new MultiBore(HoleDiameter.AsMillimeters(),
-                            new((HolesOffEdge + ExtendFront).AsMillimeters(), startPosition.AsMillimeters()),
-                            new((HolesOffEdge + ExtendFront).AsMillimeters(), endPosition.AsMillimeters()),
-                            HoleSpacing.AsMillimeters(),
+            new MultiBore(s_holeDiameter.AsMillimeters(),
+                            new((s_holesOffEdge + ExtendFront).AsMillimeters(), startPosition.AsMillimeters()),
+                            new((s_holesOffEdge + ExtendFront).AsMillimeters(), endPosition.AsMillimeters()),
+                            s_holeSpacing.AsMillimeters(),
                             depth.AsMillimeters())
         };
 
         if (BottomNotchHeight == Dimension.Zero || endPosition > BottomNotchHeight) {
-            tokens.Add(new MultiBore(HoleDiameter.AsMillimeters(),
-                                        new((Width - HolesOffEdge - ExtendBack).AsMillimeters(), startPosition.AsMillimeters()),
-                                        new((Width - HolesOffEdge - ExtendBack).AsMillimeters(), endPosition.AsMillimeters()),
-                                        HoleSpacing.AsMillimeters(),
+            tokens.Add(new MultiBore(s_holeDiameter.AsMillimeters(),
+                                        new((Width - s_holesOffEdge - ExtendBack).AsMillimeters(), startPosition.AsMillimeters()),
+                                        new((Width - s_holesOffEdge - ExtendBack).AsMillimeters(), endPosition.AsMillimeters()),
+                                        s_holeSpacing.AsMillimeters(),
                                         depth.AsMillimeters()));
         } else if (startPosition < BottomNotchHeight) {
-            tokens.Add(new MultiBore(HoleDiameter.AsMillimeters(),
-                                        new((Width - HolesOffEdge - ExtendBack - BottomNotchDepth).AsMillimeters(), startPosition.AsMillimeters()),
-                                        new((Width - HolesOffEdge - ExtendBack - BottomNotchDepth).AsMillimeters(), endPosition.AsMillimeters()),
-                                        HoleSpacing.AsMillimeters(),
+            tokens.Add(new MultiBore(s_holeDiameter.AsMillimeters(),
+                                        new((Width - s_holesOffEdge - ExtendBack - BottomNotchDepth).AsMillimeters(), startPosition.AsMillimeters()),
+                                        new((Width - s_holesOffEdge - ExtendBack - BottomNotchDepth).AsMillimeters(), endPosition.AsMillimeters()),
+                                        s_holeSpacing.AsMillimeters(),
                                         depth.AsMillimeters()));
         } else {
-            tokens.Add(new MultiBore(HoleDiameter.AsMillimeters(),
-                                        new((Width - HolesOffEdge - ExtendBack).AsMillimeters(), startPosition.AsMillimeters()),
-                                        new((Width - HolesOffEdge - ExtendBack).AsMillimeters(), BottomNotchHeight.AsMillimeters()),
-                                        HoleSpacing.AsMillimeters(),
+            tokens.Add(new MultiBore(s_holeDiameter.AsMillimeters(),
+                                        new((Width - s_holesOffEdge - ExtendBack).AsMillimeters(), startPosition.AsMillimeters()),
+                                        new((Width - s_holesOffEdge - ExtendBack).AsMillimeters(), BottomNotchHeight.AsMillimeters()),
+                                        s_holeSpacing.AsMillimeters(),
                                         depth.AsMillimeters()));
-            tokens.Add(new MultiBore(HoleDiameter.AsMillimeters(),
-                                        new((Width - HolesOffEdge - ExtendBack - BottomNotchDepth).AsMillimeters(), GetValidHolePositionFromBottom(BottomNotchHeight).AsMillimeters()),
-                                        new((Width - HolesOffEdge - ExtendBack - BottomNotchDepth).AsMillimeters(), endPosition.AsMillimeters()),
-                                        HoleSpacing.AsMillimeters(),
+            tokens.Add(new MultiBore(s_holeDiameter.AsMillimeters(),
+                                        new((Width - s_holesOffEdge - ExtendBack - BottomNotchDepth).AsMillimeters(), GetValidHolePositionFromBottom(Length, BottomNotchHeight).AsMillimeters()),
+                                        new((Width - s_holesOffEdge - ExtendBack - BottomNotchDepth).AsMillimeters(), endPosition.AsMillimeters()),
+                                        s_holeSpacing.AsMillimeters(),
                                         depth.AsMillimeters()));
         }
 
@@ -285,23 +283,33 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
     }
 
-    private Dimension GetValidHolePositionFromTop(Dimension maxSpaceFromTop) {
+    public static Dimension GetValidHolePositionFromTop(Dimension maxSpaceFromTop) {
 
-        if (maxSpaceFromTop < HolesOffTop) {
+        if (maxSpaceFromTop < s_holesOffTop || s_holeSpacing == Dimension.Zero) {
             return Dimension.Zero;
         }
 
-        double holeIndex = Math.Floor(((maxSpaceFromTop - HolesOffTop) / HoleSpacing).AsMillimeters());
+        double holeIndex = Math.Floor(((maxSpaceFromTop - s_holesOffTop) / s_holeSpacing).AsMillimeters());
 
-        return (Dimension.FromMillimeters(holeIndex) * HoleSpacing + HolesOffTop);
+        return (Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop);
 
     }
 
-    private Dimension GetValidHolePositionFromBottom(Dimension maxSpaceFromBottom) {
+    public static Dimension GetValidHolePositionFromBottom(Dimension length, Dimension maxSpaceFromBottom) {
 
-        double holeIndex = Math.Ceiling(((Length - maxSpaceFromBottom - HolesOffTop) / HoleSpacing).AsMillimeters());
+        if (length < s_holesOffTop || maxSpaceFromBottom > length - s_holesOffTop || s_holeSpacing == Dimension.Zero) {
+            return Dimension.Zero;
+    }
 
-        var position = Length - (Dimension.FromMillimeters(holeIndex) * HoleSpacing + HolesOffTop);
+        double holeIndex = Math.Ceiling(((length - maxSpaceFromBottom - s_holesOffTop) / s_holeSpacing).AsMillimeters());
+
+        var distanceToHole = (Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop);
+
+        if (distanceToHole >= length) {
+            return Dimension.Zero;
+        }
+
+        var position = length - distanceToHole;
         
         return position;
 
