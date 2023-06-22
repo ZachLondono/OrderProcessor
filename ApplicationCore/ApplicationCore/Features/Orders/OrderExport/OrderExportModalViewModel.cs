@@ -39,9 +39,9 @@ internal class OrderExportModalViewModel {
                                         .Any(p => p.ContainsDoors());
 
         bool containsDBs = order.Products
-                                .Where(p => p is IDrawerBoxContainer)
-                                .Cast<IDrawerBoxContainer>()
-                                .Any(p => p.ContainsDrawerBoxes());
+                                .Where(p => p is IDovetailDrawerBoxContainer)
+                                .Cast<IDovetailDrawerBoxContainer>()
+                                .Any(p => p.ContainsDovetailDrawerBoxes());
 
         bool containsPPs = order.Products
                                 .Where(p => p is IPPProductContainer)

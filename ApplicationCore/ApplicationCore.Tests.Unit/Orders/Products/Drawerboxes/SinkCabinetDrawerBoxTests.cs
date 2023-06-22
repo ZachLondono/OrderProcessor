@@ -38,7 +38,7 @@ public class SinkCabinetDrawerBoxTests {
 
 
         // Act
-        var drawers = cabinet.GetDrawerBoxes(new DBBuilderFactoryFactory().CreateBuilderFactory());
+        var drawers = cabinet.GetDovetailDrawerBoxes(new DBBuilderFactoryFactory().CreateBuilderFactory());
 
         // Assert
         drawers.Sum(d => d.Qty).Should().Be(expectedDrawerCount);
@@ -67,7 +67,7 @@ public class SinkCabinetDrawerBoxTests {
                             .Build();
 
         // Act
-        var drawers = cabinet.GetDrawerBoxes(new DBBuilderFactoryFactory().CreateBuilderFactory());
+        var drawers = cabinet.GetDovetailDrawerBoxes(new DBBuilderFactoryFactory().CreateBuilderFactory());
 
         // Assert
         drawers.Should().NotBeEmpty();
@@ -99,7 +99,7 @@ public class SinkCabinetDrawerBoxTests {
                             .Build();
 
         // Act
-        var drawers = cabinet.GetDrawerBoxes(new DBBuilderFactoryFactory().CreateBuilderFactory(() => {
+        var drawers = cabinet.GetDovetailDrawerBoxes(new DBBuilderFactoryFactory().CreateBuilderFactory(() => {
             DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
                 Dimension.FromMillimeters(533),
                 Dimension.FromMillimeters(457),

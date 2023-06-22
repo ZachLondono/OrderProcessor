@@ -5,7 +5,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
+internal class TrashCabinet : Cabinet, IDoorContainer, IDovetailDrawerBoxContainer {
 
     public Dimension DrawerFaceHeight { get; set; }
     public TrashPulloutConfiguration TrashPulloutConfiguration { get; set; }
@@ -73,9 +73,9 @@ internal class TrashCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
 
     }
 
-    public bool ContainsDrawerBoxes() => true;
+    public bool ContainsDovetailDrawerBoxes() => true;
 
-    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
+    public IEnumerable<DovetailDrawerBox> GetDovetailDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
         var box = getBuilder().WithInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType)
                                 .WithInnerCabinetWidth(InnerWidth, 1, DrawerBoxOptions.SlideType)

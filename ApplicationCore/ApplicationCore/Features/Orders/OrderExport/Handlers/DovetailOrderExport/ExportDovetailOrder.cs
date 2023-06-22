@@ -48,8 +48,8 @@ public class ExportDovetailOrder {
             var customer = await _getCustomerById(command.Order.CustomerId);
 
             var groups = command.Order.Products
-                                .OfType<IDrawerBoxContainer>()
-                                .SelectMany(p => p.GetDrawerBoxes(_factory.CreateDovetailDrawerBoxBuilder))
+                                .OfType<IDovetailDrawerBoxContainer>()
+                                .SelectMany(p => p.GetDovetailDrawerBoxes(_factory.CreateDovetailDrawerBoxBuilder))
                                 .GroupBy(b => b.DrawerBoxOptions.Assembled);
 
             Microsoft.Office.Interop.Excel.Application app = new() {

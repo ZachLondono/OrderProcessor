@@ -6,7 +6,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class DrawerBaseCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
+internal class DrawerBaseCabinet : Cabinet, IDoorContainer, IDovetailDrawerBoxContainer {
 
     // TODO: add option for no doors
 
@@ -76,9 +76,9 @@ internal class DrawerBaseCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer 
 
     }
 
-    public bool ContainsDrawerBoxes() => Drawers.FaceHeights.Any();
+    public bool ContainsDovetailDrawerBoxes() => Drawers.FaceHeights.Any();
 
-    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
+    public IEnumerable<DovetailDrawerBox> GetDovetailDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
         if (!Drawers.FaceHeights.Any()) {
             return Enumerable.Empty<DovetailDrawerBox>();

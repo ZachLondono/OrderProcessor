@@ -6,7 +6,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class BaseCabinet : Cabinet, IDrawerBoxContainer, IDoorContainer {
+internal class BaseCabinet : Cabinet, IDovetailDrawerBoxContainer, IDoorContainer {
 
     public BaseCabinetDoors Doors { get; }
     public ToeType ToeType { get; }
@@ -112,9 +112,9 @@ internal class BaseCabinet : Cabinet, IDrawerBoxContainer, IDoorContainer {
 
     }
 
-    public bool ContainsDrawerBoxes() => Drawers.Any() || Inside.RollOutBoxes.Any();
+    public bool ContainsDovetailDrawerBoxes() => Drawers.Any() || Inside.RollOutBoxes.Any();
 
-    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
+    public IEnumerable<DovetailDrawerBox> GetDovetailDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
         List<DovetailDrawerBox> boxes = new();
 

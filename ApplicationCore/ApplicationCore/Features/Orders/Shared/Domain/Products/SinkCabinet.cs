@@ -5,7 +5,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class SinkCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
+internal class SinkCabinet : Cabinet, IDoorContainer, IDovetailDrawerBoxContainer {
 
     public ToeType ToeType { get; }
     public HingeSide HingeSide { get; }
@@ -94,9 +94,9 @@ internal class SinkCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
 
     }
 
-    public bool ContainsDrawerBoxes() => RollOutBoxes.Positions.Any();
+    public bool ContainsDovetailDrawerBoxes() => RollOutBoxes.Positions.Any();
 
-    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
+    public IEnumerable<DovetailDrawerBox> GetDovetailDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
         if (!RollOutBoxes.Positions.Any()) {
 
