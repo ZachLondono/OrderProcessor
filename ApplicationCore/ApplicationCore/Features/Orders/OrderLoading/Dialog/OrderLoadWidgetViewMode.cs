@@ -87,7 +87,7 @@ internal class OrderLoadWidgetViewModel : IOrderLoadWidgetViewModel {
 
         } catch (Exception ex) {
 
-            AddLoadingMessage(MessageSeverity.Error, $"Exception thrown while trying to order data - {ex.Message}");
+            AddLoadingMessage(MessageSeverity.Error, $"Exception thrown while trying to load order data - {ex.Message}");
             State = State.Error;
 
         }

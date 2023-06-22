@@ -3,5 +3,6 @@
 public enum OrderSourceType {
     AllmoxyWebXML,
     AllmoxyFileXML,
-    DoorOrder
+    DoorOrder,
+    ClosetProCSV
 }
