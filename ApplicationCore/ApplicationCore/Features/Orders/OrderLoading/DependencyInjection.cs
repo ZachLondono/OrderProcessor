@@ -7,6 +7,7 @@ using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllm
 using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyFileOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.XMLValidation;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
+using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData;
 
 namespace ApplicationCore.Features.Orders.OrderLoading;
 
@@ -21,6 +22,7 @@ internal static class DependencyInjection {
         services.AddTransient<IOrderProviderFactory, OrderProviderFactory>();
         services.AddTransient<AllmoxyWebXMLOrderProvider>();
         services.AddTransient<AllmoxyFileXMLOrderProvider>();
+        services.AddTransient<ClosetProCSVOrderProvider>();
         services.AddTransient<AllmoxyClientFactory>();
         services.AddTransient<IXMLValidator, XMLValidator>();
         services.AddTransient<OrderLoadWidgetViewModel>();
