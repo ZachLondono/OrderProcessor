@@ -7,20 +7,21 @@ namespace ApplicationCore.Tests.Unit.Orders.Products.CustomVP;
 public class ClosetHoles {
 
     [Theory]
-    [InlineData(0, 0)]
-    [InlineData(10, 9.5)]
-    [InlineData(20, 9.5)]
-    [InlineData(30, 9.5)]
-    [InlineData(40, 9.5)]
-    [InlineData(50, 41.5)]
-    [InlineData(41.5, 41.5)]
-    public void GetValidHolePositionFromTop_ShouldReturnLowestHoleThatIsNoLowerThanDistanceFromTop(double distanceFromTop, double expectedHolePosition) {
+    [InlineData(2131, 0, 0)]
+    [InlineData(2131, 10, 2121.5)]
+    [InlineData(2131, 20, 2121.5)]
+    [InlineData(2131, 30, 2121.5)]
+    [InlineData(2131, 40, 2121.5)]
+    [InlineData(2131, 50, 2089.5)]
+    [InlineData(2131, 41.5, 2089.5)]
+    public void GetValidHolePositionFromTop_ShouldReturnLowestHoleThatIsNoLowerThanDistanceFromTop(double panelLength, double distanceFromTop, double expectedHolePosition) {
 
         // Arrange
         Dimension distance = Dimension.FromMillimeters(distanceFromTop);
+        Dimension length = Dimension.FromMillimeters(panelLength);
 
         // Act
-        var result = CustomDrilledVerticalPanel.GetValidHolePositionFromTop(distance);
+        var result = CustomDrilledVerticalPanel.GetValidHolePositionFromTop(length, distance);
 
         // Assert
         result.AsMillimeters().Should().Be(expectedHolePosition);

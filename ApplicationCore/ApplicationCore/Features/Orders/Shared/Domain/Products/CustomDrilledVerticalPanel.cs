@@ -166,13 +166,13 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             Dimension stoppedStartHeight = Length - s_holesOffTop - TransitionHoleDimensionFromTop;
             Dimension stoppedEndHeight = TransitionHoleDimensionFromBottom;
             if (stoppedStartHeight > stoppedEndHeight) {
-                tokens.AddRange(CreateTwoRowsOfHoles(GetValidHolePositionFromTop(stoppedStartHeight),
+                tokens.AddRange(CreateTwoRowsOfHoles(GetValidHolePositionFromTop(Length, stoppedStartHeight),
                                                     stoppedEndHeight,
                                                     s_stoppedDepth));
             } 
         } else {
             if (HoleDimensionFromTop > Dimension.Zero) {
-                Dimension transEnd = GetValidHolePositionFromTop(TransitionHoleDimensionFromTop);
+                Dimension transEnd = GetValidHolePositionFromTop(Length, TransitionHoleDimensionFromTop);
                 Dimension start = Length - s_holesOffTop;
                 if (transEnd > Dimension.Zero) {
                     start =  transEnd - s_holeSpacing;
@@ -284,7 +284,8 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
     }
 
-    public static Dimension GetValidHolePositionFromTop(Dimension maxSpaceFromTop) {
+    // Returns hole position relative to the bottom of the panel 
+    public static Dimension GetValidHolePositionFromTop(Dimension length, Dimension maxSpaceFromTop) {
 
         if (maxSpaceFromTop < s_holesOffTop || s_holeSpacing == Dimension.Zero) {
             return Dimension.Zero;
@@ -292,10 +293,17 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
         double holeIndex = Math.Floor(((maxSpaceFromTop - s_holesOffTop) / s_holeSpacing).AsMillimeters());
 
-        return (Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop);
+        var distanceFromTop = Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop;
+
+        if (distanceFromTop >= length) {
+            return Dimension.Zero;
+        }
+
+        return length - distanceFromTop;
 
     }
 
+    // Returns hole position relative to the bottom of the panel
     public static Dimension GetValidHolePositionFromBottom(Dimension length, Dimension maxSpaceFromBottom) {
 
         if (length < s_holesOffTop || maxSpaceFromBottom > length - s_holesOffTop || s_holeSpacing == Dimension.Zero) {
@@ -304,13 +312,13 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
         double holeIndex = Math.Ceiling(((length - maxSpaceFromBottom - s_holesOffTop) / s_holeSpacing).AsMillimeters());
 
-        var distanceToHole = (Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop);
+        var distanceFromTop = (Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop);
 
-        if (distanceToHole >= length) {
+        if (distanceFromTop >= length) {
             return Dimension.Zero;
         }
 
-        var position = length - distanceToHole;
+        var position = length - distanceFromTop;
         
         return position;
 
