@@ -4,7 +4,7 @@ namespace ApplicationCore.Features.Orders.Shared.Domain;
 
 internal interface ICNCPartContainer {
 
-    IEnumerable<Part> GetParts();
+    IEnumerable<Part> GetCNCParts();
 
     bool ContainsCNCParts();
 

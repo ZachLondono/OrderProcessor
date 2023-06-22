@@ -162,7 +162,7 @@ internal class ExportService {
         var parts = order.Products
             .Where(p => p is ICNCPartContainer)
             .Cast<ICNCPartContainer>()
-            .SelectMany(p => p.GetParts())
+            .SelectMany(p => p.GetCNCParts())
             .ToArray();
 
         if (!parts.Any()) {

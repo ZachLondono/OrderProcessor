@@ -147,7 +147,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
     public bool ContainsCNCParts() => _requiresCustomDrilling;
 
-    public IEnumerable<Part> GetParts() {
+    public IEnumerable<Part> GetCNCParts() {
 
         if (!_requiresCustomDrilling) {
             return Enumerable.Empty<Part>();
