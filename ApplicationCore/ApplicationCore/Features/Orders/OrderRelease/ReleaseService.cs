@@ -13,6 +13,8 @@ using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using MimeKit;
 using QuestPDF.Fluent;
+using ApplicationCore.Shared.Settings;
+using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -30,8 +32,9 @@ public class ReleaseService {
     private readonly CNCReleaseDecoratorFactory _cncReleaseDecoratorFactory;
     private readonly IJobSummaryDecorator _jobSummaryDecorator;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
+    private readonly Email _emailSettings;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, IInvoiceDecorator invoiceDecorator, IPackingListDecorator packingListDecorator, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, IJobSummaryDecorator jobSummaryDecorator, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, IInvoiceDecorator invoiceDecorator, IPackingListDecorator packingListDecorator, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, IJobSummaryDecorator jobSummaryDecorator, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IOptions<Email> emailOptions) {
         _fileReader = fileReader;
         _invoiceDecorator = invoiceDecorator;
         _packingListDecorator = packingListDecorator;
@@ -39,6 +42,7 @@ public class ReleaseService {
         _jobSummaryDecorator = jobSummaryDecorator;
         _logger = logger;
         _getCustomerByIdAsync = getCustomerByIdAsync;
+        _emailSettings = emailOptions.Value;
     }
 
     public async Task Release(Order order, ReleaseConfiguration configuration) {
@@ -125,7 +129,7 @@ public class ReleaseService {
             OnProgressReport?.Invoke("Sending release email");
             try {
                 string body = GenerateEmailBody(configuration.IncludeSummaryInEmailBody, releases);
-                await SendEmailAsync(recipients, $"RELEASED: {order.Number} {customerName}", body, new string[] { filePaths.First() }, configuration);
+                await SendEmailAsync(recipients, $"RELEASED: {order.Number} {customerName}", body, new string[] { filePaths.First() });
             } catch (Exception ex) {
                 OnError?.Invoke($"Could not send email - '{ex.Message}'");
                 _logger.LogError(ex, "Exception thrown while trying to send release email");
@@ -247,7 +251,7 @@ public class ReleaseService {
         if (filePaths.Any() && configuration.SendInvoiceEmail && configuration.InvoiceEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending invoice email");
             try {
-                await SendEmailAsync(recipients, $"INVOICE: {order.Number} {customerName}", "Please see attached invoice", new string[] { filePaths.First() }, configuration);
+                await SendEmailAsync(recipients, $"INVOICE: {order.Number} {customerName}", "Please see attached invoice", new string[] { filePaths.First() });
             } catch (Exception ex) {
                 OnError?.Invoke($"Could not send invoice email - '{ex.Message}'");
                 _logger.LogError(ex, "Exception thrown while trying to send invoice email");
@@ -265,7 +269,7 @@ public class ReleaseService {
 
     }
 
-    private async Task SendEmailAsync(string recipients, string subject, string body, IEnumerable<string> attachments, ReleaseConfiguration configuration) {
+    private async Task SendEmailAsync(string recipients, string subject, string body, IEnumerable<string> attachments) {
 
         var message = new MimeMessage();
 
@@ -278,12 +282,12 @@ public class ReleaseService {
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(configuration.EmailSenderEmail)) {
+        if (string.IsNullOrWhiteSpace(_emailSettings.SenderEmail)) {
             OnError?.Invoke("No email sender is configured");
             return;
         }
 
-        message.From.Add(new MailboxAddress(configuration.EmailSenderName, configuration.EmailSenderEmail));
+        message.From.Add(new MailboxAddress(_emailSettings.SenderName, _emailSettings.SenderEmail));
         message.Subject = subject;
 
         var builder = new BodyBuilder {
@@ -295,8 +299,8 @@ public class ReleaseService {
         message.Body = builder.ToMessageBody();
 
         using var client = new SmtpClient();
-        client.Connect(configuration.EmailServerHost, configuration.EmailServerPort, SecureSocketOptions.Auto);
-        client.Authenticate(configuration.EmailSenderEmail, UserDataProtection.Unprotect(configuration.EmailSenderPassword));
+        client.Connect(_emailSettings.Host, _emailSettings.Port, SecureSocketOptions.Auto);
+        client.Authenticate(_emailSettings.SenderEmail, UserDataProtection.Unprotect(_emailSettings.ProtectedPassword));
 
         client.MessageSent += (_, _) => OnActionComplete?.Invoke("Email sent");
 

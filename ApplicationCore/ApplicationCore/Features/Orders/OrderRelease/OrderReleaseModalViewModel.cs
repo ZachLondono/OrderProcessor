@@ -86,10 +86,6 @@ public class OrderReleaseModalViewModel {
             InvoiceFileName = $"{order.Number} INVOICE",
             InvoiceOutputDirectory = invoiceDirectory,
 
-            EmailSenderName = vendor.EmailSender.Name,
-            EmailSenderEmail = vendor.EmailSender.Email,
-            EmailSenderPassword = vendor.EmailSender.ProtectedPassword
-
         };
 
         IsLoadingConfiguration = false;
