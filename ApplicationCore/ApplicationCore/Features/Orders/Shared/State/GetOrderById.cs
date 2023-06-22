@@ -42,7 +42,15 @@ public class GetOrderById {
             var itemData = await connection.QueryAsync<AdditionalItemDataModel>(AdditionalItemDataModel.GetQueryByOrderId(), request);
             var items = itemData.Select(i => i.ToDomainModel());
 
-            var products = await GetProducts(request.OrderId, connection);
+            IEnumerable<IProduct> products;
+            try {
+                products = await GetProducts(request.OrderId, connection);
+            } catch (Exception ex) {
+                return Response<Order>.Error(new() {
+                    Title = "Failed to load products",
+                    Details = ex.Message
+                });
+            }
 
             var order = orderData.ToDomainModel(request.OrderId, products, items);
 
