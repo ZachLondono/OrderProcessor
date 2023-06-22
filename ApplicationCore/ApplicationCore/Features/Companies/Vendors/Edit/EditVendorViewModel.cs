@@ -82,7 +82,7 @@ internal class EditVendorViewModel {
         Error = null;
         IsSaving = true;
 
-        byte[] logo = Array.Empty<byte>();
+        byte[] logo = Model.Logo;
         try {
 
             if (File.Exists(Model.LogoFile)) {
