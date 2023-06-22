@@ -60,10 +60,7 @@ internal class EditVendorViewModel {
                 LogoFile = string.Empty,
                 Address = vendor.Address,
                 ExportProfile = vendor.ExportProfile,
-                ReleaseProfile = vendor.ReleaseProfile,
-                EmailSenderName = vendor.EmailSender.Name,
-                EmailSenderEmail = vendor.EmailSender.Email,
-                EmailSenderPassword = vendor.EmailSender.GetUnprotectedPassword(),
+                ReleaseProfile = vendor.ReleaseProfile
             },
             error => null
         );
@@ -104,7 +101,7 @@ internal class EditVendorViewModel {
 
         try {
 
-            var vendor = new Vendor(Model.Id, Model.Name ?? "", Model.Address, Model.Phone, logo, Model.ExportProfile, Model.ReleaseProfile, Model.GetEmailSender());
+            var vendor = new Vendor(Model.Id, Model.Name ?? "", Model.Address, Model.Phone, logo, Model.ExportProfile, Model.ReleaseProfile);
 
             var response = await _bus.Send(new UpdateVendor.Command(vendor));
 

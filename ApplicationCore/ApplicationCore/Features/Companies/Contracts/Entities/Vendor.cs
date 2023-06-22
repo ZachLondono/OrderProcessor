@@ -11,9 +11,8 @@ public class Vendor {
     public byte[] Logo { get; set; } = Array.Empty<byte>();
     public ExportProfile ExportProfile { get; set; }
     public ReleaseProfile ReleaseProfile { get; set; }
-    public EmailSender EmailSender { get; set; }
 
-    internal Vendor(Guid id, string name, Address address, string phone, byte[] logo, ExportProfile exportProfile, ReleaseProfile releaseProfile, EmailSender emailSender) {
+    internal Vendor(Guid id, string name, Address address, string phone, byte[] logo, ExportProfile exportProfile, ReleaseProfile releaseProfile) {
         Id = id;
         Name = name;
         Address = address;
@@ -21,10 +20,9 @@ public class Vendor {
         Logo = logo;
         ExportProfile = exportProfile;
         ReleaseProfile = releaseProfile;
-        EmailSender = emailSender;
     }
 
-    public static Vendor Create(string name, Address address, string phone, byte[] logo, ExportProfile exportProfile, ReleaseProfile releaseProfile, EmailSender emailSender)
-        => new(Guid.NewGuid(), name, address, phone, logo, exportProfile, releaseProfile, emailSender);
+    public static Vendor Create(string name, Address address, string phone, byte[] logo, ExportProfile exportProfile, ReleaseProfile releaseProfile)
+        => new(Guid.NewGuid(), name, address, phone, logo, exportProfile, releaseProfile);
 
 }

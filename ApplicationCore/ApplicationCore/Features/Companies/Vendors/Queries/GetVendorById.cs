@@ -45,10 +45,6 @@ internal class GetVendorById {
                     vendors.release_send_email AS ReleaseSendEmail,
                     vendors.release_email_recipients AS ReleaseEmailRecipients,
 
-                    vendors.email_sender_name AS EmailSenderName,
-                    vendors.email_sender_email AS EmailSenderEmail,
-                    vendors.email_sender_password AS EmailSenderPassword,
-
                     addresses.line1 AS AddrLine1,
                     addresses.line2 AS AddrLine2,
                     addresses.line3 AS AddrLine3,
@@ -106,10 +102,6 @@ internal class GetVendorById {
             public string ReleaseEmailRecipients { get; set; } = string.Empty;
             public string ReleaseOutputDirectory { get; set; } = string.Empty;
 
-            public string EmailSenderName { get; set; } = string.Empty;
-            public string EmailSenderEmail { get; set; } = string.Empty;
-            public string EmailSenderPassword { get; set; } = string.Empty;
-
             public Vendor AsVendor() {
 
                 var address = new Address() {
@@ -140,9 +132,7 @@ internal class GetVendorById {
                     InvoiceEmailRecipients = InvoiceEmailRecipients
                 };
 
-                var emailSender = new EmailSender(EmailSenderName, EmailSenderEmail, EmailSenderPassword);
-
-                return new Vendor(Id, Name, address, Phone, Logo, exportProfile, releaseProfile, emailSender);
+                return new Vendor(Id, Name, address, Phone, Logo, exportProfile, releaseProfile);
 
             }
 
