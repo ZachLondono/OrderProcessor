@@ -5,8 +5,10 @@ using ApplicationCore.Features.Orders.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Shared.Services;
+using ApplicationCore.Shared.Settings;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 
 namespace ApplicationCore.Tests.Unit.Orders;
@@ -23,6 +25,7 @@ public class ReleaseServiceTests {
     private readonly IJobSummaryDecorator _jobSummaryDecorator;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
+    private readonly IOptions<Email> _emailOptions;
 
     public ReleaseServiceTests() {
         _fileReader = new FileReader();
@@ -34,8 +37,9 @@ public class ReleaseServiceTests {
         var sp = Substitute.For<IServiceProvider>();
         _cncReleaseDecoratorFactory = new CNCReleaseDecoratorFactory(sp, _getCustomerByIdAsync, _getVendorByIdAsync);
         _jobSummaryDecorator = Substitute.For<IJobSummaryDecorator>();
+        _emailOptions = Substitute.For<IOptions<Email>>();
 
-        _sut = new ReleaseService(_logger, _fileReader, _invoiceDecorator, _packingListDecorator, _cncReleaseDecoratorFactory, _jobSummaryDecorator, _getCustomerByIdAsync);
+        _sut = new ReleaseService(_logger, _fileReader, _invoiceDecorator, _packingListDecorator, _cncReleaseDecoratorFactory, _jobSummaryDecorator, _getCustomerByIdAsync, _emailOptions);
     }
 
     [Fact]
