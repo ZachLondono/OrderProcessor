@@ -33,6 +33,9 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     public Dimension BottomNotchDepth { get; }
     public Dimension BottomNotchHeight { get; }
 
+    // TODO: Implement this 
+    public bool EdgeBandTop { get; } = false;
+
     private bool _requiresCustomDrilling;
     private static readonly Dimension s_holeSpacing = Dimension.FromMillimeters(32);
     private static readonly Dimension s_holesOffEdge = Dimension.FromMillimeters(37);
@@ -225,6 +228,9 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             });
         }
 
+        var edgeBanding = new EdgeBanding(EdgeBandingColor, "PVC");
+        var topEdgeBanding = EdgeBandTop ? new EdgeBanding(EdgeBandingColor, "PVC") : new("", "");
+
         var part = new Part() {
             Width = Width.AsMillimeters(),
             Length = Length.AsMillimeters(),
@@ -238,8 +244,11 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
                 IsRotated = true,
                 IsMirrored = DrillingType == ClosetVerticalDrillingType.FinishedRight,
                 Tokens = tokens.ToArray()
-            }
+            },
+            Width1Banding = edgeBanding,
+            Length1Banding = topEdgeBanding
         };
+
 
         return new Part[] { part };
 
