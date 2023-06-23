@@ -1,14 +1,11 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Notifications;
-using ApplicationCore.Shared.Domain;
+﻿using ApplicationCore.Shared.Domain;
 using CADCodeProxy.Enums;
 using CADCodeProxy.Machining;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
-public class DoweledDrawerBox : ICNCPartContainer {
+public class DoweledDrawerBox {
 
-    public int Qty { get; }
-    public int ProductNumber { get; }
     public Dimension Height { get; }
     public Dimension Width { get; }
     public Dimension Depth { get; }
@@ -17,15 +14,11 @@ public class DoweledDrawerBox : ICNCPartContainer {
     public DoweledDrawerBoxMaterial SideMaterial { get; }
     public DoweledDrawerBoxMaterial BottomMaterial { get; }
     public bool MachineThicknessForUMSlides { get; }
-    public bool DrillBackForHooks { get; }
-    public bool DrillFrontForDrawerFace { get; }
     public Dimension FrontBackHeightAdjustment { get; }
 
-    public DoweledDrawerBox(int qty, int productNumber, Dimension height, Dimension width, Dimension depth,
+    public DoweledDrawerBox(Dimension height, Dimension width, Dimension depth,
                             DoweledDrawerBoxMaterial front, DoweledDrawerBoxMaterial back, DoweledDrawerBoxMaterial sides, DoweledDrawerBoxMaterial bottom,
-                            bool machineForUM, bool drillBacksForHooks, bool drillFrontsForDrawerFace, Dimension frontBackHeightAdjustment) {
-        Qty = qty;
-        ProductNumber = productNumber;
+                            bool machineForUM, Dimension frontBackHeightAdjustment) {
         Height = height;
         Width = width;
         Depth = depth;
@@ -34,24 +27,23 @@ public class DoweledDrawerBox : ICNCPartContainer {
         SideMaterial = sides;
         BottomMaterial = bottom;
         MachineThicknessForUMSlides = machineForUM;
-        DrillBackForHooks = drillBacksForHooks;
-        DrillFrontForDrawerFace = drillFrontsForDrawerFace;
         FrontBackHeightAdjustment = frontBackHeightAdjustment;
     }
 
     public bool ContainsCNCParts() => true; 
 
-    public IEnumerable<Part> GetCNCParts() {
+    public IEnumerable<Part> GetCNCParts(int qty, int productNumber) {
+        // TODO: maybe pass in the construction object to this method
         // TODO: make the bellow methods static, maybe
-        yield return GetFrontPart(Construction);
-        yield return GetBackPart(Construction);
-        var (left, right) = GetSideParts(Construction);
+        yield return GetFrontPart(Construction, qty, productNumber);
+        yield return GetBackPart(Construction, qty, productNumber);
+        var (left, right) = GetSideParts(Construction, qty, productNumber);
         yield return left;
         yield return right;
-        yield return GetBottomPart(Construction);
+        yield return GetBottomPart(Construction, qty, productNumber);
     }
 
-    public Part GetFrontPart(DoweledDrawerBoxConstruction construction) {
+    public Part GetFrontPart(DoweledDrawerBoxConstruction construction, int qty, int productNumber) {
 
         Dimension frontLength = Width - 2 * SideMaterial.Thickness;
 
@@ -80,7 +72,7 @@ public class DoweledDrawerBox : ICNCPartContainer {
         }
 
         return new Part() {
-            Qty = Qty,
+            Qty = qty,
             Width = frontLength.AsMillimeters(),
             Length = (Height - FrontBackHeightAdjustment).AsMillimeters(),
             Thickness = FrontMaterial.Thickness.AsMillimeters(),
@@ -88,14 +80,14 @@ public class DoweledDrawerBox : ICNCPartContainer {
             IsGrained = FrontMaterial.IsGrained,
             Name = "Front",
             PrimaryFace = new() {
-                ProgramName = $"Front{ProductNumber}",
+                ProgramName = $"Front{productNumber}",
                 Tokens = tokens.ToArray()
             }
         };
 
     }
 
-    public Part GetBackPart(DoweledDrawerBoxConstruction construction) {
+    public Part GetBackPart(DoweledDrawerBoxConstruction construction, int qty, int productNumber) {
 
         Dimension backLength = Width - 2 * SideMaterial.Thickness;
 
@@ -109,7 +101,7 @@ public class DoweledDrawerBox : ICNCPartContainer {
         }
 
         return new Part() {
-            Qty = Qty,
+            Qty = qty,
             Width = backLength.AsMillimeters(),
             Length = (Height - FrontBackHeightAdjustment).AsMillimeters(),
             Thickness = BackMaterial.Thickness.AsMillimeters(),
@@ -117,7 +109,7 @@ public class DoweledDrawerBox : ICNCPartContainer {
             IsGrained = BackMaterial.IsGrained,
             Name = "Back",
             PrimaryFace = new() {
-                ProgramName = $"Back{ProductNumber}",
+                ProgramName = $"Back{productNumber}",
                 Tokens = tokens.ToArray()
             }
         };
@@ -138,7 +130,7 @@ public class DoweledDrawerBox : ICNCPartContainer {
 
     }
     
-    public (Part Left, Part Right) GetSideParts(DoweledDrawerBoxConstruction construction) {
+    public (Part Left, Part Right) GetSideParts(DoweledDrawerBoxConstruction construction, int qty, int productNumber) {
 
         Dimension dadoLengthAdj = (FrontMaterial.Thickness < BackMaterial.Thickness ? FrontMaterial : BackMaterial).Thickness - construction.BottomDadoDepth;
 
@@ -161,7 +153,7 @@ public class DoweledDrawerBox : ICNCPartContainer {
         }
         
         var left = new Part() {
-            Qty = Qty,
+            Qty = qty,
             Width = Depth.AsMillimeters(),
             Length = Height.AsMillimeters(),
             Thickness = SideMaterial.Thickness.AsMillimeters(),
@@ -169,14 +161,14 @@ public class DoweledDrawerBox : ICNCPartContainer {
             IsGrained = SideMaterial.IsGrained,
             Name = "Left",
             PrimaryFace = new() {
-                ProgramName = $"Left{ProductNumber}",
+                ProgramName = $"Left{productNumber}",
                 IsMirrored = true,
                 Tokens = tokens.ToArray()
             }
         };
 
         var right = new Part() {
-            Qty = Qty,
+            Qty = qty,
             Width = Depth.AsMillimeters(),
             Length = Height.AsMillimeters(),
             Thickness = SideMaterial.Thickness.AsMillimeters(),
@@ -184,7 +176,7 @@ public class DoweledDrawerBox : ICNCPartContainer {
             IsGrained = SideMaterial.IsGrained,
             Name = "Right",
             PrimaryFace = new() {
-                ProgramName = $"Right{ProductNumber}",
+                ProgramName = $"Right{productNumber}",
                 Tokens = tokens.ToArray()
             }
         };
@@ -259,9 +251,9 @@ public class DoweledDrawerBox : ICNCPartContainer {
 
     }
 
-    public Part GetBottomPart(DoweledDrawerBoxConstruction construction) {
+    public Part GetBottomPart(DoweledDrawerBoxConstruction construction, int qty, int productNumber) {
         return new Part() {
-            Qty = Qty,
+            Qty = qty,
             Width = (Width - 2 * SideMaterial.Thickness - construction.BottomUndersize).AsMillimeters(),
             Length = (Depth - FrontMaterial.Thickness - BackMaterial.Thickness - construction.BottomUndersize).AsMillimeters(),
             Thickness = BottomMaterial.Thickness.AsMillimeters(),
@@ -269,7 +261,7 @@ public class DoweledDrawerBox : ICNCPartContainer {
             IsGrained = BottomMaterial.IsGrained,
             Name = "Bottom",
             PrimaryFace = new() {
-                ProgramName = $"Bottom{ProductNumber}",
+                ProgramName = $"Bottom{productNumber}",
                 Tokens = Array.Empty<IToken>()
             }
         };

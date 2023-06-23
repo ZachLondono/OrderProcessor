@@ -6,14 +6,16 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 public class DoweledDrawerBoxProduct : DoweledDrawerBox, IProduct {
 
     public Guid Id { get; } 
-
+    public int Qty { get; }
+    public int ProductNumber { get; }
     public decimal UnitPrice { get; }
-
     public string Room { get; set; }
 
-    public DoweledDrawerBoxProduct(Guid id, decimal unitPrice, int qty, string room, int productNumber, Dimension height, Dimension width, Dimension depth, DoweledDrawerBoxMaterial front, DoweledDrawerBoxMaterial back, DoweledDrawerBoxMaterial sides, DoweledDrawerBoxMaterial bottom, bool machineThicknessForUMSlides, bool drillBacksForHooks, bool drillFrontsForDrawerFace, Dimension frontBackHeightAdjustment)
-        : base(qty, productNumber, height, width, depth, front, back, sides, bottom, machineThicknessForUMSlides, drillBacksForHooks, drillFrontsForDrawerFace, frontBackHeightAdjustment) {
+    public DoweledDrawerBoxProduct(Guid id, decimal unitPrice, int qty, string room, int productNumber, Dimension height, Dimension width, Dimension depth, DoweledDrawerBoxMaterial front, DoweledDrawerBoxMaterial back, DoweledDrawerBoxMaterial sides, DoweledDrawerBoxMaterial bottom, bool machineThicknessForUMSlides, Dimension frontBackHeightAdjustment)
+        : base(height, width, depth, front, back, sides, bottom, machineThicknessForUMSlides, frontBackHeightAdjustment) {
         Id = id;
+        Qty = qty;
+        ProductNumber = productNumber; 
         UnitPrice = unitPrice;
         Room = room;
     }
