@@ -121,6 +121,10 @@ public readonly struct Dimension : IComparable {
 
     public static Dimension Pow(Dimension dim1, Dimension dim2) => FromMillimeters(Math.Pow(dim1.AsMillimeters(), dim2.AsMillimeters()));
 
+    public static Dimension CeilingMM(Dimension val) => FromMillimeters(Math.Ceiling(val.AsMillimeters()));
+
+    public static Dimension CeilingIN(Dimension val) => FromInches(Math.Ceiling(val.AsInches()));
+
     public override bool Equals(object? obj) {
 
         if (obj is not Dimension dim) {
