@@ -107,6 +107,21 @@ BEGIN
 	DELETE FROM drawer_box_configs WHERE id = OLD.product_id;
 END;
 
+CREATE TABLE doweled_drawer_products (
+	product_id BLOB NOT NULL,
+	height REAL NOT NULL,
+	width REAL NOT NULL,
+	depth REAL NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+	FOREIGN KEY (product_id) REFERENCES doweled_drawer_box_configs(id) ON DELETE CASCADE
+);
+
+CREATE TRIGGER remove_doweled_drawer_config AFTER DELETE ON doweled_drawer_products
+BEGIN
+	DELETE FROM doweled_drawer_box_configs WHERE id = OLD.product_id; 
+END;
+
 CREATE TABLE closet_parts (
 	product_id BLOB NOT NULL,
 	sku TEXT NOT NULL,
@@ -178,6 +193,7 @@ BEGIN
 	DELETE FROM mdf_door_configs WHERE id = OLD.mdf_config_id;
 END;
 
+-- TODO: rename to a more specific `dovetail_drawer_box_configs`
 CREATE TABLE drawer_box_configs (
 	id BLOB NOT NULL,
 	front_material TEXT NOT NULL,
@@ -192,6 +208,25 @@ CREATE TABLE drawer_box_configs (
 	scoop_front INTEGER NOT NULL,
 	face_mounting_holes INTEGER NOT NULL,
 	assembled INTEGER NOT NULL,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE doweled_drawer_box_configs (
+	id BLOB NOT NULL,
+	front_mat_name TEXT NOT NULL,
+	front_mat_thickness REAL NOT NULL,
+	front_mat_graining INTEGER NOT NULL,
+	back_mat_name TEXT NOT NULL,
+	back_mat_thickness REAL NOT NULL,
+	back_mat_graining INTEGER NOT NULL,
+	side_mat_name TEXT NOT NULL,
+	side_mat_thickness REAL NOT NULL,
+	side_mat_graining INTEGER NOT NULL,
+	bottom_mat_name TEXT NOT NULL,
+	bottom_mat_thickness REAL NOT NULL,
+	bottom_mat_graining INTEGER NOT NULL,
+	machine_thickness_for_um INTEGER NOT NULL,
+	frontback_height_adjustment REAL NOT NULL,
 	PRIMARY KEY (id)
 );
 
