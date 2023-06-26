@@ -3,7 +3,7 @@ using Dapper;
 using Microsoft.Data.Sqlite;
 using System.Data;
 
-namespace ApplicationCore.Tests.Unit.Orders.CreatingNewOrder;
+namespace ApplicationCore.Tests.Unit.Orders.Persistence;
 
 internal class TestOrderingConnectionFactory : IOrderingDbConnectionFactory {
 
