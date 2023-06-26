@@ -1,9 +1,10 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
+using CADCodeProxy.Machining;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-public class DoweledDrawerBoxProduct : DoweledDrawerBox, IProduct {
+public class DoweledDrawerBoxProduct : DoweledDrawerBox, IProduct, ICNCPartContainer {
 
     public Guid Id { get; } 
     public int Qty { get; }
@@ -24,5 +25,7 @@ public class DoweledDrawerBoxProduct : DoweledDrawerBox, IProduct {
 
     // TODO: maybe add option to include slides, clips etc.
     public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
+
+    public IEnumerable<Part> GetCNCParts() => GetCNCParts(Qty, ProductNumber);
 
 }
