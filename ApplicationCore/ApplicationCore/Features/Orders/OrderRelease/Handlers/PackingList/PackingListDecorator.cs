@@ -60,8 +60,12 @@ internal class PackingListDecorator : IPackingListDecorator {
                         ComposeDoorTable(column.Item(), _packingList.Doors);
                     }
 
-                    if (_packingList.DrawerBoxes.Any()) {
-                        ComposeDrawerBoxTable(column.Item(), _packingList.DrawerBoxes);
+                    if (_packingList.DovetailDrawerBoxes.Any()) {
+                        ComposeDovetailDrawerBoxTable(column.Item(), _packingList.DovetailDrawerBoxes);
+                    }
+
+                    if (_packingList.DoweledDrawerBoxes.Any()) {
+                        ComposeDoweledDrawerBoxTable(column.Item(), _packingList.DoweledDrawerBoxes);
                     }
 
                 });
@@ -372,7 +376,7 @@ internal class PackingListDecorator : IPackingListDecorator {
 
     }
 
-    public static void ComposeDrawerBoxTable(IContainer container, IEnumerable<DrawerBoxItem> items) {
+    private static void ComposeDoweledDrawerBoxTable(IContainer container, IEnumerable<DoweledDrawerBoxItem> items) {
 
         var defaultCellStyle = (IContainer cell)
             => cell.Border(1)
@@ -395,7 +399,80 @@ internal class PackingListDecorator : IPackingListDecorator {
             col.Item()
                 .PaddingTop(10)
                 .PaddingLeft(10)
-                .Text($"Drawer Boxes ({items.Sum(i => i.Qty)})")
+                .Text($"Doweled Drawer Boxes ({items.Sum(i => i.Qty)})")
+                .FontSize(16)
+                .Bold()
+                .Italic();
+
+            col.Item()
+                .DefaultTextStyle(x => x.FontSize(10))
+                .Table(table => {
+
+                    table.ColumnsDefinition(column => {
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(200);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                    });
+
+
+                    table.Header(header => {
+
+                        header.Cell().Element(headerCellStyle).Text("#");
+                        header.Cell().Element(headerCellStyle).Text("Qty");
+                        header.Cell().Element(headerCellStyle).Text("Description");
+                        header.Cell().Element(headerCellStyle).Text("Width");
+                        header.Cell().Element(headerCellStyle).Text("Height");
+                        header.Cell().Element(headerCellStyle).Text("Depth");
+
+                    });
+
+
+                    foreach (var item in items) {
+
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description);
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
+
+                    }
+
+                });
+
+        });
+
+    }
+
+
+
+    public static void ComposeDovetailDrawerBoxTable(IContainer container, IEnumerable<DovetailDrawerBoxItem> items) {
+
+        var defaultCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .AlignMiddle()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3);
+
+        var headerCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .Background(Colors.Grey.Lighten3)
+                    .AlignCenter()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3)
+                    .DefaultTextStyle(x => x.Bold());
+
+        container.Column(col => {
+
+            col.Item()
+                .PaddingTop(10)
+                .PaddingLeft(10)
+                .Text($"Dovetail Drawer Boxes ({items.Sum(i => i.Qty)})")
                 .FontSize(16)
                 .Bold()
                 .Italic();
@@ -524,9 +601,19 @@ internal class PackingListDecorator : IPackingListDecorator {
                                 Width = cab.Width,
                                 Description = cab.GetDescription()
                             }).ToList(),
-            DrawerBoxes = order.Products
+            DovetailDrawerBoxes = order.Products
                             .OfType<DovetailDrawerBoxProduct>()
-                            .Select(cab => new DrawerBoxItem() {
+                            .Select(cab => new DovetailDrawerBoxItem() {
+                                Line = cab.ProductNumber,
+                                Qty = cab.Qty,
+                                Height = cab.Height,
+                                Width = cab.Width,
+                                Depth = cab.Depth,
+                                Description = cab.GetDescription()
+                            }).ToList(),
+            DoweledDrawerBoxes = order.Products
+                            .OfType<DoweledDrawerBoxProduct>()
+                            .Select(cab => new DoweledDrawerBoxItem() {
                                 Line = cab.ProductNumber,
                                 Qty = cab.Qty,
                                 Height = cab.Height,

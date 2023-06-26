@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.PackingList;
 
-internal class DovetailDrawerBoxItem {
+internal class DoweledDrawerBoxItem {
 
     public int Line { get; set; }
 
@@ -17,4 +17,5 @@ internal class DovetailDrawerBoxItem {
     public Dimension Depth { get; set; }
 
 }
+
 

@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 
-internal class DrawerBoxGroup {
+internal class DovetailDrawerBoxGroup {
 
     public string Room { get; set; } = string.Empty;
     public string Material { get; set; } = string.Empty;
@@ -10,9 +10,9 @@ internal class DrawerBoxGroup {
 
     public List<DrawerBoxItem> Items { get; set; } = new();
 
-    public class DrawerBoxGroupComparer : IEqualityComparer<DrawerBoxGroup> {
+    public class DrawerBoxGroupComparer : IEqualityComparer<DovetailDrawerBoxGroup> {
 
-        bool IEqualityComparer<DrawerBoxGroup>.Equals(DrawerBoxGroup? x, DrawerBoxGroup? y) {
+        bool IEqualityComparer<DovetailDrawerBoxGroup>.Equals(DovetailDrawerBoxGroup? x, DovetailDrawerBoxGroup? y) {
 
             if (x is null && y is null) return true;
             if (x is null || y is null) return false;
@@ -25,7 +25,7 @@ internal class DrawerBoxGroup {
 
         }
 
-        int IEqualityComparer<DrawerBoxGroup>.GetHashCode(DrawerBoxGroup obj) {
+        int IEqualityComparer<DovetailDrawerBoxGroup>.GetHashCode(DovetailDrawerBoxGroup obj) {
             return HashCode.Combine(obj.Room, obj.Material, obj.BottomMaterial, obj.Clips, obj.Notch);
         }
 

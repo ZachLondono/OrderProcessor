@@ -12,7 +12,9 @@ internal record PackingList {
 
     public Company Vendor { get; set; } = new();
 
-    public List<DrawerBoxItem> DrawerBoxes { get; set; } = new();
+    public List<DovetailDrawerBoxItem> DovetailDrawerBoxes { get; set; } = new();
+
+    public List<DoweledDrawerBoxItem> DoweledDrawerBoxes { get; set; } = new();
 
     public List<DoorItem> Doors { get; set; } = new();
 
