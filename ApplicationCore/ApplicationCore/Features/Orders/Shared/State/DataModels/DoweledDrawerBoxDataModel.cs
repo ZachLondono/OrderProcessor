@@ -55,6 +55,9 @@ internal class DoweledDrawerBoxDataModel : ProductDataModelBase, IProductDataMod
 
         FROM doweled_drawer_products AS db_product
 
+            JOIN products ON db_product.product_id = products.id
+            JOIN doweled_drawer_box_configs AS config ON config.id = products.id
+
         WHERE products.order_id = @OrderId;
         """;
 
