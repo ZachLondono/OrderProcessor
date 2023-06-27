@@ -183,7 +183,7 @@ public class ReleaseService {
 
             string tableBody = "";
             foreach (var materialGroup in usedMaterials) {
-                tableBody += 
+                tableBody +=
                     $"""
                             <tr style="border: 1px solid black; border-collapse: collapse;">
                                 <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{materialGroup.Count()}</td>
@@ -203,7 +203,7 @@ public class ReleaseService {
                 """;
 
             body += tableHeader + tableBody + tableFooter;
-           
+
         }
 
         return body;

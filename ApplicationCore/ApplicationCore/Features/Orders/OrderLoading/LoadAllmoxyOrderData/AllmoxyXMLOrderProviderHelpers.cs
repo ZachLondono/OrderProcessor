@@ -2,7 +2,7 @@
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Shared.Domain;
 
-namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData; 
+namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData;
 
 internal static class AllmoxyXMLOrderProviderHelpers {
 

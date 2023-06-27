@@ -68,7 +68,7 @@ public partial class OrderTests {
 
         Order order = new OrderBuilder() {
             Products = new() {
-                product 
+                product
             }
         }.Build();
 
@@ -90,7 +90,7 @@ public partial class OrderTests {
         result.OnError(e => Assert.Fail($"Handler returned error {e}"));
         foundOrder.Should().NotBeNull();
 
-        var foundProduct = (T) foundOrder.Products.First();
+        var foundProduct = (T)foundOrder.Products.First();
         foundProduct.Should().NotBeNull();
         foundProduct.Should().BeEquivalentTo(product);
 
@@ -119,7 +119,7 @@ public partial class OrderTests {
 
     }
 
-    protected void EnsureAllTablesAreEmpty() { 
+    protected void EnsureAllTablesAreEmpty() {
         var connection = _factory.CreateConnection().Result;
 
         var tableNames = connection.Query<string>("SELECT name FROM sqlite_master WHERE type='table';");

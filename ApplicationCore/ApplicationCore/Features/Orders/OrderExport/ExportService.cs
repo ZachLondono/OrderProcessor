@@ -169,7 +169,7 @@ internal class ExportService {
             OnError?.Invoke("No parts in order to write to CSV");
             return;
         }
-        
+
         OnProgressReport?.Invoke("Generating CSV file");
 
         string jobName = string.IsNullOrWhiteSpace(configuration.CsvJobName) ? $"{order.Number} - {order.Name}" : configuration.CsvJobName;

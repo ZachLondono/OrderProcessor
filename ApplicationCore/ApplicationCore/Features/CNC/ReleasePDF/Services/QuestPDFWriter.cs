@@ -188,7 +188,7 @@ internal class QuestPDFWriter : IReleasePDFWriter {
             }
 
             toolTableContent.Add(row);
-    
+
             var toolTable = new Table() {
                 Title = $"{release.MachineName} Tools Used",
                 Content = toolTableContent

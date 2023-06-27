@@ -22,7 +22,7 @@ internal class OrderBuilder {
     public decimal PriceAdjustment { get; set; } = decimal.Zero;
     public bool Rush { get; set; } = false;
     public Dictionary<string, string> Info { get; set; } = new();
-    public List<AdditionalItem> Items  { get; set; }= new();
+    public List<AdditionalItem> Items { get; set; } = new();
     public List<IProduct> Products { get; set; } = new();
 
     public OrderBuilder() {

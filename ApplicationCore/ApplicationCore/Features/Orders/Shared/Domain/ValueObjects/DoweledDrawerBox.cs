@@ -30,7 +30,7 @@ public class DoweledDrawerBox {
         FrontBackHeightAdjustment = frontBackHeightAdjustment;
     }
 
-    public bool ContainsCNCParts() => true; 
+    public bool ContainsCNCParts() => true;
 
     public IEnumerable<Part> GetCNCParts(int qty, int productNumber) {
         // TODO: maybe pass in the construction object to this method
@@ -129,7 +129,7 @@ public class DoweledDrawerBox {
         throw new InvalidOperationException("Invalid drawer box height");
 
     }
-    
+
     public (Part Left, Part Right) GetSideParts(DoweledDrawerBoxConstruction construction, int qty, int productNumber) {
 
         Dimension dadoLengthAdj = (FrontMaterial.Thickness < BackMaterial.Thickness ? FrontMaterial : BackMaterial).Thickness - construction.BottomDadoDepth;
@@ -151,7 +151,7 @@ public class DoweledDrawerBox {
             });
 
         }
-        
+
         var left = new Part() {
             Qty = qty,
             Width = Depth.AsMillimeters(),
@@ -268,7 +268,7 @@ public class DoweledDrawerBox {
     }
 
     public static DoweledDrawerBoxConstruction Construction = new() {
-            DowelPositionsByHeight = new Dictionary<Dimension, Dimension[]> {
+        DowelPositionsByHeight = new Dictionary<Dimension, Dimension[]> {
 
                 { Dimension.FromMillimeters(63), new Dimension[] {
                     Dimension.FromMillimeters(30),
@@ -308,52 +308,52 @@ public class DoweledDrawerBox {
                 { Dimension.FromMillimeters(228), new Dimension[] {
                     Dimension.FromMillimeters(36),
                     Dimension.FromMillimeters(112),
-                    Dimension.FromMillimeters(187) 
+                    Dimension.FromMillimeters(187)
                 } },
 
                 { Dimension.FromMillimeters(254), new Dimension[] {
                     Dimension.FromMillimeters(36),
                     Dimension.FromMillimeters(125),
-                    Dimension.FromMillimeters(213) 
+                    Dimension.FromMillimeters(213)
                 } },
 
                 { Dimension.FromMillimeters(279), new Dimension[] {
                     Dimension.FromMillimeters(36),
                     Dimension.FromMillimeters(137),
-                    Dimension.FromMillimeters(238) 
+                    Dimension.FromMillimeters(238)
                 } },
 
                 { Dimension.FromMillimeters(305), new Dimension[] {
                     Dimension.FromMillimeters(36),
                     Dimension.FromMillimeters(150),
-                    Dimension.FromMillimeters(263) 
+                    Dimension.FromMillimeters(263)
                 } },
 
                 { Dimension.FromMillimeters(330), new Dimension[] {
                     Dimension.FromMillimeters(36),
                     Dimension.FromMillimeters(163),
-                    Dimension.FromMillimeters(289) 
+                    Dimension.FromMillimeters(289)
                 } },
 
                 { Dimension.FromMillimeters(355), new Dimension[] {
                     Dimension.FromMillimeters(36),
                     Dimension.FromMillimeters(129),
                     Dimension.FromMillimeters(222),
-                    Dimension.FromMillimeters(314) 
+                    Dimension.FromMillimeters(314)
                 } },
 
                 { Dimension.FromMillimeters(393), new Dimension[] {
                     Dimension.FromMillimeters(36),
                     Dimension.FromMillimeters(137),
                     Dimension.FromMillimeters(238),
-                    Dimension.FromMillimeters(340) 
+                    Dimension.FromMillimeters(340)
                 } },
 
                 { Dimension.FromMillimeters(432), new Dimension[] {
                     Dimension.FromMillimeters(36),
                     Dimension.FromMillimeters(150),
                     Dimension.FromMillimeters(264),
-                    Dimension.FromMillimeters(378) 
+                    Dimension.FromMillimeters(378)
                 } },
 
                 { Dimension.FromMillimeters(470), new Dimension[] {
@@ -361,7 +361,7 @@ public class DoweledDrawerBox {
                     Dimension.FromMillimeters(131),
                     Dimension.FromMillimeters(226),
                     Dimension.FromMillimeters(321),
-                    Dimension.FromMillimeters(416) 
+                    Dimension.FromMillimeters(416)
                 } },
 
                 { Dimension.FromMillimeters(508), new Dimension[] {
@@ -369,7 +369,7 @@ public class DoweledDrawerBox {
                     Dimension.FromMillimeters(141),
                     Dimension.FromMillimeters(246),
                     Dimension.FromMillimeters(351),
-                    Dimension.FromMillimeters(454) 
+                    Dimension.FromMillimeters(454)
                 } },
 
                 { Dimension.FromMillimeters(546), new Dimension[] {
@@ -377,7 +377,7 @@ public class DoweledDrawerBox {
                     Dimension.FromMillimeters(150),
                     Dimension.FromMillimeters(264),
                     Dimension.FromMillimeters(378),
-                    Dimension.FromMillimeters(492) 
+                    Dimension.FromMillimeters(492)
                 } },
 
                 { Dimension.FromMillimeters(584), new Dimension[] {
@@ -385,7 +385,7 @@ public class DoweledDrawerBox {
                     Dimension.FromMillimeters(150),
                     Dimension.FromMillimeters(284),
                     Dimension.FromMillimeters(408),
-                    Dimension.FromMillimeters(530) 
+                    Dimension.FromMillimeters(530)
                 } },
 
                 { Dimension.FromMillimeters(635), new Dimension[] {
@@ -393,7 +393,7 @@ public class DoweledDrawerBox {
                     Dimension.FromMillimeters(169),
                     Dimension.FromMillimeters(302),
                     Dimension.FromMillimeters(435),
-                    Dimension.FromMillimeters(568) 
+                    Dimension.FromMillimeters(568)
                 } },
 
                 { Dimension.FromMillimeters(999), new Dimension[] {
@@ -401,22 +401,22 @@ public class DoweledDrawerBox {
                     Dimension.FromMillimeters(182),
                     Dimension.FromMillimeters(328),
                     Dimension.FromMillimeters(474),
-                    Dimension.FromMillimeters(619) 
+                    Dimension.FromMillimeters(619)
                 } }
 
             },
-            DowelDepth = Dimension.FromMillimeters(10),
-            DowelDiameter = Dimension.FromMillimeters(8),
-            BottomDadoToolName = "1-4Strt",
-            BottomDadoToolDiameter = Dimension.FromMillimeters(6.35),
-            BottomDadoStartHeight = Dimension.FromInches(0.5),
-            BottomDadoDepth = Dimension.FromMillimeters(8),
-            BottomDadoHeightOversize = Dimension.FromMillimeters(1.5),
-            FrontBackBottomDadoLengthOversize = Dimension.FromMillimeters(3),
-            BottomUndersize = Dimension.FromMillimeters(1),
-            UMSlidePocketToolName = "Pocket9",
-            UMSlidePocketDiameter = Dimension.FromMillimeters(9),
-            UMSlideMaxDistanceOffOutsideFace = Dimension.FromInches(5.0/8.0)
-        };
+        DowelDepth = Dimension.FromMillimeters(10),
+        DowelDiameter = Dimension.FromMillimeters(8),
+        BottomDadoToolName = "1-4Strt",
+        BottomDadoToolDiameter = Dimension.FromMillimeters(6.35),
+        BottomDadoStartHeight = Dimension.FromInches(0.5),
+        BottomDadoDepth = Dimension.FromMillimeters(8),
+        BottomDadoHeightOversize = Dimension.FromMillimeters(1.5),
+        FrontBackBottomDadoLengthOversize = Dimension.FromMillimeters(3),
+        BottomUndersize = Dimension.FromMillimeters(1),
+        UMSlidePocketToolName = "Pocket9",
+        UMSlidePocketDiameter = Dimension.FromMillimeters(9),
+        UMSlideMaxDistanceOffOutsideFace = Dimension.FromInches(5.0 / 8.0)
+    };
 
 }

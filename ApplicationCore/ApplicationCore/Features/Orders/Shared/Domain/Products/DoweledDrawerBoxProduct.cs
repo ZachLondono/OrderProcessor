@@ -6,7 +6,7 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
 public class DoweledDrawerBoxProduct : DoweledDrawerBox, IProduct, ICNCPartContainer {
 
-    public Guid Id { get; } 
+    public Guid Id { get; }
     public int Qty { get; }
     public int ProductNumber { get; }
     public decimal UnitPrice { get; }
@@ -16,7 +16,7 @@ public class DoweledDrawerBoxProduct : DoweledDrawerBox, IProduct, ICNCPartConta
         : base(height, width, depth, front, back, sides, bottom, machineThicknessForUMSlides, frontBackHeightAdjustment) {
         Id = id;
         Qty = qty;
-        ProductNumber = productNumber; 
+        ProductNumber = productNumber;
         UnitPrice = unitPrice;
         Room = room;
     }

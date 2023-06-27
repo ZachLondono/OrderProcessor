@@ -175,6 +175,15 @@ public class CustomDrillingVerticalPanelModel : ProductModel {
     [XmlElement("bottomNotchHeight")]
     public double BottomNotchHeight { get; set; }
 
+    [XmlElement("ledChannelFront")]
+    public double LEDChannelOffFront { get; set; }
+
+    [XmlElement("ledChannelWidth")]
+    public double LEDChannelWidth { get; set; }
+
+    [XmlElement("ledChannelDepth")]
+    public double LEDChannelDepth { get; set; }
+
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
@@ -221,8 +230,11 @@ public class CustomDrillingVerticalPanelModel : ProductModel {
         Dimension transitionHoleDimensionFromTop = Dimension.FromMillimeters(TransitionHoleDimensionFromTop);
         Dimension bottomNotchHeight = Dimension.FromMillimeters(BottomNotchHeight);
         Dimension bottomNotchDepth = Dimension.FromMillimeters(BottomNotchDepth);
+        Dimension ledChannelOffFront = Dimension.FromMillimeters(LEDChannelOffFront);
+        Dimension ledChannelWidth = Dimension.FromMillimeters(LEDChannelWidth);
+        Dimension ledChannelDepth = Dimension.FromMillimeters(LEDChannelDepth);
 
-        return new CustomDrilledVerticalPanel(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), room, width, length, material, paint, edgeBandColor, Comment, drillingType, extendBack, extendFront, holeDimensionFromBottom, holeDimensionFromTop, transitionHoleDimensionFromBottom, transitionHoleDimensionFromTop, bottomNotchDepth, bottomNotchHeight);
+        return new CustomDrilledVerticalPanel(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), room, width, length, material, paint, edgeBandColor, Comment, drillingType, extendBack, extendFront, holeDimensionFromBottom, holeDimensionFromTop, transitionHoleDimensionFromBottom, transitionHoleDimensionFromTop, bottomNotchDepth, bottomNotchHeight, ledChannelOffFront, ledChannelWidth, ledChannelDepth);
 
     }
 

@@ -16,14 +16,17 @@ internal class CustomDrilledVerticalPanelDataModel : ProductDataModelBase, IProd
     public string EdgeBandingFinish { get; set; } = string.Empty;
     public string Comment { get; set; } = string.Empty;
     public ClosetVerticalDrillingType DrillingType { get; set; }
-    public Dimension ExtendBack { get; set; } 
-    public Dimension ExtendFront { get; set; } 
-    public Dimension HoleDimensionFromBottom { get; set; } 
-    public Dimension HoleDimensionFromTop { get; set; } 
-    public Dimension TransitionHoleDimensionFromBottom { get; set; } 
-    public Dimension TransitionHoleDimensionFromTop { get; set; } 
+    public Dimension ExtendBack { get; set; }
+    public Dimension ExtendFront { get; set; }
+    public Dimension HoleDimensionFromBottom { get; set; }
+    public Dimension HoleDimensionFromTop { get; set; }
+    public Dimension TransitionHoleDimensionFromBottom { get; set; }
+    public Dimension TransitionHoleDimensionFromTop { get; set; }
     public Dimension BottomNotchDepth { get; set; }
     public Dimension BottomNotchHeight { get; set; }
+    public Dimension LEDChannelOffFront { get; set; }
+    public Dimension LEDChannelWidth { get; set; }
+    public Dimension LEDChannelDepth { get; set; }
 
     public static string GetQueryByOrderId
         =>
@@ -52,7 +55,10 @@ internal class CustomDrilledVerticalPanelDataModel : ProductDataModelBase, IProd
             custom_drilled_vertical_panels.trans_hole_dim_from_bottom AS TransitionHoleDimensionFromBottom,
             custom_drilled_vertical_panels.trans_hole_dim_from_top AS TransitionHoleDimensionFromTop,
             custom_drilled_vertical_panels.bottom_notch_depth AS BottomNotchDepth,
-            custom_drilled_vertical_panels.bottom_notch_height AS BottomNotchHeight
+            custom_drilled_vertical_panels.bottom_notch_height AS BottomNotchHeight,
+            custom_drilled_vertical_panels.led_channel_off_front AS LEDChannelOffFront, 
+            custom_drilled_vertical_panels.led_channel_width AS LEDChannelWidth,
+            custom_drilled_vertical_panels.led_channel_depth AS LEDChannelDepth 
 
         FROM custom_drilled_vertical_panels
 
@@ -65,7 +71,7 @@ internal class CustomDrilledVerticalPanelDataModel : ProductDataModelBase, IProd
     public IProduct MapToProduct() {
         ClosetPaint? paint = PaintColor is null ? null : new(PaintColor, PaintedSide);
         ClosetMaterial material = new(MaterialFinish, MaterialCore);
-        return new CustomDrilledVerticalPanel(Id, Qty, UnitPrice, ProductNumber, Room, Width, Length, material, paint, EdgeBandingFinish, Comment, DrillingType, ExtendBack, ExtendFront, HoleDimensionFromBottom, HoleDimensionFromTop, TransitionHoleDimensionFromBottom, TransitionHoleDimensionFromTop, BottomNotchDepth, BottomNotchHeight);
+        return new CustomDrilledVerticalPanel(Id, Qty, UnitPrice, ProductNumber, Room, Width, Length, material, paint, EdgeBandingFinish, Comment, DrillingType, ExtendBack, ExtendFront, HoleDimensionFromBottom, HoleDimensionFromTop, TransitionHoleDimensionFromBottom, TransitionHoleDimensionFromTop, BottomNotchDepth, BottomNotchHeight, LEDChannelOffFront, LEDChannelWidth, LEDChannelDepth);
     }
 
 }

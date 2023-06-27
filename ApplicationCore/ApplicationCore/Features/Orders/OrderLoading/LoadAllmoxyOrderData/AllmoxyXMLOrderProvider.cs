@@ -49,7 +49,7 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
         if (exportXML == string.Empty) {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "No order data found");
             return null;
-        } 
+        }
 
         // Validate data
         if (!ValidateData(exportXML)) {

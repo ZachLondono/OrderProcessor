@@ -157,6 +157,9 @@ CREATE TABLE custom_drilled_vertical_panels (
 	trans_hole_dim_from_top REAL NOT NULL,
 	bottom_notch_depth REAL NOT NULL,
 	bottom_notch_height REAL NOT NULL,
+	led_channel_off_front REAL NOT NULL,
+	led_channel_width REAL NOT NULL,
+	led_channel_depth REAL NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );

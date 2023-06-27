@@ -7,7 +7,7 @@ internal class DoweledDrawerBoxGroup {
 
     public string Room { get; set; } = string.Empty;
     public DoweledDrawerBoxMaterial FrontMaterial { get; set; } = new("", Dimension.Zero, false);
-    public DoweledDrawerBoxMaterial BackMaterial { get; set; } = new("", Dimension.Zero, false);      
+    public DoweledDrawerBoxMaterial BackMaterial { get; set; } = new("", Dimension.Zero, false);
     public DoweledDrawerBoxMaterial SideMaterial { get; set; } = new("", Dimension.Zero, false);
     public DoweledDrawerBoxMaterial BottomMaterial { get; set; } = new("", Dimension.Zero, false);
     public bool MachineForUMSlides { get; set; }
@@ -17,7 +17,7 @@ internal class DoweledDrawerBoxGroup {
     public class DoweledDrawerBoxGroupComparer : IEqualityComparer<DoweledDrawerBoxGroup> {
 
         bool IEqualityComparer<DoweledDrawerBoxGroup>.Equals(DoweledDrawerBoxGroup? x, DoweledDrawerBoxGroup? y) {
- 
+
             if (x is null && y is null) return true;
             if (x is null || y is null) return false;
 

@@ -54,7 +54,7 @@ public class Room {
     }
 
     public static Room FromGrouping(IGrouping<string, IProduct> productGrouping) {
-        return new(productGrouping.Key, productGrouping.ToList()); 
+        return new(productGrouping.Key, productGrouping.ToList());
     }
 
 }

@@ -49,15 +49,16 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     private static readonly string s_cutOutTool = "3-8Comp";
     private static readonly Dimension s_panelThickness = Dimension.FromMillimeters(19.05);
 
-    private static readonly string s_largeLEDToolName = "1-2Dado"; 
+    private static readonly string s_largeLEDToolName = "1-2Dado";
     private static readonly Dimension s_largeLEDToolDiameter = Dimension.FromMillimeters(13.6);
-    private static readonly string s_smallLEDToolName = "POCKET3"; 
+    private static readonly string s_smallLEDToolName = "POCKET3";
     private static readonly Dimension s_smallLEDToolDiameter = Dimension.FromMillimeters(3);
 
     public string GetDescription() => "Closet Part - Custom Drilled Vertical Panel";
 
     public CustomDrilledVerticalPanel(Guid id, int qty, decimal unitPrice, int productNumber, string room, Dimension width, Dimension length, ClosetMaterial material, ClosetPaint? paint, string edgeBandingColor, string comment,
-                                    ClosetVerticalDrillingType drillingType, Dimension extendBack, Dimension extendFront, Dimension holeDimensionFromBottom, Dimension holeDimensionFromTop, Dimension transitionHoleDimensionFromBottom, Dimension transitionHoleDimensionFromTop, Dimension bottomNotchDepth, Dimension bottomNotchHeight) {
+                                    ClosetVerticalDrillingType drillingType, Dimension extendBack, Dimension extendFront, Dimension holeDimensionFromBottom, Dimension holeDimensionFromTop, Dimension transitionHoleDimensionFromBottom, Dimension transitionHoleDimensionFromTop, Dimension bottomNotchDepth, Dimension bottomNotchHeight,
+                                    Dimension ledChannelOffFront, Dimension ledChannelWidth, Dimension ledChannelDepth) {
         Id = id;
         Qty = qty;
         UnitPrice = unitPrice;
@@ -79,6 +80,9 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
         TransitionHoleDimensionFromTop = transitionHoleDimensionFromTop;
         BottomNotchDepth = bottomNotchDepth;
         BottomNotchHeight = bottomNotchHeight;
+        LEDChannelOffFront = ledChannelOffFront;
+        LEDChannelWidth = ledChannelWidth;
+        LEDChannelDepth = ledChannelDepth;
 
         if (DrillingType == ClosetVerticalDrillingType.DrilledThrough) {
             SKU = "PC";
@@ -183,19 +187,19 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
                 tokens.AddRange(CreateTwoRowsOfHoles(GetValidHolePositionFromTop(Length, stoppedStartHeight),
                                                     stoppedEndHeight,
                                                     s_stoppedDepth));
-            } 
+            }
         } else {
             if (HoleDimensionFromTop > Dimension.Zero) {
                 Dimension transEnd = GetValidHolePositionFromTop(Length, TransitionHoleDimensionFromTop);
                 Dimension start = Length - s_holesOffTop;
                 if (transEnd > Dimension.Zero) {
-                    start =  transEnd - s_holeSpacing;
+                    start = transEnd - s_holeSpacing;
                 }
                 tokens.AddRange(CreateTwoRowsOfHoles(start,
                                                     Length - HoleDimensionFromTop,
                                                     s_stoppedDepth));
             }
-            
+
             if (HoleDimensionFromBottom > Dimension.Zero) {
                 Dimension transStart = GetValidHolePositionFromBottom(Length, TransitionHoleDimensionFromBottom);
                 Dimension end = transStart;
@@ -209,11 +213,11 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
         }
 
         if (TransitionHoleDimensionFromTop > Dimension.Zero) {
-             tokens.AddRange(CreateTwoRowsOfHoles(Length - s_holesOffTop,
-                                                Length - TransitionHoleDimensionFromTop,
-                                                s_drillThroughDepth));
+            tokens.AddRange(CreateTwoRowsOfHoles(Length - s_holesOffTop,
+                                               Length - TransitionHoleDimensionFromTop,
+                                               s_drillThroughDepth));
         }
-        
+
         if (TransitionHoleDimensionFromBottom > Dimension.Zero) {
             tokens.AddRange(CreateTwoRowsOfHoles(GetValidHolePositionFromBottom(Length, TransitionHoleDimensionFromBottom),
                                                 Dimension.Zero,
@@ -226,16 +230,16 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
                 StartDepth = s_panelThickness.AsMillimeters(),
                 EndDepth = s_panelThickness.AsMillimeters(),
                 Offset = Offset.Right,
-                Start = new((Width - BottomNotchDepth).AsMillimeters(),0),
-                End = new((Width - BottomNotchDepth).AsMillimeters(),BottomNotchHeight.AsMillimeters())
+                Start = new((Width - BottomNotchDepth).AsMillimeters(), 0),
+                End = new((Width - BottomNotchDepth).AsMillimeters(), BottomNotchHeight.AsMillimeters())
             });
             tokens.Add(new Route() {
                 ToolName = s_cutOutTool,
                 StartDepth = s_panelThickness.AsMillimeters(),
                 EndDepth = s_panelThickness.AsMillimeters(),
                 Offset = Offset.Right,
-                Start = new((Width - BottomNotchDepth).AsMillimeters(),BottomNotchHeight.AsMillimeters()),
-                End = new(Width.AsMillimeters(),BottomNotchHeight.AsMillimeters())
+                Start = new((Width - BottomNotchDepth).AsMillimeters(), BottomNotchHeight.AsMillimeters()),
+                End = new(Width.AsMillimeters(), BottomNotchHeight.AsMillimeters())
             });
         }
 
@@ -415,11 +419,11 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
         }
 
         var position = length - distanceFromTop;
-        
+
         return position;
 
     }
 
-    public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>(); 
+    public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
 
 }

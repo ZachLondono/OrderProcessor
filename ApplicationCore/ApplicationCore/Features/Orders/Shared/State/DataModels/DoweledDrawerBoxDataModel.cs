@@ -10,16 +10,16 @@ internal class DoweledDrawerBoxDataModel : ProductDataModelBase, IProductDataMod
     public Dimension Width { get; set; }
     public Dimension Depth { get; set; }
     public string FrontMatName { get; set; } = string.Empty;
-    public Dimension FrontMatThickness { get; set; } 
+    public Dimension FrontMatThickness { get; set; }
     public bool FrontMatGraining { get; set; }
     public string BackMatName { get; set; } = string.Empty;
-    public Dimension BackMatThickness { get; set; } 
+    public Dimension BackMatThickness { get; set; }
     public bool BackMatGraining { get; set; }
     public string SideMatName { get; set; } = string.Empty;
-    public Dimension SideMatThickness { get; set; } 
+    public Dimension SideMatThickness { get; set; }
     public bool SideMatGraining { get; set; }
     public string BottomMatName { get; set; } = string.Empty;
-    public Dimension BottomMatThickness { get; set; } 
+    public Dimension BottomMatThickness { get; set; }
     public bool BottomMatGraining { get; set; }
     public bool MachineThicknessForUM { get; set; }
     public Dimension FrontBackHeightAdjustment { get; set; }

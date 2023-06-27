@@ -18,7 +18,7 @@ public class UpdateProduct {
         }
 
         public override async Task<Response> Handle(Command command) {
- 
+
             using var connection = await _factory.CreateConnection();
 
             const string sql = """

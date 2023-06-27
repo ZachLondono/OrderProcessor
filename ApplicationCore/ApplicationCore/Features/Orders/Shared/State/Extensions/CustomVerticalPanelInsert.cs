@@ -31,7 +31,10 @@ public partial class InsertOrder {
                 TransHoleDimFromBottom = verticalPanel.TransitionHoleDimensionFromBottom,
                 TransHoleDimFromTop = verticalPanel.TransitionHoleDimensionFromTop,
                 BottomNotchDepth = verticalPanel.BottomNotchDepth,
-                BottomNotchHeight = verticalPanel.BottomNotchHeight
+                BottomNotchHeight = verticalPanel.BottomNotchHeight,
+                LEDChannelOffFront = verticalPanel.LEDChannelOffFront,
+                LEDChannelWidth = verticalPanel.LEDChannelWidth,
+                LEDChannelDepth = verticalPanel.LEDChannelDepth
             };
 
             await connection.ExecuteAsync("""
@@ -53,7 +56,10 @@ public partial class InsertOrder {
                         trans_hole_dim_from_bottom,
                         trans_hole_dim_from_top,
                         bottom_notch_depth,
-                        bottom_notch_height)
+                        bottom_notch_height,
+                        led_channel_off_front,
+                        led_channel_width,
+                        led_channel_depth)
                     VALUES
                         (@ProductId,
                         @Width,
@@ -72,7 +78,10 @@ public partial class InsertOrder {
                         @TransHoleDimFromBottom,
                         @TransHoleDimFromTop,
                         @BottomNotchDepth,
-                        @BottomNotchHeight);
+                        @BottomNotchHeight,
+                        @LEDChannelOffFront,
+                        @LEDChannelWidth,
+                        @LEDChannelDepth);
                     """, parameters, trx);
 
         }

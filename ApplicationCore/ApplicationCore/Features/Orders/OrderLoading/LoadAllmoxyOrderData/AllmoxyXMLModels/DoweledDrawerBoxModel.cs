@@ -18,7 +18,7 @@ public class DoweledDrawerBoxModel : ProductModel {
     public int Qty { get; set; }
 
     [XmlElement("unitPrice")]
-    public decimal UnitPrice { get; set; } 
+    public decimal UnitPrice { get; set; }
 
     [XmlElement("height")]
     public double Height { get; set; }
@@ -36,7 +36,7 @@ public class DoweledDrawerBoxModel : ProductModel {
     public double BoxThickness { get; set; }
 
     [XmlElement("bottomThickness")]
-    public double BottomThickness { get; set; } 
+    public double BottomThickness { get; set; }
 
     [XmlElement("machineForUMSlides")]
     public bool MachineForUMSlides { get; set; }
