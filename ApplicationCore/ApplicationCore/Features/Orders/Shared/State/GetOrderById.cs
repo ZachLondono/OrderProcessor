@@ -66,6 +66,7 @@ public class GetOrderById {
             await AddProductDataToCollection<ClosetPartDataModel>(productData, orderId, connection);
             await AddProductDataToCollection<CustomDrilledVerticalPanelDataModel>(productData, orderId, connection);
             await AddProductDataToCollection<DovetailDrawerBoxDataModel>(productData, orderId, connection);
+            await AddProductDataToCollection<DoweledDrawerBoxDataModel>(productData, orderId, connection);
             await AddMDFDoorProductDataToCollection(productData, orderId, connection);
 
             await AddProductDataToCollection<BaseCabinetDataModel>(productData, orderId, connection);

@@ -12,9 +12,9 @@ namespace ApplicationCore.Features.Orders.Shared.State;
 
 public partial class InsertOrder {
 
-    public record Command(string Source, string Number, string Name, string WorkingDirectory, Guid CustomerId, Guid VendorId, string Comment, DateTime OrderDate, ShippingInfo Shipping, BillingInfo Billing, decimal Tax, decimal PriceAdjustment, bool Rush, IReadOnlyDictionary<string, string> Info, IEnumerable<IProduct> Products, IEnumerable<AdditionalItem> AdditionalItems, Guid? OrderId = null) : ICommand<Order>;
+    public record Command(Order NewOrder) : ICommand;
 
-    public partial class Handler : CommandHandler<Command, Order> {
+    public partial class Handler : CommandHandler<Command> {
 
         private readonly ILogger<Handler> _logger;
         private readonly IOrderingDbConnectionFactory _factory;
@@ -26,9 +26,9 @@ public partial class InsertOrder {
             _bus = bus;
         }
 
-        public override async Task<Response<Order>> Handle(Command request) {
+        public override async Task<Response> Handle(Command request) {
 
-            Order order = Order.Create(request.Source, request.Number, request.Name, string.Empty, request.WorkingDirectory, request.CustomerId, request.VendorId, request.Comment, request.OrderDate, request.Shipping, request.Billing, request.Tax, request.PriceAdjustment, request.Rush, request.Info, request.Products, request.AdditionalItems, request.OrderId);
+            Order order = request.NewOrder;
 
             using var connection = await _factory.CreateConnection();
 
@@ -45,7 +45,7 @@ public partial class InsertOrder {
 
                 await InsertOrder(order, shippingAddressId, billingAddressId, connection, trx);
 
-                await InsertItems(request.AdditionalItems, order.Id, connection, trx);
+                await InsertItems(order.AdditionalItems, order.Id, connection, trx);
 
                 await InsertProducts(order.Products, order.Id, connection, trx);
 
@@ -55,14 +55,14 @@ public partial class InsertOrder {
                     Order = order
                 });
 
-                return new(order);
+                return Response.Success();
 
             } catch (Exception ex) {
 
                 trx.Rollback();
                 _logger.LogError(ex, "Exception thrown while creating order");
 
-                return Response<Order>.Error(new() {
+                return Response.Error(new() {
                     Title = "Could not create order",
                     Details = $"An exception was thrown while trying to create order, check logs for details - {ex.Message}"
                 });

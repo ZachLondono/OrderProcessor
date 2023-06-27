@@ -4,7 +4,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDrawerBoxContainer {
+public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDovetailDrawerBoxContainer {
 
     public Guid Id { get; }
     public decimal UnitPrice { get; }
@@ -53,9 +53,9 @@ public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDrawerBoxC
         return new(Guid.NewGuid(), unitPrice, qty, room, productNumber, height, width, depth, note, labelFields, options);
     }
 
-    public bool ContainsDrawerBoxes() => true;
+    public bool ContainsDovetailDrawerBoxes() => true;
 
-    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) { yield return this; }
+    public IEnumerable<DovetailDrawerBox> GetDovetailDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) { yield return this; }
 
     public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
 

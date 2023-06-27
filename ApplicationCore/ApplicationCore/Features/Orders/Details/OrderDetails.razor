@@ -242,11 +242,18 @@
                     <div class="pl-5">
                         @if (room.DovetailDrawerBoxes.Any()) {
                             <section class="mt-5">
-                                <h3>Drawer Boxes</h3>
+                                <h3>Dovetail Drawer Boxes</h3>
                                 <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@room.DovetailDrawerBoxes" />
                             </section>
                         }
-    
+
+                        @if (room.DoweledDrawerBoxes.Any()) {
+                            <section class="mt-5">
+                                <h3>Doweled Drawer Boxes</h3>
+                                <DoweledDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@room.DoweledDrawerBoxes" />
+                            </section>
+                        }
+       
                         @if (room.Cabinets.Any()) {
                             <section class="mt-5">
                                 <h3>Cabinets</h3>
@@ -268,7 +275,6 @@
                             </section>
                         }
     
-
                         @if (room.MDFDoors.Any()) {
                             <section class="mt-5">
                                 <h3>MDF Doors</h3>

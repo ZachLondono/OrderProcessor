@@ -6,28 +6,28 @@ namespace ApplicationCore.Tests.Unit.Orders;
 
 internal class OrderBuilder {
 
-    private Guid _id = Guid.NewGuid();
-    private string _source = string.Empty;
-    private string _number = string.Empty;
-    private string _name = string.Empty;
-    private string _note = string.Empty;
-    private string _workingDirectory = string.Empty;
-    private Guid _customerId = Guid.NewGuid();
-    private Guid _vendorId = Guid.NewGuid();
-    private string _comment = string.Empty;
-    private DateTime _orderDate = DateTime.Today;
-    private decimal _tax = decimal.Zero;
-    private ShippingInfo _shipping;
-    private BillingInfo _billing;
-    private decimal _priceAdjustment = decimal.Zero;
-    private bool _rush = false;
-    private Dictionary<string, string> _info = new();
-    private List<AdditionalItem> _items = new();
-    private List<IProduct> _products = new();
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Source { get; set; } = string.Empty;
+    public string Number { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Note { get; set; } = string.Empty;
+    public string WorkingDirectory { get; set; } = string.Empty;
+    public Guid CustomerId { get; set; } = Guid.NewGuid();
+    public Guid VendorId { get; set; } = Guid.NewGuid();
+    public string Comment { get; set; } = string.Empty;
+    public DateTime OrderDate { get; set; } = DateTime.Today;
+    public decimal Tax { get; set; } = decimal.Zero;
+    public ShippingInfo Shipping { get; set; }
+    public BillingInfo Billing { get; set; }
+    public decimal PriceAdjustment { get; set; } = decimal.Zero;
+    public bool Rush { get; set; } = false;
+    public Dictionary<string, string> Info { get; set; } = new();
+    public List<AdditionalItem> Items  { get; set; }= new();
+    public List<IProduct> Products { get; set; } = new();
 
     public OrderBuilder() {
 
-        _shipping = new() {
+        Shipping = new() {
             Contact = "",
             Method = "",
             PhoneNumber = "",
@@ -35,7 +35,7 @@ internal class OrderBuilder {
             Address = new()
         };
 
-        _billing = new() {
+        Billing = new() {
             InvoiceEmail = null,
             PhoneNumber = "",
             Address = new(),
@@ -44,85 +44,85 @@ internal class OrderBuilder {
     }
 
     public OrderBuilder WithId(Guid id) {
-        _id = id;
+        Id = id;
         return this;
     }
 
     public OrderBuilder WithSource(string source) {
-        _source = source;
+        Source = source;
         return this;
     }
 
     public OrderBuilder WithNumber(string number) {
-        _number = number;
+        Number = number;
         return this;
     }
 
     public OrderBuilder WithName(string name) {
-        _name = name;
+        Name = name;
         return this;
     }
 
     public OrderBuilder WithCustomerId(Guid customerId) {
-        _customerId = customerId;
+        CustomerId = customerId;
         return this;
     }
 
     public OrderBuilder WithVendorId(Guid vendorId) {
-        _vendorId = vendorId;
+        VendorId = vendorId;
         return this;
     }
 
     public OrderBuilder WithComment(string comment) {
-        _comment = comment;
+        Comment = comment;
         return this;
     }
 
     public OrderBuilder WithOrderDate(DateTime orderDate) {
-        _orderDate = orderDate;
+        OrderDate = orderDate;
         return this;
     }
 
     public OrderBuilder WithTax(decimal tax) {
-        _tax = tax;
+        Tax = tax;
         return this;
     }
 
     public OrderBuilder WithShipping(ShippingInfo shipping) {
-        _shipping = shipping;
+        Shipping = shipping;
         return this;
     }
 
     public OrderBuilder WithBilling(BillingInfo billing) {
-        _billing = billing;
+        Billing = billing;
         return this;
     }
 
     public OrderBuilder WithPriceAdjustment(decimal priceAdjustment) {
-        _priceAdjustment = priceAdjustment;
+        PriceAdjustment = priceAdjustment;
         return this;
     }
 
     public OrderBuilder WithInfo(Dictionary<string, string> info) {
-        _info = info;
+        Info = info;
         return this;
     }
 
     public OrderBuilder WithProducts(List<IProduct> products) {
-        _products = products;
+        Products = products;
         return this;
     }
 
     public OrderBuilder WithItems(List<AdditionalItem> items) {
-        _items = items;
+        Items = items;
         return this;
     }
 
     public OrderBuilder WithRush(bool rush) {
-        _rush = rush;
+        Rush = rush;
         return this;
     }
 
-    public Order Build() => new(_id, _source, _number, _name, _note, _workingDirectory, _customerId, _vendorId, _comment, _orderDate, _shipping, _billing, _tax, _priceAdjustment, _rush, _info, _products, _items);
+    public Order Build() => new(Id, Source, Number, Name, Note, WorkingDirectory, CustomerId, VendorId, Comment, OrderDate, Shipping, Billing, Tax, PriceAdjustment, Rush, Info, Products, Items);
 
 }

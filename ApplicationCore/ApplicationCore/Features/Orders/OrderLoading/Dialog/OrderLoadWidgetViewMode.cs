@@ -108,16 +108,14 @@ internal class OrderLoadWidgetViewModel : IOrderLoadWidgetViewModel {
 
         try {
 
-            Response<Order> result = await _bus.Send(new InsertOrder.Command(source, data.Number, data.Name, data.WorkingDirectory, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Shipping, billing, data.Tax, data.PriceAdjustment, data.Rush, data.Info, data.Products, data.AdditionalItems));
-            result.Match(
-                newOrder => {
-                    order = newOrder;
-                },
-                error => {
-                    _logger.LogError("Error creating order from data {Data} {Error}", data, error);
-                    AddLoadingMessage(MessageSeverity.Error, error.Title + " - " + error.Details);
-                    State = State.Error;
-                });
+            order = Order.Create(source, data.Number, data.Name, string.Empty, data.WorkingDirectory, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Shipping, billing, data.Tax, data.PriceAdjustment, data.Rush, data.Info, data.Products, data.AdditionalItems);
+
+            var result = await _bus.Send(new InsertOrder.Command(order));
+            result.OnError(error => {
+                _logger.LogError("Error creating order from data {Data} {Error}", data, error);
+                AddLoadingMessage(MessageSeverity.Error, error.Title + " - " + error.Details);
+                State = State.Error;
+            });
 
         } catch (Exception ex) {
 

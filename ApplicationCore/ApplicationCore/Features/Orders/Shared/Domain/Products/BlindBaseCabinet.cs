@@ -5,7 +5,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-internal class BlindBaseCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
+internal class BlindBaseCabinet : Cabinet, IDoorContainer, IDovetailDrawerBoxContainer {
 
     public BlindCabinetDoors Doors { get; }
     public HorizontalDrawerBank Drawers { get; }
@@ -92,9 +92,9 @@ internal class BlindBaseCabinet : Cabinet, IDoorContainer, IDrawerBoxContainer {
 
     }
 
-    public bool ContainsDrawerBoxes() => Drawers.Any();
+    public bool ContainsDovetailDrawerBoxes() => Drawers.Any();
 
-    public IEnumerable<DovetailDrawerBox> GetDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
+    public IEnumerable<DovetailDrawerBox> GetDovetailDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
         if (!Drawers.Any()) {
             return Enumerable.Empty<DovetailDrawerBox>();

@@ -26,7 +26,7 @@ public class DovetailDrawerBox {
         LabelFields = labelFields;
     }
 
-    public IEnumerable<DrawerBoxPart> GetParts(ConstructionValues construction) {
+    public IEnumerable<DovetailDrawerBoxPart> GetParts(ConstructionValues construction) {
 
         string accComment = DrawerBoxOptions.Accessory.Equals("None") ? "" : DrawerBoxOptions.Accessory;
         string logoComment = DrawerBoxOptions.Logo switch {
@@ -39,10 +39,10 @@ public class DovetailDrawerBox {
         var sdAdj = Dimension.FromMillimeters(construction.SideLengthAdjustment);
         var btAdj = Dimension.FromMillimeters(construction.BottomSizeAdjustment);
 
-        var front = new DrawerBoxPart(DrawerBoxPartType.Front, Qty, ProductNumber, Height, Width + fbAdj, DrawerBoxOptions.FrontMaterial, DrawerBoxOptions.ScoopFront ? "Scoop Front" : "");
-        var back = new DrawerBoxPart(DrawerBoxPartType.Back, Qty, ProductNumber, Height, Width + fbAdj, DrawerBoxOptions.BackMaterial, accComment);
-        var side = new DrawerBoxPart(DrawerBoxPartType.Side, Qty * 2, ProductNumber, Height, Depth + sdAdj, DrawerBoxOptions.SideMaterial, logoComment);
-        var bottom = new DrawerBoxPart(DrawerBoxPartType.Bottom, Qty, ProductNumber, Width + btAdj, Depth + btAdj, DrawerBoxOptions.BottomMaterial, "");
+        var front = new DovetailDrawerBoxPart(DrawerBoxPartType.Front, Qty, ProductNumber, Height, Width + fbAdj, DrawerBoxOptions.FrontMaterial, DrawerBoxOptions.ScoopFront ? "Scoop Front" : "");
+        var back = new DovetailDrawerBoxPart(DrawerBoxPartType.Back, Qty, ProductNumber, Height, Width + fbAdj, DrawerBoxOptions.BackMaterial, accComment);
+        var side = new DovetailDrawerBoxPart(DrawerBoxPartType.Side, Qty * 2, ProductNumber, Height, Depth + sdAdj, DrawerBoxOptions.SideMaterial, logoComment);
+        var bottom = new DovetailDrawerBoxPart(DrawerBoxPartType.Bottom, Qty, ProductNumber, Width + btAdj, Depth + btAdj, DrawerBoxOptions.BottomMaterial, "");
 
         if (DrawerBoxOptions.UBoxDimensions is not null) {
 
@@ -51,18 +51,18 @@ public class DovetailDrawerBox {
             var c = DrawerBoxOptions.UBoxDimensions.C;
             var diff = Width - (a + b);
 
-            var leftBack = new DrawerBoxPart(DrawerBoxPartType.BackLeft, Qty, ProductNumber, Height, a + fbAdj, DrawerBoxOptions.BackMaterial, "");
-            var rightBack = new DrawerBoxPart(DrawerBoxPartType.BackRight, Qty, ProductNumber, Height, b + fbAdj, DrawerBoxOptions.BackMaterial, "");
-            var centerBack = new DrawerBoxPart(DrawerBoxPartType.BackCenter, Qty, ProductNumber, Height, diff + fbAdj, DrawerBoxOptions.BackMaterial, "");
-            var sideCenter = new DrawerBoxPart(DrawerBoxPartType.SideCenter, Qty, ProductNumber, Height, c + sdAdj, DrawerBoxOptions.SideMaterial, "");
+            var leftBack = new DovetailDrawerBoxPart(DrawerBoxPartType.BackLeft, Qty, ProductNumber, Height, a + fbAdj, DrawerBoxOptions.BackMaterial, "");
+            var rightBack = new DovetailDrawerBoxPart(DrawerBoxPartType.BackRight, Qty, ProductNumber, Height, b + fbAdj, DrawerBoxOptions.BackMaterial, "");
+            var centerBack = new DovetailDrawerBoxPart(DrawerBoxPartType.BackCenter, Qty, ProductNumber, Height, diff + fbAdj, DrawerBoxOptions.BackMaterial, "");
+            var sideCenter = new DovetailDrawerBoxPart(DrawerBoxPartType.SideCenter, Qty, ProductNumber, Height, c + sdAdj, DrawerBoxOptions.SideMaterial, "");
 
-            return new List<DrawerBoxPart>() {
+            return new List<DovetailDrawerBoxPart>() {
                 front, leftBack, rightBack, centerBack, sideCenter, side, bottom
             };
 
         } else {
 
-            return new List<DrawerBoxPart>() {
+            return new List<DovetailDrawerBoxPart>() {
                 front, back, side, bottom
             };
 

@@ -216,5 +216,62 @@ public partial class InsertOrder {
 
         }
 
+        private static async Task InsertDoweledDB(Guid id, DoweledDrawerBox drawerBox, IDbConnection connection, IDbTransaction trx) {
+
+            var parameters = new {
+                Id = id,
+                FrontMatName = drawerBox.FrontMaterial.Name,
+                FrontMatThickness = drawerBox.FrontMaterial.Thickness,
+                FrontMatGraining = drawerBox.FrontMaterial.IsGrained,
+                BackMatName = drawerBox.BackMaterial.Name,
+                BackMatThickness = drawerBox.BackMaterial.Thickness,
+                BackMatGraining = drawerBox.BackMaterial.IsGrained,
+                SideMatName = drawerBox.SideMaterial.Name,
+                SideMatThickness = drawerBox.SideMaterial.Thickness,
+                SideMatGraining = drawerBox.SideMaterial.IsGrained,
+                BottomMatName = drawerBox.BottomMaterial.Name,
+                BottomMatThickness = drawerBox.BottomMaterial.Thickness,
+                BottomMatGraining = drawerBox.BottomMaterial.IsGrained,
+                MachineThicknessForUM = drawerBox.MachineThicknessForUMSlides,
+                FrontBackHeightAdjustment = drawerBox.FrontBackHeightAdjustment
+            };
+
+            await connection.ExecuteAsync(
+                """
+                INSERT INTO doweled_drawer_box_configs
+                    (id,
+                    front_mat_name,
+                    front_mat_thickness,
+                    front_mat_graining,
+                    back_mat_name,
+                    back_mat_thickness,
+                    back_mat_graining,
+                    side_mat_name,
+                    side_mat_thickness,
+                    side_mat_graining,
+                    bottom_mat_name,
+                    bottom_mat_thickness,
+                    bottom_mat_graining,
+                    machine_thickness_for_um,
+                    frontback_height_adjustment)
+                VALUES
+                    (@Id,
+                    @FrontMatName,
+                    @FrontMatThickness,
+                    @FrontMatGraining,
+                    @BackMatName,
+                    @BackMatThickness,
+                    @BackMatGraining,
+                    @SideMatName,
+                    @SideMatThickness,
+                    @SideMatGraining,
+                    @BottomMatName,
+                    @BottomMatThickness,
+                    @BottomMatGraining,
+                    @MachineThicknessForUM,
+                    @FrontBackHeightAdjustment); 
+                """, parameters, trx);
+
+        }
     }
 }

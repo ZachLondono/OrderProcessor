@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace ApplicationCore.Tests.Unit.Orders.CreatingNewOrder;
+namespace ApplicationCore.Tests.Unit.Orders.Persistence;
 
 internal class TestOrderingConnection : IDbConnection {
 

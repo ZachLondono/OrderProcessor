@@ -9,8 +9,9 @@ using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Shared.Domain;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.CabinetGroup;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.ClosetPartGroup;
-using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.DrawerBoxGroup;
+using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.DovetailDrawerBoxGroup;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.DoorGroup;
+using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.DoweledDrawerBoxGroup;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 
@@ -75,7 +76,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                     int cabQty = jobSummary.Cabinets.Sum(p => p.Items.Sum(i => i.Qty));
                                     int cpQty = jobSummary.ClosetParts.Sum(p => p.Items.Sum(i => i.Qty));
                                     int doorQty = jobSummary.Doors.Sum(p => p.Items.Sum(i => i.Qty));
-                                    int drawerQty = jobSummary.DrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty));
+                                    int drawerQty = jobSummary.DovetailDrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty));
 
                                     table.Cell().AlignRight().PaddingRight(5).Text("Cabinets:");
                                     table.Cell().AlignCenter().Text(cabQty == 0 ? "-" : cabQty.ToString());
@@ -143,8 +144,12 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                             ComposeClosetPartTable(column.Item(), group);
                         }
 
-                        foreach (var group in jobSummary.DrawerBoxes) {
-                            ComposeDrawerBoxTable(column.Item(), group);
+                        foreach (var group in jobSummary.DovetailDrawerBoxes) {
+                            ComposeDovetailDrawerBoxTable(column.Item(), group);
+                        }
+
+                        foreach (var group in jobSummary.DoweledDrawerBoxes) {
+                            ComposeDoweledDrawerBoxTable(column.Item(), group);
                         }
 
                         foreach (var group in jobSummary.Doors) {
@@ -186,9 +191,9 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                             .Select(g => new Supply(g.Sum(g => g.Qty), g.Key))
                             .ToList();
 
-        var db = order.Products
+        var dovetailDb = order.Products
                     .OfType<DovetailDrawerBoxProduct>()
-                    .GroupBy(b => new DrawerBoxGroup() {
+                    .GroupBy(b => new DovetailDrawerBoxGroup() {
                         Room = b.Room,
                         Material = b.DrawerBoxOptions.GetMaterialFriendlyName(),
                         BottomMaterial = b.DrawerBoxOptions.BottomMaterial,
@@ -211,6 +216,31 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         return g.Key;
                     })
                     .ToList();
+
+        var doweledDb = order.Products
+                            .OfType<DoweledDrawerBoxProduct>()
+                            .GroupBy(b => new DoweledDrawerBoxGroup() {
+                                Room = b.Room,
+                                FrontMaterial = b.FrontMaterial,
+                                BackMaterial = b.BackMaterial,
+                                SideMaterial = b.SideMaterial,
+                                BottomMaterial = b.BottomMaterial,
+                                MachineForUMSlides = b.MachineThicknessForUMSlides
+                            }, new DoweledDrawerBoxGroupComparer())
+                            .Select(g => {
+                                g.Key.Items = g.Select(i => new DoweledDrawerBoxItem() {
+                                    Line = i.ProductNumber,
+                                    Qty = i.Qty,
+                                    Description = i.GetDescription(),
+                                    Height = i.Height,
+                                    Width = i.Width,
+                                    Depth = i.Depth
+                                })
+                                .OrderBy(i => i.Line)
+                                .ToList();
+                                return g.Key;
+                            })
+                            .ToList();
 
         var cp = order.Products
                     .OfType<ClosetPart>()
@@ -314,7 +344,8 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             Cabinets = cabs,
             ClosetParts = cp,
             Doors = doors,
-            DrawerBoxes = db,
+            DovetailDrawerBoxes = dovetailDb,
+            DoweledDrawerBoxes = doweledDb,
 
             ShowSuppliesInSummary = _showSupplies,
             Supplies = supplies,
@@ -562,7 +593,92 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
     }
 
-    private static void ComposeDrawerBoxTable(IContainer container, DrawerBoxGroup group) {
+    private static void ComposeDoweledDrawerBoxTable(IContainer container, DoweledDrawerBoxGroup group) {
+
+        var defaultCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .AlignMiddle()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3);
+
+        var headerCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .Background(Colors.Grey.Lighten3)
+                    .AlignCenter()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3)
+                    .DefaultTextStyle(x => x.Bold());
+
+        var materialStr = (DoweledDrawerBoxMaterial material)
+            => $"{material.Thickness.AsMillimeters():0.00}mm {material.Name}";
+
+        container.Column(col => {
+
+            col.Item()
+                .PaddingTop(10)
+                .PaddingLeft(10)
+                .Text($"{(group.Room == "" ? "" : $"{group.Room} - ")}Doweled Drawer Boxes ({group.Items.Sum(i => i.Qty)})")
+                .FontSize(16)
+                .Bold()
+                .Italic();
+
+            col.Item()
+                .DefaultTextStyle(x => x.FontSize(10))
+                .Table(table => {
+
+                    table.ColumnsDefinition(column => {
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(200);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                    });
+
+
+                    table.Header(header => {
+
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Front Material");
+                        header.Cell().ColumnSpan(4).Element(defaultCellStyle).PaddingLeft(5).Text(materialStr(group.FrontMaterial));
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Side Material");
+                        header.Cell().ColumnSpan(4).Element(defaultCellStyle).PaddingLeft(5).Text(materialStr(group.SideMaterial));
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Back Material");
+                        header.Cell().ColumnSpan(4).Element(defaultCellStyle).PaddingLeft(5).Text(materialStr(group.BackMaterial));
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Bottom material");
+                        header.Cell().ColumnSpan(4).Element(defaultCellStyle).PaddingLeft(5).Text(materialStr(group.BottomMaterial));
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Notch");
+                        header.Cell().ColumnSpan(4).Element(defaultCellStyle).PaddingLeft(5).Text(group.MachineForUMSlides ? "Notch for UM" : "None");
+
+                        header.Cell().Element(headerCellStyle).Text("#");
+                        header.Cell().Element(headerCellStyle).Text("Qty");
+                        header.Cell().Element(headerCellStyle).Text("Description");
+                        header.Cell().Element(headerCellStyle).Text("Width");
+                        header.Cell().Element(headerCellStyle).Text("Height");
+                        header.Cell().Element(headerCellStyle).Text("Depth");
+
+                    });
+
+
+                    foreach (var item in group.Items) {
+
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description);
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
+
+                    }
+
+                });
+
+        });
+
+    }
+
+    private static void ComposeDovetailDrawerBoxTable(IContainer container, DovetailDrawerBoxGroup group) {
 
         var defaultCellStyle = (IContainer cell)
             => cell.Border(1)
@@ -585,7 +701,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             col.Item()
                 .PaddingTop(10)
                 .PaddingLeft(10)
-                .Text($"{(group.Room == "" ? "" : $"{group.Room} - ")}Drawer Boxes ({group.Items.Sum(i => i.Qty)})")
+                .Text($"{(group.Room == "" ? "" : $"{group.Room} - ")}Dovetail Drawer Boxes ({group.Items.Sum(i => i.Qty)})")
                 .FontSize(16)
                 .Bold()
                 .Italic();
