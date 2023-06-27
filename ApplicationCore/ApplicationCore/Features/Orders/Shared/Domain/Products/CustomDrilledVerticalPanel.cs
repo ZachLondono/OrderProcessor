@@ -32,6 +32,9 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     public Dimension TransitionHoleDimensionFromTop { get; }
     public Dimension BottomNotchDepth { get; }
     public Dimension BottomNotchHeight { get; }
+    public Dimension LEDChannelOffFront { get; } = Dimension.FromMillimeters(51);
+    public Dimension LEDChannelWidth { get; } = Dimension.FromMillimeters(18.5);
+    public Dimension LEDChannelDepth { get; } = Dimension.FromMillimeters(8.5);
 
     // TODO: Implement this 
     public bool EdgeBandTop { get; } = false;
@@ -45,6 +48,11 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     private static readonly Dimension s_drillThroughDepth = Dimension.FromMillimeters(26);
     private static readonly string s_cutOutTool = "3-8Comp";
     private static readonly Dimension s_panelThickness = Dimension.FromMillimeters(19.05);
+
+    private static readonly string s_largeLEDToolName = "1-2Dado"; 
+    private static readonly Dimension s_largeLEDToolDiameter = Dimension.FromMillimeters(13.6);
+    private static readonly string s_smallLEDToolName = "POCKET3"; 
+    private static readonly Dimension s_smallLEDToolDiameter = Dimension.FromMillimeters(3);
 
     public string GetDescription() => "Closet Part - Custom Drilled Vertical Panel";
 
@@ -142,7 +150,10 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             ["TransHoleBot"] = TransitionHoleDimensionFromBottom.AsMillimeters().ToString(),
             ["TransHoleTop"] = TransitionHoleDimensionFromTop.AsMillimeters().ToString(),
             ["ProductWidth"] = Width.AsMillimeters().ToString(),
-            ["ProductLength"] = Length.AsMillimeters().ToString()
+            ["ProductLength"] = Length.AsMillimeters().ToString(),
+            ["LEDfront"] = LEDChannelOffFront.AsMillimeters().ToString(),
+            ["LEDwidth"] = LEDChannelWidth.AsMillimeters().ToString(),
+            ["LEDdepth"] = LEDChannelDepth.AsMillimeters().ToString(),
         };
 
         return new List<PPProduct>() { new PPProduct(Id, Qty, Room, SKU, ProductNumber, "Royal_c", materialType, "slab", "standard", Comment, finishMaterials, ebMaterials, parameters, new Dictionary<string, string>(), new Dictionary<string, string>()) };
@@ -231,6 +242,10 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
         var edgeBanding = new EdgeBanding(EdgeBandingColor, "PVC");
         var topEdgeBanding = EdgeBandTop ? new EdgeBanding(EdgeBandingColor, "PVC") : new("", "");
 
+        if (LEDChannelOffFront > Dimension.Zero) {
+            tokens.AddRange(CreateLEDChannel());
+        }
+
         var part = new Part() {
             Width = Width.AsMillimeters(),
             Length = Length.AsMillimeters(),
@@ -251,6 +266,78 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
 
         return new Part[] { part };
+
+    }
+
+    private IToken[] CreateLEDChannel() {
+
+        Dimension toolDiameter = s_largeLEDToolDiameter;
+        string toolName = s_largeLEDToolName;
+
+        if (LEDChannelWidth < s_largeLEDToolDiameter) {
+            toolDiameter = s_smallLEDToolDiameter;
+            toolName = s_smallLEDToolName;
+        }
+
+        double offEdgeMM = 7;
+
+        Dimension top = (LEDChannelOffFront + LEDChannelWidth);
+        Dimension bottom = LEDChannelOffFront;
+        Dimension depth = LEDChannelDepth;
+
+        var routeOffset = Offset.Left;
+
+        var passCount = Dimension.CeilingMM(LEDChannelWidth / toolDiameter).AsMillimeters();
+        var passDistance = LEDChannelWidth / passCount;
+
+        List<IToken> tokens = new();
+
+        Point start;
+        Point end;
+
+        for (int i = 0; i < passCount; i++) {
+
+            start = new Point() {
+                X = (top - (i * passDistance)).AsMillimeters(),
+                Y = -offEdgeMM
+            };
+
+            end = new Point() {
+                X = (top - (i * passDistance)).AsMillimeters(),
+                Y = Length.AsMillimeters() + offEdgeMM
+            };
+
+            tokens.Add(new Route() {
+                Start = start,
+                End = end,
+                StartDepth = depth.AsMillimeters(),
+                EndDepth = depth.AsMillimeters(),
+                Offset = routeOffset,
+                ToolName = toolName
+            });
+
+        }
+
+        start = new Point() {
+            X = bottom.AsMillimeters(),
+            Y = Length.AsMillimeters() + offEdgeMM
+        };
+
+        end = new Point() {
+            X = bottom.AsMillimeters(),
+            Y = -offEdgeMM
+        };
+
+        tokens.Add(new Route() {
+            Start = start,
+            End = end,
+            StartDepth = depth.AsMillimeters(),
+            EndDepth = depth.AsMillimeters(),
+            Offset = routeOffset,
+            ToolName = toolName
+        });
+
+        return tokens.ToArray();
 
     }
 
