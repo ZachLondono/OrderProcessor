@@ -593,7 +593,7 @@ internal class PackingListDecorator : IPackingListDecorator {
                                 Description = cab.GetDescription()
                             }).ToList(),
             ClosetParts = order.Products
-                            .OfType<ClosetPart>()
+                            .OfType<IClosetPartProduct>()
                             .Select(cab => new ClosetPartItem() {
                                 Line = cab.ProductNumber,
                                 Qty = cab.Qty,

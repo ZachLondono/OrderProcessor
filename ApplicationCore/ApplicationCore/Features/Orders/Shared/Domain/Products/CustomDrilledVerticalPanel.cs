@@ -8,7 +8,7 @@ using CADCodeProxy.Machining;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
 
-public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPartContainer {
+public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPartContainer, IClosetPartProduct {
 
     public Guid Id { get; }
     public int Qty { get; }

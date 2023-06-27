@@ -243,7 +243,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                             .ToList();
 
         var cp = order.Products
-                    .OfType<ClosetPart>()
+                    .OfType<IClosetPartProduct>()
                     .GroupBy(p => new ClosetPartGroup() {
                         Room = p.Room,
                         MaterialCore = p.Material.Core.ToString(),
