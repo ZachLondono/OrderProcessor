@@ -174,6 +174,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
         List<IToken> tokens = new();
 
         if (Width > Dimension.FromInches(12)) {
+            // Vertical panels which are deeper than 12" have an additional hole drilled at the top of the panel which matches the first hole at the top of a 12" deep panel
             Dimension depth = DrillingType == ClosetVerticalDrillingType.DrilledThrough ? s_drillThroughDepth : s_stoppedDepth;
             tokens.Add(new Bore(s_holeDiameter.AsMillimeters(),
                                 new((Width - Dimension.FromInches(12) + s_holesOffEdge).AsMillimeters(), (Length - s_holesOffTop).AsMillimeters()),
@@ -189,7 +190,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
                                                     s_stoppedDepth));
             }
         } else {
-            if (HoleDimensionFromTop > Dimension.Zero) {
+            if (HoleDimensionFromTop > TransitionHoleDimensionFromTop) { // Stopped holes from the top start just after the last transition (full depth) hole. If HoleDimensionFromTop is 0 (or equal to the TransitionHoleDimensionFromTop) then there are no additional holes
                 Dimension transEnd = GetValidHolePositionFromTop(Length, TransitionHoleDimensionFromTop);
                 Dimension start = Length - s_holesOffTop;
                 if (transEnd > Dimension.Zero) {
@@ -200,7 +201,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
                                                     s_stoppedDepth));
             }
 
-            if (HoleDimensionFromBottom > Dimension.Zero) {
+            if (HoleDimensionFromBottom > TransitionHoleDimensionFromBottom) {
                 Dimension transStart = GetValidHolePositionFromBottom(Length, TransitionHoleDimensionFromBottom);
                 Dimension end = transStart;
                 if (transStart > Dimension.Zero) {
