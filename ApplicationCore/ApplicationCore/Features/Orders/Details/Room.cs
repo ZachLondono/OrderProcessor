@@ -1,8 +1,4 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using static ApplicationCore.Features.Orders.Details.ProductTables.CabinetProductTable;
-using static ApplicationCore.Features.Orders.Details.ProductTables.DovetailDrawerBoxProductTable;
-using static ApplicationCore.Features.Orders.Details.ProductTables.DoweledDrawerBoxProductTable;
-using static ApplicationCore.Features.Orders.Details.ProductTables.MDFDoorProductTable;
 
 namespace ApplicationCore.Features.Orders.Details;
 
@@ -20,11 +16,11 @@ public class Room {
     public List<IProduct> Products { get; init; }
     public bool IsDirty { get; set; }
 
-    public List<CabinetRowModel> Cabinets { get; private set; }
+    public List<Cabinet> Cabinets { get; private set; }
     public List<IClosetPartProduct> ClosetParts { get; private set; }
-    public List<DovetailDrawerBoxRowModel> DovetailDrawerBoxes { get; private set; }
-    public List<DoweledDrawerBoxRowModel> DoweledDrawerBoxes { get; private set; }
-    public List<MDFDoorRowModel> MDFDoors { get; private set; }
+    public List<DovetailDrawerBoxProduct> DovetailDrawerBoxes { get; private set; }
+    public List<DoweledDrawerBoxProduct> DoweledDrawerBoxes { get; private set; }
+    public List<MDFDoorProduct> MDFDoors { get; private set; }
 
     public Room(string name, List<IProduct> products) {
 
@@ -32,24 +28,19 @@ public class Room {
         Products = products;
 
         Cabinets = products.OfType<Cabinet>()
-                          .Select(cab => new CabinetRowModel(cab))
                           .ToList();
 
         ClosetParts = products.OfType<IClosetPartProduct>()
                               .ToList();
 
         DovetailDrawerBoxes = products.OfType<DovetailDrawerBoxProduct>()
-                                  .Select(db => new DovetailDrawerBoxRowModel(db))
-                                  .ToList();
+                                      .ToList();
 
         DoweledDrawerBoxes = products.OfType<DoweledDrawerBoxProduct>()
-                                  .Select(db => new DoweledDrawerBoxRowModel(db))
-                                  .ToList();
+                                    .ToList();
 
         MDFDoors = products.OfType<MDFDoorProduct>()
-                        .Select(door => new MDFDoorRowModel(door))
-                        .ToList();
-
+                            .ToList();
 
     }
 

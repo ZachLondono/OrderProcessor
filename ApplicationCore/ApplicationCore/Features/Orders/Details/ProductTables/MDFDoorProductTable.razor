@@ -7,7 +7,6 @@
     <table class="table-auto">
         <thead class="border-b border-slate-300">
             <tr>
-                <th></th>
                 <th class="p-5">#</th>
                 <th class="p-5">Qty</th>
                 <th class="p-5">Width</th>
@@ -24,41 +23,26 @@
         <tbody>
             @foreach (var row in MDFDoors) {
                 <tr>
-                    <td>
-                        @if (row.IsComplete) {
-                            <ToolTip UnderLine="false" Text="Complete" Offset="ToolTip.OffsetSide.Right">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-600">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </ToolTip>
-                        } else {
-                            <ToolTip UnderLine="false" Text="Incomplete" Offset="ToolTip.OffsetSide.Right">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-red-600">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </ToolTip>
-                        }
-                    </td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.ProductNumber</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.Qty</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.ProductNumber</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Qty</td>
                     @if (UseInches) {
-                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.Product.Width.GetFormatedFraction())"</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.Product.Height.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.Width.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.Height.GetFormatedFraction())"</td>
                     } else {
-                        <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.Width.AsMillimeters().ToString("0.00")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.Height.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center">@row.Width.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center">@row.Height.AsMillimeters().ToString("0.00")</td>
                     }
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.FramingBead</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.EdgeDetail</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.FramingBead</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.EdgeDetail</td>
                     @if (UseInches){
-                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.Product.PanelDrop.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.PanelDrop.GetFormatedFraction())"</td>
                     } else {
-                        <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.PanelDrop.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center">@row.PanelDrop.AsMillimeters().ToString("0.00")</td>
                     }
-                    <td class="whitespace-nowrap p-5 border-b text-center">@(row.Product.PaintColor is null ? "N/A" : row.Product.PaintColor)</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.Room</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Product.UnitPrice.ToString("$0.00")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@((row.Product.UnitPrice * row.Product.Qty).ToString("$0.00"))</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@(row.PaintColor is null ? "N/A" : row.PaintColor)</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Room</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.UnitPrice.ToString("$0.00")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
                 </tr>
             }
         </tbody>
@@ -69,13 +53,9 @@
 @code {
 
     [Parameter]
-    public IEnumerable<MDFDoorRowModel> MDFDoors { get; set; } = Enumerable.Empty<MDFDoorRowModel>();
+    public IEnumerable<MDFDoorProduct> MDFDoors { get; set; } = Enumerable.Empty<MDFDoorProduct>();
 
     [Parameter]
     public bool UseInches { get; set; }
-
-    public class MDFDoorRowModel : ProductRowModel<MDFDoorProduct> {
-        public MDFDoorRowModel(MDFDoorProduct product) : base(product) { }
-    }
 
 }
