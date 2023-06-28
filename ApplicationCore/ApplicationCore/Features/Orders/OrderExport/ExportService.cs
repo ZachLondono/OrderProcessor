@@ -175,7 +175,7 @@ internal class ExportService {
         string jobName = string.IsNullOrWhiteSpace(configuration.CsvJobName) ? $"{order.Number} - {order.Name}" : configuration.CsvJobName;
 
         var batch = new Batch() {
-            Name = jobName,
+            Name = _fileReader.RemoveInvalidPathCharacters(jobName),
             Parts = parts
         };
 
