@@ -64,6 +64,7 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
             return null;
         }
 
+        // TODO: Get base directory from configuration file
         string workingDirectory = Path.Combine(@"R:\Job Scans\Allmoxy", _fileReader.RemoveInvalidPathCharacters($"{data.Number} - {data.Customer.Company} - {data.Name}", ' '));
         bool workingDirExists = TryToCreateWorkingDirectory(workingDirectory);
 

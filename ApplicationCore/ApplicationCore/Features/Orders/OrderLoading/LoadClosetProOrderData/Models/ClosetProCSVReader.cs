@@ -15,12 +15,13 @@ public class ClosetProCSVReader {
         _logger = logger;
     }
 
-    public ClosetProOrderInfo ReadCSVFile(string filePath) {
+    public async Task<ClosetProOrderInfo> ReadCSVFile(string filePath) {
 
         // TODO: make Async
 
         var config = new CsvConfiguration(CultureInfo.InvariantCulture) {
             HasHeaderRecord = false,
+            MissingFieldFound = null
         };
         
         OrderHeader orderInfo = new();
@@ -38,16 +39,16 @@ public class ClosetProCSVReader {
         bool isReadingPickList = false;
         bool isReadingAccessories = false;
         
-        while (csv.Read()) {
+        while (await csv.ReadAsync()) {
         
             if (!wasOrderHeaderRead) {
             
                 orderInfo = new() {
                     Designer = csv.GetField(0) ?? "",
-                    B = csv.GetField(0) ?? "",
-                    C = csv.GetField(0) ?? "",
-                    CustomerName = csv.GetField(0) ?? "",
-                    OrderName = csv.GetField(0) ?? "",
+                    Customer = csv.GetField(1) ?? "",
+                    DesignerCompany = csv.GetField(2) ?? "",
+                    CustomerName = csv.GetField(3) ?? "",
+                    OrderName = csv.GetField(4) ?? "",
                 };
             
                 wasOrderHeaderRead = true;

@@ -55,8 +55,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Companies\Data\" />
-  </ItemGroup>
-
 </Project>

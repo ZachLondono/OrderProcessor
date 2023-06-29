@@ -55,6 +55,14 @@ CREATE TABLE additional_items (
 	FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
+CREATE TABLE order_numbers (
+	name TEXT NOT NULL,
+	number INTEGER NOT NULL,
+	PRIMARY KEY (name)
+);
+
+INSERT INTO order_numbers (name, number) VALUES ("closet_pro_software", 0);
+
 -- Product Tables --
 
 CREATE TABLE products (

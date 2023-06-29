@@ -15,6 +15,7 @@ public class ClosetProPartMapper {
         { "AdjustableShelf", CreateAdjustableShelfFromPart },
         { "Toe Kick_3.75", CreateToeKickFromPart },
         { "Toe Kick_2.5", CreateToeKickFromPart },
+        { "Cleat", CreateCleatPart }
     };
     
     public IProduct? CreateProductFromPart(Part part) {
@@ -46,7 +47,7 @@ public class ClosetProPartMapper {
         double leftDrilling = part.VertDrillL;
         double rightDrilling = part.VertDrillR;
 
-        bool isTransition = leftDrilling != rightDrilling;
+        bool isTransition = leftDrilling != 0 && rightDrilling != 0 && leftDrilling != rightDrilling;
 
         bool isWallMount = part.ExportName.Contains("WM");
 
@@ -151,6 +152,29 @@ public class ClosetProPartMapper {
         Dictionary<string, string> parameters = new();
 
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
+
+    }
+
+    public static IProduct CreateCleatPart(Part part) {
+
+        if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
+            unitPrice = 0M;
+        }
+        string room = $"Wall {part.WallNum} Sec {part.SectionNum}";
+        string sku = "CLEAT";
+        Dimension width = Dimension.FromInches(part.Height);
+        Dimension length = Dimension.FromInches(part.Width);
+        ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
+        ClosetPaint? paint = null;
+        string edgeBandingColor = part.InfoRecords
+                                .Where(i => i.PartName == "Edge Banding")
+                                .Select(i => i.Color)
+                                .FirstOrDefault() ?? part.Color;
+        string comment = "";
+        Dictionary<string, string> parameters = new();
+
+        return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
+
 
     }
 
