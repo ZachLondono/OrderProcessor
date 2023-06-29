@@ -119,7 +119,7 @@ internal class ClosetProCSVOrderProvider : IOrderProvider {
             }
         };
 
-    }
+        }
 
     private string CreateWorkingDirectory(string source, ClosetProOrderInfo info, string orderNumber) {
         // TODO: get base directory from a configuration file
