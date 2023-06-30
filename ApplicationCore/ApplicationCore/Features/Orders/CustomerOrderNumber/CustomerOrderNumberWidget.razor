@@ -1,0 +1,47 @@
+﻿@using ApplicationCore.Shared.Components
+@inject CustomerOrderNumberViewModel DataContext
+
+@if (DataContext.Error is not null) {
+    <div>
+        <span>@DataContext.Error.Title</span>
+        <span>@DataContext.Error.Details</span>
+    </div>
+}
+
+@if (DataContext.Model is not null) {
+    
+    <EditForm Model="DataContext.Model" OnValidSubmit="DataContext.SaveData">
+        <label for="orderNumber" class="block text-sm font-medium text-gray-700">Next Order Number</label>
+        <InputNumber id="orderNumber" @bind-Value="DataContext.Model.Number" class="mt-1 w-24 px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+        <Button Type="submit">Save</Button>
+    </EditForm>
+
+} else {
+
+    <div>
+        <span>Customer does not have order numbering set up</span>
+        <Button OnClickAsync="() => DataContext.AddNewOrderNumber(CustomerId)">Add Order Number</Button>
+    </div>
+    
+}
+
+@code {
+
+    [Parameter]
+    public Guid CustomerId { get; set; }
+
+    protected override void OnInitialized() {
+        DataContext.OnPropertyChanged += StateHasChanged;
+    }
+
+    protected override async Task OnParametersSetAsync() {
+
+        if (CustomerId == Guid.Empty) {
+            return;
+        }
+
+        await DataContext.LoadData(CustomerId);
+
+    }
+
+}

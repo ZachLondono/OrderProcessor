@@ -19,6 +19,7 @@ using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 using ApplicationCore.Features.Orders.OrderLoading.LoadDoorSpreadsheetOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadDoorSpreadsheetOrderData.DoorOrderModels;
 using ApplicationCore.Shared.Data.Ordering;
+using ApplicationCore.Features.Orders.CustomerOrderNumber;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -86,6 +87,7 @@ public static class DependencyInjection {
     private static IServiceCollection AddViewModels(this IServiceCollection services)
         => services.AddTransient<OrderListViewModel>()
                     .AddTransient<ChooseOrderProviderViewModel>()
-                    .AddTransient<DeleteOrderConfirmationModalViewModel>();
+                    .AddTransient<DeleteOrderConfirmationModalViewModel>()
+                    .AddTransient<CustomerOrderNumberViewModel>();
 
 }
