@@ -52,7 +52,11 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
 
         } else {
 
-            await InitilizeDatabase(connection);
+            try {
+                await InitializeDatabase(connection);
+            } catch (Exception ex) {
+                throw new DataBaseInitializationException(ex);
+            }
 
         }
 
@@ -62,7 +66,7 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
 
     }
 
-    private async Task InitilizeDatabase(SqliteConnection connection) {
+    private async Task InitializeDatabase(SqliteConnection connection) {
 
         var schemaPath = _configuration.GetRequiredSection("Schemas").GetValue<string>("Ordering");
 
@@ -70,7 +74,7 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
             throw new InvalidOperationException("Ordering data base schema path is not set");
         }
 
-        _logger.LogInformation("Initilizing ordering database, version {DB_VERSION} from schema in file {FilePath}", DB_VERSION, schemaPath);
+        _logger.LogInformation("Initializing ordering database, version {DB_VERSION} from schema in file {FilePath}", DB_VERSION, schemaPath);
 
         var schema = await File.ReadAllTextAsync(schemaPath);
 

@@ -50,7 +50,11 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
 
         } else {
 
-            await InitializeDatabase(connection);
+            try {
+                await InitializeDatabase(connection);
+            } catch (Exception ex) {
+                throw new DataBaseInitializationException(ex);
+            }
 
         }
 
