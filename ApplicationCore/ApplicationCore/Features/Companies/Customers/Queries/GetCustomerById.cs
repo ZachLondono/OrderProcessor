@@ -28,8 +28,9 @@ internal class GetCustomerById {
                     
                     customers.id,
                     customers.name,
-
+                    customers.order_number_prefix AS OrderNumberPrefix,
                     customers.shipping_method AS ShippingMethod,
+
                     ship_cont.name AS ShippingContactName,
                     ship_cont.phone_number AS ShippingContactPhone,
                     ship_cont.email  AS ShippingContactEmail,
@@ -77,7 +78,7 @@ internal class GetCustomerById {
 
             public Guid Id { get; set; }
             public string Name { get; set; } = string.Empty;
-
+            public string? OrderNumberPrefix { get; set; } = null;
             public string ShippingMethod { get; set; } = string.Empty;
 
             public string ShippingContactName { get; set; } = string.Empty;
@@ -139,7 +140,7 @@ internal class GetCustomerById {
                     Country = BillingAddrCountry
                 };
 
-                return new Customer(Id, Name, ShippingMethod, shippingContact, shippingAddress, billingContact, billingAddress);
+                return new Customer(Id, Name, ShippingMethod, shippingContact, shippingAddress, billingContact, billingAddress, OrderNumberPrefix);
 
             }
 
