@@ -9,7 +9,6 @@ using ApplicationCore.Shared.Services;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using static ApplicationCore.Features.Companies.Contracts.CompanyDirectory;
-using CompanyAddress = ApplicationCore.Features.Companies.Contracts.ValueObjects.Address;
 using CompanyCustomer = ApplicationCore.Features.Companies.Contracts.Entities.Customer;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData;
@@ -23,17 +22,19 @@ internal class ClosetProCSVOrderProvider : IOrderProvider {
     private readonly ClosetProPartMapper _partMapper;
     private readonly IFileReader _fileReader;
     private readonly IOrderingDbConnectionFactory _dbConnectionFactory;
-    private readonly GetCustomerIdByNameAsync _getCustomerIdByNameIdAsync;
+    private readonly GetCustomerIdByNameAsync _getCustomerIdByNameAsync;
+    private readonly GetCustomerOrderPrefixByIdAsync _getCustomerOrderPrefixByIdAsync;
     private readonly InsertCustomerAsync _insertCustomerAsync;
 
-    public ClosetProCSVOrderProvider(ILogger<ClosetProCSVOrderProvider> logger, ClosetProCSVReader reader, ClosetProPartMapper partMapper, IFileReader fileReader, IOrderingDbConnectionFactory dbConnectionFactory, GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, InsertCustomerAsync insertCustomerAsync) {
+    public ClosetProCSVOrderProvider(ILogger<ClosetProCSVOrderProvider> logger, ClosetProCSVReader reader, ClosetProPartMapper partMapper, IFileReader fileReader, IOrderingDbConnectionFactory dbConnectionFactory, GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, InsertCustomerAsync insertCustomerAsync, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync) {
         _logger = logger;
         _reader = reader;
         _partMapper = partMapper;
         _fileReader = fileReader;
         _dbConnectionFactory = dbConnectionFactory;
-        _getCustomerIdByNameIdAsync = getCustomerIdByNameIdAsync;
+        _getCustomerIdByNameAsync = getCustomerIdByNameIdAsync;
         _insertCustomerAsync = insertCustomerAsync;
+        _getCustomerOrderPrefixByIdAsync = getCustomerOrderPrefixByIdAsync;
     }
 
     public async Task<OrderData?> LoadOrderData(string source) {
@@ -81,14 +82,18 @@ internal class ClosetProCSVOrderProvider : IOrderProvider {
 
         }
 
-        var orderNumber = await GetNextOrderNumber();
-
-        string workingDirectory = CreateWorkingDirectory(source, info, orderNumber);
-
         // TODO: get this info from a configuration file
         var vendorId = Guid.Parse("a81d759d-5b6c-4053-8cec-55a6c94d609e");
         string designerName = info.Header.GetDesignerName();
         var customerId = await GetOrCreateCustomerId(info.Header.DesignerCompany, designerName);
+
+        var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync(customerId);
+        if (orderNumberPrefix is null) {
+            throw new InvalidOperationException("Could not get customer data");
+        }
+
+        var orderNumber = await GetNextOrderNumber(customerId, orderNumberPrefix);
+        string workingDirectory = CreateWorkingDirectory(source, info, orderNumber);
 
         return new OrderData() {
             VendorId = vendorId,
@@ -119,7 +124,7 @@ internal class ClosetProCSVOrderProvider : IOrderProvider {
             }
         };
 
-        }
+    }
 
     private string CreateWorkingDirectory(string source, ClosetProOrderInfo info, string orderNumber) {
         // TODO: get base directory from a configuration file
@@ -133,7 +138,8 @@ internal class ClosetProCSVOrderProvider : IOrderProvider {
         return workingDirectory;
     }
 
-    private async Task<string> GetNextOrderNumber() {
+    private async Task<string> GetNextOrderNumber(Guid customerId, string? orderPrefix) {
+
         using var connection = await _dbConnectionFactory.CreateConnection();
 
         connection.Open();
@@ -141,20 +147,27 @@ internal class ClosetProCSVOrderProvider : IOrderProvider {
 
         try {
 
-            string orderSourceName = "closet_pro_software";
-
-            var newNumber = await connection.QuerySingleAsync<int>("SELECT number FROM order_numbers WHERE name = @OrderSourceName;", new {
-                OrderSourceName = orderSourceName
+            var newNumber = await connection.QuerySingleOrDefaultAsync<int?>("SELECT number FROM order_numbers WHERE customer_id = @CustomerId;", new {
+                CustomerId = customerId 
             });
 
-            await connection.ExecuteAsync("UPDATE order_numbers SET number = @IncrementedValue WHERE name = @OrderSourceName", new {
-                OrderSourceName = orderSourceName,
+            if (newNumber is null) {
+                int initialNumber = 1;
+                await connection.ExecuteAsync("INSERT INTO order_numbers (customer_id, number) VALUES (@CustomerId, @InitialNumber);", new {
+                    CustomerId = customerId,
+                    InitialNumber = initialNumber
+                }, trx);
+                newNumber = initialNumber;
+            }
+
+            await connection.ExecuteAsync("UPDATE order_numbers SET number = @IncrementedValue WHERE customer_id = @CustomerId", new {
+                CustomerId = customerId,
                 IncrementedValue = newNumber + 1
             });
 
             trx.Commit();
 
-            return newNumber.ToString();
+            return $"{orderPrefix ?? ""}{newNumber}";
 
         } catch {
             trx.Rollback();
@@ -167,7 +180,7 @@ internal class ClosetProCSVOrderProvider : IOrderProvider {
 
     private async Task<Guid> GetOrCreateCustomerId(string designerCompanyName, string designerName) {
  
-        Guid? customerId = await _getCustomerIdByNameIdAsync(designerCompanyName);
+        Guid? customerId = await _getCustomerIdByNameAsync(designerCompanyName);
 
         if (customerId is Guid id) {
             return id;
