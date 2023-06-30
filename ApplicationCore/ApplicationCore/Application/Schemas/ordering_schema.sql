@@ -56,12 +56,10 @@ CREATE TABLE additional_items (
 );
 
 CREATE TABLE order_numbers (
-	name TEXT NOT NULL,
+	customer_id BLOB NOT NULL,
 	number INTEGER NOT NULL,
-	PRIMARY KEY (name)
+	PRIMARY KEY (customer_id)
 );
-
-INSERT INTO order_numbers (name, number) VALUES ("closet_pro_software", 0);
 
 -- Product Tables --
 
