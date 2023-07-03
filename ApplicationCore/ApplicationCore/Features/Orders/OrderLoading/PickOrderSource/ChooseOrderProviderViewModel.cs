@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
-using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData;
+using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProFileOrderData;
+using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProWebOrderData;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 
@@ -23,9 +24,15 @@ internal class ChooseOrderProviderViewModel {
                 SourcePickerDialogType = typeof(GetAllmoxyOrderFilePathDialog)
             },
             new() {
-                Name = "Closet Pro",
-                SourceType = OrderSourceType.ClosetProCSV,
-                DialogTitle = "Select ClosetPro Order File",
+                Name = "Closet Pro Web",
+                SourceType = OrderSourceType.ClosetProWebCSV,
+                DialogTitle = "Select ClosetPro Design ID",
+                SourcePickerDialogType = typeof(GetClosetProDesignIdDialog)
+            },
+            new() {
+                Name = "Closet Pro File",
+                SourceType = OrderSourceType.ClosetProFileCSV,
+                DialogTitle = "Enter ClosetPro Order File",
                 SourcePickerDialogType = typeof(GetClosetProOrderFilePathDialog)
             }
             //new() {

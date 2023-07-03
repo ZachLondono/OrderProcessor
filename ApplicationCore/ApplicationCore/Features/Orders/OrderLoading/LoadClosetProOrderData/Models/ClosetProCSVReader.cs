@@ -15,7 +15,7 @@ public class ClosetProCSVReader {
         _logger = logger;
     }
 
-    public async Task<ClosetProOrderInfo> ReadCSVFile(string filePath) {
+    public async Task<ClosetProOrderInfo> ReadCSVData(string csvData) {
 
         // TODO: make Async
 
@@ -29,9 +29,8 @@ public class ClosetProCSVReader {
         List<BuyOutPart> buyOutParts = new();
         List<PickPart> pickList = new();
         List<Accessory> accessories = new();
-        
-        using var file = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-        using var reader = new StreamReader(file);
+
+        using var reader = new StringReader(csvData);
         using var csv = new CsvReader(reader, config);
         
         bool wasOrderHeaderRead = false;

@@ -13,7 +13,7 @@ using CompanyCustomer = ApplicationCore.Features.Companies.Contracts.Entities.Cu
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData;
 
-internal class ClosetProCSVOrderProvider : IOrderProvider {
+internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
     public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
 
@@ -37,16 +37,14 @@ internal class ClosetProCSVOrderProvider : IOrderProvider {
         _getCustomerOrderPrefixByIdAsync = getCustomerOrderPrefixByIdAsync;
     }
 
+    protected abstract Task<string> GetCSVDataFromSourceAsync(string source);
+
     public async Task<OrderData?> LoadOrderData(string source) {
 
-        if (!File.Exists(source)) {
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "File cannot be found");
-            return null;
-        }
+        var csvData = await GetCSVDataFromSourceAsync(source);
 
         _reader.OnReadError += (msg) => OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, msg);
-
-        var info = await _reader.ReadCSVFile(source);
+        var info = await _reader.ReadCSVData(csvData);
 
         List<IProduct> products = new();
         foreach (var part in info.Parts) {

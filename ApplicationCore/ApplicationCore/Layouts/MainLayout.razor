@@ -125,13 +125,13 @@
 			}
 
 			var sourceDialogResult = await Modal.Show(sourceConfig.SourcePickerDialogType, sourceConfig.DialogTitle).Result;
-			if (sourceDialogResult.Data is not string orderNumber || string.IsNullOrWhiteSpace(orderNumber)) {
+			if (sourceDialogResult.Data is not string orderSource || string.IsNullOrWhiteSpace(orderSource)) {
 				return;
 			}
 
 			var parameters = new ModalParameters() {
 				{ "SourceType", sourceConfig.SourceType },
-				{ "Source", orderNumber.Trim() }
+				{ "Source", orderSource.Trim() }
 			};
 
 			var options = new ModalOptions() {

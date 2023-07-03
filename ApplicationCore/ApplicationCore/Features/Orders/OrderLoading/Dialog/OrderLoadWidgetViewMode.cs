@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Orders.OrderLoading;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Logging;
