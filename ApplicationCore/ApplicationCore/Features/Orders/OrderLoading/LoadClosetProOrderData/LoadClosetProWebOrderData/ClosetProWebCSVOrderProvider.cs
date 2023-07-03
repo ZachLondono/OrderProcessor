@@ -15,23 +15,22 @@ internal class ClosetProWebCSVOrderProvider : ClosetProCSVOrderProvider {
         _factory = factory;
     }
 
-    protected override async Task<string> GetCSVDataFromSourceAsync(string source) {
+    protected override async Task<string?> GetCSVDataFromSourceAsync(string source) {
 
         if (int.TryParse(source, out int designId)) {
 
             var client = _factory.CreateClient();
 
-            var data = await client.GetCutListDataAsync(designId);
+            client.OnError += (msg) => OrderLoadingViewModel?.AddLoadingMessage(Dialog.MessageSeverity.Error, msg);
 
-            if (data is null) {
-                throw new InvalidOperationException();
-            }
+            var data = await client.GetCutListDataAsync(designId);
 
             return data;
 
         } else {
 
-            throw new NotImplementedException();
+            OrderLoadingViewModel?.AddLoadingMessage(Dialog.MessageSeverity.Error, $"Invalid design ID format '{source}'. Design ID must be an integer.");
+            return null;
 
         }
 

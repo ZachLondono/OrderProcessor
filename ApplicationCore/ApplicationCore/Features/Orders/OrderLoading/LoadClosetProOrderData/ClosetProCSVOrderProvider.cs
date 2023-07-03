@@ -37,11 +37,16 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         _getCustomerOrderPrefixByIdAsync = getCustomerOrderPrefixByIdAsync;
     }
 
-    protected abstract Task<string> GetCSVDataFromSourceAsync(string source);
+    protected abstract Task<string?> GetCSVDataFromSourceAsync(string source);
 
     public async Task<OrderData?> LoadOrderData(string source) {
 
         var csvData = await GetCSVDataFromSourceAsync(source);
+
+        if (csvData is null) {
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "No order data found");
+            return null;
+        }
 
         _reader.OnReadError += (msg) => OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, msg);
         var info = await _reader.ReadCSVData(csvData);

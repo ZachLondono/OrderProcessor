@@ -19,13 +19,13 @@ internal class ClosetProFileCSVOrderProvider : ClosetProCSVOrderProvider {
     }
 
 
-    protected override async Task<string> GetCSVDataFromSourceAsync(string source) {
+    protected override async Task<string?> GetCSVDataFromSourceAsync(string source) {
         try {
             string cutListCSV = await _fileReader.ReadFileContentsAsync(source);
             return cutListCSV;
         } catch (Exception ex) {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not load order data from Closet Pro: {ex.Message}");
-            return string.Empty;
+            return null;
         }
     }
     
