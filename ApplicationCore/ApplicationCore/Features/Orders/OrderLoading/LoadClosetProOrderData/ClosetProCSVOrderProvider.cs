@@ -90,13 +90,11 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         string designerName = info.Header.GetDesignerName();
         var customerId = await GetOrCreateCustomerId(info.Header.DesignerCompany, designerName);
 
-        var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync(customerId);
-        if (orderNumberPrefix is null) {
-            throw new InvalidOperationException("Could not get customer data");
-        }
-
-        var orderNumber = await GetNextOrderNumber(customerId, orderNumberPrefix);
+        var orderNumber = await GetNextOrderNumber(customerId);
         string workingDirectory = CreateWorkingDirectory(source, info, orderNumber);
+
+        var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync(customerId) ?? throw new InvalidOperationException("Could not get customer data");
+        orderNumber = $"{orderNumberPrefix}{orderNumber}";
 
         return new OrderData() {
             VendorId = vendorId,
@@ -141,7 +139,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         return workingDirectory;
     }
 
-    private async Task<string> GetNextOrderNumber(Guid customerId, string? orderPrefix) {
+    private async Task<string> GetNextOrderNumber(Guid customerId) {
 
         using var connection = await _dbConnectionFactory.CreateConnection();
 
@@ -170,7 +168,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
             trx.Commit();
 
-            return $"{orderPrefix ?? ""}{newNumber}";
+            return newNumber?.ToString() ?? "0";
 
         } catch {
             trx.Rollback();
