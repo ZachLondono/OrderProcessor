@@ -14,6 +14,7 @@ using ApplicationCore.Shared.Bus;
 using ApplicationCore.Infrastructure.UI;
 using ApplicationCore.Shared.Settings;
 using ApplicationCore.Features.DataFilePaths;
+using ApplicationCore.Features.Updates;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -40,6 +41,10 @@ public static class DependencyInjection {
         services.AddBlazoredModal();
 
         services.AddOrderListPage();
+
+        services.AddUpdates();
+
+        services.AddHttpClient();
 
         services.AddSingleton<IFileReader, FileReader>();
         services.AddSingleton<IFileWriter, FileWriter>();
