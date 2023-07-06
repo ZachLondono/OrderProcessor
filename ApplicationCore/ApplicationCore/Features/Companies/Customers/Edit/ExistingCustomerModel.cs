@@ -9,6 +9,7 @@ internal class ExistingCustomerModel {
 
     [Required]
     public string? Name { get; set; } = null;
+    public string? OrderNumberPrefix { get; set; } = null;
     public string ShippingMethod { get; set; } = string.Empty;
     public Contact ShippingContact { get; set; } = new();
     public Address ShippingAddress { get; set; } = new();

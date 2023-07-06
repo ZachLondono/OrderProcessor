@@ -55,6 +55,7 @@ internal class EditCustomerViewModel {
             customer => customer is null ? null : new() {
                 Id = customerId,
                 Name = customer.Name,
+                OrderNumberPrefix = customer.OrderNumberPrefix,
                 BillingAddress = customer.BillingAddress,
                 BillingContact = customer.BillingContact,
                 ShippingMethod = customer.ShippingMethod,
@@ -83,7 +84,7 @@ internal class EditCustomerViewModel {
 
         try {
 
-            var customer = new Customer(Model.Id, Model.Name ?? "", Model.ShippingMethod, Model.ShippingContact, Model.ShippingAddress, Model.BillingContact, Model.BillingAddress);
+            var customer = new Customer(Model.Id, Model.Name ?? "", Model.ShippingMethod, Model.ShippingContact, Model.ShippingAddress, Model.BillingContact, Model.BillingAddress, Model.OrderNumberPrefix);
 
             var response = await _bus.Send(new UpdateCustomer.Command(customer));
 

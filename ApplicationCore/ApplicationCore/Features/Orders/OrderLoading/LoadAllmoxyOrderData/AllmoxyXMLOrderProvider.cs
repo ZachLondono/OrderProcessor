@@ -28,16 +28,18 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
     private readonly GetCustomerIdByAllmoxyIdAsync _getCustomerIdByAllmoxyIdAsync;
     private readonly InsertCustomerAsync _insertCustomerAsync;
     private readonly IFileReader _fileReader;
+    private readonly GetCustomerOrderPrefixByIdAsync _getCustomerOrderPrefixByIdAsync;
 
     public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
 
-    public AllmoxyXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader) {
+    public AllmoxyXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync) {
         _configuration = configuration.Value;
         _validator = validator;
         _builderFactory = builderFactory;
         _getCustomerIdByAllmoxyIdAsync = getCustomerIdByAllmoxyIdAsync;
         _insertCustomerAsync = insertCustomerAsync;
         _fileReader = fileReader;
+        _getCustomerOrderPrefixByIdAsync = getCustomerOrderPrefixByIdAsync;
     }
 
     protected abstract Task<string> GetExportXMLFromSource(string source);
@@ -64,6 +66,7 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
             return null;
         }
 
+        // TODO: Get base directory from configuration file
         string workingDirectory = Path.Combine(@"R:\Job Scans\Allmoxy", _fileReader.RemoveInvalidPathCharacters($"{data.Number} - {data.Customer.Company} - {data.Name}", ' '));
         bool workingDirExists = TryToCreateWorkingDirectory(workingDirectory);
 
@@ -110,8 +113,14 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
         List<IProduct> products = new();
         data.Products.ForEach(c => MapAndAddProduct(c, products));
 
+        string number = data.Number.ToString();
+        string? prefix = await _getCustomerOrderPrefixByIdAsync(customerId);
+        if (prefix is not null) {
+            number = prefix + number;
+        }
+
         OrderData? order = new() {
-            Number = data.Number.ToString(),
+            Number = number,
             Name = data.Name,
             WorkingDirectory = workingDirectory,                                         // TODO: Get default working directory from configuration file
             Comment = data.Description,

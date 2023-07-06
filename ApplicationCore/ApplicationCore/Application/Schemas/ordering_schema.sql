@@ -55,6 +55,12 @@ CREATE TABLE additional_items (
 	FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
+CREATE TABLE order_numbers (
+	customer_id BLOB NOT NULL,
+	number INTEGER NOT NULL,
+	PRIMARY KEY (customer_id)
+);
+
 -- Product Tables --
 
 CREATE TABLE products (

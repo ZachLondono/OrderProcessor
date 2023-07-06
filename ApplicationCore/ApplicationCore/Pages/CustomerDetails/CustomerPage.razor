@@ -1,17 +1,23 @@
 ﻿@page "/customers/{customerId:guid}"
 @using ApplicationCore.Features.Companies.Customers.Edit
 @using ApplicationCore.Features.Orders.List
+@using ApplicationCore.Features.Orders.CustomerOrderNumber
 
 <h1 class="font-bold text-lg">Customer Details</h1>
 
 <div class="grid grid-cols-1 gap-5">
-    <div>
+    <section>
         <EditCustomer CustomerId="CustomerId" />
-    </div>
-    <div>
+    </section>
+    <hr />
+    <section>
+        <CustomerOrderNumberWidget CustomerId="CustomerId" />
+    </section>
+    <hr />
+    <section>
         <h2 class="font-bold text-md">Orders</h2>
         <OrderList CustomerId="CustomerId" />
-    </div>
+    </section>
 </div>
 
 @code {

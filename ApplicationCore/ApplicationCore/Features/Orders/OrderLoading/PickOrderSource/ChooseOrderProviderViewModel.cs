@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
-using ApplicationCore.Features.Orders.OrderLoading.LoadDoorSpreadsheetOrderData.DoorOrderModels;
+using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProFileOrderData;
+using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProWebOrderData;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 
@@ -23,11 +24,23 @@ internal class ChooseOrderProviderViewModel {
                 SourcePickerDialogType = typeof(GetAllmoxyOrderFilePathDialog)
             },
             new() {
-                Name = "Door Spreadsheet",
-                SourceType = OrderSourceType.DoorOrder,
-                DialogTitle = "Select Door Order Spreadsheet",
-                SourcePickerDialogType = typeof(GetDoorOrderSpreadsheetPathDialog)
+                Name = "Closet Pro Web",
+                SourceType = OrderSourceType.ClosetProWebCSV,
+                DialogTitle = "Select ClosetPro Design ID",
+                SourcePickerDialogType = typeof(GetClosetProDesignIdDialog)
+            },
+            new() {
+                Name = "Closet Pro File",
+                SourceType = OrderSourceType.ClosetProFileCSV,
+                DialogTitle = "Enter ClosetPro Order File",
+                SourcePickerDialogType = typeof(GetClosetProOrderFilePathDialog)
             }
+            //new() {
+            //    Name = "Door Spreadsheet",
+            //    SourceType = OrderSourceType.DoorOrder,
+            //    DialogTitle = "Select Door Order Spreadsheet",
+            //    SourcePickerDialogType = typeof(GetDoorOrderSpreadsheetPathDialog)
+            //}
         };
 
     }

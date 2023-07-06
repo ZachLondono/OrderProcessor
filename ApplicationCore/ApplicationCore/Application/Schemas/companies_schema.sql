@@ -1,6 +1,7 @@
 CREATE TABLE customers (
 	id BLOB NOT NULL,
 	name TEXT NOT NULL,
+	order_number_prefix TEXT,
 	shipping_method TEXT NOT NULL,
 	shipping_contact_id BLOB NOT NULL,
 	shipping_address_id BLOB NOT NULL,

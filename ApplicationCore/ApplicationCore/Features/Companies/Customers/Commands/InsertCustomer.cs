@@ -52,6 +52,7 @@ internal class InsertCustomer {
                     INSERT INTO customers (
                         id,
                         name,
+                        order_number_prefix,
                         shipping_method,
                         shipping_contact_id,
                         shipping_address_id,
@@ -60,6 +61,7 @@ internal class InsertCustomer {
                     VALUES (
                         @Id,
                         @Name,
+                        @OrderNumberPrefix,
                         @ShippingMethod,
                         @ShippingContactId,
                         @ShippingAddressId,
@@ -69,6 +71,7 @@ internal class InsertCustomer {
                     """, new {
                         customer.Id,
                         customer.Name,
+                        customer.OrderNumberPrefix,
                         customer.ShippingMethod,
                         ShippingContactId = shippingContactId,
                         ShippingAddressId = shippingAddressId,
