@@ -65,13 +65,13 @@ jobs:
        echo -n ${{ env.ReleaseChannel }} > ".\${{ env.ApplicationName }}\channel.txt"
       shell: pwsh
 
-    - name: Version schema
-      run: |
-        $schemaVersion = (git log --pretty=format:%s .\${{ env.ApplicationName }}\Schemas\test_schema.sql).Length
-        echo "Setting schema version to $($schemaVersion)"
-        .\${{ env.ApplicationName }}\Schemas\GenerateSchemaVersionSourceFile.ps1 TestSchemaVersion $schemaVersion
-        cat .\${{ env.ApplicationName }}\Schemas\TestSchemaVersion.cs
-      shell: pwsh
+    # - name: Version schema
+    #   run: |
+    #     $schemaVersion = (git log --pretty=format:%s .\${{ env.ApplicationName }}\Schemas\test_schema.sql).Length
+    #     echo "Setting schema version to $($schemaVersion)"
+    #     .\${{ env.ApplicationName }}\Schemas\GenerateSchemaVersionSourceFile.ps1 TestSchemaVersion $schemaVersion
+    #     cat .\${{ env.ApplicationName }}\Schemas\TestSchemaVersion.cs
+    #   shell: pwsh
     
     - name: Build Appx Package
       run: |
