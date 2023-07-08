@@ -1,0 +1,127 @@
+on:
+  push:
+    branches: [ master, "feature/app_updates" ]
+    paths-ignore:
+    - .github/workflows/deploy_release_channel.yml
+
+jobs:
+  
+  Build:
+    name: Deploy App to Preview Channel
+    runs-on: windows-latest
+    
+    env:
+      ApplicationName: DesktopHost
+      WapProjectName: Package
+      BuildConfiguration: Release
+      ReleaseChannel: preview
+      SigningCertificate: GithubCertificate.pfx      
+      DeployURI: http://zacharylondono.com/orders/preview
+      DeployPath: ./app_deployment/orderprocessor_artifacts/preview
+
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+       fetch-depth: 0 # Needed for nbgv
+    
+    - name: Setup NerdBank.GitVersion
+      uses: dotnet/nbgv@master
+      id: nbgv
+    
+    - name: Setup msbuild
+      uses: microsoft/setup-msbuild@v1.1
+    
+    - name: Use .NET Core SDK 7.0.x
+      uses: actions/setup-dotnet@v3
+      with:
+       dotnet-version: 7.0.x
+    
+    - name: Create directory for output
+      run: mkdir ${{ github.workspace }}\${{ env.ReleaseChannel }}
+      
+    - name: Decode certificate
+      run: |
+       $pfx_bytes = [System.Convert]::FromBase64String("${{ secrets.BASE64_PFX_CONTENT }}");
+       $currentDirectory = Get-Location
+       $certificatePath = Join-Path -Path $currentDirectory -ChildPath ${{ env.WapProjectName }} -AdditionalChildPath ${{ env.SigningCertificate }}
+       [IO.File]::WriteAllBytes("$certificatePath", $pfx_bytes)
+      shell: pwsh
+    
+    - name: Update AppxManifest
+      run: |
+       # Update appxmanifest. This must be done before build.
+       [xml]$manifest= get-content ".\${{ env.WapProjectName }}\${{ env.WapProjectName }}.appxmanifest"
+       # Set version number
+       $manifest.Package.Identity.Version = "${{ steps.nbgv.outputs.SimpleVersion }}.0"
+       # Update display name for preview version
+       $manifest.Package.Applications.Application.VisualElements.DisplayName = "$($manifest.Package.Applications.Application.VisualElements.DisplayName) (preview)"
+       $manifest.save(".\${{ env.WapProjectName }}\${{ env.WapProjectName }}.appxmanifest")
+      shell: pwsh
+    
+    - name: Set channel name
+      run: |
+       echo -n ${{ env.ReleaseChannel }} > ".\${{ env.ApplicationName }}\channel.txt"
+      shell: pwsh
+
+    - name: Version schema
+      run: |
+        $schemaVersion = (git log --pretty=format:%s .\${{ env.ApplicationName }}\Schemas\test_schema.sql).Length
+        echo "Setting schema version to $($schemaVersion)"
+        .\${{ env.ApplicationName }}\Schemas\GenerateSchemaVersionSourceFile.ps1 TestSchemaVersion $schemaVersion
+        cat .\${{ env.ApplicationName }}\Schemas\TestSchemaVersion.cs
+      shell: pwsh
+    
+    - name: Build Appx Package
+      run: |
+       dotnet restore .\${{ env.ApplicationName }}\${{ env.ApplicationName }}.csproj
+       msbuild /t:restore .\${{ env.WapProjectName }}\${{ env.WapProjectName }}.wapproj
+       msbuild '.\${{ env.WapProjectName }}\${{ env.WapProjectName }}.wapproj' `
+               /p:VersionNumber=${{ steps.nbgv.outputs.SimpleVersion }}.0 `
+               /p:configuration='${{ env.BuildConfiguration }}' `
+               /p:IncludeSymbols=true `
+               /p:PackageCertificateKeyFile=${{ env.SigningCertificate }} `
+               /p:PackageCertificatePassword=${{ secrets.PFX_KEY }} `
+               /p:AppInstallerUri="${{ env.DeployURI }}" `
+               /p:AppxPackageDir="${{ github.workspace }}\${{ env.ReleaseChannel }}\"
+    
+    - name: Remove the .pfx
+      run: Remove-Item -path ${{ env.WapProjectName }}\${{ env.SigningCertificate }}
+    
+    - name: Remove appinstaller protocol
+      run: |
+       (Get-Content "${{ github.workspace }}\${{ env.ReleaseChannel }}\index.html").replace('ms-appinstaller:?source=', '') | Set-Content "${{ github.workspace }}\${{ env.ReleaseChannel }}\index.html"
+      shell: pwsh
+     
+    - name: Create Release Notes
+      id: release_notes
+      uses: actions/github-script@v6.4.1
+      env:
+       COMMITS: ${{ toJSON(github.event.commits) }}
+      with:
+        result-encoding: string
+        script: |
+          const commits = JSON.parse(process.env.COMMITS);
+          notes = ""
+          for (const commit of commits) {
+              const date = new Date(commit.timestamp)
+              const timestampStr = (date.getMonth()+1) + "/" + date.getDate() + "/" + date.getFullYear() + " " + date.getHours() + ":" + ("0" + date.getMinutes()).slice(-2)
+              const commitNote = ("[" + timestampStr + "] - " + commit.message + "\n").replace(/"/g, "`\"")
+              notes += commitNote
+          }
+          return notes.trim()
+
+    - name: Write Release Notes to File
+      run: |
+        echo -n "${{ steps.release_notes.outputs.result }}" > "${{ github.workspace }}\${{ env.ReleaseChannel }}\release_notes.txt"
+
+    - name: Copy Files to Remote
+      uses: garygrossgarten/github-action-scp@release
+      with:
+       local: ${{ github.workspace }}\${{ env.ReleaseChannel }}\
+       remote: ${{ env.DeployPath }}
+       host: ${{ secrets.SSH_HOST }}
+       username: ${{ secrets.SSH_USER }}
+       port: ${{ secrets.SSH_PORT }}
+       privateKey : ${{ secrets.SSH_PRIVATE_KEY }}
