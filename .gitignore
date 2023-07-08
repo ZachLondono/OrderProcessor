@@ -40,3 +40,6 @@ msbuild.wrn
 /DesktopHost/wwwroot/css/app.css
 /UI Mockup/*
 /DesktopHost/Configuration/credentials.json
+
+# Signing Certificate
+*.pfx
