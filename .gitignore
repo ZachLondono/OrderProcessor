@@ -43,3 +43,4 @@ msbuild.wrn
 
 # Signing Certificate
 *.pfx
+/nuget.config

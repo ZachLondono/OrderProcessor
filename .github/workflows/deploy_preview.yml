@@ -75,6 +75,7 @@ jobs:
     
     - name: Build Appx Package
       run: |
+       dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ZachLondono/index.json"
        dotnet restore .\${{ env.ApplicationName }}\${{ env.ApplicationName }}.csproj
        msbuild /t:restore .\${{ env.WapProjectName }}\${{ env.WapProjectName }}.wapproj
        msbuild '.\${{ env.WapProjectName }}\${{ env.WapProjectName }}.wapproj' `

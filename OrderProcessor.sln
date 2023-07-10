@@ -19,6 +19,9 @@ EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "Package", "Package\Package.wapproj", "{A3054482-612B-48CD-8D44-40DDC2FE4278}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{C86A9F12-8A0B-4320-AAD3-D98E4671EEBA}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\deploy_preview.yml = .github\workflows\deploy_preview.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
