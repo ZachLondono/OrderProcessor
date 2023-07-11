@@ -75,7 +75,7 @@ jobs:
 
     - name: Write credentials file 
       run: |
-       $creds = ${{ secrets.CREDENTIALS }}
+       $creds = '${{ secrets.CREDENTIALS }}'
        Out-File -FilePath ".\${{ env.ApplicationName }}\Configuration\credentials.json" -InputObject $creds
       shell: pwsh
 
