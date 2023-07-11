@@ -75,7 +75,8 @@ jobs:
 
     - name: Write credentials file 
       run: |
-       echo -n ${{ secrets.CREDENTIALS }} > ".\${{ env.ApplicationName }}\Configuration\credentials.json"
+       $creds = ${{ secrets.CREDENTIALS }}
+       Out-File -FilePath ".\${{ env.ApplicationName }}\Configuration\credentials.json" -InputObject $creds
       shell: pwsh
 
     # - name: Version schema
