@@ -59,7 +59,7 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
             };
 
             workbook = app.Workbooks.Open(source, ReadOnly: true);
-            Worksheet? orderSheet = workbook.Sheets["MDF"];
+            Worksheet? orderSheet = (Worksheet?)workbook.Sheets["MDF"];
 
             if (orderSheet is null) {
                 OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find MDF sheet in workbook");
