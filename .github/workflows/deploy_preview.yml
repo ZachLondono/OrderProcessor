@@ -73,6 +73,11 @@ jobs:
        echo -n ${{ env.ReleaseChannel }} > ".\${{ env.ApplicationName }}\channel.txt"
       shell: pwsh
 
+    - name: Write credentials file 
+      run: |
+       echo -n ${{ secrets.CREDENTIALS }} > ".\${{ env.ApplicationName }}\Configuration\credentials.json"
+      shell: pwsh
+
     # - name: Version schema
     #   run: |
     #     $schemaVersion = (git log --pretty=format:%s .\${{ env.ApplicationName }}\Schemas\test_schema.sql).Length
@@ -92,7 +97,8 @@ jobs:
                /p:IncludeSymbols=true `
                /p:PackageCertificateKeyFile=${{ env.SigningCertificate }} `
                /p:AppInstallerUri="${{ env.DeployURI }}" `
-               /p:AppxPackageDir="${{ github.workspace }}\${{ env.ReleaseChannel }}\"
+               /p:AppxPackageDir="${{ github.workspace }}\${{ env.ReleaseChannel }}\" `
+               /p:PackageName="Order Processor"
                #/p:PackageCertificatePassword=${{ secrets.PFX_KEY }} `
     
     - name: Remove the .pfx

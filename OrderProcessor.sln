@@ -14,6 +14,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{11370171-39FB-4E64-B981-1BE8107E3BE9}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		version.json = version.json
 	EndProjectSection
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "Package", "Package\Package.wapproj", "{A3054482-612B-48CD-8D44-40DDC2FE4278}"
