@@ -32,7 +32,15 @@ jobs:
     
     - name: Setup msbuild
       uses: microsoft/setup-msbuild@v1.1
-    
+
+    - name: Setup Node for Tailwindcss
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Install Tailwindcss
+      run: npm install -g tailwindcss
+
     - name: Use .NET Core SDK 7.0.x
       uses: actions/setup-dotnet@v3
       with:
