@@ -91,9 +91,9 @@ jobs:
                /p:configuration='${{ env.BuildConfiguration }}' `
                /p:IncludeSymbols=true `
                /p:PackageCertificateKeyFile=${{ env.SigningCertificate }} `
-               /p:PackageCertificatePassword=${{ secrets.PFX_KEY }} `
                /p:AppInstallerUri="${{ env.DeployURI }}" `
                /p:AppxPackageDir="${{ github.workspace }}\${{ env.ReleaseChannel }}\"
+               #/p:PackageCertificatePassword=${{ secrets.PFX_KEY }} `
     
     - name: Remove the .pfx
       run: Remove-Item -path ${{ env.WapProjectName }}\${{ env.SigningCertificate }}
