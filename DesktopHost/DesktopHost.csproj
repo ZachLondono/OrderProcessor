@@ -47,7 +47,8 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="(cd ../ &amp;&amp; tailwindcss.exe -i ./DesktopHost/Styles/input.css -o ./DesktopHost/wwwroot/css/app.css)" />
+    <!--<Exec Command="(cd ../ &amp;&amp; tailwindcss.exe -i ./DesktopHost/Styles/input.css -o ./DesktopHost/wwwroot/css/app.css)" />-->
+    <Exec Command="(cd ../ &amp;&amp; npx tailwindcss -i ./DesktopHost/Styles/input.css -o ./DesktopHost/wwwroot/css/app.css)" />
   </Target>
 
   <Target Name="FullClean" AfterTargets="Clean">
