@@ -66,16 +66,18 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
 
     private async Task InitializeDatabase(SqliteConnection connection) {
 
-        var schemaPath = _configuration.GetRequiredSection("Schemas").GetValue<string>("Companies");
+        var directory = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        var relativeSchemaPath = _configuration.GetRequiredSection("Schemas").GetValue<string>("Companies");
 
-        if (schemaPath is null) {
+        if (relativeSchemaPath is null) {
             connection.Close();
             throw new InvalidOperationException("Companies data base schema path is not set");
         }
 
-        _logger.LogInformation("Initializing companies database, version {DB_VERSION} from schema in file {FilePath}", DB_VERSION, schemaPath);
+        _logger.LogInformation("Initializing companies database, version {DB_VERSION} from schema in file {FilePath}", DB_VERSION, relativeSchemaPath);
 
-        var schema = await File.ReadAllTextAsync(schemaPath);
+        string fullPath = Path.Combine(directory, relativeSchemaPath);
+        var schema = await File.ReadAllTextAsync(relativeSchemaPath);
 
         await connection.OpenAsync();
         var trx = await connection.BeginTransactionAsync();
