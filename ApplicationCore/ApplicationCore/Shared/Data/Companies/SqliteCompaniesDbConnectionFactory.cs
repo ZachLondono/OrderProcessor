@@ -77,7 +77,7 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
         _logger.LogInformation("Initializing companies database, version {DB_VERSION} from schema in file {FilePath}", DB_VERSION, relativeSchemaPath);
 
         string fullPath = Path.Combine(directory, relativeSchemaPath);
-        var schema = await File.ReadAllTextAsync(relativeSchemaPath);
+        var schema = await File.ReadAllTextAsync(fullPath);
 
         await connection.OpenAsync();
         var trx = await connection.BeginTransactionAsync();
