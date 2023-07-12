@@ -1,5 +1,4 @@
 {
-  "ordering_db_path": "./ordering.sqlite",
-  "companies_db_path": "./companies.sqlite",
-  "work_orders_db_path": "./work_orders.sqlite"
+  "ordering_db_path": "C:/Program Files/OrderProcessor/ordering.sqlite",
+  "companies_db_path": "C:/Program Files/OrderProcessor/companies.sqlite"
 }
