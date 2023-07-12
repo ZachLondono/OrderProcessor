@@ -68,7 +68,7 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
 
     private async Task InitializeDatabase(SqliteConnection connection) {
 
-        var directory = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        var directory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         var relativeSchemaPath = _configuration.GetRequiredSection("Schemas").GetValue<string>("Ordering");
 
         if (relativeSchemaPath is null) {

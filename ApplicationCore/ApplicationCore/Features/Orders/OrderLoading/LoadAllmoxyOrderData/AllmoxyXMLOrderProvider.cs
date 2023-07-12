@@ -207,7 +207,7 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
-            var directory = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var directory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             var fullPath = Path.Combine(directory, _configuration.SchemaFilePath);
             var errors = _validator.ValidateXML(stream, fullPath);
 
