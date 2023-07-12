@@ -70,7 +70,7 @@ public partial class App : Application {
     private static void ConfigureLogging(ILoggingBuilder loggingBuilder) {
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Debug()
-            //.WriteTo.SQLite("logs.db")
+            .WriteTo.SQLite(@"C:\Program Files\OrderProcessor\Logs\logs.db")
             .CreateLogger();
 
         loggingBuilder.ClearProviders().AddSerilog();
