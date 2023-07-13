@@ -25,19 +25,14 @@
 
         <div>Checking for updates...</div>
 
-    } else if (DataContext.IsUpdateDownloading) {
-    
-        <div>Dowloading update... (@DataContext.AvailableUpdate)</div>
+    } else if (DataContext.IsInstallingUpdate) {
 
-    } else if (DataContext.IsUpdateReady) {
+        <div>Installing update...</div>
+        
+    } else if (DataContext.IsUpdateAvailable) {
 
-        <div class="mb-3">Update is ready to install. (@DataContext.AvailableUpdate)</div>
-        <Button Style="Button.ButtonStyle.Contained" Color="Button.ButtonColor.Success" OnClick="DataContext.InstallUpdate">Install</Button>
-
-    } else if (DataContext.AvailableUpdate is not null) {
-
-        <div class="mb-3">Update available. (@DataContext.AvailableUpdate)</div>
-        <Button Style="Button.ButtonStyle.Contained" Color="Button.ButtonColor.Success" OnClickAsync="DataContext.DownloadUpdate">Download</Button>
+        <div class="mb-3">Update is ready to install.</div>
+        <Button Style="Button.ButtonStyle.Contained" Color="Button.ButtonColor.Success" OnClickAsync="DataContext.InstallUpdate">Install</Button>
 
     } else {
     
@@ -57,6 +52,7 @@
     protected override async Task OnInitializedAsync() {
         await base.OnInitializedAsync();
         DataContext.OnPropertyChanged += StateHasChanged;
+        await DataContext.Initialize();
         await DataContext.CheckForUpdates();
     }
 
