@@ -5,6 +5,7 @@ using static ApplicationCore.Features.Companies.Contracts.CompanyDirectory;
 using Microsoft.Extensions.Options;
 using ApplicationCore.Shared.Services;
 using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.XMLValidation;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyFileOrderData;
 
@@ -12,8 +13,8 @@ internal class AllmoxyFileXMLOrderProvider : AllmoxyXMLOrderProvider {
 
     private readonly IFileReader _fileReader;
 
-    public AllmoxyFileXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync)
-        : base(configuration, validator, builderFactory, getCustomerIdByAllmoxyIdAsync, insertCustomerAsync, fileReader, getCustomerOrderPrefixByIdAsync) {
+    public AllmoxyFileXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, ILogger<AllmoxyXMLOrderProvider> logger)
+        : base(configuration, validator, builderFactory, getCustomerIdByAllmoxyIdAsync, insertCustomerAsync, fileReader, getCustomerOrderPrefixByIdAsync, logger) {
         _fileReader = fileReader;
     }
 

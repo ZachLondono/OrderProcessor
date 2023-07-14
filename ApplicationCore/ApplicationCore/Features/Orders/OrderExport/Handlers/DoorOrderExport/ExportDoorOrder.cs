@@ -126,7 +126,7 @@ public class ExportDoorOrder {
                     var customerName = customer?.Name ?? "";
 
                     var worksheets = workbook.Worksheets;
-                    Worksheet worksheet = worksheets["MDF"];
+                    Worksheet worksheet = (Worksheet)worksheets["MDF"];
                     FillOrderSheet(order, customerName, group, worksheet, orderNumber);
                     Marshal.ReleaseComObject(worksheet);
                     Marshal.ReleaseComObject(worksheets);
@@ -134,7 +134,7 @@ public class ExportDoorOrder {
                     string fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{orderNumber} - {order.Name} MDF DOORS", ".xlsm");
                     string finalPath = Path.GetFullPath(fileName);
 
-                    workbook.SaveAs2(finalPath);
+                    workbook.SaveAs(finalPath);
                     workbook?.Close(SaveChanges: false);
                     Marshal.ReleaseComObject(workbook);
 

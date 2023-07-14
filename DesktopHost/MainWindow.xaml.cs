@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using Microsoft.AspNetCore.Components.WebView;
+using Windows.ApplicationModel;
 
 namespace DesktopHost;
 
@@ -17,6 +18,31 @@ public partial class MainWindow : Window {
                     };
 
         Resources.Add("services", serviceProvider);
+
+        Title = GetTitle();
+
+    }
+
+    private static string GetTitle() {
+
+        string title = "";
+
+        try {
+
+            var version =  Package.Current.Id.Version;
+            title = $"Royal Order Processor {version.Major}.{version.Minor}.{version.Build}";
+
+        } catch {
+
+            title = "Royal Order Processor";
+
+        }
+
+#if DEBUG
+        title += " (DEBUG)";
+#endif
+
+        return title;
 
     }
 

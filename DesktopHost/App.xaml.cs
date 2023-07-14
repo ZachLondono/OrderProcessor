@@ -45,6 +45,9 @@ public partial class App : Application {
     private static IConfiguration BuildConfiguration()
         => new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+#if DEBUG
+                .AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true)
+#endif
                 .AddJsonFile("Configuration/pdfconfig.json", optional: false, reloadOnChange: true)
                 .AddJsonFile("Configuration/credentials.json", optional: false, reloadOnChange: true)
                 .Build();
@@ -70,7 +73,7 @@ public partial class App : Application {
     private static void ConfigureLogging(ILoggingBuilder loggingBuilder) {
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Debug()
-            .WriteTo.SQLite("logs.db")
+            .WriteTo.SQLite(@"C:\ProgramData\OrderProcessor\Logs\logs.db")
             .CreateLogger();
 
         loggingBuilder.ClearProviders().AddSerilog();

@@ -68,7 +68,7 @@ public class ExportDovetailOrder {
 
                     var data = MapData(command.Order, customer?.Name ?? "", group);
                     var worksheets = workbook.Worksheets;
-                    Worksheet worksheet = worksheets["Order"];
+                    Worksheet worksheet = (Worksheet)worksheets["Order"];
                     WriteData(worksheet, data);
                     Marshal.ReleaseComObject(worksheets);
                     Marshal.ReleaseComObject(worksheet);
@@ -76,7 +76,7 @@ public class ExportDovetailOrder {
                     var filename = _fileReader.GetAvailableFileName(command.OutputDirectory, $"{command.Order.Number} - {command.Order.Name} Drawer Boxes", ".xlsm");
                     string finalPath = Path.GetFullPath(filename);
 
-                    workbook.SaveAs2(finalPath);
+                    workbook.SaveAs(finalPath);
                     workbook.Close(SaveChanges: false);
                     Marshal.ReleaseComObject(workbook);
 

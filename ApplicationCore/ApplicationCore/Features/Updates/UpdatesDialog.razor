@@ -1,0 +1,59 @@
+﻿@using ApplicationCore.Shared.Components
+@using ApplicationCore.Shared.Data.Companies;
+@using ApplicationCore.Shared.Data.Ordering;
+@inject UpdatesDialogViewModel DataContext
+
+<div class="grid grid-cols-1 justify-items-center">
+    <h2>
+        Current Version <span>@DataContext.CurrentVersion</span>
+        @if (DataContext.UsePreviewChannel) {
+            <span class="px-2 py-1 ml-3 font-semibold text-xs bg-cyan-500 text-white rounded-full shadow-sm">preview</span>
+        }
+    </h2>
+    <div class="text-xs mt-3">
+        <div>Ordering schema <span class="font-bold">@SqliteOrderingDbConnectionFactory.DB_VERSION</span></div>
+        <div>Companies schema <span class="font-bold">@SqliteCompaniesDbConnectionFactory.DB_VERSION</span></div>
+    </div>
+
+    @if (DataContext.Error is not null) {
+        <div class="text-red-700 text-center my-3">
+            @DataContext.Error
+        </div>
+    }
+
+    @if (DataContext.IsCheckingForUpdates) {
+
+        <div>Checking for updates...</div>
+
+    } else if (DataContext.IsInstallingUpdate) {
+
+        <div>Installing update...</div>
+        
+    } else if (DataContext.IsUpdateAvailable) {
+
+        <div class="mb-3">Update is ready to install.</div>
+        <Button Style="Button.ButtonStyle.Contained" Color="Button.ButtonColor.Success" OnClickAsync="DataContext.InstallUpdate">Install</Button>
+
+    } else {
+    
+        <div class="mb-3">No updates available</div>
+        <Button Style="Button.ButtonStyle.Outline" Color="Button.ButtonColor.Secondary" OnClickAsync="DataContext.CheckForUpdates">Refresh</Button>
+
+    }
+</div>
+
+<article class="mt-6">
+    <h3 class="font-bold text-md">Release Notes</h3>
+    <div class="whitespace-pre-wrap">@DataContext.LatestReleaseNotes</div>
+</article>
+
+@code {
+
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+        DataContext.OnPropertyChanged += StateHasChanged;
+        await DataContext.Initialize();
+        await DataContext.CheckForUpdates();
+    }
+
+}

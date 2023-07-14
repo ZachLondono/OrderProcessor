@@ -56,7 +56,7 @@
         string recipientEmail = "zach@royalcabinet.com";
         string subject = $"BUG REPORT";
         string defaultBody = "No description provided.";
-        string pathToLogs = ".\\logs.db";
+        string pathToLogs = @"C:\ProgramData\OrderProcessor\Logs\logs.db";
 
         var stream = FileReader.OpenReadFileStream(pathToLogs);
         var attachment = new MimePart ("Logs", "db") {

@@ -17,6 +17,7 @@ using Microsoft.Extensions.Options;
 using ApplicationCore.Shared.Services;
 using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.XMLValidation;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData;
 
@@ -29,10 +30,11 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
     private readonly InsertCustomerAsync _insertCustomerAsync;
     private readonly IFileReader _fileReader;
     private readonly GetCustomerOrderPrefixByIdAsync _getCustomerOrderPrefixByIdAsync;
+    private readonly ILogger<AllmoxyXMLOrderProvider> _logger;
 
     public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
 
-    public AllmoxyXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync) {
+    public AllmoxyXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, ILogger<AllmoxyXMLOrderProvider> logger) {
         _configuration = configuration.Value;
         _validator = validator;
         _builderFactory = builderFactory;
@@ -40,6 +42,7 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
         _insertCustomerAsync = insertCustomerAsync;
         _fileReader = fileReader;
         _getCustomerOrderPrefixByIdAsync = getCustomerOrderPrefixByIdAsync;
+        _logger = logger;
     }
 
     protected abstract Task<string> GetExportXMLFromSource(string source);
@@ -152,6 +155,7 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
             return dirInfo.Exists;
         } catch (Exception ex) {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
+            _logger.LogError(ex, "Exception thrown while trying to create working directory", workingDirectory);
         }
 
         return false;
@@ -202,7 +206,10 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
         try {
 
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
-            var errors = _validator.ValidateXML(stream, _configuration.SchemaFilePath);
+
+            var directory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            var fullPath = Path.Combine(directory, _configuration.SchemaFilePath);
+            var errors = _validator.ValidateXML(stream, fullPath);
 
             errors.ForEach(error => OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Error] [{error.Severity}] {error.Exception.Message}"));
 
@@ -211,15 +218,19 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
         } catch (XmlSchemaException ex) {
 
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Schema Error] XML schema is not valid L{ex.LineNumber} - {ex.Message}");
+            _logger.LogError(ex, "Exception thrown while comparing Allmoxy XML order data against schema");
             return false;
 
         } catch (XmlException ex) {
 
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Schema Error] XML schema is not valid L{ex.LineNumber} - {ex.Message}");
+            _logger.LogError(ex, "Exception thrown while comparing Allmoxy XML order data against schema");
             return false;
 
-        } catch {
+        } catch (Exception ex) {
 
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not verify order data against schema");
+            _logger.LogError(ex, "Exception thrown while comparing Allmoxy XML order data against schema");
             return false;
 
         }
@@ -248,6 +259,7 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
         } catch (Exception ex) {
 
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not load product {ex.Message}");
+            _logger.LogError(ex, "Exception thrown while mapping order data to product", data);
 
         }
 
