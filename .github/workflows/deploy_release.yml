@@ -1,23 +1,21 @@
 on:
-  push:
-    branches: [ master ]
-    paths-ignore:
-    - .github/workflows/deploy_release.yml
+  release:
+    types: [ published ]
 
 jobs:
   
   Build:
-    name: Deploy App to Preview Channel
+    name: Deploy App to Release Channel
     runs-on: windows-latest
     
     env:
       ApplicationName: DesktopHost
       WapProjectName: Package
       BuildConfiguration: Release
-      ReleaseChannel: preview
+      ReleaseChannel: release
       SigningCertificate: GithubCertificate.pfx      
-      DeployURI: http://zacharylondono.com/orders/preview
-      DeployPath: ./app_deployment/orderprocessor_artifacts/preview
+      DeployURI: http://zacharylondono.com/orders/release
+      DeployPath: ./app_deployment/orderprocessor_artifacts/release
 
     steps:
 
@@ -111,26 +109,12 @@ jobs:
       shell: pwsh
      
     - name: Create Release Notes
-      id: release_notes
-      uses: actions/github-script@v6.4.1
-      env:
-       COMMITS: ${{ toJSON(github.event.commits) }}
-      with:
-        result-encoding: string
-        script: |
-          const commits = JSON.parse(process.env.COMMITS);
-          notes = ""
-          for (const commit of commits) {
-              const date = new Date(commit.timestamp)
-              const timestampStr = (date.getMonth()+1) + "/" + date.getDate() + "/" + date.getFullYear() + " " + date.getHours() + ":" + ("0" + date.getMinutes()).slice(-2)
-              const commitNote = ("[" + timestampStr + "] - " + commit.message + "\n").replace(/"/g, "`\"")
-              notes += commitNote
-          }
-          return notes.trim()
-
-    - name: Write Release Notes to File
       run: |
-        echo -n "${{ steps.release_notes.outputs.result }}" > "${{ github.workspace }}\${{ env.ReleaseChannel }}\release_notes.txt"
+        echo -n "${{ github.event.release.name }}`n${{ github.event.release.body }}" > "${{ github.workspace }}\${{ env.ReleaseChannel }}\release_notes.txt"
+        echo -n "commit messages:" >> "${{ github.workspace }}\${{ env.ReleaseChannel }}\release_notes.txt"
+        $tag = git describe --tags --abbrev=0 HEAD^
+        git log "$tag..HEAD" --oneline --no-merges --date=format-local:'%m/%d/%Y %H:%M' --pretty=format:"[%ad] - %s" >> "${{ github.workspace }}\${{ env.ReleaseChannel }}\release_notes.txt"
+      shell: pwsh
 
     - name: Copy Files to Remote
       uses: garygrossgarten/github-action-scp@release
