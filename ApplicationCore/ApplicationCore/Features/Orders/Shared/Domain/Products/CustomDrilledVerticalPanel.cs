@@ -392,7 +392,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             return Dimension.Zero;
         }
 
-        double holeIndex = Math.Floor(((maxSpaceFromTop - s_holesOffTop) / s_holeSpacing).AsMillimeters());
+        double holeIndex = Math.Floor((((maxSpaceFromTop + Dimension.FromMillimeters(9.5)) - s_holesOffTop) / s_holeSpacing).AsMillimeters());
 
         var distanceFromTop = Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop;
 
@@ -411,7 +411,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             return Dimension.Zero;
         }
 
-        double holeIndex = Math.Ceiling(((length - maxSpaceFromBottom - s_holesOffTop) / s_holeSpacing).AsMillimeters());
+        double holeIndex = Math.Ceiling(((length - (maxSpaceFromBottom + Dimension.FromMillimeters(9.5)) - s_holesOffTop) / s_holeSpacing).AsMillimeters());
 
         var distanceFromTop = (Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop);
 
