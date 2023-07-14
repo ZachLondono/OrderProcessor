@@ -75,6 +75,8 @@ internal class UpdatesDialogViewModel {
         try {
             LatestReleaseNotes = await _versionService.GetReleaseNotes(InstallerUri);
             CurrentVersion = ApplicationVersionService.GetCurrentVersion();
+            var channel = await ApplicationVersionService.GetReleaseChannel();
+            UsePreviewChannel = channel != "release";
         } catch {
 
         }

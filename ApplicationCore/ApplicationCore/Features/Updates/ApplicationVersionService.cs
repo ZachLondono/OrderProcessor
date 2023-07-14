@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Reflection;
 using Windows.ApplicationModel;
 using Windows.Management.Deployment;
 
@@ -80,6 +81,21 @@ internal class ApplicationVersionService {
         }
 
         return result.Availability;
+
+    }
+
+    public static async Task<string> GetReleaseChannel() {
+        string exeFilePath = Assembly.GetExecutingAssembly().Location;
+        string? workPath = Path.GetDirectoryName(exeFilePath);
+        if (workPath is null) {
+            return "unknown";
+        }
+
+        var filePath = Path.Combine(workPath, "channel.txt");
+        if (!Path.Exists(filePath)) {
+            return "unknown";
+        }
+        return await File.ReadAllTextAsync(filePath);
 
     }
 
