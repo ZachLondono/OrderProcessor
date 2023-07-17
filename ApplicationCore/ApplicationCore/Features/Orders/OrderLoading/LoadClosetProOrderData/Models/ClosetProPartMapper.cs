@@ -54,7 +54,7 @@ public class ClosetProPartMapper {
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
-        string room = $"Wall {part.WallNum} Sec {part.SectionNum}";
+        string room = GetRoomName(part);
 
         string sku = "";
         if (isTransition) {
@@ -74,7 +74,7 @@ public class ClosetProPartMapper {
         string comment = "";
 
         bool finLeft = (isTransition && leftDrilling < rightDrilling) || (!isTransition && part.VertHand == "L");
-        bool finRight = (isTransition && leftDrilling < rightDrilling) || (!isTransition && part.VertHand == "L");
+        bool finRight = (isTransition && leftDrilling < rightDrilling) || (!isTransition && part.VertHand == "R");
 
         Dictionary<string, string> parameters = new() {
             { "FINLEFT", finLeft ? "1" : "0" },
@@ -94,7 +94,7 @@ public class ClosetProPartMapper {
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
-        string room = $"Wall {part.WallNum} Sec {part.SectionNum}";
+        string room = GetRoomName(part);
         string sku = "TK-F";
         Dimension width = Dimension.FromInches(part.Height);
         Dimension length = Dimension.FromInches(part.Width);
@@ -116,7 +116,7 @@ public class ClosetProPartMapper {
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
-        string room = $"Wall {part.WallNum} Sec {part.SectionNum}";
+        string room = GetRoomName(part);
         string sku = "SF";
         Dimension width = Dimension.FromInches(part.Depth);
         Dimension length = Dimension.FromInches(part.Width);
@@ -138,7 +138,7 @@ public class ClosetProPartMapper {
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
-        string room = $"Wall {part.WallNum} Sec {part.SectionNum}";
+        string room = GetRoomName(part);
         string sku = "SA";
         Dimension width = Dimension.FromInches(part.Depth);
         Dimension length = Dimension.FromInches(part.Width);
@@ -160,7 +160,7 @@ public class ClosetProPartMapper {
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
-        string room = $"Wall {part.WallNum} Sec {part.SectionNum}";
+        string room = GetRoomName(part);
         string sku = "CLEAT";
         Dimension width = Dimension.FromInches(part.Height);
         Dimension length = Dimension.FromInches(part.Width);
@@ -177,6 +177,16 @@ public class ClosetProPartMapper {
 
 
     }
+
+    public static IProduct CreateDrawerFace(Part part) {
+        throw new NotImplementedException();
+    }
+
+    public static IProduct CreateDrawerBox(Part part) {
+        throw new NotImplementedException();
+    }
+
+    public static string GetRoomName(Part part) => $"Wall {part.WallNum} Sec {part.SectionNum}";
 
     public static bool TryParseMoneyString(string text, out decimal value) {
         return decimal.TryParse(text.Replace("$", ""), out value);
