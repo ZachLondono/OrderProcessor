@@ -141,9 +141,9 @@ public class ClosetProPartMapper {
             }
             
             if (part.PartName == "Hang Rod") {
-                items.Add(new AdditionalItem(Guid.NewGuid(), $"{part.PartName} - {part.Color} - {part.Width}\"L", unitPrice));
+                items.Add(new AdditionalItem(Guid.NewGuid(), $"({part.Quantity}) {part.PartName} - {part.Color} - {part.Width}\"L", unitPrice));
             } else {
-                items.Add(new AdditionalItem(Guid.NewGuid(), part.PartName, unitPrice));
+                items.Add(new AdditionalItem(Guid.NewGuid(), $"({part.Quantity}) {part.PartName}", unitPrice));
             }
             
         }
