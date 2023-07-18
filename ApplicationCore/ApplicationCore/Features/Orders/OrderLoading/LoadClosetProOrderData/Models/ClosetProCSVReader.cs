@@ -95,7 +95,7 @@ public class ClosetProCSVReader {
 
                     if (partNum == "" && csv.GetRecord<PartInfo>() is PartInfo partInfo) {
                         parts.Last()?.InfoRecords.Add(partInfo);
-                    } else if ((partType == "Material" || partType == "Drawer" || partType == "Door") && csv.GetRecord<Part>() is Part part) {
+                    } else if ((partType == "Material" || partType == "Drawer" || partType == "Door" || partType == "Box") && csv.GetRecord<Part>() is Part part) {
                         parts.Add(part);
                     } else if (csv.GetRecord<BuyOutPart>() is BuyOutPart boPart) {
                         buyOutParts.Add(boPart);
