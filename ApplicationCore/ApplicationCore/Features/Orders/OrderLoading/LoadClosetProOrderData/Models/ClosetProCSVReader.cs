@@ -114,7 +114,7 @@ public class ClosetProCSVReader {
         
         }
 
-        return new(orderInfo, parts, pickList, accessories);
+        return new(orderInfo, parts, pickList, accessories, buyOutParts);
 
     }
 
