@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
@@ -217,6 +218,10 @@ public class DovetailDrawerBoxBuilder {
 
     public DovetailDrawerBox Build() {
         return new DovetailDrawerBox(Qty, ProductNumber, Height, Width, Depth, Note, Options, LabelFields);
+    }
+
+    public DovetailDrawerBoxProduct BuildProduct(decimal unitPrice, string room) {
+        return new DovetailDrawerBoxProduct(Guid.NewGuid(), unitPrice, Qty, room, ProductNumber, Height, Width, Depth, Note, LabelFields, Options);
     }
 
 }
