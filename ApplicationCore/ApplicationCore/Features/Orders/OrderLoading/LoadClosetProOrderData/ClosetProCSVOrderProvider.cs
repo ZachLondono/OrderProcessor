@@ -5,6 +5,7 @@ using ApplicationCore.Features.Orders.OrderLoading.Models;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Shared.Data.Ordering;
+using ApplicationCore.Shared.Domain;
 using ApplicationCore.Shared.Services;
 using Dapper;
 using Microsoft.Extensions.Logging;
@@ -39,6 +40,8 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
     protected abstract Task<string?> GetCSVDataFromSourceAsync(string source);
 
+    public record FrontHardware(string Name, Dimension Spread);
+
     public async Task<OrderData?> LoadOrderData(string source) {
 
         var csvData = await GetCSVDataFromSourceAsync(source);
@@ -51,39 +54,13 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         _reader.OnReadError += (msg) => OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, msg);
         var info = await _reader.ReadCSVData(csvData);
 
-        List<IProduct> products = new();
-        foreach (var part in info.Parts) {
-            var product = _partMapper.CreateProductFromPart(part);
-            if (product is not null) {
-                products.Add(product);
-            } else {
-                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Skipping part {part.PartNum} - {part.PartName} / {part.ExportName}");
-                _logger.LogWarning("Skipping part {Part}", part);
-            }
-        }
+        List<AdditionalItem> additionalItems  = new();
+        additionalItems.AddRange(_partMapper.MapPickListToItems(info.PickList, out var hardwareSpread));
+        _partMapper.HardwareSpread = hardwareSpread;
+        additionalItems.AddRange(_partMapper.MapAccessoriesToItems(info.Accessories));
+        additionalItems.AddRange(_partMapper.MapBuyOutPartsToItems(info.BuyOutParts));
 
-        List<AdditionalItem> additionalItems = new();
-        foreach (var item in info.PickList) {
-
-            if (!TryParseMoneyString(item.Cost, out var cost)) {
-                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not parse item cost '{item.Cost}'");
-                cost = 0;
-            }
-
-            additionalItems.Add(new(Guid.NewGuid(), $"({item.Quantity}) {item.Name}", cost));
-
-        }
-
-        foreach (var item in info.Accessories) {
-
-            if (!TryParseMoneyString(item.Cost, out var cost)) {
-                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not parse item cost '{item.Cost}'");
-                cost = 0;
-            }
-
-            additionalItems.Add(new(Guid.NewGuid(), $"({item.Quantity}) {item.Name}", cost));
-
-        }
+        List<IProduct> products =  _partMapper.MapPartsToProducts(info.Parts);
 
         // TODO: get this info from a configuration file
         var vendorId = Guid.Parse("a81d759d-5b6c-4053-8cec-55a6c94d609e");
