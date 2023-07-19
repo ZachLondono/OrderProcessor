@@ -276,7 +276,6 @@ public class ClosetProPartMapper {
             unitPrice = 0M;
         }
         string room = GetRoomName(part);
-        string sku = "SS12-TAG"; // TODO: create a shoe shelf that works for any depth
         Dimension width = Dimension.FromInches(part.Depth);
         Dimension length = Dimension.FromInches(part.Width);
         ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
@@ -288,6 +287,13 @@ public class ClosetProPartMapper {
         string comment = "";
         Dictionary<string, string> parameters = new();
 
+        string sku = width.AsInches() switch {
+            12 => "SS12-TAG",
+            14 => "SS14-TAG",
+            16 => "SS16-TAG",
+            _ => throw new InvalidOperationException("Shoe shelves are currently only supported in 12, 14 and 16\" depths.") // TODO: Add custom depth shoe shelves
+        };
+            
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
 
     }
