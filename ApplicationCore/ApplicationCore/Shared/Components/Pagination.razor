@@ -1,4 +1,5 @@
-﻿@using static ApplicationCore.Shared.Components.Button;
+﻿@using System.Diagnostics;
+@using static ApplicationCore.Shared.Components.Button;
 
 <nav>
     <ul>
@@ -13,7 +14,12 @@
                     &laquo
              </Button>
         </li>
-        @foreach (var pageNum in Enumerable.Range(1, PageCount)) {
+        @if (FirstVisibleTab > 1) {
+            <li class="inline-block">
+                ...
+            </li>
+        }
+        @foreach (var pageNum in Enumerable.Range(FirstVisibleTab, VisibleTabCount)) {
             <li class="inline-block">
                 <Button Size="ButtonSize.XSmall"
                         Style="@(pageNum == CurrentPage ? ButtonStyle.Contained : ButtonStyle.Outline)"
@@ -23,6 +29,11 @@
                         Class="px-1.5">
                         @pageNum
                 </Button>
+            </li>
+        }
+        @if (LastVisibleTab < PageCount) {
+            <li class="inline-block">
+                ...
             </li>
         }
         <li class="inline-block">
@@ -49,6 +60,27 @@
 
     [Parameter]
     public int CurrentPage { get; set; } = 1;
+
+    [Parameter]
+    public int MaxTabCount { get; set; } = 5; 
+
+    public int FirstVisibleTab {
+        get {
+
+            if (CurrentPage <= MaxTabCount / 2) {
+                return 1;
+            } else if (CurrentPage >= PageCount - (MaxTabCount / 2)) {
+                return PageCount - MaxTabCount + 1;
+            }
+
+            return CurrentPage - (MaxTabCount / 2);
+
+        }
+    }
+
+    public int VisibleTabCount => Math.Min(MaxTabCount, PageCount);
+
+    public int LastVisibleTab => FirstVisibleTab + VisibleTabCount - 1;
 
     private void SelectPage(int pageNum) {
         CurrentPage = pageNum;
