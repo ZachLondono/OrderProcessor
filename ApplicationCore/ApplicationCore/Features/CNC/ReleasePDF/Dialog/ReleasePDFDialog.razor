@@ -63,9 +63,32 @@
 
 @code {
 
+    [Parameter]
+    public string? ReportFilePath { get; init; } = null;
+
+    [Parameter]
+    public string? CustomerName { get; init; } = null;
+
+    [Parameter]
+    public string? VendorName { get; init; } = null;
+
+    [Parameter]
+    public string? OutputDirectory { get; init; } = null;
+
+    [Parameter]
+    public string? FileName { get; init; } = null;
+
     protected override void OnInitialized() {
         base.OnInitialized();
         DataContext.OnPropertyChanged += StateHasChanged;
+
+        if (ReportFilePath is not null && File.Exists(ReportFilePath)) {
+            DataContext.Model.ReportFilePath = ReportFilePath ?? string.Empty;
+        }
+        DataContext.Model.CustomerName = CustomerName ?? string.Empty;
+        DataContext.Model.VendorName = VendorName ?? string.Empty;
+        DataContext.Model.FileName = FileName ?? string.Empty;
+
     }
 
     private void ChooseReportFile()

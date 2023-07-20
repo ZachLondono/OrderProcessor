@@ -1,0 +1,91 @@
+﻿@using ApplicationCore.Features.OpenDoorOrders;
+@using ApplicationCore.Infrastructure.Bus;
+@using ApplicationCore.Shared.Components
+@using static ApplicationCore.Shared.Components.Button;
+@inject IBus Bus
+<h3>Open Door Orders</h3>
+
+@if (!string.IsNullOrEmpty(_error)) {
+    <span class="text-red-500">@_error</span>
+}
+
+@if (_isLoading) {
+    <span>Loading...</span>
+} else {
+
+    @if (_openDoorOrders.Any()) {
+        <table class="table-auto">
+            <thead class="border-b border-slate-300">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Customer</th>
+                    <th>Vendor</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in _openDoorOrders) {
+                    <tr class="text-center border-b cursor-pointer hover:bg-slate-200" onclick="@(() => SelectOrder(order))">
+                        <td class="p-5">@order.OrderNumber</td>
+                        <td class="p-5">@order.OrderName</td>
+                        <td class="p-5">@order.Customer</td>
+                        <td class="p-5">@order.Vendor</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    } else {
+        <div>
+            <span>No open door orders were found</span>
+        </div>
+    }
+
+    <div class="mt-5">
+        <Button OnClickAsync="Close" Color="ButtonColor.Danger">Close</Button>
+        <Button OnClick="LoadOpenOrders" Color="ButtonColor.Secondary">Refresh</Button>
+    </div>
+}
+
+
+@code {
+
+    [CascadingParameter]
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    private bool _isLoading = true;
+    private List<DoorOrder> _openDoorOrders = new();
+    private string _error = "";
+
+    protected override void OnInitialized() {
+        base.OnInitialized();
+        LoadOpenOrders();
+    }
+
+    private void LoadOpenOrders() {
+
+        _isLoading = true;
+        StateHasChanged();
+
+        _ = Task.Run(() => {
+
+            var response = Bus.Send(new GetOpenDoorOrders.Query()).Result;
+            response.Match(
+                orders => _openDoorOrders = new(orders),
+                error => _error = $"{error.Title} - {error.Details}"
+            );
+            _isLoading = false;
+            InvokeAsync(StateHasChanged);
+
+        });
+
+    }
+
+    private async Task SelectOrder(DoorOrder selectedOrder) {
+        await BlazoredModal.CloseAsync(ModalResult.Ok(selectedOrder));
+    }
+
+    private async Task Close() {
+        await BlazoredModal.CloseAsync();
+    }
+
+}
