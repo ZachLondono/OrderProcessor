@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
@@ -12,6 +13,7 @@ public class ClosetProPartMapper {
     public Dictionary<string, Func<Part, IProduct>> ProductNameMappings { get; }
     public Dictionary<string, Dimension> FrontHardwareSpreads { get; }
     public Dimension HardwareSpread { get; set; } = Dimension.Zero;
+    public ClosetProSettings Settings { get; set; } = new();
 
     private readonly ComponentBuilderFactory _factory;
 
@@ -204,13 +206,13 @@ public class ClosetProPartMapper {
 
     }
 
-    public static IProduct CreateToeKickFromPart(Part part) {
+    public IProduct CreateToeKickFromPart(Part part) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
         string room = GetRoomName(part);
-        string sku = "TK-F";
+        string sku = Settings.ToeKickSKU;
         Dimension width = Dimension.FromInches(part.Height);
         Dimension length = Dimension.FromInches(part.Width);
         ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
@@ -226,13 +228,13 @@ public class ClosetProPartMapper {
 
     }
 
-    public static IProduct CreateFixedShelfFromPart(Part part) {
+    public IProduct CreateFixedShelfFromPart(Part part) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
         string room = GetRoomName(part);
-        string sku = "SF";
+        string sku = Settings.FixedShelfSKU;
         Dimension width = Dimension.FromInches(part.Depth);
         Dimension length = Dimension.FromInches(part.Width);
         ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
@@ -248,13 +250,13 @@ public class ClosetProPartMapper {
 
     }
 
-    public static IProduct CreateAdjustableShelfFromPart(Part part) {
+    public IProduct CreateAdjustableShelfFromPart(Part part) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
         string room = GetRoomName(part);
-        string sku = "SA";
+        string sku = Settings.AdjustableShelfSKU;
         Dimension width = Dimension.FromInches(part.Depth);
         Dimension length = Dimension.FromInches(part.Width);
         ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
@@ -291,7 +293,7 @@ public class ClosetProPartMapper {
             12 => "SS12-TAG",
             14 => "SS14-TAG",
             16 => "SS16-TAG",
-            _ => throw new InvalidOperationException("Shoe shelves are currently only supported in 12, 14 and 16\" depths.") // TODO: Add custom depth shoe shelves
+            _ => "SS12-TAG" // TODO: Add custom depth shoe shelves
         };
             
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);

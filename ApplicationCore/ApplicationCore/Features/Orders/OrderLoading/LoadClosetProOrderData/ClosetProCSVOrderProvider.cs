@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+﻿using ApplicationCore.Features.Companies.Contracts.Entities;
+using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
@@ -26,6 +27,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
     private readonly GetCustomerIdByNameAsync _getCustomerIdByNameAsync;
     private readonly GetCustomerOrderPrefixByIdAsync _getCustomerOrderPrefixByIdAsync;
     private readonly InsertCustomerAsync _insertCustomerAsync;
+    private readonly GetCustomerByIdAsync _getCustomerByIdAsync;
 
     public ClosetProCSVOrderProvider(ILogger<ClosetProCSVOrderProvider> logger, ClosetProCSVReader reader, ClosetProPartMapper partMapper, IFileReader fileReader, IOrderingDbConnectionFactory dbConnectionFactory, GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, InsertCustomerAsync insertCustomerAsync, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync) {
         _logger = logger;
@@ -54,28 +56,29 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         _reader.OnReadError += (msg) => OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, msg);
         var info = await _reader.ReadCSVData(csvData);
 
+        // TODO: get this info from a configuration file
+        var vendorId = Guid.Parse("a81d759d-5b6c-4053-8cec-55a6c94d609e");
+        string designerName = info.Header.GetDesignerName();
+        var customer = await GetOrCreateCustomer(info.Header.DesignerCompany, designerName);
+
+        _partMapper.Settings = customer.ClosetProSettings;
+
         List<AdditionalItem> additionalItems  = new();
         additionalItems.AddRange(_partMapper.MapPickListToItems(info.PickList, out var hardwareSpread));
         _partMapper.HardwareSpread = hardwareSpread;
         additionalItems.AddRange(_partMapper.MapAccessoriesToItems(info.Accessories));
         additionalItems.AddRange(_partMapper.MapBuyOutPartsToItems(info.BuyOutParts));
-
         List<IProduct> products =  _partMapper.MapPartsToProducts(info.Parts);
 
-        // TODO: get this info from a configuration file
-        var vendorId = Guid.Parse("a81d759d-5b6c-4053-8cec-55a6c94d609e");
-        string designerName = info.Header.GetDesignerName();
-        var customerId = await GetOrCreateCustomerId(info.Header.DesignerCompany, designerName);
-
-        var orderNumber = await GetNextOrderNumber(customerId);
+        var orderNumber = await GetNextOrderNumber(customer.Id);
         string workingDirectory = CreateWorkingDirectory(source, info, orderNumber);
 
-        var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync(customerId) ?? throw new InvalidOperationException("Could not get customer data");
+        var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync(customer.Id) ?? throw new InvalidOperationException("Could not get customer data");
         orderNumber = $"{orderNumberPrefix}{orderNumber}";
 
         return new OrderData() {
             VendorId = vendorId,
-            CustomerId = customerId,
+            CustomerId = customer.Id,
             Name = info.Header.OrderName,
             Number = orderNumber,
             WorkingDirectory = workingDirectory,
@@ -156,12 +159,18 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
     }
 
-    private async Task<Guid> GetOrCreateCustomerId(string designerCompanyName, string designerName) {
+    private async Task<Customer> GetOrCreateCustomer(string designerCompanyName, string designerName) {
  
         Guid? customerId = await _getCustomerIdByNameAsync(designerCompanyName);
 
         if (customerId is Guid id) {
-            return id;
+
+            var customer = await _getCustomerByIdAsync(id);
+            if (customer is null) {
+                throw new InvalidOperationException("Unable to load customer information");
+            }
+            return customer;
+
         } else {
 
             var contact = new Contact() {
@@ -174,7 +183,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
             await _insertCustomerAsync(newCustomer);
 
-            return newCustomer.Id;
+            return newCustomer;
 
         }
 

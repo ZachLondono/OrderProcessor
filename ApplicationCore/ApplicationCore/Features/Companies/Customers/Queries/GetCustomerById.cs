@@ -51,7 +51,11 @@ internal class GetCustomerById {
                     billing_addr.city AS BillingAddrCity,
                     billing_addr.state AS BillingAddrState,
                     billing_addr.zip AS BillingAddrZip,
-                    billing_addr.country AS BillingAddrCountry
+                    billing_addr.country AS BillingAddrCountry,
+
+                    closet_pro_settings.toe_kick_sku AS CPToeKickSKU,
+                    closet_pro_settings.adjustable_shelf_sku AS CPAdjustableShelfSKU,
+                    closet_pro_settings.fixed_shelf_sku AS CPFixedShelfSKU
 
                 FROM customers
                     
@@ -60,6 +64,8 @@ internal class GetCustomerById {
                     
                     LEFT JOIN contacts AS ship_cont ON customers.shipping_contact_id = ship_cont.id
                     LEFT JOIN contacts AS billing_cont ON customers.billing_contact_id = billing_cont.id
+
+                    LEFT JOIN closet_pro_settings ON customers.closet_pro_settings_id = closet_pro_settings.id
 
                 WHERE customers.id = @Id;
                 """, query);
@@ -105,6 +111,9 @@ internal class GetCustomerById {
             public string BillingAddrZip { get; set; } = string.Empty;
             public string BillingAddrCountry { get; set; } = string.Empty;
 
+            public string CPToeKickSKU { get; set; } = string.Empty;
+            public string CPAdjustableShelfSKU { get; set; } = string.Empty;
+            public string CPFixedShelfSKU { get; set; } = string.Empty;
 
             public Customer AsCustomer() {
 
@@ -140,7 +149,13 @@ internal class GetCustomerById {
                     Country = BillingAddrCountry
                 };
 
-                return new Customer(Id, Name, ShippingMethod, shippingContact, shippingAddress, billingContact, billingAddress, OrderNumberPrefix);
+                var closetProSettings = new ClosetProSettings() {
+                    ToeKickSKU = CPToeKickSKU,
+                    AdjustableShelfSKU = CPAdjustableShelfSKU,
+                    FixedShelfSKU = CPFixedShelfSKU
+                };
+
+                return new Customer(Id, Name, ShippingMethod, shippingContact, shippingAddress, billingContact, billingAddress, OrderNumberPrefix, closetProSettings);
 
             }
 
