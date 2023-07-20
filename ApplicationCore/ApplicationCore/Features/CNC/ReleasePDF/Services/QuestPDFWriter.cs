@@ -84,7 +84,7 @@ internal class QuestPDFWriter : IReleasePDFWriter {
 
             // TODO: add an option to use the file name or the line number (in the pattern)
             //int index = 1;
-            var imgtxts = program.Parts.Select(p => new ImageText() { Text = $"{p.Name}", Location = p.Center });
+            var imgtxts = program.Parts.Select(p => new ImageText() { Text = $"{p.ProductNumber}-{p.FileName}", Location = p.Center });
             byte[] imageData = PatternImageFactory.CreatePatternImage(program.ImagePath, releases.First().MachineTableOrientation, program.Material.Width, program.Material.Length, imgtxts);
 
             pages.Add(new() {
