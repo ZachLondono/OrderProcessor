@@ -48,7 +48,7 @@
         <div class="grid grid-cols-2 gap-4">
             <section id="shipping">
 
-                <h3>Shipping</h3>
+                <h3 class="block font-medium text-gray-700">Shipping</h3>
 
                 <label for="shipping_contact_name" class="block text-sm font-medium text-gray-700">Name</label>
                 <InputText id="shipping_contact_name" @bind-Value="DataContext.Model.ShippingContact.Name" placeholder="John Smith" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
@@ -72,7 +72,7 @@
 
             <section id="billing">
 
-                <h3>Billing</h3>
+                <h3 class="block font-medium text-gray-700">Billing</h3>
             
                 <label for="billing_contact_name" class="block text-sm font-medium text-gray-700">Name</label>
                 <InputText id="billing_contact_name" @bind-Value="DataContext.Model.BillingContact.Name" placeholder="John Smith" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
@@ -91,6 +91,29 @@
                 <InputText id="billing_contact_state" @bind-Value="DataContext.Model.BillingAddress.State" placeholder="State" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
                 <InputText id="billing_contact_zip" @bind-Value="DataContext.Model.BillingAddress.Zip" placeholder="Zip" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
                 <InputText id="billing_contact_country" @bind-Value="DataContext.Model.BillingAddress.Country" placeholder="Country" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+            </section>
+        </div>
+
+        <div class="my-5">
+            <section id="closet_pro_settings">
+
+                <h3 class="block font-medium text-gray-700">Closet Pro Settings</h3>
+
+                <div>
+                    <label for="adjustable_shelf_sku" class="block text-sm font-medium text-gray-700">Adjustabl Shelf</label>
+                    <InputText id="adjustable_shelf_sku" @bind-Value="DataContext.Model.ClosetProSettings.AdjustableShelfSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                </div>
+
+                <div>
+                    <label for="fixed_shelf_sku" class="block text-sm font-medium text-gray-700">Fixed Shelf</label>
+                    <InputText id="fixed_shelf_sku" @bind-Value="DataContext.Model.ClosetProSettings.FixedShelfSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                </div>
+
+                <div>
+                    <label for="toe_kick_sku" class="block text-sm font-medium text-gray-700">Toe Kick</label>
+                    <InputText id="toe_kick_sku" @bind-Value="DataContext.Model.ClosetProSettings.ToeKickSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                </div>
 
             </section>
         </div>

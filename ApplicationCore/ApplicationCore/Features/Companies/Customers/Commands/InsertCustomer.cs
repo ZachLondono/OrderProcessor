@@ -32,8 +32,9 @@ internal class InsertCustomer {
             var billingAddressId = await InsertAddress(customer.BillingAddress, connection, trx);
             var shippingContactId = await InsertContact(customer.ShippingContact, connection, trx);
             var shippingAddressId = await InsertAddress(customer.ShippingAddress, connection, trx);
+            var cpSettingsId = await InsertClosetProSettings(customer.ClosetProSettings, connection, trx);
 
-            await InsertCustomer(customer, shippingContactId, shippingAddressId, billingContactId, billingAddressId, connection, trx);
+            await InsertCustomer(customer, shippingContactId, shippingAddressId, billingContactId, billingAddressId, cpSettingsId, connection, trx);
 
             if (command.AllmoxyId is int allmoxyId) {
                 await InsertAllmoxyId(customer.Id, allmoxyId, connection, trx);
@@ -46,7 +47,7 @@ internal class InsertCustomer {
 
         }
 
-        private static async Task InsertCustomer(Customer customer, Guid shippingContactId, Guid shippingAddressId, Guid billingContactId, Guid billingAddressId, IDbConnection connection, IDbTransaction trx) {
+        private static async Task InsertCustomer(Customer customer, Guid shippingContactId, Guid shippingAddressId, Guid billingContactId, Guid billingAddressId, Guid closetProSettingsId, IDbConnection connection, IDbTransaction trx) {
             await connection.ExecuteAsync(
                     """
                     INSERT INTO customers (
@@ -57,7 +58,8 @@ internal class InsertCustomer {
                         shipping_contact_id,
                         shipping_address_id,
                         billing_contact_id,
-                        billing_address_id)
+                        billing_address_id,
+                        closet_pro_settings_id)
                     VALUES (
                         @Id,
                         @Name,
@@ -66,7 +68,8 @@ internal class InsertCustomer {
                         @ShippingContactId,
                         @ShippingAddressId,
                         @BillingContactId,
-                        @BillingAddressId
+                        @BillingAddressId,
+                        @ClosetProSettingsId
                     );
                     """, new {
                         customer.Id,
@@ -76,7 +79,8 @@ internal class InsertCustomer {
                         ShippingContactId = shippingContactId,
                         ShippingAddressId = shippingAddressId,
                         BillingContactId = billingContactId,
-                        BillingAddressId = billingAddressId
+                        BillingAddressId = billingAddressId,
+                        ClosetProSettingsId = closetProSettingsId
                     }, trx);
         }
 
@@ -157,6 +161,23 @@ internal class InsertCustomer {
                     AllmoxyId = allmoxyId
                 }, trx);
 
+
+        }
+
+        public static async Task<Guid> InsertClosetProSettings(ClosetProSettings settings, IDbConnection connection, IDbTransaction trx) {
+
+            Guid id = Guid.NewGuid();
+
+            await connection.ExecuteAsync(
+                "INSERT INTO closet_pro_settings (id, toe_kick_sku, adjustable_shelf_sku, fixed_shelf_sku) VALUES (@Id, @ToeKickSKU, @AdjustableShelfSKU, @FixedShelfSKU);",
+                new {
+                    Id = id,
+                    settings.ToeKickSKU,
+                    settings.AdjustableShelfSKU,
+                    settings.FixedShelfSKU
+                }, trx);
+
+            return id;
 
         }
 

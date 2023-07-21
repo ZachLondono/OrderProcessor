@@ -12,8 +12,9 @@ public class Customer {
     public Address ShippingAddress { get; set; }
     public Contact BillingContact { get; set; }
     public Address BillingAddress { get; set; }
+    public ClosetProSettings ClosetProSettings { get; set; }
 
-    internal Customer(Guid id, string name, string shippingMethod, Contact shippingContact, Address shippingAddress, Contact billingContact, Address billingAddress, string? orderNumberPrefix) {
+    internal Customer(Guid id, string name, string shippingMethod, Contact shippingContact, Address shippingAddress, Contact billingContact, Address billingAddress, string? orderNumberPrefix, ClosetProSettings closetProSettings) {
         Id = id;
         Name = name;
         ShippingMethod = shippingMethod;
@@ -22,9 +23,10 @@ public class Customer {
         BillingContact = billingContact;
         BillingAddress = billingAddress;
         OrderNumberPrefix = orderNumberPrefix;
+        ClosetProSettings = closetProSettings;
     }
 
     public static Customer Create(string name, string shippingMethod, Contact shippingContact, Address shippingAddress, Contact billingContact, Address billingAddress)
-        => new(Guid.NewGuid(), name, shippingMethod, shippingContact, shippingAddress, billingContact, billingAddress, null);
+        => new(Guid.NewGuid(), name, shippingMethod, shippingContact, shippingAddress, billingContact, billingAddress, null, new());
 
 }

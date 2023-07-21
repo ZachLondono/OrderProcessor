@@ -36,6 +36,8 @@ internal class UpdateCustomer {
             await UpdateContact(customer.ShippingContact, customer.Id, "shipping_contact_id", connection, trx);
             await UpdateAddress(customer.ShippingAddress, customer.Id, "shipping_address_id", connection, trx);
 
+            await UpdateClosetProSettings(customer.ClosetProSettings, customer.Id, connection, trx);
+
             trx.Commit();
             connection.Close();
 
@@ -97,6 +99,25 @@ internal class UpdateCustomer {
                     address.Zip,
                     address.Country,
                     CustomerId = customerId
+                }, trx);
+
+        }
+
+        public static async Task UpdateClosetProSettings(ClosetProSettings settings, Guid customerId, IDbConnection connection, IDbTransaction trx) {
+
+            await connection.ExecuteAsync(
+                $"""
+                UPDATE closet_pro_settings
+                SET
+                    toe_kick_sku = @ToeKickSKU,
+                    adjustable_shelf_sku = @AdjustableShelfSKU,
+                    fixed_shelf_sku = @FixedShelfSKU
+                WHERE id = (SELECT closet_pro_settings_id FROM customers WHERE id = @CustomerId);
+                """, new {
+                    CustomerId = customerId,
+                    settings.ToeKickSKU,
+                    settings.AdjustableShelfSKU,
+                    settings.FixedShelfSKU
                 }, trx);
 
         }

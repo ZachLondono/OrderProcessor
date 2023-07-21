@@ -7,9 +7,18 @@ CREATE TABLE customers (
 	shipping_address_id BLOB NOT NULL,
 	billing_contact_id BLOB NOT NULL,
 	billing_address_id BLOB NOT NULL,
+	closet_pro_settings_id BLOB NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (shipping_contact_id) REFERENCES contacts(id),
-	FOREIGN KEY (billing_contact_id) REFERENCES contacts(id)
+	FOREIGN KEY (billing_contact_id) REFERENCES contacts(id),
+	FOREIGN KEY (closet_pro_settings_id) REFERENCES closet_pro_settings(id)
+);
+
+CREATE TABLE closet_pro_settings (
+	id BLOB NOT NULL,
+	toe_kick_sku TEXT NOT NULL,
+	adjustable_shelf_sku TEXT NOT NULL,
+	fixed_shelf_sku TEXT NOT NULL
 );
 
 CREATE TABLE vendors (

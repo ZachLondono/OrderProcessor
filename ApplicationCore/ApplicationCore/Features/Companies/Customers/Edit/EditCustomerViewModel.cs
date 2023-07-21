@@ -60,7 +60,8 @@ internal class EditCustomerViewModel {
                 BillingContact = customer.BillingContact,
                 ShippingMethod = customer.ShippingMethod,
                 ShippingAddress = customer.ShippingAddress,
-                ShippingContact = customer.ShippingContact
+                ShippingContact = customer.ShippingContact,
+                ClosetProSettings = customer.ClosetProSettings
             },
             error => null
         );
@@ -84,7 +85,7 @@ internal class EditCustomerViewModel {
 
         try {
 
-            var customer = new Customer(Model.Id, Model.Name ?? "", Model.ShippingMethod, Model.ShippingContact, Model.ShippingAddress, Model.BillingContact, Model.BillingAddress, Model.OrderNumberPrefix);
+            var customer = new Customer(Model.Id, Model.Name ?? "", Model.ShippingMethod, Model.ShippingContact, Model.ShippingAddress, Model.BillingContact, Model.BillingAddress, Model.OrderNumberPrefix, Model.ClosetProSettings);
 
             var response = await _bus.Send(new UpdateCustomer.Command(customer));
 
