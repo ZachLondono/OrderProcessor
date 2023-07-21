@@ -128,7 +128,7 @@ public class ReleaseService {
         if (filePaths.Any() && configuration.SendReleaseEmail && configuration.ReleaseEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending release email");
             try {
-                string body = GenerateEmailBody(configuration.IncludeSummaryInEmailBody, releases);
+                string body = GenerateEmailBody(configuration.IncludeSummaryInEmailBody, releases, order.Note);
                 await SendEmailAsync(recipients, $"RELEASED: {order.Number} {customerName}", body, new string[] { filePaths.First() });
             } catch (Exception ex) {
                 OnError?.Invoke($"Could not send email - '{ex.Message}'");
@@ -140,14 +140,30 @@ public class ReleaseService {
 
     }
 
-    private string GenerateEmailBody(bool includeReleaseSummary, List<ReleasedJob> jobs) {
+    private string GenerateEmailBody(bool includeReleaseSummary, List<ReleasedJob> jobs, string note) {
 
         string body = "Please see attached release";
+
+        if (!string.IsNullOrWhiteSpace(note)) {
+
+            body +=
+                $"""
+
+                <br />
+                <br />
+
+                <div style="border: 1px solid black; padding: 5px;">
+                    <div style="font-weight: bold;">Note:</div>
+                    <div style="white-space: pre-wrap;">{note}</div>
+                </div>
+
+                """;
+
+        }
 
         if (!includeReleaseSummary) {
             return body;
         }
-
 
         // TODO: generate the data to create a table of required materials in a similar way to the QuestPDFWriter
         foreach (var job in jobs) {
