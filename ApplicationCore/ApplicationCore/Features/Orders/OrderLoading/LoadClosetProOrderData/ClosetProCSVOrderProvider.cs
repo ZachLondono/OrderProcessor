@@ -29,7 +29,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
     private readonly InsertCustomerAsync _insertCustomerAsync;
     private readonly GetCustomerByIdAsync _getCustomerByIdAsync;
 
-    public ClosetProCSVOrderProvider(ILogger<ClosetProCSVOrderProvider> logger, ClosetProCSVReader reader, ClosetProPartMapper partMapper, IFileReader fileReader, IOrderingDbConnectionFactory dbConnectionFactory, GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, InsertCustomerAsync insertCustomerAsync, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync) {
+    public ClosetProCSVOrderProvider(ILogger<ClosetProCSVOrderProvider> logger, ClosetProCSVReader reader, ClosetProPartMapper partMapper, IFileReader fileReader, IOrderingDbConnectionFactory dbConnectionFactory, GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, InsertCustomerAsync insertCustomerAsync, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerByIdAsync getCustomerByIdAsync) {
         _logger = logger;
         _reader = reader;
         _partMapper = partMapper;
@@ -38,6 +38,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         _getCustomerIdByNameAsync = getCustomerIdByNameIdAsync;
         _insertCustomerAsync = insertCustomerAsync;
         _getCustomerOrderPrefixByIdAsync = getCustomerOrderPrefixByIdAsync;
+        _getCustomerByIdAsync = getCustomerByIdAsync;
     }
 
     protected abstract Task<string?> GetCSVDataFromSourceAsync(string source);
