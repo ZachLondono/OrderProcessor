@@ -24,6 +24,7 @@ public class ClosetProPartMapper {
         ProductNameMappings = new() {
             { "CPS FM Vert", CreateVerticalPanelFromPart },
             { "CPS WM Vert", CreateVerticalPanelFromPart },
+            { "VP-Corner Floor Mount", CreateVerticalPanelFromPart },
             { "FixedShelf", CreateFixedShelfFromPart },
             { "AdjustableShelf", CreateAdjustableShelfFromPart },
             { "ShoeShelf", CreateShoeShelfFromPart },
@@ -299,7 +300,6 @@ public class ClosetProPartMapper {
             unitPrice = 0M;
         }
         string room = GetRoomName(part);
-        string sku = Settings.FixedShelfSKU;
         Dimension width = Dimension.FromInches(part.Depth);
         Dimension length = Dimension.FromInches(part.Width);
         ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
@@ -309,7 +309,38 @@ public class ClosetProPartMapper {
                                 .Select(i => i.Color)
                                 .FirstOrDefault() ?? part.Color;
         string comment = "";
+
         Dictionary<string, string> parameters = new();
+
+        string sku;
+        if (part.ExportName == "L Fixed Shelf") {
+
+            var dimensions = ParseCornerShelfDimensions(part.CornerShelfSizes);
+            var left = dimensions[0];
+            var right = dimensions[3];
+
+            sku = "SFL19"; // TODO: get sku from ClosetProSettings
+            parameters.Add("RightWidth", left.AsMillimeters().ToString());
+            parameters.Add("NotchSideLength", right.AsMillimeters().ToString());
+            parameters.Add("NotchLeft", "Y");
+            parameters.Add("ShelfRadius", "0"); // TODO: get radius from ClosetProSettings
+
+        } else if (part.ExportName == "Pie Fixed Shelf") {
+
+            var dimensions = ParseCornerShelfDimensions(part.CornerShelfSizes);
+            var left = dimensions[0];
+            var right = dimensions[3];
+
+            sku = "SFD19"; // TODO: get sku from ClosetProSettings
+            parameters.Add("RightWidth", left.AsMillimeters().ToString());
+            parameters.Add("NotchSideLength", right.AsMillimeters().ToString());
+            parameters.Add("NotchLeft", "Y");
+
+        } else {
+
+            sku = Settings.FixedShelfSKU;
+
+        }
 
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
 
@@ -321,7 +352,6 @@ public class ClosetProPartMapper {
             unitPrice = 0M;
         }
         string room = GetRoomName(part);
-        string sku = Settings.AdjustableShelfSKU;
         Dimension width = Dimension.FromInches(part.Depth);
         Dimension length = Dimension.FromInches(part.Width);
         ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
@@ -332,6 +362,36 @@ public class ClosetProPartMapper {
                                 .FirstOrDefault() ?? part.Color;
         string comment = "";
         Dictionary<string, string> parameters = new();
+
+        string sku;
+        if (part.ExportName == "L Adj Shelf") {
+
+            var dimensions = ParseCornerShelfDimensions(part.CornerShelfSizes);
+            var left = dimensions[0];
+            var right = dimensions[3];
+
+            sku = "SAL19"; // TODO: get sku from ClosetProSettings
+            parameters.Add("RightWidth", left.AsMillimeters().ToString());
+            parameters.Add("NotchSideLength", right.AsMillimeters().ToString());
+            parameters.Add("NotchLeft", "Y");
+            parameters.Add("ShelfRadius", "0"); // TODO: get radius from ClosetProSettings
+
+        } else if(part.ExportName == "Pie Adj Shelf") {
+
+            var dimensions = ParseCornerShelfDimensions(part.CornerShelfSizes);
+            var left = dimensions[0];
+            var right = dimensions[3];
+
+            sku = "SAD19"; // TODO: get sku from ClosetProSettings
+            parameters.Add("RightWidth", left.AsMillimeters().ToString());
+            parameters.Add("NotchSideLength", right.AsMillimeters().ToString());
+            parameters.Add("NotchLeft", "Y");
+
+        } else {
+
+            sku = Settings.AdjustableShelfSKU;
+
+        }
 
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
 
@@ -550,5 +610,20 @@ public class ClosetProPartMapper {
         VerticalDividerPanelEndDrillingType.NoCams => "",
         _ => ""
     };
+
+    public static Dimension[] ParseCornerShelfDimensions(string cornerShelfSizes) {
+
+        var dimensions = cornerShelfSizes.Split('|')
+                            .Select(double.Parse)
+                            .Select(Dimension.FromInches)
+                            .ToArray();
+
+        if (dimensions.Length != 4) {
+            throw new InvalidOperationException($"Unexpected corner shelf dimensions '{cornerShelfSizes}'");
+        }
+
+        return dimensions;
+
+    }
 
 }
