@@ -24,6 +24,8 @@ public class ClosetProPartMapper {
         ProductNameMappings = new() {
             { "CPS FM Vert", CreateVerticalPanelFromPart },
             { "CPS WM Vert", CreateVerticalPanelFromPart },
+            { "CPS WM Vert Radius", CreateVerticalPanelFromPart },
+            { "CPS WM Vert Straight", CreateVerticalPanelFromPart },
             { "VP-Corner Floor Mount", CreateVerticalPanelFromPart },
             { "FixedShelf", CreateFixedShelfFromPart },
             { "AdjustableShelf", CreateAdjustableShelfFromPart },
@@ -229,6 +231,8 @@ public class ClosetProPartMapper {
 
         bool isWallMount = part.ExportName.Contains("WM");
 
+        bool hasRadiusBottom = part.ExportName.Contains("Radius");
+
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
@@ -261,6 +265,7 @@ public class ClosetProPartMapper {
             { "BottomNotchD", "0" },
             { "BottomNotchH", "0" },
             { "WallMount", isWallMount ? "1" : "0" },
+            { "BottomRadius", hasRadiusBottom ? "51" : "0" }, // TODO: get radius value from ClosetProSettings
         };
 
         if (isTransition) {
