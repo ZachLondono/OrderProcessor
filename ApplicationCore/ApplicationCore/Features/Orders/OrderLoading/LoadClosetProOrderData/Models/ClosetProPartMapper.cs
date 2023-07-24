@@ -27,6 +27,7 @@ public class ClosetProPartMapper {
             { "CPS WM Vert Radius", CreateVerticalPanelFromPart },
             { "CPS WM Vert Straight", CreateVerticalPanelFromPart },
             { "VP-Corner Floor Mount", CreateVerticalPanelFromPart },
+            { "VP-Corner Wall Hung", CreateVerticalPanelFromPart },
             { "FixedShelf", CreateFixedShelfFromPart },
             { "AdjustableShelf", CreateAdjustableShelfFromPart },
             { "ShoeShelf", CreateShoeShelfFromPart },
