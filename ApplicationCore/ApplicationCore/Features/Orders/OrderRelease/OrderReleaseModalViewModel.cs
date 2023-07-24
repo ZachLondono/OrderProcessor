@@ -96,7 +96,7 @@ public class OrderReleaseModalViewModel {
 
     public ModalParameters CreateReleaseProgressModalParameters(Order order) {
         return new ModalParameters() {
-            { "ActionRunner",  new ReleaseActionRunner(_service, order, Configuration) },
+            { "ActionRunner",  new ReleaseActionRunner(_service, new() { order }, Configuration) },
             { "InProgressTitle", "Releasing Order..." },
             { "CompleteTitle", "Release Complete" }
         };
