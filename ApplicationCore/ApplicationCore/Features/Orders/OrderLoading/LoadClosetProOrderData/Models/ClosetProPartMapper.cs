@@ -47,9 +47,11 @@ public class ClosetProPartMapper {
 
         List<IProduct> products = new();
         var enumerator = parts.GetEnumerator();
-        while (enumerator.MoveNext()) {
-
-            var part = enumerator.Current;
+        if (!enumerator.MoveNext()) {
+            throw new InvalidOperationException("No products found in order");
+        }
+        Part part = enumerator.Current;
+        while (true) {
 
             if (part.PartName == "Cab Door Rail") {
 
@@ -63,14 +65,72 @@ public class ClosetProPartMapper {
                 }
 
                 products.Add(CreateFrontFromParts(part, insertPart));
-                continue;
+                if (enumerator.MoveNext()) {
+                    part = enumerator.Current;
+                    continue;
+                } else {
+                    break;
+                }
 
             }
 
+            Part? nextPart = null;
+            if (part.ExportName == "FixedShelf") {
+
+                if (enumerator.MoveNext()) {
+
+                    var cubbyPart = enumerator.Current;
+                    if (cubbyPart.ExportName == "Cubby-V" || cubbyPart.ExportName == "Cubby-H") {
+
+                        var accum = new CubbyAccumulator();
+                        accum.AddBottomShelf(part);
+                        if (cubbyPart.ExportName == "Cubby-V") {
+                            accum.AddVerticalPanel(cubbyPart);
+                        } else {
+                            accum.AddHorizontalPanel(cubbyPart);
+                        }
+
+                        while(enumerator.MoveNext()) {
+                            cubbyPart = enumerator.Current;
+                            if (cubbyPart.ExportName == "Cubby-V") {
+                                accum.AddVerticalPanel(cubbyPart);
+                            } else if (cubbyPart.ExportName == "Cubby-H") {
+                                accum.AddHorizontalPanel(cubbyPart);
+                            } else if (cubbyPart.ExportName == "FixedShelf") {
+                                accum.AddTopShelf(cubbyPart);
+                                break;
+                            }
+                        }
+
+                        products.AddRange(accum.GetProducts(this));
+
+                        if (enumerator.MoveNext()) {
+                            part = enumerator.Current;
+                            continue;
+                        } else {
+                            break;
+                        }
+
+                    } else {
+                        nextPart = cubbyPart;
+                    }
+
+                }
+
+            }
+            
             if (ProductNameMappings.TryGetValue(part.ExportName, out var mapper)) {
                 products.Add(mapper(part));
             } else {
                 throw new InvalidOperationException($"Unexpected part {part.PartName} / {part.ExportName}");
+            }
+
+            if (nextPart is not null) {
+                part = nextPart;
+            } else if (enumerator.MoveNext()) {
+                part = enumerator.Current;
+            } else {
+                break;
             }
 
         }
@@ -272,6 +332,65 @@ public class ClosetProPartMapper {
 
     }
 
+    public IProduct CreateDividerShelfFromPart(Part part, int dividerCount, bool isBottom) {
+
+        // TODO: get the drilling type from ClosetProSettings
+        var drillingType = HorizontalDividerPanelEndDrillingType.DoubleCams;
+
+        string sku = $"SF-D{dividerCount}{(isBottom ? "B" : "T")}{GetDividerShelfSuffix(drillingType)}";
+
+        if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
+            unitPrice = 0M;
+        }
+        string room = GetRoomName(part);
+        Dimension width = Dimension.FromInches(part.Depth);
+        Dimension length = Dimension.FromInches(part.Width);
+        ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
+        ClosetPaint? paint = null;
+        string edgeBandingColor = part.InfoRecords
+                                .Where(i => i.PartName == "Edge Banding")
+                                .Select(i => i.Color)
+                                .FirstOrDefault() ?? part.Color;
+        string comment = "";
+        Dictionary<string, string> parameters = new() {
+            { "Div1", "0" },
+            { "Div2", "0" },
+            { "Div3", "0" },
+            { "Div4", "0" },
+            { "Div5", "0" }
+        };
+
+        return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
+
+    }
+
+    public IProduct CreateDividerPanelFromPart(Part part) {
+
+        // TODO: get the drilling type from ClosetProSettings
+        var drillingType = VerticalDividerPanelEndDrillingType.DoubleCams;
+
+        string sku = $"PEDV{GetDividerPanelSuffix(drillingType)}";
+
+        if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
+            unitPrice = 0M;
+        }
+        string room = GetRoomName(part);
+        Dimension width = Dimension.FromInches(part.Depth);
+        Dimension length = Dimension.FromInches(part.Height);
+        ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
+        ClosetPaint? paint = null;
+        string edgeBandingColor = part.InfoRecords
+                                .Where(i => i.PartName == "Edge Banding")
+                                .Select(i => i.Color)
+                                .FirstOrDefault() ?? part.Color;
+        string comment = "";
+        Dictionary<string, string> parameters = new();
+
+        return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
+
+
+    }
+
     public static IProduct CreateShoeShelfFromPart(Part part) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
@@ -410,5 +529,21 @@ public class ClosetProPartMapper {
     public static bool TryParseMoneyString(string text, out decimal value) {
         return decimal.TryParse(text.Replace("$", ""), out value);
     }
+    
+    public static string GetDividerShelfSuffix(HorizontalDividerPanelEndDrillingType type) => type switch {
+        HorizontalDividerPanelEndDrillingType.FiveMM => "5",
+        HorizontalDividerPanelEndDrillingType.FiveMMSingleCams => "5C",
+        HorizontalDividerPanelEndDrillingType.FiveMMDoubleCams => "5C-D",
+        HorizontalDividerPanelEndDrillingType.SingleCams => "",
+        HorizontalDividerPanelEndDrillingType.DoubleCams => "-D",
+        _ => ""
+    };
+
+    public static string GetDividerPanelSuffix(VerticalDividerPanelEndDrillingType type) => type switch {
+        VerticalDividerPanelEndDrillingType.DoubleCams => "-CAM-D",
+        VerticalDividerPanelEndDrillingType.SingleCams => "-CAM",
+        VerticalDividerPanelEndDrillingType.NoCams => "",
+        _ => ""
+    };
 
 }
