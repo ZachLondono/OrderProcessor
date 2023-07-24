@@ -251,7 +251,7 @@ public class ClosetProPartMapper {
         string comment = "";
 
         bool finLeft = (isTransition && leftDrilling < rightDrilling) || (!isTransition && part.VertHand == "L");
-        bool finRight = (isTransition && leftDrilling < rightDrilling) || (!isTransition && part.VertHand == "R");
+        bool finRight = (isTransition && rightDrilling < leftDrilling) || (!isTransition && part.VertHand == "R");
 
         Dictionary<string, string> parameters = new() {
             { "FINLEFT", finLeft ? "1" : "0" },
@@ -261,6 +261,11 @@ public class ClosetProPartMapper {
             { "BottomNotchH", "0" },
             { "WallMount", isWallMount ? "1" : "0" },
         };
+
+        if (isTransition) {
+            var middleHoles = Dimension.FromInches(double.Min(leftDrilling, rightDrilling)) - Dimension.FromMillimeters(37);
+            parameters.Add("MiddleHoles", middleHoles.AsMillimeters().ToString());
+        }
 
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
 
