@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using HtmlAgilityPack;
+using Microsoft.Extensions.Logging;
 using RestSharp;
 using System.Net;
 
@@ -10,6 +11,8 @@ internal class ClosetProClient {
     private readonly string _password;
     private readonly string _instanceName;
     private readonly ILogger<ClosetProClient> _logger;
+
+    private WebAppState _viewState = new("", "", "");
 
     public Action<string>? OnError { get; set; }
 
@@ -23,6 +26,8 @@ internal class ClosetProClient {
     public async Task<string?> GetCutListDataAsync(int designId) {
     
         var client = CreateClient();
+
+        _viewState = await GetWebAppStateAsync(client);
         
         var loginRequest = CreateLoginRequest();
         var loginResponse = await client.ExecuteAsync(loginRequest);
@@ -33,6 +38,13 @@ internal class ClosetProClient {
             var stdCLResponse = await client.ExecuteAsync(cutListRequest);
             
             if (stdCLResponse.StatusCode == HttpStatusCode.Redirect) {
+
+                string? location = stdCLResponse?.Headers?.FirstOrDefault(h => h.Name == "Location")?.Value?.ToString() ?? null;
+                if (location is null) {
+                    OnError?.Invoke("Could not generate cut list");
+                    _logger.LogError("Location header was not found in redirect response when requesting to generate cut list - {Response}", stdCLResponse);
+                    return null;
+                }
                 
                 var downloadRequest = CreateDownloadRequest(designId);
                 var downloadResponse = await client.ExecuteAsync(downloadRequest);
@@ -40,6 +52,10 @@ internal class ClosetProClient {
                 if (!downloadResponse.IsSuccessful) {
                     OnError?.Invoke("Downloading cut list was unsuccessful");
                     _logger.LogError("Server returned unsuccessful status code when attempting to download cut list - {Response}", downloadResponse);
+                    return null;
+                } else if (downloadResponse.ContentType != "text/csv") {
+                    OnError?.Invoke("Unexpected response when attempting to download cut list");
+                    _logger.LogError("Server returned unexpected content type when attempting to download standard cut list - {Response}", downloadResponse);
                     return null;
                 }
                 
@@ -78,15 +94,13 @@ internal class ClosetProClient {
     }
     
     private RestRequest CreateDownloadRequest(int designId) {
-    
-        var request = new RestRequest("StandardCutList.aspx?PID=0&CID=5&T=1&P=C", Method.Get);
+
+        var request = new RestRequest($"/StandardCutList.aspx?PID={designId}&CID=0&T=1&P=", Method.Get);
         AddCPHeaders(request);
-        
-        request.AddUrlSegment("T", "1");    // Type?
-        request.AddUrlSegment("P", "C");
-        request.AddUrlSegment("CID", designId);
-        request.AddUrlSegment("PID", "0");
-        
+        request.AddParameter("__EVENTVALIDATION", _viewState.EventValidation);
+        request.AddParameter("__VIEWSTATE", _viewState.ViewState);
+        request.AddParameter("__VIEWSTATEGENERATOR", _viewState.ViewStateGenerator);
+
         return request;
     
     }
@@ -97,12 +111,14 @@ internal class ClosetProClient {
         AddCPHeaders(request);
         
         request.AddUrlSegment("T", "1");    // Type?
-        request.AddUrlSegment("P", "C");    
-        request.AddUrlSegment("CID", designId);
-        request.AddUrlSegment("PT", "N");
+        request.AddUrlSegment("PID", designId);
         
+        request.AddParameter("__EVENTVALIDATION", _viewState.EventValidation);
+        request.AddParameter("__VIEWSTATE", _viewState.ViewState);
+        request.AddParameter("__VIEWSTATEGENERATOR", _viewState.ViewStateGenerator);
+
         return request;
-    
+
     }
     
     private RestRequest CreateLoginRequest() {
@@ -112,9 +128,9 @@ internal class ClosetProClient {
             
         request.AddParameter("UserEmail", _username);
         request.AddParameter("UserPW", _password);
-        request.AddParameter("__EVENTVALIDATION", "/wEdAAuoS7FKyV6NReK05NZsBYuvmbPYTfnUmq9VB1vL+V5Bf9VidFe+StlUq9Z5UBVcgio85pbWlDO2hADfoPXD/5tdeas8b2dSfWoH06jyW707oc+N+aipBT3RLGXvV35pNmBYL6cxLwS2xjEYOm1IHlC7SKcSLRmm5MrwL3b0QpXZM0tyCzci6nG+dE4KwPO/C2cM43Ckv+gfXlmlRzrs0RwhCqmjXEP4iHv8SHq1w27kbRrCWtJnM30OCxcqSjqWgMbQecWNOA6AClnm/wJyB9HH");
-        request.AddParameter("__VIEWSTATE", "/wEPDwUJMjM4NDkzMTg3D2QWAmYPZBYEAgEPDxYCHgRUZXh0BRhSb3lhbCBDYWJpbmV0IFVTRVIgTE9HSU5kZAIDD2QWAgIOD2QWAgIGDxYCHgdWaXNpYmxlaGRk7nXLMLHuVhHhoCWM/88u/EPcc/j8XQkKo9DGcmVOBvk=");
-        request.AddParameter("__VIEWSTATEGENERATOR", "C2EE9ABB");
+        request.AddParameter("__EVENTVALIDATION", _viewState.EventValidation);
+        request.AddParameter("__VIEWSTATE", _viewState.ViewState);
+        request.AddParameter("__VIEWSTATEGENERATOR", _viewState.ViewStateGenerator);
         request.AddParameter("btnSubmit", "Login");
         
         request.AddParameter("RegEmail", "");
@@ -145,5 +161,23 @@ internal class ClosetProClient {
         request.AddHeader("sec-ch-ua-platform", "\"Windows\"");
         request.AddHeader("Upgrade-Insecure-Requests", "1");
     }
+
+    private static async Task<WebAppState> GetWebAppStateAsync(RestClient client) {
+    
+        var request = new RestRequest("", Method.Get);
+        RestResponse response = await client.ExecuteAsync(request);
+    
+        var doc = new HtmlDocument();
+        doc.LoadHtml(response.Content);
+        
+        var viewState = doc.GetElementbyId("__VIEWSTATE").GetAttributeValue("value","");
+        var viewStateGen = doc.GetElementbyId("__VIEWSTATEGENERATOR").GetAttributeValue("value","");
+        var eventValid = doc.GetElementbyId("__EVENTVALIDATION").GetAttributeValue("value","");
+    
+        return new(viewState, viewStateGen, eventValid);
+    
+    }
+    
+    private record WebAppState(string ViewState, string ViewStateGenerator, string EventValidation);
 
 }
