@@ -539,6 +539,8 @@ public class ClosetProPartMapper {
 
     public static IProduct CreateDoweledDrawerBox(Part part) {
 
+        throw new NotImplementedException("Melamine doweled drawer boxes are not yet supported");
+        /*
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
@@ -552,6 +554,7 @@ public class ClosetProPartMapper {
         Dimension width = Dimension.FromInches(part.Width);
 
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, "Mela Side Mount", width, length, material, paint, edgeBandingColor, comment, parameters);
+        */
 
     }
 
@@ -586,7 +589,7 @@ public class ClosetProPartMapper {
     }
 
     public static IProduct CreateZargenDrawerBox(Part part) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("Zargen drawer boxes are not yet supported");
     }
 
     public static string GetRoomName(Part part) => $"Wall {part.WallNum} Sec {part.SectionNum}";
