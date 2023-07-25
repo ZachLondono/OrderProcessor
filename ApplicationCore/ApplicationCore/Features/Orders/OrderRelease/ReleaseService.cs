@@ -51,7 +51,7 @@ public class ReleaseService {
 
         if (orders.Count == 0) {
             throw new InvalidOperationException("No orders selected to include in release");
-        } 
+        }
 
         // TODO: check that all orders have the same customer & vendor, if not list all of them separated by a comma
         var customerName = await GetCustomerName(orders.First().CustomerId);
@@ -149,7 +149,7 @@ public class ReleaseService {
                 string orderNotes = string.Join(
                                         ';',
                                         orders.Where(o => !string.IsNullOrEmpty(o.Note))
-                                                .Select(o => $"{(multipleOrders ? $"{o.Number}:":"")}{o.Note}")
+                                                .Select(o => $"{(multipleOrders ? $"{o.Number}:" : "")}{o.Note}")
                                     );
                 string body = GenerateEmailBody(configuration.IncludeSummaryInEmailBody, releases, orderNotes);
                 await SendEmailAsync(recipients, $"RELEASED: {orderNumbers} {customerName}", body, new string[] { filePaths.First() });

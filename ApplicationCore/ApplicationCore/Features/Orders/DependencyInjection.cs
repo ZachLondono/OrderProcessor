@@ -25,7 +25,7 @@ namespace ApplicationCore.Features.Orders;
 
 public static class DependencyInjection {
 
-    public static IServiceCollection AddOrdering(this IServiceCollection services, IConfiguration configuration) {
+    public static IServiceCollection AddOrderFeatures(this IServiceCollection services, IConfiguration configuration) {
 
         services.AddViewModels();
 
@@ -81,7 +81,6 @@ public static class DependencyInjection {
     private static void AddOrderProviders(IServiceCollection services, IConfiguration configuration) {
         services.Configure<DoorOrderProviderOptions>(configuration.GetRequiredSection("DoorOrderProviderOptions"));
         services.AddTransient<DoorSpreadsheetOrderProvider>();
-        services.AddTransient<OrderReleaseModalViewModel>();
     }
 
     private static IServiceCollection AddViewModels(this IServiceCollection services)

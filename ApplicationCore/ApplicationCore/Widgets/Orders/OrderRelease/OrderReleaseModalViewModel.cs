@@ -1,8 +1,9 @@
 ﻿using ApplicationCore.Features.Companies.Contracts;
+using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using Blazored.Modal;
 
-namespace ApplicationCore.Features.Orders.OrderRelease;
+namespace ApplicationCore.Widgets.Orders.Release;
 
 public class OrderReleaseModalViewModel {
 
