@@ -4,12 +4,12 @@ using ApplicationCore.Shared.Domain;
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
 
 public class CubbyAccumulator {
-    
+
     private readonly List<Part> _verticalPanels = new();
     private readonly List<Part> _horizontalPanels = new();
     private Part? _topShelf = null;
     private Part? _bottomShelf = null;
-    
+
     public void AddVerticalPanel(Part part) {
         _verticalPanels.Add(part);
     }

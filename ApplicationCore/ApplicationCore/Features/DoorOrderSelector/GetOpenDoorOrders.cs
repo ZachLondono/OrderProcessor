@@ -30,8 +30,8 @@ public class GetOpenDoorOrders {
 
                     nint winHandle = process.MainWindowHandle;
 
-                    var retriever = new ExcelApplicationRetriever((int) winHandle);
-                    
+                    var retriever = new ExcelApplicationRetriever((int)winHandle);
+
                     if (retriever.xl is not null) {
                         excelApps.Add(retriever.xl);
                     }

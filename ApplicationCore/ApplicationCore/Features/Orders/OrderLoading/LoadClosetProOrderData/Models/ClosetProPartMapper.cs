@@ -46,7 +46,7 @@ public class ClosetProPartMapper {
         FrontHardwareSpreads = new();
 
     }
-    
+
     public List<IProduct> MapPartsToProducts(IEnumerable<Part> parts) {
 
         List<IProduct> products = new();
@@ -94,7 +94,7 @@ public class ClosetProPartMapper {
                             accum.AddHorizontalPanel(cubbyPart);
                         }
 
-                        while(enumerator.MoveNext()) {
+                        while (enumerator.MoveNext()) {
                             cubbyPart = enumerator.Current;
                             if (cubbyPart.ExportName == "Cubby-V") {
                                 accum.AddVerticalPanel(cubbyPart);
@@ -122,7 +122,7 @@ public class ClosetProPartMapper {
                 }
 
             }
-            
+
             if (ProductNameMappings.TryGetValue(part.ExportName, out var mapper)) {
                 products.Add(mapper(part));
             } else {
@@ -179,7 +179,7 @@ public class ClosetProPartMapper {
     }
 
     public List<AdditionalItem> MapAccessoriesToItems(IEnumerable<Accessory> accessories) {
- 
+
         List<AdditionalItem> items = new();
 
         foreach (var accessory in accessories) {
@@ -200,18 +200,18 @@ public class ClosetProPartMapper {
 
         List<AdditionalItem> items = new();
 
-        foreach (var part in parts) { 
+        foreach (var part in parts) {
 
             if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
                 unitPrice = 0M;
             }
-            
+
             if (part.PartName == "Hang Rod") {
                 items.Add(new AdditionalItem(Guid.NewGuid(), $"({part.Quantity}) {part.PartName} - {part.Color} - {part.Width}\"L", unitPrice));
             } else {
                 items.Add(new AdditionalItem(Guid.NewGuid(), $"({part.Quantity}) {part.PartName}", unitPrice));
             }
-            
+
         }
 
         return items;
@@ -382,7 +382,7 @@ public class ClosetProPartMapper {
             parameters.Add("NotchLeft", "Y");
             parameters.Add("ShelfRadius", "0"); // TODO: get radius from ClosetProSettings
 
-        } else if(part.ExportName == "Pie Adj Shelf") {
+        } else if (part.ExportName == "Pie Adj Shelf") {
 
             var dimensions = ParseCornerShelfDimensions(part.CornerShelfSizes);
             var left = dimensions[0];
@@ -485,7 +485,7 @@ public class ClosetProPartMapper {
             16 => "SS16-TAG",
             _ => "SS12-TAG" // TODO: Add custom depth shoe shelves
         };
-            
+
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
 
     }
@@ -584,7 +584,7 @@ public class ClosetProPartMapper {
         bool scoopFront = part.PartName == "Scoop Front Box";
 
         return _factory.CreateDovetailDrawerBoxBuilder()
-            .WithOptions(new(materialName, materialName, materialName, bottomMaterial, clips, notch, accessory, LogoPosition.None, scoopFront:scoopFront))
+            .WithOptions(new(materialName, materialName, materialName, bottomMaterial, clips, notch, accessory, LogoPosition.None, scoopFront: scoopFront))
             .WithDrawerFaceHeight(Dimension.FromInches(part.Height))
             .WithInnerCabinetWidth(Dimension.FromInches(part.Width), 1, slideType)
             .WithInnerCabinetDepth(Dimension.FromInches(part.Depth), slideType, false)
@@ -603,7 +603,7 @@ public class ClosetProPartMapper {
     public static bool TryParseMoneyString(string text, out decimal value) {
         return decimal.TryParse(text.Replace("$", ""), out value);
     }
-    
+
     public static string GetDividerShelfSuffix(HorizontalDividerPanelEndDrillingType type) => type switch {
         HorizontalDividerPanelEndDrillingType.FiveMM => "5",
         HorizontalDividerPanelEndDrillingType.FiveMMSingleCams => "5C",

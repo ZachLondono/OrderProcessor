@@ -9,5 +9,5 @@ public class PickPart {
     public double Width { get; set; }
     public double Depth { get; set; }
     public int Quantity { get; set; }
-    public string Cost { get; set; } = string.Empty;    
+    public string Cost { get; set; } = string.Empty;
 }

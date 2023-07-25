@@ -24,19 +24,19 @@ internal class ClosetProClient {
     }
 
     public async Task<string?> GetCutListDataAsync(int designId) {
-    
+
         var client = CreateClient();
 
         _viewState = await GetWebAppStateAsync(client);
-        
+
         var loginRequest = CreateLoginRequest();
         var loginResponse = await client.ExecuteAsync(loginRequest);
-        
+
         if (loginResponse.StatusCode == HttpStatusCode.Redirect) {
-        
+
             var cutListRequest = CreateGenerateCutListRequest(designId);
             var stdCLResponse = await client.ExecuteAsync(cutListRequest);
-            
+
             if (stdCLResponse.StatusCode == HttpStatusCode.Redirect) {
 
                 string? location = stdCLResponse?.Headers?.FirstOrDefault(h => h.Name == "Location")?.Value?.ToString() ?? null;
@@ -45,7 +45,7 @@ internal class ClosetProClient {
                     _logger.LogError("Location header was not found in redirect response when requesting to generate cut list - {Response}", stdCLResponse);
                     return null;
                 }
-                
+
                 var downloadRequest = CreateDownloadRequest(designId);
                 var downloadResponse = await client.ExecuteAsync(downloadRequest);
 
@@ -58,41 +58,41 @@ internal class ClosetProClient {
                     _logger.LogError("Server returned unexpected content type when attempting to download standard cut list - {Response}", downloadResponse);
                     return null;
                 }
-                
+
                 return downloadResponse.Content;
-                
+
             } else {
 
                 OnError?.Invoke("Unexpected response when attempting to generate cut list");
                 _logger.LogError("Unexpected response from server when attempting to generate standard cut list - {Response}", stdCLResponse);
                 return null;
-            
+
             }
-        
+
         } else {
-        
+
             OnError?.Invoke("Unexpected response when attempting to log in");
             _logger.LogError("Unexpected response from server when attempting to authenticate - {Response}", loginResponse);
             return null;
-        
+
         }
-    
+
     }
 
     private RestClient CreateClient() {
-    
+
         var cookieJar = new CookieContainer();
         var options = new RestClientOptions($"https://{_instanceName}.closetprosoftware.com") {
-          MaxTimeout = -1,
-          UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-          FollowRedirects = false,
-          CookieContainer = cookieJar
+            MaxTimeout = -1,
+            UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+            FollowRedirects = false,
+            CookieContainer = cookieJar
         };
-        
+
         return new(options);
-    
+
     }
-    
+
     private RestRequest CreateDownloadRequest(int designId) {
 
         var request = new RestRequest($"/StandardCutList.aspx?PID={designId}&CID=0&T=1&P=", Method.Get);
@@ -102,17 +102,17 @@ internal class ClosetProClient {
         request.AddParameter("__VIEWSTATEGENERATOR", _viewState.ViewStateGenerator);
 
         return request;
-    
+
     }
-    
+
     private RestRequest CreateGenerateCutListRequest(int designId) {
-    
+
         var request = new RestRequest("GenerateCutList.aspx", Method.Get);
         AddCPHeaders(request);
-        
+
         request.AddUrlSegment("T", "1");    // Type?
         request.AddUrlSegment("PID", designId);
-        
+
         request.AddParameter("__EVENTVALIDATION", _viewState.EventValidation);
         request.AddParameter("__VIEWSTATE", _viewState.ViewState);
         request.AddParameter("__VIEWSTATEGENERATOR", _viewState.ViewStateGenerator);
@@ -120,19 +120,19 @@ internal class ClosetProClient {
         return request;
 
     }
-    
+
     private RestRequest CreateLoginRequest() {
-    
+
         var request = new RestRequest("/login.aspx", Method.Post);
         AddCPHeaders(request);
-            
+
         request.AddParameter("UserEmail", _username);
         request.AddParameter("UserPW", _password);
         request.AddParameter("__EVENTVALIDATION", _viewState.EventValidation);
         request.AddParameter("__VIEWSTATE", _viewState.ViewState);
         request.AddParameter("__VIEWSTATEGENERATOR", _viewState.ViewStateGenerator);
         request.AddParameter("btnSubmit", "Login");
-        
+
         request.AddParameter("RegEmail", "");
         request.AddParameter("RegFName", "");
         request.AddParameter("RegLName", "");
@@ -143,9 +143,9 @@ internal class ClosetProClient {
         request.AddParameter("__EVENTTARGET", "");
         request.AddParameter("__LASTFOCUS", "");
         request.AddParameter("g-recaptcha-response", "");
-    
+
         return request;
-    
+
     }
 
     public void AddCPHeaders(RestRequest request) {
@@ -163,21 +163,21 @@ internal class ClosetProClient {
     }
 
     private static async Task<WebAppState> GetWebAppStateAsync(RestClient client) {
-    
+
         var request = new RestRequest("", Method.Get);
         RestResponse response = await client.ExecuteAsync(request);
-    
+
         var doc = new HtmlDocument();
         doc.LoadHtml(response.Content);
-        
-        var viewState = doc.GetElementbyId("__VIEWSTATE").GetAttributeValue("value","");
-        var viewStateGen = doc.GetElementbyId("__VIEWSTATEGENERATOR").GetAttributeValue("value","");
-        var eventValid = doc.GetElementbyId("__EVENTVALIDATION").GetAttributeValue("value","");
-    
+
+        var viewState = doc.GetElementbyId("__VIEWSTATE").GetAttributeValue("value", "");
+        var viewStateGen = doc.GetElementbyId("__VIEWSTATEGENERATOR").GetAttributeValue("value", "");
+        var eventValid = doc.GetElementbyId("__EVENTVALIDATION").GetAttributeValue("value", "");
+
         return new(viewState, viewStateGen, eventValid);
-    
+
     }
-    
+
     private record WebAppState(string ViewState, string ViewStateGenerator, string EventValidation);
 
 }

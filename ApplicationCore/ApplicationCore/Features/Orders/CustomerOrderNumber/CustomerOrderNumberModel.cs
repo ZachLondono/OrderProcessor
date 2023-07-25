@@ -2,8 +2,8 @@
 
 internal class CustomerOrderNumberModel {
 
-    public Guid CustomerId { get; set; } 
+    public Guid CustomerId { get; set; }
 
     public int Number { get; set; }
-    
+
 }

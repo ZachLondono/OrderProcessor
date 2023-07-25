@@ -121,5 +121,5 @@ internal class CustomerOrderNumberViewModel {
         }
 
     }
-    
+
 }

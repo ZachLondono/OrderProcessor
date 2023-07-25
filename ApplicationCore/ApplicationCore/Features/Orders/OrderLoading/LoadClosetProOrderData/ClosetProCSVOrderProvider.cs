@@ -64,12 +64,12 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
         _partMapper.Settings = customer.ClosetProSettings;
 
-        List<AdditionalItem> additionalItems  = new();
+        List<AdditionalItem> additionalItems = new();
         additionalItems.AddRange(_partMapper.MapPickListToItems(info.PickList, out var hardwareSpread));
         _partMapper.HardwareSpread = hardwareSpread;
         additionalItems.AddRange(_partMapper.MapAccessoriesToItems(info.Accessories));
         additionalItems.AddRange(_partMapper.MapBuyOutPartsToItems(info.BuyOutParts));
-        List<IProduct> products =  _partMapper.MapPartsToProducts(info.Parts);
+        List<IProduct> products = _partMapper.MapPartsToProducts(info.Parts);
 
         var orderNumber = await GetNextOrderNumber(customer.Id);
         string workingDirectory = CreateWorkingDirectory(source, info, orderNumber);
@@ -130,7 +130,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         try {
 
             var newNumber = await connection.QuerySingleOrDefaultAsync<int?>("SELECT number FROM order_numbers WHERE customer_id = @CustomerId;", new {
-                CustomerId = customerId 
+                CustomerId = customerId
             });
 
             if (newNumber is null) {
@@ -161,7 +161,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
     }
 
     private async Task<Customer> GetOrCreateCustomer(string designerCompanyName, string designerName) {
- 
+
         Guid? customerId = await _getCustomerIdByNameAsync(designerCompanyName);
 
         if (customerId is Guid id) {

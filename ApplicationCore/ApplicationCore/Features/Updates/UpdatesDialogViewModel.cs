@@ -86,16 +86,16 @@ internal class UpdatesDialogViewModel {
         IsCheckingForUpdates = true;
         try {
             IsUpdateAvailable = await ApplicationVersionService.IsUpdateAvailable();
-		} catch (Exception ex) {
+        } catch (Exception ex) {
             Error = "Could not check if any updates are available";
             _logger.LogError(ex, "Exception thrown while checking for updates");
         }
-		IsCheckingForUpdates = false;
+        IsCheckingForUpdates = false;
     }
 
     public async Task DownloadUpdate() {
         IsInstallingUpdate = true;
-        try { 
+        try {
             await ApplicationVersionService.InstallLatestVersion(InstallerUri);
         } catch (Exception ex) {
             Error = "Could not download new update";
