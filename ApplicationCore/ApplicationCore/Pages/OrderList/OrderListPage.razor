@@ -34,6 +34,6 @@
             <Button Disabled="!DataContext.SelectedOrders.Any()" OnClickAsync="ReleaseSelectedOrders">Release</Button>
         }
     </div>
-    <OrderListWidget SearchTerm="@DataContext.SearchTerm" VendorId="DataContext.VendorId" CustomerId="DataContext.CustomerId" SelectedOrdersChanged="OnSelectedOrdersChanged" />
+    <OrderListWidget SearchTerm="@DataContext.SearchTerm" VendorId="DataContext.VendorId" CustomerId="DataContext.CustomerId" @ref="_orderList"/>
 </section>
 

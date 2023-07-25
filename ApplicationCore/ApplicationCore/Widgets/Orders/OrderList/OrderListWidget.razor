@@ -64,7 +64,7 @@
         <tbody>
             @foreach(var order in DataContext.Orders) {
                 <tr class="justify-center hover:bg-slate-200 cursor-pointer">
-                    <td class="p-5 whitespace-nowrap border-b" @onclick="async () => ToggleOrder(order)">
+                    <td class="p-5 whitespace-nowrap border-b" @onclick="() => ToggleOrder(order)">
                         <input type="checkbox" checked="@SelectedOrders.Contains(order)" />
                     </td>
                     <td class="p-5 whitespace-nowrap border-b" @onclick="async () => await OpenOrder(order.Id)">@order.Number</td>
@@ -106,7 +106,6 @@
     [Parameter]
     public HashSet<OrderListItem> SelectedOrders { get; set; } = new();
 
-    [Parameter]
     public Action<HashSet<OrderListItem>>? SelectedOrdersChanged { get; set; }
 
     [CascadingParameter]
@@ -207,7 +206,6 @@
         }
 
         SelectedOrdersChanged?.Invoke(SelectedOrders);
-        StateHasChanged();
 
     } 
 

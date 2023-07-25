@@ -3,6 +3,7 @@ using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Infrastructure.Bus;
+using ApplicationCore.Widgets.Orders.OrderList;
 using Blazored.Modal;
 using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
@@ -22,9 +23,10 @@ public partial class OrderListPage {
     }
 
     protected override async Task OnInitializedAsync() {
-
         await DataContext.LoadCompanies();
-
+        if (_orderList is not null) {
+            _orderList.SelectedOrdersChanged += OnSelectedOrdersChanged;
+        }
     }
 
     public void OnSelectedOrdersChanged(HashSet<OrderListItem> selectedOrders) {
@@ -37,6 +39,8 @@ public partial class OrderListPage {
 
     [Inject]
     public IBus? Bus { get; set; }
+
+    private OrderListWidget? _orderList;
 
     private async Task ReleaseSelectedOrders() {
 
