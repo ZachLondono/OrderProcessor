@@ -45,25 +45,35 @@ public class OrderReleaseModalViewModel {
         _service = service;
     }
 
-    public async Task LoadConfiguration(Order order) {
+    public async Task LoadConfiguration(List<Order> orders) {
+
+        if (orders.Count == 0) {
+            return;
+        }
 
         IsLoadingConfiguration = true;
 
         string invoiceEmailRecipients = string.Empty;
 
-        var vendor = await _getVendorByIdAsync(order.VendorId);
+        var firstOrder = orders.First();
+
+        var vendor = await _getVendorByIdAsync(firstOrder.VendorId);
         if (vendor is null) {
             return;
         }
 
         invoiceEmailRecipients = vendor.ReleaseProfile.InvoiceEmailRecipients;
-        invoiceEmailRecipients = await AddCustomerInvoiceEmailRecipients(order.CustomerId, invoiceEmailRecipients);
+        invoiceEmailRecipients = await AddCustomerInvoiceEmailRecipients(firstOrder.CustomerId, invoiceEmailRecipients);
+
+        string workingDirectories = string.Join(';', orders.Select(o => o.WorkingDirectory).Where(s => !string.IsNullOrEmpty(s)));
 
         string releaseDirectory = @"X:\_CUTLISTS  Incoming";
-        if (order.WorkingDirectory != string.Empty) {
-            releaseDirectory += ";" + order.WorkingDirectory;
+        if (workingDirectories != string.Empty) {
+            releaseDirectory += ";" + workingDirectories;
         }
-        string invoiceDirectory = order.WorkingDirectory;
+        string invoiceDirectory = workingDirectories;
+
+        string orderNumbers = string.Join(", ", orders.Select(o => o.Number));
 
         Configuration = new ReleaseConfiguration() {
 
@@ -75,7 +85,7 @@ public class OrderReleaseModalViewModel {
             IncludeSuppliesInSummary = false,
             GeneratePackingList = vendor.ReleaseProfile.GeneratePackingList,
             IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
-            ReleaseFileName = $"{order.Number} CUTLIST",
+            ReleaseFileName = $"{orderNumbers} CUTLIST",
             ReleaseOutputDirectory = releaseDirectory,
             GenerateCNCRelease = false,
             CopyCNCReportToWorkingDirectory = true,
@@ -83,20 +93,20 @@ public class OrderReleaseModalViewModel {
             GenerateInvoice = vendor.ReleaseProfile.GenerateInvoice,
             SendInvoiceEmail = vendor.ReleaseProfile.SendInvoiceEmail,
             InvoiceEmailRecipients = invoiceEmailRecipients,
-            InvoiceFileName = $"{order.Number} INVOICE",
+            InvoiceFileName = $"{orderNumbers} INVOICE",
             InvoiceOutputDirectory = invoiceDirectory,
 
         };
 
         IsLoadingConfiguration = false;
 
-        await LoadCNCReportFiles(order);
+        await LoadCNCReportFiles(orders);
 
     }
 
-    public ModalParameters CreateReleaseProgressModalParameters(Order order) {
+    public ModalParameters CreateReleaseProgressModalParameters(List<Order> orders) {
         return new ModalParameters() {
-            { "ActionRunner",  new ReleaseActionRunner(_service, order, Configuration) },
+            { "ActionRunner",  new ReleaseActionRunner(_service, orders, Configuration) },
             { "InProgressTitle", "Releasing Order..." },
             { "CompleteTitle", "Release Complete" }
         };
@@ -117,12 +127,14 @@ public class OrderReleaseModalViewModel {
         return invoiceEmailRecipients;
     }
 
-    private async Task LoadCNCReportFiles(Order order) {
+    private async Task LoadCNCReportFiles(List<Order> orders) {
         IsReportLoadingFiles = true;
 
-        var files = await GetReportFiles(order.Number);
-        Configuration.CNCDataFilePaths.AddRange(files);
-        Configuration.GenerateCNCRelease = Configuration.CNCDataFilePaths.Any();
+        foreach (var order in orders) {
+            var files = await GetReportFiles(order.Number);
+            Configuration.CNCDataFilePaths.AddRange(files);
+            Configuration.GenerateCNCRelease = Configuration.CNCDataFilePaths.Any();
+        }
 
         IsReportLoadingFiles = false;
     }

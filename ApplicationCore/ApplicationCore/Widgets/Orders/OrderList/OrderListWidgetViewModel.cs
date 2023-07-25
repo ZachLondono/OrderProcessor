@@ -2,10 +2,11 @@
 using ApplicationCore.Shared.Services;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Logging;
+using ApplicationCore.Features.Orders.List;
 
-namespace ApplicationCore.Features.Orders.List;
+namespace ApplicationCore.Widgets.Orders.OrderList;
 
-public class OrderListViewModel {
+public class OrderListWidgetViewModel {
 
     public Action? OnPropertyChanged { get; set; }
 
@@ -78,13 +79,13 @@ public class OrderListViewModel {
 
     public int Page { get; set; } = 1;
 
-    private readonly ILogger<OrderListViewModel> _logger;
+    private readonly ILogger<OrderListWidgetViewModel> _logger;
     private readonly IBus _bus;
     private readonly NavigationService _navigationService;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorById;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerById;
 
-    public OrderListViewModel(ILogger<OrderListViewModel> logger, IBus bus, NavigationService navigationService, CompanyDirectory.GetVendorByIdAsync getVendorById, CompanyDirectory.GetCustomerByIdAsync getCustomerById) {
+    public OrderListWidgetViewModel(ILogger<OrderListWidgetViewModel> logger, IBus bus, NavigationService navigationService, CompanyDirectory.GetVendorByIdAsync getVendorById, CompanyDirectory.GetCustomerByIdAsync getCustomerById) {
         _logger = logger;
         _bus = bus;
         _navigationService = navigationService;

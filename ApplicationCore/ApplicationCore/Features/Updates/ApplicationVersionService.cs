@@ -7,13 +7,13 @@ namespace ApplicationCore.Features.Updates;
 
 internal class ApplicationVersionService {
 
-	private readonly ILogger<ApplicationVersionService> _logger;
-	private readonly HttpClient _httpClient;
+    private readonly ILogger<ApplicationVersionService> _logger;
+    private readonly HttpClient _httpClient;
 
-	public ApplicationVersionService(ILogger<ApplicationVersionService> logger, IHttpClientFactory clientFactory) {
-		_logger = logger;
-		_httpClient = clientFactory.CreateClient();
-	}
+    public ApplicationVersionService(ILogger<ApplicationVersionService> logger, IHttpClientFactory clientFactory) {
+        _logger = logger;
+        _httpClient = clientFactory.CreateClient();
+    }
 
     public static async Task InstallLatestVersion(string uri) {
 
@@ -44,30 +44,30 @@ internal class ApplicationVersionService {
     }
 
     public static Version GetCurrentVersion() {
-		var version = Package.Current.Id.Version;
-		return new(version.Major, version.Minor, version.Build, version.Revision);
-	}
+        var version = Package.Current.Id.Version;
+        return new(version.Major, version.Minor, version.Build, version.Revision);
+    }
 
     public static async Task<bool> IsUpdateAvailable() {
         var availability = await GetUpdateAvailabilityAsync(0);
         return (availability == PackageUpdateAvailability.Available) || (availability == PackageUpdateAvailability.Required);
     }
 
-	public async Task<string> GetReleaseNotes(string uri) {
+    public async Task<string> GetReleaseNotes(string uri) {
 
-		Uri baseUri;
+        Uri baseUri;
         if (uri.EndsWith('/')) baseUri = new(uri);
-		else baseUri = new(uri + '/');
+        else baseUri = new(uri + '/');
 
         Uri releaseNoteUri = new(baseUri, "release_notes.txt");
 
-		_logger.LogInformation("Requesting release notes at URI {URI}", releaseNoteUri);
+        _logger.LogInformation("Requesting release notes at URI {URI}", releaseNoteUri);
 
-        var releaseNotes =  await _httpClient.GetStringAsync(releaseNoteUri);
+        var releaseNotes = await _httpClient.GetStringAsync(releaseNoteUri);
 
-		return releaseNotes;
+        return releaseNotes;
 
-	}
+    }
 
     private static async Task<PackageUpdateAvailability> GetUpdateAvailabilityAsync(int attempt) {
 

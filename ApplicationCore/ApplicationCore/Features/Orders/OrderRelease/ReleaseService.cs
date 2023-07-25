@@ -27,37 +27,48 @@ public class ReleaseService {
 
     private readonly ILogger<ReleaseService> _logger;
     private readonly IFileReader _fileReader;
-    private readonly IInvoiceDecorator _invoiceDecorator;
-    private readonly IPackingListDecorator _packingListDecorator;
+    private readonly InvoiceDecoratorFactory _invoiceDecoratorFactory;
+    private readonly PackingListDecoratorFactory _packingListDecoratorFactory;
     private readonly CNCReleaseDecoratorFactory _cncReleaseDecoratorFactory;
-    private readonly IJobSummaryDecorator _jobSummaryDecorator;
+    private readonly JobSummaryDecoratorFactory _jobSummaryDecoratorFactory;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
+    private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly Email _emailSettings;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, IInvoiceDecorator invoiceDecorator, IPackingListDecorator packingListDecorator, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, IJobSummaryDecorator jobSummaryDecorator, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IOptions<Email> emailOptions) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IOptions<Email> emailOptions) {
         _fileReader = fileReader;
-        _invoiceDecorator = invoiceDecorator;
-        _packingListDecorator = packingListDecorator;
+        _invoiceDecoratorFactory = invoiceDecoratorFactory;
+        _packingListDecoratorFactory = packingListDecoratorFactory;
         _cncReleaseDecoratorFactory = cncReleaseDecoratorFactory;
-        _jobSummaryDecorator = jobSummaryDecorator;
+        _jobSummaryDecoratorFactory = jobSummaryDecoratorFactory;
         _logger = logger;
         _getCustomerByIdAsync = getCustomerByIdAsync;
+        _getVendorByIdAsync = getVendorByIdAsync;
         _emailSettings = emailOptions.Value;
     }
 
-    public async Task Release(Order order, ReleaseConfiguration configuration) {
+    public async Task Release(List<Order> orders, ReleaseConfiguration configuration) {
 
-        var customerName = await GetCustomerName(order.CustomerId);
+        if (orders.Count == 0) {
+            throw new InvalidOperationException("No orders selected to include in release");
+        }
 
-        await CreateReleasePDF(order, configuration, customerName);
+        // TODO: check that all orders have the same customer & vendor, if not list all of them separated by a comma
+        var customerName = await GetCustomerName(orders.First().CustomerId);
+        var vendorName = await GetVendorName(orders.First().VendorId);
+        var releaseDate = DateTime.Now;
 
-        await Invoicing(order, configuration, customerName);
+        await CreateReleasePDF(orders, configuration, releaseDate, customerName, vendorName);
+
+        foreach (var order in orders) {
+            await Invoicing(order, configuration, customerName);
+        }
 
         OnActionComplete?.Invoke("Release Complete");
 
     }
 
-    private async Task CreateReleasePDF(Order order, ReleaseConfiguration configuration, string customerName) {
+    private async Task CreateReleasePDF(List<Order> orders, ReleaseConfiguration configuration, DateTime releaseDate, string customerName, string vendorName) {
 
         if (configuration.ReleaseOutputDirectory is null) {
             OnError?.Invoke("No output directory set");
@@ -71,19 +82,21 @@ public class ReleaseService {
 
         List<IDocumentDecorator> decorators = new();
 
-        if (configuration.GenerateJobSummary) {
-            await _jobSummaryDecorator.AddData(order, configuration.IncludeProductTablesInSummary, configuration.IncludeSuppliesInSummary);
-            decorators.Add(_jobSummaryDecorator);
-        }
+        foreach (var order in orders) {
+            if (configuration.GenerateJobSummary) {
+                var decorator = await _jobSummaryDecoratorFactory.CreateDecorator(order, configuration.IncludeProductTablesInSummary, configuration.IncludeSuppliesInSummary);
+                decorators.Add(decorator);
+            }
 
-        if (configuration.GeneratePackingList) {
-            await _packingListDecorator.AddData(order);
-            decorators.Add(_packingListDecorator);
-        }
+            if (configuration.GeneratePackingList) {
+                var decorator = await _packingListDecoratorFactory.CreateDecorator(order);
+                decorators.Add(decorator);
+            }
 
-        if (configuration.IncludeInvoiceInRelease) {
-            await _invoiceDecorator.AddData(order);
-            decorators.Add(_invoiceDecorator);
+            if (configuration.IncludeInvoiceInRelease) {
+                var decorator = await _invoiceDecoratorFactory.CreateDecorator(order);
+                decorators.Add(decorator);
+            }
         }
 
         List<ReleasedJob> releases = new();
@@ -95,14 +108,16 @@ public class ReleaseService {
                     continue;
                 }
 
-                var (decorator, jobData) = await _cncReleaseDecoratorFactory.Create(filePath, order);
+                var (decorator, jobData) = await _cncReleaseDecoratorFactory.Create(filePath, releaseDate, customerName, vendorName);
                 decorators.Add(decorator);
                 if (jobData is not null) {
                     releases.Add(jobData);
                 }
 
                 if (configuration.CopyCNCReportToWorkingDirectory) {
-                    CopyReportToWorkingDirectory(order, filePath);
+                    foreach (var order in orders) {
+                        CopyReportToWorkingDirectory(order, filePath);
+                    }
                 }
 
             }
@@ -115,7 +130,9 @@ public class ReleaseService {
             return;
         }
 
-        var filename = configuration.ReleaseFileName ?? $"{order.Number} RELEASE";
+        string orderNumbers = string.Join(", ", orders.Select(o => o.Number));
+
+        var filename = configuration.ReleaseFileName ?? $"{orderNumbers} RELEASE";
 
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
@@ -128,8 +145,14 @@ public class ReleaseService {
         if (filePaths.Any() && configuration.SendReleaseEmail && configuration.ReleaseEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending release email");
             try {
-                string body = GenerateEmailBody(configuration.IncludeSummaryInEmailBody, releases, order.Note);
-                await SendEmailAsync(recipients, $"RELEASED: {order.Number} {customerName}", body, new string[] { filePaths.First() });
+                bool multipleOrders = orders.Count > 1;
+                string orderNotes = string.Join(
+                                        ';',
+                                        orders.Where(o => !string.IsNullOrEmpty(o.Note))
+                                                .Select(o => $"{(multipleOrders ? $"{o.Number}:" : "")}{o.Note}")
+                                    );
+                string body = GenerateEmailBody(configuration.IncludeSummaryInEmailBody, releases, orderNotes);
+                await SendEmailAsync(recipients, $"RELEASED: {orderNumbers} {customerName}", body, new string[] { filePaths.First() });
             } catch (Exception ex) {
                 OnError?.Invoke($"Could not send email - '{ex.Message}'");
                 _logger.LogError(ex, "Exception thrown while trying to send release email");
@@ -257,8 +280,8 @@ public class ReleaseService {
 
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
-            await _invoiceDecorator.AddData(order);
-            filePaths = GeneratePDF(invoiceDirectories, new IDocumentDecorator[] { _invoiceDecorator }, filename, customerName, isTemp);
+            var decorator = await _invoiceDecoratorFactory.CreateDecorator(order);
+            filePaths = GeneratePDF(invoiceDirectories, new IDocumentDecorator[] { decorator }, filename, customerName, isTemp);
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate invoice PDF - '{ex.Message}'");
             _logger.LogError(ex, "Exception thrown while trying to generate invoice pdf");
@@ -399,6 +422,27 @@ public class ReleaseService {
         } catch (Exception ex) {
 
             _logger.LogError(ex, "Exception thrown while getting customer name");
+            return string.Empty;
+
+        }
+
+    }
+
+    private async Task<string> GetVendorName(Guid vendorId) {
+
+        try {
+
+            var vendor = await _getVendorByIdAsync(vendorId);
+
+            if (vendor is null) {
+                return string.Empty;
+            }
+
+            return vendor.Name;
+
+        } catch (Exception ex) {
+
+            _logger.LogError(ex, "Exception thrown while getting vendor name");
             return string.Empty;
 
         }

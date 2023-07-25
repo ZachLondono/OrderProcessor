@@ -29,7 +29,7 @@ public class BuyOutPart {
     public string UnitL { get; set; } = string.Empty;
     public string UnitR { get; set; } = string.Empty;
     public int PartNum { get; set; }
-    
+
     public List<PartInfo> InfoRecords = new();
- 
+
 }

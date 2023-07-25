@@ -29,5 +29,5 @@ internal class ClosetProFileCSVOrderProvider : ClosetProCSVOrderProvider {
             return null;
         }
     }
-    
+
 }

@@ -9,7 +9,7 @@ namespace ApplicationCore.Features.Orders.OrderRelease;
 public partial class OrderReleaseModal {
 
     [Parameter]
-    public Order? Order { get; set; } = null;
+    public List<Order> Orders { get; set; } = new();
 
     [CascadingParameter]
     private BlazoredModalInstance ModalInstance { get; set; } = default!;
@@ -23,9 +23,9 @@ public partial class OrderReleaseModal {
 
         DataContext.OnPropertyChanged += StateHasChanged;
 
-        if (Order is null) return;
+        if (!Orders.Any()) return;
 
-        await DataContext.LoadConfiguration(Order);
+        await DataContext.LoadConfiguration(Orders);
 
     }
 
@@ -60,9 +60,9 @@ public partial class OrderReleaseModal {
 
         _errorMessage = null;
 
-        if (Order is null) return;
+        if (!Orders.Any()) return;
 
-        var parameters = DataContext.CreateReleaseProgressModalParameters(Order);
+        var parameters = DataContext.CreateReleaseProgressModalParameters(Orders);
 
         var options = new ModalOptions() {
             HideHeader = true,

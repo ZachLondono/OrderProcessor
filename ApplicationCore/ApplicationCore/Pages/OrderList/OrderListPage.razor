@@ -1,5 +1,6 @@
 ﻿@page "/orders/list"
-@using ApplicationCore.Features.Orders.List
+@using ApplicationCore.Shared.Components
+@using ApplicationCore.Widgets.Orders.OrderList
 @inject OrderListPageViewModel DataContext 
 
 <h1 class="text-3xl mb-2">Orders</h1>
@@ -28,6 +29,11 @@
             </select>
         </div>
     </div>
-    <OrderList SearchTerm="@DataContext.SearchTerm" VendorId="DataContext.VendorId" CustomerId="DataContext.CustomerId" />
+    <div class="my-5">
+        @if (DataContext.SelectedOrders.Any()) {
+            <Button Disabled="!DataContext.SelectedOrders.Any()" OnClickAsync="ReleaseSelectedOrders">Release</Button>
+        }
+    </div>
+    <OrderListWidget SearchTerm="@DataContext.SearchTerm" VendorId="DataContext.VendorId" CustomerId="DataContext.CustomerId" @ref="_orderList"/>
 </section>
 

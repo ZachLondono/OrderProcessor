@@ -4,7 +4,6 @@ using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.OrderLoading;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.State;
-using ApplicationCore.Features.Orders.List;
 using ApplicationCore.Features.Orders.Contracts;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.PackingList;
@@ -13,7 +12,6 @@ using ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Dapper;
 using ApplicationCore.Features.Orders.Delete;
 using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 using ApplicationCore.Features.Orders.OrderLoading.LoadDoorSpreadsheetOrderData;
@@ -25,7 +23,7 @@ namespace ApplicationCore.Features.Orders;
 
 public static class DependencyInjection {
 
-    public static IServiceCollection AddOrdering(this IServiceCollection services, IConfiguration configuration) {
+    public static IServiceCollection AddOrderFeatures(this IServiceCollection services, IConfiguration configuration) {
 
         services.AddViewModels();
 
@@ -66,8 +64,11 @@ public static class DependencyInjection {
     private static void AddReleaseServices(IServiceCollection services) {
         services.AddTransient<CNCReleaseDecoratorFactory>();
         services.AddTransient<IJobSummaryDecorator, JobSummaryDecorator>();
+        services.AddTransient<JobSummaryDecoratorFactory>();
         services.AddTransient<IInvoiceDecorator, InvoiceDecorator>();
+        services.AddTransient<InvoiceDecoratorFactory>();
         services.AddTransient<IPackingListDecorator, PackingListDecorator>();
+        services.AddTransient<PackingListDecoratorFactory>();
         services.AddTransient<ReleaseService>();
     }
 
@@ -81,12 +82,10 @@ public static class DependencyInjection {
     private static void AddOrderProviders(IServiceCollection services, IConfiguration configuration) {
         services.Configure<DoorOrderProviderOptions>(configuration.GetRequiredSection("DoorOrderProviderOptions"));
         services.AddTransient<DoorSpreadsheetOrderProvider>();
-        services.AddTransient<OrderReleaseModalViewModel>();
     }
 
     private static IServiceCollection AddViewModels(this IServiceCollection services)
-        => services.AddTransient<OrderListViewModel>()
-                    .AddTransient<ChooseOrderProviderViewModel>()
+        => services.AddTransient<ChooseOrderProviderViewModel>()
                     .AddTransient<DeleteOrderConfirmationModalViewModel>()
                     .AddTransient<CustomerOrderNumberViewModel>();
 

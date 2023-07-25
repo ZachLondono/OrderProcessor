@@ -15,6 +15,7 @@ using ApplicationCore.Infrastructure.UI;
 using ApplicationCore.Shared.Settings;
 using ApplicationCore.Features.DataFilePaths;
 using ApplicationCore.Features.Updates;
+using ApplicationCore.Widgets.Orders;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -32,7 +33,8 @@ public static class DependencyInjection {
 
         services.AddCompanies();
 
-        services.AddOrdering(configuration);
+        services.AddOrderFeatures(configuration);
+        services.AddOrderWidgets();
 
         services.AddCNC(configuration);
 

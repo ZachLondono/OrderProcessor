@@ -8,12 +8,12 @@ public class ReleaseActionRunner : IActionRunner {
     public Action<ProgressLogMessage>? PublishProgressMessage { get; set; }
 
     private readonly ReleaseService _service;
-    private readonly Order _order;
+    private readonly List<Order> _orders;
     private readonly ReleaseConfiguration _configuration;
 
-    public ReleaseActionRunner(ReleaseService service, Order order, ReleaseConfiguration configuration) {
+    public ReleaseActionRunner(ReleaseService service, List<Order> orders, ReleaseConfiguration configuration) {
         _service = service;
-        _order = order;
+        _orders = orders;
         _configuration = configuration;
 
         _service.OnProgressReport += (msg) => PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, msg));
@@ -23,6 +23,6 @@ public class ReleaseActionRunner : IActionRunner {
     }
 
     public async Task Run() {
-        await _service.Release(_order, _configuration);
+        await _service.Release(_orders, _configuration);
     }
 }
