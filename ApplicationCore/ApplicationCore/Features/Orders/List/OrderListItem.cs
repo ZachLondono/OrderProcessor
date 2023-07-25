@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.Orders.List;
 
-public class OrderListItem {
+public record OrderListItem {
 
     public Guid Id { get; init; }
 

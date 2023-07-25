@@ -1,4 +1,5 @@
-﻿@using ApplicationCore.Features.Orders.Shared.Domain
+﻿@using ApplicationCore.Features.Orders.List;
+@using ApplicationCore.Features.Orders.Shared.Domain
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Infrastructure
 @using ApplicationCore.Shared.Components;
@@ -6,13 +7,14 @@
 @using ApplicationCore.Shared.Data;
 @using System.Diagnostics;
 @using Microsoft.Extensions.Logging;
-@inject OrderListViewModel DataContext
-@inject ILogger<OrderList> Logger
+@inject OrderListWidgetViewModel DataContext
+@inject ILogger<OrderListWidget> Logger
 
 <table class="w-full table-auto">
 
     <thead class="border-b border-slate-300">
         <tr>
+            <th class="p-5 text-gray-700"></th>
             <th class="p-5 text-gray-700">Number</th>
             <th class="p-5 text-gray-700">Name</th>
             <th class="p-5 text-gray-700">Customer</th>
@@ -62,12 +64,15 @@
         <tbody>
             @foreach(var order in DataContext.Orders) {
                 <tr class="justify-center hover:bg-slate-200 cursor-pointer">
-                    <td class="p-5 whitespace-nowrap border-b" @onclick="async () => await SelectOrder(order.Id)">@order.Number</td>
-                    <td class="p-5 whitespace-nowrap border-b" @onclick="async () => await SelectOrder(order.Id)">@order.Name</td>
+                    <td class="p-5 whitespace-nowrap border-b" @onclick="async () => ToggleOrder(order)">
+                        <input type="checkbox" checked="@SelectedOrders.Contains(order)" />
+                    </td>
+                    <td class="p-5 whitespace-nowrap border-b" @onclick="async () => await OpenOrder(order.Id)">@order.Number</td>
+                    <td class="p-5 whitespace-nowrap border-b" @onclick="async () => await OpenOrder(order.Id)">@order.Name</td>
                     <td class="p-5 whitespace-nowrap border-b hover:underline" @onclick="() => DataContext.OpenCustomerPage(order.CustomerId)">@order.CustomerName</td>
                     <td class="p-5 whitespace-nowrap border-b hover:text-underline hover:underline" @onclick="() => DataContext.OpenVendorPage(order.VendorId)">@order.VendorName</td>
-                    <td class="p-5 whitespace-nowrap text-center border-b" @onclick="async () => await SelectOrder(order.Id)">@order.ItemCount</td>
-                    <td class="p-5 whitespace-nowrap text-center border-b" @onclick="async () => await SelectOrder(order.Id)">@order.OrderDate.ToShortDateString()</td>
+                    <td class="p-5 whitespace-nowrap text-center border-b" @onclick="async () => await OpenOrder(order.Id)">@order.ItemCount</td>
+                    <td class="p-5 whitespace-nowrap text-center border-b" @onclick="async () => await OpenOrder(order.Id)">@order.OrderDate.ToShortDateString()</td>
                 </tr>
             }
         </tbody>
@@ -77,6 +82,9 @@
 </table>
 @if (!DataContext.IsLoading && !DataContext.HasError && DataContext.Orders is not null && DataContext.Orders.Any()) {
     <div class="my-3">
+        @if (SelectedOrders.Any()) {
+            <span class="mr-5">@SelectedOrders.Count selected</span>            
+        }
         <span>@DataContext.TotalOrderCount @(DataContext.TotalOrderCount == 1 ? "order" : "orders")</span>
         <div class="float-right">
             <Pagination PageCount="DataContext.PageCount" OnPageSelected="async (i) => await UpdatePage(i)" CurrentPage="DataContext.Page" />
@@ -94,6 +102,12 @@
 
     [Parameter]
     public string? SearchTerm { get; set; }
+
+    [Parameter]
+    public HashSet<OrderListItem> SelectedOrders { get; set; } = new();
+
+    [Parameter]
+    public Action<HashSet<OrderListItem>>? SelectedOrdersChanged { get; set; }
 
     [CascadingParameter]
     public IModalService ModalService { get; set; } = default!;
@@ -151,7 +165,7 @@
 
     }
 
-    private async Task SelectOrder(Guid orderId) {
+    private async Task OpenOrder(Guid orderId) {
 
         try {
             await DataContext.OpenOrder(orderId);
@@ -179,5 +193,22 @@
         }
 
     }
+
+    public void ToggleOrder(OrderListItem order) {
+
+        if (SelectedOrders.Contains(order)) {
+
+            SelectedOrders.Remove(order);
+
+        } else {
+
+            SelectedOrders.Add(order);
+
+        }
+
+        SelectedOrdersChanged?.Invoke(SelectedOrders);
+        StateHasChanged();
+
+    } 
 
 }

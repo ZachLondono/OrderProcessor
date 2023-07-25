@@ -2,9 +2,9 @@
 @using ApplicationCore.Features.Orders.Delete
 @using ApplicationCore.Features.Orders.Details
 @using ApplicationCore.Features.Orders.OrderExport
-@using ApplicationCore.Features.Orders.OrderRelease
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Shared.Services;
+@using ApplicationCore.Widgets.Orders.OrderRelease
 @inject OrderState OrderState
 @inject NavigationService Nav
 
@@ -14,7 +14,7 @@
         <OrderDetails>
             <div class="flex flex-col space-y-5">
                 <OrderExportWidget Order="OrderState.Order" />
-                <OrderReleaseWidget Order="OrderState.Order" />
+                <OrderReleaseWidget Orders="(new() { OrderState.Order })" />
                 <OrderDeleteWidget OrderId="OrderState.Order?.Id ?? Guid.Empty" OnOrderDeleted="OnOrderDeleted" />
             </div>
         </OrderDetails>

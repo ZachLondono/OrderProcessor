@@ -20,13 +20,13 @@
     public IModalService Modal { get; set; } = default!;
 
     [Parameter]
-    public Order? Order { get; set; } = null;
+    public List<Order> Orders { get; set; } = new();
 
     private bool _isReleasing = false;
 
     private async Task ReleaseOrder() {
 
-        if (_isReleasing == true || Order is null) {
+        if (_isReleasing == true || !Orders.Any()) {
             return;
         }
 
@@ -34,7 +34,7 @@
 
         var dialog = Modal.Show<OrderReleaseModal>("Release Setup",
             new ModalParameters() {
-                { "Order", Order }
+                { "Orders", Orders }
             }, new ModalOptions() {
                 HideHeader = true,
                 HideCloseButton = true,
