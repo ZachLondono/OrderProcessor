@@ -2,12 +2,15 @@
 @    using ApplicationCore.Shared.Components
 @    using ApplicationCore.Shared.Components.ProgressModal;
 @    using ApplicationCore.Shared.Services;
-    using ApplicationCore.Widgets.Orders.Release;
+@    using ApplicationCore.Widgets.Orders.Release;
 @inject OrderReleaseModalViewModel DataContext
 @inject IFilePicker FilePicker
 
 @if (DataContext.IsLoadingConfiguration) {
     <span>Loading release configuration...</span>
+} else if (!Orders.Any()) {
+    <span>No orders selected to release</span>
+    <Button Color="ButtonColor.Secondary" Style="ButtonStyle.Text" OnClickAsync="Cancel">Cancel</Button>
 } else {
 
     <div class="flex flex-col space-y-5">

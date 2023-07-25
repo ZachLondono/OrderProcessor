@@ -27,20 +27,20 @@ public class ReleaseService {
 
     private readonly ILogger<ReleaseService> _logger;
     private readonly IFileReader _fileReader;
-    private readonly IInvoiceDecorator _invoiceDecorator;
-    private readonly IPackingListDecorator _packingListDecorator;
+    private readonly InvoiceDecoratorFactory _invoiceDecoratorFactory;
+    private readonly PackingListDecoratorFactory _packingListDecoratorFactory;
     private readonly CNCReleaseDecoratorFactory _cncReleaseDecoratorFactory;
-    private readonly IJobSummaryDecorator _jobSummaryDecorator;
+    private readonly JobSummaryDecoratorFactory _jobSummaryDecoratorFactory;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly Email _emailSettings;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, IInvoiceDecorator invoiceDecorator, IPackingListDecorator packingListDecorator, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, IJobSummaryDecorator jobSummaryDecorator, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IOptions<Email> emailOptions) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IOptions<Email> emailOptions) {
         _fileReader = fileReader;
-        _invoiceDecorator = invoiceDecorator;
-        _packingListDecorator = packingListDecorator;
+        _invoiceDecoratorFactory = invoiceDecoratorFactory;
+        _packingListDecoratorFactory = packingListDecoratorFactory;
         _cncReleaseDecoratorFactory = cncReleaseDecoratorFactory;
-        _jobSummaryDecorator = jobSummaryDecorator;
+        _jobSummaryDecoratorFactory = jobSummaryDecoratorFactory;
         _logger = logger;
         _getCustomerByIdAsync = getCustomerByIdAsync;
         _getVendorByIdAsync = getVendorByIdAsync;
@@ -84,18 +84,18 @@ public class ReleaseService {
 
         foreach (var order in orders) {
             if (configuration.GenerateJobSummary) {
-                await _jobSummaryDecorator.AddData(order, configuration.IncludeProductTablesInSummary, configuration.IncludeSuppliesInSummary);
-                decorators.Add(_jobSummaryDecorator);
+                var decorator = await _jobSummaryDecoratorFactory.CreateDecorator(order, configuration.IncludeProductTablesInSummary, configuration.IncludeSuppliesInSummary);
+                decorators.Add(decorator);
             }
 
             if (configuration.GeneratePackingList) {
-                await _packingListDecorator.AddData(order);
-                decorators.Add(_packingListDecorator);
+                var decorator = await _packingListDecoratorFactory.CreateDecorator(order);
+                decorators.Add(decorator);
             }
 
             if (configuration.IncludeInvoiceInRelease) {
-                await _invoiceDecorator.AddData(order);
-                decorators.Add(_invoiceDecorator);
+                var decorator = await _invoiceDecoratorFactory.CreateDecorator(order);
+                decorators.Add(decorator);
             }
         }
 
@@ -130,7 +130,7 @@ public class ReleaseService {
             return;
         }
 
-        string orderNumbers = string.Join(',', orders.Select(o => o.Number));
+        string orderNumbers = string.Join(", ", orders.Select(o => o.Number));
 
         var filename = configuration.ReleaseFileName ?? $"{orderNumbers} RELEASE";
 
@@ -280,8 +280,8 @@ public class ReleaseService {
 
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
-            await _invoiceDecorator.AddData(order);
-            filePaths = GeneratePDF(invoiceDirectories, new IDocumentDecorator[] { _invoiceDecorator }, filename, customerName, isTemp);
+            var decorator = await _invoiceDecoratorFactory.CreateDecorator(order);
+            filePaths = GeneratePDF(invoiceDirectories, new IDocumentDecorator[] { decorator }, filename, customerName, isTemp);
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate invoice PDF - '{ex.Message}'");
             _logger.LogError(ex, "Exception thrown while trying to generate invoice pdf");
