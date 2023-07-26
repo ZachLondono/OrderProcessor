@@ -545,22 +545,26 @@ public class ClosetProPartMapper {
 
     public static IProduct CreateDoweledDrawerBox(Part part) {
 
-        throw new NotImplementedException("Melamine doweled drawer boxes are not yet supported");
-        /*
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
         string room = GetRoomName(part);
-        ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
-        ClosetPaint? paint = null;
-        string edgeBandingColor = part.Color;
-        string comment = "";
-        Dictionary<string, string> parameters = new();
-        Dimension length = Dimension.FromInches(part.Height);
-        Dimension width = Dimension.FromInches(part.Width);
+        int productNumber = part.PartNum;
+        var height = Dimension.FromInches(part.Height);
+        var width = Dimension.FromInches(part.Width);
+        var depth = Dimension.FromInches(part.Depth);
 
-        return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, "Mela Side Mount", width, length, material, paint, edgeBandingColor, comment, parameters);
-        */
+        string matName = "White"; // TODO: Get material name from ClosetProSettings
+
+        var matThickness = Dimension.FromInches(0.625);
+        var material = new DoweledDrawerBoxMaterial(matName, matThickness, true);
+        var botMatThickness = Dimension.FromInches(0.5);
+        var botMaterial = new DoweledDrawerBoxMaterial(matName, botMatThickness, true);
+
+        bool isUndermount = part.PartName.Contains("Undermount");
+        var heightAdj = Dimension.FromMillimeters(1);
+
+        return new DoweledDrawerBoxProduct(Guid.NewGuid(), unitPrice, part.Quantity, room, productNumber, height, width, depth, material, material, material, botMaterial, isUndermount, heightAdj);
 
     }
 
