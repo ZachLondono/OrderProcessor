@@ -1,10 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.List;
-using ApplicationCore.Features.Orders.OrderRelease;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.State;
-using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Widgets.Orders.OrderList;
-using Blazored.Modal;
 using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
 
@@ -37,36 +32,6 @@ public partial class OrderListPage {
     [CascadingParameter]
     public IModalService Modal { get; set; } = default!;
 
-    [Inject]
-    public IBus? Bus { get; set; }
-
     private OrderListWidget? _orderList;
-
-    private async Task ReleaseSelectedOrders() {
-
-        if (Bus is null) {
-            return;
-        }
-
-        List<Order> orders = new();
-
-        foreach (var item in DataContext.SelectedOrders) {
-            var response = await Bus.Send(new GetOrderById.Query(item.Id));
-            response.OnSuccess(orders.Add);
-        }
-
-        var dialog = Modal.Show<OrderReleaseModal>("Release Setup",
-            new ModalParameters() {
-                { "Orders", orders }
-            }, new ModalOptions() {
-                HideHeader = true,
-                HideCloseButton = true,
-                DisableBackgroundCancel = true,
-                Size = ModalSize.Medium
-            });
-
-        _ = await dialog.Result;
-
-    }
 
 }
