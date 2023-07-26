@@ -2,6 +2,7 @@
 @using ApplicationCore.Features.Orders.Delete
 @using ApplicationCore.Features.Orders.Details
 @using ApplicationCore.Features.Orders.OrderExport
+@using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Shared.Services;
 @using ApplicationCore.Widgets.Orders.OrderRelease
@@ -14,7 +15,7 @@
         <OrderDetails>
             <div class="flex flex-col space-y-5">
                 <OrderExportWidget Order="OrderState.Order" />
-                <OrderReleaseWidget Orders="(new() { OrderState.Order })" />
+                <OrderReleaseWidget Orders="GetOrder()" />
                 <OrderDeleteWidget OrderId="OrderState.Order?.Id ?? Guid.Empty" OnOrderDeleted="OnOrderDeleted" />
             </div>
         </OrderDetails>
@@ -23,6 +24,13 @@
 </div>
 
 @code {
+
+    public List<Order> GetOrder() {
+        if (OrderState.Order is null) {
+            return new() ;
+        }
+        return new() { OrderState.Order };
+    }
 
     public void OnOrderDeleted() {
         Nav.NavigateToOrderListPage();
