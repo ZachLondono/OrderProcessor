@@ -21,8 +21,8 @@
                 <th class="p-5">Ext. $</th>
             </tr>
         </thead>
-        <tbody>
-            @foreach (var row in ClosetParts) {
+        @foreach (var row in ClosetParts) {
+            <tbody class="hover:bg-blue-500/10">
                 <tr>
                     <td class="whitespace-nowrap p-5 border-b text-center">@row.ProductNumber</td>
                     <td class="whitespace-nowrap p-5 border-b text-center">@row.Qty</td>
@@ -50,8 +50,8 @@
                         </td>
                     </tr>
                 }
-            }
-        </tbody>
+            </tbody>
+        }
     </table>
 </div>
 
