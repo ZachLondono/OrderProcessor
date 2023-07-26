@@ -36,6 +36,19 @@ internal static class DependencyInjection {
 
         });
 
+        services.AddTransient<Contracts.CompanyDirectory.GetCustomerWorkingDirectoryRootByIdAsync>(sp => {
+
+            var bus = sp.GetRequiredService<IBus>();
+            return async (customerId) => {
+                var result = await bus.Send(new GetCustomerWorkingDirectoryRootById.Query(customerId));
+                return result.Match<string?>(
+                    workingDirectoryRoot => workingDirectoryRoot,
+                    error => null
+                );
+            };
+
+        });
+
         services.AddTransient<Contracts.CompanyDirectory.GetCustomerIdByAllmoxyIdAsync>(sp => {
 
             var bus = sp.GetRequiredService<IBus>();
