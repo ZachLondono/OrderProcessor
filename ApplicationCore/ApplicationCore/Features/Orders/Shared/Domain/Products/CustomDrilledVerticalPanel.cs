@@ -388,7 +388,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     // Returns hole position relative to the bottom of the panel 
     public static Dimension GetValidHolePositionFromTop(Dimension length, Dimension maxSpaceFromTop) {
 
-        if (maxSpaceFromTop < s_holesOffTop || s_holeSpacing == Dimension.Zero) {
+        if (s_holeSpacing == Dimension.Zero) {
             return Dimension.Zero;
         }
 
