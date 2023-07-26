@@ -22,15 +22,26 @@
     [Parameter]
     public List<Order> Orders { get; set; } = new();
 
+    [Parameter]
+    public Func<Task<List<Order>>> GetOrdersAsync { get; set; } = () => Task.FromResult<List<Order>>(new());
+
     private bool _isReleasing = false;
 
     private async Task ReleaseOrder() {
 
-        if (_isReleasing == true || !Orders.Any()) {
+        if (_isReleasing == true) {
             return;
         }
 
         _isReleasing = true;
+
+        var orders = await GetOrdersAsync();
+        Orders.AddRange(orders);
+
+        if (!Orders.Any()) {
+            _isReleasing = false;
+            return;
+        }
 
         var dialog = Modal.Show<OrderReleaseModal>("Release Setup",
             new ModalParameters() {
