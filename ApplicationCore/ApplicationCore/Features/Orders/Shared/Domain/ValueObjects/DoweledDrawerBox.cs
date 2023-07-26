@@ -16,6 +16,8 @@ public class DoweledDrawerBox {
     public bool MachineThicknessForUMSlides { get; }
     public Dimension FrontBackHeightAdjustment { get; }
 
+    // TODO: add a note property
+
     public DoweledDrawerBox(Dimension height, Dimension width, Dimension depth,
                             DoweledDrawerBoxMaterial front, DoweledDrawerBoxMaterial back, DoweledDrawerBoxMaterial sides, DoweledDrawerBoxMaterial bottom,
                             bool machineForUM, Dimension frontBackHeightAdjustment) {

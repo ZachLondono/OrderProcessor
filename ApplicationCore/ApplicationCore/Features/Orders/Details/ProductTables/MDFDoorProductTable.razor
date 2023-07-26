@@ -44,6 +44,15 @@
                     <td class="whitespace-nowrap p-5 border-b text-center">@row.UnitPrice.ToString("$0.00")</td>
                     <td class="whitespace-nowrap p-5 border-b text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
                 </tr>
+
+                @if (row.Note != string.Empty) {
+                    <tr>
+                        <td class="p-5 font-bold border-b text-red-500" colspan="11">
+                            Note: @row.Note
+                        </td>
+                    </tr>                        
+                }
+
             }
         </tbody>
     </table>

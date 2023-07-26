@@ -15,6 +15,7 @@ public interface IClosetPartProduct {
     public ClosetMaterial Material { get; }
     public ClosetPaint? Paint { get; }
     public string EdgeBandingColor { get; }
+    public string Comment { get; }
     public string GetDescription();
 
 }
