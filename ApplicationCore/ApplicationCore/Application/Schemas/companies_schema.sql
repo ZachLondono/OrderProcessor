@@ -8,6 +8,7 @@ CREATE TABLE customers (
 	billing_contact_id BLOB NOT NULL,
 	billing_address_id BLOB NOT NULL,
 	closet_pro_settings_id BLOB NOT NULL,
+	working_directory_root TEXT,
 	PRIMARY KEY (id),
 	FOREIGN KEY (shipping_contact_id) REFERENCES contacts(id),
 	FOREIGN KEY (billing_contact_id) REFERENCES contacts(id),

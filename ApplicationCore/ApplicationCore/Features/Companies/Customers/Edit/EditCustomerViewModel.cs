@@ -61,7 +61,8 @@ internal class EditCustomerViewModel {
                 ShippingMethod = customer.ShippingMethod,
                 ShippingAddress = customer.ShippingAddress,
                 ShippingContact = customer.ShippingContact,
-                ClosetProSettings = customer.ClosetProSettings
+                ClosetProSettings = customer.ClosetProSettings,
+                WorkingDirectoryRoot = customer.WorkingDirectoryRoot
             },
             error => null
         );
@@ -85,7 +86,9 @@ internal class EditCustomerViewModel {
 
         try {
 
-            var customer = new Customer(Model.Id, Model.Name ?? "", Model.ShippingMethod, Model.ShippingContact, Model.ShippingAddress, Model.BillingContact, Model.BillingAddress, Model.OrderNumberPrefix, Model.ClosetProSettings);
+            string? orderNumberPrefix = Model.OrderNumberPrefix == string.Empty ? null : Model.OrderNumberPrefix;
+            string? workingDirectoryRoot = Model.WorkingDirectoryRoot == string.Empty ? null : Model.WorkingDirectoryRoot;
+            var customer = new Customer(Model.Id, Model.Name ?? "", Model.ShippingMethod, Model.ShippingContact, Model.ShippingAddress, Model.BillingContact, Model.BillingAddress, orderNumberPrefix, Model.ClosetProSettings, workingDirectoryRoot);
 
             var response = await _bus.Send(new UpdateCustomer.Command(customer));
 
