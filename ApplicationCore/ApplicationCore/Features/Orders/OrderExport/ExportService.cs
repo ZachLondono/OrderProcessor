@@ -53,7 +53,7 @@ internal class ExportService {
 
         await GenerateEXT(configuration, order, _options.EXTOutputDirectory);
 
-        await GenerateCSV(configuration, order, _options.CSVOutputDirectory);
+        await GenerateCSV(configuration, order, customerName, _options.CSVOutputDirectory);
 
         OnActionComplete?.Invoke("Export Complete");
 
@@ -147,7 +147,7 @@ internal class ExportService {
 
     }
 
-    private async Task GenerateCSV(ExportConfiguration configuration, Order order, string outputDir) {
+    private async Task GenerateCSV(ExportConfiguration configuration, Order order, string customerName, string outputDir) {
 
         if (!configuration.GenerateCSV) {
             OnProgressReport?.Invoke("Not generating CSV file");
@@ -164,6 +164,8 @@ internal class ExportService {
             .Cast<ICNCPartContainer>()
             .SelectMany(p => p.GetCNCParts())
             .ToArray();
+
+        parts.ForEach(p => p.InfoFields.Add("CustomerInfo1", customerName));
 
         if (!parts.Any()) {
             OnError?.Invoke("No parts in order to write to CSV");
