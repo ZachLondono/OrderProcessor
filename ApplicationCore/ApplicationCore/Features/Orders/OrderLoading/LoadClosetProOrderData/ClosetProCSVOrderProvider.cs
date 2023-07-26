@@ -26,10 +26,11 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
     private readonly IOrderingDbConnectionFactory _dbConnectionFactory;
     private readonly GetCustomerIdByNameAsync _getCustomerIdByNameAsync;
     private readonly GetCustomerOrderPrefixByIdAsync _getCustomerOrderPrefixByIdAsync;
+    private readonly GetCustomerWorkingDirectoryRootByIdAsync _getCustomerWorkingDirectoryRootByIdAsync;
     private readonly InsertCustomerAsync _insertCustomerAsync;
     private readonly GetCustomerByIdAsync _getCustomerByIdAsync;
 
-    public ClosetProCSVOrderProvider(ILogger<ClosetProCSVOrderProvider> logger, ClosetProCSVReader reader, ClosetProPartMapper partMapper, IFileReader fileReader, IOrderingDbConnectionFactory dbConnectionFactory, GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, InsertCustomerAsync insertCustomerAsync, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerByIdAsync getCustomerByIdAsync) {
+    public ClosetProCSVOrderProvider(ILogger<ClosetProCSVOrderProvider> logger, ClosetProCSVReader reader, ClosetProPartMapper partMapper, IFileReader fileReader, IOrderingDbConnectionFactory dbConnectionFactory, GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, InsertCustomerAsync insertCustomerAsync, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerByIdAsync getCustomerByIdAsync, GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync) {
         _logger = logger;
         _reader = reader;
         _partMapper = partMapper;
@@ -39,6 +40,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         _insertCustomerAsync = insertCustomerAsync;
         _getCustomerOrderPrefixByIdAsync = getCustomerOrderPrefixByIdAsync;
         _getCustomerByIdAsync = getCustomerByIdAsync;
+        _getCustomerWorkingDirectoryRootByIdAsync = getCustomerWorkingDirectoryRootByIdAsync;
     }
 
     protected abstract Task<string?> GetCSVDataFromSourceAsync(string source);
@@ -109,8 +111,9 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
     }
 
     private string CreateWorkingDirectory(string source, ClosetProOrderInfo info, string orderNumber) {
-        // TODO: get base directory from a configuration file
-        string workingDirectory = Path.Combine(@"R:\Job Scans\ClosetProSoftware", _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {info.Header.DesignerCompany} - {info.Header.OrderName}", ' '));
+        string? customerWorkingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customerId);
+        string cpDefaultWorkingDirectory = @"R:\Job Scans\ClosetProSoftware"; // TODO: Get base directory from configuration file
+        string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? cpDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {info.Header.DesignerCompany} - {info.Header.OrderName}", ' '));
         bool workingDirExists = TryToCreateWorkingDirectory(workingDirectory);
         if (workingDirExists) {
             string dataFile = _fileReader.GetAvailableFileName(workingDirectory, "Incoming", ".csv");
