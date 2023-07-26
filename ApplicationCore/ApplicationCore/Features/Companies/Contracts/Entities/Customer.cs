@@ -28,7 +28,7 @@ public class Customer {
         WorkingDirectoryRoot = workingDirectoryRoot;
     }
 
-    public static Customer Create(string name, string shippingMethod, Contact shippingContact, Address shippingAddress, Contact billingContact, Address billingAddress, string? workingDirectoryRoot)
-        => new(Guid.NewGuid(), name, shippingMethod, shippingContact, shippingAddress, billingContact, billingAddress, null, new(), workingDirectoryRoot);
+    public static Customer Create(string name, string shippingMethod, Contact shippingContact, Address shippingAddress, Contact billingContact, Address billingAddress)
+        => new(Guid.NewGuid(), name, shippingMethod, shippingContact, shippingAddress, billingContact, billingAddress, null, new(), null);
 
 }
