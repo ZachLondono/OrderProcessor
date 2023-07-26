@@ -3,12 +3,12 @@
 @using static ApplicationCore.Shared.Components.Button;
 
 <div>
-    <label>Design ID</label>
-    <input type="number" class="input-text" min="0" @bind-value="DesignId" />
+    <label>Order ID</label>
+    <input type="number" class="input-text" min="0" @bind-value="OrderId" />
 </div>
 
 <div class="mt-12">
-    <Button Style="ButtonStyle.Text" Color="ButtonColor.Success" OnClickAsync="ReturnValue" Class="mt-3 float-right mr-3" disabled="@string.IsNullOrEmpty(DesignId)">Enter</Button>
+    <Button Style="ButtonStyle.Text" Color="ButtonColor.Success" OnClickAsync="ReturnValue" Class="mt-3 float-right mr-3" disabled="@string.IsNullOrEmpty(OrderId)">Enter</Button>
     <Button Style="ButtonStyle.Text" Color="ButtonColor.Secondary" OnClickAsync="Cancel" Class="mt-3 float-right">Cancel</Button>
 </div>
 
@@ -17,10 +17,10 @@
     [CascadingParameter]
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
-    public string DesignId { get; set; }
+    public string OrderId { get; set; } = string.Empty;
 
     public async Task ReturnValue() {
-        await BlazoredModal.CloseAsync(ModalResult.Ok(DesignId));
+        await BlazoredModal.CloseAsync(ModalResult.Ok(OrderId));
     }
 
     public async Task Cancel() {

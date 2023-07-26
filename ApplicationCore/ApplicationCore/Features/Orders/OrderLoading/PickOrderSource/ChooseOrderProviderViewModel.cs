@@ -26,8 +26,8 @@ internal class ChooseOrderProviderViewModel {
             new() {
                 Name = "Closet Pro Web",
                 SourceType = OrderSourceType.ClosetProWebCSV,
-                DialogTitle = "Select ClosetPro Design ID",
-                SourcePickerDialogType = typeof(GetClosetProDesignIdDialog)
+                DialogTitle = "Select ClosetPro Order ID",
+                SourcePickerDialogType = typeof(GetClosetProOrderIdDialog)
             },
             new() {
                 Name = "Closet Pro File",
