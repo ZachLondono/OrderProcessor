@@ -82,15 +82,15 @@ public class OrderListWidgetViewModel {
     private readonly ILogger<OrderListWidgetViewModel> _logger;
     private readonly IBus _bus;
     private readonly NavigationService _navigationService;
-    private readonly CompanyDirectory.GetVendorByIdAsync _getVendorById;
-    private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerById;
+    private readonly CompanyDirectory.GetVendorNameByIdAsync _getVendorNameById;
+    private readonly CompanyDirectory.GetCustomerNameByIdAsync _getCustomerNameById;
 
-    public OrderListWidgetViewModel(ILogger<OrderListWidgetViewModel> logger, IBus bus, NavigationService navigationService, CompanyDirectory.GetVendorByIdAsync getVendorById, CompanyDirectory.GetCustomerByIdAsync getCustomerById) {
+    public OrderListWidgetViewModel(ILogger<OrderListWidgetViewModel> logger, IBus bus, NavigationService navigationService, CompanyDirectory.GetVendorNameByIdAsync getVendorNameById, CompanyDirectory.GetCustomerNameByIdAsync getCustomerNameById) {
         _logger = logger;
         _bus = bus;
         _navigationService = navigationService;
-        _getVendorById = getVendorById;
-        _getCustomerById = getCustomerById;
+        _getVendorNameById = getVendorNameById;
+        _getCustomerNameById = getCustomerNameById;
     }
 
     public async Task OpenOrder(Guid orderId) {
@@ -124,17 +124,27 @@ public class OrderListWidgetViewModel {
             return;
         }
 
+        Dictionary<Guid, string> customerNames = new();
+        Dictionary<Guid, string> vendorNames = new();
         foreach (var order in Orders) {
 
             if (order is null) {
                 continue;
             }
 
-            var vendor = await _getVendorById(order.VendorId);
-            order.VendorName = vendor?.Name ?? "";
+            if (vendorNames.TryGetValue(order.VendorId, out string? vendorName)) {
+                order.VendorName = vendorName ?? "";
+            } else {
+                order.VendorName = await _getVendorNameById(order.VendorId) ?? "";
+                vendorNames[order.VendorId] = order.VendorName;
+            }
 
-            var customer = await _getCustomerById(order.CustomerId);
-            order.CustomerName = customer?.Name ?? "";
+            if (customerNames.TryGetValue(order.CustomerId, out string? customerName)) {
+                order.CustomerName = customerName ?? ""; 
+            } else {
+                order.CustomerName = await _getCustomerNameById(order.CustomerId) ?? "";
+                customerNames[order.CustomerId] = order.CustomerName;
+            }
 
         }
 

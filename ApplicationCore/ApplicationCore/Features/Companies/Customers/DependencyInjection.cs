@@ -23,6 +23,19 @@ internal static class DependencyInjection {
 
         });
 
+        services.AddTransient<Contracts.CompanyDirectory.GetCustomerNameByIdAsync>(sp => {
+
+            var bus = sp.GetRequiredService<IBus>();
+            return async (id) => {
+                var result = await bus.Send(new GetCustomerNameById.Query(id));
+                return result.Match<string?>(
+                    customerName => customerName,
+                    error => null
+                );
+            };
+
+        });
+
         services.AddTransient<Contracts.CompanyDirectory.GetCustomerOrderPrefixByIdAsync>(sp => {
 
             var bus = sp.GetRequiredService<IBus>();
