@@ -1,6 +1,7 @@
 ﻿@page "/customers/{customerId:guid}"
 @using ApplicationCore.Features.Companies.Customers.Edit
 @using ApplicationCore.Features.Orders.CustomerOrderNumber
+@using ApplicationCore.Widgets.Companies.AllmoxyId
 @using ApplicationCore.Widgets.Orders.OrderList
 
 <h1 class="font-bold text-lg">Customer Details</h1>
@@ -12,6 +13,10 @@
     <hr />
     <section>
         <CustomerOrderNumberWidget CustomerId="CustomerId" />
+    </section>
+    <hr />
+    <section>
+        <CustomerAllmoxyIdWidget CustomerId="CustomerId"/>
     </section>
     <hr />
     <section>
