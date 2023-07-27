@@ -3,6 +3,7 @@ using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using ApplicationCore.Shared.Data.Companies;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
+using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Companies.Customers.Queries;
 
@@ -56,7 +57,14 @@ internal class GetCustomerById {
 
                     closet_pro_settings.toe_kick_sku AS CPToeKickSKU,
                     closet_pro_settings.adjustable_shelf_sku AS CPAdjustableShelfSKU,
-                    closet_pro_settings.fixed_shelf_sku AS CPFixedShelfSKU
+                    closet_pro_settings.fixed_shelf_sku AS CPFixedShelfSKU,
+                    closet_pro_settings.l_fixed_shelf_sku AS CPLFixedShelfSKU,
+                    closet_pro_settings.l_adjustable_shelf_sku AS CPLAdjustableShelfSKU,
+                    closet_pro_settings.l_shelf_radius AS CPLShelfRadius,
+                    closet_pro_settings.diagonal_fixed_shelf_sku AS CPDiagonalFixedShelfSKU,
+                    closet_pro_settings.diagonal_adjustable_shelf_sku AS CPDiagonalAdjustableShelfSKU,
+                    closet_pro_settings.doweled_drawer_box_material_finish AS CPDoweledDrawerBoxMaterialFinish,
+                    closet_pro_settings.vertical_panel_bottom_radius AS CPVerticalPanelBottomRadius
 
                 FROM customers
                     
@@ -116,6 +124,13 @@ internal class GetCustomerById {
             public string CPToeKickSKU { get; set; } = string.Empty;
             public string CPAdjustableShelfSKU { get; set; } = string.Empty;
             public string CPFixedShelfSKU { get; set; } = string.Empty;
+            public string CPLFixedShelfSKU { get; set; } = string.Empty;
+            public string CPLAdjustableShelfSKU { get; set; } = string.Empty;
+            public Dimension CPLShelfRadius { get; set; } = Dimension.Zero; 
+            public string CPDiagonalFixedShelfSKU { get; set; } = string.Empty;
+            public string CPDiagonalAdjustableShelfSKU { get; set; } = string.Empty;
+            public string CPDoweledDrawerBoxMaterialFinish { get; set; } = string.Empty;
+            public Dimension CPVerticalPanelBottomRadius { get; set; } = Dimension.Zero;
 
             public Customer AsCustomer() {
 
@@ -154,7 +169,14 @@ internal class GetCustomerById {
                 var closetProSettings = new ClosetProSettings() {
                     ToeKickSKU = CPToeKickSKU,
                     AdjustableShelfSKU = CPAdjustableShelfSKU,
-                    FixedShelfSKU = CPFixedShelfSKU
+                    FixedShelfSKU = CPFixedShelfSKU,
+                    LFixedShelfSKU = CPLFixedShelfSKU,
+                    LAdjustableShelfSKU = CPLAdjustableShelfSKU,
+                    LShelfRadius = CPLShelfRadius,
+                    DiagonalFixedShelfSKU = CPDiagonalFixedShelfSKU,
+                    DiagonalAdjustableShelfSKU = CPDiagonalAdjustableShelfSKU,
+                    DoweledDrawerBoxMaterialFinish = CPDoweledDrawerBoxMaterialFinish,
+                    VerticalPanelBottomRadius = CPVerticalPanelBottomRadius
                 };
 
                 return new Customer(Id, Name, ShippingMethod, shippingContact, shippingAddress, billingContact, billingAddress, OrderNumberPrefix, closetProSettings, WorkingDirectoryRoot);

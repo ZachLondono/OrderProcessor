@@ -19,7 +19,14 @@ CREATE TABLE closet_pro_settings (
 	id BLOB NOT NULL,
 	toe_kick_sku TEXT NOT NULL,
 	adjustable_shelf_sku TEXT NOT NULL,
-	fixed_shelf_sku TEXT NOT NULL
+	fixed_shelf_sku TEXT NOT NULL,
+	l_fixed_shelf_sku TEXT NOT NULL,
+	l_adjustable_shelf_sku TEXT NOT NULL,
+	l_shelf_radius REAL NOT NULL,
+	diagonal_fixed_shelf_sku TEXT NOT NULL,
+	diagonal_adjustable_shelf_sku TEXT NOT NULL,
+	doweled_drawer_box_material_finish TEXT NOT NULL,
+	vertical_panel_bottom_radius REAL NOT NULL
 );
 
 CREATE TABLE vendors (

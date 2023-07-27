@@ -112,13 +112,27 @@ internal class UpdateCustomer {
                 SET
                     toe_kick_sku = @ToeKickSKU,
                     adjustable_shelf_sku = @AdjustableShelfSKU,
-                    fixed_shelf_sku = @FixedShelfSKU
+                    fixed_shelf_sku = @FixedShelfSKU,
+                    l_fixed_shelf_sku = @LFixedShelfSKU,
+                    l_adjustable_shelf_sku = @LAdjustableShelfSKU,
+                    l_shelf_radius = @LShelfRadius,
+                    diagonal_fixed_shelf_sku = @DiagonalFixedShelfSKU,
+                    diagonal_adjustable_shelf_sku = @DiagonalAdjustableShelfSKU,
+                    doweled_drawer_box_material_finish = @DoweledDrawerBoxMaterialFinish,
+                    vertical_panel_bottom_radius = @VerticalPanelBottomRadius
                 WHERE id = (SELECT closet_pro_settings_id FROM customers WHERE id = @CustomerId);
                 """, new {
                     CustomerId = customerId,
                     settings.ToeKickSKU,
                     settings.AdjustableShelfSKU,
-                    settings.FixedShelfSKU
+                    settings.FixedShelfSKU,
+                    settings.LFixedShelfSKU,
+                    settings.LAdjustableShelfSKU,
+                    settings.LShelfRadius,
+                    settings.DiagonalFixedShelfSKU,
+                    settings.DiagonalAdjustableShelfSKU,
+                    settings.DoweledDrawerBoxMaterialFinish,
+                    settings.VerticalPanelBottomRadius
                 }, trx);
 
         }

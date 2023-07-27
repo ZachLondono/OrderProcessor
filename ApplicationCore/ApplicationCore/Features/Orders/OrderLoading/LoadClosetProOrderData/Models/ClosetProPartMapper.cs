@@ -223,7 +223,7 @@ public class ClosetProPartMapper {
         throw new NotImplementedException();
     }
 
-    public static IProduct CreateVerticalPanelFromPart(Part part) {
+    public IProduct CreateVerticalPanelFromPart(Part part) {
 
         double leftDrilling = part.VertDrillL;
         double rightDrilling = part.VertDrillR;
@@ -266,7 +266,7 @@ public class ClosetProPartMapper {
             { "BottomNotchD", "0" },
             { "BottomNotchH", "0" },
             { "WallMount", isWallMount ? "1" : "0" },
-            { "BottomRadius", hasRadiusBottom ? "51" : "0" }, // TODO: get radius value from ClosetProSettings
+            { "BottomRadius", hasRadiusBottom ? Settings.VerticalPanelBottomRadius.AsMillimeters().ToString() : "0" },
         };
 
         if (isTransition) {
@@ -325,11 +325,11 @@ public class ClosetProPartMapper {
             var left = dimensions[0];
             var right = dimensions[3];
 
-            sku = "SFL19"; // TODO: get sku from ClosetProSettings
+            sku = Settings.LFixedShelfSKU;
             parameters.Add("RightWidth", left.AsMillimeters().ToString());
             parameters.Add("NotchSideLength", right.AsMillimeters().ToString());
             parameters.Add("NotchLeft", "Y");
-            parameters.Add("ShelfRadius", "0"); // TODO: get radius from ClosetProSettings
+            parameters.Add("ShelfRadius", Settings.LShelfRadius.AsMillimeters().ToString());
 
         } else if (part.ExportName == "Pie Fixed Shelf") {
 
@@ -337,7 +337,7 @@ public class ClosetProPartMapper {
             var left = dimensions[0];
             var right = dimensions[3];
 
-            sku = "SFD19"; // TODO: get sku from ClosetProSettings
+            sku = Settings.DiagonalFixedShelfSKU;
             parameters.Add("RightWidth", left.AsMillimeters().ToString());
             parameters.Add("NotchSideLength", right.AsMillimeters().ToString());
             parameters.Add("NotchLeft", "Y");
@@ -376,11 +376,11 @@ public class ClosetProPartMapper {
             var left = dimensions[0];
             var right = dimensions[3];
 
-            sku = "SAL19"; // TODO: get sku from ClosetProSettings
+            sku = Settings.LAdjustableShelfSKU;
             parameters.Add("RightWidth", left.AsMillimeters().ToString());
             parameters.Add("NotchSideLength", right.AsMillimeters().ToString());
             parameters.Add("NotchLeft", "Y");
-            parameters.Add("ShelfRadius", "0"); // TODO: get radius from ClosetProSettings
+            parameters.Add("ShelfRadius", Settings.LShelfRadius.AsMillimeters().ToString());
 
         } else if (part.ExportName == "Pie Adj Shelf") {
 
@@ -388,7 +388,7 @@ public class ClosetProPartMapper {
             var left = dimensions[0];
             var right = dimensions[3];
 
-            sku = "SAD19"; // TODO: get sku from ClosetProSettings
+            sku = Settings.DiagonalAdjustableShelfSKU;
             parameters.Add("RightWidth", left.AsMillimeters().ToString());
             parameters.Add("NotchSideLength", right.AsMillimeters().ToString());
             parameters.Add("NotchLeft", "Y");
@@ -543,7 +543,7 @@ public class ClosetProPartMapper {
 
     }
 
-    public static IProduct CreateDoweledDrawerBox(Part part) {
+    public IProduct CreateDoweledDrawerBox(Part part) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
@@ -554,7 +554,7 @@ public class ClosetProPartMapper {
         var width = Dimension.FromInches(part.Width);
         var depth = Dimension.FromInches(part.Depth);
 
-        string matName = "White"; // TODO: Get material name from ClosetProSettings
+        string matName = Settings.DoweledDrawerBoxMaterialFinish; 
 
         var matThickness = Dimension.FromInches(0.625);
         var material = new DoweledDrawerBoxMaterial(matName, matThickness, true);

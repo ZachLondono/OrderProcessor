@@ -172,12 +172,24 @@ internal class InsertCustomer {
             Guid id = Guid.NewGuid();
 
             await connection.ExecuteAsync(
-                "INSERT INTO closet_pro_settings (id, toe_kick_sku, adjustable_shelf_sku, fixed_shelf_sku) VALUES (@Id, @ToeKickSKU, @AdjustableShelfSKU, @FixedShelfSKU);",
+                """
+                INSERT INTO closet_pro_settings
+                    (id, toe_kick_sku, adjustable_shelf_sku, fixed_shelf_sku, l_fixed_shelf_sku, l_adjustable_shelf_sku, l_shelf_radius, diagonal_fixed_shelf_sku, diagonal_adjustable_shelf_sku, doweled_drawer_box_material_finish, vertical_panel_bottom_radius)
+                VALUES
+                    (@Id, @ToeKickSKU, @AdjustableShelfSKU, @FixedShelfSKU, @LFixedShelfSKU, @LAdjustableShelfSKU, @LShelfRadius, @DiagonalFixedShelfSKU, @DiagonalAdjustableShelfSKU, @DoweledDrawerBoxMaterialFinish, @VerticalPanelBottomRadius);
+                """,
                 new {
                     Id = id,
                     settings.ToeKickSKU,
                     settings.AdjustableShelfSKU,
-                    settings.FixedShelfSKU
+                    settings.FixedShelfSKU,
+                    settings.LFixedShelfSKU,
+                    settings.LAdjustableShelfSKU,
+                    settings.LShelfRadius,
+                    settings.DiagonalFixedShelfSKU,
+                    settings.DiagonalAdjustableShelfSKU,
+                    settings.DoweledDrawerBoxMaterialFinish,
+                    settings.VerticalPanelBottomRadius
                 }, trx);
 
             return id;
