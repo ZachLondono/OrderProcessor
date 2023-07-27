@@ -16,5 +16,6 @@ internal class ExistingCustomerModel {
     public Contact BillingContact { get; set; } = new();
     public Address BillingAddress { get; set; } = new();
     public ClosetProSettings ClosetProSettings { get; set; } = new();
+    public string? WorkingDirectoryRoot { get; set; } = null;
 
 }

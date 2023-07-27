@@ -30,11 +30,14 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
     private readonly InsertCustomerAsync _insertCustomerAsync;
     private readonly IFileReader _fileReader;
     private readonly GetCustomerOrderPrefixByIdAsync _getCustomerOrderPrefixByIdAsync;
+    private readonly GetCustomerWorkingDirectoryRootByIdAsync _getCustomerWorkingDirectoryRootByIdAsync;
     private readonly ILogger<AllmoxyXMLOrderProvider> _logger;
 
     public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
 
-    public AllmoxyXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, ILogger<AllmoxyXMLOrderProvider> logger) {
+    public AllmoxyXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader,
+                                    GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync,
+                                    ILogger<AllmoxyXMLOrderProvider> logger) {
         _configuration = configuration.Value;
         _validator = validator;
         _builderFactory = builderFactory;
@@ -42,6 +45,7 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
         _insertCustomerAsync = insertCustomerAsync;
         _fileReader = fileReader;
         _getCustomerOrderPrefixByIdAsync = getCustomerOrderPrefixByIdAsync;
+        _getCustomerWorkingDirectoryRootByIdAsync = getCustomerWorkingDirectoryRootByIdAsync;
         _logger = logger;
     }
 
@@ -67,15 +71,6 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
         if (data is null) {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find order information in given data");
             return null;
-        }
-
-        // TODO: Get base directory from configuration file
-        string workingDirectory = Path.Combine(@"R:\Job Scans\Allmoxy", _fileReader.RemoveInvalidPathCharacters($"{data.Number} - {data.Customer.Company} - {data.Name}", ' '));
-        bool workingDirExists = TryToCreateWorkingDirectory(workingDirectory);
-
-        if (workingDirExists) {
-            string dataFile = _fileReader.GetAvailableFileName(workingDirectory, "Incoming", ".xml");
-            await File.WriteAllTextAsync(dataFile, exportXML);
         }
 
         ShippingInfo shipping = new() {
@@ -120,6 +115,16 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
         string? prefix = await _getCustomerOrderPrefixByIdAsync(customerId);
         if (prefix is not null) {
             number = prefix + number;
+        }
+
+        string? customerWorkingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customerId);
+        string allmoxyDefaultWorkingDirectory = @"R:\Job Scans\Allmoxy"; // TODO: Get base directory from configuration file
+        string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? allmoxyDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{data.Number} - {data.Customer.Company} - {data.Name}", ' '));
+        bool workingDirExists = TryToCreateWorkingDirectory(workingDirectory);
+
+        if (workingDirExists) {
+            string dataFile = _fileReader.GetAvailableFileName(workingDirectory, "Incoming", ".xml");
+            await File.WriteAllTextAsync(dataFile, exportXML);
         }
 
         OrderData? order = new() {

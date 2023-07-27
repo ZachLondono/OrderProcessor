@@ -52,7 +52,8 @@ internal class UpdateCustomer {
                 SET
                     name = @Name,
                     shipping_method = @ShippingMethod,
-                    order_number_prefix = @OrderNumberPrefix
+                    order_number_prefix = @OrderNumberPrefix,
+                    working_directory_root = @WorkingDirectoryRoot
                 WHERE id = @Id;
                 """, customer, trx);
         }

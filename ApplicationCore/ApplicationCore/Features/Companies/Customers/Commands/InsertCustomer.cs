@@ -59,7 +59,8 @@ internal class InsertCustomer {
                         shipping_address_id,
                         billing_contact_id,
                         billing_address_id,
-                        closet_pro_settings_id)
+                        closet_pro_settings_id,
+                        working_directory_root)
                     VALUES (
                         @Id,
                         @Name,
@@ -69,7 +70,8 @@ internal class InsertCustomer {
                         @ShippingAddressId,
                         @BillingContactId,
                         @BillingAddressId,
-                        @ClosetProSettingsId
+                        @ClosetProSettingsId,
+                        @WorkingDirectoryRoot
                     );
                     """, new {
                         customer.Id,
@@ -80,7 +82,8 @@ internal class InsertCustomer {
                         ShippingAddressId = shippingAddressId,
                         BillingContactId = billingContactId,
                         BillingAddressId = billingAddressId,
-                        ClosetProSettingsId = closetProSettingsId
+                        ClosetProSettingsId = closetProSettingsId,
+                        customer.WorkingDirectoryRoot
                     }, trx);
         }
 

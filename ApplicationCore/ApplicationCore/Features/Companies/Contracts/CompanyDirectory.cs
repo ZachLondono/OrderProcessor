@@ -10,6 +10,7 @@ public static class CompanyDirectory {
     public delegate Task<Guid?> GetCustomerIdByAllmoxyIdAsync(int id);
     public delegate Task<Guid?> GetCustomerIdByNameAsync(string name);
     public delegate Task<string?> GetCustomerOrderPrefixByIdAsync(Guid id);
+    public delegate Task<string?> GetCustomerWorkingDirectoryRootByIdAsync(Guid id);
 
     public delegate Task<Vendor?> GetVendorByIdAsync(Guid id);
     public delegate Task UpdateVendorAsync(Vendor vendor);

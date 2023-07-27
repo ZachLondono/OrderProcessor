@@ -30,6 +30,7 @@ internal class GetCustomerById {
                     customers.name,
                     customers.order_number_prefix AS OrderNumberPrefix,
                     customers.shipping_method AS ShippingMethod,
+                    customers.working_directory_root AS WorkingDirectoryRoot,
 
                     ship_cont.name AS ShippingContactName,
                     ship_cont.phone_number AS ShippingContactPhone,
@@ -86,6 +87,7 @@ internal class GetCustomerById {
             public string Name { get; set; } = string.Empty;
             public string? OrderNumberPrefix { get; set; } = null;
             public string ShippingMethod { get; set; } = string.Empty;
+            public string? WorkingDirectoryRoot { get; set; } = null;
 
             public string ShippingContactName { get; set; } = string.Empty;
             public string? ShippingContactPhone { get; set; }
@@ -155,7 +157,7 @@ internal class GetCustomerById {
                     FixedShelfSKU = CPFixedShelfSKU
                 };
 
-                return new Customer(Id, Name, ShippingMethod, shippingContact, shippingAddress, billingContact, billingAddress, OrderNumberPrefix, closetProSettings);
+                return new Customer(Id, Name, ShippingMethod, shippingContact, shippingAddress, billingContact, billingAddress, OrderNumberPrefix, closetProSettings, WorkingDirectoryRoot);
 
             }
 

@@ -11,16 +11,18 @@ namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.Load
 
 internal class AllmoxyWebXMLOrderProvider : AllmoxyXMLOrderProvider {
 
-    private readonly AllmoxyClientFactory _clientfactory;
+    private readonly AllmoxyClientFactory _clientFactory;
 
-    public AllmoxyWebXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, AllmoxyClientFactory clientfactory, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, ILogger<AllmoxyXMLOrderProvider> logger)
-        : base(configuration, validator, builderFactory, getCustomerIdByAllmoxyIdAsync, insertCustomerAsync, fileReader, getCustomerOrderPrefixByIdAsync, logger) {
-        _clientfactory = clientfactory;
+    public AllmoxyWebXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, AllmoxyClientFactory clientFactory, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader,
+                                    GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync,
+                                    ILogger<AllmoxyXMLOrderProvider> logger)
+        : base(configuration, validator, builderFactory, getCustomerIdByAllmoxyIdAsync, insertCustomerAsync, fileReader, getCustomerOrderPrefixByIdAsync, getCustomerWorkingDirectoryRootByIdAsync, logger) {
+        _clientFactory = clientFactory;
     }
 
     protected override async Task<string> GetExportXMLFromSource(string source) {
         try {
-            string exportXML = await _clientfactory.CreateClient().GetExportAsync(source, 6);
+            string exportXML = await _clientFactory.CreateClient().GetExportAsync(source, 6);
             return exportXML;
         } catch (Exception ex) {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not load order data from Allmoxy: {ex.Message}");

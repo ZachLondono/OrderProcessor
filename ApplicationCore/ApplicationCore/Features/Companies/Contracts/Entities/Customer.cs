@@ -13,8 +13,9 @@ public class Customer {
     public Contact BillingContact { get; set; }
     public Address BillingAddress { get; set; }
     public ClosetProSettings ClosetProSettings { get; set; }
+    public string? WorkingDirectoryRoot { get; set; }
 
-    internal Customer(Guid id, string name, string shippingMethod, Contact shippingContact, Address shippingAddress, Contact billingContact, Address billingAddress, string? orderNumberPrefix, ClosetProSettings closetProSettings) {
+    internal Customer(Guid id, string name, string shippingMethod, Contact shippingContact, Address shippingAddress, Contact billingContact, Address billingAddress, string? orderNumberPrefix, ClosetProSettings closetProSettings, string? workingDirectoryRoot) {
         Id = id;
         Name = name;
         ShippingMethod = shippingMethod;
@@ -24,9 +25,10 @@ public class Customer {
         BillingAddress = billingAddress;
         OrderNumberPrefix = orderNumberPrefix;
         ClosetProSettings = closetProSettings;
+        WorkingDirectoryRoot = workingDirectoryRoot;
     }
 
     public static Customer Create(string name, string shippingMethod, Contact shippingContact, Address shippingAddress, Contact billingContact, Address billingAddress)
-        => new(Guid.NewGuid(), name, shippingMethod, shippingContact, shippingAddress, billingContact, billingAddress, null, new());
+        => new(Guid.NewGuid(), name, shippingMethod, shippingContact, shippingAddress, billingContact, billingAddress, null, new(), null);
 
 }
