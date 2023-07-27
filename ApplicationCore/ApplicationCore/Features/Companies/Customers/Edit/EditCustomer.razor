@@ -1,4 +1,6 @@
-﻿@using ApplicationCore.Shared.Components
+﻿@using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+@using ApplicationCore.Shared.Components
+@using ApplicationCore.Shared.Domain;
 @inject EditCustomerViewModel DataContext
 
 @if (DataContext.Error is not null) {
@@ -103,19 +105,56 @@
 
                 <h3 class="block font-medium text-gray-700">Closet Pro Settings</h3>
 
-                <div>
-                    <label for="adjustable_shelf_sku" class="block text-sm font-medium text-gray-700">Adjustabl Shelf</label>
-                    <InputText id="adjustable_shelf_sku" @bind-Value="DataContext.Model.ClosetProSettings.AdjustableShelfSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
-                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="adjustable_shelf_sku" class="block text-sm font-medium text-gray-700">Adjustable Shelf</label>
+                        <InputText id="adjustable_shelf_sku" @bind-Value="DataContext.Model.ClosetProSettings.AdjustableShelfSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
 
-                <div>
-                    <label for="fixed_shelf_sku" class="block text-sm font-medium text-gray-700">Fixed Shelf</label>
-                    <InputText id="fixed_shelf_sku" @bind-Value="DataContext.Model.ClosetProSettings.FixedShelfSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
-                </div>
+                    <div>
+                        <label for="fixed_shelf_sku" class="block text-sm font-medium text-gray-700">Fixed Shelf</label>
+                        <InputText id="fixed_shelf_sku" @bind-Value="DataContext.Model.ClosetProSettings.FixedShelfSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
 
-                <div>
-                    <label for="toe_kick_sku" class="block text-sm font-medium text-gray-700">Toe Kick</label>
-                    <InputText id="toe_kick_sku" @bind-Value="DataContext.Model.ClosetProSettings.ToeKickSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    <div>
+                        <label for="toe_kick_sku" class="block text-sm font-medium text-gray-700">Toe Kick</label>
+                        <InputText id="toe_kick_sku" @bind-Value="DataContext.Model.ClosetProSettings.ToeKickSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+
+                    <div>
+                        <label for="l_fixed_shelf_sku" class="block text-sm font-medium text-gray-700">L Fixed Shelf</label>
+                        <InputText id="l_fixed_shelf_sku" @bind-Value="DataContext.Model.ClosetProSettings.LFixedShelfSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+
+                    <div>
+                        <label for="l_adjustable_shelf_sku" class="block text-sm font-medium text-gray-700">L Adjustable Shelf</label>
+                        <InputText id="l_adjustable_shelf_sku" @bind-Value="DataContext.Model.ClosetProSettings.LAdjustableShelfSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+
+                    <div>
+                        <label for="l_shelf_radius" class="block text-sm font-medium text-gray-700">L Shelf Radius</label>
+                        <input type="number" step="any" id="l_shelf_radius" value="@DataContext.Model.ClosetProSettings.LShelfRadius.AsMillimeters()" @onchange="UpdateLShelfRadius" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+
+                    <div>
+                        <label for="diagonal_fixed_shelf_sku" class="block text-sm font-medium text-gray-700">Diag. Fixed Shelf</label>
+                        <InputText id="diagonal_fixed_shelf_sku" @bind-Value="DataContext.Model.ClosetProSettings.DiagonalFixedShelfSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+
+                    <div>
+                        <label for="diagonal_adjustable_shelf_sku" class="block text-sm font-medium text-gray-700">Diag. Adjustable Shelf</label>
+                        <InputText id="diagonal_adjustable_shelf_sku" @bind-Value="DataContext.Model.ClosetProSettings.DiagonalAdjustableShelfSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+
+                    <div>
+                        <label for="doweled_drawer_box_finish" class="block text-sm font-medium text-gray-700">Doweled Drawer Box Finish</label>
+                        <InputText id="doweled_drawer_box_finish" @bind-Value="DataContext.Model.ClosetProSettings.DoweledDrawerBoxMaterialFinish" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+
+                    <div>
+                        <label for="vertical_panel_bottom_radius" class="block text-sm font-medium text-gray-700">Vertical Panel Bottom Radius</label>
+                        <input type="number" step="any" id="vertical_panel_bottom_radius" value="@DataContext.Model.ClosetProSettings.VerticalPanelBottomRadius.AsMillimeters()" @onchange="UpdateVertBottomRadius" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
                 </div>
 
             </section>
@@ -136,6 +175,18 @@
 
     protected override async Task OnParametersSetAsync() {
         await DataContext.SetCustomerId(CustomerId);
+    }
+
+    private void UpdateLShelfRadius(ChangeEventArgs args) {
+        if (args.Value is string valueStr && double.TryParse(valueStr, out double value) && DataContext.Model is not null) {
+            DataContext.Model.ClosetProSettings.LShelfRadius = Dimension.FromMillimeters(value);
+        }
+    }
+
+    private void UpdateVertBottomRadius(ChangeEventArgs args) {
+        if (args.Value is string valueStr && double.TryParse(valueStr, out double value) && DataContext.Model is not null) {
+            DataContext.Model.ClosetProSettings.VerticalPanelBottomRadius = Dimension.FromMillimeters(value);
+        }
     }
 
 }
