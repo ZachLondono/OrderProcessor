@@ -73,8 +73,9 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         additionalItems.AddRange(_partMapper.MapBuyOutPartsToItems(info.BuyOutParts));
         List<IProduct> products = _partMapper.MapPartsToProducts(info.Parts);
 
+        string? customerWorkingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customer.Id);
         var orderNumber = await GetNextOrderNumber(customer.Id);
-        string workingDirectory = CreateWorkingDirectory(source, info, orderNumber);
+        string workingDirectory = CreateWorkingDirectory(source, info, orderNumber, customerWorkingDirectoryRoot);
 
         var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync(customer.Id) ?? throw new InvalidOperationException("Could not get customer data");
         orderNumber = $"{orderNumberPrefix}{orderNumber}";
@@ -110,8 +111,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
     }
 
-    private string CreateWorkingDirectory(string source, ClosetProOrderInfo info, string orderNumber) {
-        string? customerWorkingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customerId);
+    private string CreateWorkingDirectory(string source, ClosetProOrderInfo info, string orderNumber, string? customerWorkingDirectoryRoot) {
         string cpDefaultWorkingDirectory = @"R:\Job Scans\ClosetProSoftware"; // TODO: Get base directory from configuration file
         string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? cpDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {info.Header.DesignerCompany} - {info.Header.OrderName}", ' '));
         bool workingDirExists = TryToCreateWorkingDirectory(workingDirectory);
