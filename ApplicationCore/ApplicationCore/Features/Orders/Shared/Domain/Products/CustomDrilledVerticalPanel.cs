@@ -165,7 +165,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
     public bool ContainsCNCParts() => _requiresCustomDrilling;
 
-    public IEnumerable<Part> GetCNCParts() {
+    public IEnumerable<Part> GetCNCParts(string customerName) {
 
         if (!_requiresCustomDrilling) {
             return Enumerable.Empty<Part>();
@@ -251,12 +251,16 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             tokens.AddRange(CreateLEDChannel());
         }
 
+        string prodName = DrillingType switch {
+            ClosetVerticalDrillingType.DrilledThrough => "PC",
+            _ => "PE"
+        };
+
         var part = new Part() {
             Width = Width.AsMillimeters(),
             Length = Length.AsMillimeters(),
             Thickness = s_panelThickness.AsMillimeters(),
             Material = $"{Material.Finish} Mela {Material.Core}",
-            Name = "Custom Vertical Panel",
             IsGrained = true,
             Qty = Qty,
             PrimaryFace = new() {
@@ -266,9 +270,18 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
                 Tokens = tokens.ToArray()
             },
             Width1Banding = edgeBanding,
-            Length1Banding = topEdgeBanding
+            Length1Banding = topEdgeBanding,
+            InfoFields = new() {
+                { "ProductName", prodName },
+                { "Description", "Custom Vertical Panel" },
+                { "Level1", Room },
+                { "Comment1", "" },
+                { "Comment2", "" },
+                { "Side1Color", Material.Finish },
+                { "Side1Material", Material.Core.ToString() },
+                { "CabinetNumber", ProductNumber.ToString() },
+            }
         };
-
 
         return new Part[] { part };
 
