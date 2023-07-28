@@ -162,10 +162,8 @@ internal class ExportService {
         var parts = order.Products
             .Where(p => p is ICNCPartContainer)
             .Cast<ICNCPartContainer>()
-            .SelectMany(p => p.GetCNCParts())
+            .SelectMany(p => p.GetCNCParts(customerName))
             .ToArray();
-
-        parts.ForEach(p => p.InfoFields.Add("CustomerInfo1", customerName));
 
         if (!parts.Any()) {
             OnError?.Invoke("No parts in order to write to CSV");
