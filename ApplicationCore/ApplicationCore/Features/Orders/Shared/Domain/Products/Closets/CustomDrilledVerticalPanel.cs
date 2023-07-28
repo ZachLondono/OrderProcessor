@@ -6,7 +6,7 @@ using ApplicationCore.Shared.Domain;
 using CADCodeProxy.Enums;
 using CADCodeProxy.Machining;
 
-namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
+namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 
 public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPartContainer, IClosetPartProduct {
 
@@ -90,8 +90,8 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             SKU = "PE";
         }
 
-        if (((holeDimensionFromBottom == Dimension.Zero && holeDimensionFromTop == Dimension.Zero)
-            || (transitionHoleDimensionFromBottom == Dimension.Zero && transitionHoleDimensionFromTop == Dimension.Zero))
+        if ((holeDimensionFromBottom == Dimension.Zero && holeDimensionFromTop == Dimension.Zero
+            || transitionHoleDimensionFromBottom == Dimension.Zero && transitionHoleDimensionFromTop == Dimension.Zero)
             // PSI does not handle custom drilling w/ bottom notch correctly 
             && !((holeDimensionFromBottom != Dimension.Zero || holeDimensionFromTop != Dimension.Zero || transitionHoleDimensionFromBottom != Dimension.Zero || transitionHoleDimensionFromTop != Dimension.Zero) && BottomNotchHeight != Dimension.Zero)) {
             _requiresCustomDrilling = false;
@@ -106,8 +106,8 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             throw new InvalidProductOptionsException("Invalid hole dimensions, transition holes cannot exceed standard holes without flipping panel");
         }
 
-        if ((BottomNotchDepth != Dimension.Zero && BottomNotchHeight == Dimension.Zero)
-            || (BottomNotchDepth == Dimension.Zero && BottomNotchHeight != Dimension.Zero)) {
+        if (BottomNotchDepth != Dimension.Zero && BottomNotchHeight == Dimension.Zero
+            || BottomNotchDepth == Dimension.Zero && BottomNotchHeight != Dimension.Zero) {
             throw new InvalidProductOptionsException("Invalid notch dimensions");
         }
 
@@ -299,7 +299,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
         double offEdgeMM = 7;
 
-        Dimension top = (LEDChannelOffFront + LEDChannelWidth);
+        Dimension top = LEDChannelOffFront + LEDChannelWidth;
         Dimension bottom = LEDChannelOffFront;
         Dimension depth = LEDChannelDepth;
 
@@ -316,12 +316,12 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
         for (int i = 0; i < passCount; i++) {
 
             start = new Point() {
-                X = (top - (i * passDistance)).AsMillimeters(),
+                X = (top - i * passDistance).AsMillimeters(),
                 Y = -offEdgeMM
             };
 
             end = new Point() {
-                X = (top - (i * passDistance)).AsMillimeters(),
+                X = (top - i * passDistance).AsMillimeters(),
                 Y = Length.AsMillimeters() + offEdgeMM
             };
 
@@ -405,7 +405,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             return Dimension.Zero;
         }
 
-        double holeIndex = Math.Floor((((maxSpaceFromTop + Dimension.FromMillimeters(9.5)) - s_holesOffTop) / s_holeSpacing).AsMillimeters());
+        double holeIndex = Math.Floor(((maxSpaceFromTop + Dimension.FromMillimeters(9.5) - s_holesOffTop) / s_holeSpacing).AsMillimeters());
 
         var distanceFromTop = Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop;
 
@@ -426,7 +426,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
         double holeIndex = Math.Ceiling(((length - (maxSpaceFromBottom + Dimension.FromMillimeters(9.5)) - s_holesOffTop) / s_holeSpacing).AsMillimeters());
 
-        var distanceFromTop = (Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop);
+        var distanceFromTop = Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop;
 
         if (distanceFromTop >= length) {
             return Dimension.Zero;

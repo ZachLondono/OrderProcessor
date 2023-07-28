@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 using ApplicationCore.Shared.Domain;
 using FluentAssertions;
 
@@ -199,7 +200,7 @@ public class ProductMappingTests {
         public ClosetPart CompareToProduct(IProduct product) {
 
             product.Should().BeOfType<ClosetPart>();
-            
+
             var closetPart = product as ClosetPart;
             closetPart.Should().NotBeNull();
             closetPart!.Material.Core.Should().Be(ClosetMaterialCore.ParticleBoard);

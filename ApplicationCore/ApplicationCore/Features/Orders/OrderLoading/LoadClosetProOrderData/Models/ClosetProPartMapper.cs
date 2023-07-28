@@ -3,6 +3,8 @@ using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
@@ -554,7 +556,7 @@ public class ClosetProPartMapper {
         var width = Dimension.FromInches(part.Width);
         var depth = Dimension.FromInches(part.Depth);
 
-        string matName = Settings.DoweledDrawerBoxMaterialFinish; 
+        string matName = Settings.DoweledDrawerBoxMaterialFinish;
 
         var matThickness = Dimension.FromInches(0.625);
         var material = new DoweledDrawerBoxMaterial(matName, matThickness, true);

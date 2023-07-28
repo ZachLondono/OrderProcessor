@@ -4,7 +4,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Exceptions;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
-namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
+namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 
 public abstract class Cabinet : IProduct, IPPProductContainer {
 
@@ -154,7 +154,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
     /// Returns the ProductPlanner value for "Door/Drawer Front" Style. 
     /// 'Buyout' style means that the doors will not be cut listed buy ProductPlanner. This is for applications where the doors are being ordered from another vendor or the doors are being manufactured using some other method outside of ProductPlanner (MDF doors).
     /// </summary>
-    protected string GetDoorType() => (SlabDoorMaterial is not null) ? "Slab" : "Buyout";
+    protected string GetDoorType() => SlabDoorMaterial is not null ? "Slab" : "Buyout";
 
     protected static string GetSideOption(CabinetSideType side) => side switch {
         CabinetSideType.AppliedPanel => "0",

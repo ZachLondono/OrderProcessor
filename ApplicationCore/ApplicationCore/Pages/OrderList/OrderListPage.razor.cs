@@ -27,7 +27,7 @@ public partial class OrderListPage {
     public void OnSelectedOrdersChanged(HashSet<OrderListItem> selectedOrders) {
         DataContext.SelectedOrders = selectedOrders;
         StateHasChanged();
-    } 
+    }
 
     [CascadingParameter]
     public IModalService Modal { get; set; } = default!;

@@ -1,4 +1,8 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 
 namespace ApplicationCore.Features.Orders.Details;
 

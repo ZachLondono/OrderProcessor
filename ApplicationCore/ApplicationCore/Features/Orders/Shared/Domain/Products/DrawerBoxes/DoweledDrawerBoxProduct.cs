@@ -2,7 +2,7 @@
 using ApplicationCore.Shared.Domain;
 using CADCodeProxy.Machining;
 
-namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
+namespace ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 
 public class DoweledDrawerBoxProduct : DoweledDrawerBox, IProduct, ICNCPartContainer {
 
