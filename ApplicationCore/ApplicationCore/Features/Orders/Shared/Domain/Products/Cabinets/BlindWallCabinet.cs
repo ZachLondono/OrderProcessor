@@ -3,7 +3,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
-namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
+namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 
 internal class BlindWallCabinet : Cabinet, IDoorContainer {
 

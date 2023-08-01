@@ -126,7 +126,7 @@ internal class GetCustomerById {
             public string CPFixedShelfSKU { get; set; } = string.Empty;
             public string CPLFixedShelfSKU { get; set; } = string.Empty;
             public string CPLAdjustableShelfSKU { get; set; } = string.Empty;
-            public Dimension CPLShelfRadius { get; set; } = Dimension.Zero; 
+            public Dimension CPLShelfRadius { get; set; } = Dimension.Zero;
             public string CPDiagonalFixedShelfSKU { get; set; } = string.Empty;
             public string CPDiagonalAdjustableShelfSKU { get; set; } = string.Empty;
             public string CPDoweledDrawerBoxMaterialFinish { get; set; } = string.Empty;

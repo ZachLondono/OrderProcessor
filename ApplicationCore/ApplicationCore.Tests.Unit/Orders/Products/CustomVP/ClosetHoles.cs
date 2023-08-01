@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 using ApplicationCore.Shared.Domain;
 using FluentAssertions;
 

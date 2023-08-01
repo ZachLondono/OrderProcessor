@@ -140,7 +140,7 @@ public class OrderListWidgetViewModel {
             }
 
             if (customerNames.TryGetValue(order.CustomerId, out string? customerName)) {
-                order.CustomerName = customerName ?? ""; 
+                order.CustomerName = customerName ?? "";
             } else {
                 order.CustomerName = await _getCustomerNameById(order.CustomerId) ?? "";
                 customerNames[order.CustomerId] = order.CustomerName;

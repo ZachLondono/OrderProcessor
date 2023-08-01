@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 using System.Xml.Serialization;

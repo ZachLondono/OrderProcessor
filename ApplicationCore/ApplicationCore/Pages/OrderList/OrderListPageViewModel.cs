@@ -33,7 +33,7 @@ public class OrderListPageViewModel {
     }
 
     public async Task<List<Order>> GetSelectedOrdersAsync() {
-        
+
         List<Order> orders = new();
 
         foreach (var item in SelectedOrders) {

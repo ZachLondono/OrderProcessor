@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using Dapper;
 using System.Data;
@@ -138,6 +139,49 @@ public partial class InsertOrder {
                     @MDFMaterial,
                     @MDFPanelDrop,
                     @MDFPaintColor);
+                """, parameters, trx);
+
+        }
+
+        private static async Task InsertFivePieceDoor(Guid id, FivePieceDoor door, IDbConnection connection, IDbTransaction trx) {
+
+            var parameters = new {
+                Id = id,
+                door.Width,
+                door.Height,
+                door.FrameSize.TopRail,
+                door.FrameSize.BottomRail,
+                door.FrameSize.LeftStile,
+                door.FrameSize.RightStile,
+                door.FrameThickness,
+                door.PanelThickness,
+                door.Material
+            };
+
+            await connection.ExecuteAsync(
+                """
+                INSERT INTO five_piece_doors
+                    (id,
+                    width,
+                    height,
+                    top_rail,
+                    bottom_rail,
+                    left_stile,
+                    right_stile,
+                    frame_thickness,
+                    panel_thickness,
+                    material)
+                VALUES
+                    (@Id,
+                    @Width,
+                    @Height,
+                    @TopRail,
+                    @BottomRail,
+                    @LeftStile,
+                    @RightStile,
+                    @FrameThickness,
+                    @PanelThickness,
+                    @Material);
                 """, parameters, trx);
 
         }

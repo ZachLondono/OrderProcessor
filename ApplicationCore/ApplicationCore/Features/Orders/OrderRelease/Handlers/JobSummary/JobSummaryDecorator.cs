@@ -4,7 +4,6 @@ using QuestPDF.Infrastructure;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using ApplicationCore.Features.Companies.Contracts;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Shared.Domain;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.CabinetGroup;
@@ -12,6 +11,10 @@ using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.Cl
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.DovetailDrawerBoxGroup;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.DoorGroup;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.DoweledDrawerBoxGroup;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 

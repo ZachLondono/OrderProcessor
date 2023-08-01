@@ -29,7 +29,7 @@ public partial class MainWindow : Window {
 
         try {
 
-            var version =  Package.Current.Id.Version;
+            var version = Package.Current.Id.Version;
             title = $"Royal Order Processor {version.Major}.{version.Minor}.{version.Build}";
 
         } catch {

@@ -1,49 +1,55 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Exceptions;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
-namespace ApplicationCore.Features.Orders.Shared.Domain.Products;
+namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 
-internal class BasePieCutCornerCabinet : Cabinet, IDoorContainer {
+internal class BaseDiagonalCornerCabinet : Cabinet, IDoorContainer {
 
     public Dimension RightWidth { get; }
     public Dimension RightDepth { get; }
     public ToeType ToeType { get; }
-    public int AdjustableShelves { get; }
     public HingeSide HingeSide { get; }
+    public int DoorQty { get; }
+    public int AdjustableShelves { get; }
 
-    public override string GetDescription() => "Pie Cut Corner Base Cabinet";
+    public Dimension DoorHeight => Height - ToeType.HeightAdjustment - DoorGaps.TopGap - DoorGaps.BottomGap;
 
-    public Dimension DoorHeight => Height - ToeType.HeightAdjustment - DoorGaps.TopGap;
+    public override string GetDescription() => "Diagonal Corner Base Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
         BottomGap = Dimension.Zero,
-        EdgeReveal = Dimension.FromMillimeters(2),
+        EdgeReveal = Dimension.FromMillimeters(3),
         HorizontalGap = Dimension.FromMillimeters(3),
         VerticalGap = Dimension.FromMillimeters(3),
     };
 
-    internal BasePieCutCornerCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
+    internal BaseDiagonalCornerCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        Dimension rightWidth, Dimension rightDepth, ToeType toeType, int adjustableShelves, HingeSide hingeSide)
+                        Dimension rightWidth, Dimension rightDepth, ToeType toeType, int adjShelfQty, HingeSide hingeSide, int doorQty)
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
         RightWidth = rightWidth;
         RightDepth = rightDepth;
         ToeType = toeType;
-        AdjustableShelves = adjustableShelves;
+        AdjustableShelves = adjShelfQty;
         HingeSide = hingeSide;
+        DoorQty = doorQty;
+
+        if (DoorQty > 2 || DoorQty < 1) throw new InvalidProductOptionsException("Invalid number of doors");
+
     }
 
-    public static BasePieCutCornerCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
+    public static BaseDiagonalCornerCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        Dimension rightWidth, Dimension rightDepth, ToeType toeType, int adjustableShelves, HingeSide hingeSide)
-    => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, toeType, adjustableShelves, hingeSide);
+                        Dimension rightWidth, Dimension rightDepth, ToeType toeType, int adjShelfQty, HingeSide hingeSide, int doorQty)
+                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, toeType, adjShelfQty, hingeSide, doorQty);
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
 
@@ -53,37 +59,31 @@ internal class BasePieCutCornerCabinet : Cabinet, IDoorContainer {
             return Enumerable.Empty<MDFDoor>();
         }
 
+        Dimension a = Width - RightDepth - Dimension.FromMillimeters(19);
+        Dimension b = RightWidth - Depth - Dimension.FromMillimeters(19);
+
+        Dimension diagOpening = Dimension.Sqrt(a * a + b * b);
+
+        Dimension width = RoundToHalfMM(diagOpening - 2 * DoorGaps.EdgeReveal);
+        if (DoorQty == 2) {
+            width = RoundToHalfMM((width - DoorGaps.HorizontalGap) / 2);
+        }
+
         Dimension height = DoorHeight;
-        Dimension doorThickness = Dimension.FromMillimeters(19);
-        Dimension bumperWidth = Dimension.FromMillimeters(3);
 
-        Dimension leftWidth = Width - RightDepth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
-        MDFDoor leftDoor = getBuilder().WithQty(Qty)
-                                        .WithProductNumber(ProductNumber)
-                                        .WithFramingBead(MDFDoorOptions.FramingBead)
-                                        .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
-                                        .Build(height, leftWidth);
+        var door = getBuilder().WithQty(DoorQty * Qty)
+                                .WithProductNumber(ProductNumber)
+                                .WithFramingBead(MDFDoorOptions.FramingBead)
+                                .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
+                                .Build(height, width);
 
-        Dimension rightWidth = RightWidth - Depth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
-        MDFDoor rightDoor = getBuilder().WithQty(Qty)
-                                        .WithProductNumber(ProductNumber)
-                                        .WithFramingBead(MDFDoorOptions.FramingBead)
-                                        .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
-                                        .Build(height, rightWidth);
-
-        return new List<MDFDoor>() { leftDoor, rightDoor };
+        return new List<MDFDoor>() { door };
 
     }
 
     public override IEnumerable<Supply> GetSupplies() {
 
-        List<Supply> supplies = new();
-
-        if (ToeType == ToeType.LegLevelers) {
-
-            supplies.Add(Supply.CabinetLeveler(Qty * 5));
-
-        }
+        var supplies = new List<Supply>();
 
         if (AdjustableShelves > 0) {
 
@@ -91,17 +91,43 @@ internal class BasePieCutCornerCabinet : Cabinet, IDoorContainer {
 
         }
 
-        supplies.Add(Supply.DoorPull(Qty));
+        if (DoorQty > 0) {
 
-        supplies.AddRange(Supply.StandardHinge(DoorHeight, Qty));
+            supplies.Add(Supply.DoorPull(DoorQty * Qty));
+            supplies.AddRange(Supply.CrossCornerHinge(DoorHeight, DoorQty * Qty));
 
-        //supplies.Add(Supply.LazySusan(Qty));
+        }
+
+        if (ToeType == ToeType.LegLevelers) {
+
+            supplies.Add(Supply.CabinetLeveler(Qty * 5));
+
+        }
 
         return supplies;
 
     }
 
-    protected override string GetProductSku() => "BCPC";
+    public static Dimension RoundToHalfMM(Dimension dim) {
+
+        var value = Math.Round(dim.AsMillimeters() * 2, MidpointRounding.AwayFromZero) / 2;
+
+        return Dimension.FromMillimeters(value);
+
+    }
+
+    private string GetHingeSideOption() => HingeSide switch {
+        HingeSide.NotApplicable => "0",
+        HingeSide.Left => "1",
+        HingeSide.Right => "0",
+        _ => "0"
+    };
+
+    protected override string GetProductSku() => DoorQty switch {
+        1 => "BC1D-M",
+        2 => "BC2D-M",
+        _ => "BC1D-M"
+    };
 
     protected override IDictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {
@@ -114,6 +140,7 @@ internal class BasePieCutCornerCabinet : Cabinet, IDoorContainer {
             { "FinishedRight", GetSideOption(RightSideType) },
             { "ShelfQ", AdjustableShelves.ToString() },
             { "AppliedPanel", GetAppliedPanelOption() },
+            { "LazySusan", "N" },
         };
 
         if (HingeSide != HingeSide.NotApplicable) {
@@ -134,14 +161,6 @@ internal class BasePieCutCornerCabinet : Cabinet, IDoorContainer {
         }
 
         return parameters;
-
     }
-
-    private string GetHingeSideOption() => HingeSide switch {
-        HingeSide.NotApplicable => "0",
-        HingeSide.Left => "1",
-        HingeSide.Right => "0",
-        _ => "0"
-    };
 
 }
