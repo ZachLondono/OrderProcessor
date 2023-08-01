@@ -74,6 +74,18 @@ CREATE TABLE products (
 	FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
+CREATE TABLE five_piece_door_products (
+	product_id BLOB NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+	FOREIGN KEY (product_id) REFERENCES five_piece_doors
+);
+
+CREATE TRIGGER remove_five_piece_door AFTER DELETE ON five_piece_doors
+BEGIN
+	DELETE FROM five_piece_doors WHERE id = OLD.productId;
+END;
+
 CREATE TABLE mdf_door_products (
 	product_id BLOB NOT NULL,
 	note TEXT NOT NULL,
@@ -243,6 +255,20 @@ CREATE TABLE cabinet_db_configs (
 	id BLOB NOT NULL,
 	material INTEGER NOT NULL,
 	slide_type INTEGER NOT NULL,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE five_piece_doors (
+	id BLOB NOT NULL,
+	width REAL NOT NULL,
+	height REAL NOT NULL,
+	top_rail REAL NOT NULL,
+	bottom_rail REAL NOT NULL,
+	left_stile REAL NOT NULL,
+	right_stile REAL NOT NULL,
+	frame_thickness REAL NOT NULL,
+	panel_thickness REAL NOT NULL,
+	material TEXT NOT NULL,
 	PRIMARY KEY (id)
 );
 
