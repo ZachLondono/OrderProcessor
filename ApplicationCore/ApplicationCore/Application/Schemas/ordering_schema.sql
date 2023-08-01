@@ -61,6 +61,12 @@ CREATE TABLE order_numbers (
 	PRIMARY KEY (customer_id)
 );
 
+CREATE TABLE order_relationships (
+	order_1_id BLOB NOT NULL,
+	order_2_id BLOB NOT NULL,
+	PRIMARY KEY (order_1_id, order_2_id)
+);
+
 -- Product Tables --
 
 CREATE TABLE products (
