@@ -280,6 +280,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
                 { "Side1Color", Material.Finish },
                 { "Side1Material", Material.Core.ToString() },
                 { "CabinetNumber", ProductNumber.ToString() },
+                { "CustomerInfo1", customerName }
             }
         };
 
