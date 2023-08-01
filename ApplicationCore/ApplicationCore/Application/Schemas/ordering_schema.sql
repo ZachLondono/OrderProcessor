@@ -78,12 +78,12 @@ CREATE TABLE five_piece_door_products (
 	product_id BLOB NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-	FOREIGN KEY (product_id) REFERENCES five_piece_doors
+	FOREIGN KEY (product_id) REFERENCES five_piece_doors(id)
 );
 
-CREATE TRIGGER remove_five_piece_door AFTER DELETE ON five_piece_doors
+CREATE TRIGGER remove_five_piece_door AFTER DELETE ON five_piece_door_products
 BEGIN
-	DELETE FROM five_piece_doors WHERE id = OLD.productId;
+	DELETE FROM five_piece_doors WHERE id = OLD.product_id;
 END;
 
 CREATE TABLE mdf_door_products (
