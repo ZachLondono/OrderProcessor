@@ -1,5 +1,6 @@
 ﻿@page "/orders/list"
 @using ApplicationCore.Shared.Components
+@using ApplicationCore.Widgets.Orders.CreateOrderRelationships
 @using ApplicationCore.Widgets.Orders.OrderList
 @using ApplicationCore.Widgets.Orders.OrderRelease
 @inject OrderListPageViewModel DataContext 
@@ -30,9 +31,14 @@
             </select>
         </div>
     </div>
-    <div class="my-5">
+    <div class="my-5 flex space-x-5">
         @if (DataContext.SelectedOrders.Any()) {
-            <OrderReleaseWidget GetOrdersAsync="DataContext.GetSelectedOrdersAsync"/>
+            <div class="flex-none">
+                <OrderReleaseWidget GetOrdersAsync="DataContext.GetSelectedOrdersAsync"/>
+            </div>
+            <div class="flex-none">
+                <CreateOrderRelationshipsWidget OrderIds="DataContext.SelectedOrders.Select(o => o.Id)" />
+            </div>
         }
     </div>
     <OrderListWidget SearchTerm="@DataContext.SearchTerm" VendorId="DataContext.VendorId" CustomerId="DataContext.CustomerId" @ref="_orderList" />

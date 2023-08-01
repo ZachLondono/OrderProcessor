@@ -1,0 +1,44 @@
+﻿@using ApplicationCore.Shared.Services;
+@inject OrderRelationshipListWidgetViewModel DataContext
+@inject NavigationService Navigation
+
+@if (DataContext.RelatedOrders.Any()) {
+    <table>
+        <thead class="border-b border-slate-300">
+            <tr>
+                <th class="p-5 text-gray-700">#</th>
+                <th class="p-5 text-gray-700">Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in DataContext.RelatedOrders) {
+                <tr @onclick="async () => await OpenOrder(order.Id)" class="justify-center hover:bg-slate-200 cursor-pointer">
+                    <td class="p-5 whitespace-nowrap border-b">@order.Number</td>
+                    <td class="p-5 whitespace-nowrap border-b">@order.Name</td>
+                </tr>
+            } 
+        </tbody>
+    </table>
+} else {
+    <span>No related orders</span>
+}
+
+@code {
+
+    [Parameter]
+    public Guid? OrderId { get; set; }
+
+    protected override async Task OnInitializedAsync() {
+
+        if (OrderId is null) return;
+
+        DataContext.OnPropertyChanged += StateHasChanged;
+        await DataContext.LoadRelatedOrders((Guid) OrderId);
+
+    }
+
+    private async Task OpenOrder(Guid orderId) {
+        await Navigation.NavigateToOrderPage(orderId);
+    }
+
+}

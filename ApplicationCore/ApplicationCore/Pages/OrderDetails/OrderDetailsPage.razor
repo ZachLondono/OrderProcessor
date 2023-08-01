@@ -5,11 +5,12 @@
 @using ApplicationCore.Shared.Services;
 @using ApplicationCore.Widgets.Orders.OrderDelete
 @using ApplicationCore.Widgets.Orders.OrderExport
+@using ApplicationCore.Widgets.Orders.OrderRelationshipList
 @using ApplicationCore.Widgets.Orders.OrderRelease
 @inject OrderState OrderState
 @inject NavigationService Nav
 
-<div>
+<div class="grid grid-cols-1 gap-5">
 
     <section id="orderDetails">
         <OrderDetails>
@@ -19,6 +20,11 @@
                 <OrderDeleteWidget OrderId="OrderState.Order?.Id ?? Guid.Empty" OnOrderDeleted="OnOrderDeleted" />
             </div>
         </OrderDetails>
+    </section>
+
+    <section>
+        <h2 class="font-bold text-md">Related Orders</h2>
+        <OrderRelationshipListWidget OrderId="OrderState.Order?.Id"/>
     </section>
 
 </div>
