@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
@@ -8,6 +9,12 @@ using FluentAssertions;
 namespace ApplicationCore.Tests.Unit.Orders.ClosetProOrderLoading;
 
 public class ProductMappingTests {
+
+    private readonly ClosetProPartMapper _sut;
+    
+    public ProductMappingTests() {
+        _sut = new(new ComponentBuilderFactory());
+    }
 
     [Fact]
     public void FloorMountedDrillThroughPart_ShouldCreateCorrectProduct() {
@@ -41,7 +48,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = ClosetProPartMapper.CreateVerticalPanelFromPart(part);
+        var product = _sut.CreateVerticalPanelFromPart(part);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -87,7 +94,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = ClosetProPartMapper.CreateVerticalPanelFromPart(part);
+        var product = _sut.CreateVerticalPanelFromPart(part);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -133,7 +140,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = ClosetProPartMapper.CreateVerticalPanelFromPart(part);
+        var product = _sut.CreateVerticalPanelFromPart(part);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -179,7 +186,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = ClosetProPartMapper.CreateVerticalPanelFromPart(part);
+        var product = _sut.CreateVerticalPanelFromPart(part);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
