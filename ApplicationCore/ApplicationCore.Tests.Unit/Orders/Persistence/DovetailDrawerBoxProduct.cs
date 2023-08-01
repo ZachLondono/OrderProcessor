@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence;
