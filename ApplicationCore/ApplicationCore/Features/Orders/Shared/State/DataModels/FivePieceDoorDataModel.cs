@@ -29,12 +29,12 @@ internal class FivePieceDoorDataModel : ProductDataModelBase, IProductDataModel,
 
             config.width,
             config.height,
-            config.top_rail,
-            config.bottom_rail,
-            config.left_stile,
-            config.right_stile,
-            config.frame_thickness,
-            config.panel_thickness,
+            config.top_rail AS TopRail,
+            config.bottom_rail AS BottomRail,
+            config.left_stile AS LeftStile,
+            config.right_stile AS RightStile,
+            config.frame_thickness AS FrameThickness,
+            config.panel_thickness AS PanelThickness,
             config.material
 
         FROM five_piece_door_products AS fpd_product
