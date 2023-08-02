@@ -151,6 +151,8 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 
     private bool TryToCreateWorkingDirectory(string workingDirectory) {
 
+        workingDirectory = workingDirectory.Trim();
+
         if (Directory.Exists(workingDirectory)) {
             return true;
         }

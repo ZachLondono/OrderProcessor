@@ -195,6 +195,8 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
     private bool TryToCreateWorkingDirectory(string workingDirectory) {
 
+        workingDirectory = workingDirectory.Trim();
+
         if (Directory.Exists(workingDirectory)) {
             return true;
         }
