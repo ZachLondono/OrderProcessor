@@ -1,8 +1,9 @@
-﻿using ApplicationCore.Shared.Domain;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Shared.Domain;
 using CADCodeProxy.Enums;
 using CADCodeProxy.Machining;
 
-namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+namespace ApplicationCore.Features.Orders.Shared.Domain.Components;
 
 public class DoweledDrawerBox {
 
@@ -269,12 +270,12 @@ public class DoweledDrawerBox {
 
             start = new Point() {
                 X = -offEdgeMM,
-                Y = (top - (i * passDistance)).AsMillimeters()
+                Y = (top - i * passDistance).AsMillimeters()
             };
 
             end = new Point() {
                 X = partLength.AsMillimeters() + offEdgeMM,
-                Y = (top - (i * passDistance)).AsMillimeters()
+                Y = (top - i * passDistance).AsMillimeters()
             };
 
 
