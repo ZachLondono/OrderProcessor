@@ -1,8 +1,9 @@
-﻿using ApplicationCore.Shared.Domain;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Shared.Domain;
 using CADCodeProxy.Enums;
 using CADCodeProxy.Machining;
 
-namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+namespace ApplicationCore.Features.Orders.Shared.Domain.Components;
 
 public class DoweledDrawerBox {
 
@@ -181,7 +182,7 @@ public class DoweledDrawerBox {
             Length = Height.AsMillimeters(),
             Thickness = SideMaterial.Thickness.AsMillimeters(),
             Material = SideMaterial.Name,
-            IsGrained = SideMaterial.IsGrained, 
+            IsGrained = SideMaterial.IsGrained,
             InfoFields = new() {
                 { "ProductName", "Back" },
                 { "Description", "Drawer Box Left Side" },
@@ -206,7 +207,7 @@ public class DoweledDrawerBox {
             Length = Height.AsMillimeters(),
             Thickness = SideMaterial.Thickness.AsMillimeters(),
             Material = SideMaterial.Name,
-            IsGrained = SideMaterial.IsGrained, 
+            IsGrained = SideMaterial.IsGrained,
             InfoFields = new() {
                 { "ProductName", "Back" },
                 { "Description", "Drawer Box Right Side" },
@@ -251,12 +252,12 @@ public class DoweledDrawerBox {
 
             start = new Point() {
                 X = -offEdgeMM,
-                Y = (top - (i * passDistance)).AsMillimeters()
+                Y = (top - i * passDistance).AsMillimeters()
             };
 
             end = new Point() {
                 X = partLength.AsMillimeters() + offEdgeMM,
-                Y = (top - (i * passDistance)).AsMillimeters()
+                Y = (top - i * passDistance).AsMillimeters()
             };
 
             tokens.Add(new Route() {
@@ -301,7 +302,7 @@ public class DoweledDrawerBox {
             Length = (Depth - FrontMaterial.Thickness - BackMaterial.Thickness - construction.BottomUndersize).AsMillimeters(),
             Thickness = BottomMaterial.Thickness.AsMillimeters(),
             Material = BottomMaterial.Name,
-            IsGrained = BottomMaterial.IsGrained, 
+            IsGrained = BottomMaterial.IsGrained,
             InfoFields = new() {
                 { "ProductName", "Back" },
                 { "Description", "Drawer Box Bottom" },

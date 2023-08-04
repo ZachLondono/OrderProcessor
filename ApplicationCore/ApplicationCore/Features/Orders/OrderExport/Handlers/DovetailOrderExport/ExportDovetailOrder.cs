@@ -2,12 +2,12 @@
 using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Services;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Logging;
 using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
+using ApplicationCore.Features.Orders.Shared.Domain.Components;
 
 namespace ApplicationCore.Features.Orders.OrderExport.Handlers.DovetailOrderExport;
 

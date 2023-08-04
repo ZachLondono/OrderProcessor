@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Components;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 using CADCodeProxy.Machining;
 
@@ -6,7 +7,7 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 
 internal class FivePieceDoorProduct : FivePieceDoor, IProduct, ICNCPartContainer {
 
-    public Guid Id { get; init; } 
+    public Guid Id { get; init; }
     public int Qty { get; init; }
     public decimal UnitPrice { get; init; }
     public int ProductNumber { get; init; }
@@ -25,7 +26,7 @@ internal class FivePieceDoorProduct : FivePieceDoor, IProduct, ICNCPartContainer
 
     public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
 
-    public IEnumerable<Part> GetCNCParts(string customerName) => GetCNCParts(Qty, ProductNumber, customerName, Room); 
+    public IEnumerable<Part> GetCNCParts(string customerName) => GetCNCParts(Qty, ProductNumber, customerName, Room);
 
     public bool ContainsCNCParts() => true;
 

@@ -34,7 +34,7 @@ internal class InsertOrderRelationship {
             await connection.ExecuteAsync(
                 """
                 INSERT INTO order_relationships (order_1_id, order_2_id) VALUES (@Order1Id, @Order2Id);
-                """, 
+                """,
                 command);
 
             return Response.Success();
