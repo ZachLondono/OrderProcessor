@@ -14,7 +14,9 @@
 
     <thead class="border-b border-slate-300">
         <tr>
-            <th class="p-5 text-gray-700"></th>
+            @if (IsSelectable) {
+                <th class="p-5 text-gray-700"></th>
+            }
             <th class="p-5 text-gray-700">Number</th>
             <th class="p-5 text-gray-700">Name</th>
             <th class="p-5 text-gray-700">Customer</th>
@@ -64,9 +66,11 @@
         <tbody>
             @foreach(var order in DataContext.Orders) {
                 <tr class="@RowClass(order)">
-                    <td class="p-5 whitespace-nowrap border-b" @onclick="() => ToggleOrder(order)">
-                        <input type="checkbox" checked="@SelectedOrders.Contains(order)" />
-                    </td>
+                    @if (IsSelectable) {
+                        <td class="p-5 whitespace-nowrap border-b" @onclick="() => ToggleOrder(order)">
+                            <input type="checkbox" checked="@SelectedOrders.Contains(order)" />
+                        </td>
+                    }
                     <td class="p-5 whitespace-nowrap border-b" @onclick="async () => await OpenOrder(order.Id)">@order.Number</td>
                     <td class="p-5 whitespace-nowrap border-b" @onclick="async () => await OpenOrder(order.Id)">@order.Name</td>
                     <td class="p-5 whitespace-nowrap border-b hover:underline" @onclick="() => DataContext.OpenCustomerPage(order.CustomerId)">@order.CustomerName</td>
@@ -102,6 +106,9 @@
 
     [Parameter]
     public string? SearchTerm { get; set; }
+
+    [Parameter]
+    public bool IsSelectable { get; set; } = true;
 
     [Parameter]
     public HashSet<OrderListItem> SelectedOrders { get; set; } = new();
