@@ -175,10 +175,14 @@ public class ReleaseService {
                 <br />
                 <br />
 
-                <div style="border: 1px solid black; padding: 5px;">
-                    <div style="font-weight: bold;">Note:</div>
-                    <div style="white-space: pre-wrap;">{note}</div>
-                </div>
+                <table>
+                    <tr>
+                        <td style="border: 1px solid black; padding: 5px;">
+                            <div style="font-weight: bold;">Note:</div>
+                            <div style="white-space: pre-wrap;">{note}</div>
+                        </td>
+                    </tr>
+                </table>
 
                 """;
 
