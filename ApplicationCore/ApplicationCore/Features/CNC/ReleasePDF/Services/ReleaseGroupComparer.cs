@@ -57,6 +57,15 @@ public class ReleaseGroupComparer : IEqualityComparer<MachineRelease> {
             }
         }
 
+        var xPartFileNames = x.SinglePrograms.Select(p => p.FileName).Distinct().ToList();
+        var yPartFileNames = y.SinglePrograms.Select(p => p.FileName).Distinct().ToList();
+        if (xPartFileNames.Count != yPartFileNames.Count) return false;
+        foreach (var fileName in xPartFileNames) {
+            if (!yPartFileNames.Contains(fileName)) {
+                return false;
+            }
+        }
+
         return true;
 
     }

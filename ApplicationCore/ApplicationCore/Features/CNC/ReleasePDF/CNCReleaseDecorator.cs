@@ -113,6 +113,32 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                                     })
                                                 }).ToList();
 
+        var singleParts = report.Items
+                                .Where(item => item.Note == "Single Program Code")
+                                .GroupBy(item => GetMachineName(item.Name))
+                                .ToDictionary(
+                                    group => group.Key,
+                                    group => group.SelectMany(item => item.PartIds.Select(id => report.Parts[id]))
+                                                    .Select(part => {
+                                                        var label = report.PartLabels[part.LabelId];
+                                                        return new SinglePartProgram() {
+                                                            Name = part.Name,
+                                                            FileName = part.Variables["Face5Filename"],
+                                                            Width = Dimension.FromMillimeters(part.Width),
+                                                            Length = Dimension.FromMillimeters(part.Length),
+                                                            Description = part.Description,
+                                                            PartId = part.Id,
+                                                            ProductNumber = label.Fields.GetValueOrEmpty("Cabinet Number"),
+                                                        };
+                                                    })
+                                 );
+
+        foreach (var machineRelease in releases) {
+            if (singleParts.TryGetValue(machineRelease.MachineName, out IEnumerable<SinglePartProgram>? parts)) {
+                machineRelease.SinglePrograms = parts;
+            }
+        }
+
         foreach (var machineRelease in releases) {
 
             var twoSidedPrograms = machineRelease.Programs
@@ -181,8 +207,8 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
 
     private static string GetMachineName(string scheduleName) {
 
-        if (scheduleName.Contains("OMNITECH")) return "OMNITECH";
-        if (scheduleName.Contains("ANDI STRATOS")) return "ANDI STRATOS";
+        if (scheduleName.ToUpper().Contains("OMNITECH")) return "OMNITECH";
+        if (scheduleName.ToUpper().Contains("ANDI STRATOS") || scheduleName.ToUpper().Contains("ANDI")) return "ANDI STRATOS";
         return "UNKNOWN";
 
     }

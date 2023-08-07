@@ -128,21 +128,21 @@ internal class QuestPDFWriter : IReleasePDFWriter {
             Content = materialTableContent
         };
 
-        var releasedparts = releases.First().Programs.SelectMany(p => p.Parts).OrderBy(p => p.ProductNumber).GroupBy(p => p.PartId);
+        var releasedparts = releases.First().SinglePrograms.OrderBy(p => p.ProductNumber).GroupBy(p => p.PartId);
         var partsTableContent = new List<Dictionary<string, string>>();
         foreach (var group in releasedparts) {
             var part = group.First();
             partsTableContent.Add(new() {
                     { "#", part.ProductNumber },
-                    { "Qty", group.Count().ToString() },
                     { "Name", part.Name },
+                    { "FileName", part.FileName },
                     { "Width", part.Width.AsMillimeters().ToString("0.00") },
                     { "Length", part.Length.AsMillimeters().ToString("0.00") },
                 });
         }
 
         var partsTable = new Table() {
-            Title = "Parts in Release",
+            Title = "Single Parts",
             Content = partsTableContent
         };
 

@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using ApplicationCore.Shared;
+using System.Xml.Linq;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF.WSXML;
 
@@ -24,7 +25,7 @@ internal partial class WSXMLParser {
             return null;
         }
 
-        var allParts = job.Elements("Item")
+        var nestedParts = job.Elements("Item")
                            .Where(item => item.ElementValue("Note") == "Nested blocknest")
                            .Where(nest => nest.Elements("Part").Any())
                            .SelectMany(item =>
@@ -34,9 +35,25 @@ internal partial class WSXMLParser {
                            .DistinctBy(part => part.Id)
                            .ToDictionary(part => part.Id, part => part);
 
+        var singleParts = job.Elements("Item")
+                           .Where(item => item.ElementValue("Note") == "Single Program Code")
+                           .Where(nest => nest.Elements("Part").Any())
+                           .SelectMany(item =>
+                                item.Elements("Part")
+                                            .Select(Part.FromXElemnt)
+                                            .ToList())
+                           .DistinctBy(part => part.Id)
+                           .ToDictionary(part => part.Id, part => part);
+
+        var allParts = new Dictionary<string, Part>();
+        nestedParts.ForEach(kv => allParts[kv.Key] = kv.Value);
+        singleParts.ForEach(kv => allParts[kv.Key] = kv.Value);
+
         var patternScheduleItems = manufacturing.Elements("PatternSchedule");
 
         var patternSchedules = patternScheduleItems.Select(PatternSchedule.FromXElement);
+
+        var items = job.Elements("Item").Select(Item.FromXElement);
 
         var materials = job.Elements("Material")
                             .Select(MaterialRecord.FromXElement)
@@ -53,6 +70,7 @@ internal partial class WSXMLParser {
             JobName = job.ElementValue("Name"),
             Parts = allParts,
             PatternSchedules = patternSchedules,
+            Items = items,
             Materials = materials,
             PartLabels = labels,
             OperationGroups = operationGroups
