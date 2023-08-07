@@ -426,6 +426,24 @@
                   </xs:complexType>
                 </xs:element>
 
+                <xs:element name="fivePieceDoor">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="unitPrice" type="xs:string"/>
+                      <xs:element name="height" type="xs:decimal"/>
+                      <xs:element name="width" type="xs:decimal"/>
+                      <xs:element name="qty" type="xs:integer"/>
+                      <xs:element name="materialFinish" type="xs:string"/>
+                      <xs:element name="materialCore" type="xs:string"/>
+                      <xs:element name="rails" type="xs:decimal"/>
+                      <xs:element name="comment" type="xs:string"/>
+                      <xs:element name="room" type="xs:string"/>
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
                 <xs:element name="customDrillingVerticalPanel">
                   <xs:complexType>
                     <xs:sequence>
