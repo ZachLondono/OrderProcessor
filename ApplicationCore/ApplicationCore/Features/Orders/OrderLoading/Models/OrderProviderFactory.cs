@@ -3,6 +3,7 @@ using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllm
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProFileOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProWebOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadDoorSpreadsheetOrderData;
+using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.Models;
@@ -21,6 +22,7 @@ public class OrderProviderFactory : IOrderProviderFactory {
         OrderSourceType.ClosetProFileCSV => _serviceProvider.GetRequiredService<ClosetProFileCSVOrderProvider>(),
         OrderSourceType.ClosetProWebCSV => _serviceProvider.GetRequiredService<ClosetProWebCSVOrderProvider>(),
         OrderSourceType.DoorOrder => _serviceProvider.GetRequiredService<DoorSpreadsheetOrderProvider>(),
+        OrderSourceType.DoweledDBOrderForm => _serviceProvider.GetRequiredService<DoweledDBSpreadsheetOrderProvider>(),
         _ => throw new KeyNotFoundException("No valid order provider for given order source type"),
     };
 

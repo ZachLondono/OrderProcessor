@@ -14,8 +14,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ApplicationCore.Features.Orders.Delete;
 using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
-using ApplicationCore.Features.Orders.OrderLoading.LoadDoorSpreadsheetOrderData;
-using ApplicationCore.Features.Orders.OrderLoading.LoadDoorSpreadsheetOrderData.DoorOrderModels;
 using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Features.Orders.CustomerOrderNumber;
 
@@ -36,7 +34,6 @@ public static class DependencyInjection {
 
         AddReleaseServices(services);
         AddExportServices(services, configuration);
-        AddOrderProviders(services, configuration);
 
         services.AddTransient<Ordering.GetOrderNumberById>(sp => {
 
@@ -77,11 +74,6 @@ public static class DependencyInjection {
         services.AddTransient<ExportService>();
         services.AddTransient<IExtWriter, ExtWriter>();
         services.AddTransient<OrderExportModalViewModel>();
-    }
-
-    private static void AddOrderProviders(IServiceCollection services, IConfiguration configuration) {
-        services.Configure<DoorOrderProviderOptions>(configuration.GetRequiredSection("DoorOrderProviderOptions"));
-        services.AddTransient<DoorSpreadsheetOrderProvider>();
     }
 
     private static IServiceCollection AddViewModels(this IServiceCollection services)

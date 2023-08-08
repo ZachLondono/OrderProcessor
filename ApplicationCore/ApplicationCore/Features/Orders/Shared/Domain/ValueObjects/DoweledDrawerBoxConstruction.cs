@@ -11,8 +11,15 @@ public record DoweledDrawerBoxConstruction {
     public required Dimension DowelDepth { get; init; }
     public required Dimension DowelDiameter { get; init; }
 
-    public required string BottomDadoToolName { get; init; }
-    public required Dimension BottomDadoToolDiameter { get; init; }
+    public required string SmallBottomDadoToolName { get; init; }
+    public required Dimension SmallBottomDadoToolDiameter { get; init; }
+
+    public required string LargeBottomDadoToolName { get; init; }
+    public required Dimension LargeBottomDadoToolDiameter { get; init; }
+
+    public required Dimension LargeBottomDadoToolMinimum { get; init; }
+    public required Dimension BottomDadoScoringDepth { get; init; }
+
     /// <summary>
     /// Distance from bottom of drawer box to bottom of the dado for the bottom
     /// </summary>
