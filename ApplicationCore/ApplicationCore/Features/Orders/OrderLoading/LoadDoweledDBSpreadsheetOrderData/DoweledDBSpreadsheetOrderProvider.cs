@@ -1,0 +1,254 @@
+﻿using ApplicationCore.Features.Companies.Contracts;
+using ApplicationCore.Features.Companies.Contracts.Entities;
+using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+using ApplicationCore.Features.Orders.OrderLoading.Dialog;
+using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData.Models;
+using ApplicationCore.Features.Orders.OrderLoading.Models;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Shared.Domain;
+using ApplicationCore.Shared.Services;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Office.Interop.Excel;
+
+namespace ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData;
+
+internal class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
+
+    private readonly IFileReader _fileReader;
+    private readonly ILogger<DoweledDBSpreadsheetOrderProvider> _logger;
+    private readonly DoweledDBOrderProviderOptions _options;
+    private readonly CompanyDirectory.InsertCustomerAsync _insertCustomerAsync;
+    private readonly CompanyDirectory.GetCustomerIdByNameAsync _getCustomerByNamAsync;
+    private readonly CompanyDirectory.GetCustomerWorkingDirectoryRootByIdAsync _getCustomerWorkingDirectoryRootByIdAsync;
+
+    public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
+
+    public DoweledDBSpreadsheetOrderProvider(IFileReader fileReader, ILogger<DoweledDBSpreadsheetOrderProvider> logger, IOptions<DoweledDBOrderProviderOptions> options, CompanyDirectory.InsertCustomerAsync insertCustomerAsync, CompanyDirectory.GetCustomerIdByNameAsync getCustomerByNamAsync, CompanyDirectory.GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync) {
+        _fileReader = fileReader;
+        _logger = logger;
+        _options = options.Value;
+        _insertCustomerAsync = insertCustomerAsync;
+        _getCustomerByNamAsync = getCustomerByNamAsync;
+        _getCustomerWorkingDirectoryRootByIdAsync = getCustomerWorkingDirectoryRootByIdAsync;
+    }
+
+    public async Task<OrderData?> LoadOrderData(string source) {
+
+        if (!_fileReader.DoesFileExist(source)) {
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not access given filepath");
+            return null;
+        }
+
+        var extension = Path.GetExtension(source);
+        if (extension is null || extension != ".xlsx" && extension != ".xlsm") {
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Given filepath is not an excel document");
+            return null;
+        }
+        Microsoft.Office.Interop.Excel.Application? app = null;
+        Workbook? workbook = null;
+
+        try {
+
+            app = new() {
+                DisplayAlerts = false,
+                Visible = false
+            };
+
+            workbook = app.Workbooks.Open(source, ReadOnly: true);
+
+            Worksheet? orderSheet = (Worksheet?)workbook.Worksheets["Order"];
+            Worksheet? specSheet = (Worksheet?)workbook.Worksheets["Specs"];
+
+            if (orderSheet is null) {
+                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find Order sheet in workbook");
+                return null;
+            }
+
+            if (specSheet is null) {
+                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find Spec sheet in workbook");
+                return null;
+            }
+
+            var header = Header.ReadFromSheet(orderSheet);
+            var customerInfo = CustomerInfo.ReadFromSheet(orderSheet);
+
+            var slideSpecs = UMSlideSpecs.ReadFromSheet(specSheet);
+            var bottomSpecs = BottomSpecs.ReadFromSheet(specSheet);
+            var frontDrillingSpecs = FrontDrillingSpecs.ReadFromSheet(specSheet);
+            var constructionSpecs = ConstructionSpecs.ReadFromSheet(specSheet);
+
+            bool useInches = header.Units == "English (in)";
+            bool machineThicknessForUMSlides = slideSpecs.UMSlideMachining;
+            var frontBackHeightAdjustment = Dimension.FromMillimeters(constructionSpecs.FrontBackDrop);
+            var boxes = LoadAllLineItems(orderSheet)
+                                            .Select(i => i.CreateDoweledDrawerBoxProduct(useInches, machineThicknessForUMSlides, frontBackHeightAdjustment))
+                                            .Cast<IProduct>()
+                                            .ToList();
+
+            var vendorId = Guid.Parse(_options.VendorIds[header.VendorName]);
+            var customerId = await GetCustomerId(header.CustomerName, customerInfo);
+            var address = new Shared.Domain.ValueObjects.Address() {
+                Line1 = customerInfo.Line1,
+                Line2 = customerInfo.Line2,
+                Line3 = customerInfo.Line3,
+                City = customerInfo.City,
+                State = customerInfo.State,
+                Zip = customerInfo.Zip,
+                Country = "USA"
+            };
+
+            var dirRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customerId);
+            var workingDirectory = CreateWorkingDirectory(source, header.OrderNumber, header.OrderName, header.CustomerName, dirRoot);
+
+            return new() {
+                VendorId = vendorId,
+                CustomerId = customerId,
+                Comment = header.SpecialInstructions,
+                OrderDate = header.OrderDate,
+                Rush = false,
+                Name = header.OrderName,
+                Number = header.OrderNumber,
+                PriceAdjustment = 0,
+                Tax = 0,
+                WorkingDirectory = workingDirectory,
+                AdditionalItems = new(),
+                Info = new(),
+                Billing = new() {
+                    PhoneNumber = "",
+                    InvoiceEmail = customerInfo.Email,
+                    Address = address 
+                },
+                Shipping = new() {
+                    Contact = customerInfo.Contact,
+                    Method = "",
+                    PhoneNumber = "",
+                    Price = 0,
+                    Address = address 
+                },
+                Products = boxes
+            };
+
+        } catch (Exception ex) {
+
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Error occurred while reading order from workbook {ex}");
+            _logger.LogError(ex, "Exception thrown while loading order from workbook");
+
+        } finally {
+
+            workbook?.Close(SaveChanges: false);
+            app?.Quit();
+
+            // Clean up COM objects, calling these twice ensures it is fully cleaned up.
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+        }
+
+        return null;
+
+    }
+
+    private IEnumerable<LineItem> LoadAllLineItems(Worksheet worksheet) {
+
+        List<LineItem> lineItems = new();
+
+        int row = 0;
+        while (true) {
+
+            if (!LineItem.DoesRowContainItem(worksheet, row)) {
+                break;
+            }
+
+            try {
+
+                var line = LineItem.ReadFromSheet(worksheet, row);
+
+                lineItems.Add(line);
+
+            } catch (Exception ex) {
+
+                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Error reading line item at line {row}");
+                _logger.LogError(ex, "Exception thrown while reading line item from workbook");
+
+            }
+
+            row++;
+
+        }
+
+        return lineItems;
+
+    }
+
+    private async Task<Guid> GetCustomerId(string customerName, CustomerInfo customerInfo) {
+
+        Guid? result = await _getCustomerByNamAsync(customerName);
+
+        if (result is not null) {
+            return (Guid)result;
+        }
+
+        var address = new Address() {
+            Line1 = customerInfo.Line1,
+            Line2 = customerInfo.Line2,
+            Line3 = customerInfo.Line3,
+            City = customerInfo.City,
+            State = customerInfo.State,
+            Zip = customerInfo.Zip,
+            Country = "USA"
+        };
+
+        var billingContact = new Contact() {
+            Name = customerInfo.Contact,
+            Phone = "",
+            Email = customerInfo.Email
+        };
+
+        var shippingContact = new Contact() {
+            Name = customerInfo.Contact,
+            Phone = "",
+            Email = customerInfo.Email
+        };
+
+        var customer = Customer.Create(customerName, string.Empty, shippingContact, address, billingContact, address);
+        await _insertCustomerAsync(customer);
+
+        return customer.Id;
+
+    }
+
+    private string CreateWorkingDirectory(string source, string orderNumber, string orderName, string customerName, string? customerWorkingDirectory) {
+        string workingDirectory = Path.Combine((customerWorkingDirectory ?? _options.DefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {customerName} - {orderName}", ' '));
+        bool workingDirExists = TryToCreateWorkingDirectory(workingDirectory);
+        if (workingDirExists) {
+            string dataFile = _fileReader.GetAvailableFileName(workingDirectory, "Incoming", ".csv");
+            File.Copy(source, dataFile);
+        }
+
+        return workingDirectory;
+    }
+
+    private bool TryToCreateWorkingDirectory(string workingDirectory) {
+
+        workingDirectory = workingDirectory.Trim();
+
+        if (Directory.Exists(workingDirectory)) {
+            return true;
+        }
+
+        try {
+            var dirInfo = Directory.CreateDirectory(workingDirectory);
+            return dirInfo.Exists;
+        } catch (Exception ex) {
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
+        }
+
+        return false;
+
+    }
+
+}
+

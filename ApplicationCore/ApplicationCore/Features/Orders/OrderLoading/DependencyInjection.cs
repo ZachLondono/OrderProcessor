@@ -5,12 +5,13 @@ using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllm
 using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyFileOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.XMLValidation;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
-using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProFileOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProWebOrderData;
+using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData.Models;
+using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData;
 
 namespace ApplicationCore.Features.Orders.OrderLoading;
 
@@ -22,6 +23,7 @@ internal static class DependencyInjection {
         services.Configure<AllmoxyCredentials>(configuration.GetRequiredSection("AllmoxyCredentials"));
         services.Configure<AllmoxyConfiguration>(configuration.GetRequiredSection("AllmoxyConfiguration"));
         services.Configure<ConstructionValues>(configuration.GetRequiredSection("DrawerBoxConstruction"));
+        services.Configure<DoweledDBOrderProviderOptions>(configuration.GetRequiredSection("DoweledDBOrderProviderOptions"));
 
         services.AddTransient<IOrderProviderFactory, OrderProviderFactory>();
         services.AddTransient<AllmoxyWebXMLOrderProvider>();
@@ -31,6 +33,7 @@ internal static class DependencyInjection {
         services.AddTransient<ClosetProCSVReader>();
         services.AddTransient<ClosetProPartMapper>();
         services.AddTransient<ClosetProClientFactory>();
+        services.AddTransient<DoweledDBSpreadsheetOrderProvider>();
         services.AddTransient<AllmoxyClientFactory>();
         services.AddTransient<IXMLValidator, XMLValidator>();
         services.AddTransient<OrderLoadWidgetViewModel>();

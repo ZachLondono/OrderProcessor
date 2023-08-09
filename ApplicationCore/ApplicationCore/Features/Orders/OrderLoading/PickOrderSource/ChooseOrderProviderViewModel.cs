@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProFileOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProWebOrderData;
+using ApplicationCore.Features.Orders.OrderLoading.LoadDoorSpreadsheetOrderData.DoorOrderModels;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 
@@ -34,6 +35,12 @@ internal class ChooseOrderProviderViewModel {
                 SourceType = OrderSourceType.ClosetProFileCSV,
                 DialogTitle = "Enter ClosetPro Order File",
                 SourcePickerDialogType = typeof(GetClosetProOrderFilePathDialog)
+            },
+            new() {
+                Name = "Doweled DB Form",
+                SourceType = OrderSourceType.DoweledDBOrderForm,
+                DialogTitle = "Select Doweled DB Spreadsheet",
+                SourcePickerDialogType = typeof(GetDoorOrderSpreadsheetPathDialog)
             }
             //new() {
             //    Name = "Door Spreadsheet",

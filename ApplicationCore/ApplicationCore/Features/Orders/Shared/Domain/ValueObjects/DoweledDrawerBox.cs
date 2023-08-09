@@ -181,9 +181,9 @@ public class DoweledDrawerBox {
             Length = Height.AsMillimeters(),
             Thickness = SideMaterial.Thickness.AsMillimeters(),
             Material = SideMaterial.Name,
-            IsGrained = SideMaterial.IsGrained, 
+            IsGrained = SideMaterial.IsGrained,
             InfoFields = new() {
-                { "ProductName", "Back" },
+                { "ProductName", "Left" },
                 { "Description", "Drawer Box Left Side" },
                 { "CustomerInfo1", customerName },
                 { "Level1", room },
@@ -206,9 +206,9 @@ public class DoweledDrawerBox {
             Length = Height.AsMillimeters(),
             Thickness = SideMaterial.Thickness.AsMillimeters(),
             Material = SideMaterial.Name,
-            IsGrained = SideMaterial.IsGrained, 
+            IsGrained = SideMaterial.IsGrained,
             InfoFields = new() {
-                { "ProductName", "Back" },
+                { "ProductName", "Right" },
                 { "Description", "Drawer Box Right Side" },
                 { "CustomerInfo1", customerName },
                 { "Level1", room },
@@ -239,7 +239,17 @@ public class DoweledDrawerBox {
         var bottom = construction.BottomDadoStartHeight;
         var top = height + bottom;
 
-        var passCount = Dimension.CeilingMM(height / construction.BottomDadoToolDiameter).AsMillimeters();
+        string toolName;
+        Dimension toolDiameter;
+        if (height >= construction.LargeBottomDadoToolMinimum) {
+            toolName = construction.LargeBottomDadoToolName;
+            toolDiameter = construction.LargeBottomDadoToolDiameter;
+        } else {
+            toolName = construction.SmallBottomDadoToolName;
+            toolDiameter = construction.SmallBottomDadoToolDiameter;
+        }
+
+        var passCount = Dimension.CeilingMM(height / toolDiameter).AsMillimeters();
         var passDistance = height / passCount;
 
         List<IToken> tokens = new();
@@ -259,13 +269,23 @@ public class DoweledDrawerBox {
                 Y = (top - (i * passDistance)).AsMillimeters()
             };
 
+
+            tokens.Add(new Route() {
+                Start = start,
+                End = end,
+                StartDepth = construction.BottomDadoScoringDepth.AsMillimeters(),
+                EndDepth = construction.BottomDadoScoringDepth.AsMillimeters(),
+                Offset = routeOffset,
+                ToolName = toolName
+            });
+
             tokens.Add(new Route() {
                 Start = start,
                 End = end,
                 StartDepth = construction.BottomDadoDepth.AsMillimeters(),
                 EndDepth = construction.BottomDadoDepth.AsMillimeters(),
                 Offset = routeOffset,
-                ToolName = construction.BottomDadoToolName
+                ToolName = toolName
             });
 
         }
@@ -283,10 +303,19 @@ public class DoweledDrawerBox {
         tokens.Add(new Route() {
             Start = start,
             End = end,
+            StartDepth = construction.BottomDadoScoringDepth.AsMillimeters(),
+            EndDepth = construction.BottomDadoScoringDepth.AsMillimeters(),
+            Offset = routeOffset,
+            ToolName = toolName
+        });
+
+        tokens.Add(new Route() {
+            Start = start,
+            End = end,
             StartDepth = construction.BottomDadoDepth.AsMillimeters(),
             EndDepth = construction.BottomDadoDepth.AsMillimeters(),
             Offset = routeOffset,
-            ToolName = construction.BottomDadoToolName
+            ToolName = toolName
         });
 
         return tokens;
@@ -301,9 +330,9 @@ public class DoweledDrawerBox {
             Length = (Depth - FrontMaterial.Thickness - BackMaterial.Thickness - construction.BottomUndersize).AsMillimeters(),
             Thickness = BottomMaterial.Thickness.AsMillimeters(),
             Material = BottomMaterial.Name,
-            IsGrained = BottomMaterial.IsGrained, 
+            IsGrained = BottomMaterial.IsGrained,
             InfoFields = new() {
-                { "ProductName", "Back" },
+                { "ProductName", "Bottom" },
                 { "Description", "Drawer Box Bottom" },
                 { "CustomerInfo1", customerName },
                 { "Level1", room },
@@ -460,8 +489,12 @@ public class DoweledDrawerBox {
             },
         DowelDepth = Dimension.FromMillimeters(10),
         DowelDiameter = Dimension.FromMillimeters(8),
-        BottomDadoToolName = "1-4Strt",
-        BottomDadoToolDiameter = Dimension.FromMillimeters(6.35),
+        SmallBottomDadoToolName = "1-4Strt",
+        SmallBottomDadoToolDiameter = Dimension.FromMillimeters(6.35),
+        LargeBottomDadoToolName = "1-2Dado",
+        LargeBottomDadoToolDiameter = Dimension.FromMillimeters(12.7),
+        LargeBottomDadoToolMinimum = Dimension.FromMillimeters(12.7),
+        BottomDadoScoringDepth = Dimension.FromMillimeters(1.5),
         BottomDadoStartHeight = Dimension.FromInches(0.5),
         BottomDadoDepth = Dimension.FromMillimeters(8),
         BottomDadoHeightOversize = Dimension.FromMillimeters(1.5),

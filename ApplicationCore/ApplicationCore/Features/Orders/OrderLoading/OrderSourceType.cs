@@ -5,5 +5,6 @@ public enum OrderSourceType {
     AllmoxyFileXML,
     DoorOrder,
     ClosetProFileCSV,
-    ClosetProWebCSV
+    ClosetProWebCSV,
+    DoweledDBOrderForm
 }
