@@ -95,7 +95,10 @@ public class DoweledDrawerBox {
             PrimaryFace = new() {
                 ProgramName = $"Front{productNumber}",
                 Tokens = tokens.ToArray()
-            }
+            },
+            Length1Banding = new(FrontMaterial.Name, "PVC"),
+            Width1Banding = new(FrontMaterial.Name, "PVC"),
+            Width2Banding = new(FrontMaterial.Name, "PVC")
         };
 
     }
@@ -134,7 +137,10 @@ public class DoweledDrawerBox {
             PrimaryFace = new() {
                 ProgramName = $"Back{productNumber}",
                 Tokens = tokens.ToArray()
-            }
+            },
+            Length1Banding = new(FrontMaterial.Name, "PVC"),
+            Width1Banding = new(FrontMaterial.Name, "PVC"),
+            Width2Banding = new(FrontMaterial.Name, "PVC")
         };
 
     }
@@ -197,7 +203,8 @@ public class DoweledDrawerBox {
                 ProgramName = $"Left{productNumber}",
                 IsMirrored = true,
                 Tokens = tokens.ToArray()
-            }
+            },
+            Length1Banding = new(FrontMaterial.Name, "PVC")
         };
 
         var right = new Part() {
@@ -221,7 +228,8 @@ public class DoweledDrawerBox {
             PrimaryFace = new() {
                 ProgramName = $"Right{productNumber}",
                 Tokens = tokens.ToArray()
-            }
+            },
+            Length1Banding = new(FrontMaterial.Name, "PVC")
         };
 
         return (left, right);
