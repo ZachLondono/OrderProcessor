@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Orders.OrderLoading.Providers.AllmoxyXMLModels;
+﻿namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 
 public class AllmoxyCredentials {
 

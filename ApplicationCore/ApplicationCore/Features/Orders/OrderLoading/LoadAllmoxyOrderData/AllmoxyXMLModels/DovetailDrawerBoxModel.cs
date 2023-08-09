@@ -7,7 +7,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 using System.Xml.Serialization;
 
-namespace ApplicationCore.Features.Orders.OrderLoading.Providers.AllmoxyXMLModels;
+namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 
 public class DovetailDrawerBoxModel : ProductModel {
 

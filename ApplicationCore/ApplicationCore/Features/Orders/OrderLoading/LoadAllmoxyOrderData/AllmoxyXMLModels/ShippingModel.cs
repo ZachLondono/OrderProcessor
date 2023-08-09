@@ -1,6 +1,7 @@
-﻿using System.Xml.Serialization;
+﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
+using System.Xml.Serialization;
 
-namespace ApplicationCore.Features.Orders.OrderLoading.Providers.AllmoxyXMLModels;
+namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 
 public class ShippingModel {
 

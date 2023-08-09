@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.OrderLoading.Providers.AllmoxyXMLModels;
+﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using static ApplicationCore.Features.Companies.Contracts.CompanyDirectory;

@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Features.Orders.OrderLoading.Providers.AllmoxyXMLModels;
+using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 using System.Xml.Serialization;
 using System.Text;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;

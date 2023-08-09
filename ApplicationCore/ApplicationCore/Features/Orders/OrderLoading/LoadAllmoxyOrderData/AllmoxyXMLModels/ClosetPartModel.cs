@@ -8,7 +8,7 @@ using ApplicationCore.Shared.Domain;
 using System.Xml.Serialization;
 using ClosetPaintedSide = ApplicationCore.Features.Orders.Shared.Domain.ValueObjects.PaintedSide;
 
-namespace ApplicationCore.Features.Orders.OrderLoading.Providers.AllmoxyXMLModels;
+namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 
 public class ClosetPartModel : ProductModel {
 

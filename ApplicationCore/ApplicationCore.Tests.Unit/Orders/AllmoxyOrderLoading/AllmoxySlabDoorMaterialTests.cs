@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.OrderLoading.Providers.AllmoxyXMLModels;
+﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using FluentAssertions;

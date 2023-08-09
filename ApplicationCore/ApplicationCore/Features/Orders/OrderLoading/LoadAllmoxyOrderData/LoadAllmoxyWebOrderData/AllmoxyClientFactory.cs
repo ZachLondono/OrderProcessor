@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyWebOrderData.Rest;
-using ApplicationCore.Features.Orders.OrderLoading.Providers.AllmoxyXMLModels;
+using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 using Microsoft.Extensions.Options;
 using RestSharp;
 
