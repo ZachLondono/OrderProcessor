@@ -181,7 +181,7 @@ public class DoweledDrawerBox {
             Length = Height.AsMillimeters(),
             Thickness = SideMaterial.Thickness.AsMillimeters(),
             Material = SideMaterial.Name,
-            IsGrained = SideMaterial.IsGrained, 
+            IsGrained = SideMaterial.IsGrained,
             InfoFields = new() {
                 { "ProductName", "Left" },
                 { "Description", "Drawer Box Left Side" },
@@ -206,7 +206,7 @@ public class DoweledDrawerBox {
             Length = Height.AsMillimeters(),
             Thickness = SideMaterial.Thickness.AsMillimeters(),
             Material = SideMaterial.Name,
-            IsGrained = SideMaterial.IsGrained, 
+            IsGrained = SideMaterial.IsGrained,
             InfoFields = new() {
                 { "ProductName", "Right" },
                 { "Description", "Drawer Box Right Side" },
@@ -299,7 +299,7 @@ public class DoweledDrawerBox {
             X = -offEdgeMM,
             Y = bottom.AsMillimeters()
         };
-        
+
         tokens.Add(new Route() {
             Start = start,
             End = end,
@@ -330,7 +330,7 @@ public class DoweledDrawerBox {
             Length = (Depth - FrontMaterial.Thickness - BackMaterial.Thickness - construction.BottomUndersize).AsMillimeters(),
             Thickness = BottomMaterial.Thickness.AsMillimeters(),
             Material = BottomMaterial.Name,
-            IsGrained = BottomMaterial.IsGrained, 
+            IsGrained = BottomMaterial.IsGrained,
             InfoFields = new() {
                 { "ProductName", "Bottom" },
                 { "Description", "Drawer Box Bottom" },

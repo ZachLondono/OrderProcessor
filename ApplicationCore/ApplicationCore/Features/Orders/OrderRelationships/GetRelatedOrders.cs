@@ -33,7 +33,7 @@ internal class GetRelatedOrders {
                 """, query);
 
             return Response<IEnumerable<RelatedOrder>>.Success(orders);
-            
+
         }
 
     }

@@ -36,7 +36,7 @@ internal class FivePieceDoor {
     }
 
     public (Part top, Part bottom) GetRailParts(int qty, int productNumber, string customerName, string room) {
-        
+
         Dimension topWidth = FrameSize.TopRail;
         Dimension bottomWidth = FrameSize.BottomRail;
         Dimension length = Width - FrameSize.LeftStile - FrameSize.RightStile;
@@ -91,7 +91,7 @@ internal class FivePieceDoor {
 
         return (top, bottom);
 
-    } 
+    }
 
     public (Part left, Part right) GetStileParts(int qty, int productNumber, string customerName, string room) {
 
@@ -149,7 +149,7 @@ internal class FivePieceDoor {
 
         return (left, right);
 
-    } 
+    }
 
     public Part GetCenterPanelPart(int qty, int productNumber, string customerName, string room) {
 
@@ -181,6 +181,6 @@ internal class FivePieceDoor {
 
         };
 
-    } 
+    }
 
 }
