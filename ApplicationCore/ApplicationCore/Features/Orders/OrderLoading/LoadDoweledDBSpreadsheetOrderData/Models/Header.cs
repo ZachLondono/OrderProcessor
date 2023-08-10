@@ -10,6 +10,7 @@ public record Header {
     public string CustomerName { get; init; } = string.Empty;
     public string OrderNumber { get; init; } = string.Empty;
     public string OrderName { get; init; } = string.Empty;
+    public string ShippingMethod { get; init; } = string.Empty;
     public string ConnectorType { get; init; } = string.Empty;
     public string Construction { get; init; } = string.Empty;
     public string Units { get; init; } = string.Empty;
@@ -32,16 +33,26 @@ public record Header {
                 worksheet.GetRangeStringValue("SpecialInstructions_12"),
             };
 
+        string orderDateStr = worksheet.GetRangeStringValue("OrderDate");
+        if (!DateTime.TryParse(orderDateStr, out DateTime orderDate)) {
+            orderDate = DateTime.Today;
+        }
+        string dueDateStr = worksheet.GetRangeStringValue("DueDate");
+        if (!DateTime.TryParse(dueDateStr, out DateTime dueDate)) {
+            dueDate = DateTime.Today;
+        }
+
         return new() {
-            OrderDate = DateTime.Today, // worksheet.Range["OrderDate"].Value2,
-            DueDate = DateTime.Today, // worksheet.Range["DueDate"].Value2,
-            VendorName = worksheet.Range["Vendor"].Value2.ToString(),
-            CustomerName = worksheet.Range["CustomerName"].Value2.ToString(),
-            OrderNumber = worksheet.Range["JobNumber"].Value2.ToString(),
-            OrderName = worksheet.Range["JobName"].Value2.ToString(),
-            ConnectorType = worksheet.Range["SelectedConnectionType"].Value2.ToString(),
-            Construction = worksheet.Range["SelectedConstructionOption"].Value2.ToString(),
-            Units = worksheet.Range["SelectedUnits"].Value2.ToString(),
+            OrderDate = orderDate,
+            DueDate = dueDate,
+            VendorName = worksheet.GetRangeStringValue("Vendor"),
+            CustomerName = worksheet.GetRangeStringValue("CustomerName"),
+            OrderNumber = worksheet.GetRangeStringValue("JobNumber"),
+            OrderName = worksheet.GetRangeStringValue("JobName"),
+            ShippingMethod = worksheet.GetRangeStringValue("ShippingMethod"),
+            ConnectorType = worksheet.GetRangeStringValue("SelectedConnectionType"),
+            Construction = worksheet.GetRangeStringValue("SelectedConstructionOption"),
+            Units = worksheet.GetRangeStringValue("SelectedUnits"),
             SpecialInstructions = string.Join("; ", noteSegments.Where(s => !string.IsNullOrWhiteSpace(s)))
         };
 

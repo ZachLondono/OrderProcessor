@@ -121,7 +121,7 @@ internal class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
                 },
                 Shipping = new() {
                     Contact = customerInfo.Contact,
-                    Method = "",
+                    Method = header.ShippingMethod,
                     PhoneNumber = "",
                     Price = 0,
                     Address = address 
