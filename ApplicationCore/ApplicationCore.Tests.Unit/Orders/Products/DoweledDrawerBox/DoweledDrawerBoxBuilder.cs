@@ -1,10 +1,12 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Components;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products.DoweledDrawerBoxTests;
 
 public class DoweledDrawerBoxBuilder {
 
+    public int Qty { get; set; } = 1;
     public Dimension Height { get; set; } = Dimension.FromInches(4.125);
     public Dimension Width { get; set; } = Dimension.FromInches(21);
     public Dimension Depth { get; set; } = Dimension.FromInches(21);
@@ -16,7 +18,7 @@ public class DoweledDrawerBoxBuilder {
     public Dimension FrontBackHeightAdjustment { get; set; } = Dimension.Zero;
 
     public DoweledDrawerBox Build() {
-        return new(Height, Width, Depth, FrontMaterial, BackMaterial, SideMaterial, BottomMaterial, MachineThicknessForUMSlides, FrontBackHeightAdjustment);
+        return new(Qty, Height, Width, Depth, FrontMaterial, BackMaterial, SideMaterial, BottomMaterial, MachineThicknessForUMSlides, FrontBackHeightAdjustment);
     }
 
 }

@@ -1,11 +1,12 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Components;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 
-internal class BlindBaseCabinet : Cabinet, IDoorContainer, IDovetailDrawerBoxContainer {
+internal class BlindBaseCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer {
 
     public BlindCabinetDoors Doors { get; }
     public HorizontalDrawerBank Drawers { get; }

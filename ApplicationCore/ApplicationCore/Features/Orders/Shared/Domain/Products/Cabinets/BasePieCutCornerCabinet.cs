@@ -1,11 +1,12 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Components;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 
-internal class BasePieCutCornerCabinet : Cabinet, IDoorContainer {
+internal class BasePieCutCornerCabinet : Cabinet, IMDFDoorContainer {
 
     public Dimension RightWidth { get; }
     public Dimension RightDepth { get; }

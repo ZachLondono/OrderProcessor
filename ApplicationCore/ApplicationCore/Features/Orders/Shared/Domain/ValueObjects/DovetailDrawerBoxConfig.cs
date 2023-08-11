@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
-public class DrawerBoxOptions {
+public class DovetailDrawerBoxConfig {
 
     public const string FINGER_JOINT_BIRCH = "Birch FJ";
     public const string SOLID_BIRCH = "Birch CL";
@@ -20,9 +20,9 @@ public class DrawerBoxOptions {
     public bool FaceMountingHoles { get; }
     public bool Assembled { get; }
     public UBoxDimensions? UBoxDimensions { get; }
-    public FixedDivdersCounts? FixedDivdersCounts { get; }
+    public FixedDivdersCounts? FixedDividersCounts { get; }
 
-    public DrawerBoxOptions(string frontMaterial, string backMaterial, string sideMaterial, string bottomMaterial, string clips, string notches, string accessory, LogoPosition logo, bool postFinish = false, bool scoopFront = false, bool facemountingholes = false, bool assembled = true, UBoxDimensions? uBoxDimensions = null, FixedDivdersCounts? fixedDivdersCounts = null) {
+    public DovetailDrawerBoxConfig(string frontMaterial, string backMaterial, string sideMaterial, string bottomMaterial, string clips, string notches, string accessory, LogoPosition logo, bool postFinish = false, bool scoopFront = false, bool facemountingHoles = false, bool assembled = true, UBoxDimensions? uBoxDimensions = null, FixedDivdersCounts? fixedDivdersCounts = null) {
         FrontMaterial = frontMaterial;
         BackMaterial = backMaterial;
         SideMaterial = sideMaterial;
@@ -33,10 +33,10 @@ public class DrawerBoxOptions {
         Logo = logo;
         PostFinish = postFinish;
         ScoopFront = scoopFront;
-        FaceMountingHoles = facemountingholes;
+        FaceMountingHoles = facemountingHoles;
         Assembled = assembled;
         UBoxDimensions = uBoxDimensions;
-        FixedDivdersCounts = fixedDivdersCounts;
+        FixedDividersCounts = fixedDivdersCounts;
     }
 
     public string GetMaterialFriendlyName() {

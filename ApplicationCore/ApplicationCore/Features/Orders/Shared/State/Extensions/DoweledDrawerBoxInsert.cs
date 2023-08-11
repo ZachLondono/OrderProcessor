@@ -9,7 +9,7 @@ public partial class InsertOrder {
 
         private static async Task InsertProduct(DoweledDrawerBoxProduct drawerBox, Guid orderId, IDbConnection connection, IDbTransaction trx) {
 
-            await InsertDoweledDB(drawerBox.Id, drawerBox, connection, trx);
+            await InsertDoweledDBConfig(drawerBox.Id, drawerBox, connection, trx);
             await InsertIntoProductTable(drawerBox, orderId, connection, trx);
 
             var parameters = new {

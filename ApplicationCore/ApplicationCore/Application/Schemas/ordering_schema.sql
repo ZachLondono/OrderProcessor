@@ -82,14 +82,20 @@ CREATE TABLE products (
 
 CREATE TABLE five_piece_door_products (
 	product_id BLOB NOT NULL,
+	width REAL NOT NULL,
+	height REAL NOT NULL,
+	top_rail REAL NOT NULL,
+	bottom_rail REAL NOT NULL,
+	left_stile REAL NOT NULL,
+	right_stile REAL NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-	FOREIGN KEY (product_id) REFERENCES five_piece_doors(id)
+	FOREIGN KEY (product_id) REFERENCES five_piece_door_configs(id)
 );
 
-CREATE TRIGGER remove_five_piece_door AFTER DELETE ON five_piece_door_products
+CREATE TRIGGER remove_five_piece_door_config AFTER DELETE ON five_piece_door_products
 BEGIN
-	DELETE FROM five_piece_doors WHERE id = OLD.product_id;
+	DELETE FROM five_piece_door_configs WHERE id = OLD.product_id;
 END;
 
 CREATE TABLE mdf_door_products (
@@ -123,12 +129,12 @@ CREATE TABLE dovetail_drawer_products (
 	label_fields TEXT NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-	FOREIGN KEY (product_id) REFERENCES drawer_box_configs(id)
+	FOREIGN KEY (product_id) REFERENCES dovetail_drawer_box_configs(id)
 );
 
 CREATE TRIGGER remove_dovetail_drawer_config AFTER DELETE ON dovetail_drawer_products
 BEGIN
-	DELETE FROM drawer_box_configs WHERE id = OLD.product_id;
+	DELETE FROM dovetail_drawer_box_configs WHERE id = OLD.product_id;
 END;
 
 CREATE TABLE doweled_drawer_products (
@@ -220,81 +226,10 @@ BEGIN
 	DELETE FROM mdf_door_configs WHERE id = OLD.mdf_config_id;
 END;
 
--- TODO: rename to a more specific `dovetail_drawer_box_configs`
-CREATE TABLE drawer_box_configs (
-	id BLOB NOT NULL,
-	front_material TEXT NOT NULL,
-	back_material TEXT NOT NULL,
-	side_material TEXT NOT NULL,
-	bottom_material TEXT NOT NULL,
-	clips TEXT NOT NULL,
-	notches TEXT NOT NULL,
-	accessory TEXT NOT NULL,
-	logo INTEGER NOT NULL,
-	post_finish INTEGER NOT NULL,
-	scoop_front INTEGER NOT NULL,
-	face_mounting_holes INTEGER NOT NULL,
-	assembled INTEGER NOT NULL,
-	PRIMARY KEY (id)
-);
-
-CREATE TABLE doweled_drawer_box_configs (
-	id BLOB NOT NULL,
-	front_mat_name TEXT NOT NULL,
-	front_mat_thickness REAL NOT NULL,
-	front_mat_graining INTEGER NOT NULL,
-	back_mat_name TEXT NOT NULL,
-	back_mat_thickness REAL NOT NULL,
-	back_mat_graining INTEGER NOT NULL,
-	side_mat_name TEXT NOT NULL,
-	side_mat_thickness REAL NOT NULL,
-	side_mat_graining INTEGER NOT NULL,
-	bottom_mat_name TEXT NOT NULL,
-	bottom_mat_thickness REAL NOT NULL,
-	bottom_mat_graining INTEGER NOT NULL,
-	machine_thickness_for_um INTEGER NOT NULL,
-	frontback_height_adjustment REAL NOT NULL,
-	PRIMARY KEY (id)
-);
-
 CREATE TABLE cabinet_db_configs (
 	id BLOB NOT NULL,
 	material INTEGER NOT NULL,
 	slide_type INTEGER NOT NULL,
-	PRIMARY KEY (id)
-);
-
-CREATE TABLE five_piece_doors (
-	id BLOB NOT NULL,
-	width REAL NOT NULL,
-	height REAL NOT NULL,
-	top_rail REAL NOT NULL,
-	bottom_rail REAL NOT NULL,
-	left_stile REAL NOT NULL,
-	right_stile REAL NOT NULL,
-	frame_thickness REAL NOT NULL,
-	panel_thickness REAL NOT NULL,
-	material TEXT NOT NULL,
-	PRIMARY KEY (id)
-);
-
-CREATE TABLE mdf_door_configs (
-	id BLOB NOT NULL,
-	framing_bead TEXT NOT NULL,
-	edge_detail TEXT NOT NULL,
-	panel_detail TEXT NOT NULL,
-	thickness TEXT NOT NULL,
-	material TEXT NOT NULL,
-	panel_drop REAL,
-	paint_color TEXT,
-	PRIMARY KEY (id)
-);
-
-CREATE TABLE mdf_door_openings (
-    id BLOB NOT NULL,
-	product_id BLOB NOT NULL,
-	opening REAL NOT NULL,
-	rail REAL NOT NULL,
 	PRIMARY KEY (id)
 );
 
@@ -466,4 +401,70 @@ CREATE TABLE blind_wall_cabinets (
 	hinge_side INTEGER NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+-- Component Configuration Tables --
+
+CREATE TABLE five_piece_door_configs (
+	id BLOB NOT NULL,
+	frame_thickness REAL NOT NULL,
+	panel_thickness REAL NOT NULL,
+	material TEXT NOT NULL,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE mdf_door_configs (
+	id BLOB NOT NULL,
+	framing_bead TEXT NOT NULL,
+	edge_detail TEXT NOT NULL,
+	panel_detail TEXT NOT NULL,
+	thickness TEXT NOT NULL,
+	material TEXT NOT NULL,
+	panel_drop REAL,
+	paint_color TEXT,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE mdf_door_openings (
+    id BLOB NOT NULL,
+	product_id BLOB NOT NULL,
+	opening REAL NOT NULL,
+	rail REAL NOT NULL,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE dovetail_drawer_box_configs (
+	id BLOB NOT NULL,
+	front_material TEXT NOT NULL,
+	back_material TEXT NOT NULL,
+	side_material TEXT NOT NULL,
+	bottom_material TEXT NOT NULL,
+	clips TEXT NOT NULL,
+	notches TEXT NOT NULL,
+	accessory TEXT NOT NULL,
+	logo INTEGER NOT NULL,
+	post_finish INTEGER NOT NULL,
+	scoop_front INTEGER NOT NULL,
+	face_mounting_holes INTEGER NOT NULL,
+	assembled INTEGER NOT NULL,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE doweled_drawer_box_configs (
+	id BLOB NOT NULL,
+	front_mat_name TEXT NOT NULL,
+	front_mat_thickness REAL NOT NULL,
+	front_mat_graining INTEGER NOT NULL,
+	back_mat_name TEXT NOT NULL,
+	back_mat_thickness REAL NOT NULL,
+	back_mat_graining INTEGER NOT NULL,
+	side_mat_name TEXT NOT NULL,
+	side_mat_thickness REAL NOT NULL,
+	side_mat_graining INTEGER NOT NULL,
+	bottom_mat_name TEXT NOT NULL,
+	bottom_mat_thickness REAL NOT NULL,
+	bottom_mat_graining INTEGER NOT NULL,
+	machine_thickness_for_um INTEGER NOT NULL,
+	frontback_height_adjustment REAL NOT NULL,
+	PRIMARY KEY (id)
 );

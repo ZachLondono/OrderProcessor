@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Office.Interop.Excel;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Shared.Services;
@@ -10,6 +9,7 @@ using ApplicationCore.Features.Companies.Contracts;
 using System.Runtime.InteropServices;
 using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.Components;
 
 namespace ApplicationCore.Features.Orders.OrderExport.Handlers.DoorOrderExport;
 
@@ -34,7 +34,7 @@ public class ExportDoorOrder {
         public override async Task<Response<DoorOrderExportResult>> Handle(Command command) {
 
             var doors = command.Order.Products
-                                .Where(p => p is IDoorContainer)
+                                .Where(p => p is IMDFDoorContainer)
                                 .SelectMany(SelectDoorsFromProduct)
                                 .ToList();
 
@@ -79,7 +79,7 @@ public class ExportDoorOrder {
         private IEnumerable<MDFDoorComponent> SelectDoorsFromProduct(IProduct p) {
             try {
 
-                return ((IDoorContainer)p).GetDoors(_factory.CreateMDFDoorBuilder)
+                return ((IMDFDoorContainer)p).GetDoors(_factory.CreateMDFDoorBuilder)
                                                 .Select(d => new MDFDoorComponent() {
                                                     ProductId = p.Id,
                                                     Door = d

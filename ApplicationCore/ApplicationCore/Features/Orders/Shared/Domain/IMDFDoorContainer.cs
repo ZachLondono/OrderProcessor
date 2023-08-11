@@ -1,12 +1,9 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Features.Orders.Shared.Domain.Components;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain;
 
-/// <summary>
-/// An object which contains doors
-/// </summary>
-internal interface IDoorContainer {
+internal interface IMDFDoorContainer {
 
     IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder);
 

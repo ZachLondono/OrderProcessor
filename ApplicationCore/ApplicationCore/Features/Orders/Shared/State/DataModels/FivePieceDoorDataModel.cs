@@ -27,12 +27,13 @@ internal class FivePieceDoorDataModel : ProductDataModelBase, IProductDataModel,
             products.product_number AS ProductNumber,
             products.room,
 
-            config.width,
-            config.height,
-            config.top_rail AS TopRail,
-            config.bottom_rail AS BottomRail,
-            config.left_stile AS LeftStile,
-            config.right_stile AS RightStile,
+            fpd_product.width,
+            fpd_product.height,
+            fpd_product.top_rail AS TopRail,
+            fpd_product.bottom_rail AS BottomRail,
+            fpd_product.left_stile AS LeftStile,
+            fpd_product.right_stile AS RightStile,
+
             config.frame_thickness AS FrameThickness,
             config.panel_thickness AS PanelThickness,
             config.material
@@ -40,7 +41,7 @@ internal class FivePieceDoorDataModel : ProductDataModelBase, IProductDataModel,
         FROM five_piece_door_products AS fpd_product
 
             JOIN products ON fpd_product.product_id = products.id
-            JOIN five_piece_doors AS config ON config.id = products.id
+            JOIN five_piece_door_configs AS config ON config.id = products.id
 
         WHERE products.order_id = @OrderId;
 

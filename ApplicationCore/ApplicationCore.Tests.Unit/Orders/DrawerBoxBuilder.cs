@@ -17,7 +17,7 @@ public class DrawerBoxBuilder {
     private Dimension _depth = Dimension.FromMillimeters(0);
     private string _note = string.Empty;
     private Dictionary<string, string> _labelFields = new();
-    private DrawerBoxOptions _options = new(
+    private DovetailDrawerBoxConfig _options = new(
         "",
         "",
         "",
@@ -62,7 +62,7 @@ public class DrawerBoxBuilder {
         return this;
     }
 
-    public DrawerBoxBuilder WithOptions(DrawerBoxOptions options) {
+    public DrawerBoxBuilder WithOptions(DovetailDrawerBoxConfig options) {
         _options = options;
         return this;
     }

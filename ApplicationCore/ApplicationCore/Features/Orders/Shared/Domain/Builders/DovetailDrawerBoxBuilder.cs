@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Components;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
@@ -13,7 +14,7 @@ public class DovetailDrawerBoxBuilder {
     public Dimension Width { get; private set; }
     public Dimension Depth { get; private set; }
     public string Note { get; private set; }
-    public DrawerBoxOptions Options { get; private set; }
+    public DovetailDrawerBoxConfig Options { get; private set; }
     public Dictionary<string, string> LabelFields { get; private set; }
 
     /// <summary>
@@ -206,7 +207,7 @@ public class DovetailDrawerBoxBuilder {
         return this;
     }
 
-    public DovetailDrawerBoxBuilder WithOptions(DrawerBoxOptions options) {
+    public DovetailDrawerBoxBuilder WithOptions(DovetailDrawerBoxConfig options) {
         Options = options;
         return this;
     }

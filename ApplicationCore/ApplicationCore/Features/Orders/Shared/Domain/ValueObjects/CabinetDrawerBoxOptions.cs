@@ -4,11 +4,11 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
 public record CabinetDrawerBoxOptions(CabinetDrawerBoxMaterial Material, DrawerSlideType SlideType) {
 
-    public DrawerBoxOptions GetDrawerBoxOptions() {
+    public DovetailDrawerBoxConfig GetDrawerBoxOptions() {
 
         string materialName = Material switch {
-            CabinetDrawerBoxMaterial.FingerJointBirch => DrawerBoxOptions.FINGER_JOINT_BIRCH,
-            CabinetDrawerBoxMaterial.SolidBirch => DrawerBoxOptions.SOLID_BIRCH,
+            CabinetDrawerBoxMaterial.FingerJointBirch => DovetailDrawerBoxConfig.FINGER_JOINT_BIRCH,
+            CabinetDrawerBoxMaterial.SolidBirch => DovetailDrawerBoxConfig.SOLID_BIRCH,
             _ => "UNKNOWN"
         };
 

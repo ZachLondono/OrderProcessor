@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
@@ -75,11 +74,11 @@ public class DovetailDrawerBoxModel : ProductModel {
         var labelFields = new Dictionary<string, string>();
 
         if (Material == "Pre-Finished Birch")
-            Material = DrawerBoxOptions.SOLID_BIRCH;
+            Material = DovetailDrawerBoxConfig.SOLID_BIRCH;
         else if (Material == "Economy Birch")
-            Material = DrawerBoxOptions.FINGER_JOINT_BIRCH;
+            Material = DovetailDrawerBoxConfig.FINGER_JOINT_BIRCH;
 
-        var options = new DrawerBoxOptions(Material, Material, Material, Bottom, Clips, Notch, Insert, LogoPosition.None);
+        var options = new DovetailDrawerBoxConfig(Material, Material, Material, Bottom, Clips, Notch, Insert, LogoPosition.None);
 
         string room = Room == "folder_name" ? string.Empty : Room;
 
