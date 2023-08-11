@@ -12,10 +12,10 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
 
     private ReleasedJob? _jobData = null;
 
-    private readonly IReleasePDFDecoratorFactory _pdfService;
+    private readonly ReleasePDFDecoratorFactory _pdfService;
     private readonly CNCToolBox.GetToolCarousels _getToolCarousels;
 
-    public CNCReleaseDecorator(IReleasePDFDecoratorFactory pdfService, CNCToolBox.GetToolCarousels getToolCarousels) {
+    public CNCReleaseDecorator(ReleasePDFDecoratorFactory pdfService, CNCToolBox.GetToolCarousels getToolCarousels) {
         _pdfService = pdfService;
         _getToolCarousels = getToolCarousels;
     }

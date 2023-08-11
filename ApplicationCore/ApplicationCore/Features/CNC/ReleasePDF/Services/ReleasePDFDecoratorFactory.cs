@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF.Services;
 
-internal class ReleasePDFDecoratorFactory : IReleasePDFDecoratorFactory {
+internal class ReleasePDFDecoratorFactory {
 
     private readonly PDFConfiguration _config;
 
