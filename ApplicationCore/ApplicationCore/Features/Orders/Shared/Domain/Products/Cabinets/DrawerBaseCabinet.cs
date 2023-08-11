@@ -7,7 +7,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 
-internal class DrawerBaseCabinet : Cabinet, IDoorContainer, IDovetailDrawerBoxContainer {
+internal class DrawerBaseCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer {
 
     // TODO: add option for no doors
 

@@ -4,7 +4,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Components;
 
-public class MDFDoor : MDFDoorOptions {
+public class MDFDoor : MDFDoorOptions, IComponent {
 
     public int Qty { get; }
     public int ProductNumber { get; }

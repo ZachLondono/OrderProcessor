@@ -4,7 +4,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Components;
 
-public class DovetailDrawerBox {
+public class DovetailDrawerBox : IComponent {
 
     public int Qty { get; }
     public int ProductNumber { get; }
@@ -12,11 +12,11 @@ public class DovetailDrawerBox {
     public Dimension Width { get; }
     public Dimension Depth { get; }
     public string Note { get; }
-    public DrawerBoxOptions DrawerBoxOptions { get; }
+    public DovetailDrawerBoxConfig DrawerBoxOptions { get; }
     public IReadOnlyDictionary<string, string> LabelFields { get; }
 
     public DovetailDrawerBox(int qty, int productNumber, Dimension height, Dimension width, Dimension depth,
-                            string note, DrawerBoxOptions options, IReadOnlyDictionary<string, string> labelFields) {
+                            string note, DovetailDrawerBoxConfig options, IReadOnlyDictionary<string, string> labelFields) {
         Qty = qty;
         ProductNumber = productNumber;
         Height = height;

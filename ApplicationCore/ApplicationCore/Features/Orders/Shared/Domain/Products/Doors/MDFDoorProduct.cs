@@ -6,7 +6,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 
-public class MDFDoorProduct : MDFDoor, IProduct, IDoorContainer {
+public class MDFDoorProduct : MDFDoor, IProduct, IMDFDoorContainer {
 
     public Guid Id { get; }
     public decimal UnitPrice { get; }

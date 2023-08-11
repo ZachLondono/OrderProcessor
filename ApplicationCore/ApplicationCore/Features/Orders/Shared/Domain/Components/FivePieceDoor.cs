@@ -4,22 +4,17 @@ using CADCodeProxy.Machining;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Components;
 
-internal class FivePieceDoor {
+internal class FivePieceDoor : FivePieceDoorConfig {
 
     public Dimension Width { get; init; }
     public Dimension Height { get; init; }
     public DoorFrame FrameSize { get; init; }
-    public Dimension FrameThickness { get; init; }
-    public Dimension PanelThickness { get; init; }
-    public string Material { get; init; }
 
-    public FivePieceDoor(Dimension width, Dimension height, DoorFrame frameSize, Dimension frameThickness, Dimension panelThickness, string material) {
+    public FivePieceDoor(Dimension width, Dimension height, DoorFrame frameSize, Dimension frameThickness, Dimension panelThickness, string material)
+            : base(frameThickness, panelThickness, material) {
         Width = width;
         Height = height;
         FrameSize = frameSize;
-        FrameThickness = frameThickness;
-        PanelThickness = panelThickness;
-        Material = material;
     }
 
     public IEnumerable<Part> GetCNCParts(int qty, int productNumber, string customerName, string room) {

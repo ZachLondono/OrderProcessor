@@ -34,8 +34,8 @@ internal class OrderExportModalViewModel {
         if (vendor is null) return;
 
         bool containsMDFDoors = order.Products
-                                        .Where(p => p is IDoorContainer)
-                                        .Cast<IDoorContainer>()
+                                        .Where(p => p is IMDFDoorContainer)
+                                        .Cast<IMDFDoorContainer>()
                                         .Any(p => p.ContainsDoors());
 
         bool containsDBs = order.Products

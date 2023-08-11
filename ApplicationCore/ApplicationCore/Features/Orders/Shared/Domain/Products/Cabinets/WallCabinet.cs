@@ -7,7 +7,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 
-internal class WallCabinet : Cabinet, IDoorContainer {
+internal class WallCabinet : Cabinet, IMDFDoorContainer {
 
     public WallCabinetDoors Doors { get; }
     public WallCabinetInside Inside { get; }

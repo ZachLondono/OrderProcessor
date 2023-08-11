@@ -7,18 +7,18 @@ namespace ApplicationCore.Features.Orders.Shared.State;
 public partial class InsertOrder {
     public partial class Handler {
 
-        private static async Task InsertProduct(DovetailDrawerBoxProduct drawerbox, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+        private static async Task InsertProduct(DovetailDrawerBoxProduct drawerBox, Guid orderId, IDbConnection connection, IDbTransaction trx) {
 
-            await InsertDBConfig(drawerbox.Id, drawerbox.DrawerBoxOptions, connection, trx);
-            await InsertIntoProductTable(drawerbox, orderId, connection, trx);
+            await InsertDovetailDBConfig(drawerBox.Id, drawerBox.DrawerBoxOptions, connection, trx);
+            await InsertIntoProductTable(drawerBox, orderId, connection, trx);
 
             var parameters = new {
-                ProductId = drawerbox.Id,
-                drawerbox.Height,
-                drawerbox.Width,
-                drawerbox.Depth,
-                drawerbox.Note,
-                LabelFields = (IDictionary<string, string>)drawerbox.LabelFields
+                ProductId = drawerBox.Id,
+                drawerBox.Height,
+                drawerBox.Width,
+                drawerBox.Depth,
+                drawerBox.Note,
+                LabelFields = (IDictionary<string, string>)drawerBox.LabelFields
             };
 
             await connection.ExecuteAsync("""

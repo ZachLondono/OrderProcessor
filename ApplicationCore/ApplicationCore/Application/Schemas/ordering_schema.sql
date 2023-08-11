@@ -82,14 +82,20 @@ CREATE TABLE products (
 
 CREATE TABLE five_piece_door_products (
 	product_id BLOB NOT NULL,
+	width REAL NOT NULL,
+	height REAL NOT NULL,
+	top_rail REAL NOT NULL,
+	bottom_rail REAL NOT NULL,
+	left_stile REAL NOT NULL,
+	right_stile REAL NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-	FOREIGN KEY (product_id) REFERENCES five_piece_doors(id)
+	FOREIGN KEY (product_id) REFERENCES five_piece_door_configs(id)
 );
 
-CREATE TRIGGER remove_five_piece_door AFTER DELETE ON five_piece_door_products
+CREATE TRIGGER remove_five_piece_door_config AFTER DELETE ON five_piece_door_products
 BEGIN
-	DELETE FROM five_piece_doors WHERE id = OLD.product_id;
+	DELETE FROM five_piece_door_configs WHERE id = OLD.product_id;
 END;
 
 CREATE TABLE mdf_door_products (
@@ -123,12 +129,12 @@ CREATE TABLE dovetail_drawer_products (
 	label_fields TEXT NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-	FOREIGN KEY (product_id) REFERENCES drawer_box_configs(id)
+	FOREIGN KEY (product_id) REFERENCES dovetail_drawer_box_configs(id)
 );
 
 CREATE TRIGGER remove_dovetail_drawer_config AFTER DELETE ON dovetail_drawer_products
 BEGIN
-	DELETE FROM drawer_box_configs WHERE id = OLD.product_id;
+	DELETE FROM dovetail_drawer_box_configs WHERE id = OLD.product_id;
 END;
 
 CREATE TABLE doweled_drawer_products (
@@ -221,7 +227,7 @@ BEGIN
 END;
 
 -- TODO: rename to a more specific `dovetail_drawer_box_configs`
-CREATE TABLE drawer_box_configs (
+CREATE TABLE dovetail_drawer_box_configs (
 	id BLOB NOT NULL,
 	front_material TEXT NOT NULL,
 	back_material TEXT NOT NULL,
@@ -264,14 +270,8 @@ CREATE TABLE cabinet_db_configs (
 	PRIMARY KEY (id)
 );
 
-CREATE TABLE five_piece_doors (
+CREATE TABLE five_piece_door_configs (
 	id BLOB NOT NULL,
-	width REAL NOT NULL,
-	height REAL NOT NULL,
-	top_rail REAL NOT NULL,
-	bottom_rail REAL NOT NULL,
-	left_stile REAL NOT NULL,
-	right_stile REAL NOT NULL,
 	frame_thickness REAL NOT NULL,
 	panel_thickness REAL NOT NULL,
 	material TEXT NOT NULL,

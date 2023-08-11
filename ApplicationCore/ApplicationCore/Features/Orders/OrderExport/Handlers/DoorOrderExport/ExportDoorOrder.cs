@@ -34,7 +34,7 @@ public class ExportDoorOrder {
         public override async Task<Response<DoorOrderExportResult>> Handle(Command command) {
 
             var doors = command.Order.Products
-                                .Where(p => p is IDoorContainer)
+                                .Where(p => p is IMDFDoorContainer)
                                 .SelectMany(SelectDoorsFromProduct)
                                 .ToList();
 
@@ -79,7 +79,7 @@ public class ExportDoorOrder {
         private IEnumerable<MDFDoorComponent> SelectDoorsFromProduct(IProduct p) {
             try {
 
-                return ((IDoorContainer)p).GetDoors(_factory.CreateMDFDoorBuilder)
+                return ((IMDFDoorContainer)p).GetDoors(_factory.CreateMDFDoorBuilder)
                                                 .Select(d => new MDFDoorComponent() {
                                                     ProductId = p.Id,
                                                     Door = d
