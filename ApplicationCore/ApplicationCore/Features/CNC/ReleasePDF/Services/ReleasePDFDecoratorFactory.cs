@@ -7,11 +7,11 @@ using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF.Services;
 
-internal class QuestPDFWriter : IReleasePDFWriter {
+internal class ReleasePDFDecoratorFactory : IReleasePDFDecoratorFactory {
 
     private readonly PDFConfiguration _config;
 
-    public QuestPDFWriter(IOptions<PDFConfiguration> config) {
+    public ReleasePDFDecoratorFactory(IOptions<PDFConfiguration> config) {
         _config = config.Value;
     }
 
@@ -92,7 +92,7 @@ internal class QuestPDFWriter : IReleasePDFWriter {
                 MachinePrograms = programs,
                 Subtitle = $"{material.Name} - {material.Width:0.00}x{material.Length:0.00}x{material.Thickness:0.00}",
 
-                Footer = "footer",
+                TimeStamp = job.TimeStamp,
                 ImageData = imageData,
                 Parts = new Table() {
                     Title = "Parts on Sheet",
@@ -155,6 +155,7 @@ internal class QuestPDFWriter : IReleasePDFWriter {
 
         var cover = new CoverModel() {
             Title = $"{job.JobName}  [{string.Join(',', releases.Select(r => r.MachineName))}]",
+            TimeStamp = job.TimeStamp,
             Info = new Dictionary<string, string>() {
                     {"Vendor", job.VendorName },
                     {"Customer", job.CustomerName },

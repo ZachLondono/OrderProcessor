@@ -9,6 +9,6 @@ public class PageModel {
     public string Subtitle { get; init; } = string.Empty;
     public byte[] ImageData { get; init; } = Array.Empty<byte>();
     public Table Parts { get; init; } = new();
-    public string Footer { get; init; } = string.Empty;
+    public DateTime TimeStamp { get; init; } = DateTime.MinValue;
 
 }

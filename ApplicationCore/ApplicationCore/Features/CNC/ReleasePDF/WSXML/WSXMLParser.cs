@@ -13,6 +13,8 @@ internal partial class WSXMLParser {
             return null;
         }
 
+        var timestamp = new FileInfo(reportFilePath).LastWriteTime;
+
         var job = xdoc.Root.Element("Job");
         if (job is null) {
             Console.WriteLine("No job found");
@@ -73,7 +75,8 @@ internal partial class WSXMLParser {
             Items = items,
             Materials = materials,
             PartLabels = labels,
-            OperationGroups = operationGroups
+            OperationGroups = operationGroups,
+            TimeStamp = timestamp
         };
 
         return report;

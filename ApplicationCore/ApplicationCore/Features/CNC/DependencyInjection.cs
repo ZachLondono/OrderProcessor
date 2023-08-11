@@ -12,7 +12,7 @@ namespace ApplicationCore.Features.CNC;
 public static class DependencyInjection {
 
     public static IServiceCollection AddCNC(this IServiceCollection services, IConfiguration configuration) {
-        services.AddTransient<IReleasePDFWriter, QuestPDFWriter>();
+        services.AddTransient<IReleasePDFDecoratorFactory, ReleasePDFDecoratorFactory>();
         services.AddTransient<ICNCReleaseDecorator, CNCReleaseDecorator>();
         services.Configure<PDFConfiguration>(configuration.GetRequiredSection("ReleasePDFConfig"));
         services.AddTransient<ReleasePDFDialogViewModel>();

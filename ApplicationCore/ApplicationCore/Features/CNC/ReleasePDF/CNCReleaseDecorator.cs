@@ -12,10 +12,10 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
 
     private ReleasedJob? _jobData = null;
 
-    private readonly IReleasePDFWriter _pdfService;
+    private readonly IReleasePDFDecoratorFactory _pdfService;
     private readonly CNCToolBox.GetToolCarousels _getToolCarousels;
 
-    public CNCReleaseDecorator(IReleasePDFWriter pdfService, CNCToolBox.GetToolCarousels getToolCarousels) {
+    public CNCReleaseDecorator(IReleasePDFDecoratorFactory pdfService, CNCToolBox.GetToolCarousels getToolCarousels) {
         _pdfService = pdfService;
         _getToolCarousels = getToolCarousels;
     }
@@ -169,7 +169,8 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
             ReleaseDate = DateTime.Now,
             CustomerName = customerName,
             VendorName = vendorName,
-            Releases = releases
+            Releases = releases,
+            TimeStamp = report.TimeStamp
         };
 
         return releasedJob;

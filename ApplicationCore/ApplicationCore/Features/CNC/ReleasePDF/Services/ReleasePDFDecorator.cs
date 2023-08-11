@@ -54,6 +54,11 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
 
             });
 
+        page.Footer()
+            .AlignLeft()
+            .Text(summary.TimeStamp.ToString("g"))
+            .FontSize(8);
+
         page.Content().Column(c => {
 
             var titleStyle = config.TitleStyle;
@@ -199,7 +204,7 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
                 });
                 c.Item()
                 .AlignCenter()
-                .Text(DateTime.Today.ToShortDateString())
+                .Text(data.TimeStamp.ToString("g"))
                 .FontSize(10);
             });
 

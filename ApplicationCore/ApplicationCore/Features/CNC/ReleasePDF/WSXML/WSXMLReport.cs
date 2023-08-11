@@ -9,5 +9,6 @@ internal class WSXMLReport {
     public required Dictionary<string, MaterialRecord> Materials { get; set; }
     public required Dictionary<string, PartLabels> PartLabels { get; set; }
     public required IEnumerable<OperationGroups> OperationGroups { get; set; }
+    public required DateTime TimeStamp { get; set; }
 
 }
