@@ -40,7 +40,7 @@ internal class FivePieceDoorDataModel : ProductDataModelBase, IProductDataModel,
         FROM five_piece_door_products AS fpd_product
 
             JOIN products ON fpd_product.product_id = products.id
-            JOIN five_piece_doors AS config ON config.id = products.id
+            JOIN five_piece_door_configs AS config ON config.id = products.id
 
         WHERE products.order_id = @OrderId;
 

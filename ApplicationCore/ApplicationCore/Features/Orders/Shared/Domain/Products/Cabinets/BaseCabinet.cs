@@ -7,7 +7,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 
-internal class BaseCabinet : Cabinet, IDovetailDrawerBoxContainer, IDoorContainer {
+internal class BaseCabinet : Cabinet, IDovetailDrawerBoxContainer, IMDFDoorContainer {
 
     public BaseCabinetDoors Doors { get; }
     public ToeType ToeType { get; }

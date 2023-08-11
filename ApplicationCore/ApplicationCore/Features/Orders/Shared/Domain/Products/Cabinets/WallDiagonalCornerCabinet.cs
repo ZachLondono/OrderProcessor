@@ -7,7 +7,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 
-internal class WallDiagonalCornerCabinet : Cabinet, IDoorContainer {
+internal class WallDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
 
     public Dimension RightWidth { get; }
     public Dimension RightDepth { get; }

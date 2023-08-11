@@ -5,32 +5,23 @@ using CADCodeProxy.Machining;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Components;
 
-public class DoweledDrawerBox {
+public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
+    public int Qty { get; }
     public Dimension Height { get; }
     public Dimension Width { get; }
     public Dimension Depth { get; }
-    public DoweledDrawerBoxMaterial FrontMaterial { get; }
-    public DoweledDrawerBoxMaterial BackMaterial { get; }
-    public DoweledDrawerBoxMaterial SideMaterial { get; }
-    public DoweledDrawerBoxMaterial BottomMaterial { get; }
-    public bool MachineThicknessForUMSlides { get; }
-    public Dimension FrontBackHeightAdjustment { get; }
 
     // TODO: add a note property
 
-    public DoweledDrawerBox(Dimension height, Dimension width, Dimension depth,
+    public DoweledDrawerBox(int qty, Dimension height, Dimension width, Dimension depth,
                             DoweledDrawerBoxMaterial front, DoweledDrawerBoxMaterial back, DoweledDrawerBoxMaterial sides, DoweledDrawerBoxMaterial bottom,
-                            bool machineForUM, Dimension frontBackHeightAdjustment) {
+                            bool machineForUM, Dimension frontBackHeightAdjustment)
+                            : base(front, back, sides, bottom, machineForUM, frontBackHeightAdjustment) {
+        Qty = qty;
         Height = height;
         Width = width;
         Depth = depth;
-        FrontMaterial = front;
-        BackMaterial = back;
-        SideMaterial = sides;
-        BottomMaterial = bottom;
-        MachineThicknessForUMSlides = machineForUM;
-        FrontBackHeightAdjustment = frontBackHeightAdjustment;
     }
 
     public bool ContainsCNCParts() => true;

@@ -31,7 +31,7 @@ public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDovetailDr
             description += $", {DrawerBoxOptions.Accessory}";
         }
 
-        if (DrawerBoxOptions.FixedDivdersCounts is not null) {
+        if (DrawerBoxOptions.FixedDividersCounts is not null) {
             description += ", Fixed Dividers";
         }
 
@@ -43,14 +43,14 @@ public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDovetailDr
 
     }
 
-    public DovetailDrawerBoxProduct(Guid id, decimal unitPrice, int qty, string room, int productNumber, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options)
+    public DovetailDrawerBoxProduct(Guid id, decimal unitPrice, int qty, string room, int productNumber, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DovetailDrawerBoxConfig options)
                             : base(qty, productNumber, height, width, depth, note, options, labelFields) {
         Id = id;
         UnitPrice = unitPrice;
         Room = room;
     }
 
-    public static DovetailDrawerBoxProduct Create(decimal unitPrice, int qty, string room, int productNumber, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DrawerBoxOptions options) {
+    public static DovetailDrawerBoxProduct Create(decimal unitPrice, int qty, string room, int productNumber, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DovetailDrawerBoxConfig options) {
         return new(Guid.NewGuid(), unitPrice, qty, room, productNumber, height, width, depth, note, labelFields, options);
     }
 

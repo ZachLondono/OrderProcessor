@@ -583,7 +583,7 @@ public class ClosetProPartMapper {
             unitPrice = 0M;
         }
         string room = GetRoomName(part);
-        string materialName = DrawerBoxOptions.FINGER_JOINT_BIRCH;
+        string materialName = DovetailDrawerBoxConfig.FINGER_JOINT_BIRCH;
         string bottomMaterial = "1/4\" Ply";
         string clips = "Blum";
         string accessory = "None";

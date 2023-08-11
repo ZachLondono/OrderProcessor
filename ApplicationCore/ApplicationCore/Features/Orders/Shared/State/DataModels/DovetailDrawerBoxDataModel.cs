@@ -59,14 +59,14 @@ internal class DovetailDrawerBoxDataModel : ProductDataModelBase, IProductDataMo
             FROM dovetail_drawer_products AS db_product
 
             	JOIN products ON db_product.product_id = products.id
-            	JOIN drawer_box_configs AS db_config ON db_config.id = products.id
+            	JOIN dovetail_drawer_box_configs AS db_config ON db_config.id = products.id
 
             WHERE products.order_id = @OrderId;
             """;
 
     public IProduct MapToProduct() {
 
-        var options = new DrawerBoxOptions(FrontMaterial, BackMaterial, SideMaterial, BottomMaterial, Clips, Notches, Accessory, Logo, PostFinish, ScoopFront, FaceMountingHoles, Assembled, null, null);
+        var options = new DovetailDrawerBoxConfig(FrontMaterial, BackMaterial, SideMaterial, BottomMaterial, Clips, Notches, Accessory, Logo, PostFinish, ScoopFront, FaceMountingHoles, Assembled, null, null);
 
         return new DovetailDrawerBoxProduct(Id, UnitPrice, Qty, Room, ProductNumber, Height, Width, Depth, Note, LabelFields.AsReadOnly(), options);
 

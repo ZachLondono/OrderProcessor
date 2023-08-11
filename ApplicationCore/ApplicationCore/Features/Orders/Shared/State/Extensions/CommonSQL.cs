@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Components;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using Dapper;
@@ -144,16 +143,10 @@ public partial class InsertOrder {
 
         }
 
-        private static async Task InsertFivePieceDoor(Guid id, FivePieceDoor door, IDbConnection connection, IDbTransaction trx) {
+        private static async Task InsertFivePieceDoorConfig(Guid id, FivePieceDoorConfig door, IDbConnection connection, IDbTransaction trx) {
 
             var parameters = new {
                 Id = id,
-                door.Width,
-                door.Height,
-                door.FrameSize.TopRail,
-                door.FrameSize.BottomRail,
-                door.FrameSize.LeftStile,
-                door.FrameSize.RightStile,
                 door.FrameThickness,
                 door.PanelThickness,
                 door.Material
@@ -161,25 +154,13 @@ public partial class InsertOrder {
 
             await connection.ExecuteAsync(
                 """
-                INSERT INTO five_piece_doors
+                INSERT INTO five_piece_door_configs
                     (id,
-                    width,
-                    height,
-                    top_rail,
-                    bottom_rail,
-                    left_stile,
-                    right_stile,
                     frame_thickness,
                     panel_thickness,
                     material)
                 VALUES
                     (@Id,
-                    @Width,
-                    @Height,
-                    @TopRail,
-                    @BottomRail,
-                    @LeftStile,
-                    @RightStile,
                     @FrameThickness,
                     @PanelThickness,
                     @Material);
@@ -209,27 +190,27 @@ public partial class InsertOrder {
 
         }
 
-        private static async Task InsertDBConfig(Guid id, DrawerBoxOptions dbOptions, IDbConnection connection, IDbTransaction trx) {
+        private static async Task InsertDovetailDBConfig(Guid id, DovetailDrawerBoxConfig dbConfig, IDbConnection connection, IDbTransaction trx) {
 
             var parameters = new {
                 Id = id,
-                dbOptions.FrontMaterial,
-                dbOptions.BackMaterial,
-                dbOptions.SideMaterial,
-                dbOptions.BottomMaterial,
-                dbOptions.Clips,
-                dbOptions.Notches,
-                dbOptions.Accessory,
-                dbOptions.Logo,
-                dbOptions.PostFinish,
-                dbOptions.ScoopFront,
-                dbOptions.FaceMountingHoles,
-                dbOptions.Assembled,
+                dbConfig.FrontMaterial,
+                dbConfig.BackMaterial,
+                dbConfig.SideMaterial,
+                dbConfig.BottomMaterial,
+                dbConfig.Clips,
+                dbConfig.Notches,
+                dbConfig.Accessory,
+                dbConfig.Logo,
+                dbConfig.PostFinish,
+                dbConfig.ScoopFront,
+                dbConfig.FaceMountingHoles,
+                dbConfig.Assembled,
             };
 
             await connection.ExecuteAsync(
                 """
-                INSERT INTO drawer_box_configs
+                INSERT INTO dovetail_drawer_box_configs
                     (id,
                     front_material,
                     back_material,
@@ -261,24 +242,24 @@ public partial class InsertOrder {
 
         }
 
-        private static async Task InsertDoweledDB(Guid id, DoweledDrawerBox drawerBox, IDbConnection connection, IDbTransaction trx) {
+        private static async Task InsertDoweledDBConfig(Guid id, DoweledDrawerBoxConfig dbConfig, IDbConnection connection, IDbTransaction trx) {
 
             var parameters = new {
                 Id = id,
-                FrontMatName = drawerBox.FrontMaterial.Name,
-                FrontMatThickness = drawerBox.FrontMaterial.Thickness,
-                FrontMatGraining = drawerBox.FrontMaterial.IsGrained,
-                BackMatName = drawerBox.BackMaterial.Name,
-                BackMatThickness = drawerBox.BackMaterial.Thickness,
-                BackMatGraining = drawerBox.BackMaterial.IsGrained,
-                SideMatName = drawerBox.SideMaterial.Name,
-                SideMatThickness = drawerBox.SideMaterial.Thickness,
-                SideMatGraining = drawerBox.SideMaterial.IsGrained,
-                BottomMatName = drawerBox.BottomMaterial.Name,
-                BottomMatThickness = drawerBox.BottomMaterial.Thickness,
-                BottomMatGraining = drawerBox.BottomMaterial.IsGrained,
-                MachineThicknessForUM = drawerBox.MachineThicknessForUMSlides,
-                FrontBackHeightAdjustment = drawerBox.FrontBackHeightAdjustment
+                FrontMatName = dbConfig.FrontMaterial.Name,
+                FrontMatThickness = dbConfig.FrontMaterial.Thickness,
+                FrontMatGraining = dbConfig.FrontMaterial.IsGrained,
+                BackMatName = dbConfig.BackMaterial.Name,
+                BackMatThickness = dbConfig.BackMaterial.Thickness,
+                BackMatGraining = dbConfig.BackMaterial.IsGrained,
+                SideMatName = dbConfig.SideMaterial.Name,
+                SideMatThickness = dbConfig.SideMaterial.Thickness,
+                SideMatGraining = dbConfig.SideMaterial.IsGrained,
+                BottomMatName = dbConfig.BottomMaterial.Name,
+                BottomMatThickness = dbConfig.BottomMaterial.Thickness,
+                BottomMatGraining = dbConfig.BottomMaterial.IsGrained,
+                MachineThicknessForUM = dbConfig.MachineThicknessForUMSlides,
+                FrontBackHeightAdjustment = dbConfig.FrontBackHeightAdjustment
             };
 
             await connection.ExecuteAsync(
