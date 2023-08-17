@@ -105,7 +105,8 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                                                                     PartId = nestPart.partId,
                                                                                                     ImageData = label.Fields.GetValueOrEmpty("Machining Picture"),
                                                                                                     HasFace6 = part.Variables.ContainsKey("Face6FileName"),
-                                                                                                    Face6FileName = part.Variables.ContainsKey("Face6FileName") ? part.Variables["Face6FileName"] : null
+                                                                                                    Face6FileName = part.Variables.ContainsKey("Face6FileName") ? part.Variables["Face6FileName"] : null,
+                                                                                                    HasBackSideProgram = label.Fields.GetValueOrEmpty("HasBackSideProgram") == "Y"
                                                                                                 };
                                                                                             })
                                                                                             .ToList()

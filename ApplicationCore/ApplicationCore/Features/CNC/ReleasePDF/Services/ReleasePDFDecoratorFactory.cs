@@ -63,6 +63,7 @@ internal class ReleasePDFDecoratorFactory {
                                     .GroupBy(p => p.PartId);
 
             bool containsFace6 = face6FileNames.Any();
+            bool containsBackSideProgram = partGroups.Any(group => group.Any(part => part.HasBackSideProgram));
 
             var partsTableContent = new List<Dictionary<string, string>>();
             foreach (var group in partGroups) {
@@ -77,6 +78,7 @@ internal class ReleasePDFDecoratorFactory {
                         { "File Name", part.FileName }
                     };
                 if (containsFace6) fields.Add("Face 6", part.Face6FileName ?? "");
+                if (containsBackSideProgram) fields.Add("Back Side", part.HasBackSideProgram ? "Y" : "");
                 partsTableContent.Add(fields);
             }
 

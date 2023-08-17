@@ -18,5 +18,6 @@ public class NestedPart {
     public Guid ProductId { get; init; } = Guid.Empty;
     public string PartId { get; init; } = string.Empty;
     public bool IsRotated { get; init; } = false;
+    public bool HasBackSideProgram { get; init; } = false;
 
 }
