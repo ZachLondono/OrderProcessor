@@ -111,7 +111,10 @@ internal class ReleasePDFDecoratorFactory {
 
         if (!releases.Any()) return new();
 
-        var usedmaterials = releases.First().Programs.Select(p => p.Material).GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained));
+        var usedmaterials = releases.First()
+                                    .Programs
+                                    .Select(p => p.Material)
+                                    .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained));
         var materialTableContent = new List<Dictionary<string, string>>();
         foreach (var mat in usedmaterials) {
             materialTableContent.Add(new() {
@@ -128,7 +131,10 @@ internal class ReleasePDFDecoratorFactory {
             Content = materialTableContent
         };
 
-        var releasedparts = releases.First().SinglePrograms.OrderBy(p => p.ProductNumber).GroupBy(p => p.PartId);
+        var releasedparts = releases.First()
+                                    .SinglePrograms
+                                    .OrderBy(p => p.ProductNumber)
+                                    .GroupBy(p => p.PartId);
         var partsTableContent = new List<Dictionary<string, string>>();
         foreach (var group in releasedparts) {
             var part = group.First();
@@ -148,10 +154,22 @@ internal class ReleasePDFDecoratorFactory {
 
         var toolTables = CreateToolTables(releases);
 
+        // TODO: this might not work right with cabinets or other products that have multiple parts
+        var twoSidedPartGroups = releases.First()
+                                        .SinglePrograms
+                                        .GroupBy(part => part.ProductNumber)
+                                        .Where(group => group.Count() == 2)
+                                        .Where(group => group.Any(p => p.HasBackSideProgram))
+                                        .Select(group => group.ToArray());
+        var backSideMachiningTable = CreateBackSideMachiningTable(twoSidedPartGroups);
+
         var tables = new List<Table>();
         tables.AddRange(toolTables);
         tables.Add(materialTable);
         tables.Add(partsTable);
+        if (backSideMachiningTable != null) {
+            tables.Add(backSideMachiningTable);
+        }
 
         var cover = new CoverModel() {
             Title = $"{job.JobName}  [{string.Join(',', releases.Select(r => r.MachineName))}]",
@@ -202,6 +220,36 @@ internal class ReleasePDFDecoratorFactory {
         }
 
         return toolTables;
+
+    }
+
+    private static Table? CreateBackSideMachiningTable(IEnumerable<SinglePartProgram[]> twoSidedParts) {
+
+        if (!twoSidedParts.Any()) return null;
+
+        List<Dictionary<string, string>> content = new();
+
+        twoSidedParts.ForEach(group => {
+
+            if (group.Length != 2) {
+                return;
+            }
+
+            var sideA = group[0];
+            var sideB = group[1];
+
+            content.Add(new() {
+                { "#", sideA.ProductNumber },
+                { "SideA", sideA.FileName },
+                { "SideB", sideB.FileName }
+            });
+
+        });
+
+        return new Table() {
+            Title = "Back Side Machining",
+            Content = content
+        };
 
     }
 

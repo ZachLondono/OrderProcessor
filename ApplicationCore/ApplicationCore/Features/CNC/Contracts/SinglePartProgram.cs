@@ -11,5 +11,6 @@ public class SinglePartProgram {
     public string Description { get; init; } = string.Empty;
     public string PartId { get; init; } = string.Empty;
     public string ProductNumber { get; init; } = string.Empty;
+    public bool HasBackSideProgram { get; init; } = false;
 
 }

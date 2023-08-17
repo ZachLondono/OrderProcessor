@@ -129,6 +129,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                             Description = part.Description,
                                                             PartId = part.Id,
                                                             ProductNumber = label.Fields.GetValueOrEmpty("Cabinet Number"),
+                                                            HasBackSideProgram = label.Fields.GetValueOrEmpty("HasBackSideProgram") == "Y"
                                                         };
                                                     })
                                  );
