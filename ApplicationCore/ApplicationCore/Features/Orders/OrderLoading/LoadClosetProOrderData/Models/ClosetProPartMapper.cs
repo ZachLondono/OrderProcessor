@@ -372,6 +372,7 @@ public class ClosetProPartMapper {
         Dictionary<string, string> parameters = new();
 
         string sku;
+        // TODO: When the right and left sides of a corner shelf are not same length the notch should go on the longer side to give it extra support.
         if (part.ExportName == "L Adj Shelf") {
 
             var dimensions = ParseCornerShelfDimensions(part.CornerShelfSizes);
@@ -587,7 +588,7 @@ public class ClosetProPartMapper {
         string bottomMaterial = "1/4\" Ply";
         string clips = "Blum";
         string accessory = "None";
-        bool scoopFront = part.PartName == "Scoop Front Box";
+        bool scoopFront = part.ExportName == "Scoop Front Box";
 
         return _factory.CreateDovetailDrawerBoxBuilder()
             .WithOptions(new(materialName, materialName, materialName, bottomMaterial, clips, notch, accessory, LogoPosition.None, scoopFront: scoopFront))
