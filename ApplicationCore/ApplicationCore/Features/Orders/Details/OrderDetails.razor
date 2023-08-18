@@ -1,6 +1,7 @@
 ﻿@using ApplicationCore.Features.Companies.Contracts;
 @using ApplicationCore.Features.Orders.Details;
 @using ApplicationCore.Features.Orders.Details.ProductTables
+@using ApplicationCore.Features.Orders.Details.WorkingDirectory
 @using ApplicationCore.Features.Orders.OrderExport;
 @using ApplicationCore.Features.Orders.Shared.Domain
 @using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
@@ -82,12 +83,11 @@
 
     <section class="mt-10" id="editSection">
         <div>
-            <label for="note" class="mr-3">Note</label>
             <Button OnClickAsync="@SaveChangesAsync" Size="ButtonSize.XSmall" Style="ButtonStyle.Text" Disabled="!OrderState.IsDirty">Save</Button>
         </div>
+        <label for="note">Note</label>
         <textarea id="note" placeholder="Order Note..." class="w-full" @oninput="OnNoteChanged">@_note</textarea>
-        <label for="wd">Working Directory</label>
-        <input type="text" id="wd" placeholder="C:/" class="input-text w-full" @oninput="OnWorkingDirectoryChanged" value="@_workingDirectory" />
+        <WorkingDirectoryWidget WorkingDirectory="@OrderState.Order.WorkingDirectory" OnWorkingDirectoryChanged="StateHasChanged" />
     </section>
 
     <section class="mt-10" id="shipping">

@@ -17,7 +17,6 @@ public partial class OrderDetails {
     public List<Room> Rooms { get; set; } = new();
 
     private string _note = string.Empty;
-    private string _workingDirectory = string.Empty;
     private string? _customerName = null;
     private string? _vendorName = null;
 
@@ -34,7 +33,6 @@ public partial class OrderDetails {
         _customerName = customer?.Name ?? "";
 
         _note = OrderState.Order.Note;
-        _workingDirectory = OrderState.Order.WorkingDirectory;
 
         Rooms = OrderState.Order
                     .Products
@@ -72,11 +70,6 @@ public partial class OrderDetails {
     private void OnNoteChanged(ChangeEventArgs args) {
         _note = args.Value?.ToString() ?? "";
         OrderState.SetNote(_note);
-    }
-
-    private void OnWorkingDirectoryChanged(ChangeEventArgs args) {
-        _workingDirectory = args.Value?.ToString() ?? "";
-        OrderState.SetWorkingDirectory(_workingDirectory);
     }
 
     private async Task SaveRoomNameChange(Room room) {

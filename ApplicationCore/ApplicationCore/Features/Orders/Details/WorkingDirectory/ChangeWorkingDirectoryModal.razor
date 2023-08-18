@@ -1,0 +1,92 @@
+﻿@using ApplicationCore.Features.Orders.Shared.State;
+@using ApplicationCore.Features.Orders.WorkingDirectory;
+@using ApplicationCore.Infrastructure.Bus;
+@using ApplicationCore.Shared.Components
+@using static ApplicationCore.Shared.Components.Button;
+@inject IBus Bus
+@inject OrderState OrderState
+
+<EditForm Model="@_model" OnSubmit="@UpdateWorkingDirectory" >
+
+    @if (_error is not null) {
+        <div>
+            <h3>@_error.Title</h3>
+            <p>@_error.Details</p>
+        </div>
+    }
+
+    <label>
+        New Directory
+        <InputText @bind-Value="_model.NewDirectory" class="input-text w-full"/>
+    </label>
+
+    <div>
+        <InputCheckbox @bind-Value="_model.CopyExistingFiles" />
+        <label>
+            Copy Files From Existing Working Directory
+        </label>
+    </div>
+
+    <div>
+        <InputCheckbox @bind-Value="_model.DeleteExistingFiles" />
+        <label>
+            Delete Files in Existing Working Directory
+        </label>
+    </div>
+
+    <Button type="submit" Color="ButtonColor.Primary">Update</Button>
+    <Button Color="ButtonColor.Secondary" OnClickAsync="Cancel">Cancel</Button>
+
+</EditForm>
+
+@code {
+
+    [CascadingParameter]
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    private EditModel _model = new();
+    private Error? _error = null;
+
+    protected override void OnInitialized() {
+
+        if (OrderState.Order is null) {
+
+            _error = new() {
+                Title = "No Order Found",
+                Details = "There is no order set to update."
+            };
+
+            return;
+
+        }
+
+        _model.NewDirectory = OrderState.Order.WorkingDirectory;
+
+    }
+
+    private async Task UpdateWorkingDirectory() {
+
+        if (OrderState.Order is null) {
+            return;
+        }
+
+        bool wasMigrateSuccessful = true;
+        if (_model.CopyExistingFiles || _model.DeleteExistingFiles) {
+            var result = await Bus.Send(new MigrateWorkingDirectory.Command(OrderState.Order.WorkingDirectory, _model.NewDirectory, _model.CopyExistingFiles, _model.DeleteExistingFiles));
+            if (result.IsError) {
+                result.OnError(error => _error = error);
+                wasMigrateSuccessful = false;
+            }
+        }
+
+        OrderState.SetWorkingDirectory(_model.NewDirectory);
+
+        if (wasMigrateSuccessful) {
+            await BlazoredModal.CloseAsync();
+        }
+
+    }
+
+    private Task Cancel() => BlazoredModal.CancelAsync();
+
+}
