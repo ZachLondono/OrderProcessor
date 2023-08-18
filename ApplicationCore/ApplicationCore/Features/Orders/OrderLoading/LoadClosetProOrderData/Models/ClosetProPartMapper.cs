@@ -657,7 +657,8 @@ public class ClosetProPartMapper {
 
         string sku = "NL1";
         Dimension length = Dimension.FromInches(part.Height);
-        Dimension width = Dimension.FromInches(part.Depth);
+        // TODO: make nailer depth a changeable setting
+        Dimension width = Dimension.FromInches(4);
 
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
 
