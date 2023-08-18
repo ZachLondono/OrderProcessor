@@ -42,7 +42,8 @@ public class ClosetProPartMapper {
             { "Dovetail Undermount", CreateDovetailDrawerBox },
             { "Scoop Front Box", CreateDovetailDrawerBox },
             { "Zargen", CreateZargenDrawerBox },
-            { "Slab", CreateSlabFront }
+            { "Slab", CreateSlabFront },
+            { "Filler Panel", CreateFillerPanel }
         };
 
         FrontHardwareSpreads = new();
@@ -639,6 +640,26 @@ public class ClosetProPartMapper {
         }
 
         return dimensions;
+
+    }
+
+    public static IProduct CreateFillerPanel(Part part) {
+
+        if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
+            unitPrice = 0M;
+        }
+        string room = GetRoomName(part);
+        ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
+        ClosetPaint? paint = null;
+        string edgeBandingColor = part.Color;
+        string comment = "";
+        Dictionary<string, string> parameters = new();
+
+        string sku = "NL1";
+        Dimension length = Dimension.FromInches(part.Height);
+        Dimension width = Dimension.FromInches(part.Depth);
+
+        return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
 
     }
 
