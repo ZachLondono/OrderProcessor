@@ -16,6 +16,7 @@ using ApplicationCore.Features.Orders.Delete;
 using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Features.Orders.CustomerOrderNumber;
+using ApplicationCore.Features.Orders.WorkingDirectory;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -31,6 +32,8 @@ public static class DependencyInjection {
         services.AddSingleton<ProductBuilderFactory>();
         services.AddSingleton<ComponentBuilderFactory>();
         services.AddSingleton<OrderState>();
+
+        services.AddTransient<IFileHandler, FileHandler>();
 
         AddReleaseServices(services);
         AddExportServices(services, configuration);
