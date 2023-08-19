@@ -15,6 +15,7 @@ using MimeKit;
 using QuestPDF.Fluent;
 using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Options;
+using UglyToad.PdfPig.Writer;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -136,13 +137,13 @@ public class ReleaseService {
 
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
-            filePaths = GeneratePDF(directories, decorators, filename, customerName);
+            filePaths = await GeneratePDFAsync(directories, decorators, filename, customerName, configuration.AttachAdditionalFiles ? configuration.AdditionalFilePaths : Enumerable.Empty<string>());
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate release PDF - '{ex.Message}'");
             _logger.LogError(ex, "Exception thrown while trying to generate release pdf");
         }
 
-        if ((filePaths.Any() || configuration.AttachAdditionalFiles) && configuration.SendReleaseEmail && configuration.ReleaseEmailRecipients is string recipients) {
+        if (filePaths.Any() && configuration.SendReleaseEmail && configuration.ReleaseEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending release email");
             try {
 
@@ -155,7 +156,9 @@ public class ReleaseService {
                 string body = GenerateEmailBody(configuration.IncludeSummaryInEmailBody, releases, orderNotes);
 
                 List<string> attachments = new() { filePaths.First() };
-                attachments.AddRange(configuration.AdditionalFilePaths);
+                if (configuration.AttachAdditionalFiles) {
+                    attachments.AddRange(configuration.AdditionalFilePaths);
+                }
 
                 await SendEmailAsync(recipients, $"RELEASED: {orderNumbers} {customerName}", body, attachments);
 
@@ -291,7 +294,7 @@ public class ReleaseService {
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
             var decorator = await _invoiceDecoratorFactory.CreateDecorator(order);
-            filePaths = GeneratePDF(invoiceDirectories, new IDocumentDecorator[] { decorator }, filename, customerName, isTemp);
+            filePaths = await GeneratePDFAsync(invoiceDirectories, new IDocumentDecorator[] { decorator }, filename, customerName, Enumerable.Empty<string>(), isTemp);
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate invoice PDF - '{ex.Message}'");
             _logger.LogError(ex, "Exception thrown while trying to generate invoice pdf");
@@ -359,9 +362,7 @@ public class ReleaseService {
 
     }
 
-    private IEnumerable<string> GeneratePDF(IEnumerable<string> outputDirs, IEnumerable<IDocumentDecorator> decorators, string name, string customerName, bool isTemp = false) {
-
-        // TODO: merge 'attached' pdf files (maybe use (PdfPig)[https://github.com/UglyToad/PdfPig])
+    private async Task<IEnumerable<string>> GeneratePDFAsync(IEnumerable<string> outputDirs, IEnumerable<IDocumentDecorator> decorators, string name, string customerName, IEnumerable<string> attachedFiles, bool isTemp = false) {
 
         if (!decorators.Any()) {
             OnError?.Invoke($"There are no pages to add to the '{name}' document");
@@ -382,11 +383,24 @@ public class ReleaseService {
 
         List<string> files = new();
 
+        var documentBytes = document.GeneratePdf();
+        if (attachedFiles.Any()) {
+
+            List<byte[]> documents = new() {
+                documentBytes
+            };
+
+            foreach (var file in attachedFiles) {
+                documents.Add(await File.ReadAllBytesAsync(file));
+            }
+
+            documentBytes = PdfMerger.Merge(documents);
+
+        }
+
         foreach (var outputDir in outputDirs) {
 
             string directory = ReplaceTokensInDirectory(customerName, outputDir);
-
-            //string directory = Path.Combine(dir, _fileReader.RemoveInvalidPathCharacters($"{order.Number} {order.Name}"));
 
             try {
 
@@ -395,7 +409,7 @@ public class ReleaseService {
                 }
 
                 var filePath = _fileReader.GetAvailableFileName(directory, name, ".pdf");
-                document.GeneratePdf(filePath);
+                await File.WriteAllBytesAsync(filePath, documentBytes);
                 files.Add(filePath);
 
                 if (!isTemp) {
