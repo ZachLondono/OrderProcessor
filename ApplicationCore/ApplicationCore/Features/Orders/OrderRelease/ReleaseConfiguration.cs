@@ -2,6 +2,8 @@
 
 public class ReleaseConfiguration {
 
+    public List<string> AdditionalFilePaths { get; set; } = new();
+    public bool AttachAdditionalFiles { get; set; } = false;
     public List<string> CNCDataFilePaths { get; set; } = new();
     public bool GenerateCNCRelease { get; set; }
     public bool CopyCNCReportToWorkingDirectory { get; set; }

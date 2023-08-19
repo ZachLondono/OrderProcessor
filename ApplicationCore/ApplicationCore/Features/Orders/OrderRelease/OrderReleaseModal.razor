@@ -81,6 +81,29 @@
                     </div>
                 }
             }
+ 
+            <br />
+            
+            <CheckBox @bind-IsChecked="DataContext.Configuration.AttachAdditionalFiles">
+                <span class="text-gray-700">Additional Files</span>
+            </CheckBox>
+            @if (DataContext.Configuration.AttachAdditionalFiles) {
+                     <div class="mt-3 ml-3">
+                        <div>
+                            <Button OnClick="ChooseAdditionalFile" Color="ButtonColor.Secondary">+ Add File</Button>
+                        </div>
+
+                        @if (DataContext.Configuration.AdditionalFilePaths.Any()) {
+                            foreach (var file in DataContext.Configuration.AdditionalFilePaths) {
+                                <div class="text-sm">
+                                    <Button OnClick="@(() => RemoveAdditionalFile(file))">X</Button>@TruncateString(file)
+                                </div>
+                            }
+                        } else {
+                            <div class="text-sm">No File Selected</div>
+                        }
+                    </div>                           
+            }
 
             @if (DataContext.Configuration.GenerateJobSummary || DataContext.Configuration.GeneratePackingList || DataContext.Configuration.GenerateCNCRelease) {
 

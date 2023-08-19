@@ -142,9 +142,10 @@ public class ReleaseService {
             _logger.LogError(ex, "Exception thrown while trying to generate release pdf");
         }
 
-        if (filePaths.Any() && configuration.SendReleaseEmail && configuration.ReleaseEmailRecipients is string recipients) {
+        if ((filePaths.Any() || configuration.AttachAdditionalFiles) && configuration.SendReleaseEmail && configuration.ReleaseEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending release email");
             try {
+
                 bool multipleOrders = orders.Count > 1;
                 string orderNotes = string.Join(
                                         ';',
@@ -152,7 +153,12 @@ public class ReleaseService {
                                                 .Select(o => $"{(multipleOrders ? $"{o.Number}:" : "")}{o.Note}")
                                     );
                 string body = GenerateEmailBody(configuration.IncludeSummaryInEmailBody, releases, orderNotes);
-                await SendEmailAsync(recipients, $"RELEASED: {orderNumbers} {customerName}", body, new string[] { filePaths.First() });
+
+                List<string> attachments = new() { filePaths.First() };
+                attachments.AddRange(configuration.AdditionalFilePaths);
+
+                await SendEmailAsync(recipients, $"RELEASED: {orderNumbers} {customerName}", body, attachments);
+
             } catch (Exception ex) {
                 OnError?.Invoke($"Could not send email - '{ex.Message}'");
                 _logger.LogError(ex, "Exception thrown while trying to send release email");
@@ -355,6 +361,8 @@ public class ReleaseService {
 
     private IEnumerable<string> GeneratePDF(IEnumerable<string> outputDirs, IEnumerable<IDocumentDecorator> decorators, string name, string customerName, bool isTemp = false) {
 
+        // TODO: merge 'attached' pdf files (maybe use (PdfPig)[https://github.com/UglyToad/PdfPig])
+
         if (!decorators.Any()) {
             OnError?.Invoke($"There are no pages to add to the '{name}' document");
             return Enumerable.Empty<string>();
@@ -371,6 +379,8 @@ public class ReleaseService {
             }
 
         });
+
+        Document.Merge(document);
 
         List<string> files = new();
 

@@ -28,6 +28,22 @@ public partial class OrderReleaseModal {
         await DataContext.LoadConfiguration(Orders);
 
     }
+    
+    private void RemoveAdditionalFile(string filePath) {
+        DataContext.Configuration.AdditionalFilePaths.Remove(filePath);
+        StateHasChanged();
+    }
+
+    private void ChooseAdditionalFile()
+        => FilePicker.PickFiles(new() {
+            Title = "Select Additional File to Attach",
+            InitialDirectory = Orders.FirstOrDefault()?.WorkingDirectory ?? "C:/",
+            Filter = new("PDF File", "pdf")
+        }, (fileNames) => {
+            DataContext.Configuration.AdditionalFilePaths.AddRange(fileNames);
+            InvokeAsync(StateHasChanged);
+        });
+
 
     private void RemoveCNCDataFile(string filePath) {
         DataContext.Configuration.CNCDataFilePaths.Remove(filePath);
