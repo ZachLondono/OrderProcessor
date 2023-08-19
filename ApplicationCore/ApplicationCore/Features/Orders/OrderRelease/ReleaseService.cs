@@ -380,8 +380,6 @@ public class ReleaseService {
 
         });
 
-        Document.Merge(document);
-
         List<string> files = new();
 
         foreach (var outputDir in outputDirs) {
