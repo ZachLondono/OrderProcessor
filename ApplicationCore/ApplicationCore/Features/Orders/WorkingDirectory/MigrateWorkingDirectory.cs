@@ -9,6 +9,8 @@ internal class MigrateWorkingDirectory {
 
     public class Handler : CommandHandler<Command> {
 
+        public const int MAX_FILES = 10;
+
         private readonly IFileHandler _fileHandler;
 
         public Handler(IFileHandler fileHandler) {
@@ -19,6 +21,10 @@ internal class MigrateWorkingDirectory {
 
             if (!_fileHandler.DirectoryExists(command.NewWorkingDirectory)) {
                 _fileHandler.CreateDirectory(command.NewWorkingDirectory);
+            }
+
+            if (command.MigrationType == MigrationType.None) {
+                return Response.Success();
             }
 
             if (_fileHandler.DirectoryExists(command.OldWorkingDirectory)) {
@@ -32,7 +38,7 @@ internal class MigrateWorkingDirectory {
 
                 var files = _fileHandler.GetFiles(command.OldWorkingDirectory, "*", SearchOption.TopDirectoryOnly);
 
-                if (files.Length > 10) {
+                if (files.Length > MAX_FILES) {
                     return Response.Error(new() {
                         Title = "Refused to Migrate Directories",
                         Details = "Existing directory contains too many files, please migrate directories manually."
@@ -60,8 +66,6 @@ internal class MigrateWorkingDirectory {
                 });
 
             }
-
-
 
         }
 

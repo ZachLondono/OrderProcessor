@@ -21,17 +21,13 @@
     </label>
 
     <div>
-        <InputCheckbox @bind-Value="_model.CopyExistingFiles" />
-        <label>
-            Copy Files From Existing Working Directory
-        </label>
-    </div>
-
-    <div>
-        <InputCheckbox @bind-Value="_model.DeleteExistingFiles" />
-        <label>
-            Delete Files in Existing Working Directory
-        </label>
+        Migration Mode
+        <InputSelect @bind-Value="_model.Mode">
+            <option>None</option>
+            <option>Copy</option>
+            <option>Move</option>
+            <option>Delete</option>
+        </InputSelect>
     </div>
 
     <Button type="submit" Color="ButtonColor.Primary">Update</Button>
@@ -71,8 +67,8 @@
         }
 
         bool wasMigrateSuccessful = true;
-        if (_model.CopyExistingFiles || _model.DeleteExistingFiles) {
-            var result = await Bus.Send(new MigrateWorkingDirectory.Command(OrderState.Order.WorkingDirectory, _model.NewDirectory, _model.CopyExistingFiles, _model.DeleteExistingFiles));
+        if (_model.Mode != MigrationType.None) {
+            var result = await Bus.Send(new MigrateWorkingDirectory.Command(OrderState.Order.WorkingDirectory, _model.NewDirectory, _model.Mode));
             if (result.IsError) {
                 result.OnError(error => _error = error);
                 wasMigrateSuccessful = false;
