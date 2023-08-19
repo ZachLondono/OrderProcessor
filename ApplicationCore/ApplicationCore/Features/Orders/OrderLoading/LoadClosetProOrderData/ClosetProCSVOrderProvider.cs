@@ -47,7 +47,17 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
     public record FrontHardware(string Name, Dimension Spread);
 
-    public async Task<OrderData?> LoadOrderData(string source) {
+    public async Task<OrderData?> LoadOrderData(string data) {
+
+        var parts = data.Split('*');
+
+        if (parts.Length != 3) {
+            throw new InvalidOperationException("Invalid data source");
+        }
+
+        string source = parts[0];
+        string? customOrderNumber = string.IsNullOrWhiteSpace(parts[1]) ? null : parts[1];
+        string? customWorkingDirectoryRoot = string.IsNullOrWhiteSpace(parts[2]) ? null : parts[2];
 
         var csvData = await GetCSVDataFromSourceAsync(source);
 
@@ -73,12 +83,22 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         additionalItems.AddRange(_partMapper.MapBuyOutPartsToItems(info.BuyOutParts));
         List<IProduct> products = _partMapper.MapPartsToProducts(info.Parts);
 
-        string? customerWorkingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customer.Id);
-        var orderNumber = await GetNextOrderNumber(customer.Id);
-        string workingDirectory = CreateWorkingDirectory(source, info, orderNumber, customerWorkingDirectoryRoot);
+        string orderNumber;
+        if (customOrderNumber is null && string.IsNullOrWhiteSpace(customOrderNumber)) {
+            orderNumber = await GetNextOrderNumber(customer.Id);
+            var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync(customer.Id) ?? throw new InvalidOperationException("Could not get customer data");
+            orderNumber = $"{orderNumberPrefix}{orderNumber}";
+        } else {
+            orderNumber = customOrderNumber;
+        }
 
-        var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync(customer.Id) ?? throw new InvalidOperationException("Could not get customer data");
-        orderNumber = $"{orderNumberPrefix}{orderNumber}";
+        string? workingDirectoryRoot;
+        if (customWorkingDirectoryRoot is null) {
+            workingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customer.Id);
+        } else {
+            workingDirectoryRoot = customWorkingDirectoryRoot;
+        }
+        string workingDirectory = CreateWorkingDirectory(source, info, orderNumber, workingDirectoryRoot);
 
         return new OrderData() {
             VendorId = vendorId,
