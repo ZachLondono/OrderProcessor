@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.CNC.Contracts;
+using ApplicationCore.Features.CNC.ReleaseEmail;
 using ApplicationCore.Features.Companies.Contracts;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.Invoice;
@@ -30,20 +31,22 @@ public class ReleaseService {
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly IEmailService _emailService;
+    private readonly ReleaseEmailBodyGenerator _emailBodyGenerator;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService) {
-        _fileReader = fileReader;
-        _invoiceDecoratorFactory = invoiceDecoratorFactory;
-        _packingListDecoratorFactory = packingListDecoratorFactory;
-        _cncReleaseDecoratorFactory = cncReleaseDecoratorFactory;
-        _jobSummaryDecoratorFactory = jobSummaryDecoratorFactory;
-        _logger = logger;
-        _getCustomerByIdAsync = getCustomerByIdAsync;
-        _getVendorByIdAsync = getVendorByIdAsync;
-        _emailService = emailService;
-    }
+	public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, ReleaseEmailBodyGenerator emailBodyGenerator) {
+		_fileReader = fileReader;
+		_invoiceDecoratorFactory = invoiceDecoratorFactory;
+		_packingListDecoratorFactory = packingListDecoratorFactory;
+		_cncReleaseDecoratorFactory = cncReleaseDecoratorFactory;
+		_jobSummaryDecoratorFactory = jobSummaryDecoratorFactory;
+		_logger = logger;
+		_getCustomerByIdAsync = getCustomerByIdAsync;
+		_getVendorByIdAsync = getVendorByIdAsync;
+		_emailService = emailService;
+		_emailBodyGenerator = emailBodyGenerator;
+	}
 
-    public async Task Release(List<Order> orders, ReleaseConfiguration configuration) {
+	public async Task Release(List<Order> orders, ReleaseConfiguration configuration) {
 
         if (orders.Count == 0) {
             throw new InvalidOperationException("No orders selected to include in release");
@@ -169,91 +172,22 @@ public class ReleaseService {
 
     private string GenerateEmailBody(bool includeReleaseSummary, List<ReleasedJob> jobs, string note) {
 
-        string body = "Please see attached release";
-
-        if (!string.IsNullOrWhiteSpace(note)) {
-
-            body +=
-                $"""
-
-                <br />
-                <br />
-
-                <table>
-                    <tr>
-                        <td style="border: 1px solid black; padding: 5px;">
-                            <div style="font-weight: bold;">Note:</div>
-                            <div style="white-space: pre-wrap;">{note}</div>
-                        </td>
-                    </tr>
-                </table>
-
-                """;
-
-        }
-
-        if (!includeReleaseSummary) {
-            return body;
-        }
-
-        // TODO: generate the data to create a table of required materials in a similar way to the QuestPDFWriter
-        foreach (var job in jobs) {
+        var releasedJobs = jobs.Select(job => {
 
             var usedMaterials = job.Releases
                                     .First()
                                     .Programs
                                     .Select(p => p.Material)
-                                    .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained));
+                                    .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained))
+                                    .Select(g => new UsedMaterial(g.Count(), g.Key.Name, g.Key.Width, g.Key.Length, g.Key.Thickness));
 
+            return new Job(job.JobName, usedMaterials);
 
-            string tableHeader =
-                $"""
+        });
 
-                <br />
-                <br />
+        var model = new Model(releasedJobs, note);
 
-                <table style="border: 1px solid black;">
-                    <caption><b>{job.JobName} Materials</b></caption>
-                    <thead>
-                        <tr style="border: 1px solid black; border-collapse: collapse;">
-                            <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Qty</th>
-                            <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Name</th>
-                            <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Width</th>
-                            <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Length</th>
-                            <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Thickness</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                """;
-
-            string tableBody = "";
-            foreach (var materialGroup in usedMaterials) {
-                tableBody +=
-                    $"""
-                            <tr style="border: 1px solid black; border-collapse: collapse;">
-                                <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{materialGroup.Count()}</td>
-                                <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{materialGroup.Key.Name}</td>
-                                <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{materialGroup.Key.Width}</td>
-                                <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{materialGroup.Key.Length}</td>
-                                <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{materialGroup.Key.Thickness}</td>
-                            </tr>
-                    """;
-
-            }
-
-            string tableFooter =
-                """
-                    </tbody>
-                <table>
-                """;
-
-            body += tableHeader + tableBody + tableFooter;
-
-        }
-
-        return body;
+        return _emailBodyGenerator.GenerateReleaseEmailBody(model, includeReleaseSummary);
 
     }
 
