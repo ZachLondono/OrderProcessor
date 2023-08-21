@@ -7,14 +7,9 @@ using ApplicationCore.Features.Orders.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Shared;
 using ApplicationCore.Shared.Services;
-using ApplicationCore.Shared.Data;
-using MailKit.Net.Smtp;
-using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using MimeKit;
 using QuestPDF.Fluent;
-using ApplicationCore.Shared.Settings;
-using Microsoft.Extensions.Options;
 using UglyToad.PdfPig.Writer;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
@@ -34,9 +29,9 @@ public class ReleaseService {
     private readonly JobSummaryDecoratorFactory _jobSummaryDecoratorFactory;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
-    private readonly Email _emailSettings;
+    private readonly IEmailService _emailService;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IOptions<Email> emailOptions) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService) {
         _fileReader = fileReader;
         _invoiceDecoratorFactory = invoiceDecoratorFactory;
         _packingListDecoratorFactory = packingListDecoratorFactory;
@@ -45,7 +40,7 @@ public class ReleaseService {
         _logger = logger;
         _getCustomerByIdAsync = getCustomerByIdAsync;
         _getVendorByIdAsync = getVendorByIdAsync;
-        _emailSettings = emailOptions.Value;
+        _emailService = emailService;
     }
 
     public async Task Release(List<Order> orders, ReleaseConfiguration configuration) {
@@ -334,12 +329,7 @@ public class ReleaseService {
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(_emailSettings.SenderEmail)) {
-            OnError?.Invoke("No email sender is configured");
-            return;
-        }
-
-        message.From.Add(new MailboxAddress(_emailSettings.SenderName, _emailSettings.SenderEmail));
+        message.From.Add(_emailService.GetSender());
         message.Subject = subject;
 
         var builder = new BodyBuilder {
@@ -350,15 +340,9 @@ public class ReleaseService {
 
         message.Body = builder.ToMessageBody();
 
-        using var client = new SmtpClient();
-        client.Connect(_emailSettings.Host, _emailSettings.Port, SecureSocketOptions.Auto);
-        client.Authenticate(_emailSettings.SenderEmail, UserDataProtection.Unprotect(_emailSettings.ProtectedPassword));
-
-        client.MessageSent += (_, _) => OnActionComplete?.Invoke("Email sent");
-
-        var response = await client.SendAsync(message);
+        var response = await _emailService.SendMessageAsync(message);
         _logger.LogInformation("Response from email client - '{Response}'", response);
-        await client.DisconnectAsync(true);
+        OnActionComplete?.Invoke("Email sent");
 
     }
 
