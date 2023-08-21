@@ -3,6 +3,7 @@ using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using ApplicationCore.Shared.Data.Companies;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Companies.Vendors.Queries;
 
@@ -13,17 +14,21 @@ internal class GetVendorById {
     public class Handler : QueryHandler<Query, Vendor?> {
 
         private readonly ICompaniesDbConnectionFactory _factory;
+        private readonly ILogger<Handler> _logger;
 
-        public Handler(ICompaniesDbConnectionFactory factory) {
-            _factory = factory;
-        }
+		public Handler(ICompaniesDbConnectionFactory factory, ILogger<Handler> logger) {
+			_factory = factory;
+			_logger = logger;
+		}
 
-        public override async Task<Response<Vendor?>> Handle(Query query) {
+		public override async Task<Response<Vendor?>> Handle(Query query) {
 
             using var connection = await _factory.CreateConnection();
 
-            var data = await connection.QuerySingleOrDefaultAsync<VendorDataModel>(
-                """
+            try {
+
+                var data = await connection.QuerySingleOrDefaultAsync<VendorDataModel>(
+                                                                                                                                                                """
                 SELECT
                     
                     vendors.id,
@@ -59,14 +64,25 @@ internal class GetVendorById {
 
                 WHERE vendors.id = @Id;
                 """, query);
+    
+                if (data is null) {
+                    return Response<Vendor?>.Success(null);
+                }
+    
+                var vendor = data.AsVendor();
+    
+                return Response<Vendor?>.Success(vendor);
 
-            if (data is null) {
-                return Response<Vendor?>.Success(null);
+            } catch (Exception ex) {
+
+                _logger.LogError(ex, "Exception thrown while trying to load vendor");
+
+                return Response<Vendor?>.Error(new() {
+                    Title = "Could not Load Vendor Info From Database",
+                    Details = ex.Message
+                });
+
             }
-
-            var vendor = data.AsVendor();
-
-            return Response<Vendor?>.Success(vendor);
 
         }
 
