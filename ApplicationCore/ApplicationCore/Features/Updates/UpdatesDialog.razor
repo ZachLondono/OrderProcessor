@@ -42,6 +42,10 @@
     }
 </div>
 
+<CheckBox @bind-IsChecked="DataContext.UsePreviewChannel" >
+    <span class="text-gray-700">Use Preview Channel</span>
+</CheckBox>
+
 <article class="mt-6">
     <h3 class="font-bold text-md">Release Notes</h3>
     <div class="whitespace-pre-wrap">@DataContext.LatestReleaseNotes</div>
