@@ -48,16 +48,17 @@ public class GetOpenClosetOrders {
 
                             try {
 
+								string[] orderNumParts = (worksheet.Range["OrderNum"].Value2.ToString() as string).Split(' ', 2, StringSplitOptions.None);
                                 string customerName = worksheet.Range["CustomerName"].Value2.ToString();
-                                string jobName = worksheet.Range["JobName"].Value2.ToString();
-                                string jobNumber = worksheet.Range["OrderNum"].Value2.ToString();
-                                string reportFilePath = @$"Y:\CADCode\Reports\{jobNumber} - {jobName}.xml"; // TODO: Get this directory from a settings file
-                                string filePath = workbook.Path;
+                                string jobNumber = orderNumParts[0];
+                                string jobName = orderNumParts[1];
+                                string reportFilePath = @$"Y:\CADCode\Reports\{jobNumber} {jobName}.xml"; // TODO: Get this directory from a settings file
+                                string directory = workbook.Path;
 
-                                closetOrders.Add(new(customerName, jobName, jobNumber, reportFilePath, filePath));
+                                closetOrders.Add(new(customerName, jobName, jobNumber, reportFilePath, directory));
 
                             } catch (Exception ex) {
-                                _logger.LogWarning(ex, "Exception thrown while trying to read order info from door order MDF tab");
+                                _logger.LogWarning(ex, "Exception thrown while trying to read order info from door order Cover tab");
                             }
                         }
 

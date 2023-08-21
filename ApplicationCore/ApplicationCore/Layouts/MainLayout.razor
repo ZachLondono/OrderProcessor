@@ -263,7 +263,13 @@
 		var result = await dialog.Result;	
 		if (result.Confirmed && result.Data is ClosetOrder closetOrder) {
 
-			string directory = Path.GetDirectoryName(closetOrder.OrderFilePath) ?? @"R:\Door Orders\Door Programs";
+			string? directory = null;
+			if (Path.GetDirectoryName(closetOrder.OrderFileDirectory) is string baseDirectory) {
+				directory = Path.Combine(baseDirectory, "CUTLIST");
+				if (!Directory.Exists(directory)) {
+					Directory.CreateDirectory(directory);
+				}
+			}
 
 			var parameters = new ModalParameters(){
 				 { "CustomerName", closetOrder.Customer },
