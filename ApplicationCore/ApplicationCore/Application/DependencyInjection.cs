@@ -50,6 +50,8 @@ public static class DependencyInjection {
 
         services.AddHttpClient();
 
+        services.AddTransient<IEmailService, EmailService>();
+
         services.AddSingleton<IFileReader, FileReader>();
         services.AddSingleton<IFileWriter, FileWriter>();
 
