@@ -209,9 +209,7 @@
 	}
 
 	private async Task OpenCNCReleaseDialog() {
-		var dialog = Modal.Show<ReleasePDFDialog>("CNC Release PDF", new ModalOptions() {
-			DisableBackgroundCancel = true
-		});
+		var dialog = ShowReleasePDFDialogModal();
 		_ = await dialog.Result;
 	}
 
@@ -238,19 +236,8 @@
 		});
 		var result = await dialog.Result;	
 		if (result.Confirmed && result.Data is DoorOrder doorOrder) {
-
-			var parameters = new ModalParameters(){
-				 { "CustomerName", doorOrder.Customer },
-				 { "VendorName", doorOrder.Vendor },
-				 { "FileName", $"{doorOrder.OrderNumber} CUTLIST" },
-				 { "ReportFilePath", doorOrder.ReportFilePath }
-			};
-
-			dialog = Modal.Show<ReleasePDFDialog>("CNC Release PDF", parameters, new ModalOptions() {
-				DisableBackgroundCancel = true
-			});
+			dialog = ShowReleasePDFDialogModal(doorOrder.Customer, doorOrder.Vendor, $"{doorOrder.OrderNumber} CUTLIST", doorOrder.ReportFilePath);
 			_ = await dialog.Result;
-
 		}
 	}
 
@@ -263,35 +250,42 @@
 		var result = await dialog.Result;	
 		if (result.Confirmed && result.Data is ClosetOrder closetOrder) {
 
-			string? directory = null;
+			string directory = @"X:\_CUTLISTS  Incoming";
 			if (Path.GetDirectoryName(closetOrder.OrderFileDirectory) is string baseDirectory) {
-				directory = Path.Combine(baseDirectory, "CUTLIST");
-				if (!Directory.Exists(directory)) {
-					Directory.CreateDirectory(directory);
+				string workingDirectory = Path.Combine(baseDirectory, "CUTLIST");
+				if (!Directory.Exists(workingDirectory)) {
+					Directory.CreateDirectory(workingDirectory);
 				}
+				directory += ";" + workingDirectory;
 			}
 
-			var parameters = new ModalParameters(){
-				 { "CustomerName", closetOrder.Customer },
-				 { "VendorName", "Royal Cabinet" },
-				 { "FileName", $"{closetOrder.OrderNumber} CUTLIST" },
-				 { "ReportFilePath", closetOrder.ReportFilePath },
-				 { "OutputDirectory", directory }
-			};
-
-			dialog = Modal.Show<ReleasePDFDialog>("CNC Release PDF", parameters, new ModalOptions() {
-				DisableBackgroundCancel = true
-			});
+			dialog = ShowReleasePDFDialogModal(closetOrder.Customer, "Royal Cabinet", $"{closetOrder.OrderNumber} CUTLIST", closetOrder.ReportFilePath, directory);
 			_ = await dialog.Result;
 
 		}
 	}
-    private async Task GoBack() {
-        await JSRuntime.InvokeVoidAsync("history.back");
-    }
+	private async Task GoBack() {
+		await JSRuntime.InvokeVoidAsync("history.back");
+	}
 
-    private async Task GoForward() {
-        await JSRuntime.InvokeVoidAsync("history.forward");
-    }
+	private async Task GoForward() {
+		await JSRuntime.InvokeVoidAsync("history.forward");
+	}
+
+	private IModalReference ShowReleasePDFDialogModal(string? customerName = null, string? vendorName = null, string? fileName = null, string? reportFilePath = null, string? outputDirectory = null) {
+
+		var parameters = new ModalParameters();
+		if (customerName is not null) parameters.Add("CustomerName", customerName);
+		if (vendorName is not null) parameters.Add("VendorName", vendorName);
+		if (fileName is not null) parameters.Add("FileName", fileName);
+		if (reportFilePath is not null) parameters.Add("ReportFilePath", reportFilePath);
+		if (outputDirectory is not null) parameters.Add("OutputDirectory", outputDirectory);
+		
+		return Modal.Show<ReleasePDFDialog>("CNC Release PDF", parameters, new ModalOptions() {
+			DisableBackgroundCancel = true,
+			Size = ModalSize.ExtraLarge
+		});
+
+	}
 
 }
