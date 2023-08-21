@@ -28,8 +28,8 @@ internal class ReleasePDFDialogViewModel {
         }
     }
 
-    private string? _generatedFile = null;
-    public string? GeneratedFile {
+    private List<string> _generatedFile = new();
+    public List<string> GeneratedFiles {
         get => _generatedFile;
         set {
             _generatedFile = value;
@@ -65,9 +65,13 @@ internal class ReleasePDFDialogViewModel {
             return;
         }
 
-        if (!Directory.Exists(Model.OutputDirectory)) {
-            Error = "Output directory does not exist";
-            return;
+        string[] outputDirectories = Model.OutputDirectory.Split(';');
+
+        foreach (var directory in outputDirectories) {
+            if (!Directory.Exists(directory)) {
+                Error = "Output directory does not exist";
+                return;
+            }
         }
 
         IsGeneratingPDF = true;
@@ -78,13 +82,15 @@ internal class ReleasePDFDialogViewModel {
 
             var doc = Document.Create(_cncReleaseDecorator.Decorate);
 
-            var outputFilePath = _fileReader.GetAvailableFileName(Model.OutputDirectory, Model.FileName, "pdf");
-            doc.GeneratePdf(outputFilePath);
-            GeneratedFile = outputFilePath;
+            foreach (var directory in outputDirectories) {
+                var outputFilePath = _fileReader.GetAvailableFileName(directory, Model.FileName, "pdf");
+                doc.GeneratePdf(outputFilePath);
+                GeneratedFiles.Add(outputFilePath);
+            }
 
         } catch {
             Error = "Failed to generate pdf";
-            GeneratedFile = null;
+            GeneratedFiles = new();
         }
 
         IsGeneratingPDF = false;

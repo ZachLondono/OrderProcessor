@@ -12,17 +12,25 @@
 
     <p>Generating PDF...</p>
 
-} else if (DataContext.GeneratedFile is not null) {
+} else if (DataContext.GeneratedFiles.Any()) {
 
-    <p>PDF Generated</p>
-    <a onclick="@(() => OpenFile(DataContext.GeneratedFile))" class="underline cursor-pointer">@DataContext.GeneratedFile</a> 
+    <div class="ml-5">
+        <h3>PDFs Generated:</h3>
+        <ul class="list-disc">
+        @foreach (var fileName in DataContext.GeneratedFiles) {
+            <li>
+                <a onclick="@(() => OpenFile(fileName))" class="underline cursor-pointer">@fileName</a> 
+            </li>
+        }
+        </ul>
+    </div>
 
 } else {
 
     <EditForm Model="@DataContext.Model">
 
         <div>
-            <Button Color="Button.ButtonColor.Secondary" OnClick="ChooseReportFile">Choose Report</Button>
+            <Button Color="Button.ButtonColor.Secondary" OnClick="ChooseReportFile" Class="mr-5">Choose Report</Button>
             @if (string.IsNullOrEmpty(DataContext.Model.ReportFilePath)) {
                 <span>None selected</span>
             } else {
@@ -32,12 +40,12 @@
 
         <div class="mt-3">
             <label class="font-semibold">Customer</label>
-            <InputText @bind-Value="DataContext.Model.CustomerName" class="border w-full" />
+            <InputText @bind-Value="DataContext.Model.CustomerName" class="input-text w-full" spellcheck="false" />
         </div>
 
         <div class="mt-3">
             <label class="font-semibold">Vendor</label>
-            <InputText @bind-Value="DataContext.Model.VendorName" class="border w-full" />
+            <InputText @bind-Value="DataContext.Model.VendorName" class="input-text w-full" spellcheck="false" />
         </div>
 
         <div class="mt-3">
@@ -47,12 +55,12 @@
 
         <div class="mt-3">
             <label class="font-semibold">Output directory</label>
-            <InputText @bind-Value="DataContext.Model.OutputDirectory" class="border w-full" />
+            <InputText @bind-Value="DataContext.Model.OutputDirectory" class="input-text w-full" spellcheck="false" />
         </div>
 
         <div class="mt-3">
             <label class="font-semibold">File name</label>
-            <InputText @bind-Value="DataContext.Model.FileName" class="border w-full" />
+            <InputText @bind-Value="DataContext.Model.FileName" class="input-text w-full" spellcheck="false" />
         </div>
     
         <Button OnClickAsync="DataContext.GeneratePDF" Color="Button.ButtonColor.Primary" class="mt-3">Generate PDF</Button>
