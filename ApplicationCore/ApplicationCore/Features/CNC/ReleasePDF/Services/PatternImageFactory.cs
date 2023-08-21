@@ -159,7 +159,6 @@ public class PatternImageFactory {
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
     static Bitmap GetBitmapFromMetaFile(string path) {
 
         using Metafile? img = Image.FromFile(path) as Metafile;
@@ -179,7 +178,6 @@ public class PatternImageFactory {
 
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
     static byte[] GetBitmapData(Bitmap bitmap) {
         using var ms = new MemoryStream();
         bitmap.Save(ms, ImageFormat.Png);
