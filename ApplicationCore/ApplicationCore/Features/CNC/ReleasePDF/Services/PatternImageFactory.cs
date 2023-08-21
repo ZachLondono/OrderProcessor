@@ -65,7 +65,7 @@ public class PatternImageFactory {
         double mmToPxScaleX = bitmap.Width / sheetLength;
         double mmToPxScaleY = bitmap.Height / sheetWidth;
 
-        float fontSize = 8;
+        float fontSize = 12;
         using var font = new Font("Tahoma", fontSize, FontStyle.Bold);
 
         foreach (ImageText text in patternTexts) {
