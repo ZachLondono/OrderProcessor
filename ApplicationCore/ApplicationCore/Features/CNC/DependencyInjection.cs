@@ -1,7 +1,8 @@
 ﻿using ApplicationCore.Features.CNC.Contracts;
+using ApplicationCore.Features.CNC.ReleaseDialog;
+using ApplicationCore.Features.CNC.ReleaseEmail;
 using ApplicationCore.Features.CNC.ReleasePDF;
 using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
-using ApplicationCore.Features.CNC.ReleasePDF.Dialog;
 using ApplicationCore.Features.CNC.ReleasePDF.Services;
 using ApplicationCore.Features.CNC.Tools;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,7 @@ public static class DependencyInjection {
         services.AddTransient<ICNCReleaseDecorator, CNCReleaseDecorator>();
         services.Configure<PDFConfiguration>(configuration.GetRequiredSection("ReleasePDFConfig"));
         services.AddTransient<ReleasePDFDialogViewModel>();
+        services.AddTransient<ReleaseEmailBodyGenerator>();
         services.AddToolEditor();
         return services;
 

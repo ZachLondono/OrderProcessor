@@ -62,6 +62,15 @@
             <label class="font-semibold">File name</label>
             <InputText @bind-Value="DataContext.Model.FileName" class="input-text w-full" spellcheck="false" />
         </div>
+
+        <div class="mt-3">
+            <CheckBox @bind-IsChecked="DataContext.Model.SendEmail">
+                <span class="font-semibold">Send Email</span>
+            </CheckBox>
+            @if (DataContext.Model.SendEmail) {
+                <InputText @bind-Value="DataContext.Model.EmailRecipients" class="input-text w-full" />
+            }
+        </div>
     
         <Button OnClickAsync="DataContext.GeneratePDF" Color="Button.ButtonColor.Primary" class="mt-3">Generate PDF</Button>
     
@@ -86,6 +95,9 @@
     [Parameter]
     public string? FileName { get; init; } = null;
 
+    [Parameter]
+    public string? EmailRecipients { get; init; } = null;
+
     protected override void OnInitialized() {
         base.OnInitialized();
         DataContext.OnPropertyChanged += StateHasChanged;
@@ -97,6 +109,10 @@
         DataContext.Model.VendorName = VendorName ?? string.Empty;
         DataContext.Model.FileName = FileName ?? string.Empty;
         DataContext.Model.OutputDirectory = OutputDirectory ?? DataContext.Model.OutputDirectory;
+        if (!string.IsNullOrWhiteSpace(EmailRecipients)) {
+            DataContext.Model.EmailRecipients = EmailRecipients;
+            DataContext.Model.SendEmail = true;
+        }
 
     }
 
