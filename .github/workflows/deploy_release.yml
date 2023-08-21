@@ -61,8 +61,6 @@ jobs:
        [xml]$manifest= get-content ".\${{ env.WapProjectName }}\${{ env.WapProjectName }}.appxmanifest"
        # Set version number
        $manifest.Package.Identity.Version = "${{ steps.nbgv.outputs.SimpleVersion }}.0"
-       # Update display name for preview version
-       $manifest.Package.Applications.Application.VisualElements.DisplayName = "$($manifest.Package.Applications.Application.VisualElements.DisplayName) (preview)"
        $manifest.save(".\${{ env.WapProjectName }}\${{ env.WapProjectName }}.appxmanifest")
       shell: pwsh
     
