@@ -1,6 +1,6 @@
 ﻿@page "/vendors/{vendorId:guid}"
 @using ApplicationCore.Features.Companies.Vendors.Edit
-@using ApplicationCore.Features.Orders.List
+@using ApplicationCore.Widgets.Orders.OrderList
 
 <h1 class="font-bold text-lg">Vendor Details</h1>
 
@@ -10,7 +10,7 @@
     </div>
     <div>
         <h2 class="font-bold text-md text-gray-700">Orders</h2>
-        <OrderList VendorId="VendorId" />
+        <OrderListWidget VendorId="VendorId" IsSelectable="false" />
     </div>
 </div>
 
