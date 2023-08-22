@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.CNC.Contracts;
 using ApplicationCore.Features.CNC.ReleaseEmail;
+using ApplicationCore.Shared;
 using ApplicationCore.Shared.Services;
 using MimeKit;
 using QuestPDF.Fluent;
@@ -104,7 +105,7 @@ internal class ReleasePDFDialogViewModel {
 				}
 
 				if (Model.SendEmail && !string.IsNullOrWhiteSpace(Model.EmailRecipients)) {
-					SendReleaseEmail(job, filePath);
+					await SendReleaseEmail(job, filePath, Model.EmailRecipients);
 				}
 
 			} else {
@@ -121,8 +122,11 @@ internal class ReleasePDFDialogViewModel {
 
 	}
 
-	private void SendReleaseEmail(ReleasedJob job, string filePath) {
+	private async Task SendReleaseEmail(ReleasedJob job, string filePath, string recipients) {
         var message = new MimeMessage();
+        recipients.Split(';')
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .ForEach(r => message.To.Add(new MailboxAddress(r, r)));
         message.From.Add(_emailService.GetSender());
         message.Subject = $"RELEASED: {job.JobName} - {job.CustomerName}";
 
@@ -144,7 +148,8 @@ internal class ReleasePDFDialogViewModel {
             HtmlBody = body
         };
 		builder.Attachments.Add(filePath);
-		_emailService.SendMessageAsync(message);
+		message.Body = builder.ToMessageBody();
+		await _emailService.SendMessageAsync(message);
 	}
 
 }
