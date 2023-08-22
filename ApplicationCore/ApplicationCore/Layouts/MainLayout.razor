@@ -250,13 +250,13 @@
 		var result = await dialog.Result;	
 		if (result.Confirmed && result.Data is ClosetOrder closetOrder) {
 
-			string directory = @"X:\_CUTLISTS  Incoming";
+			string directory = "";// @"X:\_CUTLISTS  Incoming";
 			if (Path.GetDirectoryName(closetOrder.OrderFileDirectory) is string baseDirectory) {
 				string workingDirectory = Path.Combine(baseDirectory, "CUTLIST");
 				if (!Directory.Exists(workingDirectory)) {
 					Directory.CreateDirectory(workingDirectory);
 				}
-				directory += ";" + workingDirectory;
+				directory = workingDirectory; //+= ";" + workingDirectory;
 			}
 
 			dialog = ShowReleasePDFDialogModal(closetOrder.Customer, "Royal Cabinet", $"{closetOrder.OrderNumber} CUTLIST", closetOrder.ReportFilePath, directory, false, "maciej@royalcabinet.com;purchasing@royalcabinet.com");
