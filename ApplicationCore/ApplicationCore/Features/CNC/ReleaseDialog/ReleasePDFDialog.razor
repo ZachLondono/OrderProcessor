@@ -96,6 +96,9 @@
     public string? FileName { get; init; } = null;
 
     [Parameter]
+    public bool? SendEmail { get; init; } = false;
+
+    [Parameter]
     public string? EmailRecipients { get; init; } = null;
 
     protected override void OnInitialized() {
@@ -109,10 +112,8 @@
         DataContext.Model.VendorName = VendorName ?? string.Empty;
         DataContext.Model.FileName = FileName ?? string.Empty;
         DataContext.Model.OutputDirectory = OutputDirectory ?? DataContext.Model.OutputDirectory;
-        if (!string.IsNullOrWhiteSpace(EmailRecipients)) {
-            DataContext.Model.EmailRecipients = EmailRecipients;
-            DataContext.Model.SendEmail = true;
-        }
+        DataContext.Model.EmailRecipients = EmailRecipients ?? DataContext.Model.EmailRecipients;
+        DataContext.Model.SendEmail = SendEmail ?? DataContext.Model.SendEmail;
 
     }
 

@@ -236,7 +236,7 @@
 		});
 		var result = await dialog.Result;	
 		if (result.Confirmed && result.Data is DoorOrder doorOrder) {
-			dialog = ShowReleasePDFDialogModal(doorOrder.Customer, doorOrder.Vendor, $"{doorOrder.OrderNumber} CUTLIST", doorOrder.ReportFilePath, @"R:\Door Orders\Door Programs", "maciej@royalcabinet.com");
+			dialog = ShowReleasePDFDialogModal(doorOrder.Customer, doorOrder.Vendor, $"{doorOrder.OrderNumber} CUTLIST", doorOrder.ReportFilePath, @"R:\Door Orders\Door Programs", true, "maciej@royalcabinet.com");
 			_ = await dialog.Result;
 		}
 	}
@@ -259,7 +259,7 @@
 				directory += ";" + workingDirectory;
 			}
 
-			dialog = ShowReleasePDFDialogModal(closetOrder.Customer, "Royal Cabinet", $"{closetOrder.OrderNumber} CUTLIST", closetOrder.ReportFilePath, directory, "maciej@royalcabinet.com;purchasing@royalcabinet.com");
+			dialog = ShowReleasePDFDialogModal(closetOrder.Customer, "Royal Cabinet", $"{closetOrder.OrderNumber} CUTLIST", closetOrder.ReportFilePath, directory, false, "maciej@royalcabinet.com;purchasing@royalcabinet.com");
 			_ = await dialog.Result;
 
 		}
@@ -272,7 +272,7 @@
 		await JSRuntime.InvokeVoidAsync("history.forward");
 	}
 
-	private IModalReference ShowReleasePDFDialogModal(string? customerName = null, string? vendorName = null, string? fileName = null, string? reportFilePath = null, string? outputDirectory = null, string? emailRecipients = null) {
+	private IModalReference ShowReleasePDFDialogModal(string? customerName = null, string? vendorName = null, string? fileName = null, string? reportFilePath = null, string? outputDirectory = null, bool? sendEmail = null, string? emailRecipients = null) {
 
 		var parameters = new ModalParameters();
 		if (customerName is not null) parameters.Add("CustomerName", customerName);
@@ -280,6 +280,7 @@
 		if (fileName is not null) parameters.Add("FileName", fileName);
 		if (reportFilePath is not null) parameters.Add("ReportFilePath", reportFilePath);
 		if (outputDirectory is not null) parameters.Add("OutputDirectory", outputDirectory);
+		if (sendEmail is not null) parameters.Add("SendEmail", sendEmail);
 		if (emailRecipients is not null) parameters.Add("EmailRecipients", emailRecipients);
 		
 		return Modal.Show<ReleasePDFDialog>("CNC Release PDF", parameters, new ModalOptions() {
