@@ -21,6 +21,8 @@ public class PatternImageFactory {
             try {
                 var bitmap = GetBitmapFromMetaFile(imagePath);
 
+                bitmap.Save(@"C:\ProgramData\OrderProcessor\tests\original.jpg", ImageFormat.Jpeg);
+
                 if (orientation == TableOrientation.Rotated) {
                     bitmap.RotateFlip(RotateFlipType.Rotate90FlipY);
                     // When rotating a bitmap that changes it's dimensions drawing can only be done within the original bitmaps dimension, so it must be saved and created as a new bitmap
@@ -29,9 +31,11 @@ public class PatternImageFactory {
                     var bitmap2 = new Bitmap(stream);
                     bitmap.Dispose();
                     bitmap = bitmap2;
+                    bitmap.Save(@"C:\ProgramData\OrderProcessor\tests\rotated.jpg", ImageFormat.Jpeg);
                 }
 
                 AddTextToBitmap(bitmap, text, sheetWidth, sheetLength);
+                bitmap.Save(@"C:\ProgramData\OrderProcessor\tests\textadded.jpg", ImageFormat.Jpeg);
                 return GetBitmapData(bitmap);
             } catch {
 
