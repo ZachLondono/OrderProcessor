@@ -12,6 +12,7 @@ using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadCl
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProWebOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData.Models;
 using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData;
+using ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadsheetOrderData;
 
 namespace ApplicationCore.Features.Orders.OrderLoading;
 
@@ -34,6 +35,7 @@ internal static class DependencyInjection {
         services.AddTransient<ClosetProPartMapper>();
         services.AddTransient<ClosetProClientFactory>();
         services.AddTransient<DoweledDBSpreadsheetOrderProvider>();
+        services.AddTransient<ClosetSpreadsheetOrderProvider>();
         services.AddTransient<AllmoxyClientFactory>();
         services.AddTransient<IXMLValidator, XMLValidator>();
         services.AddTransient<OrderLoadWidgetViewModel>();

@@ -6,5 +6,6 @@ public enum OrderSourceType {
     DoorOrder,
     ClosetProFileCSV,
     ClosetProWebCSV,
-    DoweledDBOrderForm
+    DoweledDBOrderForm,
+    ClosetOrderForm
 }
