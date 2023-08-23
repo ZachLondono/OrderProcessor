@@ -134,8 +134,10 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
             .PaddingVertical(1, Unit.Centimetre)
             .Column(x => {
 
-                if (data.ImageData.Length != 0)
-                    x.Item().Image(data.ImageData);
+                if (data.ImageData.Length != 0) {
+                    x.Item()
+                        .Image(data.ImageData, ImageScaling.FitWidth);
+                }
 
                 x.Item().AlignCenter()
                         .PaddingVertical(5)
