@@ -1,7 +1,9 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
+using ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadsheetOrderData.Models;
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProFileOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProWebOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadDoorSpreadsheetOrderData.DoorOrderModels;
+using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData.Models;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 
@@ -40,7 +42,13 @@ internal class ChooseOrderProviderViewModel {
                 Name = "Doweled DB Form",
                 SourceType = OrderSourceType.DoweledDBOrderForm,
                 DialogTitle = "Select Doweled DB Spreadsheet",
-                SourcePickerDialogType = typeof(GetDoorOrderSpreadsheetPathDialog)
+                SourcePickerDialogType = typeof(GetDoweledDBOrderSpreadsheetPathDialog)
+            },
+            new() {
+                Name = "Closet Order Form",
+                SourceType = OrderSourceType.ClosetOrderForm,
+                DialogTitle = "Select Closet Order Spreadsheet",
+                SourcePickerDialogType = typeof(GetClosetOrderSpreadsheetPathDialog)
             }
             //new() {
             //    Name = "Door Spreadsheet",
