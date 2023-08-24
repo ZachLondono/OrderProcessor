@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.PackingList;
 
-internal class DoorItem {
+internal class MDFDoorItem {
 
     public int Line { get; set; }
 

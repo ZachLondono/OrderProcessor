@@ -9,7 +9,7 @@ using ApplicationCore.Shared.Domain;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.CabinetGroup;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.ClosetPartGroup;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.DovetailDrawerBoxGroup;
-using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.DoorGroup;
+using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.MDFDoorGroup;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.DoweledDrawerBoxGroup;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
@@ -79,22 +79,41 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                     int cabQty = jobSummary.Cabinets.Sum(p => p.Items.Sum(i => i.Qty));
                                     int cpQty = jobSummary.ClosetParts.Sum(p => p.Items.Sum(i => i.Qty));
                                     int doorQty = jobSummary.Doors.Sum(p => p.Items.Sum(i => i.Qty));
-                                    int drawerQty = jobSummary.DovetailDrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty));
+                                    int dovetailQty = jobSummary.DovetailDrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty));
+                                    int doweledQty = jobSummary.DoweledDrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty));
 
-                                    table.Cell().AlignRight().PaddingRight(5).Text("Cabinets:");
-                                    table.Cell().AlignCenter().Text(cabQty == 0 ? "-" : cabQty.ToString());
+                                    if (cabQty > 0) {
+                                        table.Cell().AlignRight().PaddingRight(5).Text("Cabinets:");
+                                        table.Cell().AlignCenter().Text(cabQty == 0 ? "-" : cabQty.ToString());
+                                    }
 
-                                    table.Cell().AlignRight().PaddingRight(5).Text("Closet Parts:");
-                                    table.Cell().AlignCenter().Text(cpQty == 0 ? "-" : cpQty.ToString());
+                                    if (cpQty > 0) {
+                                        table.Cell().AlignRight().PaddingRight(5).Text("Closet Parts:");
+                                        table.Cell().AlignCenter().Text(cpQty == 0 ? "-" : cpQty.ToString());
+                                    }
 
-                                    table.Cell().AlignRight().PaddingRight(5).Text("MDF Doors:");
-                                    table.Cell().AlignCenter().Text(doorQty == 0 ? "-" : doorQty.ToString());
+                                    if (doorQty > 0) {
+                                        table.Cell().AlignRight().PaddingRight(5).Text("MDF Doors:");
+                                        table.Cell().AlignCenter().Text(doorQty == 0 ? "-" : doorQty.ToString());
+                                    }
 
-                                    table.Cell().BorderBottom(0.5f).AlignRight().PaddingRight(5).Text("Drawer Boxes:");
-                                    table.Cell().BorderBottom(0.5f).AlignCenter().Text(drawerQty == 0 ? "-" : drawerQty.ToString());
+                                    if (dovetailQty > 0) {
+                                        table.Cell().AlignRight().PaddingRight(5).Text("Dovetail Drawer Boxes:");
+                                        table.Cell().AlignCenter().Text(dovetailQty == 0 ? "-" : dovetailQty.ToString());
+                                    }
 
-                                    table.Cell().AlignRight().PaddingRight(5).Text("Total:").Bold().FontSize(14);
-                                    table.Cell().AlignCenter().Text((cabQty + cpQty + doorQty + drawerQty).ToString()).Bold().FontSize(14);
+                                    if (doweledQty > 0) {
+                                        table.Cell().AlignRight().PaddingRight(5).Text("Doweled Drawer Boxes:");
+                                        table.Cell().AlignCenter().Text(doweledQty == 0 ? "-" : doweledQty.ToString());
+                                    }
+
+                                    if (jobSummary.AdditionalItems > 0) {
+                                        table.Cell().AlignRight().PaddingRight(5).Text("Other:");
+                                        table.Cell().AlignCenter().Text(jobSummary.AdditionalItems == 0 ? "-" : jobSummary.AdditionalItems.ToString());
+                                    }
+
+                                    table.Cell().BorderTop(0.5f).AlignRight().PaddingRight(5).Text("Total:").Bold().FontSize(14);
+                                    table.Cell().BorderTop(0.5f).AlignCenter().Text((cabQty + cpQty + doorQty + dovetailQty + doweledQty + jobSummary.AdditionalItems).ToString()).Bold().FontSize(14);
 
                                 });
 
@@ -204,7 +223,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         Notch = b.DrawerBoxOptions.Notches
                     }, new DrawerBoxGroupComparer())
                     .Select(g => {
-                        g.Key.Items = g.Select(i => new DrawerBoxItem() {
+                        g.Key.Items = g.Select(i => new DovetailDrawerBoxItem() {
                             Line = i.ProductNumber,
                             Qty = i.Qty,
                             Description = i.GetDescription(),
@@ -304,7 +323,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
         var doors = order.Products
                         .OfType<MDFDoorProduct>()
-                        .GroupBy(d => new DoorGroup {
+                        .GroupBy(d => new MDFDoorGroup {
                             Room = d.Room,
                             Finish = d.PaintColor ?? "",
                             Material = d.Material,
@@ -312,7 +331,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         }, new DoorGroupComparer())
                         .Select(g => {
 
-                            g.Key.Items = g.Select(i => new DoorItem {
+                            g.Key.Items = g.Select(i => new MDFDoorItem {
                                 Line = i.ProductNumber,
                                 Description = i.GetDescription(),
                                 Qty = i.Qty,
@@ -349,6 +368,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             Doors = doors,
             DovetailDrawerBoxes = dovetailDb,
             DoweledDrawerBoxes = doweledDb,
+            AdditionalItems = order.AdditionalItems.Count(),
 
             ShowSuppliesInSummary = _showSupplies,
             Supplies = supplies,
@@ -519,7 +539,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
     }
 
-    private static void ComposeDoorTable(IContainer container, DoorGroup group) {
+    private static void ComposeDoorTable(IContainer container, MDFDoorGroup group) {
 
         var defaultCellStyle = (IContainer cell)
             => cell.Border(1)

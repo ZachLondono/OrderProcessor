@@ -23,7 +23,8 @@ internal class JobSummary {
     public List<ClosetPartGroup> ClosetParts { get; set; } = new();
     public List<DovetailDrawerBoxGroup> DovetailDrawerBoxes { get; set; } = new();
     public List<DoweledDrawerBoxGroup> DoweledDrawerBoxes { get; set; } = new();
-    public List<DoorGroup> Doors { get; set; } = new();
+    public List<MDFDoorGroup> Doors { get; set; } = new();
+    public int AdditionalItems { get; set; } = new();
 
     public bool ShowSuppliesInSummary { get; set; } = false;
     public List<Supply> Supplies { get; set; } = new();

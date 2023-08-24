@@ -1,17 +1,17 @@
 ﻿namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 
-internal class DoorGroup {
+internal class MDFDoorGroup {
 
     public string Room { get; set; } = string.Empty;
     public string Material { get; set; } = string.Empty;
     public string Style { get; set; } = string.Empty;
     public string Finish { get; set; } = string.Empty;
 
-    public List<DoorItem> Items { get; set; } = new();
+    public List<MDFDoorItem> Items { get; set; } = new();
 
-    public class DoorGroupComparer : IEqualityComparer<DoorGroup> {
+    public class DoorGroupComparer : IEqualityComparer<MDFDoorGroup> {
 
-        bool IEqualityComparer<DoorGroup>.Equals(DoorGroup? x, DoorGroup? y) {
+        bool IEqualityComparer<MDFDoorGroup>.Equals(MDFDoorGroup? x, MDFDoorGroup? y) {
 
             if (x is null && y is null) return true;
             if (x is null || y is null) return false;
@@ -23,7 +23,7 @@ internal class DoorGroup {
 
         }
 
-        int IEqualityComparer<DoorGroup>.GetHashCode(DoorGroup obj) {
+        int IEqualityComparer<MDFDoorGroup>.GetHashCode(MDFDoorGroup obj) {
             return HashCode.Combine(obj.Room, obj.Material, obj.Style, obj.Finish);
         }
 

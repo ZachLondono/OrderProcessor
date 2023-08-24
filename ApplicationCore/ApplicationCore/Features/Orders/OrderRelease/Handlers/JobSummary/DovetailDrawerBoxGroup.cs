@@ -8,7 +8,7 @@ internal class DovetailDrawerBoxGroup {
     public string Clips { get; set; } = string.Empty;
     public string Notch { get; set; } = string.Empty;
 
-    public List<DrawerBoxItem> Items { get; set; } = new();
+    public List<DovetailDrawerBoxItem> Items { get; set; } = new();
 
     public class DrawerBoxGroupComparer : IEqualityComparer<DovetailDrawerBoxGroup> {
 

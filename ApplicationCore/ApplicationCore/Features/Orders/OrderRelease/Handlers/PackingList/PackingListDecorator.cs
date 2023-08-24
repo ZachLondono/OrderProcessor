@@ -60,7 +60,7 @@ internal class PackingListDecorator : IPackingListDecorator {
                     }
 
                     if (_packingList.Doors.Any()) {
-                        ComposeDoorTable(column.Item(), _packingList.Doors);
+                        ComposeMDFDoorTable(column.Item(), _packingList.Doors);
                     }
 
                     if (_packingList.DovetailDrawerBoxes.Any()) {
@@ -69,6 +69,10 @@ internal class PackingListDecorator : IPackingListDecorator {
 
                     if (_packingList.DoweledDrawerBoxes.Any()) {
                         ComposeDoweledDrawerBoxTable(column.Item(), _packingList.DoweledDrawerBoxes);
+                    }
+
+                    if (_packingList.AdditionalItems.Any()) {
+                        ComposeAdditionalItemTable(column.Item(), _packingList.AdditionalItems);
                     }
 
                 });
@@ -314,7 +318,7 @@ internal class PackingListDecorator : IPackingListDecorator {
         });
     }
 
-    public static void ComposeDoorTable(IContainer container, IEnumerable<DoorItem> items) {
+    public static void ComposeMDFDoorTable(IContainer container, IEnumerable<MDFDoorItem> items) {
 
         var defaultCellStyle = (IContainer cell)
             => cell.Border(1)
@@ -450,9 +454,7 @@ internal class PackingListDecorator : IPackingListDecorator {
 
     }
 
-
-
-    public static void ComposeDovetailDrawerBoxTable(IContainer container, IEnumerable<DovetailDrawerBoxItem> items) {
+    public static void ComposeDovetailDrawerBoxTable(IContainer container, IEnumerable<DovetailDovetailDrawerBoxItem> items) {
 
         var defaultCellStyle = (IContainer cell)
             => cell.Border(1)
@@ -520,7 +522,63 @@ internal class PackingListDecorator : IPackingListDecorator {
 
     }
 
-    private static void FormatFraction(TextDescriptor text, Dimension dim, float fontSize) {
+	public static void ComposeAdditionalItemTable(IContainer container, IEnumerable<AdditionalItem> items) {
+
+		var defaultCellStyle = (IContainer cell)
+			=> cell.Border(1)
+					.BorderColor(Colors.Grey.Lighten1)
+					.AlignMiddle()
+					.PaddingVertical(3)
+					.PaddingHorizontal(3);
+
+		var headerCellStyle = (IContainer cell)
+			=> cell.Border(1)
+					.BorderColor(Colors.Grey.Lighten1)
+					.Background(Colors.Grey.Lighten3)
+					.AlignCenter()
+					.PaddingVertical(3)
+					.PaddingHorizontal(3)
+					.DefaultTextStyle(x => x.Bold());
+
+		container.Column(col => {
+
+			col.Item()
+				.PaddingTop(10)
+				.PaddingLeft(10)
+				.Text($"Additional Items ({items.Count()})")
+				.FontSize(16)
+				.Bold()
+				.Italic();
+
+			col.Item()
+				.DefaultTextStyle(x => x.FontSize(10))
+				.Table(table => {
+
+					table.ColumnsDefinition(column => {
+						column.ConstantColumn(40);
+						column.RelativeColumn();
+					});
+
+
+					table.Header(header => {
+
+						header.Cell().Element(headerCellStyle).Text("#");
+						header.Cell().Element(headerCellStyle).Text("Description");
+
+					});
+
+					foreach (var item in items) {
+						table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
+						table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
+					}
+
+				});
+
+		});
+
+	}
+
+	private static void FormatFraction(TextDescriptor text, Dimension dim, float fontSize) {
 
         var fraction = dim.RoundToInchMultiple((double)1 / 64).AsInchFraction();
 
@@ -588,7 +646,7 @@ internal class PackingListDecorator : IPackingListDecorator {
                             }).ToList(),
             Doors = order.Products
                             .OfType<MDFDoorProduct>()
-                            .Select(cab => new DoorItem() {
+                            .Select(cab => new MDFDoorItem() {
                                 Line = cab.ProductNumber,
                                 Qty = cab.Qty,
                                 Height = cab.Height,
@@ -606,7 +664,7 @@ internal class PackingListDecorator : IPackingListDecorator {
                             }).ToList(),
             DovetailDrawerBoxes = order.Products
                             .OfType<DovetailDrawerBoxProduct>()
-                            .Select(cab => new DovetailDrawerBoxItem() {
+                            .Select(cab => new DovetailDovetailDrawerBoxItem() {
                                 Line = cab.ProductNumber,
                                 Qty = cab.Qty,
                                 Height = cab.Height,
@@ -623,6 +681,11 @@ internal class PackingListDecorator : IPackingListDecorator {
                                 Width = cab.Width,
                                 Depth = cab.Depth,
                                 Description = cab.GetDescription()
+                            }).ToList(),
+            AdditionalItems = order.AdditionalItems
+                            .Select((item, idx) => new AdditionalItem() {
+                                Line = idx + 1,
+                                Description = item.Description
                             }).ToList()
         };
 
