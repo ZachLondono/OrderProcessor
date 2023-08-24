@@ -97,17 +97,11 @@ internal class OrderLoadWidgetViewModel : IOrderLoadWidgetViewModel {
 
     private async Task<Order?> CreateOrderFromDataAsync(string source, OrderData data) {
 
-        var billing = new BillingInfo() {
-            InvoiceEmail = null,
-            PhoneNumber = "",
-            Address = new()
-        };
-
         Order? order = null;
 
         try {
 
-            order = Order.Create(source, data.Number, data.Name, string.Empty, data.WorkingDirectory, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Shipping, billing, data.Tax, data.PriceAdjustment, data.Rush, data.Info, data.Products, data.AdditionalItems);
+            order = Order.Create(source, data.Number, data.Name, string.Empty, data.WorkingDirectory, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Shipping, data.Billing, data.Tax, data.PriceAdjustment, data.Rush, data.Info, data.Products, data.AdditionalItems);
 
             var result = await _bus.Send(new InsertOrder.Command(order));
             result.OnError(error => {
