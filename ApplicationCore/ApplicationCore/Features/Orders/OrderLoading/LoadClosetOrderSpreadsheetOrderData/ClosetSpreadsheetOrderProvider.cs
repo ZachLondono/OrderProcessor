@@ -1,9 +1,13 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.Dialog;
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadsheetOrderData.Models;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
+using ApplicationCore.Features.Orders.Shared.Domain.Components;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Data.Ordering;
+using ApplicationCore.Shared.Domain;
 using ApplicationCore.Shared.Services;
 using Dapper;
 using Microsoft.Office.Interop.Excel;
@@ -104,6 +108,13 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
             var mdfFronts = LoadItemsFromWorksheet<MDFFront>(mdfFrontSheet);
 
             List<IProduct> products = new();
+            products.AddRange(MapClosetPartToProduct(cover, closetParts));
+            products.AddRange(MapCornerShelfToProduct(cover, cornerShelves));
+            products.AddRange(MapZargenToProduct(cover, zargens));
+            products.AddRange(MapDovetailDBToProduct(dovetailDBHeader, dovetailDBs));
+            products.AddRange(MapMelamineDBToProduct(melamineDBHeader, melamineDBs));
+            products.AddRange(MapMDFFrontToProduct(mdfFrontHeader, mdfFronts));
+
             var billing = new BillingInfo() {
                 InvoiceEmail = null,
                 PhoneNumber = "",
@@ -168,6 +179,137 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
 	}
     
+    private IEnumerable<IProduct> MapClosetPartToProduct(Cover cover, IEnumerable<ClosetPart> closetParts) {
+
+        foreach (var closetPart in closetParts) {
+
+            var parameters = new Dictionary<string, string>() {
+                { "FinLeft", closetPart.Finished == "Left" ? "1" : "0" },
+                { "FinRight", closetPart.Finished == "Right" ? "1" : "0" },
+                { "WallMount", closetPart.WallMount == "Yes" ? "1" : "0" }
+            };
+
+            yield return new Shared.Domain.Products.Closets.ClosetPart(Guid.NewGuid(), closetPart.Qty, closetPart.UnitPrice, closetPart.Number, closetPart.RoomName, closetPart.Item, Dimension.FromMillimeters(closetPart.Width), Dimension.FromMillimeters(closetPart.Length), new(cover.MaterialColor, Shared.Domain.Enums.ClosetMaterialCore.ParticleBoard), null, cover.MaterialColor, closetPart.Comment, parameters);
+
+        }
+
+    }
+ 
+    private IEnumerable<IProduct> MapCornerShelfToProduct(Cover cover, IEnumerable<CornerShelf> cornerShelves) {
+
+        foreach (var cornerShelf in cornerShelves) {
+
+            var parameters = new Dictionary<string, string>() {
+                { "RightWidth", cornerShelf.RightWidth.ToString() },
+                { "NotchSideLength", cornerShelf.NotchSideLength.ToString() },
+                { "NotchLeft", cornerShelf.NotchSide == "L" ? "1" : "0" },
+                { "ShelfRadius", cornerShelf.ShelfRadius.ToString() }
+            };
+
+            yield return new Shared.Domain.Products.Closets.ClosetPart(Guid.NewGuid(), cornerShelf.Qty, cornerShelf.UnitPrice, cornerShelf.Number, cornerShelf.RoomName, cornerShelf.Item, Dimension.FromMillimeters(cornerShelf.ProductWidth), Dimension.FromMillimeters(cornerShelf.ProductLength), new(cover.MaterialColor, Shared.Domain.Enums.ClosetMaterialCore.ParticleBoard), null, cover.MaterialColor, cornerShelf.Comment, parameters);
+
+        }
+
+    }
+    private IEnumerable<IProduct> MapZargenToProduct(Cover cover, IEnumerable<Zargen> zargens) {
+
+        if (!zargens.Any()) {
+            return Enumerable.Empty<IProduct>();
+        }
+        
+        throw new NotImplementedException();
+        foreach (var zargen in zargens) {
+
+            var parameters = new Dictionary<string, string>() {
+                { "OpeningWidth", zargen.HoleSize.ToString() },
+                { "PullCenters", zargen.PullCtrDim.ToString() },
+            };
+
+            // zargens use product height and product depth instead of width and length
+            //yield return new Shared.Domain.Products.Closets.ClosetPart(Guid.NewGuid(), zargen.Qty, zargen.UnitPrice, zargen.Number, zargen.RoomName, zargen.Item, Dimension.FromMillimeters(zargen.ProductWidth), Dimension.FromMillimeters(zargen.ProductLength), new(cover.MaterialColor, Shared.Domain.Enums.ClosetMaterialCore.ParticleBoard), null, cover.MaterialColor, zargen.Comment, parameters);
+
+        }
+
+    }
+
+    private IEnumerable<IProduct> MapMelamineDBToProduct(MelamineDBHeader header, IEnumerable<MelamineDB> melamineDBs) {
+
+        foreach (var melamine in melamineDBs) {
+
+            yield return new DoweledDrawerBoxProduct(Guid.NewGuid(),
+													 melamine.UnitPrice,
+													 melamine.Qty,
+													 "",
+													 melamine.LineNumber,
+													 Dimension.FromInches(melamine.Height),
+													 Dimension.FromInches(melamine.Width),
+													 Dimension.FromInches(melamine.Depth),
+													 new(header.BoxMaterial, Dimension.FromInches(0.75), true),
+													 new(header.BoxMaterial, Dimension.FromInches(0.75), true),
+													 new(header.BoxMaterial, Dimension.FromInches(0.75), true),
+													 new(header.BottomMaterial, Dimension.FromInches(0.75), true),
+													 false,
+													 Dimension.Zero);
+
+        }
+
+    }
+
+    private IEnumerable<IProduct> MapDovetailDBToProduct(DovetailDBHeader header, IEnumerable<DovetailDB> dovetailDBs) {
+
+        foreach (var dovetail in dovetailDBs) {
+
+            yield return DovetailDrawerBoxProduct.Create(dovetail.UnitPrice,
+														 dovetail.Qty,
+														 "",
+														 dovetail.LineNumber,
+														 Dimension.FromInches(dovetail.Height),
+														 Dimension.FromInches(dovetail.Width),
+														 Dimension.FromInches(dovetail.Depth),
+														 dovetail.Note,
+														 new Dictionary<string, string>(),
+														 new DovetailDrawerBoxConfig(
+															 header.BoxMaterial,
+															 header.BoxMaterial,
+															 header.BoxMaterial,
+															 header.BottomMaterial,
+															 header.Clips,
+															 header.Notch,
+															 "",
+															 Shared.Domain.Enums.LogoPosition.None,
+															 header.PostFinish));
+
+        }
+
+    }
+
+    private IEnumerable<IProduct> MapMDFFrontToProduct(MDFFrontHeader header, IEnumerable<MDFFront> mdfFronts) {
+
+        foreach (var front in mdfFronts) {
+
+            yield return MDFDoorProduct.Create(front.UnitPrice,
+											   "",
+											   front.Qty,
+											   front.LineNumber,
+											   Shared.Domain.Enums.DoorType.Door,
+											   Dimension.FromInches(front.Height),
+											   Dimension.FromInches(front.Width),
+											   front.Note,
+											   new(Dimension.FromInches(header.FrameSize)),
+											   "MDF-3/4",
+											   Dimension.FromInches(0.75),
+											   header.Style,
+											   "Square",
+											   "Flat",
+											   Dimension.Zero,
+											   DoorOrientation.Vertical,
+											   Array.Empty<AdditionalOpening>(),
+											   string.IsNullOrWhiteSpace(header.PaintColor) ? null : "");
+
+        }
+
+    }
+
 	private IEnumerable<T> LoadItemsFromWorksheet<T>(Worksheet worksheet) where T : IWorksheetReadable<T>, new() {
 
 		List<T> items = new();
