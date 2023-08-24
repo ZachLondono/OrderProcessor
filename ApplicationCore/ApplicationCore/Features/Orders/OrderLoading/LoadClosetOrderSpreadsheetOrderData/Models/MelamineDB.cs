@@ -19,14 +19,14 @@ internal record MelamineDB : IWorksheetReadable<MelamineDB> {
 	public decimal ExtPrice { get; set; }
 
 	public static MelamineDB ReadFromWorksheet(Worksheet worksheet, int row) {
-		int lineNum = worksheet.GetRangeValueOrDefault($"A{row}", 0);
-		int qty = worksheet.GetRangeValueOrDefault($"B{row}", 0);
+		int lineNum = (int) worksheet.GetRangeValueOrDefault($"A{row}", 0.0);
+		int qty = (int) worksheet.GetRangeValueOrDefault($"B{row}", 0.0);
 		var height = worksheet.GetRangeValueOrDefault($"E{row}", 0.0);
 		var width = worksheet.GetRangeValueOrDefault($"F{row}", 0.0);
 		var depth = worksheet.GetRangeValueOrDefault($"G{row}", 0.0);
 		var note = worksheet.GetRangeValueOrDefault($"H{row}", "");
-		var unitPrice = worksheet.GetRangeValueOrDefault($"J{row}", 0m);
-		var extPrice = worksheet.GetRangeValueOrDefault($"K{row}", 0m);
+		var unitPrice = (decimal) worksheet.GetRangeValueOrDefault($"J{row}", 0.0);
+		var extPrice = (decimal) worksheet.GetRangeValueOrDefault($"K{row}", 0.0);
 		return new() {
 			LineNumber = lineNum,
 			Qty = qty,

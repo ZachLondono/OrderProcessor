@@ -19,14 +19,14 @@ internal record MDFFront : IWorksheetReadable<MDFFront> {
 	public static int RowStep => 1; 
 
 	public static MDFFront ReadFromWorksheet(Worksheet worksheet, int row) {
-		int lineNum = worksheet.GetRangeValueOrDefault($"A{row}", 0);
-		int qty = worksheet.GetRangeValueOrDefault($"B{row}", 0);
+		int lineNum = (int) worksheet.GetRangeValueOrDefault($"A{row}", 0.0);
+		int qty = (int) worksheet.GetRangeValueOrDefault($"B{row}", 0.0);
 		var height = worksheet.GetRangeValueOrDefault($"E{row}", 0.0);
 		var width = worksheet.GetRangeValueOrDefault($"F{row}", 0.0);
 		var aStyle = worksheet.GetRangeValueOrDefault($"G{row}", "");
 		var note = worksheet.GetRangeValueOrDefault($"G{row}", "");
-		var unitPrice = worksheet.GetRangeValueOrDefault($"G{row}", 0m);
-		var totalPrice = worksheet.GetRangeValueOrDefault($"G{row}", 0m);
+		var unitPrice = (decimal) worksheet.GetRangeValueOrDefault($"G{row}", 0.0);
+		var totalPrice = (decimal) worksheet.GetRangeValueOrDefault($"G{row}", 0.0);
 		return new() {
 			LineNumber = lineNum,
 			Qty = qty,

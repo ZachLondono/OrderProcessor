@@ -24,9 +24,9 @@ internal record CornerShelf : IWorksheetReadable<CornerShelf> {
 	public decimal ExtPrice { get; init; }
 
 	public static CornerShelf ReadFromWorksheet(Worksheet worksheet, int row) {
-		int number = worksheet.GetRangeValueOrDefault($"A{row}", 0);
+		int number = (int) worksheet.GetRangeValueOrDefault($"A{row}", 0.0);
 		var item = worksheet.GetRangeValueOrDefault($"B{row}", "");
-		var qty = worksheet.GetRangeValueOrDefault($"C{row}", 0);
+		var qty = (int)worksheet.GetRangeValueOrDefault($"C{row}", 0.0);
 		var productWidth = worksheet.GetRangeValueOrDefault($"D{row}", 0.0);
 		var productLength = worksheet.GetRangeValueOrDefault($"E{row}", 0.0);
 		var rightWidth = worksheet.GetRangeValueOrDefault($"F{row}", 0.0);
@@ -35,8 +35,8 @@ internal record CornerShelf : IWorksheetReadable<CornerShelf> {
 		var roomName = worksheet.GetRangeValueOrDefault($"I{row}", "");
 		var comment = worksheet.GetRangeValueOrDefault($"J{row}", "");
 		var shelfRadius = worksheet.GetRangeValueOrDefault($"K{row}", 0.0);
-		var unitPrice = worksheet.GetRangeValueOrDefault($"L{row}", 0m);
-		var extPrice = worksheet.GetRangeValueOrDefault($"M{row}", 0m);
+		var unitPrice = (decimal) worksheet.GetRangeValueOrDefault($"L{row}", 0.0);
+		var extPrice = (decimal) worksheet.GetRangeValueOrDefault($"M{row}", 0.0);
 		return new() {
 			Number = number,
 			Item = item,

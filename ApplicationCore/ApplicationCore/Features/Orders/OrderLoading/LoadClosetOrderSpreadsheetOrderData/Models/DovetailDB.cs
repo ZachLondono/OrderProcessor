@@ -21,16 +21,16 @@ internal record DovetailDB : IWorksheetReadable<DovetailDB> {
 	public decimal ExtPrice { get; set; }
 	
 	public static DovetailDB ReadFromWorksheet(Worksheet worksheet, int row) {
-		int lineNum = worksheet.GetRangeValueOrDefault($"A{row}", 0);
-		int qty = worksheet.GetRangeValueOrDefault($"B{row}", 0);
+		int lineNum = (int) worksheet.GetRangeValueOrDefault($"A{row}", 0.0);
+		int qty = (int) worksheet.GetRangeValueOrDefault($"B{row}", 0.0);
 		var height = worksheet.GetRangeValueOrDefault($"E{row}", 0.0);
 		var width = worksheet.GetRangeValueOrDefault($"F{row}", 0.0);
 		var depth = worksheet.GetRangeValueOrDefault($"G{row}", 0.0);
 		var logo = worksheet.GetRangeValueOrDefault($"H{row}", "");
 		var scoop = worksheet.GetRangeValueOrDefault($"I{row}", "");
 		var note = worksheet.GetRangeValueOrDefault($"J{row}", "");
-		var unitPrice = worksheet.GetRangeValueOrDefault($"O{row}", 0m);
-		var extPrice = worksheet.GetRangeValueOrDefault($"P{row}", 0m);
+		var unitPrice = (decimal) worksheet.GetRangeValueOrDefault($"O{row}", 0.0);
+		var extPrice = (decimal) worksheet.GetRangeValueOrDefault($"P{row}", 0.0);
 		return new() {
 			LineNumber = lineNum,
 			Qty = qty,

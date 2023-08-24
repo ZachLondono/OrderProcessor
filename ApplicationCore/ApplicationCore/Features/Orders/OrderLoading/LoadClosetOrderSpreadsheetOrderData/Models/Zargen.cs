@@ -17,12 +17,12 @@ internal record Zargen : IWorksheetReadable<Zargen> {
 	public decimal ExtPrice { get; set; }
 
 	public static Zargen ReadFromWorksheet(Worksheet worksheet, int row) {
-		int qty = worksheet.GetRangeValueOrDefault($"A{row}", 0);
+		int qty = (int) worksheet.GetRangeValueOrDefault($"A{row}", 0.0);
 		var item = worksheet.GetRangeValueOrDefault($"B{row}", "");
 		var holeSize = worksheet.GetRangeValueOrDefault($"C{row}", 0);
 		var slideDepth = worksheet.GetRangeValueOrDefault($"D{row}", 0.0);
 		var pullCtrDim = worksheet.GetRangeValueOrDefault($"E{row}", 0.0);
-		var extPrice = worksheet.GetRangeValueOrDefault($"N{row}", 0m);
+		var extPrice = (decimal) worksheet.GetRangeValueOrDefault($"N{row}", 0.0);
 		return new() {
 			Qty = qty,
 			Item = item,

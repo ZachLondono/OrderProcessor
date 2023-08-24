@@ -22,17 +22,17 @@ internal record ClosetPart : IWorksheetReadable<ClosetPart> {
 	public static int RowStep => 1;
 
 	public static ClosetPart ReadFromWorksheet(Worksheet worksheet, int row) {
-		int number = worksheet.GetRangeValueOrDefault($"A{row}", 0);
+		int number = (int) worksheet.GetRangeValueOrDefault($"A{row}", 0.0);
 		var item = worksheet.GetRangeValueOrDefault($"B{row}", "");
-		var qty = worksheet.GetRangeValueOrDefault($"C{row}", 0);
+		var qty = (int) worksheet.GetRangeValueOrDefault($"C{row}", 0.0);
 		var width = worksheet.GetRangeValueOrDefault($"D{row}", 0.0);
 		var length = worksheet.GetRangeValueOrDefault($"E{row}", 0.0);
 		var wallMount = worksheet.GetRangeValueOrDefault($"F{row}", "");
 		var finished = worksheet.GetRangeValueOrDefault($"G{row}", "");
-		var roomName = worksheet.GetRangeValueOrDefault($"H{row}", "");
-		var comment = worksheet.GetRangeValueOrDefault($"I{row}", "");
-		var unitPrice = worksheet.GetRangeValueOrDefault($"J{row}", 0m);
-		var extPrice = worksheet.GetRangeValueOrDefault($"K{row}", 0m);
+		var roomName = worksheet.GetRangeValueOrDefault($"I{row}", "");
+		var comment = worksheet.GetRangeValueOrDefault($"J{row}", "");
+		var unitPrice = (decimal) worksheet.GetRangeValueOrDefault($"K{row}", 0.0);
+		var extPrice = (decimal) worksheet.GetRangeValueOrDefault($"L{row}", 0.0);
 		return new() {
 			Number = number,
 			Item = item,
