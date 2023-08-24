@@ -159,7 +159,7 @@ internal class InvoiceDecorator : IInvoiceDecorator {
 
 
                                 table.Cell().AlignRight().Text("Invoice #").FontSize(12).SemiBold();
-                                table.Cell().PaddingLeft(5).Text("0000").FontSize(12);
+                                table.Cell().PaddingLeft(5).Text(invoice.OrderNumber).FontSize(12);
                                 table.Cell().AlignRight().Text("Job").FontSize(12).SemiBold();
                                 table.Cell().PaddingLeft(5).Text(invoice.OrderName).FontSize(12);
                                 table.Cell().AlignRight().Text("Terms").FontSize(12).SemiBold();
