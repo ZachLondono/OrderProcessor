@@ -11,7 +11,7 @@ public record Address {
     public string Country { get; set; } = string.Empty;
 
     public string GetLine4() {
-        return $"{City}{(string.IsNullOrWhiteSpace(State) ? "" : $" {State}")}{(string.IsNullOrWhiteSpace(Zip) ? "" : $", {Zip}")}";
+        return $"{City}{(string.IsNullOrWhiteSpace(State) ? "" : $", {State}")}{(string.IsNullOrWhiteSpace(Zip) ? "" : $" {Zip}")}";
     }
 
 }
