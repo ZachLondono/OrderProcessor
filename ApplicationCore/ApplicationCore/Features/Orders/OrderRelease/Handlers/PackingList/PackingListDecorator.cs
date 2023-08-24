@@ -571,10 +571,10 @@ internal class PackingListDecorator : IPackingListDecorator {
             },
             Customer = new() {
                 Name = customer?.Name ?? "",
-                Line1 = customer?.ShippingAddress.Line1 ?? "",
-                Line2 = customer?.ShippingAddress.Line2 ?? "",
-                Line3 = customer is null ? "" : customer.ShippingAddress.GetLine4(),
-                Line4 = customer?.ShippingContact.Phone ?? "",
+                Line1 = order.Shipping.Address.Line1,
+                Line2 = order.Shipping.Address.Line2,
+                Line3 = order.Shipping.Address.GetLine4(),
+                Line4 = order.Shipping.PhoneNumber,
             },
             Cabinets = order.Products
                             .OfType<Cabinet>()

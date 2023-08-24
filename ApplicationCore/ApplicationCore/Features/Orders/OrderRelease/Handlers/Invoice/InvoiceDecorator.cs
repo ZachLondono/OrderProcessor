@@ -560,10 +560,10 @@ internal class InvoiceDecorator : IInvoiceDecorator {
             },
             Customer = new() {
                 Name = customer?.Name ?? "",
-                Line1 = customer?.BillingAddress.Line1 ?? "",
-                Line2 = customer?.BillingAddress.Line2 ?? "",
-                Line3 = customer is null ? "" : customer.BillingAddress.GetLine4(),
-                Line4 = customer?.BillingContact.Phone ?? "",
+                Line1 = order.Billing.Address.Line1,
+                Line2 = order.Billing.Address.Line2,
+                Line3 = order.Billing.Address.GetLine4(),
+                Line4 = order.Billing.PhoneNumber,
             },
             Cabinets = order.Products
                             .OfType<Cabinet>()
