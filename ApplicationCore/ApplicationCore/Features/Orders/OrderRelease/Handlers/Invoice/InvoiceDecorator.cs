@@ -59,12 +59,20 @@ internal class InvoiceDecorator : IInvoiceDecorator {
                         ComposeClosetPartTable(column.Item(), invoice.ClosetParts);
                     }
 
-                    if (invoice.Doors.Any()) {
-                        ComposeDoorTable(column.Item(), invoice.Doors);
+                    if (invoice.MDFDoors.Any()) {
+                        ComposeDoorTable(column.Item(), invoice.MDFDoors);
                     }
 
-                    if (invoice.DrawerBoxes.Any()) {
-                        ComposeDrawerBoxTable(column.Item(), invoice.DrawerBoxes);
+                    if (invoice.DovetailDrawerBoxes.Any()) {
+                        ComposeDovetailDrawerBoxTable(column.Item(), invoice.DovetailDrawerBoxes);
+                    }
+
+                    if (invoice.DoweledDrawerBoxes.Any()) {
+                        ComposeDoweledDrawerBoxTable(column.Item(), invoice.DoweledDrawerBoxes);
+                    }
+
+                    if (invoice.AdditionalItems.Any()) {
+                        ComposeAdditionalItemTable(column.Item(), invoice.AdditionalItems);
                     }
 
                 });
@@ -351,7 +359,7 @@ internal class InvoiceDecorator : IInvoiceDecorator {
         });
     }
 
-    private static void ComposeDoorTable(IContainer container, IEnumerable<DoorItem> items) {
+    private static void ComposeDoorTable(IContainer container, IEnumerable<MDFDoorItem> items) {
 
         var defaultCellStyle = (IContainer cell)
             => cell.Border(1)
@@ -425,7 +433,7 @@ internal class InvoiceDecorator : IInvoiceDecorator {
 
     }
 
-    private static void ComposeDrawerBoxTable(IContainer container, IEnumerable<DrawerBoxItem> items) {
+    private static void ComposeDovetailDrawerBoxTable(IContainer container, IEnumerable<DovetailDrawerBoxItem> items) {
 
         var defaultCellStyle = (IContainer cell)
             => cell.Border(1)
@@ -448,7 +456,7 @@ internal class InvoiceDecorator : IInvoiceDecorator {
             col.Item()
                 .PaddingTop(10)
                 .PaddingLeft(10)
-                .Text($"Drawer Boxes ({items.Sum(i => i.Qty)})")
+                .Text($"Dovetail Drawer Boxes ({items.Sum(i => i.Qty)})")
                 .FontSize(16)
                 .Bold()
                 .Italic();
@@ -496,6 +504,146 @@ internal class InvoiceDecorator : IInvoiceDecorator {
 
                     table.Cell().ColumnSpan(6).PaddingVertical(3).PaddingRight(5).AlignRight().Text("Sub Total: ").SemiBold();
                     table.Cell().ColumnSpan(2).Border(1).BorderColor(Colors.Grey.Lighten1).Background(Colors.Grey.Lighten3).PaddingVertical(3).PaddingRight(10).AlignCenter().Text(items.Sum(i => i.Qty * i.UnitPrice).ToString("$0.00"));
+
+                });
+
+        });
+
+    }
+
+    private static void ComposeDoweledDrawerBoxTable(IContainer container, IEnumerable<DoweledDrawerBoxItem> items) {
+
+        var defaultCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .AlignMiddle()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3);
+
+        var headerCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .Background(Colors.Grey.Lighten3)
+                    .AlignCenter()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3)
+                    .DefaultTextStyle(x => x.Bold());
+
+        container.Column(col => {
+
+            col.Item()
+                .PaddingTop(10)
+                .PaddingLeft(10)
+                .Text($"Doweled Drawer Boxes ({items.Sum(i => i.Qty)})")
+                .FontSize(16)
+                .Bold()
+                .Italic();
+
+            col.Item()
+                .DefaultTextStyle(x => x.FontSize(10))
+                .Table(table => {
+
+                    table.ColumnsDefinition(column => {
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(40);
+                        column.RelativeColumn();
+                        column.ConstantColumn(55);
+                        column.ConstantColumn(55);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(55);
+                        column.ConstantColumn(55);
+                    });
+
+
+                    table.Header(header => {
+
+                        header.Cell().Element(headerCellStyle).Text("#");
+                        header.Cell().Element(headerCellStyle).Text("Qty");
+                        header.Cell().Element(headerCellStyle).Text("Description");
+                        header.Cell().Element(headerCellStyle).Text("Height");
+                        header.Cell().Element(headerCellStyle).Text("Width");
+                        header.Cell().Element(headerCellStyle).Text("Depth");
+                        header.Cell().Element(headerCellStyle).Text("Unit $");
+                        header.Cell().Element(headerCellStyle).Text("Ext $");
+
+                    });
+
+                    foreach (var item in items) {
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
+
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.UnitPrice.ToString("0.00"));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text((item.UnitPrice * item.Qty).ToString("$0.00"));
+                    }
+
+                    table.Cell().ColumnSpan(6).PaddingVertical(3).PaddingRight(5).AlignRight().Text("Sub Total: ").SemiBold();
+                    table.Cell().ColumnSpan(2).Border(1).BorderColor(Colors.Grey.Lighten1).Background(Colors.Grey.Lighten3).PaddingVertical(3).PaddingRight(10).AlignCenter().Text(items.Sum(i => i.Qty * i.UnitPrice).ToString("$0.00"));
+
+                });
+
+        });
+
+    }
+
+    private static void ComposeAdditionalItemTable(IContainer container, IEnumerable<AdditionalItem> items) {
+
+        var defaultCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .AlignMiddle()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3);
+
+        var headerCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .Background(Colors.Grey.Lighten3)
+                    .AlignCenter()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3)
+                    .DefaultTextStyle(x => x.Bold());
+
+        container.Column(col => {
+
+            col.Item()
+                .PaddingTop(10)
+                .PaddingLeft(10)
+                .Text($"Additional Items ({items.Count()})")
+                .FontSize(16)
+                .Bold()
+                .Italic();
+
+            col.Item()
+                .DefaultTextStyle(x => x.FontSize(10))
+                .Table(table => {
+
+                    table.ColumnsDefinition(column => {
+                        column.ConstantColumn(40);
+                        column.RelativeColumn();
+                        column.ConstantColumn(55);
+                    });
+
+
+                    table.Header(header => {
+
+                        header.Cell().Element(headerCellStyle).Text("#");
+                        header.Cell().Element(headerCellStyle).Text("Description");
+                        header.Cell().Element(headerCellStyle).Text("Price");
+
+                    });
+
+                    foreach (var item in items) {
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text((item.Price).ToString("$0.00"));
+                    }
+
+                    table.Cell().ColumnSpan(2).PaddingVertical(3).PaddingRight(5).AlignRight().Text("Sub Total: ").SemiBold();
+                    table.Cell().ColumnSpan(1).Border(1).BorderColor(Colors.Grey.Lighten1).Background(Colors.Grey.Lighten3).PaddingVertical(3).PaddingRight(10).AlignCenter().Text(items.Sum(i => i.Price).ToString("$0.00"));
 
                 });
 
@@ -576,9 +724,9 @@ internal class InvoiceDecorator : IInvoiceDecorator {
                                 Description = cab.GetDescription(),
                                 UnitPrice = cab.UnitPrice,
                             }).ToList(),
-            Doors = order.Products
+            MDFDoors = order.Products
                             .OfType<MDFDoorProduct>()
-                            .Select(cab => new DoorItem() {
+                            .Select(cab => new MDFDoorItem() {
                                 Line = cab.ProductNumber,
                                 Qty = cab.Qty,
                                 Height = cab.Height,
@@ -596,9 +744,9 @@ internal class InvoiceDecorator : IInvoiceDecorator {
                                 Description = cab.GetDescription(),
                                 UnitPrice = cab.UnitPrice,
                             }).ToList(),
-            DrawerBoxes = order.Products
+            DovetailDrawerBoxes = order.Products
                             .OfType<DovetailDrawerBoxProduct>()
-                            .Select(cab => new DrawerBoxItem() {
+                            .Select(cab => new DovetailDrawerBoxItem() {
                                 Line = cab.ProductNumber,
                                 Qty = cab.Qty,
                                 Height = cab.Height,
@@ -606,6 +754,23 @@ internal class InvoiceDecorator : IInvoiceDecorator {
                                 Depth = cab.Depth,
                                 Description = cab.GetDescription(),
                                 UnitPrice = cab.UnitPrice,
+                            }).ToList(),
+            DoweledDrawerBoxes = order.Products
+                            .OfType<DoweledDrawerBoxProduct>()
+                            .Select(cab => new DoweledDrawerBoxItem() {
+                                Line = cab.ProductNumber,
+                                Qty = cab.Qty,
+                                Height = cab.Height,
+                                Width = cab.Width,
+                                Depth = cab.Depth,
+                                Description = cab.GetDescription(),
+                                UnitPrice = cab.UnitPrice,
+                            }).ToList(),
+            AdditionalItems = order.AdditionalItems
+                            .Select((item, idx) => new AdditionalItem() {
+                                Line = idx + 1,
+                                Description = item.Description,
+                                Price = item.Price
                             }).ToList()
         };
 

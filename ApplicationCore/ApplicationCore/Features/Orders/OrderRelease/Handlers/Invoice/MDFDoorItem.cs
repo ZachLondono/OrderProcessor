@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.Invoice;
 
-internal class DrawerBoxItem {
+internal class MDFDoorItem {
 
     public int Line { get; set; }
 
@@ -13,8 +13,6 @@ internal class DrawerBoxItem {
     public Dimension Height { get; set; }
 
     public Dimension Width { get; set; }
-
-    public Dimension Depth { get; set; }
 
     public decimal UnitPrice { get; set; }
 

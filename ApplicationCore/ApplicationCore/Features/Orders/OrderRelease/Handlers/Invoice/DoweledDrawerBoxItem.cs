@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.Invoice;
 
-internal class DoorItem {
+internal class DoweledDrawerBoxItem {
 
     public int Line { get; set; }
 
@@ -13,6 +13,8 @@ internal class DoorItem {
     public Dimension Height { get; set; }
 
     public Dimension Width { get; set; }
+
+    public Dimension Depth { get; set; }
 
     public decimal UnitPrice { get; set; }
 
