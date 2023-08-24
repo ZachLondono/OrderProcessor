@@ -36,12 +36,10 @@ public class OrderReleaseModalViewModel {
     private bool _isReportLoadingFiles = false;
     private ReleaseConfiguration _configuration = new();
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
-    private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly ReleaseService _service;
 
-    public OrderReleaseModalViewModel(CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, ReleaseService service) {
+    public OrderReleaseModalViewModel(CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, ReleaseService service) {
         _getVendorByIdAsync = getVendorByIdAsync;
-        _getCustomerByIdAsync = getCustomerByIdAsync;
         _service = service;
     }
 
@@ -63,7 +61,16 @@ public class OrderReleaseModalViewModel {
         }
 
         invoiceEmailRecipients = vendor.ReleaseProfile.InvoiceEmailRecipients;
-        invoiceEmailRecipients = await AddCustomerInvoiceEmailRecipients(firstOrder.CustomerId, invoiceEmailRecipients);
+        var orderInvoiceRecipients = orders.Select(o => o.Billing.InvoiceEmail)
+                                    .Distinct()
+                                    .Where(e => !string.IsNullOrEmpty(e))
+                                    .ToList();
+        var customerInvoiceRecipients = string.Join(";", orderInvoiceRecipients);
+        if (invoiceEmailRecipients != string.Empty && customerInvoiceRecipients != string.Empty) {
+            invoiceEmailRecipients += ";" + customerInvoiceRecipients;
+        } else if (invoiceEmailRecipients == string.Empty && customerInvoiceRecipients != string.Empty) {
+            invoiceEmailRecipients = customerInvoiceRecipients;
+        }
 
         string workingDirectories = string.Join(';', orders.Select(o => o.WorkingDirectory).Where(s => !string.IsNullOrEmpty(s)));
 
@@ -110,21 +117,6 @@ public class OrderReleaseModalViewModel {
             { "InProgressTitle", "Releasing Order..." },
             { "CompleteTitle", "Release Complete" }
         };
-    }
-
-    private async Task<string> AddCustomerInvoiceEmailRecipients(Guid customerId, string invoiceEmailRecipients) {
-        var customer = await _getCustomerByIdAsync(customerId);
-        if (customer is not null && customer.BillingContact.Email is string invoiceEmail) {
-
-            if (!string.IsNullOrEmpty(invoiceEmailRecipients)) {
-                invoiceEmailRecipients = invoiceEmail + ";" + invoiceEmailRecipients;
-            } else {
-                invoiceEmailRecipients = invoiceEmail;
-            }
-
-        }
-
-        return invoiceEmailRecipients;
     }
 
     private async Task LoadCNCReportFiles(List<Order> orders) {
