@@ -2,10 +2,12 @@
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadsheetOrderData.Models;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
 using ApplicationCore.Features.Orders.Shared.Domain.Components;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Shared;
 using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Shared.Domain;
 using ApplicationCore.Shared.Services;
@@ -115,26 +117,32 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
             products.AddRange(MapMelamineDBToProduct(melamineDBHeader, melamineDBs));
             products.AddRange(MapMDFFrontToProduct(mdfFrontHeader, mdfFronts));
 
+            List<AdditionalItem> additionalItems = new();
+            if (cover.InstallCamsCharge > 0) {
+                additionalItems.Add(AdditionalItem.Create("Install Cams", cover.InstallCamsCharge));
+            }
+            if (cover.RushCharge > 0) {
+                additionalItems.Add(AdditionalItem.Create("Rush", cover.RushCharge));
+            }
+            cover.Moldings
+                .Where(m => m.LinearFt > 0)
+                .Select(m => AdditionalItem.Create($"{m.Name} - {m.Color} - {m.LinearFt}ft", m.Price))
+                .ForEach(additionalItems.Add);
+
+            var address = ParseCustomerAddress(cover.AddressLine1, cover.AddressLine2);
+
             var billing = new BillingInfo() {
-                InvoiceEmail = null,
-                PhoneNumber = "",
-                Address = new()
+                InvoiceEmail = cover.CustomerEmail,
+                PhoneNumber = cover.CustomerPhone,
+                Address = address
             };
 
             ShippingInfo shipping = new() {
                 Contact = "",
-                Method = "",
-                PhoneNumber = "",
-                Price = 0M,
-                Address = new Address() {
-                    Line1 = "",
-                    Line2 = "",
-                    Line3 = "",
-                    City = "",
-                    State = "",
-                    Zip = "",
-                    Country = ""
-                }
+                Method = cover.ShippingInformation,
+                PhoneNumber = cover.CustomerPhone,
+                Price = cover.DeliveryCharge,
+                Address = address 
             };
 
             var info = new Dictionary<string, string>();
@@ -147,14 +155,14 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
                 Comment = cover.SpecialRequirements,
                 Shipping = shipping,
                 Billing = billing,
-                Tax = 0M,
-                PriceAdjustment = 0M,
+                Tax = cover.Tax,
+                PriceAdjustment = cover.ManualCharge,
                 OrderDate = cover.OrderDate,
                 CustomerId = (Guid) customerId,
                 VendorId = vendorId,
-                AdditionalItems = new(),
+                AdditionalItems = additionalItems,
                 Products = products,
-                Rush = false,
+                Rush = cover.RushCharge > 0,
                 Info = info
             };
 
@@ -211,6 +219,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
         }
 
     }
+
     private IEnumerable<IProduct> MapZargenToProduct(Cover cover, IEnumerable<Zargen> zargens) {
 
         if (!zargens.Any()) {
@@ -336,6 +345,27 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 		return items;
 
 	}
+
+	private static Address ParseCustomerAddress(string line1, string line2) {
+
+        var parts = line2.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+        string city = "", state = "", zip = "";
+        if (parts.Length == 3) {
+            city = parts[0].TrimEnd(',');
+            state = parts[1];
+            zip = parts[2];
+        }
+
+        return new() {
+            Line1 = line1,
+            Line2 = "",
+            Line3 = "",
+            City = city,
+            State = state,
+            Zip = zip,
+            Country = "USA"
+        };
+    }
 
 	private bool TryGetWorksheet(Workbook workbook, string name,  out Worksheet? worksheet) {
         worksheet = (Worksheet?)workbook.Sheets[name];
