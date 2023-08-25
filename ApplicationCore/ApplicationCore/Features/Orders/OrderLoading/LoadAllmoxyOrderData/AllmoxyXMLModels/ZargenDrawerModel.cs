@@ -9,7 +9,7 @@ using ClosetPaintedSide = ApplicationCore.Features.Orders.Shared.Domain.ValueObj
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 
-public class ClosetPartModel : ProductModel {
+public class ZargenDrawerModel : ProductModel {
 
     [XmlAttribute("groupNumber")]
     public int GroupNumber { get; set; }
@@ -23,11 +23,14 @@ public class ClosetPartModel : ProductModel {
     [XmlElement("sku")]
     public string SKU { get; set; } = string.Empty;
 
-    [XmlElement("width")]
-    public double Width { get; set; }
+    [XmlElement("openingWidth")]
+    public double OpeningWidth { get; set; }
 
-    [XmlElement("length")]
-    public double Length { get; set; }
+    [XmlElement("Height")]
+    public double Height { get; set; }
+
+    [XmlElement("Depth")]
+    public double Depth { get; set; }
 
     [XmlElement("qty")]
     public int Qty { get; set; }
@@ -80,8 +83,9 @@ public class ClosetPartModel : ProductModel {
 
         }
 
-        Dimension width = Dimension.FromMillimeters(Width);
-        Dimension length = Dimension.FromMillimeters(Length);
+        Dimension openingWidth = Dimension.FromMillimeters(OpeningWidth);
+        Dimension height = Dimension.FromMillimeters(Height);
+        Dimension depth = Dimension.FromMillimeters(Depth);
 
         decimal unitPrice = AllmoxyXMLOrderProviderHelpers.StringToMoney(UnitPrice);
 
@@ -91,7 +95,7 @@ public class ClosetPartModel : ProductModel {
 
         string room = Room == "folder_name" ? string.Empty : Room;
 
-        return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), room, SKU, width, length, material, paint, edgeBandColor, Comment, parameters);
+        return new ZargenDrawer(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), room, SKU, openingWidth, height, depth, material, paint, edgeBandColor, Comment, parameters);
 
     }
 

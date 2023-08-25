@@ -9,7 +9,7 @@ using ClosetPaintedSide = ApplicationCore.Features.Orders.Shared.Domain.ValueObj
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 
-public class ClosetPartModel : ProductModel {
+public class CustomDrillingVerticalPanelModel : ProductModel {
 
     [XmlAttribute("groupNumber")]
     public int GroupNumber { get; set; }
@@ -19,9 +19,6 @@ public class ClosetPartModel : ProductModel {
 
     [XmlElement("room")]
     public string Room { get; set; } = string.Empty;
-
-    [XmlElement("sku")]
-    public string SKU { get; set; } = string.Empty;
 
     [XmlElement("width")]
     public double Width { get; set; }
@@ -53,9 +50,41 @@ public class ClosetPartModel : ProductModel {
     [XmlElement("comment")]
     public string Comment { get; set; } = string.Empty;
 
-    [XmlArray("parameters")]
-    [XmlArrayItem(ElementName = "entry", Type = typeof(Parameter))]
-    public List<Parameter> Parameters { get; set; } = new();
+    [XmlElement("drillingType")]
+    public string DrillingType { get; set; } = string.Empty;
+
+    [XmlElement("extendBack")]
+    public double ExtendBack { get; set; }
+
+    [XmlElement("extendFront")]
+    public double ExtendFront { get; set; }
+
+    [XmlElement("holeDimensionFromBottom")]
+    public double HoleDimensionFromBottom { get; set; }
+
+    [XmlElement("holeDimensionFromTop")]
+    public double HoleDimensionFromTop { get; set; }
+
+    [XmlElement("transitionHoleDimensionFromBottom")]
+    public double TransitionHoleDimensionFromBottom { get; set; }
+
+    [XmlElement("transitionHoleDimensionFromTop")]
+    public double TransitionHoleDimensionFromTop { get; set; }
+
+    [XmlElement("bottomNotchDepth")]
+    public double BottomNotchDepth { get; set; }
+
+    [XmlElement("bottomNotchHeight")]
+    public double BottomNotchHeight { get; set; }
+
+    [XmlElement("ledChannelFront")]
+    public double LEDChannelOffFront { get; set; }
+
+    [XmlElement("ledChannelWidth")]
+    public double LEDChannelWidth { get; set; }
+
+    [XmlElement("ledChannelDepth")]
+    public double LEDChannelDepth { get; set; }
 
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
@@ -85,23 +114,29 @@ public class ClosetPartModel : ProductModel {
 
         decimal unitPrice = AllmoxyXMLOrderProviderHelpers.StringToMoney(UnitPrice);
 
-        IReadOnlyDictionary<string, string> parameters = Parameters.ToDictionary(p => p.Name, p => p.Value).AsReadOnly();
-
         string edgeBandColor = EdgeBandColor == "Match" ? MaterialFinish : EdgeBandColor;
 
         string room = Room == "folder_name" ? string.Empty : Room;
 
-        return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), room, SKU, width, length, material, paint, edgeBandColor, Comment, parameters);
+        ClosetVerticalDrillingType drillingType = DrillingType switch {
+            "finished left" => ClosetVerticalDrillingType.FinishedLeft,
+            "finished right" => ClosetVerticalDrillingType.FinishedRight,
+            "drilled through" or _ => ClosetVerticalDrillingType.DrilledThrough,
+        };
 
-    }
+        Dimension extendBack = Dimension.FromMillimeters(ExtendBack);
+        Dimension extendFront = Dimension.FromMillimeters(ExtendFront);
+        Dimension holeDimensionFromBottom = Dimension.FromMillimeters(HoleDimensionFromBottom);
+        Dimension holeDimensionFromTop = Dimension.FromMillimeters(HoleDimensionFromTop);
+        Dimension transitionHoleDimensionFromBottom = Dimension.FromMillimeters(TransitionHoleDimensionFromBottom);
+        Dimension transitionHoleDimensionFromTop = Dimension.FromMillimeters(TransitionHoleDimensionFromTop);
+        Dimension bottomNotchHeight = Dimension.FromMillimeters(BottomNotchHeight);
+        Dimension bottomNotchDepth = Dimension.FromMillimeters(BottomNotchDepth);
+        Dimension ledChannelOffFront = Dimension.FromMillimeters(LEDChannelOffFront);
+        Dimension ledChannelWidth = Dimension.FromMillimeters(LEDChannelWidth);
+        Dimension ledChannelDepth = Dimension.FromMillimeters(LEDChannelDepth);
 
-    public class Parameter {
-
-        [XmlElement("name")]
-        public string Name { get; set; } = string.Empty;
-
-        [XmlElement("value")]
-        public string Value { get; set; } = string.Empty;
+        return new CustomDrilledVerticalPanel(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), room, width, length, material, paint, edgeBandColor, Comment, drillingType, extendBack, extendFront, holeDimensionFromBottom, holeDimensionFromTop, transitionHoleDimensionFromBottom, transitionHoleDimensionFromTop, bottomNotchDepth, bottomNotchHeight, ledChannelOffFront, ledChannelWidth, ledChannelDepth);
 
     }
 
