@@ -8,30 +8,32 @@ namespace ApplicationCore.Features.Orders.Shared.State;
 public partial class InsertOrder {
     public partial class Handler {
 
-        private static async Task InsertProduct(ClosetPart closetPart, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+        private static async Task InsertProduct(ZargenDrawer zargenDrawer, Guid orderId, IDbConnection connection, IDbTransaction trx) {
 
-            await InsertIntoProductTable(closetPart, orderId, connection, trx);
+            await InsertIntoProductTable(zargenDrawer, orderId, connection, trx);
 
             var parameters = new {
-                ProductId = closetPart.Id,
-                Sku = closetPart.SKU,
-                Width = closetPart.Width,
-                Length = closetPart.Length,
-                MaterialFinish = closetPart.Material.Finish,
-                MaterialCore = closetPart.Material.Core,
-                PaintColor = closetPart.Paint?.Color ?? null,
-                PaintedSide = closetPart.Paint?.Side ?? PaintedSide.None,
-                EdgeBandingFinish = closetPart.EdgeBandingColor,
-                Comment = closetPart.Comment,
-                Parameters = (IDictionary<string, string>)closetPart.Parameters
+                ProductId = zargenDrawer.Id,
+                Sku = zargenDrawer.SKU,
+                OpeningWidth = zargenDrawer.OpeningWidth,
+                Height = zargenDrawer.Height,
+                Depth = zargenDrawer.Depth,
+                MaterialFinish = zargenDrawer.Material.Finish,
+                MaterialCore = zargenDrawer.Material.Core,
+                PaintColor = zargenDrawer.Paint?.Color ?? null,
+                PaintedSide = zargenDrawer.Paint?.Side ?? PaintedSide.None,
+                EdgeBandingFinish = zargenDrawer.EdgeBandingColor,
+                Comment = zargenDrawer.Comment,
+                Parameters = (IDictionary<string, string>)zargenDrawer.Parameters
             };
 
             await connection.ExecuteAsync("""
                     INSERT INTO closet_parts
                         (product_id,
                         sku,
-                        width,
-                        length,
+                        opening_width,
+                        height,
+                        depth,
                         material_finish,
                         material_core,
                         paint_color,
@@ -42,8 +44,9 @@ public partial class InsertOrder {
                     VALUES
                         (@ProductId,
                         @Sku,
-                        @Width,
-                        @Length,
+                        @OpeningWidth,
+                        @Height,
+                        @Depth,
                         @MaterialFinish,
                         @MaterialCore,
                         @PaintColor,
@@ -57,5 +60,3 @@ public partial class InsertOrder {
 
     }
 }
-
-
