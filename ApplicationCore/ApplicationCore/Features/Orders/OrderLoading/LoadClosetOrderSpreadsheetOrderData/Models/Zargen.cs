@@ -19,7 +19,7 @@ internal record Zargen : IWorksheetReadable<Zargen> {
 	public static Zargen ReadFromWorksheet(Worksheet worksheet, int row) {
 		int qty = (int) worksheet.GetRangeValueOrDefault($"A{row}", 0.0);
 		var item = worksheet.GetRangeValueOrDefault($"B{row}", "");
-		var holeSize = worksheet.GetRangeValueOrDefault($"C{row}", 0);
+		var holeSize = worksheet.GetRangeValueOrDefault($"C{row}", 0.0);
 		var slideDepth = worksheet.GetRangeValueOrDefault($"D{row}", 0.0);
 		var pullCtrDim = worksheet.GetRangeValueOrDefault($"E{row}", 0.0);
 		var extPrice = (decimal) worksheet.GetRangeValueOrDefault($"N{row}", 0.0);

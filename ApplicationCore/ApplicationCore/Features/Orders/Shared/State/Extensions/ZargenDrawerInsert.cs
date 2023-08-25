@@ -28,7 +28,7 @@ public partial class InsertOrder {
             };
 
             await connection.ExecuteAsync("""
-                    INSERT INTO closet_parts
+                    INSERT INTO zargen_drawers 
                         (product_id,
                         sku,
                         opening_width,

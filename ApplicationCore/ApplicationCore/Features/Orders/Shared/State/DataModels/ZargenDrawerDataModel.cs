@@ -32,7 +32,7 @@ internal class ZargenDrawerDataModel : ProductDataModelBase, IProductDataModel, 
             products.room,
 
             zargen_drawers.sku,
-            zargen_drawers.opening_width,
+            zargen_drawers.opening_width AS OpeningWidth,
             zargen_drawers.height,
             zargen_drawers.depth,
             zargen_drawers.material_finish AS MaterialFinish,
