@@ -23,8 +23,10 @@ public class PatternImageFactory {
 
                 bitmap.Save(@"C:\ProgramData\OrderProcessor\tests\original.jpg", ImageFormat.Jpeg);
 
+                bool wasFlipedX = false;
                 if (orientation == TableOrientation.Rotated) {
-                    bitmap.RotateFlip(RotateFlipType.Rotate90FlipY);
+                    bitmap.RotateFlip(RotateFlipType.Rotate90FlipXY);
+                    wasFlipedX = true;
                     // When rotating a bitmap that changes it's dimensions drawing can only be done within the original bitmaps dimension, so it must be saved and created as a new bitmap
                     using var stream = new MemoryStream();
                     bitmap.Save(stream, ImageFormat.Png);
@@ -34,7 +36,7 @@ public class PatternImageFactory {
                     bitmap.Save(@"C:\ProgramData\OrderProcessor\tests\rotated.jpg", ImageFormat.Jpeg);
                 }
 
-                AddTextToBitmap(bitmap, text, sheetWidth, sheetLength);
+                AddTextToBitmap(bitmap, text, sheetWidth, sheetLength, wasFlipedX);
                 bitmap.Save(@"C:\ProgramData\OrderProcessor\tests\textadded.jpg", ImageFormat.Jpeg);
                 return GetBitmapData(bitmap);
             } catch {
@@ -64,7 +66,7 @@ public class PatternImageFactory {
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
-    static void AddTextToBitmap(Bitmap bitmap, IEnumerable<ImageText> patternTexts, double sheetWidth, double sheetLength) {
+    static void AddTextToBitmap(Bitmap bitmap, IEnumerable<ImageText> patternTexts, double sheetWidth, double sheetLength, bool flipX) {
 
         double mmToPxScaleX = bitmap.Width / sheetLength;
         double mmToPxScaleY = bitmap.Height / sheetWidth;
@@ -80,6 +82,7 @@ public class PatternImageFactory {
             cg.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
             double x = text.Location.X * mmToPxScaleX;
+            if (flipX) x = bitmap.Width - x;
             double y = bitmap.Height - text.Location.Y * mmToPxScaleY;
 
             var textSize = cg.MeasureString(text.Text, font);
