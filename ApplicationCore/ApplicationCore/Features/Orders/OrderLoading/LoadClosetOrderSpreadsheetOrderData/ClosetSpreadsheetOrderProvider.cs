@@ -235,20 +235,21 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
     private IEnumerable<IProduct> MapZargenToProduct(Cover cover, IEnumerable<Zargen> zargens) {
 
-        if (!zargens.Any()) {
-            return Enumerable.Empty<IProduct>();
-        }
+        int line = 1;
         
-        throw new NotImplementedException();
         foreach (var zargen in zargens) {
+
+            if (!zargen.Item.StartsWith('D') || !double.TryParse(zargen.Item[1..], out double height)) {
+                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Unexpected zargen item name {zargen.Item} on line {line}");
+                continue;
+            }
 
             var parameters = new Dictionary<string, string>() {
                 { "OpeningWidth", zargen.HoleSize.ToString() },
                 { "PullCenters", zargen.PullCtrDim.ToString() },
             };
 
-            // zargens use product height and product depth instead of width and length
-            //yield return new Shared.Domain.Products.Closets.ClosetPart(Guid.NewGuid(), zargen.Qty, zargen.UnitPrice, zargen.Number, zargen.RoomName, zargen.Item, Dimension.FromMillimeters(zargen.ProductWidth), Dimension.FromMillimeters(zargen.ProductLength), new(cover.MaterialColor, Shared.Domain.Enums.ClosetMaterialCore.ParticleBoard), null, cover.MaterialColor, zargen.Comment, parameters);
+            yield return new Shared.Domain.Products.Closets.ZargenDrawer(Guid.NewGuid(), zargen.Qty, zargen.ExtPrice / zargen.Qty, line++, string.Empty, zargen.Item, Dimension.FromMillimeters(zargen.HoleSize), Dimension.FromMillimeters(height), Dimension.FromMillimeters(zargen.SlideDepth), new(cover.MaterialColor, Shared.Domain.Enums.ClosetMaterialCore.ParticleBoard), null, cover.MaterialColor, string.Empty, parameters);
 
         }
 
