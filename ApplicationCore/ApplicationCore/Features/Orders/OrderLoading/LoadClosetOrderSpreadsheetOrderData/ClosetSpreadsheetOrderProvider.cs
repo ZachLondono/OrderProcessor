@@ -104,9 +104,13 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
                 return null;
             }
             string workingDirectory = Path.Combine(workingDirectoryRoot, _fileReader.RemoveInvalidPathCharacters($"{orderNumber} {cover.JobName}", ' '));
-            if (!TryToCreateWorkingDirectory(workingDirectory)) {
+            if (!TryToCreateWorkingDirectory(workingDirectory, out string? incomingDirectory)) {
                 OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not create working directory");
                 return null;
+            }
+            if (incomingDirectory is not null) {
+                string fileName = Path.GetFileName(source);
+                File.Copy(source, Path.Combine(incomingDirectory, fileName));
             }
 
             var closetParts = LoadItemsFromWorksheet<ClosetPart>(closetPartSheet);
@@ -132,10 +136,10 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
             List<AdditionalItem> additionalItems = new();
             if (cover.InstallCamsCharge > 0) {
-                additionalItems.Add(AdditionalItem.Create("Install Cams", cover.InstallCamsCharge));
+                additionalItems.Add(AdditionalItem.Create("Install Cams", cover.InstallCamsCharge, true));
             }
             if (cover.RushCharge > 0) {
-                additionalItems.Add(AdditionalItem.Create("Rush", cover.RushCharge));
+                additionalItems.Add(AdditionalItem.Create("Rush", cover.RushCharge, true));
             }
             cover.Moldings
                 .Where(m => m.LinearFt > 0)
@@ -390,18 +394,40 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
         return true;
     }
 
-    private bool TryToCreateWorkingDirectory(string workingDirectory) {
+    private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
 
         workingDirectory = workingDirectory.Trim();
 
         if (Directory.Exists(workingDirectory)) {
+            var incomingDir = Path.Combine(workingDirectory, "incoming");
+            if (Directory.Exists(incomingDir)) {
+                incomingDirectory = incomingDir;
+            } else {
+                incomingDirectory = Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
+            }
             return true;
         }
 
         try {
+
             var dirInfo = Directory.CreateDirectory(workingDirectory);
+
+            if (dirInfo.Exists) {
+
+                var cutlistDir = Path.Combine(workingDirectory, "CUTLIST");
+                _ = Directory.CreateDirectory(cutlistDir);
+
+                var incomingDir = Path.Combine(workingDirectory, "incoming");
+                incomingDirectory = Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
+
+            } else {
+                incomingDirectory = null;
+            }
+
             return dirInfo.Exists;
+
         } catch (Exception ex) {
+            incomingDirectory = null;
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
         }
 
