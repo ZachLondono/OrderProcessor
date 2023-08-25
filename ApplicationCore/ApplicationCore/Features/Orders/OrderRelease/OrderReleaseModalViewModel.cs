@@ -72,13 +72,14 @@ public class OrderReleaseModalViewModel {
             invoiceEmailRecipients = customerInvoiceRecipients;
         }
 
-        string workingDirectories = string.Join(';', orders.Select(o => o.WorkingDirectory).Where(s => !string.IsNullOrEmpty(s)));
+        string workingDirectories = string.Join(';', orders.Select(o => o.WorkingDirectory).Where(s => !string.IsNullOrEmpty(s)).Select(wd => Path.Combine(wd, "CUTLIST")));
 
         string releaseDirectory = @"X:\_CUTLISTS  Incoming";
         if (workingDirectories != string.Empty) {
             releaseDirectory += ";" + workingDirectories;
         }
-        string invoiceDirectory = workingDirectories;
+
+        string invoiceDirectory = string.Join(';', orders.Select(o => o.WorkingDirectory).Where(s => !string.IsNullOrEmpty(s)));
 
         string orderNumbers = string.Join(", ", orders.Select(o => o.Number));
 
