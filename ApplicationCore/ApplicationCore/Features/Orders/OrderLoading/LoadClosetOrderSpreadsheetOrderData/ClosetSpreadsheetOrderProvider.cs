@@ -35,7 +35,17 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 		_getCustomerIdByNameAsync = getCustomerIdByNameAsync;
 	}
 
-	public async Task<OrderData?> LoadOrderData(string source) {
+	public async Task<OrderData?> LoadOrderData(string data) {
+
+        var parts = data.Split('*');
+
+        if (parts.Length != 3) {
+            throw new InvalidOperationException("Invalid data source");
+        }
+
+        string source = parts[0];
+        string? customOrderNumber = string.IsNullOrWhiteSpace(parts[1]) ? null : parts[1];
+        string? customWorkingDirectoryRoot = string.IsNullOrWhiteSpace(parts[2]) ? null : parts[2];
 
         if (!_fileReader.DoesFileExist(source)) {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not access given filepath");
@@ -77,17 +87,20 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
             }
 
             string orderNumber;
-            //if (customOrderNumber is null && string.IsNullOrWhiteSpace(customOrderNumber)) {
+            if (customOrderNumber is null && string.IsNullOrWhiteSpace(customOrderNumber)) {
                 orderNumber = await GetNextOrderNumber((Guid) customerId);
                 var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync((Guid) customerId) ?? throw new InvalidOperationException("Could not get customer data");
                 orderNumber = $"{orderNumberPrefix}{orderNumber}";
-            //} else {
-            //    orderNumber = customOrderNumber;
-            //}
+            } else {
+                orderNumber = customOrderNumber;
+            }
 
-            string? workingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync((Guid) customerId);
+            string? workingDirectoryRoot = customWorkingDirectoryRoot;
             if (workingDirectoryRoot is null) {
-                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not find customer working directory root");
+                workingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync((Guid) customerId);
+            }
+            if (workingDirectoryRoot is null) {
+                workingDirectoryRoot = @"R\Job Scans\Closets";
                 return null;
             }
             string workingDirectory = Path.Combine(workingDirectoryRoot, _fileReader.RemoveInvalidPathCharacters($"{orderNumber} {cover.JobName}", ' '));
