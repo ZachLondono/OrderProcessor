@@ -1,0 +1,28 @@
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
+using ApplicationCore.Shared.Domain;
+
+namespace ApplicationCore.Tests.Unit.Orders.Persistence;
+
+public partial class OrderTests {
+
+    [Fact]
+    public void InsertOrderWithZargenDrawer() {
+        var db = new ZargenDrawer(Guid.NewGuid(), 1, 0M, 1, "",
+                                "D93", Dimension.Zero, Dimension.Zero, Dimension.Zero, new("", Features.Orders.Shared.Domain.Enums.ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
+                                    { "Param1", "Value1"},
+                                    { "Param2", "Value2"}
+                                });
+        InsertAndQueryOrderWithProduct(db);
+    }
+
+    [Fact]
+    public void DeleteOrderWithZargenDrawer() {
+        var db = new ZargenDrawer(Guid.NewGuid(), 1, 0M, 1, "",
+                                "D93", Dimension.Zero, Dimension.Zero, Dimension.Zero, new("", Features.Orders.Shared.Domain.Enums.ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
+                                    { "Param1", "Value1"},
+                                    { "Param2", "Value2"}
+                                });
+        InsertAndDeleteOrderWithProduct(db);
+    }
+
+}

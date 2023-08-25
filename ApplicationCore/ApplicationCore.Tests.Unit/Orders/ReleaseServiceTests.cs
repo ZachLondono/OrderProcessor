@@ -1,14 +1,13 @@
-﻿using ApplicationCore.Features.Companies.Contracts;
+﻿using ApplicationCore.Features.CNC.ReleaseEmail;
+using ApplicationCore.Features.Companies.Contracts;
 using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Shared.Services;
-using ApplicationCore.Shared.Settings;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 
 namespace ApplicationCore.Tests.Unit.Orders;
@@ -25,7 +24,8 @@ public class ReleaseServiceTests {
     private readonly JobSummaryDecoratorFactory _jobSummaryDecorator;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
-    private readonly IOptions<Email> _emailOptions;
+    private readonly IEmailService _emailService;
+    private readonly ReleaseEmailBodyGenerator _emailBodyGenerator;
 
     public ReleaseServiceTests() {
         _fileReader = new FileReader();
@@ -37,9 +37,10 @@ public class ReleaseServiceTests {
         _invoiceDecorator = new(sp);
         _packingListDecorator = new(sp);
         _jobSummaryDecorator = new(sp);
-        _emailOptions = Substitute.For<IOptions<Email>>();
+        _emailService = Substitute.For<IEmailService>();
+        _emailBodyGenerator = Substitute.For<ReleaseEmailBodyGenerator>();
 
-        _sut = new ReleaseService(_logger, _fileReader, _invoiceDecorator, _packingListDecorator, _cncReleaseDecoratorFactory, _jobSummaryDecorator, _getCustomerByIdAsync, _getVendorByIdAsync, _emailOptions);
+        _sut = new ReleaseService(_logger, _fileReader, _invoiceDecorator, _packingListDecorator, _cncReleaseDecoratorFactory, _jobSummaryDecorator, _getCustomerByIdAsync, _getVendorByIdAsync, _emailService, _emailBodyGenerator);
     }
 
     [Fact]
