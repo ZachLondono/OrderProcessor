@@ -368,7 +368,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             Doors = doors,
             DovetailDrawerBoxes = dovetailDb,
             DoweledDrawerBoxes = doweledDb,
-            AdditionalItems = order.AdditionalItems.Count(),
+            AdditionalItems = order.AdditionalItems.Where(i => !i.IsService).Count(),
 
             ShowSuppliesInSummary = _showSupplies,
             Supplies = supplies,

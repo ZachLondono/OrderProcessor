@@ -51,6 +51,7 @@ CREATE TABLE additional_items (
 	order_id BLOB NOT NULL,
 	description TEXT NOT NULL,
 	price REAL NOT NULL,
+	is_service INTEGER NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );

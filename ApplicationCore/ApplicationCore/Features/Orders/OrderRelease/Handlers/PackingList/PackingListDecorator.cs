@@ -683,6 +683,7 @@ internal class PackingListDecorator : IPackingListDecorator {
                                 Description = cab.GetDescription()
                             }).ToList(),
             AdditionalItems = order.AdditionalItems
+                            .Where(i => !i.IsService)
                             .Select((item, idx) => new AdditionalItem() {
                                 Line = idx + 1,
                                 Description = item.Description
