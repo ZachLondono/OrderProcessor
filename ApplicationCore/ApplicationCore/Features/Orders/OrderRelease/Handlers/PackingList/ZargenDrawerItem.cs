@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.PackingList;
 
-internal class ClosetPartItem {
+internal class ZargenDrawerItem {
 
     public int Line { get; set; }
 
@@ -10,9 +10,11 @@ internal class ClosetPartItem {
 
     public string Description { get; set; } = string.Empty;
 
-    public Dimension Length { get; set; }
+    public Dimension OpeningWidth { get; set; }
 
-    public Dimension Width { get; set; }
+    public Dimension Height { get; set; }
+
+    public Dimension Depth { get; set; }
 
 }
 

@@ -34,6 +34,8 @@ internal record Invoice {
 
     public List<ClosetPartItem> ClosetParts { get; set; } = new();
 
+    public List<ZargenDrawerItem> ZargenDrawers { get; set; } = new();
+
     public List<AdditionalItem> AdditionalItems { get; set; } = new();
 
 }

@@ -59,6 +59,10 @@ internal class PackingListDecorator : IPackingListDecorator {
                         ComposeClosetPartTable(column.Item(), _packingList.ClosetParts);
                     }
 
+                    if (_packingList.ZargenDrawers.Any()) {
+                        ComposeZargenDrawerTable(column.Item(), _packingList.ZargenDrawers);
+                    }
+
                     if (_packingList.Doors.Any()) {
                         ComposeMDFDoorTable(column.Item(), _packingList.Doors);
                     }
@@ -311,6 +315,72 @@ internal class PackingListDecorator : IPackingListDecorator {
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Length, 10));
+                    }
+
+                });
+
+        });
+    }
+
+    public static void ComposeZargenDrawerTable(IContainer container, IEnumerable<ZargenDrawerItem> items) {
+        var defaultCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .AlignMiddle()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3);
+
+        var headerCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .Background(Colors.Grey.Lighten3)
+                    .AlignCenter()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3)
+                    .DefaultTextStyle(x => x.Bold());
+
+        container.Column(col => {
+
+            col.Item()
+                .PaddingTop(10)
+                .PaddingLeft(10)
+                .Text($"Zargen Drawers ({items.Sum(i => i.Qty)})")
+                .FontSize(16)
+                .Bold()
+                .Italic();
+
+            col.Item()
+                .DefaultTextStyle(x => x.FontSize(10))
+                .Table(table => {
+
+                    table.ColumnsDefinition(column => {
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(40);
+                        column.RelativeColumn();
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                    });
+
+
+                    table.Header(header => {
+
+                        header.Cell().Element(headerCellStyle).Text("#");
+                        header.Cell().Element(headerCellStyle).Text("Qty");
+                        header.Cell().Element(headerCellStyle).Text("Description");
+                        header.Cell().Element(headerCellStyle).Text("OpeningWidth");
+                        header.Cell().Element(headerCellStyle).Text("Height");
+                        header.Cell().Element(headerCellStyle).Text("Depth");
+
+                    });
+
+                    foreach (var item in items) {
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.OpeningWidth, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
                     }
 
                 });
@@ -660,6 +730,16 @@ internal class PackingListDecorator : IPackingListDecorator {
                                 Qty = cab.Qty,
                                 Length = cab.Length,
                                 Width = cab.Width,
+                                Description = cab.GetDescription()
+                            }).ToList(),
+            ZargenDrawers = order.Products
+                            .OfType<ZargenDrawer>()
+                            .Select(cab => new ZargenDrawerItem() {
+                                Line = cab.ProductNumber,
+                                Qty = cab.Qty,
+                                Height = cab.Height,
+                                Depth = cab.Depth,
+                                OpeningWidth = cab.OpeningWidth,
                                 Description = cab.GetDescription()
                             }).ToList(),
             DovetailDrawerBoxes = order.Products

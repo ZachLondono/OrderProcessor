@@ -21,6 +21,7 @@ internal class JobSummary {
     public bool ShowItemsInSummary { get; set; } = false;
     public List<CabinetGroup> Cabinets { get; set; } = new();
     public List<ClosetPartGroup> ClosetParts { get; set; } = new();
+    public List<ZargenDrawerGroup> ZargenDrawers { get; set; } = new();
     public List<DovetailDrawerBoxGroup> DovetailDrawerBoxes { get; set; } = new();
     public List<DoweledDrawerBoxGroup> DoweledDrawerBoxes { get; set; } = new();
     public List<MDFDoorGroup> Doors { get; set; } = new();
