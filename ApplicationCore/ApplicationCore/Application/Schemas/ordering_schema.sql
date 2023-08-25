@@ -195,6 +195,23 @@ CREATE TABLE custom_drilled_vertical_panels (
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
+CREATE TABLE zargen_drawers (
+	product_id BLOB NOT NULL,
+	sku TEXT NOT NULL,
+	opening_width REAL NOT NULL,
+	height REAL NOT NULL,
+	depth REAL NOT NULL,
+	material_finish TEXT NOT NULL,
+	material_core INTEGER NOT NULL,
+	paint_color TEXT,
+	painted_side INTEGER NOT NULL,
+	edge_banding_finish TEXT NOT NULL,
+	comment TEXT NOT NULL,
+	parameters TEXT NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
 CREATE TABLE cabinets (
 	product_id BLOB NOT NULL,
 	height REAL NOT NULL,
