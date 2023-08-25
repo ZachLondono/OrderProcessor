@@ -22,6 +22,7 @@ public class Room {
 
     public List<Cabinet> Cabinets { get; private set; }
     public List<IClosetPartProduct> ClosetParts { get; private set; }
+    public List<ZargenDrawer> ZargenDrawers { get; private set; }
     public List<DovetailDrawerBoxProduct> DovetailDrawerBoxes { get; private set; }
     public List<DoweledDrawerBoxProduct> DoweledDrawerBoxes { get; private set; }
     public List<MDFDoorProduct> MDFDoors { get; private set; }
@@ -35,6 +36,9 @@ public class Room {
                           .ToList();
 
         ClosetParts = products.OfType<IClosetPartProduct>()
+                              .ToList();
+
+        ZargenDrawers = products.OfType<ZargenDrawer>()
                               .ToList();
 
         DovetailDrawerBoxes = products.OfType<DovetailDrawerBoxProduct>()

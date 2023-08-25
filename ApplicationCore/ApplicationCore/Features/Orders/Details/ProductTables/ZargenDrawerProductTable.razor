@@ -1,0 +1,70 @@
+﻿@using ApplicationCore.Features.Orders.Shared.Domain.Products;
+@using ApplicationCore.Features.Orders.Shared.Domain;
+@using ApplicationCore.Shared.Components
+@using static ApplicationCore.Features.Orders.Details.OrderDetails;
+@using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
+
+<div class="overflow-x-auto rounded-md">
+    <table class="table-auto">
+        <thead class="border-b border-slate-300">
+            <tr>
+                <th class="p-5">#</th>
+                <th class="p-5">Qty</th>
+                <th class="p-5">Width</th>
+                <th class="p-5">Length</th>
+                <th class="p-5">SKU</th>
+                <th class="p-5">Material</th>
+                <th class="p-5">Paint Color</th>
+                <th class="p-5">Painted Side</th>
+                <th class="p-5">EB Color</th>
+                <th class="p-5">Room</th>
+                <th class="p-5">Unit $</th>
+                <th class="p-5">Ext. $</th>
+            </tr>
+        </thead>
+        @foreach (var row in ZargenDrawers) {
+            <tbody class="hover:bg-blue-500/10">
+                <tr>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.ProductNumber</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Qty</td>
+                    @if (UseInches) {
+                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.OpeningWidth.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.Height.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.Depth.GetFormatedFraction())"</td>
+                    } else {
+                        <td class="whitespace-nowrap p-5 border-b text-center">@row.OpeningWidth.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center">@row.Height.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 border-b text-center">@row.Depth.AsMillimeters().ToString("0.00")</td>
+                    }
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.SKU</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@($"{row.Material.Finish}/{row.Material.Core}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@($"{row.Paint?.Color ?? "N/A"}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@($"{row.Paint?.Side.ToString() ?? "N/A"}")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.EdgeBandingColor</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Room</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@row.UnitPrice.ToString("$0.00")</td>
+                    <td class="whitespace-nowrap p-5 border-b text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
+                </tr>
+
+                @if (row.Comment != string.Empty) {
+                    <tr>
+                        <td class="p-5 font-bold border-b text-red-500" colspan="12">
+                            @row.Comment
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        }
+    </table>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public IEnumerable<ZargenDrawer> ZargenDrawers { get; set; } = Enumerable.Empty<ZargenDrawer>();
+
+    [Parameter]
+    public bool UseInches { get; set; }
+
+}
