@@ -151,7 +151,7 @@ public class ReleaseService {
                                         orders.Where(o => !string.IsNullOrEmpty(o.Note))
                                                 .Select(o => $"{(multipleOrders ? $"{o.Number}:" : "")}{o.Note}")
                                     );
-                string body = GenerateEmailBody(configuration.IncludeSummaryInEmailBody, releases, orderNotes);
+                string body = GenerateEmailBody(configuration.IncludeMaterialSummaryInEmailBody, releases, orderNotes);
 
                 List<string> attachments = new() { filePaths.First() };
                 if (configuration.AttachAdditionalFiles) {

@@ -120,8 +120,8 @@
                 </CheckBox>
                 @if (DataContext.Configuration.SendReleaseEmail) {
                     <div class="ml-3">
-                        <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeSummaryInEmailBody">
-                            <span class="text-gray-700 text-sm">Include summary</span>
+                        <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeMaterialSummaryInEmailBody">
+                            <span class="text-gray-700 text-sm">Include material summary</span>
                         </CheckBox>
                         <label class="block text-sm font-medium text-gray-700">Email Recipients</label>
                         <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.ReleaseEmailRecipients" />
