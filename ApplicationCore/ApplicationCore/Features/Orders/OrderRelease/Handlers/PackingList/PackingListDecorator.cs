@@ -213,14 +213,7 @@ internal class PackingListDecorator : IPackingListDecorator {
         container.Column(col => {
 
             col.Item()
-                .PaddingTop(10)
-                .PaddingLeft(10)
-                .Text($"Cabinets ({items.Sum(i => i.Qty)})")
-                .FontSize(16)
-                .Bold()
-                .Italic();
-
-            col.Item()
+                .PaddingTop(20)
                 .DefaultTextStyle(x => x.FontSize(10))
                 .Table(table => {
 
@@ -231,14 +224,23 @@ internal class PackingListDecorator : IPackingListDecorator {
                         column.ConstantColumn(45);
                         column.ConstantColumn(45);
                         column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
                     });
 
-
                     table.Header(header => {
+
+                        header.Cell().ColumnSpan(3).PaddingLeft(10).Text($"Cabinets ({items.Sum(i => i.Qty)})").FontSize(16).Bold().Italic();
+                        header.Cell().ColumnSpan(3).Element(headerCellStyle).Text("Inches");
+                        header.Cell().ColumnSpan(3).Element(headerCellStyle).Text("Millimeters");
 
                         header.Cell().Element(headerCellStyle).Text("#");
                         header.Cell().Element(headerCellStyle).Text("Qty");
                         header.Cell().Element(headerCellStyle).Text("Description");
+                        header.Cell().Element(headerCellStyle).Text("Width");
+                        header.Cell().Element(headerCellStyle).Text("Height");
+                        header.Cell().Element(headerCellStyle).Text("Depth");
                         header.Cell().Element(headerCellStyle).Text("Width");
                         header.Cell().Element(headerCellStyle).Text("Height");
                         header.Cell().Element(headerCellStyle).Text("Depth");
@@ -252,6 +254,9 @@ internal class PackingListDecorator : IPackingListDecorator {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Width.AsMillimeters().ToString("0"));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Height.AsMillimeters().ToString("0"));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Depth.AsMillimeters().ToString("0"));
                     }
 
                 });
@@ -279,14 +284,7 @@ internal class PackingListDecorator : IPackingListDecorator {
         container.Column(col => {
 
             col.Item()
-                .PaddingTop(10)
-                .PaddingLeft(10)
-                .Text($"Closet Parts ({items.Sum(i => i.Qty)})")
-                .FontSize(16)
-                .Bold()
-                .Italic();
-
-            col.Item()
+                .PaddingTop(20)
                 .DefaultTextStyle(x => x.FontSize(10))
                 .Table(table => {
 
@@ -296,14 +294,22 @@ internal class PackingListDecorator : IPackingListDecorator {
                         column.RelativeColumn();
                         column.ConstantColumn(45);
                         column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
                     });
 
 
                     table.Header(header => {
 
+                        header.Cell().ColumnSpan(3).PaddingLeft(10).Text($"Closet Parts ({items.Sum(i => i.Qty)})").FontSize(16).Bold().Italic();
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Inches");
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Millimeters");
+
                         header.Cell().Element(headerCellStyle).Text("#");
                         header.Cell().Element(headerCellStyle).Text("Qty");
                         header.Cell().Element(headerCellStyle).Text("Description");
+                        header.Cell().Element(headerCellStyle).Text("Width");
+                        header.Cell().Element(headerCellStyle).Text("Length");
                         header.Cell().Element(headerCellStyle).Text("Width");
                         header.Cell().Element(headerCellStyle).Text("Length");
 
@@ -315,6 +321,8 @@ internal class PackingListDecorator : IPackingListDecorator {
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Length, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Width.AsMillimeters().ToString("0"));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Length.AsMillimeters().ToString("0"));
                     }
 
                 });
@@ -342,14 +350,7 @@ internal class PackingListDecorator : IPackingListDecorator {
         container.Column(col => {
 
             col.Item()
-                .PaddingTop(10)
-                .PaddingLeft(10)
-                .Text($"Zargen Drawers ({items.Sum(i => i.Qty)})")
-                .FontSize(16)
-                .Bold()
-                .Italic();
-
-            col.Item()
+                .PaddingTop(20)
                 .DefaultTextStyle(x => x.FontSize(10))
                 .Table(table => {
 
@@ -360,14 +361,24 @@ internal class PackingListDecorator : IPackingListDecorator {
                         column.ConstantColumn(45);
                         column.ConstantColumn(45);
                         column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
                     });
 
 
                     table.Header(header => {
 
+                        header.Cell().ColumnSpan(3).PaddingLeft(10).Text($"Zargen Drawers ({items.Sum(i => i.Qty)})").FontSize(16).Bold().Italic();
+                        header.Cell().ColumnSpan(3).Element(headerCellStyle).Text("Inches");
+                        header.Cell().ColumnSpan(3).Element(headerCellStyle).Text("Millimeters");
+
                         header.Cell().Element(headerCellStyle).Text("#");
                         header.Cell().Element(headerCellStyle).Text("Qty");
                         header.Cell().Element(headerCellStyle).Text("Description");
+                        header.Cell().Element(headerCellStyle).Text("OpeningWidth");
+                        header.Cell().Element(headerCellStyle).Text("Height");
+                        header.Cell().Element(headerCellStyle).Text("Depth");
                         header.Cell().Element(headerCellStyle).Text("OpeningWidth");
                         header.Cell().Element(headerCellStyle).Text("Height");
                         header.Cell().Element(headerCellStyle).Text("Depth");
@@ -381,6 +392,9 @@ internal class PackingListDecorator : IPackingListDecorator {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.OpeningWidth, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.OpeningWidth.AsMillimeters().ToString("0"));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Height.AsMillimeters().ToString("0"));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Depth.AsMillimeters().ToString("0"));
                     }
 
                 });
@@ -409,14 +423,7 @@ internal class PackingListDecorator : IPackingListDecorator {
         container.Column(col => {
 
             col.Item()
-                .PaddingTop(10)
-                .PaddingLeft(10)
-                .Text($"Doors ({items.Sum(i => i.Qty)})")
-                .FontSize(16)
-                .Bold()
-                .Italic();
-
-            col.Item()
+                .PaddingTop(20)
                 .DefaultTextStyle(x => x.FontSize(10))
                 .Table(table => {
 
@@ -426,14 +433,22 @@ internal class PackingListDecorator : IPackingListDecorator {
                         column.RelativeColumn();
                         column.ConstantColumn(45);
                         column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
                     });
 
 
                     table.Header(header => {
 
+                        header.Cell().ColumnSpan(3).PaddingLeft(10).Text($"Doors ({items.Sum(i => i.Qty)})").FontSize(16).Bold().Italic();
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Inches");
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Millimeters");
+
                         header.Cell().Element(headerCellStyle).Text("#");
                         header.Cell().Element(headerCellStyle).Text("Qty");
                         header.Cell().Element(headerCellStyle).Text("Description");
+                        header.Cell().Element(headerCellStyle).Text("Width");
+                        header.Cell().Element(headerCellStyle).Text("Height");
                         header.Cell().Element(headerCellStyle).Text("Width");
                         header.Cell().Element(headerCellStyle).Text("Height");
 
@@ -445,6 +460,8 @@ internal class PackingListDecorator : IPackingListDecorator {
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Width.AsMillimeters().ToString("0"));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Height.AsMillimeters().ToString("0"));
                     }
 
                 });
@@ -474,14 +491,7 @@ internal class PackingListDecorator : IPackingListDecorator {
         container.Column(col => {
 
             col.Item()
-                .PaddingTop(10)
-                .PaddingLeft(10)
-                .Text($"Doweled Drawer Boxes ({items.Sum(i => i.Qty)})")
-                .FontSize(16)
-                .Bold()
-                .Italic();
-
-            col.Item()
+                .PaddingTop(20)
                 .DefaultTextStyle(x => x.FontSize(10))
                 .Table(table => {
 
@@ -492,14 +502,24 @@ internal class PackingListDecorator : IPackingListDecorator {
                         column.ConstantColumn(45);
                         column.ConstantColumn(45);
                         column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
                     });
 
 
                     table.Header(header => {
 
+                        header.Cell().ColumnSpan(3).PaddingLeft(10).Text($"Doweled Drawer Boxes ({items.Sum(i => i.Qty)})").FontSize(16).Bold().Italic();
+                        header.Cell().ColumnSpan(3).Element(headerCellStyle).Text("Inches");
+                        header.Cell().ColumnSpan(3).Element(headerCellStyle).Text("Millimeters");
+
                         header.Cell().Element(headerCellStyle).Text("#");
                         header.Cell().Element(headerCellStyle).Text("Qty");
                         header.Cell().Element(headerCellStyle).Text("Description");
+                        header.Cell().Element(headerCellStyle).Text("Width");
+                        header.Cell().Element(headerCellStyle).Text("Height");
+                        header.Cell().Element(headerCellStyle).Text("Depth");
                         header.Cell().Element(headerCellStyle).Text("Width");
                         header.Cell().Element(headerCellStyle).Text("Height");
                         header.Cell().Element(headerCellStyle).Text("Depth");
@@ -515,6 +535,9 @@ internal class PackingListDecorator : IPackingListDecorator {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Width.AsMillimeters().ToString("0"));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Height.AsMillimeters().ToString("0"));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Depth.AsMillimeters().ToString("0"));
 
                     }
 
@@ -545,14 +568,7 @@ internal class PackingListDecorator : IPackingListDecorator {
         container.Column(col => {
 
             col.Item()
-                .PaddingTop(10)
-                .PaddingLeft(10)
-                .Text($"Dovetail Drawer Boxes ({items.Sum(i => i.Qty)})")
-                .FontSize(16)
-                .Bold()
-                .Italic();
-
-            col.Item()
+                .PaddingTop(20)
                 .DefaultTextStyle(x => x.FontSize(10))
                 .Table(table => {
 
@@ -563,14 +579,24 @@ internal class PackingListDecorator : IPackingListDecorator {
                         column.ConstantColumn(45);
                         column.ConstantColumn(45);
                         column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
                     });
 
 
                     table.Header(header => {
 
+                        header.Cell().ColumnSpan(3).PaddingLeft(10).Text($"Dovetail Drawer Boxes ({items.Sum(i => i.Qty)})").FontSize(16).Bold().Italic();
+                        header.Cell().ColumnSpan(3).Element(headerCellStyle).Text("Inches");
+                        header.Cell().ColumnSpan(3).Element(headerCellStyle).Text("Millimeters");
+
                         header.Cell().Element(headerCellStyle).Text("#");
                         header.Cell().Element(headerCellStyle).Text("Qty");
                         header.Cell().Element(headerCellStyle).Text("Description");
+                        header.Cell().Element(headerCellStyle).Text("Width");
+                        header.Cell().Element(headerCellStyle).Text("Height");
+                        header.Cell().Element(headerCellStyle).Text("Depth");
                         header.Cell().Element(headerCellStyle).Text("Width");
                         header.Cell().Element(headerCellStyle).Text("Height");
                         header.Cell().Element(headerCellStyle).Text("Depth");
@@ -584,6 +610,9 @@ internal class PackingListDecorator : IPackingListDecorator {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Width.AsMillimeters().ToString("0"));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Height.AsMillimeters().ToString("0"));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Depth.AsMillimeters().ToString("0"));
                     }
 
                 });
@@ -629,12 +658,11 @@ internal class PackingListDecorator : IPackingListDecorator {
 						column.RelativeColumn();
 					});
 
-
 					table.Header(header => {
 
 						header.Cell().Element(headerCellStyle).Text("#");
 						header.Cell().Element(headerCellStyle).Text("Description");
-
+                        
 					});
 
 					foreach (var item in items) {
