@@ -60,7 +60,7 @@ internal class OrderExportModalViewModel {
             GenerateCSV = containsCNC,
             CsvJobName = $"{order.Number} - {order.Name}",
             ExtJobName = $"{order.Number} - {order.Name}",
-            OutputDirectory = order.WorkingDirectory
+            OutputDirectory = Path.Combine(order.WorkingDirectory, "orders")
         };
 
     }
