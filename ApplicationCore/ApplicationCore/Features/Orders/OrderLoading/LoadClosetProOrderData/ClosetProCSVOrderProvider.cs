@@ -134,9 +134,8 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
     private string CreateWorkingDirectory(string source, ClosetProOrderInfo info, string orderNumber, string? customerWorkingDirectoryRoot) {
         string cpDefaultWorkingDirectory = @"R:\Job Scans\ClosetProSoftware"; // TODO: Get base directory from configuration file
         string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? cpDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {info.Header.DesignerCompany} - {info.Header.OrderName}", ' '));
-        bool workingDirExists = TryToCreateWorkingDirectory(workingDirectory);
-        if (workingDirExists) {
-            string dataFile = _fileReader.GetAvailableFileName(workingDirectory, "Incoming", ".csv");
+        if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDir) && incomingDir is not null) {
+            string dataFile = _fileReader.GetAvailableFileName(incomingDir, "Incoming", ".csv");
             File.Copy(source, dataFile);
         }
 
@@ -213,23 +212,41 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
     }
 
-    private bool TryToCreateWorkingDirectory(string workingDirectory) {
+    private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
 
         workingDirectory = workingDirectory.Trim();
 
-        if (Directory.Exists(workingDirectory)) {
-            return true;
-        }
-
         try {
-            var dirInfo = Directory.CreateDirectory(workingDirectory);
-            return dirInfo.Exists;
+
+            if (Directory.Exists(workingDirectory)) {
+                incomingDirectory = CreateSubDirectories(workingDirectory);
+                return true;
+            }else if (Directory.CreateDirectory(workingDirectory).Exists) {
+                incomingDirectory = CreateSubDirectories(workingDirectory);
+                return true;
+            } else {
+                incomingDirectory = null;
+                return false;
+            }
+
         } catch (Exception ex) {
+            incomingDirectory = null;
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
         }
 
         return false;
 
+    }
+
+    private static string? CreateSubDirectories(string workingDirectory) {
+        var cutListDir = Path.Combine(workingDirectory, "CUTLIST");
+        _ = Directory.CreateDirectory(cutListDir);
+        
+        var ordersDir = Path.Combine(workingDirectory, "orders");
+        _ = Directory.CreateDirectory(ordersDir);
+        
+        var incomingDir = Path.Combine(workingDirectory, "incoming");
+        return Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
     }
 
     public static bool TryParseMoneyString(string text, out decimal value) {

@@ -398,33 +398,18 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
         workingDirectory = workingDirectory.Trim();
 
-        if (Directory.Exists(workingDirectory)) {
-            var incomingDir = Path.Combine(workingDirectory, "incoming");
-            if (Directory.Exists(incomingDir)) {
-                incomingDirectory = incomingDir;
-            } else {
-                incomingDirectory = Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
-            }
-            return true;
-        }
-
         try {
 
-            var dirInfo = Directory.CreateDirectory(workingDirectory);
-
-            if (dirInfo.Exists) {
-
-                var cutlistDir = Path.Combine(workingDirectory, "CUTLIST");
-                _ = Directory.CreateDirectory(cutlistDir);
-
-                var incomingDir = Path.Combine(workingDirectory, "incoming");
-                incomingDirectory = Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
-
+            if (Directory.Exists(workingDirectory)) {
+                incomingDirectory = CreateSubDirectories(workingDirectory);
+                return true;
+            }else if (Directory.CreateDirectory(workingDirectory).Exists) {
+                incomingDirectory = CreateSubDirectories(workingDirectory);
+                return true;
             } else {
                 incomingDirectory = null;
+                return false;
             }
-
-            return dirInfo.Exists;
 
         } catch (Exception ex) {
             incomingDirectory = null;
@@ -433,6 +418,17 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
         return false;
 
+    }
+
+    private static string? CreateSubDirectories(string workingDirectory) {
+        var cutListDir = Path.Combine(workingDirectory, "CUTLIST");
+        _ = Directory.CreateDirectory(cutListDir);
+        
+        var ordersDir = Path.Combine(workingDirectory, "orders");
+        _ = Directory.CreateDirectory(ordersDir);
+        
+        var incomingDir = Path.Combine(workingDirectory, "incoming");
+        return Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
     }
 
     private async Task<string> GetNextOrderNumber(Guid customerId) {
