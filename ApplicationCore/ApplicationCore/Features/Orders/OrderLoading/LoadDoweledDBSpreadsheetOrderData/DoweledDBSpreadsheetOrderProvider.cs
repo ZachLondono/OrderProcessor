@@ -99,6 +99,7 @@ internal class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
             };
 
             var dirRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customerId);
+            if (string.IsNullOrWhiteSpace(dirRoot)) dirRoot = null;
             var workingDirectory = CreateWorkingDirectory(source, header.OrderNumber, header.OrderName, header.CustomerName, dirRoot);
 
             return new() {
@@ -221,6 +222,10 @@ internal class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
     }
 
     private string CreateWorkingDirectory(string source, string orderNumber, string orderName, string customerName, string? customerWorkingDirectory) {
+        if (string.IsNullOrWhiteSpace(customerWorkingDirectory) && string.IsNullOrWhiteSpace(_options.DefaultWorkingDirectory)) {
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "No valid working directory root found. Working directory must be created manually and incoming data copied.");
+            return string.Empty;
+        }
         string workingDirectory = Path.Combine((customerWorkingDirectory ?? _options.DefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {customerName} - {orderName}", ' '));
         if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDirectory) && incomingDirectory is not null) {
             string dataFile = _fileReader.GetAvailableFileName(incomingDirectory, "Incoming", ".csv");
