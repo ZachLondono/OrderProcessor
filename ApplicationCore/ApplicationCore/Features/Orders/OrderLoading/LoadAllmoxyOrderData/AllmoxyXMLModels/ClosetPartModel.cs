@@ -54,8 +54,8 @@ public class ClosetPartModel : ProductModel {
     public string Comment { get; set; } = string.Empty;
 
     [XmlArray("parameters")]
-    [XmlArrayItem(ElementName = "entry", Type = typeof(Parameter))]
-    public List<Parameter> Parameters { get; set; } = new();
+    [XmlArrayItem(ElementName = "entry", Type = typeof(PSIParameter))]
+    public List<PSIParameter> Parameters { get; set; } = new();
 
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
@@ -95,14 +95,5 @@ public class ClosetPartModel : ProductModel {
 
     }
 
-    public class Parameter {
-
-        [XmlElement("name")]
-        public string Name { get; set; } = string.Empty;
-
-        [XmlElement("value")]
-        public string Value { get; set; } = string.Empty;
-
-    }
 
 }
