@@ -105,12 +105,12 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                     }
 
                                     if (dovetailQty > 0) {
-                                        table.Cell().AlignRight().PaddingRight(5).Text("Dovetail Drawer Boxes:");
+                                        table.Cell().AlignRight().PaddingRight(5).Text("Dovetail DBs:");
                                         table.Cell().AlignCenter().Text(dovetailQty == 0 ? "-" : dovetailQty.ToString());
                                     }
 
                                     if (doweledQty > 0) {
-                                        table.Cell().AlignRight().PaddingRight(5).Text("Doweled Drawer Boxes:");
+                                        table.Cell().AlignRight().PaddingRight(5).Text("Doweled DBs:");
                                         table.Cell().AlignCenter().Text(doweledQty == 0 ? "-" : doweledQty.ToString());
                                     }
 
