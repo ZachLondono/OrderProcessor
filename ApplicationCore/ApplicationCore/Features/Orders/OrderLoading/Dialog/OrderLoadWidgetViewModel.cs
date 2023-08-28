@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Logging;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
@@ -87,6 +86,7 @@ internal class OrderLoadWidgetViewModel : IOrderLoadWidgetViewModel {
         } catch (Exception ex) {
 
             AddLoadingMessage(MessageSeverity.Error, $"Exception thrown while trying to load order data - {ex.Message}");
+            _logger.LogError(ex, "Exception thrown while trying to load order data.");
             State = State.Error;
 
         }
