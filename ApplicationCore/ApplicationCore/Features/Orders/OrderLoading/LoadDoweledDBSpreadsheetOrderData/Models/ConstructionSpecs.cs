@@ -17,7 +17,7 @@ public record ConstructionSpecs {
             MachineFrontFromOutside = worksheet.GetRangeStringValue("MachineFrontFromOutside") == "Yes",
             MachineBackFromOutside = worksheet.GetRangeStringValue("MachineBackFromOutside") == "Yes",
             FrontBackDrop = worksheet.GetRangeValue<double>("FrontBackAdj", 0),
-            DrillingDepthAdjustment = worksheet.GetRangeValue<double>("DrillDepthAdjustment", 0),
+            DrillingDepthAdjustment = worksheet.GetRangeValue<double>("DrillDepthAdjustment", 0.0),
             FullHeightFront = worksheet.GetRangeStringValue("FullHeightFront") == "Yes",
             FullHeightBack = worksheet.GetRangeStringValue("FullHeightBack") == "Yes"
         };

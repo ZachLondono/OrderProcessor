@@ -43,14 +43,14 @@ public record LineItem {
     public static LineItem ReadFromSheet(Worksheet worksheet, int row) {
 
         return new() {
-            Number = worksheet.GetRangeValue<int>("BoxNumStart", 0, row),
+            Number = (int) worksheet.GetRangeValue<double>("BoxNumStart", 0, row),
             Note = worksheet.GetRangeStringValue("BoxNoteStart", row),
-            Qty = worksheet.GetRangeValue<int>("BoxQtyStart", 0, row),
+            Qty = (int) worksheet.GetRangeValue<double>("BoxQtyStart", 0, row),
             Height = worksheet.GetRangeValue<double>("BoxHeightStart", 0, row),
             Width = worksheet.GetRangeValue<double>("BoxWidthStart", 0, row),
             Depth = worksheet.GetRangeValue<double>("BoxDepthStart", 0, row),
             Instructions = worksheet.GetRangeStringValue("BoxInstructionsStart", row),
-            UnitPrice = worksheet.GetRangeValue<decimal>("BoxUnitPriceStart", 0M, row),
+            UnitPrice = (decimal) worksheet.GetRangeValue<double>("BoxUnitPriceStart", 0, row),
             FrontBackColor = worksheet.GetRangeStringValue("FrontBackColorStart", row),
             FrontBackThickness = worksheet.GetRangeValue<double>("FrontBackThicknessStart", 0, row),
             FrontBackGrained = worksheet.GetRangeStringValue("FrontBackGrainedStart", row) == "Yes",

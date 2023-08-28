@@ -21,7 +21,7 @@ public static class ExcelExtensions {
 
         if (range is null) return defaultValue;
         if (range.Value2 is null) return defaultValue;
-
+        
         if (range.Value2 is T val) {
             return val;
         }
