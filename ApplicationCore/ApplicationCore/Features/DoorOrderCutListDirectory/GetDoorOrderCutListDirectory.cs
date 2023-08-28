@@ -1,0 +1,61 @@
+﻿using ApplicationCore.Infrastructure.Bus;
+
+namespace ApplicationCore.Features.DoorOrderCutListDirectory;
+
+internal class GetDoorOrderCutListDirectory {
+
+    public record Query(string OrderFileDirectory) : IQuery<string>;
+
+    public class Handler : QueryHandler<Query, string> {
+
+        public override Task<Response<string>> Handle(Query query) {
+
+            if (!query.OrderFileDirectory.StartsWith(@"R:\Job Scans")) {
+                return Task.FromResult(Response<string>.Success(@"R:\Door Orders\Door Programs"));
+            }
+
+			if (!query.OrderFileDirectory.ToLowerInvariant().Contains("orders")) {
+				return Task.FromResult(Response<string>.Success(Path.Combine(query.OrderFileDirectory, "CUTLIST")));
+			}
+
+			string directory = query.OrderFileDirectory;
+			while (true) {
+
+				var dirInfo = new DirectoryInfo(directory);
+
+				if (dirInfo.Parent is null) {
+					break;
+				}
+
+				if (Path.GetFileNameWithoutExtension(directory) is string dirName) {
+
+					if (dirName.ToLowerInvariant() == "orders") {
+
+						var parentDi = new DirectoryInfo(dirInfo.Parent.FullName);
+						var existingDir = parentDi.GetDirectories()
+												.Where(info => info.Name.ToLowerInvariant().Contains("cutlist"))
+												.FirstOrDefault();
+
+						if (existingDir is not null) {
+							return Task.FromResult(Response<string>.Success(existingDir.FullName));
+						}
+
+						return Task.FromResult(Response<string>.Success(Path.Combine(dirInfo.Parent.FullName, "CUTLIST")));
+
+					}
+
+				} else {
+					break;
+				}
+
+				directory = dirInfo.Parent.FullName;
+
+			}
+
+			return Task.FromResult(Response<string>.Success(Path.Combine(query.OrderFileDirectory, "CUTLIST")));
+
+		}
+
+    }
+
+}

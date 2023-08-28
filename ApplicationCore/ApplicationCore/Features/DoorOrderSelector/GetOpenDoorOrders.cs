@@ -53,8 +53,9 @@ public class GetOpenDoorOrders {
                                 string jobName = worksheet.Range["JobName"].Value2.ToString();
                                 string jobNumber = worksheet.Range["JobNumber"].Value2.ToString();
                                 string reportFilePath = @$"Y:\CADCode\Reports\{jobNumber} - {jobName}.xml"; // TODO: Get this directory from a settings file
+                                string directory = workbook.Path;
 
-                                doorOrders.Add(new(customerName, vendorName, jobName, jobNumber, reportFilePath));
+                                doorOrders.Add(new(customerName, vendorName, jobName, jobNumber, reportFilePath, directory));
 
                             } catch (Exception ex) {
                                 _logger.LogWarning(ex, "Exception thrown while trying to read order info from door order MDF tab");

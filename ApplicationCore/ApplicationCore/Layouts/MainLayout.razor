@@ -2,6 +2,7 @@
 @using ApplicationCore.Features.CNC.ReleaseDialog;
 @using ApplicationCore.Features.ClosetOrderSelector;
 @using ApplicationCore.Features.Companies.Customers.Create;
+@using ApplicationCore.Features.DoorOrderCutListDirectory;
 @using ApplicationCore.Features.OpenDoorOrders;
 @using ApplicationCore.Features.Orders
 @using ApplicationCore.Features.Orders.OrderLoading
@@ -234,9 +235,12 @@
 			HideHeader = true,
 			DisableBackgroundCancel = true
 		});
-		var result = await dialog.Result;	
+		var result = await dialog.Result;
 		if (result.Confirmed && result.Data is DoorOrder doorOrder) {
-			dialog = ShowReleasePDFDialogModal(doorOrder.Customer, doorOrder.Vendor, $"{doorOrder.OrderNumber} CUTLIST", doorOrder.ReportFilePath, @"R:\Door Orders\Door Programs", true, "maciej@royalcabinet.com");
+			var outputDirResult = await Bus.Send(new GetDoorOrderCutListDirectory.Query(doorOrder.OrderFileDirectory));
+			string outputDirectory = @"R:\Door Orders\Door Programs";
+			outputDirResult.OnSuccess(dir => outputDirectory = dir);			
+			dialog = ShowReleasePDFDialogModal(doorOrder.Customer, doorOrder.Vendor, $"{doorOrder.OrderNumber} CUTLIST", doorOrder.ReportFilePath, outputDirectory, true, "maciej@royalcabinet.com");
 			_ = await dialog.Result;
 		}
 	}
