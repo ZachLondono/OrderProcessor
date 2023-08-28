@@ -27,7 +27,7 @@ public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDovetailDr
             description += ", Scoop Front";
         }
 
-        if (!string.IsNullOrWhiteSpace(DrawerBoxOptions.Accessory)) {
+        if (!string.IsNullOrWhiteSpace(DrawerBoxOptions.Accessory) && DrawerBoxOptions.Accessory.ToLowerInvariant() != "none") {
             description += $", {DrawerBoxOptions.Accessory}";
         }
 
