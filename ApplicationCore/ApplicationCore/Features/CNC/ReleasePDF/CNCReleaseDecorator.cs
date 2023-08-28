@@ -65,13 +65,18 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                     Programs = group.SelectMany(group => group.Patterns)
                                                                     .Select(pattern => {
                                                                         var material = report.Materials[pattern.MaterialId];
+                                                                        double area = material.XDim * material.YDim;
+                                                                        double usedArea = pattern.Parts
+                                                                                              .Select<PatternPart,(int qty, Part part)>(part => (part.Locations.Count(), report.Parts[part.PartId]))
+                                                                                              .Sum(data => data.qty * data.part.Width * data.part.Length);
+                                                                        double yield = usedArea / area;
                                                                         return new ReleasedProgram() {
                                                                             Name = pattern.Name,
                                                                             HasFace6 = false,
                                                                             ImagePath = $"y:\\CADCode\\pix\\{GetImageFileName(pattern.Name)}.wmf",
                                                                             Material = new() {
                                                                                 IsGrained = false,
-                                                                                Yield = 0,
+                                                                                Yield = yield,
                                                                                 Name = material.Name,
                                                                                 Width = material.YDim,
                                                                                 Length = material.XDim,

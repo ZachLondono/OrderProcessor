@@ -92,7 +92,7 @@ internal class ReleasePDFDecoratorFactory {
             pages.Add(new() {
                 Header = $"{job.JobName}  [{string.Join(',', releases.Select(r => r.MachineName))}]",
                 MachinePrograms = programs,
-                Subtitle = $"{material.Name} - {material.Width:0.00}x{material.Length:0.00}x{material.Thickness:0.00}",
+                Subtitle = $"{material.Name} - {material.Width:0.00}x{material.Length:0.00}x{material.Thickness:0.00} - {material.Yield:P2}",
 
                 TimeStamp = job.TimeStamp,
                 ImageData = imageData,
@@ -116,15 +116,17 @@ internal class ReleasePDFDecoratorFactory {
         var usedmaterials = releases.First()
                                     .Programs
                                     .Select(p => p.Material)
-                                    .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained));
+                                    .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained, m.Yield));
         var materialTableContent = new List<Dictionary<string, string>>();
         foreach (var mat in usedmaterials) {
+            double avgYield = mat.Sum(m => m.Yield) / mat.Count();
             materialTableContent.Add(new() {
                     { "Qty", mat.Count().ToString() },
                     { "Name", mat.Key.Name },
                     { "Width", mat.Key.Width.ToString("0.00") },
                     { "Length", mat.Key.Length.ToString("0.00") },
                     { "Thickness", mat.Key.Thickness.ToString("0.00") },
+                    { "Avg. Yield", avgYield.ToString("P2") }
                 });
         }
 
