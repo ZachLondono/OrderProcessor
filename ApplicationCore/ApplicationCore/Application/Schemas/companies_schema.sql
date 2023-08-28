@@ -89,3 +89,7 @@ INSERT INTO vendors (id, name, phone, logo, address_id, export_db_order, export_
 INSERT INTO addresses (id, line1, line2, line3, city, state, zip, country) VALUES ('45249639-5131-480a-9bce-9e06e0843854','15E Easy St','','','Bound Brook','NJ','08805','USA');
 INSERT INTO vendors (id, name, phone, logo, address_id, export_db_order, export_mdf_door_order, export_ext_file, release_include_invoice, release_packing_list, release_job_summary, release_send_email, release_email_recipients, release_invoice, release_invoice_send_email, release_invoice_email_recipients)
 	VALUES ('579badff-4579-481d-98cf-0012eb2cc75e', 'Royal Cabinet Company', '', (CAST('' AS BLOB)), '45249639-5131-480a-9bce-9e06e0843854', 0, 0, 0, 0, 0, 0, 0, '', 0, 0, '');
+
+INSERT INTO addresses (id, line1, line2, line3, city, state, zip, country) VALUES ('fd0a640e-fa18-48b8-94e2-0df5ed7b66f0','55 South St','Ste C','','Mount Vernon','NY','10550','USA');
+INSERT INTO vendors (id, name, phone, logo, address_id, export_db_order, export_mdf_door_order, export_ext_file, release_include_invoice, release_packing_list, release_job_summary, release_send_email, release_email_recipients, release_invoice, release_invoice_send_email, release_invoice_email_recipients)
+	VALUES ('38dc201f-669d-41be-b0f4-adfa4c003a99', 'Hafele America Co.', '', (CAST('' AS BLOB)), 'fd0a640e-fa18-48b8-94e2-0df5ed7b66f0', 0, 0, 0, 0, 0, 0, 0, '', 0, 0, '');
