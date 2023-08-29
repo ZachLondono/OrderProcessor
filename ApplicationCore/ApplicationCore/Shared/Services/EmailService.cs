@@ -4,30 +4,55 @@ using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using System.Text.Json;
 
 namespace ApplicationCore.Shared.Services;
 
 public class EmailService : IEmailService {
 
-	private readonly Email _emailSettings;
+	private readonly string _settingsFilePath;
+	private readonly IFileReader _fileReader;
+	private Email? _emailSettings = null;
 
-	public EmailService(IOptions<Email> options) {
-		_emailSettings = options.Value;
+	public EmailService(IOptions<ConfigurationFiles> options, IFileReader fileReader) {
+		_settingsFilePath = options.Value.EmailConfigFile;
+		_fileReader = fileReader;
 	}
 
-	public MailboxAddress GetSender() => new(_emailSettings.SenderName, _emailSettings.SenderEmail);
+	public async Task<MailboxAddress> GetSenderAsync() {
+		var settings = await GetSettingsAsync();
+		return new(settings.SenderName, settings.SenderEmail);
+	}
 
 	public async Task<string> SendMessageAsync(MimeMessage message) {
 
+		var settings = await GetSettingsAsync();
+
 		using var client = new SmtpClient();
-		client.Connect(_emailSettings.Host, _emailSettings.Port, SecureSocketOptions.Auto);
-		client.Authenticate(_emailSettings.SenderEmail, UserDataProtection.Unprotect(_emailSettings.ProtectedPassword));
+		client.Connect(settings.Host, settings.Port, SecureSocketOptions.Auto);
+		client.Authenticate(settings.SenderEmail, UserDataProtection.Unprotect(settings.ProtectedPassword));
 
 		var response = await client.SendAsync(message);
 
 		await client.DisconnectAsync(true);
 
 		return response;
+
+	}
+
+	private async Task<Email> GetSettingsAsync() {
+
+		if (_emailSettings is not null) return _emailSettings;
+
+		using var stream = _fileReader.OpenReadFileStream(_settingsFilePath);
+
+		var data = await JsonSerializer.DeserializeAsync<Email>(stream);
+
+		if (data is null) {
+			throw new InvalidOperationException("Failed to load email settings");
+		}
+
+		return data;
 
 	}
 

@@ -10,4 +10,7 @@ public class ConfigurationFiles {
     [ConfigurationKeyName("Data")]
     public string DataConfigFile { get; set; } = string.Empty;
 
+    [ConfigurationKeyName("Email")]
+    public string EmailConfigFile { get; set; } = string.Empty;
+
 }

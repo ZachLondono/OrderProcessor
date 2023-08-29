@@ -263,7 +263,8 @@ public class ReleaseService {
             return;
         }
 
-        message.From.Add(_emailService.GetSender());
+        var sender = await _emailService.GetSenderAsync();
+        message.From.Add(sender);
         message.Subject = subject;
 
         var builder = new BodyBuilder {

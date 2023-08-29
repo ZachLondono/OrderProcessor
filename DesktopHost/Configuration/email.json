@@ -1,0 +1,9 @@
+{
+  "Email": {
+    "SenderName": "Zach",
+    "SenderEmail": "zach@royalcabinet.com",
+    "ProtectedPassword": "AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAhGwwfL+jQkWIl3wyJwqVXwAAAAACAAAAAAAQZgAAAAEAACAAAADyL9mj01HHdP02ZhEOUEjYJHJppdow1ORWIIGGBPD0JgAAAAAOgAAAAAIAACAAAADES2+tjNPPK/NPGs1U2Ls9yRtYNa8wwyNJnfcbqpAH2BAAAACXJ8vqpZnzMnjX6Zv4jjWWQAAAAALHnkLT2Bw0jxjF9YAbgPb3y7EbH84K7lRuDwOZi+fv+SXuKbqW2hzPH+OY7r0zZj/0XJVLy4I6Yadr49TbsAA=",
+    "Host": "smtp-mail.outlook.com",
+    "Port": 587
+  }
+}
