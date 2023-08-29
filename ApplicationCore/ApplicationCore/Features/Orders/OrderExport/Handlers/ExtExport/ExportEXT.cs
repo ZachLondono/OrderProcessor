@@ -31,7 +31,6 @@ public class ExportEXT {
                                 .ToList();
 
             var jobName = command.JobName.Replace(".", "");
-            if (jobName.Length > 30) jobName = jobName[..30];
 
             var customer = await _getCustomerByIdAsync(command.Order.CustomerId);
             var customerName = customer?.Name ?? "";
@@ -42,7 +41,7 @@ public class ExportEXT {
 
             var writer = new ExtWriter();
 
-            new PPJobConverter(writer).ConvertOrder(job);
+            new PPJobConverter(writer).ConvertOrder(job, command.Order.Name[..60]);
 
             writer.WriteFile(filePath);
 

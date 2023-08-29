@@ -28,7 +28,7 @@ public class PPJobConverterTests {
         var job = new PPJob("Job Name", DateTime.Now, "", products);
 
         // Act
-        _sut.ConvertOrder(job);
+        _sut.ConvertOrder(job, "Lvl1");
 
         // Assert
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
@@ -50,7 +50,7 @@ public class PPJobConverterTests {
         var job = new PPJob("Job Name", DateTime.Now, "", products);
 
         // Act
-        _sut.ConvertOrder(job);
+        _sut.ConvertOrder(job, "Lvl1");
 
         // Assert
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
@@ -72,7 +72,7 @@ public class PPJobConverterTests {
         var job = new PPJob("Job Name", DateTime.Now, "", products);
 
         // Act
-        _sut.ConvertOrder(job);
+        _sut.ConvertOrder(job, "Lvl1");
 
         // Assert
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
@@ -94,7 +94,7 @@ public class PPJobConverterTests {
         var job = new PPJob("Job Name", DateTime.Now, "", products);
 
         // Act
-        _sut.ConvertOrder(job);
+        _sut.ConvertOrder(job, "Lvl1");
 
         // Assert
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
@@ -116,7 +116,7 @@ public class PPJobConverterTests {
         var job = new PPJob("Job Name", DateTime.Now, "", products);
 
         // Act
-        _sut.ConvertOrder(job);
+        _sut.ConvertOrder(job, "Lvl1");
 
         // Assert
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
@@ -138,7 +138,7 @@ public class PPJobConverterTests {
         var job = new PPJob("Job Name", DateTime.Now, "", products);
 
         // Act
-        _sut.ConvertOrder(job);
+        _sut.ConvertOrder(job, "Lvl1");
 
         // Assert
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name" && j.LevelId == 0));
@@ -163,7 +163,7 @@ public class PPJobConverterTests {
         var job = new PPJob("Job Name", DateTime.Now, "", products);
 
         // Act
-        _sut.ConvertOrder(job);
+        _sut.ConvertOrder(job, "Lvl1");
 
         // Assert
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name" && j.LevelId == 0));
@@ -195,7 +195,7 @@ public class PPJobConverterTests {
         var job = new PPJob("Job Name", DateTime.Now, "", products);
 
         // Act
-        _sut.ConvertOrder(job);
+        _sut.ConvertOrder(job, "Lvl1");
 
         // Assert
         _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
