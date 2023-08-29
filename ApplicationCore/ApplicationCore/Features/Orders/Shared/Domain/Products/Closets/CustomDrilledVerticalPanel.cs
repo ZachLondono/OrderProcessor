@@ -90,15 +90,16 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             SKU = "PE";
         }
 
+        // PSI can only do custom transition drilling if the 'non-finished' side has full drilling & PSI does not handle custom drilling w/ bottom notch correctly 
         if ((holeDimensionFromBottom == Dimension.Zero && holeDimensionFromTop == Dimension.Zero
             || transitionHoleDimensionFromBottom == Dimension.Zero && transitionHoleDimensionFromTop == Dimension.Zero)
-            // PSI does not handle custom drilling w/ bottom notch correctly 
             && !((holeDimensionFromBottom != Dimension.Zero || holeDimensionFromTop != Dimension.Zero || transitionHoleDimensionFromBottom != Dimension.Zero || transitionHoleDimensionFromTop != Dimension.Zero) && BottomNotchHeight != Dimension.Zero)) {
             _requiresCustomDrilling = false;
         } else {
             _requiresCustomDrilling = true;
         }
 
+        // TODO: support two sided drilling
         // If BOTH holes from top and holes from bottom are zero than EITHER transition holes from top can be greater than holes from top and transition holes from bottom can be greater than holes from bottom
         // If holes from top OR holes from bottom is not zero than BOTH transition holes from top must be less than or equal to holes from top and transition holes from bottom must be less than or equal to holes from bottom
         if ((HoleDimensionFromTop != Dimension.Zero || HoleDimensionFromBottom != Dimension.Zero)
