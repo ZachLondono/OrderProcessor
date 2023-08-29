@@ -41,7 +41,9 @@ public class ExportEXT {
 
             var writer = new ExtWriter();
 
-            new PPJobConverter(writer).ConvertOrder(job, command.Order.Name[..60]);
+            string defaultLevelName = command.Order.Name;
+            if (defaultLevelName.Length > 60) defaultLevelName = defaultLevelName[..60];
+            new PPJobConverter(writer).ConvertOrder(job, defaultLevelName);
 
             writer.WriteFile(filePath);
 
