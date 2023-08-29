@@ -12,7 +12,7 @@ public class PPJobConverter {
         _writer = writer;
     }
 
-    public void ConvertOrder(PPJob job) {
+    public void ConvertOrder(PPJob job, string defaultLevelName) {
 
         _writer.Clear();
 
@@ -51,11 +51,18 @@ public class PPJobConverter {
 
             var room = rooms.First();
 
+            if (room.Groups.Count() == 1) {
+
+                AddGroupToWriter(room.Groups.First(), jobId, jobId + 1, defaultLevelName);
+                return;
+
+            }
+
             int groupIdx = 0;
             foreach (var group in room.Groups) {
 
                 groupIdx++;
-                AddGroupToWriter(group, jobId, jobId + groupIdx, $"Lvl{groupIdx}");
+                AddGroupToWriter(group, jobId, jobId + groupIdx, $"{groupIdx}-{defaultLevelName}"[..60]);
 
             }
 
@@ -78,7 +85,7 @@ public class PPJobConverter {
             var level = new LevelDescriptor() {
                 LevelId = jobId + roomIdx,
                 ParentId = jobId,
-                Name = string.IsNullOrEmpty(room.Name) ? $"Lvl{roomIdx}" : room.Name,
+                Name = (string.IsNullOrEmpty(room.Name) ? $"{roomIdx}-{defaultLevelName}" : room.Name)[..60],
 
                 // The from the first group are used, since if there is only one group in the room the products will be added directly to this level
                 Catalog = firstGroup.Key.Catalog,
@@ -109,7 +116,7 @@ public class PPJobConverter {
                     groupIdx++;
 
                     int lvlId = jobId + roomIdx + groupIdx;
-                    AddGroupToWriter(group, level.LevelId, lvlId, $"{groupIdx}-{level.Name}");
+                    AddGroupToWriter(group, level.LevelId, lvlId, $"{groupIdx}-{level.Name}"[..60]);
 
                 }
 

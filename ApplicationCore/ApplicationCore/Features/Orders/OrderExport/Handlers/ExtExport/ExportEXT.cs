@@ -42,7 +42,7 @@ public class ExportEXT {
 
             var writer = new ExtWriter();
 
-            new PPJobConverter(writer).ConvertOrder(job);
+            new PPJobConverter(writer).ConvertOrder(job, command.Order.Name[..60]);
 
             writer.WriteFile(filePath);
 
