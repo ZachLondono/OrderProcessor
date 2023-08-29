@@ -7,7 +7,7 @@
 @using Microsoft.Extensions.Options;
 @using MimeKit;
 @using static ApplicationCore.Shared.Components.Button;
-@inject IOptions<Email> EmailOptions
+@inject EmailService EmailService
 @inject IFileReader FileReader
 
 @if (_isSent) {
@@ -50,8 +50,6 @@
         _isSending = true;
         _ = InvokeAsync(StateHasChanged);
 
-        var settings = EmailOptions.Value;
-
         string recipientName = "Zach";
         string recipientEmail = "zach@royalcabinet.com";
         string subject = $"BUG REPORT";
@@ -73,17 +71,13 @@
         var body = builder.ToMessageBody();
 
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress(settings.SenderName, settings.SenderEmail));
+        var sender = await EmailService.GetSenderAsync();
+        message.From.Add(sender);
         message.To.Add(new MailboxAddress(recipientName, recipientEmail));
         message.Subject = subject;
         message.Body = body;
 
-        using var client = new SmtpClient();
-        client.Connect(settings.Host, settings.Port, SecureSocketOptions.Auto);
-        client.Authenticate(settings.SenderEmail, UserDataProtection.Unprotect(settings.ProtectedPassword));
-
-        _response = await client.SendAsync(message);
-        await client.DisconnectAsync(true);
+        await EmailService.SendMessageAsync(message);
 
         _isSending = false;
         _isSent = true;
