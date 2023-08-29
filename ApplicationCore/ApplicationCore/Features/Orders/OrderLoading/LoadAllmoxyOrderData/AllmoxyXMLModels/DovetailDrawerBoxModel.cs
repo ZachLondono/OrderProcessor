@@ -80,9 +80,7 @@ public class DovetailDrawerBoxModel : ProductModel {
 
         var options = new DovetailDrawerBoxConfig(Material, Material, Material, Bottom, Clips, Notch, Insert, LogoPosition.None);
 
-        string room = Room == "folder_name" ? string.Empty : Room;
-
-        return DovetailDrawerBoxProduct.Create(unitPrice, Qty, room, GetProductNumber(), height, width, depth, Note, labelFields, options);
+        return DovetailDrawerBoxProduct.Create(unitPrice, Qty, Room, GetProductNumber(), height, width, depth, Note, labelFields, options);
 
     }
 

@@ -64,9 +64,7 @@ public class DoweledDrawerBoxModel : ProductModel {
 
         var frontBackAdj = Dimension.FromMillimeters(FrontBackHeightAdj);
 
-        string room = Room == "folder_name" ? string.Empty : Room;
-
-        return new DoweledDrawerBoxProduct(Guid.NewGuid(), UnitPrice, Qty, room, GetProductNumber(), height, width, depth, boxMat, boxMat, boxMat, bottomMat, MachineForUMSlides, frontBackAdj);
+        return new DoweledDrawerBoxProduct(Guid.NewGuid(), UnitPrice, Qty, Room, GetProductNumber(), height, width, depth, boxMat, boxMat, boxMat, bottomMat, MachineForUMSlides, frontBackAdj);
 
     }
 

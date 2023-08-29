@@ -33,9 +33,12 @@ public class PPJobConverter {
 
         int jobId = 0;
 
+        string jobName = job.Name;
+        if (jobName.Length > 30) jobName = jobName[..30];
+
         var jobDesc = new JobDescriptor() {
             LevelId = jobId,
-            Job = job.Name[..30],
+            Job = jobName,
             Date = job.OrderDate,
             Info1 = job.CustomerName,
             Catalog = "",
@@ -62,7 +65,9 @@ public class PPJobConverter {
             foreach (var group in room.Groups) {
 
                 groupIdx++;
-                AddGroupToWriter(group, jobId, jobId + groupIdx, $"{groupIdx}-{defaultLevelName}"[..60]);
+                string levelName = $"{groupIdx}-{defaultLevelName}";
+                if (levelName.Length > 60) levelName = levelName[..60];
+                AddGroupToWriter(group, jobId, jobId + groupIdx, levelName);
 
             }
 
@@ -81,11 +86,14 @@ public class PPJobConverter {
 
             var firstGroup = room.Groups.First();
 
+            string levelName = (string.IsNullOrEmpty(room.Name) ? $"{roomIdx}-{defaultLevelName}" : room.Name);
+            if (levelName.Length > 60) levelName = levelName[..60];
+
             // Every level must have catalog, material, fronts & hardware defined, even if there are no products directly within it
             var level = new LevelDescriptor() {
                 LevelId = jobId + roomIdx,
                 ParentId = jobId,
-                Name = (string.IsNullOrEmpty(room.Name) ? $"{roomIdx}-{defaultLevelName}" : room.Name)[..60],
+                Name = levelName,
 
                 // The from the first group are used, since if there is only one group in the room the products will be added directly to this level
                 Catalog = firstGroup.Key.Catalog,
@@ -116,7 +124,9 @@ public class PPJobConverter {
                     groupIdx++;
 
                     int lvlId = jobId + roomIdx + groupIdx;
-                    AddGroupToWriter(group, level.LevelId, lvlId, $"{groupIdx}-{level.Name}"[..60]);
+                    string subLevelName = $"{groupIdx}-{level.Name}";
+                    if (subLevelName.Length > 60) subLevelName = subLevelName[..60];
+                    AddGroupToWriter(group, level.LevelId, lvlId, subLevelName);
 
                 }
 

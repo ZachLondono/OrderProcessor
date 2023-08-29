@@ -55,9 +55,8 @@ public class FivePieceDoorModel : ProductModel {
         var panelThickness = Dimension.FromMillimeters(6.35);
 
         decimal unitPrice = AllmoxyXMLOrderProviderHelpers.StringToMoney(UnitPrice);
-        string room = Room == "folder_name" ? string.Empty : Room;
 
-        return new FivePieceDoorProduct(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), room, width, height, frameSize, frameThickness, panelThickness, material);
+        return new FivePieceDoorProduct(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, width, height, frameSize, frameThickness, panelThickness, material);
 
     }
 

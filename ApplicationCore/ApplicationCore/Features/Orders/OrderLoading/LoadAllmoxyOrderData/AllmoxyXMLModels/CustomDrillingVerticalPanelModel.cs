@@ -116,8 +116,6 @@ public class CustomDrillingVerticalPanelModel : ProductModel {
 
         string edgeBandColor = EdgeBandColor == "Match" ? MaterialFinish : EdgeBandColor;
 
-        string room = Room == "folder_name" ? string.Empty : Room;
-
         ClosetVerticalDrillingType drillingType = DrillingType switch {
             "finished left" => ClosetVerticalDrillingType.FinishedLeft,
             "finished right" => ClosetVerticalDrillingType.FinishedRight,
@@ -136,7 +134,7 @@ public class CustomDrillingVerticalPanelModel : ProductModel {
         Dimension ledChannelWidth = Dimension.FromMillimeters(LEDChannelWidth);
         Dimension ledChannelDepth = Dimension.FromMillimeters(LEDChannelDepth);
 
-        return new CustomDrilledVerticalPanel(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), room, width, length, material, paint, edgeBandColor, Comment, drillingType, extendBack, extendFront, holeDimensionFromBottom, holeDimensionFromTop, transitionHoleDimensionFromBottom, transitionHoleDimensionFromTop, bottomNotchDepth, bottomNotchHeight, ledChannelOffFront, ledChannelWidth, ledChannelDepth);
+        return new CustomDrilledVerticalPanel(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, width, length, material, paint, edgeBandColor, Comment, drillingType, extendBack, extendFront, holeDimensionFromBottom, holeDimensionFromTop, transitionHoleDimensionFromBottom, transitionHoleDimensionFromTop, bottomNotchDepth, bottomNotchHeight, ledChannelOffFront, ledChannelWidth, ledChannelDepth);
 
     }
 

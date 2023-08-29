@@ -111,6 +111,12 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
         List<IProduct> products = new();
         data.Products.ForEach(c => MapAndAddProduct(c, products));
 
+        // 'Folder 1' is the default allmoxy folder name, if that is the only folder name than it can be removed
+        var roomNames = products.Select(p => p.Room).Distinct().ToList();
+        if (roomNames.Count == 1 && roomNames.First() == "Folder 1") {
+            products.ForEach(p => p.Room = string.Empty);
+        }
+
         string number = data.Number.ToString();
         string? prefix = await _getCustomerOrderPrefixByIdAsync(customerId);
         if (prefix is not null) {
@@ -276,6 +282,9 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
         try {
 
             var product = data.CreateProduct(_builderFactory);
+            if (product.Room == "folder_name") {
+                product.Room = string.Empty;
+            }
             products.Add(product);
 
         } catch (Exception ex) {

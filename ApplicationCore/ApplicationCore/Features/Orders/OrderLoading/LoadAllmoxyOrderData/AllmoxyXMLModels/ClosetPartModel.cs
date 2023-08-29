@@ -89,9 +89,7 @@ public class ClosetPartModel : ProductModel {
 
         string edgeBandColor = EdgeBandColor == "Match" ? MaterialFinish : EdgeBandColor;
 
-        string room = Room == "folder_name" ? string.Empty : Room;
-
-        return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), room, SKU, width, length, material, paint, edgeBandColor, Comment, parameters);
+        return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, SKU, width, length, material, paint, edgeBandColor, Comment, parameters);
 
     }
 

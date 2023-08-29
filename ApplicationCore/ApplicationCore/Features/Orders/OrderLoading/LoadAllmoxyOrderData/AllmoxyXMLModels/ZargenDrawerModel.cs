@@ -93,9 +93,7 @@ public class ZargenDrawerModel : ProductModel {
 
         string edgeBandColor = EdgeBandColor == "Match" ? MaterialFinish : EdgeBandColor;
 
-        string room = Room == "folder_name" ? string.Empty : Room;
-
-        return new ZargenDrawer(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), room, SKU, openingWidth, height, depth, material, paint, edgeBandColor, Comment, parameters);
+        return new ZargenDrawer(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, SKU, openingWidth, height, depth, material, paint, edgeBandColor, Comment, parameters);
 
     }
 
