@@ -24,6 +24,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
     private JobSummary? _jobSummary = null;
     private bool _showItems = false;
     private bool _showSupplies = false;
+    private bool _showInvoiceSummary = false;
 
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
@@ -33,9 +34,10 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
         _getCustomerByIdAsync = getCustomerByIdAsync;
     }
 
-    public async Task AddData(Order order, bool showItems, bool showSupplies) {
+    public async Task AddData(Order order, bool showItems, bool showSupplies, bool showInvoiceSummary) {
         _showItems = showItems;
         _showSupplies = showSupplies;
+        _showInvoiceSummary = showInvoiceSummary;
         _jobSummary = await GetJobSummaryModel(order);
     }
 
@@ -134,17 +136,21 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                         column.ConstantColumn(75);
                                     });
 
-                                    table.Cell().AlignRight().PaddingRight(5).Text("Sub Total:");
-                                    table.Cell().AlignCenter().Text($"${jobSummary.SubTotal:0.00}");
+                                    if (jobSummary.ShowInvoiceSummary) {
 
-                                    table.Cell().AlignRight().PaddingRight(5).Text("Shipping:");
-                                    table.Cell().AlignCenter().Text($"${jobSummary.Shipping:0.00}");
+                                        table.Cell().AlignRight().PaddingRight(5).Text("Sub Total:");
+                                        table.Cell().AlignCenter().Text($"${jobSummary.SubTotal:0.00}");
 
-                                    table.Cell().BorderBottom(0.5f).AlignRight().PaddingRight(5).Text("Sales Tax:");
-                                    table.Cell().BorderBottom(0.5f).AlignCenter().Text($"${jobSummary.SalesTax:0.00}");
+                                        table.Cell().AlignRight().PaddingRight(5).Text("Shipping:");
+                                        table.Cell().AlignCenter().Text($"${jobSummary.Shipping:0.00}");
 
-                                    table.Cell().AlignRight().PaddingRight(5).Text("Total:").Bold().FontSize(14);
-                                    table.Cell().AlignCenter().Text($"${jobSummary.Total:0.00}").Bold().FontSize(14);
+                                        table.Cell().BorderBottom(0.5f).AlignRight().PaddingRight(5).Text("Sales Tax:");
+                                        table.Cell().BorderBottom(0.5f).AlignCenter().Text($"${jobSummary.SalesTax:0.00}");
+
+                                        table.Cell().AlignRight().PaddingRight(5).Text("Total:").Bold().FontSize(14);
+                                        table.Cell().AlignCenter().Text($"${jobSummary.Total:0.00}").Bold().FontSize(14);
+
+                                    }
 
                                 });
 
@@ -392,6 +398,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
             SpecialRequirements = order.Note,
 
+            ShowInvoiceSummary = _showInvoiceSummary,
             SubTotal = order.SubTotal,
             SalesTax = order.Tax,
             Shipping = order.Shipping.Price,

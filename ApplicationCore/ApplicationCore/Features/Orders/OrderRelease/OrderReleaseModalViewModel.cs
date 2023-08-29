@@ -91,6 +91,7 @@ public class OrderReleaseModalViewModel {
             GenerateJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
             IncludeProductTablesInSummary = false,
             IncludeSuppliesInSummary = false,
+            IncludeInvoiceSummary = true,
             GeneratePackingList = vendor.ReleaseProfile.GeneratePackingList,
             IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
             ReleaseFileName = $"{orderNumbers} CUTLIST",

@@ -43,6 +43,11 @@
                             <span class="text-gray-700 text-sm">Include supplies in summary</span>
                         </CheckBox>
                     </div>
+                    <div>
+                        <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeInvoiceSummary">
+                            <span class="text-gray-700 text-sm">Include invoice in summary</span>
+                        </CheckBox>
+                    </div>
                 </div>
             } else {
                 <br />

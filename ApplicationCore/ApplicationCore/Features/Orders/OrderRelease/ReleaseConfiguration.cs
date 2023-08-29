@@ -12,6 +12,7 @@ public class ReleaseConfiguration {
     public bool IncludeProductTablesInSummary { get; set; }
     public bool IncludeSuppliesInSummary { get; set; }
     public bool IncludeInvoiceInRelease { get; set; }
+    public bool IncludeInvoiceSummary { get; set; }
     public string? ReleaseEmailRecipients { get; set; }
     public bool SendReleaseEmail { get; set; }
     public bool IncludeMaterialSummaryInEmailBody { get; set; }

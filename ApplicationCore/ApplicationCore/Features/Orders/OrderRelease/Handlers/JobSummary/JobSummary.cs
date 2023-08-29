@@ -13,6 +13,7 @@ internal class JobSummary {
 
     public string SpecialRequirements { get; set; } = string.Empty;
 
+    public bool ShowInvoiceSummary { get; set; } = false;
     public decimal SubTotal { get; set; }
     public decimal Shipping { get; set; }
     public decimal SalesTax { get; set; }
