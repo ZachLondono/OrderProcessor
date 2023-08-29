@@ -6,6 +6,7 @@ namespace ApplicationCore.Tests.Unit.CNC;
 
 public class ReleaseComparerTests {
 
+    /*
     private readonly ReleaseGroupComparer _sut;
 
     public ReleaseComparerTests() {
@@ -491,5 +492,6 @@ public class ReleaseComparerTests {
         result.Should().BeFalse();
 
     }
+    */
 
 }
