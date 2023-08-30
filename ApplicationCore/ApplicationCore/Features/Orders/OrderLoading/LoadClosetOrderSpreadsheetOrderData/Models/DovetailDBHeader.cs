@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadsheetOrderData.Models;
 
-internal record DovetailDBHeader(string BoxMaterial, string BottomMaterial, string Notch, string Clips, bool PostFinish, bool SandFlush) {
+internal record DovetailDBHeader(string BoxMaterial, string BottomMaterial, string Notch, string Clips, bool PostFinish, bool SandFlush, bool IncludeHettichSlides) {
 
 	public static DovetailDBHeader ReadFromWorksheet(Worksheet worksheet) {
 
@@ -52,10 +52,18 @@ internal record DovetailDBHeader(string BoxMaterial, string BottomMaterial, stri
 		if (hettich) clips = "Hettich";
 		if (richelieu) clips = "Richelieu";
 
+		var includeHettichSlides = false;
+		var boxes = worksheet.CheckBoxes();
+		foreach (CheckBox box in boxes) {
+			if (box.Name == "HettichSlideCheckBox") {
+				includeHettichSlides = worksheet.CheckBoxes("HettichSlideCheckBox").Value == 1;
+			}
+		}
+
 		var postFinish = worksheet.CheckBoxes("PostCheckBox").Value == 1;
 		var sandFlush = worksheet.CheckBoxes("SandCheckBox").Value == 1;
 
-		return new(boxMaterial, bottomMaterial, notch, clips, postFinish, sandFlush);
+		return new(boxMaterial, bottomMaterial, notch, clips, postFinish, sandFlush, includeHettichSlides);
 
 	}
 

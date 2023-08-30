@@ -1,7 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.Dialog;
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadsheetOrderData.Models;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
-using ApplicationCore.Features.Orders.Shared.Domain.Components;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
@@ -284,6 +283,8 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
     private IEnumerable<IProduct> MapDovetailDBToProduct(DovetailDBHeader header, IEnumerable<DovetailDB> dovetailDBs) {
 
+        string accessory = header.IncludeHettichSlides ? "Hettich Slides" : "";
+
         foreach (var dovetail in dovetailDBs) {
 
             yield return DovetailDrawerBoxProduct.Create(dovetail.UnitPrice,
@@ -302,7 +303,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 															 header.BottomMaterial,
 															 header.Clips,
 															 header.Notch,
-															 "",
+															 accessory,
 															 Shared.Domain.Enums.LogoPosition.None,
 															 header.PostFinish));
 
