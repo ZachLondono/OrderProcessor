@@ -101,7 +101,7 @@ internal class OrderLoadWidgetViewModel : IOrderLoadWidgetViewModel {
 
         try {
 
-            order = Order.Create(source, data.Number, data.Name, string.Empty, data.WorkingDirectory, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.Shipping, data.Billing, data.Tax, data.PriceAdjustment, data.Rush, data.Info, data.Products, data.AdditionalItems);
+            order = Order.Create(source, data.Number, data.Name, string.Empty, data.WorkingDirectory, data.CustomerId, data.VendorId, data.Comment, data.OrderDate, data.DueDate, data.Shipping, data.Billing, data.Tax, data.PriceAdjustment, data.Rush, data.Info, data.Products, data.AdditionalItems);
 
             var result = await _bus.Send(new InsertOrder.Command(order));
             result.OnError(error => {

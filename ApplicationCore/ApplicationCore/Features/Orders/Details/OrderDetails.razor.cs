@@ -17,6 +17,7 @@ public partial class OrderDetails {
     public List<Room> Rooms { get; set; } = new();
 
     private string _note = string.Empty;
+    private DateTime? _dueDate = null; 
     private string? _customerName = null;
     private string? _vendorName = null;
 
@@ -34,6 +35,8 @@ public partial class OrderDetails {
 
         _note = OrderState.Order.Note;
 
+        _dueDate = OrderState.Order.DueDate;
+
         Rooms = OrderState.Order
                     .Products
                     .GroupBy(p => p.Room)
@@ -48,6 +51,27 @@ public partial class OrderDetails {
 
     public void OpenVendorPage(Guid companyId) {
         NavigationService.NavigateToVendorPage(companyId);
+    }
+
+    private void AddDueDate() {
+        _dueDate = DateTime.Today;
+        OrderState.SetDueDate(_dueDate);
+        StateHasChanged();
+    }
+
+    private void RemoveDueDate() {
+        _dueDate = null;
+        OrderState.SetDueDate(null);
+        StateHasChanged();
+    }
+
+    private void OnDueDateChanged(ChangeEventArgs args) {
+        string newDueDateStr = args.Value?.ToString() ?? "";
+
+        if (DateTime.TryParse(newDueDateStr, out DateTime newDueDate)) { 
+            _dueDate = newDueDate;
+            OrderState.SetDueDate(newDueDate);
+        }
     }
 
     private void ToggleUnits() {

@@ -14,6 +14,7 @@ public class Order {
     public Guid VendorId { get; }
     public string CustomerComment { get; }
     public DateTime OrderDate { get; }
+    public DateTime? DueDate { get; set; }
     public ShippingInfo Shipping { get; }
     public BillingInfo Billing { get; }
     public decimal Tax { get; }
@@ -37,7 +38,7 @@ public class Order {
         get => SubTotal + Tax + Shipping.Price;
     }
 
-    public Order(Guid id, string source, string number, string name, string note, string workingDirectory, Guid customerId, Guid vendorId, string customerComment, DateTime orderDate, ShippingInfo shipping, BillingInfo billing, decimal tax, decimal priceAdjustment, bool rush, IReadOnlyDictionary<string, string> info, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> additionalItems) {
+    public Order(Guid id, string source, string number, string name, string note, string workingDirectory, Guid customerId, Guid vendorId, string customerComment, DateTime orderDate, DateTime? dueDate, ShippingInfo shipping, BillingInfo billing, decimal tax, decimal priceAdjustment, bool rush, IReadOnlyDictionary<string, string> info, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> additionalItems) {
         Id = id;
         Source = source;
         Number = number;
@@ -48,6 +49,7 @@ public class Order {
         VendorId = vendorId;
         CustomerComment = customerComment;
         OrderDate = orderDate;
+        DueDate = dueDate;
         Shipping = shipping;
         Billing = billing;
         Tax = tax;
@@ -58,8 +60,8 @@ public class Order {
         AdditionalItems = additionalItems;
     }
 
-    public static Order Create(string source, string number, string name, string note, string workingDirectory, Guid customerId, Guid vendorId, string comment, DateTime orderDate, ShippingInfo shipping, BillingInfo billing, decimal tax, decimal priceAdjustment, bool rush, IReadOnlyDictionary<string, string> info, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> additionalItems, Guid? id = null) {
-        return new Order(id ?? Guid.NewGuid(), source, number, name, note, workingDirectory, customerId, vendorId, comment, orderDate, shipping, billing, tax, priceAdjustment, rush, info, products, additionalItems);
+    public static Order Create(string source, string number, string name, string note, string workingDirectory, Guid customerId, Guid vendorId, string comment, DateTime orderDate, DateTime? dueDate, ShippingInfo shipping, BillingInfo billing, decimal tax, decimal priceAdjustment, bool rush, IReadOnlyDictionary<string, string> info, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> additionalItems, Guid? id = null) {
+        return new Order(id ?? Guid.NewGuid(), source, number, name, note, workingDirectory, customerId, vendorId, comment, orderDate, dueDate, shipping, billing, tax, priceAdjustment, rush, info, products, additionalItems);
     }
 
 }
