@@ -257,7 +257,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
         Point start;
         Point end;
 
-        for (int i = 0; i < passCount; i++) {
+        for (int i = 0; i < passCount - 1; i++) {
 
             start = new Point() {
                 X = -offEdgeMM,
