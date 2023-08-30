@@ -116,7 +116,7 @@ internal class ReleasePDFDecoratorFactory {
         var usedmaterials = releases.First()
                                     .Programs
                                     .Select(p => p.Material)
-                                    .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained, m.Yield));
+                                    .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained));
         var materialTableContent = new List<Dictionary<string, string>>();
         foreach (var mat in usedmaterials) {
             double avgYield = mat.Sum(m => m.Yield) / mat.Count();
