@@ -107,6 +107,7 @@ internal class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
                 CustomerId = customerId,
                 Comment = header.SpecialInstructions,
                 OrderDate = header.OrderDate,
+                DueDate = header.DueDate,
                 Rush = false,
                 Name = header.OrderName,
                 Number = header.OrderNumber,

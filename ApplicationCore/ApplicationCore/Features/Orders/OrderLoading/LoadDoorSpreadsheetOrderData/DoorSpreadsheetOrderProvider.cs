@@ -172,6 +172,7 @@ internal class DoorSpreadsheetOrderProvider : IOrderProvider {
             Name = header.JobName,
             Number = header.TrackingNumber,
             OrderDate = header.OrderDate,
+            DueDate = null,
 
             WorkingDirectory = workingDirectory,
 

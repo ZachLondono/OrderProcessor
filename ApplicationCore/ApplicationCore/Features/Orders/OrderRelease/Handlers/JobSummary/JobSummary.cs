@@ -10,6 +10,8 @@ internal class JobSummary {
     public byte[] VendorLogo { get; set; } = Array.Empty<byte>();
     public string Comment { get; set; } = string.Empty;
     public DateTime ReleaseDate { get; set; }
+    public DateTime OrderDate { get; set; }
+    public DateTime? DueDate { get; set; }
 
     public string SpecialRequirements { get; set; } = string.Empty;
 

@@ -25,13 +25,15 @@ public class SaveChanges {
                                UPDATE orders
                                SET
                                 note = @Note,
-                                working_directory = @WorkingDirectory
+                                working_directory = @WorkingDirectory,
+                                due_date = @DueDate
                                WHERE id = @Id;
                                """;
 
             int rowsAffected = await connection.ExecuteAsync(sql, new {
                 command.Order.Note,
                 command.Order.WorkingDirectory,
+                command.Order.DueDate,
                 command.Order.Id
             });
 

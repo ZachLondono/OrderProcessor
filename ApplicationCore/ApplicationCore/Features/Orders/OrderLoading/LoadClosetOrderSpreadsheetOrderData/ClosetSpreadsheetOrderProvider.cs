@@ -174,6 +174,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
                 Tax = cover.Tax,
                 PriceAdjustment = cover.ManualCharge,
                 OrderDate = cover.OrderDate,
+                DueDate = cover.DueDate,
                 CustomerId = (Guid) customerId,
                 VendorId = vendorId,
                 AdditionalItems = additionalItems,

@@ -16,6 +16,7 @@ internal class OrderBuilder {
     public Guid VendorId { get; set; } = Guid.NewGuid();
     public string Comment { get; set; } = string.Empty;
     public DateTime OrderDate { get; set; } = DateTime.Today;
+    public DateTime? DueDate { get; set; } = null;
     public decimal Tax { get; set; } = decimal.Zero;
     public ShippingInfo Shipping { get; set; }
     public BillingInfo Billing { get; set; }
@@ -83,6 +84,11 @@ internal class OrderBuilder {
         return this;
     }
 
+    public OrderBuilder WithDueDate(DateTime? dueDate) {
+        DueDate = dueDate;
+        return this;
+    }
+
     public OrderBuilder WithTax(decimal tax) {
         Tax = tax;
         return this;
@@ -123,6 +129,6 @@ internal class OrderBuilder {
         return this;
     }
 
-    public Order Build() => new(Id, Source, Number, Name, Note, WorkingDirectory, CustomerId, VendorId, Comment, OrderDate, Shipping, Billing, Tax, PriceAdjustment, Rush, Info, Products, Items);
+    public Order Build() => new(Id, Source, Number, Name, Note, WorkingDirectory, CustomerId, VendorId, Comment, OrderDate, DueDate, Shipping, Billing, Tax, PriceAdjustment, Rush, Info, Products, Items);
 
 }

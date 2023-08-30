@@ -15,6 +15,7 @@ public class OrderDataModel {
     public Guid VendorId { get; set; }
     public string CustomerComment { get; set; } = string.Empty;
     public DateTime OrderDate { get; set; }
+    public DateTime? DueDate { get; set; }
     public decimal Tax { get; set; }
     public decimal PriceAdjustment { get; set; }
     public bool Rush { get; set; }
@@ -74,7 +75,7 @@ public class OrderDataModel {
             }
         };
 
-        var order = new Order(orderId, Source, Number, Name, Note, WorkingDirectory, CustomerId, VendorId, CustomerComment, OrderDate, shippingInfo, billing, Tax, PriceAdjustment, Rush, Info.AsReadOnly(), products, items);
+        var order = new Order(orderId, Source, Number, Name, Note, WorkingDirectory, CustomerId, VendorId, CustomerComment, OrderDate, DueDate, shippingInfo, billing, Tax, PriceAdjustment, Rush, Info.AsReadOnly(), products, items);
         return order;
 
     }
@@ -91,6 +92,7 @@ public class OrderDataModel {
                 orders.vendor_id AS VendorId,
                 orders.customer_comment AS CustomerComment,
                 orders.order_date AS OrderDate,
+                orders.due_date AS DueDate,
                 orders.info,
                 orders.tax,
                 orders.price_adjustment AS PriceAdjustment,

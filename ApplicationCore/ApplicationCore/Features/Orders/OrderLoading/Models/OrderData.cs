@@ -22,6 +22,8 @@ public record OrderData {
 
     public required DateTime OrderDate { get; init; }
 
+    public required DateTime? DueDate { get; init; }
+
     public required Guid CustomerId { get; init; }
 
     public required Guid VendorId { get; init; }

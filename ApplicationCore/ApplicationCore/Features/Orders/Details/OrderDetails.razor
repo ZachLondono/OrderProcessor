@@ -52,6 +52,20 @@
             <label id="orderdate" class="text-md w-24 inline-block">Order Date</label>
             <span class="text-lg">@OrderState.Order.OrderDate.ToShortDateString()</span>
         </div>
+        <div>
+            <label id="duedate" class="text-md w-24 inline-block">Due Date</label>
+            @if (_dueDate is DateTime dueDate) {
+                <!--<InputDate @oninput="OnDueDateChanged" TValue="DateTime" ValueExpression="() => dueDate" />-->
+                <input class="text-lg" type="date" value="@dueDate.ToString("yyyy-MM-dd")" @oninput="OnDueDateChanged" />
+                <Button Size="ButtonSize.XSmall" Style="ButtonStyle.Outline" Color="ButtonColor.Danger" OnClick="RemoveDueDate">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-2 h-2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </Button>
+            } else {
+                <Button Size="ButtonSize.Small" Style="ButtonStyle.Link" OnClick="AddDueDate">+ Add Due Date</Button>
+            }
+        </div>
     </section>
 
     <section class="mt-10" id="actions">

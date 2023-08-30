@@ -90,7 +90,7 @@ internal class ReleasePDFDialogViewModel {
 
 		try {
 
-			var job = await _cncReleaseDecorator.LoadDataFromFile(Model.ReportFilePath, Model.OrderDate, Model.CustomerName, Model.VendorName);
+			var job = await _cncReleaseDecorator.LoadDataFromFile(Model.ReportFilePath, Model.OrderDate, Model.DueDate, Model.CustomerName, Model.VendorName);
 
 			if (job is not null) {
 

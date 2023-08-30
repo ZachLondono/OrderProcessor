@@ -141,6 +141,7 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
             Tax = AllmoxyXMLOrderProviderHelpers.StringToMoney(data.Invoice.Tax),
             PriceAdjustment = 0M,
             OrderDate = orderDate,
+            DueDate = null,
             CustomerId = customerId,
             VendorId = Guid.Parse(_configuration.VendorId),
             AdditionalItems = new(),

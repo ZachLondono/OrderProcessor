@@ -11,6 +11,7 @@ CREATE TABLE orders (
 	customer_id BLOB NOT NULL,
 	customer_comment TEXT,
 	order_date TEXT NOT NULL,
+	due_date TEXT,
 	info TEXT,
 	tax REAL NOT NULL,
 	price_adjustment REAL NOT NULL,
