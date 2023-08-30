@@ -55,9 +55,10 @@ public class ReleaseService {
         // TODO: check that all orders have the same customer & vendor, if not list all of them separated by a comma
         var customerName = await GetCustomerName(orders.First().CustomerId);
         var vendorName = await GetVendorName(orders.First().VendorId);
-        var releaseDate = DateTime.Now;
+        var orderDate = orders.First().OrderDate;
+        var dueDate = orders.First().DueDate;
 
-        await CreateReleasePDF(orders, configuration, releaseDate, customerName, vendorName);
+        await CreateReleasePDF(orders, configuration, orderDate, dueDate, customerName, vendorName);
 
         foreach (var order in orders) {
             await Invoicing(order, configuration, customerName);
@@ -67,7 +68,7 @@ public class ReleaseService {
 
     }
 
-    private async Task CreateReleasePDF(List<Order> orders, ReleaseConfiguration configuration, DateTime releaseDate, string customerName, string vendorName) {
+    private async Task CreateReleasePDF(List<Order> orders, ReleaseConfiguration configuration, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
 
         if (configuration.ReleaseOutputDirectory is null) {
             OnError?.Invoke("No output directory set");
@@ -107,7 +108,7 @@ public class ReleaseService {
                     continue;
                 }
 
-                var (decorator, jobData) = await _cncReleaseDecoratorFactory.Create(filePath, releaseDate, customerName, vendorName);
+                var (decorator, jobData) = await _cncReleaseDecoratorFactory.Create(filePath, orderDate, dueDate, customerName, vendorName);
                 decorators.Add(decorator);
                 if (jobData is not null) {
                     releases.Add(jobData);

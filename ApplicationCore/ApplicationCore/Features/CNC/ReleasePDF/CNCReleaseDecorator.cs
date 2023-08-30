@@ -20,14 +20,14 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
         _getToolCarousels = getToolCarousels;
     }
 
-    public async Task<ReleasedJob?> LoadDataFromFile(string reportFilePath, DateTime orderDate, string customerName, string vendorName) {
+    public async Task<ReleasedJob?> LoadDataFromFile(string reportFilePath, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
 
         var toolCarousels = await _getToolCarousels();
         var report = WSXMLParser.ParseWSXMLReport(reportFilePath);
         if (report is null) {
             return null;
         }
-        _jobData = MapDataToReleasedJob(report, orderDate, customerName, vendorName, toolCarousels);
+        _jobData = MapDataToReleasedJob(report, orderDate, dueDate, customerName, vendorName, toolCarousels);
         return _jobData;
 
     }
@@ -50,7 +50,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
 
     }
 
-    private static ReleasedJob MapDataToReleasedJob(WSXMLReport report, DateTime orderDate, string customerName, string vendorName, IEnumerable<ToolCarousel> toolCarousels) {
+    private static ReleasedJob MapDataToReleasedJob(WSXMLReport report, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName, IEnumerable<ToolCarousel> toolCarousels) {
 
         var allToolNames = report.OperationGroups.Where(g => g.PartId is not null)
                                         .SelectMany(g => g.ToolName)
@@ -174,6 +174,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
             JobName = report.JobName,
             OrderDate = orderDate,
             ReleaseDate = DateTime.Now,
+            DueDate = dueDate,
             CustomerName = customerName,
             VendorName = vendorName,
             Releases = releases,

@@ -8,6 +8,7 @@ public class ReleasedJob {
     public DateTime TimeStamp { get; init; } = DateTime.Now;
     public DateTime OrderDate { get; init; }
     public DateTime ReleaseDate { get; init; }
+    public DateTime? DueDate { get; init; }
     public IEnumerable<MachineRelease> Releases { get; init; } = Enumerable.Empty<MachineRelease>();
 
 }
