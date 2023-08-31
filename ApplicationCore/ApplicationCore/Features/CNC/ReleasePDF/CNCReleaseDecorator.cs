@@ -96,7 +96,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                                                                 }
                                                                                                 return new NestedPart() {
                                                                                                     Name = part.Name,
-                                                                                                    FileName = part.Variables["Face5Filename"],
+                                                                                                    FileName = part.Variables.GetValueOrEmpty("Face5Filename"),
                                                                                                     Width = Dimension.FromMillimeters(part.Width),
                                                                                                     Length = Dimension.FromMillimeters(part.Length),
                                                                                                     Center = new() {
@@ -129,7 +129,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                         var label = report.PartLabels[part.LabelId];
                                                         return new SinglePartProgram() {
                                                             Name = part.Name,
-                                                            FileName = part.Variables["Face5Filename"],
+                                                            FileName = part.Variables.GetValueOrEmpty("Face5Filename"),
                                                             Width = Dimension.FromMillimeters(part.Width),
                                                             Length = Dimension.FromMillimeters(part.Length),
                                                             Description = part.Description,
