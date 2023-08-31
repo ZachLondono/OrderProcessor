@@ -44,12 +44,6 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
         List<IToken> tokens = new();
         tokens.AddRange(CreateBottomDadoTokens(construction, frontLength, construction.FrontBackBottomDadoLengthOversize.AsMillimeters()));
 
-        var positions = GetDowelPositions(construction.DowelPositionsByHeight, Height);
-        foreach (var pos in positions) {
-            tokens.Add(new Bore(construction.DowelDiameter.AsMillimeters(), new((SideMaterial.Thickness / 2).AsMillimeters(), pos.AsMillimeters()), construction.DowelDepth.AsMillimeters()));
-            tokens.Add(new Bore(construction.DowelDiameter.AsMillimeters(), new((frontLength - SideMaterial.Thickness / 2).AsMillimeters(), pos.AsMillimeters()), construction.DowelDepth.AsMillimeters()));
-        }
-
         if (FrontMaterial.Thickness > construction.UMSlideMaxDistanceOffOutsideFace
             && MachineThicknessForUMSlides) {
 
@@ -88,9 +82,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
                 ProgramName = $"Front{productNumber}",
                 Tokens = tokens.ToArray()
             },
-            Length1Banding = new(FrontMaterial.Name, "PVC"),
-            Width1Banding = new(FrontMaterial.Name, "PVC"),
-            Width2Banding = new(FrontMaterial.Name, "PVC")
+            Length1Banding = new(FrontMaterial.Name, "PVC")
         };
 
     }
@@ -101,12 +93,6 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
         List<IToken> tokens = new();
         tokens.AddRange(CreateBottomDadoTokens(construction, backLength, construction.FrontBackBottomDadoLengthOversize.AsMillimeters()));
-
-        var positions = GetDowelPositions(construction.DowelPositionsByHeight, Height);
-        foreach (var pos in positions) {
-            tokens.Add(new Bore(construction.DowelDiameter.AsMillimeters(), new((SideMaterial.Thickness / 2).AsMillimeters(), pos.AsMillimeters()), construction.DowelDepth.AsMillimeters()));
-            tokens.Add(new Bore(construction.DowelDiameter.AsMillimeters(), new((backLength - SideMaterial.Thickness / 2).AsMillimeters(), pos.AsMillimeters()), construction.DowelDepth.AsMillimeters()));
-        }
 
         return new Part() {
             Qty = qty,
@@ -130,9 +116,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
                 ProgramName = $"Back{productNumber}",
                 Tokens = tokens.ToArray()
             },
-            Length1Banding = new(FrontMaterial.Name, "PVC"),
-            Width1Banding = new(FrontMaterial.Name, "PVC"),
-            Width2Banding = new(FrontMaterial.Name, "PVC")
+            Length1Banding = new(FrontMaterial.Name, "PVC")
         };
 
     }
@@ -157,6 +141,12 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
         List<IToken> tokens = new();
         tokens.AddRange(CreateBottomDadoTokens(construction, Depth, -1 * dadoLengthAdj.AsMillimeters()));
+
+        var positions = GetDowelPositions(construction.DowelPositionsByHeight, Height);
+        foreach (var pos in positions) {
+            tokens.Add(new Bore(construction.DowelDiameter.AsMillimeters(), new((SideMaterial.Thickness / 2).AsMillimeters(), pos.AsMillimeters()), construction.DowelDepth.AsMillimeters()));
+            tokens.Add(new Bore(construction.DowelDiameter.AsMillimeters(), new((Depth - SideMaterial.Thickness / 2).AsMillimeters(), pos.AsMillimeters()), construction.DowelDepth.AsMillimeters()));
+        }
 
         if (SideMaterial.Thickness > construction.UMSlideMaxDistanceOffOutsideFace
             && MachineThicknessForUMSlides) {
@@ -196,7 +186,9 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
                 IsMirrored = true,
                 Tokens = tokens.ToArray()
             },
-            Length1Banding = new(FrontMaterial.Name, "PVC")
+            Length1Banding = new(FrontMaterial.Name, "PVC"),
+            Width1Banding = new(FrontMaterial.Name, "PVC"),
+            Width2Banding = new(FrontMaterial.Name, "PVC")
         };
 
         var right = new Part() {
@@ -221,7 +213,10 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
                 ProgramName = $"Right{productNumber}",
                 Tokens = tokens.ToArray()
             },
-            Length1Banding = new(FrontMaterial.Name, "PVC")
+            Length1Banding = new(FrontMaterial.Name, "PVC"),
+            Width1Banding = new(FrontMaterial.Name, "PVC"),
+            Width2Banding = new(FrontMaterial.Name, "PVC")
+
         };
 
         return (left, right);
@@ -326,8 +321,8 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
     public Part GetBottomPart(DoweledDrawerBoxConstruction construction, int qty, int productNumber, string customerName, string room) {
         return new Part() {
             Qty = qty,
-            Width = (Width - 2 * SideMaterial.Thickness - construction.BottomUndersize).AsMillimeters(),
-            Length = (Depth - FrontMaterial.Thickness - BackMaterial.Thickness - construction.BottomUndersize).AsMillimeters(),
+            Width = (Width - 2 * SideMaterial.Thickness - construction.BottomUndersize + 2 * construction.BottomDadoDepth).AsMillimeters(),
+            Length = (Depth - FrontMaterial.Thickness - BackMaterial.Thickness - construction.BottomUndersize + 2 * construction.BottomDadoDepth).AsMillimeters(),
             Thickness = BottomMaterial.Thickness.AsMillimeters(),
             Material = BottomMaterial.Name,
             IsGrained = BottomMaterial.IsGrained,
