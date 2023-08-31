@@ -3,7 +3,7 @@
 internal class Model {
 	public string ReportFilePath { get; set; } = string.Empty;
 	public DateTime OrderDate { get; set; } = DateTime.Now;
-	public DateTime? DueDate { get; set; } = DateTime.Now;
+	public DateTime? DueDate { get; set; } = null;
 	public string CustomerName { get; set; } = string.Empty;
 	public string VendorName { get; set; } = string.Empty;
 	public string FileName { get; set; } = string.Empty;
