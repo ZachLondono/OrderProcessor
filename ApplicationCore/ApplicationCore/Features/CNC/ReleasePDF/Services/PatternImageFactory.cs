@@ -21,8 +21,6 @@ public class PatternImageFactory {
             try {
                 var bitmap = GetBitmapFromMetaFile(imagePath);
 
-                bitmap.Save(@"C:\ProgramData\OrderProcessor\tests\original.jpg", ImageFormat.Jpeg);
-
                 bool wasFlipedX = false;
                 if (orientation == TableOrientation.Rotated) {
                     bitmap.RotateFlip(RotateFlipType.Rotate90FlipXY);
@@ -33,11 +31,9 @@ public class PatternImageFactory {
                     var bitmap2 = new Bitmap(stream);
                     bitmap.Dispose();
                     bitmap = bitmap2;
-                    bitmap.Save(@"C:\ProgramData\OrderProcessor\tests\rotated.jpg", ImageFormat.Jpeg);
                 }
 
                 AddTextToBitmap(bitmap, text, sheetWidth, sheetLength, wasFlipedX);
-                bitmap.Save(@"C:\ProgramData\OrderProcessor\tests\textadded.jpg", ImageFormat.Jpeg);
                 return GetBitmapData(bitmap);
             } catch {
 

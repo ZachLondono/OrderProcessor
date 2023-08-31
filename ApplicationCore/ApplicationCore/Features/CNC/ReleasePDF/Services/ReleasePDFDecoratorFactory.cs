@@ -36,9 +36,15 @@ internal class ReleasePDFDecoratorFactory {
 
     private static List<PageModel> CreatePages(ReleasedJob job, IEnumerable<MachineRelease> releases) {
 
+        // If the releases contains a release for the Omnitech, use that one, otherwise just use the first one
+        var releaseData = releases.First();
+        if (releases.FirstOrDefault(r => r.MachineName.ToLowerInvariant().Contains("omni")) is MachineRelease omniRelease) {
+            releaseData = omniRelease;
+        }
+
         var pages = new List<PageModel>();
         int programIndex = 0;
-        foreach (var program in releases.First().Programs) {
+        foreach (var program in releaseData.Programs) {
 
             Dictionary<string, SheetProgam> programs = new();
             foreach (var release in releases) {
@@ -87,7 +93,7 @@ internal class ReleasePDFDecoratorFactory {
             // TODO: add an option to use the file name or the line number (in the pattern)
             //int index = 1;
             var imgtxts = program.Parts.Select(p => new ImageText() { Text = $"{p.ProductNumber}-{p.FileName}", Location = p.Center });
-            byte[] imageData = PatternImageFactory.CreatePatternImage(program.ImagePath, releases.First().MachineTableOrientation, program.Material.Width, program.Material.Length, imgtxts);
+            byte[] imageData = PatternImageFactory.CreatePatternImage(program.ImagePath, releaseData.MachineTableOrientation, program.Material.Width, program.Material.Length, imgtxts);
 
             pages.Add(new() {
                 Header = $"{job.JobName}  [{string.Join(',', releases.Select(r => r.MachineName))}]",

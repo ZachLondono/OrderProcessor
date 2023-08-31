@@ -136,7 +136,7 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
 
                 if (data.ImageData.Length != 0) {
                     x.Item()
-                        .Image(data.ImageData, ImageScaling.FitWidth);
+                        .Image(data.ImageData, ImageScaling.FitArea);
                 }
 
                 x.Item().AlignCenter()

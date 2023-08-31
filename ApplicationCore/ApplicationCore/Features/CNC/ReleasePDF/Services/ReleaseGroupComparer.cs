@@ -6,9 +6,6 @@ namespace ApplicationCore.Features.CNC.ReleasePDF.Services;
 public class ReleaseGroupComparer : IEqualityComparer<MachineRelease> {
 
     public bool Equals(MachineRelease? x, MachineRelease? y) {
-
-        // Unless both images can be shown on the same page, do not group multiple machines on the same page
-        return false;
         
         if (x is null && y is null) return true;
         if (x is null || y is null) return false;
