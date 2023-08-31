@@ -16,7 +16,7 @@ internal class WallDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
     public int AdjustableShelves { get; }
     public Dimension ExtendedDoor { get; }
 
-    public override string GetDescription() => "Diagonal Corner Wall Cabinet";
+    public override string GetDescription() => $"Diagonal Corner Wall Cabinet - {DoorQty} Doors";
 
     public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap;
 

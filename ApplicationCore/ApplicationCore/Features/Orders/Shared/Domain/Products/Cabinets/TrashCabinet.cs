@@ -13,7 +13,12 @@ internal class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxCont
     public ToeType ToeType { get; }
     public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
 
-    public override string GetDescription() => "Trash Pullout Cabinet";
+    public override string GetDescription() => TrashPulloutConfiguration switch {
+        TrashPulloutConfiguration.OneCan => $"One Can Trash Pullout Cabinet",
+        TrashPulloutConfiguration.TwoCans => $"Two Can Trash Pullout Cabinet",
+        _ => "Trash Pullout Cabinet"
+    };
+
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),

@@ -19,7 +19,7 @@ internal class BlindBaseCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBox
 
     public Dimension DoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
 
-    public override string GetDescription() => "Blind Base Cabinet";
+    public override string GetDescription() => $"Blind Base Cabinet - {Doors.Quantity} Doors, {Drawers.Quantity} Drawers";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),

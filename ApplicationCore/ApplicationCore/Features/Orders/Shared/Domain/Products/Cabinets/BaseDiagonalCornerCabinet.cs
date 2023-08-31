@@ -18,7 +18,7 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
 
     public Dimension DoorHeight => Height - ToeType.HeightAdjustment - DoorGaps.TopGap - DoorGaps.BottomGap;
 
-    public override string GetDescription() => "Diagonal Corner Base Cabinet";
+    public override string GetDescription() => $"Diagonal Corner Base Cabinet - {DoorQty} Doors";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),

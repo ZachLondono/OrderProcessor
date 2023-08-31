@@ -20,7 +20,7 @@ internal class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxConta
     public bool TiltFront { get; }
     public ScoopSides? Scoops { get; }
 
-    public override string GetDescription() => "Sink Cabinet";
+    public override string GetDescription() => $"Sink Cabinet - {DoorQty} Doors, {FalseDrawerQty} False Drawers";
 
     public Dimension DoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (FalseDrawerQty > 0 ? DrawerFaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
 

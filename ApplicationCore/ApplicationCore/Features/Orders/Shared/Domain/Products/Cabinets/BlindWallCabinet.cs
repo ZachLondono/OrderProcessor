@@ -16,7 +16,7 @@ internal class BlindWallCabinet : Cabinet, IMDFDoorContainer {
 
     public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap;
 
-    public override string GetDescription() => "Blind Wall Cabinet";
+    public override string GetDescription() => $"Blind Wall Cabinet - {Doors.Quantity} Doors";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),

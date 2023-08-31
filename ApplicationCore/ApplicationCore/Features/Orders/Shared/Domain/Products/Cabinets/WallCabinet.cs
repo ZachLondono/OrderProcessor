@@ -13,7 +13,7 @@ internal class WallCabinet : Cabinet, IMDFDoorContainer {
     public WallCabinetInside Inside { get; }
     public bool FinishedBottom { get; }
 
-    public override string GetDescription() => "Wall Cabinet";
+    public override string GetDescription() => $"Wall Cabinet - {Doors.Quantity} Doors";
 
     public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap;
 
