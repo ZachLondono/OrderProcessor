@@ -12,5 +12,6 @@ internal class CabinetItem {
     public Dimension Depth { get; set; }
     public bool FinLeft { get; set; }
     public bool FinRight { get; set; }
+    public string[] Comments { get; set; } = Array.Empty<string>();
 
 }

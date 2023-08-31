@@ -16,6 +16,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.ZargenDrawerGroup;
+using ApplicationCore.Shared;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 
@@ -344,15 +345,21 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         }, new CabinetGroupComparer())
                         .Select(g => {
 
-                            g.Key.Items = g.Select(i => new CabinetItem {
-                                Line = i.ProductNumber,
-                                Qty = i.Qty,
-                                Description = i.GetDescription(),
-                                Height = i.Height,
-                                Width = i.Width,
-                                Depth = i.Depth,
-                                FinLeft = i.LeftSideType == CabinetSideType.Finished,
-                                FinRight = i.RightSideType == CabinetSideType.Finished
+                            g.Key.Items = g.Select(i => {
+                                List<string> comments = new();
+                                if (!string.IsNullOrEmpty(i.Comment)) comments.Add(i.Comment);
+
+                                return new CabinetItem {
+                                    Line = i.ProductNumber,
+                                    Qty = i.Qty,
+                                    Description = i.GetDescription(),
+                                    Height = i.Height,
+                                    Width = i.Width,
+                                    Depth = i.Depth,
+                                    FinLeft = i.LeftSideType == CabinetSideType.Finished,
+                                    FinRight = i.RightSideType == CabinetSideType.Finished,
+                                    Comments = comments.ToArray()
+                                };
                             })
                             .OrderBy(i => i.Line)
                             .ToList();
@@ -422,8 +429,11 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
     private static void ComposeCabinetTable(IContainer container, CabinetGroup group) {
 
-        var defaultCellStyle = (IContainer cell)
-            => cell.Border(1)
+        var applyDefaultCellStyle = (IContainer cell, bool addBottomBorder, bool addTopBorder)
+            => cell.BorderLeft(1)
+                    .BorderRight(1)
+                    .BorderTop(addTopBorder ? 1 : 0)
+                    .BorderBottom(addBottomBorder ? 1 : 0)
                     .BorderColor(Colors.Grey.Lighten1)
                     .AlignMiddle()
                     .PaddingVertical(3)
@@ -467,36 +477,58 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                     table.Header(header => {
 
                         header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Box Material");
-                        header.Cell().ColumnSpan(1).Element(defaultCellStyle).PaddingLeft(5).Text($"{group.BoxCore} - {group.BoxFinish}");
+                        header.Cell().ColumnSpan(1).Element(e => applyDefaultCellStyle(e, true, true)).PaddingLeft(5).Text($"{group.BoxCore} - {group.BoxFinish}");
                         header.Cell().ColumnSpan(1).Element(headerCellStyle).Text("Fronts");
-                        header.Cell().ColumnSpan(4).Element(defaultCellStyle).PaddingLeft(5).Text(group.Fronts);
+                        header.Cell().ColumnSpan(4).Element(e => applyDefaultCellStyle(e, true, true)).PaddingLeft(5).Text(group.Fronts);
 
                         header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Fin Material");
-                        header.Cell().ColumnSpan(1).Element(defaultCellStyle).PaddingLeft(5).Text($"{group.FinishCore} - {group.FinishFinish}");
+                        header.Cell().ColumnSpan(1).Element(e => applyDefaultCellStyle(e, true, true)).PaddingLeft(5).Text($"{group.FinishCore} - {group.FinishFinish}");
                         header.Cell().ColumnSpan(1).Element(headerCellStyle).Text("Paint");
-                        header.Cell().ColumnSpan(4).Element(defaultCellStyle).PaddingLeft(5).Text(group.Paint);
+                        header.Cell().ColumnSpan(4).Element(e => applyDefaultCellStyle(e, true, true)).PaddingLeft(5).Text(group.Paint);
 
-                        header.Cell().Element(headerCellStyle).Text("#");
-                        header.Cell().Element(headerCellStyle).Text("Qty");
-                        header.Cell().Element(headerCellStyle).Text("Description");
-                        header.Cell().Element(headerCellStyle).Text("Width");
-                        header.Cell().Element(headerCellStyle).Text("Height");
-                        header.Cell().Element(headerCellStyle).Text("Depth");
-                        header.Cell().Element(headerCellStyle).Text("Fin L");
-                        header.Cell().Element(headerCellStyle).Text("Fin R");
+                        new string[] {
+                            "#",
+                            "Qty",
+                            "Description",
+                            "Width",
+                            "Height",
+                            "Depth",
+                            "Fin L",
+                            "Fin R"
+                        }.ForEach(title =>
+                            header.Cell().Element(headerCellStyle).Text(title)
+                        );
 
                     });
 
                     foreach (var item in group.Items) {
 
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
-                        table.Cell().Element(defaultCellStyle).AlignLeft().Text(item.Description);
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.FinLeft ? "X" : "");
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.FinRight ? "X" : "");
+                        bool containsComments = item.Comments.Any();
+
+                        new Action<IContainer>[] {
+
+                            (c => c.AlignCenter().Text(item.Line.ToString())),
+                            (c => c.AlignCenter().Text(item.Qty.ToString())),
+                            (c => c.AlignLeft().Text(item.Description)),
+                            (c => c.AlignCenter().Text(text => FormatFraction(text, item.Width, 10))),
+                            (c => c.AlignCenter().Text(text => FormatFraction(text, item.Height, 10))),
+                            (c => c.AlignCenter().Text(text => FormatFraction(text, item.Depth, 10))),
+                            (c => c.AlignCenter().Text(item.FinLeft ? "X" : "")),
+                            (c => c.AlignCenter().Text(item.FinRight ? "X" : ""))
+
+                        }.ForEach(action => 
+                            action(table.Cell().Element(e => applyDefaultCellStyle(e, !containsComments, true)))
+                        );
+
+                        item.Comments.ForEach((comment, index) => {
+                            var isLastComment = index == item.Comments.Length - 1;
+                            table.Cell()
+                                .ColumnSpan(8)
+                                .Element(e => applyDefaultCellStyle(e, isLastComment, false))
+                                .PaddingLeft(10)
+                                .AlignLeft()
+                                .Text(comment);
+                        });
 
                     }
 
