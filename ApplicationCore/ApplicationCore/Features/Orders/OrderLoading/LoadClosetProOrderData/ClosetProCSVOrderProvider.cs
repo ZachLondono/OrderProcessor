@@ -110,6 +110,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
             AdditionalItems = additionalItems,
 
             OrderDate = DateTime.Today,
+            DueDate = null,
             Rush = false,
             Info = new(),
             Comment = string.Empty,

@@ -402,6 +402,8 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             VendorLogo = vendor?.Logo ?? Array.Empty<byte>(),
             Comment = order.CustomerComment,
             ReleaseDate = DateTime.Now,
+            OrderDate = order.OrderDate,
+            DueDate = order.DueDate,
 
             SpecialRequirements = order.Note,
 
@@ -1014,13 +1016,45 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                              .Text($"{jobSummary.Number} {jobSummary.Name}")
                              .SemiBold()
                              .FontSize(20);
+
                          col.Item()
                              .Text(jobSummary.CustomerName)
                              .FontSize(12);
+
                          col.Item()
-                             .Text(jobSummary.ReleaseDate.ToString("MMMM d, yyyy"))
-                             .FontSize(12)
-                             .Italic();
+                            .Row(row => {
+                                row.ConstantItem(75)
+                                    .Text("Ordered")
+                                    .FontSize(12);
+                                row.AutoItem()
+                                    .Text(jobSummary.OrderDate.ToString("MMMM d, yyyy"))
+                                    .FontSize(12)
+                                    .Italic();
+                            });
+
+                         col.Item()
+                            .Row(row => {
+                                row.ConstantItem(75)
+                                    .Text("Released")
+                                    .FontSize(12);
+                                row.AutoItem()
+                                    .Text(jobSummary.ReleaseDate.ToString("MMMM d, yyyy"))
+                                    .FontSize(12)
+                                    .Italic();
+                            });
+
+                         if (jobSummary.DueDate is DateTime dueDate) {
+                             col.Item()
+                                .Row(row => {
+                                    row.ConstantItem(75)
+                                        .Text("Due")
+                                        .FontSize(12);
+                                    row.AutoItem()
+                                        .Text(dueDate.ToString("MMMM d, yyyy"))
+                                        .FontSize(12)
+                                        .Italic();
+                                });
+                         }
                      });
 
                 if (jobSummary.VendorLogo.Any()) {
@@ -1031,7 +1065,8 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
             });
 
-            col.Item().PaddingVertical(5).Text(jobSummary.Comment).FontSize(12);
+            col.Item().PaddingTop(15).Text("Customer Note:").FontSize(10).Italic();
+            col.Item().PaddingBottom(5).Text(jobSummary.Comment).FontSize(12);
 
         });
 

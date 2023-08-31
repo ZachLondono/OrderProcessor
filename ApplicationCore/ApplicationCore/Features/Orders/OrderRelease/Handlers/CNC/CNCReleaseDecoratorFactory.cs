@@ -11,10 +11,10 @@ public class CNCReleaseDecoratorFactory {
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<(ICNCReleaseDecorator, ReleasedJob?)> Create(string reportFilePath, DateTime orderDate, string customerName, string vendorName) {
+    public async Task<(ICNCReleaseDecorator, ReleasedJob?)> Create(string reportFilePath, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
 
         var decorator = _serviceProvider.GetRequiredService<ICNCReleaseDecorator>();
-        var job = await decorator.LoadDataFromFile(reportFilePath, orderDate, customerName, vendorName);
+        var job = await decorator.LoadDataFromFile(reportFilePath, orderDate, dueDate, customerName, vendorName);
         return (decorator, job);
 
     }

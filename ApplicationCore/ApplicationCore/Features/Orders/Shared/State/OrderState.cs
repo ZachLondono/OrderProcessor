@@ -35,6 +35,12 @@ public class OrderState {
         _logger.LogInformation("Current order replaced with order: {OrderId}", order.Id);
     }
 
+    public void SetDueDate(DateTime? dueDate) {
+        if (Order is null) return;
+        Order.DueDate = dueDate;
+        IsDirty = true;
+    }
+
     public void SetNote(string note) {
         if (Order is null) return;
         Order.Note = note;

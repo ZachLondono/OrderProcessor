@@ -175,15 +175,21 @@ internal class ReleasePDFDecoratorFactory {
             tables.Add(backSideMachiningTable);
         }
 
+        var coverInfo = new Dictionary<string, string>() {
+            {"Vendor", job.VendorName },
+            {"Customer", job.CustomerName },
+            {"Order Date", job.OrderDate.ToShortDateString() },
+            {"Release Date", job.ReleaseDate.ToShortDateString() }
+        };
+
+        if (job.DueDate is DateTime dueDate) {
+            coverInfo.Add("Due Date", dueDate.ToShortDateString()); 
+        }
+
         var cover = new CoverModel() {
             Title = $"{job.JobName}  [{string.Join(',', releases.Select(r => r.MachineName))}]",
             TimeStamp = job.TimeStamp,
-            Info = new Dictionary<string, string>() {
-                    {"Vendor", job.VendorName },
-                    {"Customer", job.CustomerName },
-                    {"Order Date", job.OrderDate.ToShortDateString() },
-                    {"Release Date", job.ReleaseDate.ToShortDateString() }
-                },
+            Info = coverInfo,
             Tables = tables
         };
 
