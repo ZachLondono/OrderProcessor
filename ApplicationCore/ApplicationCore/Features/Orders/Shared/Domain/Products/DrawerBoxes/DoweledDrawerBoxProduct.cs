@@ -20,7 +20,7 @@ public class DoweledDrawerBoxProduct : DoweledDrawerBox, IProduct, ICNCPartConta
         Room = room;
     }
 
-    public string GetDescription() => "Doweled Drawer Box";
+    public string GetDescription() => $"Doweled Drawer Box{(MachineThicknessForUMSlides ? "" : " - With UM Notch")}";
 
     // TODO: maybe add option to include slides, clips etc.
     public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
