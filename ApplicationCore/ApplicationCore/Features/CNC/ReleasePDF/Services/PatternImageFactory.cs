@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -23,7 +22,8 @@ public class PatternImageFactory {
 
                 bool wasFlipedX = false;
                 if (orientation == TableOrientation.Rotated) {
-                    bitmap.RotateFlip(RotateFlipType.Rotate90FlipXY);
+                    var rotationType = (sheetWidth > sheetLength) ? RotateFlipType.RotateNoneFlipXY : RotateFlipType.Rotate90FlipXY;
+                    bitmap.RotateFlip(rotationType);
                     wasFlipedX = true;
                     // When rotating a bitmap that changes it's dimensions drawing can only be done within the original bitmaps dimension, so it must be saved and created as a new bitmap
                     using var stream = new MemoryStream();

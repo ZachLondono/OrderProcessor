@@ -136,6 +136,8 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
 
                 if (data.ImageData.Length != 0) {
                     x.Item()
+                        .AlignCenter()
+                        .MaxHeight(350)
                         .Image(data.ImageData, ImageScaling.FitArea);
                 }
 
