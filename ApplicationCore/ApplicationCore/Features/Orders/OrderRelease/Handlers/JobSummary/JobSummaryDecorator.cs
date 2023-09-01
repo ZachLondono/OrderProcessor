@@ -341,7 +341,8 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                             FinishCore = p.FinishMaterial.Core.ToString(),
                             FinishFinish = p.FinishMaterial.Finish,
                             Fronts = p.SlabDoorMaterial is not null ? $"Slab - {p.SlabDoorMaterial.Finish}" : "MDF By Royal",
-                            Paint = p.FinishMaterial.PaintColor ?? ""
+                            Paint = p.FinishMaterial.PaintColor ?? "",
+                            Assembled = p.Assembled
                         }, new CabinetGroupComparer())
                         .Select(g => {
 
@@ -482,11 +483,12 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         header.Cell().ColumnSpan(1).Element(e => applyDefaultCellStyle(e, true, true)).PaddingLeft(5).Text($"{group.BoxCore} - {group.BoxFinish}");
                         header.Cell().ColumnSpan(1).Element(headerCellStyle).Text("Fronts");
                         header.Cell().ColumnSpan(4).Element(e => applyDefaultCellStyle(e, true, true)).PaddingLeft(5).Text(group.Fronts);
-
+                        
                         header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Fin Material");
                         header.Cell().ColumnSpan(1).Element(e => applyDefaultCellStyle(e, true, true)).PaddingLeft(5).Text($"{group.FinishCore} - {group.FinishFinish}");
                         header.Cell().ColumnSpan(1).Element(headerCellStyle).Text("Paint");
-                        header.Cell().ColumnSpan(4).Element(e => applyDefaultCellStyle(e, true, true)).PaddingLeft(5).Text(group.Paint);
+                        header.Cell().ColumnSpan(2).Element(e => applyDefaultCellStyle(e, true, true)).PaddingLeft(5).Text(group.Paint);
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text(group.Assembled ? "ASSEMBLED" : "NOT ASSEMBLED");
 
                         new string[] {
                             "#",

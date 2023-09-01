@@ -9,6 +9,7 @@ internal class CabinetGroup {
     public string FinishCore { get; set; } = string.Empty;
     public string Paint { get; set; } = string.Empty;
     public string Fronts { get; set; } = string.Empty;
+    public bool Assembled { get; set; } = false;
 
     public List<CabinetItem> Items { get; set; } = new();
 
@@ -25,12 +26,13 @@ internal class CabinetGroup {
                 && x.FinishFinish == y.FinishFinish
                 && x.FinishCore == y.FinishCore
                 && x.Paint == y.Paint
-                && x.Fronts == y.Fronts;
+                && x.Fronts == y.Fronts
+                && x.Assembled == y.Assembled;
 
         }
 
         int IEqualityComparer<CabinetGroup>.GetHashCode(CabinetGroup obj) {
-            return HashCode.Combine(obj.Room, obj.BoxFinish, obj.BoxCore, obj.FinishFinish, obj.FinishCore, obj.Paint, obj.Fronts);
+            return HashCode.Combine(obj.Room, obj.BoxFinish, obj.BoxCore, obj.FinishFinish, obj.FinishCore, obj.Paint, obj.Fronts, obj.Assembled);
         }
 
     }
