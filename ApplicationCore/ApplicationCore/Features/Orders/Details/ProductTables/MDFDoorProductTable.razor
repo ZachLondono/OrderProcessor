@@ -16,7 +16,6 @@
                 <th class="p-5">Edge Detail</th>
                 <th class="p-5">Panel Drop</th>
                 <th class="p-5">Paint</th>
-                <th class="p-5">Room</th>
                 <th class="p-5">Unit $</th>
                 <th class="p-5">Ext. $</th>
             </tr>
@@ -41,14 +40,13 @@
                         <td class="whitespace-nowrap p-5 border-b text-center">@row.PanelDrop.AsMillimeters().ToString("0.00")</td>
                     }
                     <td class="whitespace-nowrap p-5 border-b text-center">@(row.PaintColor is null ? "N/A" : row.PaintColor)</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Room</td>
                     <td class="whitespace-nowrap p-5 border-b text-center">@row.UnitPrice.ToString("$0.00")</td>
                     <td class="whitespace-nowrap p-5 border-b text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
                 </tr>
 
                 @if (row.Note != string.Empty) {
                     <tr>
-                        <td class="p-5 font-bold border-b text-red-500" colspan="11">
+                        <td class="p-5 font-bold border-b text-red-500" colspan="10">
                             Note: @row.Note
                         </td>
                     </tr>                        

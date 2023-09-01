@@ -23,7 +23,6 @@
                 <th class="p-5">Left</th>
                 <th class="p-5">Right</th>
                 <th class="p-5">Assembled</th>
-                <th class="p-5">Room</th>
                 <th class="p-5">Unit $</th>
                 <th class="p-5">Ext. $</th>
             </tr>
@@ -51,14 +50,13 @@
                         <td class="@GetCellClass(row)">@row.LeftSideType.ToString()</td>
                         <td class="@GetCellClass(row)">@row.RightSideType.ToString()</td>
                         <td class="@GetCellClass(row)">@(row.Assembled ? "Yes" : "No")</td>
-                        <td class="@GetCellClass(row)">@row.Room</td>
                         <td class="@GetCellClass(row)">@row.UnitPrice.ToString("$0.00")</td>
                         <td class="@GetCellClass(row)">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
                     </tr>
 
                     @if(row.Comment != string.Empty) {
                         <tr>
-                            <td class="p-5 font-bold border-b text-red-500" colspan="18">
+                            <td class="p-5 font-bold border-b text-red-500" colspan="17">
                                 @row.Comment
                             </td>
                         </tr>

@@ -17,7 +17,6 @@
                 <th class="p-5">Paint Color</th>
                 <th class="p-5">Painted Side</th>
                 <th class="p-5">EB Color</th>
-                <th class="p-5">Room</th>
                 <th class="p-5">Unit $</th>
                 <th class="p-5">Ext. $</th>
             </tr>
@@ -41,14 +40,13 @@
                     <td class="whitespace-nowrap p-5 border-b text-center">@($"{row.Paint?.Color ?? "N/A"}")</td>
                     <td class="whitespace-nowrap p-5 border-b text-center">@($"{row.Paint?.Side.ToString() ?? "N/A"}")</td>
                     <td class="whitespace-nowrap p-5 border-b text-center">@row.EdgeBandingColor</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Room</td>
                     <td class="whitespace-nowrap p-5 border-b text-center">@row.UnitPrice.ToString("$0.00")</td>
                     <td class="whitespace-nowrap p-5 border-b text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
                 </tr>
 
                 @if (row.Comment != string.Empty) {
                     <tr>
-                        <td class="p-5 font-bold border-b text-red-500" colspan="12">
+                        <td class="p-5 font-bold border-b text-red-500" colspan="11">
                             @row.Comment
                         </td>
                     </tr>
