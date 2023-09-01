@@ -134,6 +134,11 @@ public class CustomDrillingVerticalPanelModel : ProductModel {
         Dimension ledChannelWidth = Dimension.FromMillimeters(LEDChannelWidth);
         Dimension ledChannelDepth = Dimension.FromMillimeters(LEDChannelDepth);
 
+        if (holeDimensionFromTop + holeDimensionFromBottom > length) {
+            holeDimensionFromTop = Dimension.Zero;
+            holeDimensionFromBottom = Dimension.Zero;
+        }
+
         return new CustomDrilledVerticalPanel(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, width, length, material, paint, edgeBandColor, Comment, drillingType, extendBack, extendFront, holeDimensionFromBottom, holeDimensionFromTop, transitionHoleDimensionFromBottom, transitionHoleDimensionFromTop, bottomNotchDepth, bottomNotchHeight, ledChannelOffFront, ledChannelWidth, ledChannelDepth);
 
     }
