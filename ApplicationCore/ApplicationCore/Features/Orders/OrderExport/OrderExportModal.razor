@@ -34,8 +34,10 @@
             
             <br />
             
-            <label class="block text-sm font-medium text-gray-700">Output directory</label>
-            <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.OutputDirectory" />
+            @if (DataContext.Configuration.FillDovetailOrder || DataContext.Configuration.FillMDFDoorOrder) {
+                <label class="block text-sm font-medium text-gray-700">Output directory</label>
+                <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.OutputDirectory" />
+            }
         </section>
 
         <hr />
