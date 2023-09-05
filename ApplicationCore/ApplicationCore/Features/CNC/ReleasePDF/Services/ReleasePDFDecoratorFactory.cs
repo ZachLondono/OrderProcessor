@@ -141,12 +141,38 @@ internal class ReleasePDFDecoratorFactory {
             Content = materialTableContent
         };
 
-        var releasedparts = releases.First()
+
+        var programTableContent = new List<Dictionary<string, string>>();
+        releases.First().Programs.ForEach((program, i) => {
+            var programData = new Dictionary<string,string>() {
+                { "#", (i + 1).ToString() }   
+            };
+          
+            foreach (var release in releases) {
+                string programName = release.Programs.ElementAt(i).Name;
+                if (program.HasFace6) {
+                    programName += ($"\n6{programName[1..]}");
+                }
+                programData.Add(release.MachineName, programName) ;
+            }
+
+            programData.Add("Material", $"{program.Material.Name} - {program.Material.Width}x{program.Material.Length}x{program.Material.Thickness}" );
+            programData.Add("Yield", program.Material.Yield.ToString("P2"));
+            programTableContent.Add(programData);
+
+        });
+
+        var programsTable = new Table() {
+            Title = "Nest Programs",
+            Content = programTableContent
+        };
+
+        var releasedParts = releases.First()
                                     .SinglePrograms
                                     .OrderBy(p => p.ProductNumber)
                                     .GroupBy(p => p.PartId);
         var partsTableContent = new List<Dictionary<string, string>>();
-        foreach (var group in releasedparts) {
+        foreach (var group in releasedParts) {
             var part = group.First();
             partsTableContent.Add(new() {
                     { "#", part.ProductNumber },
@@ -175,8 +201,9 @@ internal class ReleasePDFDecoratorFactory {
 
         var tables = new List<Table>();
         tables.AddRange(toolTables);
-        tables.Add(materialTable);
-        tables.Add(partsTable);
+        if (materialTable.Content.Any()) tables.Add(materialTable);
+        tables.Add(programsTable);
+        if (partsTable.Content.Any()) tables.Add(partsTable);
         if (backSideMachiningTable != null) {
             tables.Add(backSideMachiningTable);
         }
