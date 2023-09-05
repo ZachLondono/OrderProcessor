@@ -492,7 +492,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
         BottomDadoScoringDepth = Dimension.FromMillimeters(1.5),
         BottomDadoStartHeight = Dimension.FromInches(0.5),
         BottomDadoDepth = Dimension.FromMillimeters(8),
-        BottomDadoHeightOversize = Dimension.FromMillimeters(1.5),
+        BottomDadoHeightOversize = Dimension.FromMillimeters(0.75),
         FrontBackBottomDadoLengthOversize = Dimension.FromMillimeters(3),
         BottomUndersize = Dimension.FromMillimeters(1),
         UMSlidePocketToolName = "Pocket9",
