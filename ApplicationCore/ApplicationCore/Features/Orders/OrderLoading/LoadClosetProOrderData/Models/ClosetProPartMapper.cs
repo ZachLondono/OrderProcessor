@@ -59,8 +59,16 @@ public class ClosetProPartMapper {
         }
         Part part = enumerator.Current;
         while (true) {
+            
+            Part? nextPart = null;
+            if (part.PartType == "Countertop") {
 
-            if (part.PartName == "Cab Door Rail") {
+                if (part.Height != 0.75) {
+                    throw new InvalidOperationException($"Unsupported counter top thickness '{part.Height}', only 3/4\" is supported");
+                }
+                products.Add(CreateTopFromPart(part));
+
+            } else if (part.PartName == "Cab Door Rail") {
 
                 if (!enumerator.MoveNext()) {
                     throw new InvalidOperationException("Unexpected end of part list");
@@ -79,10 +87,7 @@ public class ClosetProPartMapper {
                     break;
                 }
 
-            }
-
-            Part? nextPart = null;
-            if (part.ExportName == "FixedShelf") {
+            } else if (part.ExportName == "FixedShelf") {
 
                 if (enumerator.MoveNext()) {
 
@@ -124,9 +129,7 @@ public class ClosetProPartMapper {
 
                 }
 
-            }
-
-            if (ProductNameMappings.TryGetValue(part.ExportName, out var mapper)) {
+            } else if (ProductNameMappings.TryGetValue(part.ExportName, out var mapper)) {
                 products.Add(mapper(part));
             } else {
                 throw new InvalidOperationException($"Unexpected part {part.PartName} / {part.ExportName}");
@@ -514,7 +517,6 @@ public class ClosetProPartMapper {
 
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
 
-
     }
 
     public IProduct CreateSlabFront(Part part) {
@@ -599,6 +601,28 @@ public class ClosetProPartMapper {
             .WithQty(part.Quantity)
             .WithProductNumber(part.PartNum)
             .BuildProduct(unitPrice, room);
+
+    }
+
+    public IProduct CreateTopFromPart(Part part) {
+
+        if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
+            unitPrice = 0M;
+        }
+        string room = GetRoomName(part);
+        string sku = "TOP";
+        Dimension width = Dimension.FromInches(part.Width); // TODO: need to choose width / depth correctly so graining is going in the right direction
+        Dimension length = Dimension.FromInches(part.Depth);
+        ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
+        ClosetPaint? paint = null;
+        string edgeBandingColor = part.InfoRecords
+                                .Where(i => i.PartName == "Edge Banding")
+                                .Select(i => i.Color)
+                                .FirstOrDefault() ?? part.Color;
+        string comment = "";
+        Dictionary<string, string> parameters = new();
+
+        return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
 
     }
 
