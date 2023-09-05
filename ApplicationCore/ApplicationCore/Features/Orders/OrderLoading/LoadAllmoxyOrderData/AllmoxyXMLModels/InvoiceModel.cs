@@ -22,4 +22,7 @@ public class InvoiceModel {
     [XmlElement("total")]
     public string Total { get; set; } = string.Empty;
 
+    [XmlElement("address")]
+    public AddressModel Address { get; set; } = new();
+
 }

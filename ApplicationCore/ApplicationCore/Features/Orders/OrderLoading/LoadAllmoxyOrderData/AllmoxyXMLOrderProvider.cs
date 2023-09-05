@@ -105,7 +105,15 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
         var billing = new BillingInfo() {
             InvoiceEmail = null,
             PhoneNumber = "",
-            Address = new()
+            Address = new() {
+                Line1 = data.Invoice.Address.Line1,
+                Line2 = data.Invoice.Address.Line2,
+                Line3 = data.Invoice.Address.Line3,
+                City = data.Invoice.Address.City,
+                State = data.Invoice.Address.State,
+                Zip = data.Invoice.Address.Zip,
+                Country = data.Invoice.Address.Country
+            }
         };
 
         List<IProduct> products = new();

@@ -138,6 +138,19 @@
               <xs:element name="tax" type="xs:string" />
               <xs:element name="shipping" type="xs:string" />
               <xs:element name="total" type="xs:string" />
+              <xs:element name="address">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="line1" />
+                    <xs:element name="line2" />
+                    <xs:element name="line3" />
+                    <xs:element name="city" />
+                    <xs:element name="state" />
+                    <xs:element name="zip" />
+                    <xs:element name="country" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
