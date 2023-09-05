@@ -55,12 +55,11 @@ public class DovetailDrawerBoxBuilder {
     /// Theses dimensions represent the Hettich 'Nominal' slide length (the drawer length)
     /// </summary>
     public static Dimension[] UnderMountDrawerSlideDepths { get; set; } = new Dimension[] {
-        Dimension.FromMillimeters(250),
-        Dimension.FromMillimeters(280),
-        Dimension.FromMillimeters(320),
+        Dimension.FromMillimeters(229),
+        Dimension.FromMillimeters(305),
         Dimension.FromMillimeters(381),
-        Dimension.FromMillimeters(450),
-        Dimension.FromMillimeters(550)
+        Dimension.FromMillimeters(457),
+        Dimension.FromMillimeters(533)
     };
 
     /// <summary>
