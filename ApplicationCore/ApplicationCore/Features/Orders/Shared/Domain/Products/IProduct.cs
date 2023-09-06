@@ -13,4 +13,6 @@ public interface IProduct {
     public string GetDescription();
     public IEnumerable<Supply> GetSupplies();
 
+    public List<string> ProductionNotes { get; }
+
 }

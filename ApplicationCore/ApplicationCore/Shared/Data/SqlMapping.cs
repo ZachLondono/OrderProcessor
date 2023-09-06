@@ -12,6 +12,7 @@ public static class SqlMapping {
         SqlMapper.AddTypeHandler(new SqliteDimensionTypeHandler());
         SqlMapper.AddTypeHandler(new SqliteDictionaryEnumerableTypeHandler());
         SqlMapper.AddTypeHandler(new DimensionArrayTypeHandler());
+        SqlMapper.AddTypeHandler(new StringListTypeHandler());
         SqlMapper.RemoveTypeMap(typeof(Guid));
         SqlMapper.RemoveTypeMap(typeof(Guid?));
         SqlMapper.AddTypeHandler(new SqliteGuidTypeHandler());

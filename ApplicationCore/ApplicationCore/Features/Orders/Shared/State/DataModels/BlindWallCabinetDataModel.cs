@@ -15,6 +15,7 @@ internal class BlindWallCabinetDataModel : CabinetDataModelBase, IProductDataMod
     public Dimension DoorExtendDown { get; set; }
     public int DoorQty { get; set; }
     public HingeSide HingeSide { get; set; }
+    public List<string> ProductionNotes { get; set; } = new();
 
     public IProduct MapToProduct() {
 
@@ -26,7 +27,9 @@ internal class BlindWallCabinetDataModel : CabinetDataModelBase, IProductDataMod
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         return new BlindWallCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
-            doors, BlindSide, BlindWidth, AdjShelfQty, DoorExtendDown);
+            doors, BlindSide, BlindWidth, AdjShelfQty, DoorExtendDown) {
+            ProductionNotes = ProductionNotes
+        };
 
     }
 
@@ -39,6 +42,7 @@ internal class BlindWallCabinetDataModel : CabinetDataModelBase, IProductDataMod
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
            	    products.room,
+                products.production_notes AS ProductionNotes,
 
            	    cabinets.height,
            	    cabinets.width,

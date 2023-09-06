@@ -28,36 +28,43 @@
             </tr>
         </thead>
             @foreach (var row in Cabinets) {
-                <tbody class="hover:bg-blue-500/10">
+                <tbody class="hover:bg-blue-500/10 border-b">
                     <tr>
-                        <td class="@GetCellClass(row)">@row.ProductNumber</td>
-                        <td class="@GetCellClass(row)">@row.Qty</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.ProductNumber</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.Qty</td>
                         @if (UseInches) {
-                            <td class="@GetCellClass(row)">@((MarkupString)row.Height.GetFormatedFraction())"</td>
-                            <td class="@GetCellClass(row)">@((MarkupString)row.Width.GetFormatedFraction())"</td>
-                            <td class="@GetCellClass(row)">@((MarkupString)row.Depth.GetFormatedFraction())"</td>
+                            <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Height.GetFormatedFraction())"</td>
+                            <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Width.GetFormatedFraction())"</td>
+                            <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Depth.GetFormatedFraction())"</td>
                         } else {
-                            <td class="@GetCellClass(row)">@row.Height.AsMillimeters().ToString("0.00")</td>
-                            <td class="@GetCellClass(row)">@row.Width.AsMillimeters().ToString("0.00")</td>
-                            <td class="@GetCellClass(row)">@row.Depth.AsMillimeters().ToString("0.00")</td>
+                            <td class="whitespace-nowrap p-5 text-center">@row.Height.AsMillimeters().ToString("0.00")</td>
+                            <td class="whitespace-nowrap p-5 text-center">@row.Width.AsMillimeters().ToString("0.00")</td>
+                            <td class="whitespace-nowrap p-5 text-center">@row.Depth.AsMillimeters().ToString("0.00")</td>
                         }
-                        <td class="@GetCellClass(row)">@($"{row.BoxMaterial.Finish}/{row.BoxMaterial.FinishType}/{row.BoxMaterial.Core}")</td>
-                        <td class="@GetCellClass(row)">@($"{row.FinishMaterial.Finish}/{row.FinishMaterial.FinishType}/{row.FinishMaterial.Core}")</td>
-                        <td class="@GetCellClass(row)">@($"{row.FinishMaterial.PaintColor ?? "N/A"}")</td>
-                        <td class="@GetCellClass(row)">@(GetDoorMaterialStyle(row))</td>
-                        <td class="@GetCellClass(row)">@(GetDoorPaint(row))</td>
-                        <td class="@GetCellClass(row)">@row.EdgeBandingColor</td>
-                        <td class="@GetCellClass(row)">@row.LeftSideType.ToString()</td>
-                        <td class="@GetCellClass(row)">@row.RightSideType.ToString()</td>
-                        <td class="@GetCellClass(row)">@(row.Assembled ? "Yes" : "No")</td>
-                        <td class="@GetCellClass(row)">@row.UnitPrice.ToString("$0.00")</td>
-                        <td class="@GetCellClass(row)">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
+                        <td class="whitespace-nowrap p-5 text-center">@($"{row.BoxMaterial.Finish}/{row.BoxMaterial.FinishType}/{row.BoxMaterial.Core}")</td>
+                        <td class="whitespace-nowrap p-5 text-center">@($"{row.FinishMaterial.Finish}/{row.FinishMaterial.FinishType}/{row.FinishMaterial.Core}")</td>
+                        <td class="whitespace-nowrap p-5 text-center">@($"{row.FinishMaterial.PaintColor ?? "N/A"}")</td>
+                        <td class="whitespace-nowrap p-5 text-center">@(GetDoorMaterialStyle(row))</td>
+                        <td class="whitespace-nowrap p-5 text-center">@(GetDoorPaint(row))</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.EdgeBandingColor</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.LeftSideType.ToString()</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.RightSideType.ToString()</td>
+                        <td class="whitespace-nowrap p-5 text-center">@(row.Assembled ? "Yes" : "No")</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.UnitPrice.ToString("$0.00")</td>
+                        <td class="whitespace-nowrap p-5 text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
                     </tr>
 
                     @if(row.Comment != string.Empty) {
                         <tr>
-                            <td class="p-5 font-bold border-b text-red-500" colspan="17">
+                            <td class="p-5 font-bold text-red-500" colspan="17">
                                 @row.Comment
+                            </td>
+                        </tr>
+                    }
+                    @foreach(var note in row.ProductionNotes) {
+                        <tr>
+                            <td class="p-5 font-bold text-red-500" colspan="17">
+                                @note
                             </td>
                         </tr>
                     }
@@ -73,10 +80,6 @@
 
     [Parameter]
     public bool UseInches { get; set; }
-
-    public string GetCellClass(Cabinet product) {
-        return $"whitespace-nowrap p-5 text-center {(product.Comment != string.Empty ? "" : "border-b")}";
-    }
 
     public string GetDoorMaterialStyle(Cabinet cabinet) {
 

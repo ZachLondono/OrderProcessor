@@ -10,6 +10,7 @@ internal class DrawerBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBa
 
     public ToeType ToeType { get; set; } = ToeType.LegLevelers;
     public Dimension[] FaceHeights { get; set; } = Array.Empty<Dimension>();
+    public List<string> ProductionNotes { get; set; } = new();
 
     public IProduct MapToProduct() {
 
@@ -24,7 +25,9 @@ internal class DrawerBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBa
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         return new DrawerBaseCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
-            ToeType, drawers, dbOptions);
+            ToeType, drawers, dbOptions) {
+            ProductionNotes = ProductionNotes
+        };
     }
 
     public static string GetQueryByOrderId
@@ -37,6 +40,7 @@ internal class DrawerBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBa
             products.unit_price AS UnitPrice,
             products.product_number AS ProductNumber,
             products.room,
+            products.production_notes AS ProductionNotes,
             
             cabinets.height,
             cabinets.width,

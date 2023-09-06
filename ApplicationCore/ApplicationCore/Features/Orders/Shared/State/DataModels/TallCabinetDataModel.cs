@@ -18,6 +18,7 @@ internal class TallCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
     public int UpperDoorQty { get; set; }
     public Dimension LowerDoorHeight { get; set; }
     public HingeSide HingeSide { get; set; }
+    public List<string> ProductionNotes { get; set; } = new();
 
     public IProduct MapToProduct() {
 
@@ -39,7 +40,9 @@ internal class TallCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         return new TallCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
-            doors, ToeType, inside, dbOptions);
+            doors, ToeType, inside, dbOptions) {
+            ProductionNotes = ProductionNotes
+        };
 
     }
 
@@ -52,6 +55,7 @@ internal class TallCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
            	    products.room,
+                products.production_notes AS ProductionNotes,
 
            	    cabinets.height,
            	    cabinets.width,

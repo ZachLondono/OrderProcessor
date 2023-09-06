@@ -14,6 +14,7 @@ internal class WallCabinetDataModel : CabinetDataModelBase, IProductDataModel, I
     public int AdjShelfQty { get; set; }
     public int VertDivQty { get; set; }
     public bool FinishedBottom { get; set; }
+    public List<string> ProductionNotes { get; set; } = new();
 
     public IProduct MapToProduct() {
 
@@ -24,7 +25,9 @@ internal class WallCabinetDataModel : CabinetDataModelBase, IProductDataModel, I
         var doors = new WallCabinetDoors(HingeSide, DoorExtendDown);
         var inside = new WallCabinetInside(AdjShelfQty, VertDivQty);
 
-        return new WallCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment, doors, inside, FinishedBottom);
+        return new WallCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment, doors, inside, FinishedBottom) {
+            ProductionNotes = ProductionNotes
+        };
 
     }
 
@@ -37,6 +40,7 @@ internal class WallCabinetDataModel : CabinetDataModelBase, IProductDataModel, I
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
            	    products.room,
+                products.production_notes AS ProductionNotes,
 
            	    cabinets.height,
            	    cabinets.width,

@@ -61,6 +61,10 @@ public class DovetailDrawerBoxModel : ProductModel {
     [XmlElement("room")]
     public string Room { get; set; } = string.Empty;
 
+    [XmlArray("productionNotes")]
+    [XmlArrayItem(ElementName = "note", Type = typeof(string))]
+    public List<string> ProductionNotes { get; set; } = new();
+
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
@@ -80,7 +84,9 @@ public class DovetailDrawerBoxModel : ProductModel {
 
         var options = new DovetailDrawerBoxConfig(Material, Material, Material, Bottom, Clips, Notch, Insert, LogoPosition.None);
 
-        return DovetailDrawerBoxProduct.Create(unitPrice, Qty, Room, GetProductNumber(), height, width, depth, Note, labelFields, options);
+        var product = DovetailDrawerBoxProduct.Create(unitPrice, Qty, Room, GetProductNumber(), height, width, depth, Note, labelFields, options);
+        product.ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList();
+        return product;
 
     }
 

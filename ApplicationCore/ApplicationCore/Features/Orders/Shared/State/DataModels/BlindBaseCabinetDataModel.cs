@@ -18,6 +18,7 @@ internal class BlindBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBas
     public HingeSide HingeSide { get; set; }
     public int DrawerQty { get; set; }
     public Dimension DrawerFaceHeight { get; set; }
+    public List<string> ProductionNotes { get; set; } = new();
 
     public IProduct MapToProduct() {
 
@@ -35,7 +36,9 @@ internal class BlindBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBas
         };
 
         return new BlindBaseCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
-            doors, BlindSide, BlindWidth, AdjShelfQty, ShelfDepth, drawers, ToeType, dbOptions);
+            doors, BlindSide, BlindWidth, AdjShelfQty, ShelfDepth, drawers, ToeType, dbOptions) {
+            ProductionNotes = ProductionNotes
+        };
 
     }
 
@@ -48,6 +51,7 @@ internal class BlindBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBas
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
            	    products.room,
+                products.production_notes AS ProductionNotes,
 
            	    cabinets.height,
            	    cabinets.width,

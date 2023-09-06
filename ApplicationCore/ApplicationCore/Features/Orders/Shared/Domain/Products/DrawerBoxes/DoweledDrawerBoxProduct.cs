@@ -11,6 +11,7 @@ public class DoweledDrawerBoxProduct : DoweledDrawerBox, IProduct, ICNCPartConta
     public int ProductNumber { get; }
     public decimal UnitPrice { get; }
     public string Room { get; set; }
+    public List<string> ProductionNotes { get; set; } = new();
 
     public DoweledDrawerBoxProduct(Guid id, decimal unitPrice, int qty, string room, int productNumber, Dimension height, Dimension width, Dimension depth, DoweledDrawerBoxMaterial front, DoweledDrawerBoxMaterial back, DoweledDrawerBoxMaterial sides, DoweledDrawerBoxMaterial bottom, bool machineThicknessForUMSlides, Dimension frontBackHeightAdjustment)
         : base(qty, height, width, depth, front, back, sides, bottom, machineThicknessForUMSlides, frontBackHeightAdjustment) {

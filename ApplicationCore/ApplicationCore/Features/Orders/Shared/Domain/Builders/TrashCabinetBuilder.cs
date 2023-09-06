@@ -41,6 +41,7 @@ internal class TrashCabinetBuilder : CabinetBuilder<TrashCabinet> {
 
     public override TrashCabinet Build() {
         var cabinet = TrashCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, DrawerFaceHeight, TrashPulloutConfiguration, BoxOptions, ToeType);
+        cabinet.ProductionNotes = ProductionNotes;
         return cabinet;
     }
 

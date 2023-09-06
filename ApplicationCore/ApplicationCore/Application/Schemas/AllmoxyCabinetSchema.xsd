@@ -40,6 +40,12 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:complexType name="productionNotes">
+    <xs:sequence>
+      <xs:element name="note" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  
   <xs:complexType name="cabinet">
     <xs:sequence>
       <xs:element name="qty" type="xs:unsignedByte" />
@@ -81,6 +87,7 @@
         </xs:complexType>
       </xs:element>
       <xs:element name="edgeBandColor" type="xs:string" />
+      <xs:element name="productionNotes" type="productionNotes" minOccurs="0" maxOccurs="1" />
     </xs:sequence>
   </xs:complexType>
 
@@ -433,6 +440,7 @@
                           </xs:sequence>
                         </xs:complexType>
                       </xs:element>
+                      <xs:element name="productionNotes" type="productionNotes" minOccurs="0" maxOccurs="1" />
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
@@ -469,6 +477,7 @@
                           </xs:sequence>
                         </xs:complexType>
                       </xs:element>
+                      <xs:element name="productionNotes" type="productionNotes" minOccurs="0" maxOccurs="1" />
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
@@ -487,6 +496,7 @@
                       <xs:element name="rails" type="xs:decimal"/>
                       <xs:element name="comment" type="xs:string"/>
                       <xs:element name="room" type="xs:string"/>
+                      <xs:element name="productionNotes" type="productionNotes" minOccurs="0" maxOccurs="1" />
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
@@ -519,6 +529,7 @@
                       <xs:element name="ledChannelOffFront" type="xs:decimal" />
                       <xs:element name="ledChannelWidth" type="xs:decimal" />
                       <xs:element name="ledChannelDepth" type="xs:decimal" />
+                      <xs:element name="productionNotes" type="productionNotes" minOccurs="0" maxOccurs="1" />
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
@@ -549,6 +560,7 @@
                       <xs:element name="material" type="xs:string" />
                       <xs:element name="finish" type="xs:string" />
                       <xs:element name="customPanelDrop" type="xs:string" />
+                      <xs:element name="productionNotes" type="productionNotes" minOccurs="0" maxOccurs="1" />
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
@@ -573,6 +585,7 @@
                       <xs:element name="width" type="xs:decimal" />
                       <xs:element name="depth" type="xs:decimal" />
                       <xs:element name="room" type="xs:string" />
+                      <xs:element name="productionNotes" type="productionNotes" minOccurs="0" maxOccurs="1" />
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
@@ -593,6 +606,7 @@
                       <xs:element name="machineForUMSlides" type="xs:string" />
                       <xs:element name="frontBackHeightAdj" type="xs:decimal" />
                       <xs:element name="room" type="xs:string" />
+                      <xs:element name="productionNotes" type="productionNotes" minOccurs="0" maxOccurs="1" />
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
@@ -606,4 +620,5 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
 </xs:schema>

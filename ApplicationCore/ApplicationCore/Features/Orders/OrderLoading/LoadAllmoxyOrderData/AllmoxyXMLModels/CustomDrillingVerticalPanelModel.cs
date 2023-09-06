@@ -86,6 +86,10 @@ public class CustomDrillingVerticalPanelModel : ProductModel {
     [XmlElement("ledChannelDepth")]
     public double LEDChannelDepth { get; set; }
 
+    [XmlArray("productionNotes")]
+    [XmlArrayItem(ElementName = "note", Type = typeof(string))]
+    public List<string> ProductionNotes { get; set; } = new();
+
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
@@ -139,7 +143,9 @@ public class CustomDrillingVerticalPanelModel : ProductModel {
             holeDimensionFromBottom = Dimension.Zero;
         }
 
-        return new CustomDrilledVerticalPanel(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, width, length, material, paint, edgeBandColor, Comment, drillingType, extendBack, extendFront, holeDimensionFromBottom, holeDimensionFromTop, transitionHoleDimensionFromBottom, transitionHoleDimensionFromTop, bottomNotchDepth, bottomNotchHeight, ledChannelOffFront, ledChannelWidth, ledChannelDepth);
+        return new CustomDrilledVerticalPanel(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, width, length, material, paint, edgeBandColor, Comment, drillingType, extendBack, extendFront, holeDimensionFromBottom, holeDimensionFromTop, transitionHoleDimensionFromBottom, transitionHoleDimensionFromTop, bottomNotchDepth, bottomNotchHeight, ledChannelOffFront, ledChannelWidth, ledChannelDepth) {
+            ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList()
+        };
 
     }
 

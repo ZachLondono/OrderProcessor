@@ -49,6 +49,7 @@ internal class BasePieCutCornerCabinetBuilder : CabinetBuilder<BasePieCutCornerC
 
     public override BasePieCutCornerCabinet Build() {
         var cabinet = BasePieCutCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, RightWidth, RightDepth, ToeType, AdjustableShelves, HingeSide);
+        cabinet.ProductionNotes = ProductionNotes;
         return cabinet;
     }
 

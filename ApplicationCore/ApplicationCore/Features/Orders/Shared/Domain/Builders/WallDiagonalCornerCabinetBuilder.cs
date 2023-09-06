@@ -53,6 +53,7 @@ internal class WallDiagonalCornerCabinetBuilder : CabinetBuilder<WallDiagonalCor
 
     public override WallDiagonalCornerCabinet Build() {
         var cabinet = WallDiagonalCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, RightWidth, RightDepth, AdjustableShelves, HingeSide, DoorQty, ExtendDown);
+        cabinet.ProductionNotes = ProductionNotes;
         return cabinet;
     }
 

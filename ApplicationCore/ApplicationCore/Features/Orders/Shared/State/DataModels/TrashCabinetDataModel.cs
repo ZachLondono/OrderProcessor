@@ -12,6 +12,7 @@ internal class TrashCabinetDataModel : CabinetDrawerBoxContainerDataModelBase, I
     public ToeType ToeType { get; set; } = ToeType.LegLevelers;
     public TrashPulloutConfiguration TrashConfig { get; set; }
     public Dimension DrawerFaceHeight { get; set; }
+    public List<string> ProductionNotes { get; set; } = new();
 
     public IProduct MapToProduct() {
 
@@ -22,7 +23,9 @@ internal class TrashCabinetDataModel : CabinetDrawerBoxContainerDataModelBase, I
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         return new TrashCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
-            DrawerFaceHeight, TrashConfig, dbOptions, ToeType);
+            DrawerFaceHeight, TrashConfig, dbOptions, ToeType) {
+            ProductionNotes = ProductionNotes
+        };
 
     }
 
@@ -35,6 +38,7 @@ internal class TrashCabinetDataModel : CabinetDrawerBoxContainerDataModelBase, I
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
            	    products.room,
+                products.production_notes AS ProductionNotes,
 
            	    cabinets.height,
            	    cabinets.width,

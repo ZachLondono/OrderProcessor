@@ -80,6 +80,10 @@ public class MDFDoorModel : ProductModel {
     [XmlElement("customPanelDrop")]
     public string CustomPanelDrop { get; set; } = string.Empty;
 
+    [XmlArray("productionNotes")]
+    [XmlArrayItem(ElementName = "note", Type = typeof(string))]
+    public List<string> ProductionNotes { get; set; } = new();
+
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
@@ -112,7 +116,9 @@ public class MDFDoorModel : ProductModel {
             additionalOpenings.Add(new(Dimension.FromMillimeters(Rail4), Dimension.FromMillimeters(Opening2)));
         }
 
-        return MDFDoorProduct.Create(unitPrice, Room, Qty, GetProductNumber(), type, height, width, Note, frameSize, Material, thickness, FramingBead, EdgeProfile, PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), Finish);
+        var product = MDFDoorProduct.Create(unitPrice, Room, Qty, GetProductNumber(), type, height, width, Note, frameSize, Material, thickness, FramingBead, EdgeProfile, PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), Finish);
+        product.ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList();
+        return product;
 
     }
 }

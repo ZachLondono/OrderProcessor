@@ -20,6 +20,7 @@ public class ClosetPart : IProduct, IPPProductContainer, IClosetPartProduct {
     public string EdgeBandingColor { get; }
     public string Comment { get; }
     public IReadOnlyDictionary<string, string> Parameters { get; }
+    public List<string> ProductionNotes { get; set; } = new();
 
     public string GetDescription() => $"Closet Part - {SKU}";
 

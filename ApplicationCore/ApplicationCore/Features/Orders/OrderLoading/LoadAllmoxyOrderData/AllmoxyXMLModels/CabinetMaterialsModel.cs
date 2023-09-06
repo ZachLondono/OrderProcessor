@@ -46,4 +46,7 @@ public class CabinetModel {
     [XmlElement("comment")]
     public string Comment { get; set; } = string.Empty;
 
+    [XmlArray("productNotes")]
+    public List<string> ProductionNotes { get; set; } = new();
+
 }

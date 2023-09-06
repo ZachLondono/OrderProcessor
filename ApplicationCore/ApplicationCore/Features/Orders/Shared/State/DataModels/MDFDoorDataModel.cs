@@ -18,6 +18,7 @@ internal class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuer
     public Dimension RightStile { get; set; }
     public DoorOrientation Orientation { get; set; }
     public AdditionalOpening[] AdditionalOpenings { get; set; } = Array.Empty<AdditionalOpening>();
+    public List<string> ProductionNotes { get; set; } = new();
 
     public string FramingBead { get; set; } = string.Empty;
     public string EdgeDetail { get; set; } = string.Empty;
@@ -37,6 +38,7 @@ internal class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuer
             products.unit_price AS UnitPrice,
             products.product_number AS ProductNumber,
         	products.room,
+            products.production_notes AS ProductionNotes,
 
         	mdf_product.note,
         	mdf_product.height,
@@ -83,7 +85,9 @@ internal class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuer
             RightStile = RightStile
         };
 
-        return new MDFDoorProduct(Id, UnitPrice, Room, Qty, ProductNumber, Type, Height, Width, Note, frameSize, Material, Thickness, FramingBead, EdgeDetail, PanelDetail, PanelDrop, Orientation, AdditionalOpenings, PaintColor);
+        return new MDFDoorProduct(Id, UnitPrice, Room, Qty, ProductNumber, Type, Height, Width, Note, frameSize, Material, Thickness, FramingBead, EdgeDetail, PanelDetail, PanelDrop, Orientation, AdditionalOpenings, PaintColor) {
+            ProductionNotes = ProductionNotes
+        };
 
     }
 

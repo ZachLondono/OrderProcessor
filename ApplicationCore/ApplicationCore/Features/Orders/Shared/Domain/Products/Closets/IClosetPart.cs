@@ -17,5 +17,6 @@ public interface IClosetPartProduct {
     public string EdgeBandingColor { get; }
     public string Comment { get; }
     public string GetDescription();
+    public List<string> ProductionNotes { get; set; }
 
 }

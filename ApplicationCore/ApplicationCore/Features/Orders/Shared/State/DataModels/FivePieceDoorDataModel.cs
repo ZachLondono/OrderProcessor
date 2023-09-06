@@ -16,6 +16,7 @@ internal class FivePieceDoorDataModel : ProductDataModelBase, IProductDataModel,
     public Dimension FrameThickness { get; set; }
     public Dimension PanelThickness { get; set; }
     public string Material { get; set; } = string.Empty;
+    public List<string> ProductionNotes { get; set; } = new();
 
     public static string GetQueryByOrderId =>
         """
@@ -26,6 +27,7 @@ internal class FivePieceDoorDataModel : ProductDataModelBase, IProductDataModel,
             products.unit_price AS UnitPrice,
             products.product_number AS ProductNumber,
             products.room,
+            products.production_notes AS ProductionNotes,
 
             fpd_product.width,
             fpd_product.height,
@@ -54,7 +56,9 @@ internal class FivePieceDoorDataModel : ProductDataModelBase, IProductDataModel,
             LeftStile = LeftStile,
             RightStile = RightStile
         };
-        return new FivePieceDoorProduct(Id, Qty, UnitPrice, ProductNumber, Room, Width, Height, frameSize, FrameThickness, PanelThickness, Material);
+        return new FivePieceDoorProduct(Id, Qty, UnitPrice, ProductNumber, Room, Width, Height, frameSize, FrameThickness, PanelThickness, Material) {
+            ProductionNotes = ProductionNotes
+        };
     }
 
 }

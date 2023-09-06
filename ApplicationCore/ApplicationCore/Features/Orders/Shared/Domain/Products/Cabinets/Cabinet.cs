@@ -25,12 +25,14 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
     public CabinetSideType RightSideType { get; }
     public CabinetSideType LeftSideType { get; }
     public string Comment { get; }
+    public List<string> ProductionNotes { get; set; } = new();
     public abstract string GetDescription();
 
     public CabinetConstruction Construction { get; set; }
 
     public Dimension InnerWidth => Width - Construction.SideThickness * 2;
     public Dimension InnerDepth => Depth - (Construction.BackThickness + Construction.BackInset);
+
 
     public Cabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                 Dimension height, Dimension width, Dimension depth,

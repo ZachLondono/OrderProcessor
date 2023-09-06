@@ -14,6 +14,7 @@ internal class PieCutBaseCabinetDataModel : CabinetDataModelBase, IProductDataMo
     public Dimension RightDepth { get; set; }
     public HingeSide HingeSide { get; set; }
     public int AdjShelfQty { get; set; }
+    public List<string> ProductionNotes { get; set; } = new();
 
     public IProduct MapToProduct() {
 
@@ -23,7 +24,9 @@ internal class PieCutBaseCabinetDataModel : CabinetDataModelBase, IProductDataMo
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         return new BasePieCutCornerCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
-            RightWidth, RightDepth, ToeType, AdjShelfQty, HingeSide);
+            RightWidth, RightDepth, ToeType, AdjShelfQty, HingeSide) {
+            ProductionNotes = ProductionNotes
+        };
 
     }
 
@@ -36,6 +39,7 @@ internal class PieCutBaseCabinetDataModel : CabinetDataModelBase, IProductDataMo
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
            	    products.room,
+                products.production_notes AS ProductionNotes,
 
            	    cabinets.height,
            	    cabinets.width,
