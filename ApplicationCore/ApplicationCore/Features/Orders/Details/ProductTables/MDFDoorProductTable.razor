@@ -51,6 +51,15 @@
                         </td>
                     </tr>                        
                 }
+
+                @foreach(var note in row.ProductionNotes) {
+                    <tr>
+                        <td class="p-5 font-bold border-b text-red-500" colspan="17">
+                            @note
+                        </td>
+                    </tr>
+                }
+
             </tbody>
         }
     </table>
