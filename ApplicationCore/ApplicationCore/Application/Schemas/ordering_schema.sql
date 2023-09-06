@@ -78,6 +78,7 @@ CREATE TABLE products (
 	unit_price REAL NOT NULL,
 	product_number INTEGER NOT NULL,
 	room TEXT NOT NULL,
+	production_notes JSON NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
