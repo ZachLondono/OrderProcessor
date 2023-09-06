@@ -43,6 +43,10 @@ public class FivePieceDoorModel : ProductModel {
     [XmlElement("width")]
     public double Width { get; set; }
     
+    [XmlArray("productionNotes")]
+    [XmlArrayItem(ElementName = "note", Type = typeof(string))]
+    public List<string> ProductionNotes { get; set; } = new();
+
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
@@ -56,7 +60,9 @@ public class FivePieceDoorModel : ProductModel {
 
         decimal unitPrice = AllmoxyXMLOrderProviderHelpers.StringToMoney(UnitPrice);
 
-        return new FivePieceDoorProduct(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, width, height, frameSize, frameThickness, panelThickness, material);
+        return new FivePieceDoorProduct(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, width, height, frameSize, frameThickness, panelThickness, material) {
+            ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList()
+        };
 
     }
 

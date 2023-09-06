@@ -48,6 +48,7 @@ internal class BaseCabinetBuilder : CabinetBuilder<BaseCabinet> {
 
     public override BaseCabinet Build() {
         var cabinet = BaseCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, Doors, ToeType, Drawers, Inside, BoxOptions);
+        cabinet.ProductionNotes = ProductionNotes;
         return cabinet;
     }
 

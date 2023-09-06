@@ -28,6 +28,7 @@ internal class CustomDrilledVerticalPanelDataModel : ProductDataModelBase, IProd
     public Dimension LEDChannelOffFront { get; set; }
     public Dimension LEDChannelWidth { get; set; }
     public Dimension LEDChannelDepth { get; set; }
+    public List<string> ProductionNotes { get; set; } = new();
 
     public static string GetQueryByOrderId
         =>
@@ -39,6 +40,7 @@ internal class CustomDrilledVerticalPanelDataModel : ProductDataModelBase, IProd
         	products.unit_price AS UnitPrice,
         	products.product_number AS ProductNumber,
             products.room,
+            products.production_notes AS ProductionNotes,
             
             custom_drilled_vertical_panels.width,
             custom_drilled_vertical_panels.length,
@@ -72,7 +74,9 @@ internal class CustomDrilledVerticalPanelDataModel : ProductDataModelBase, IProd
     public IProduct MapToProduct() {
         ClosetPaint? paint = PaintColor is null ? null : new(PaintColor, PaintedSide);
         ClosetMaterial material = new(MaterialFinish, MaterialCore);
-        return new CustomDrilledVerticalPanel(Id, Qty, UnitPrice, ProductNumber, Room, Width, Length, material, paint, EdgeBandingFinish, Comment, DrillingType, ExtendBack, ExtendFront, HoleDimensionFromBottom, HoleDimensionFromTop, TransitionHoleDimensionFromBottom, TransitionHoleDimensionFromTop, BottomNotchDepth, BottomNotchHeight, LEDChannelOffFront, LEDChannelWidth, LEDChannelDepth);
+        return new CustomDrilledVerticalPanel(Id, Qty, UnitPrice, ProductNumber, Room, Width, Length, material, paint, EdgeBandingFinish, Comment, DrillingType, ExtendBack, ExtendFront, HoleDimensionFromBottom, HoleDimensionFromTop, TransitionHoleDimensionFromBottom, TransitionHoleDimensionFromTop, BottomNotchDepth, BottomNotchHeight, LEDChannelOffFront, LEDChannelWidth, LEDChannelDepth) {
+            ProductionNotes = ProductionNotes
+        };
     }
 
 }

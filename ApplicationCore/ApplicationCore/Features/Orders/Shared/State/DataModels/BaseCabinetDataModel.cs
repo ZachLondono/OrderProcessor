@@ -17,6 +17,7 @@ internal class BaseCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
     public ShelfDepth ShelfDepth { get; set; }
     public Dimension DrawerFaceHeight { get; set; }
     public int DrawerQty { get; set; }
+    public List<string> ProductionNotes { get; set; } = new();
 
     public IProduct MapToProduct() {
 
@@ -41,7 +42,9 @@ internal class BaseCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         return new BaseCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
-            doors, ToeType, drawers, inside, dbOptions);
+            doors, ToeType, drawers, inside, dbOptions) {
+            ProductionNotes = ProductionNotes
+        };
 
     }
 
@@ -54,6 +57,7 @@ internal class BaseCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
            	    products.room,
+                products.production_notes AS ProductionNotes,
 
            	    cabinets.height,
            	    cabinets.width,

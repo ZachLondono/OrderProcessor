@@ -18,14 +18,15 @@ public partial class InsertOrder {
                 product.UnitPrice,
                 product.ProductNumber,
                 Room = product.Room,
+                ProductionNotes = product.ProductionNotes,
             };
 
             await connection.ExecuteAsync(
                 """
                 INSERT INTO products
-                    (id, order_id, qty, unit_price, product_number, room)
+                    (id, order_id, qty, unit_price, product_number, room, production_notes)
                 VALUES
-                    (@Id, @OrderId, @Qty, @UnitPrice, @ProductNumber, @Room);
+                    (@Id, @OrderId, @Qty, @UnitPrice, @ProductNumber, @Room, @ProductionNotes);
                 """, parameters, trx);
 
         }

@@ -81,7 +81,8 @@ public abstract class CabinetModelBase : ProductModel {
                                     .WithRoom(Cabinet.Room)
                                     .WithMDFDoorOptions(mdfOptions)
                                     .WithAssembled(Cabinet.Assembled == AllmoxyXMLOrderProviderHelpers.XML_BOOL_TRUE)
-                                    .WithComment(Cabinet.Comment);
+                                    .WithComment(Cabinet.Comment)
+                                    .WithProductionNotes(Cabinet.ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList());
 
     }
 

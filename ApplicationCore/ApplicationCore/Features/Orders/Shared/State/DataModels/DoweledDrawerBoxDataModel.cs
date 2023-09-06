@@ -24,6 +24,7 @@ internal class DoweledDrawerBoxDataModel : ProductDataModelBase, IProductDataMod
     public bool BottomMatGraining { get; set; }
     public bool MachineThicknessForUM { get; set; }
     public Dimension FrontBackHeightAdjustment { get; set; }
+    public List<string> ProductionNotes { get; set; } = new();
 
     public static string GetQueryByOrderId =>
         """
@@ -34,6 +35,7 @@ internal class DoweledDrawerBoxDataModel : ProductDataModelBase, IProductDataMod
             products.unit_price AS UnitPrice,
             products.product_number AS ProductNumber,
             products.room,
+            products.production_notes AS ProductionNotes,
 
             db_product.height,
             db_product.width,
@@ -71,7 +73,9 @@ internal class DoweledDrawerBoxDataModel : ProductDataModelBase, IProductDataMod
         return new DoweledDrawerBoxProduct(Id, UnitPrice, Qty, Room, ProductNumber,
                                             Height, Width, Depth,
                                             frontMaterial, backMaterial, sideMaterial, bottomMaterial,
-                                            MachineThicknessForUM, FrontBackHeightAdjustment);
+                                            MachineThicknessForUM, FrontBackHeightAdjustment) {
+            ProductionNotes = ProductionNotes
+        };
 
     }
 

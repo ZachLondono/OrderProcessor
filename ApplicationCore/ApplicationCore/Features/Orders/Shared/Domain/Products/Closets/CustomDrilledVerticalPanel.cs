@@ -22,6 +22,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     public ClosetPaint? Paint { get; }
     public string EdgeBandingColor { get; }
     public string Comment { get; }
+    public List<string> ProductionNotes { get; set; } = new();
 
     public ClosetVerticalDrillingType DrillingType { get; }
     public Dimension ExtendBack { get; }

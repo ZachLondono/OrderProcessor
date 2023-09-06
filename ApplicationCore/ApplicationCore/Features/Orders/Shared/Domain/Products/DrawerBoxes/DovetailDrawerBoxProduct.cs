@@ -10,6 +10,7 @@ public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDovetailDr
     public Guid Id { get; }
     public decimal UnitPrice { get; }
     public string Room { get; set; }
+    public List<string> ProductionNotes { get; set; } = new();
 
     public string GetDescription() {
 

@@ -12,6 +12,7 @@ internal class FivePieceDoorProduct : FivePieceDoor, IProduct, ICNCPartContainer
     public decimal UnitPrice { get; init; }
     public int ProductNumber { get; init; }
     public string Room { get; set; }
+    public List<string> ProductionNotes { get; set; } = new();
 
     public FivePieceDoorProduct(Guid id, int qty, decimal unitPrice, int productNumber, string room, Dimension width, Dimension height, DoorFrame frameSize, Dimension frameThickness, Dimension panelThickness, string material)
             : base(width, height, frameSize, frameThickness, panelThickness, material) {

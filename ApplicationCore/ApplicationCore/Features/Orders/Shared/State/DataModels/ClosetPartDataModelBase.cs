@@ -18,6 +18,7 @@ internal class ClosetPartDataModel : ProductDataModelBase, IProductDataModel, IQ
     public string EdgeBandingFinish { get; set; } = string.Empty;
     public string Comment { get; set; } = string.Empty;
     public IDictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
+    public List<string> ProductionNotes { get; set; } = new();
 
     public static string GetQueryByOrderId
         =>
@@ -29,6 +30,7 @@ internal class ClosetPartDataModel : ProductDataModelBase, IProductDataModel, IQ
         	products.unit_price AS UnitPrice,
         	products.product_number AS ProductNumber,
             products.room,
+            products.production_notes AS ProductionNotes,
 
             closet_parts.sku,
             closet_parts.width,
@@ -51,7 +53,9 @@ internal class ClosetPartDataModel : ProductDataModelBase, IProductDataModel, IQ
 
     public IProduct MapToProduct() {
         ClosetPaint? paint = PaintColor is null ? null : new(PaintColor, PaintedSide);
-        return new ClosetPart(Id, Qty, UnitPrice, ProductNumber, Room, Sku, Width, Length, new(MaterialFinish, MaterialCore), paint, EdgeBandingFinish, Comment, Parameters.AsReadOnly());
+        return new ClosetPart(Id, Qty, UnitPrice, ProductNumber, Room, Sku, Width, Length, new(MaterialFinish, MaterialCore), paint, EdgeBandingFinish, Comment, Parameters.AsReadOnly()) {
+            ProductionNotes = ProductionNotes
+        };
     }
 
 }

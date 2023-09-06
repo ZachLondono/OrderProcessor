@@ -21,6 +21,7 @@ public class ZargenDrawer : IProduct, IPPProductContainer {
     public string EdgeBandingColor { get; }
     public string Comment { get; }
     public IReadOnlyDictionary<string, string> Parameters { get; }
+    public List<string> ProductionNotes { get; set; } = new();
 
     public static Dimension[] StandardHeights => new Dimension[] {
         Dimension.FromMillimeters(93),

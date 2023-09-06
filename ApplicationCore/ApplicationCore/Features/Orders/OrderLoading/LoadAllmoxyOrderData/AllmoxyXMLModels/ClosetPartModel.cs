@@ -57,6 +57,10 @@ public class ClosetPartModel : ProductModel {
     [XmlArrayItem(ElementName = "entry", Type = typeof(PSIParameter))]
     public List<PSIParameter> Parameters { get; set; } = new();
 
+    [XmlArray("productionNotes")]
+    [XmlArrayItem(ElementName = "note", Type = typeof(string))]
+    public List<string> ProductionNotes { get; set; } = new();
+
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
@@ -89,7 +93,9 @@ public class ClosetPartModel : ProductModel {
 
         string edgeBandColor = EdgeBandColor == "Match" ? MaterialFinish : EdgeBandColor;
 
-        return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, SKU, width, length, material, paint, edgeBandColor, Comment, parameters);
+        return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, SKU, width, length, material, paint, edgeBandColor, Comment, parameters) {
+            ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList()
+        };
 
     }
 

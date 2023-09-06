@@ -15,6 +15,7 @@ internal class DiagonalBaseCabinetDataModel : CabinetDataModelBase, IProductData
     public HingeSide HingeSide { get; set; }
     public int DoorQty { get; set; }
     public int AdjShelfQty { get; set; }
+    public List<string> ProductionNotes { get; set; } = new();
 
     public IProduct MapToProduct() {
 
@@ -24,7 +25,9 @@ internal class DiagonalBaseCabinetDataModel : CabinetDataModelBase, IProductData
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         return new BaseDiagonalCornerCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
-            RightWidth, RightDepth, ToeType, AdjShelfQty, HingeSide, DoorQty);
+            RightWidth, RightDepth, ToeType, AdjShelfQty, HingeSide, DoorQty) {
+            ProductionNotes = ProductionNotes
+        };
 
     }
 
@@ -37,6 +40,7 @@ internal class DiagonalBaseCabinetDataModel : CabinetDataModelBase, IProductData
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
            	    products.room,
+                products.production_notes AS ProductionNotes,
 
            	    cabinets.height,
            	    cabinets.width,

@@ -36,6 +36,7 @@ internal class DrawerBaseCabinetBuilder : CabinetBuilder<DrawerBaseCabinet> {
 
     public override DrawerBaseCabinet Build() {
         var cabinet = DrawerBaseCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, ToeType, Drawers, BoxOptions);
+        cabinet.ProductionNotes = ProductionNotes;
         return cabinet;
     }
 }

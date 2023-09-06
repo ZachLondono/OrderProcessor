@@ -48,6 +48,9 @@ public class DoweledDrawerBoxModel : ProductModel {
     [XmlElement("room")]
     public string Room { get; set; } = string.Empty;
 
+    [XmlArray("productNotes")]
+    public List<string> ProductionNotes { get; set; } = new();
+
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
@@ -64,7 +67,9 @@ public class DoweledDrawerBoxModel : ProductModel {
 
         var frontBackAdj = Dimension.FromMillimeters(FrontBackHeightAdj);
 
-        return new DoweledDrawerBoxProduct(Guid.NewGuid(), UnitPrice, Qty, Room, GetProductNumber(), height, width, depth, boxMat, boxMat, boxMat, bottomMat, MachineForUMSlides, frontBackAdj);
+        return new DoweledDrawerBoxProduct(Guid.NewGuid(), UnitPrice, Qty, Room, GetProductNumber(), height, width, depth, boxMat, boxMat, boxMat, bottomMat, MachineForUMSlides, frontBackAdj) {
+            ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList(),
+        };
 
     }
 
