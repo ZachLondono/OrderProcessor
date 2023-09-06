@@ -32,32 +32,32 @@
         <tbody>
             @{
                 foreach (var row in DrawerBoxes) {
-                    <tr class="hover:bg-blue-500/10">
-                        <td class="whitespace-nowrap p-5 border-b text-center">@row.ProductNumber</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center">@row.Qty</td>
+                    <tr class="hover:bg-blue-500/10 border-b">
+                        <td class="whitespace-nowrap p-5 text-center">@row.ProductNumber</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.Qty</td>
                         @if (UseInches) {
-                            <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.Height.GetFormatedFraction())"</td>
-                            <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.Width.GetFormatedFraction())"</td>
-                            <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.Depth.GetFormatedFraction())"</td>
-                            <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.FrontBackHeightAdjustment.GetFormatedFraction())</td>
+                            <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Height.GetFormatedFraction())"</td>
+                            <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Width.GetFormatedFraction())"</td>
+                            <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Depth.GetFormatedFraction())"</td>
+                            <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.FrontBackHeightAdjustment.GetFormatedFraction())</td>
                         } else {
-                            <td class="whitespace-nowrap p-5 border-b text-center">@row.Height.AsMillimeters().ToString("0.00")</td>
-                            <td class="whitespace-nowrap p-5 border-b text-center">@row.Width.AsMillimeters().ToString("0.00")</td>
-                            <td class="whitespace-nowrap p-5 border-b text-center">@row.Depth.AsMillimeters().ToString("0.00")</td>
-                            <td class="whitespace-nowrap p-5 border-b text-center">@row.FrontBackHeightAdjustment.AsMillimeters().ToString("0.00")</td>
+                            <td class="whitespace-nowrap p-5 text-center">@row.Height.AsMillimeters().ToString("0.00")</td>
+                            <td class="whitespace-nowrap p-5 text-center">@row.Width.AsMillimeters().ToString("0.00")</td>
+                            <td class="whitespace-nowrap p-5 text-center">@row.Depth.AsMillimeters().ToString("0.00")</td>
+                            <td class="whitespace-nowrap p-5 text-center">@row.FrontBackHeightAdjustment.AsMillimeters().ToString("0.00")</td>
                         }
-                        <td class="whitespace-nowrap p-5 border-b">@((MarkupString)MaterialString(row.FrontMaterial, UseInches))</td>
-                        <td class="whitespace-nowrap p-5 border-b">@((MarkupString)MaterialString(row.SideMaterial,UseInches))</td>
-                        <td class="whitespace-nowrap p-5 border-b">@((MarkupString)MaterialString(row.BackMaterial,UseInches))</td>
-                        <td class="whitespace-nowrap p-5 border-b">@((MarkupString)MaterialString(row.BottomMaterial,UseInches))</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center">@(row.MachineThicknessForUMSlides ? "Y" : "N")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center">$@row.UnitPrice.ToString("0.00")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center">$@((row.UnitPrice * row.Qty).ToString("0.00"))</td>
+                        <td class="whitespace-nowrap p-5">@((MarkupString)MaterialString(row.FrontMaterial, UseInches))</td>
+                        <td class="whitespace-nowrap p-5">@((MarkupString)MaterialString(row.SideMaterial,UseInches))</td>
+                        <td class="whitespace-nowrap p-5">@((MarkupString)MaterialString(row.BackMaterial,UseInches))</td>
+                        <td class="whitespace-nowrap p-5">@((MarkupString)MaterialString(row.BottomMaterial,UseInches))</td>
+                        <td class="whitespace-nowrap p-5 text-center">@(row.MachineThicknessForUMSlides ? "Y" : "N")</td>
+                        <td class="whitespace-nowrap p-5 text-center">$@row.UnitPrice.ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 text-center">$@((row.UnitPrice * row.Qty).ToString("0.00"))</td>
                     </tr>
 
                     @foreach(var note in row.ProductionNotes) {
                         <tr>
-                            <td class="p-5 font-bold border-b text-red-500" colspan="17">
+                            <td class="p-5 font-bold text-red-500" colspan="17">
                                 @note
                             </td>
                         </tr>

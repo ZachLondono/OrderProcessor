@@ -22,31 +22,32 @@
             </tr>
         </thead>
         @foreach (var row in ZargenDrawers) {
-            <tbody class="hover:bg-blue-500/10">
+            <tbody class="hover:bg-blue-500/10 border-b">
+
                 <tr>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.ProductNumber</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Qty</td>
+                    <td class="whitespace-nowrap p-5 text-center">@row.ProductNumber</td>
+                    <td class="whitespace-nowrap p-5 text-center">@row.Qty</td>
                     @if (UseInches) {
-                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.OpeningWidth.GetFormatedFraction())"</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.Height.GetFormatedFraction())"</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.Depth.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.OpeningWidth.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Height.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Depth.GetFormatedFraction())"</td>
                     } else {
-                        <td class="whitespace-nowrap p-5 border-b text-center">@row.OpeningWidth.AsMillimeters().ToString("0.00")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center">@row.Height.AsMillimeters().ToString("0.00")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center">@row.Depth.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.OpeningWidth.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.Height.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.Depth.AsMillimeters().ToString("0.00")</td>
                     }
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.SKU</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@($"{row.Material.Finish}/{row.Material.Core}")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@($"{row.Paint?.Color ?? "N/A"}")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@($"{row.Paint?.Side.ToString() ?? "N/A"}")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.EdgeBandingColor</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.UnitPrice.ToString("$0.00")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
+                    <td class="whitespace-nowrap p-5 text-center">@row.SKU</td>
+                    <td class="whitespace-nowrap p-5 text-center">@($"{row.Material.Finish}/{row.Material.Core}")</td>
+                    <td class="whitespace-nowrap p-5 text-center">@($"{row.Paint?.Color ?? "N/A"}")</td>
+                    <td class="whitespace-nowrap p-5 text-center">@($"{row.Paint?.Side.ToString() ?? "N/A"}")</td>
+                    <td class="whitespace-nowrap p-5 text-center">@row.EdgeBandingColor</td>
+                    <td class="whitespace-nowrap p-5 text-center">@row.UnitPrice.ToString("$0.00")</td>
+                    <td class="whitespace-nowrap p-5 text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
                 </tr>
 
                 @if (row.Comment != string.Empty) {
                     <tr>
-                        <td class="p-5 font-bold border-b text-red-500" colspan="11">
+                        <td class="p-5 font-bold text-red-500" colspan="11">
                             @row.Comment
                         </td>
                     </tr>
@@ -54,7 +55,7 @@
 
                 @foreach(var note in row.ProductionNotes) {
                     <tr>
-                        <td class="p-5 font-bold border-b text-red-500" colspan="17">
+                        <td class="p-5 font-bold text-red-500" colspan="17">
                             @note
                         </td>
                     </tr>

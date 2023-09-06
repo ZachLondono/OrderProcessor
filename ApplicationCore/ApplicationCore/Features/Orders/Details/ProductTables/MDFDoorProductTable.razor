@@ -21,32 +21,32 @@
             </tr>
         </thead>
         @foreach (var row in MDFDoors) {
-            <tbody class="hover:bg-blue-500/10">
+            <tbody class="hover:bg-blue-500/10 border-b">
                 <tr>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.ProductNumber</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.Qty</td>
+                    <td class="whitespace-nowrap p-5 text-center">@row.ProductNumber</td>
+                    <td class="whitespace-nowrap p-5 text-center">@row.Qty</td>
                     @if (UseInches) {
-                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.Width.GetFormatedFraction())"</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.Height.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Width.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Height.GetFormatedFraction())"</td>
                     } else {
-                        <td class="whitespace-nowrap p-5 border-b text-center">@row.Width.AsMillimeters().ToString("0.00")</td>
-                        <td class="whitespace-nowrap p-5 border-b text-center">@row.Height.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.Width.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.Height.AsMillimeters().ToString("0.00")</td>
                     }
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.FramingBead</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.EdgeDetail</td>
+                    <td class="whitespace-nowrap p-5 text-center">@row.FramingBead</td>
+                    <td class="whitespace-nowrap p-5 text-center">@row.EdgeDetail</td>
                     @if (UseInches){
-                        <td class="whitespace-nowrap p-5 border-b text-center">@((MarkupString)row.PanelDrop.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.PanelDrop.GetFormatedFraction())"</td>
                     } else {
-                        <td class="whitespace-nowrap p-5 border-b text-center">@row.PanelDrop.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.PanelDrop.AsMillimeters().ToString("0.00")</td>
                     }
-                    <td class="whitespace-nowrap p-5 border-b text-center">@(row.PaintColor is null ? "N/A" : row.PaintColor)</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@row.UnitPrice.ToString("$0.00")</td>
-                    <td class="whitespace-nowrap p-5 border-b text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
+                    <td class="whitespace-nowrap p-5 text-center">@(row.PaintColor is null ? "N/A" : row.PaintColor)</td>
+                    <td class="whitespace-nowrap p-5 text-center">@row.UnitPrice.ToString("$0.00")</td>
+                    <td class="whitespace-nowrap p-5 text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
                 </tr>
 
                 @if (row.Note != string.Empty) {
                     <tr>
-                        <td class="p-5 font-bold border-b text-red-500" colspan="10">
+                        <td class="p-5 font-bold text-red-500" colspan="10">
                             Note: @row.Note
                         </td>
                     </tr>                        
@@ -54,7 +54,7 @@
 
                 @foreach(var note in row.ProductionNotes) {
                     <tr>
-                        <td class="p-5 font-bold border-b text-red-500" colspan="17">
+                        <td class="p-5 font-bold text-red-500" colspan="17">
                             @note
                         </td>
                     </tr>
