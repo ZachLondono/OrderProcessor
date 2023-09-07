@@ -26,7 +26,8 @@ public partial class InsertOrder {
                 ProductId = cabinet.Id,
                 ToeType = cabinet.ToeType,
                 FaceHeights = cabinet.Drawers.FaceHeights,
-                DBConfigId = dbConfigId
+                DBConfigId = dbConfigId,
+                IsGarage = cabinet.IsGarage
             };
 
             await connection.ExecuteAsync("""
@@ -34,12 +35,14 @@ public partial class InsertOrder {
                         (product_id,
                         toe_type,
                         face_heights,
-                        db_config_id)
+                        db_config_id,
+                        is_garage)
                     VALUES
                         (@ProductId,
                         @ToeType,
                         @FaceHeights,
-                        @DBConfigId);
+                        @DBConfigId,
+                        @IsGarage);
                     """, parameters, trx);
 
         }

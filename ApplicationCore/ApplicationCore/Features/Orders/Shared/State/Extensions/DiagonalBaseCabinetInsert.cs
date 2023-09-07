@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 using Dapper;
 using System.Data;
 
@@ -27,7 +26,8 @@ public partial class InsertOrder {
                 RightDepth = cabinet.RightDepth,
                 HingeSide = cabinet.HingeSide,
                 DoorQty = cabinet.DoorQty,
-                AdjShelfQty = cabinet.AdjustableShelves
+                AdjShelfQty = cabinet.AdjustableShelves,
+                IsGarage = cabinet.IsGarage
             };
 
             await connection.ExecuteAsync("""
@@ -38,7 +38,8 @@ public partial class InsertOrder {
                         right_depth,
                         hinge_side,
                         door_qty,
-                        adj_shelf_qty)
+                        adj_shelf_qty,
+                        is_garage)
                     VALUES
                         (@ProductId,
                         @ToeType,
@@ -46,7 +47,8 @@ public partial class InsertOrder {
                         @RightDepth,
                         @HingeSide,
                         @DoorQty,
-                        @AdjShelfQty);
+                        @AdjShelfQty,
+                        @IsGarage);
                     """, parameters, trx);
 
         }

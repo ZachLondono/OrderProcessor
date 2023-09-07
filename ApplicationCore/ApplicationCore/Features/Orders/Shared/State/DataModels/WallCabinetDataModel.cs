@@ -14,6 +14,7 @@ internal class WallCabinetDataModel : CabinetDataModelBase, IProductDataModel, I
     public int AdjShelfQty { get; set; }
     public int VertDivQty { get; set; }
     public bool FinishedBottom { get; set; }
+    public bool IsGarage { get; set; }
     public List<string> ProductionNotes { get; set; } = new();
 
     public IProduct MapToProduct() {
@@ -26,7 +27,8 @@ internal class WallCabinetDataModel : CabinetDataModelBase, IProductDataModel, I
         var inside = new WallCabinetInside(AdjShelfQty, VertDivQty);
 
         return new WallCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment, doors, inside, FinishedBottom) {
-            ProductionNotes = ProductionNotes
+            ProductionNotes = ProductionNotes,
+            IsGarage = IsGarage
         };
 
     }
@@ -69,6 +71,7 @@ internal class WallCabinetDataModel : CabinetDataModelBase, IProductDataModel, I
            	    wall_cabinets.adj_shelf_qty AS AdjShelfQty,
            	    wall_cabinets.vert_div_qty AS VertDivQty,
            	    wall_cabinets.finished_bottom AS FinishedBottom,
+                wall_cabinets.is_garage AS IsGarage,
 
            	    cabinets.mdf_config_id IS NOT NULL AS ContainsMDFDoor,
            	    mdf_door_configs.framing_bead AS FramingBead,

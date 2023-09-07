@@ -35,7 +35,8 @@ public partial class InsertOrder {
                 ShelfDepth = cabinet.Inside.ShelfDepth,
                 DrawerFaceHeight = cabinet.Drawers.FaceHeight,
                 DrawerQty = cabinet.Drawers.Quantity,
-                DBConfigId = dbConfigId
+                DBConfigId = dbConfigId,
+                IsGarage = cabinet.IsGarage
             };
 
             await connection.ExecuteAsync("""
@@ -52,7 +53,8 @@ public partial class InsertOrder {
                         shelf_depth,
                         drawer_face_height,
                         drawer_qty,
-                        db_config_id)
+                        db_config_id,
+                        is_garage)
                     VALUES
                         (@ProductId,
                         @ToeType,
@@ -66,7 +68,8 @@ public partial class InsertOrder {
                         @ShelfDepth,
                         @DrawerFaceHeight,
                         @DrawerQty,
-                        @DBConfigId);
+                        @DBConfigId,
+                        @IsGarage);
                     """, parameters, trx);
 
         }

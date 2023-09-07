@@ -14,6 +14,7 @@ internal class BaseCabinet : Cabinet, IDovetailDrawerBoxContainer, IMDFDoorConta
     public HorizontalDrawerBank Drawers { get; }
     public BaseCabinetInside Inside { get; }
     public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
+    public bool IsGarage { get; set; }
 
     public Dimension DoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
 
@@ -331,5 +332,10 @@ internal class BaseCabinet : Cabinet, IDovetailDrawerBoxContainer, IMDFDoorConta
         RollOutBlockPosition.Right => "3",
         _ => "0"
     };
+
+    protected override string GetMaterialType() {
+        if (IsGarage) return "Garage";
+        return base.GetMaterialType();
+    }
 
 }

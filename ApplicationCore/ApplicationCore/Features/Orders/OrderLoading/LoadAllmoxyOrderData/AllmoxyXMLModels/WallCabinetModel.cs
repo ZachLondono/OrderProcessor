@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
@@ -28,6 +27,9 @@ public class WallCabinetModel : CabinetModelBase {
     [XmlElement("finishedBottom")]
     public string FinishedBottom { get; set; } = string.Empty;
 
+    [XmlAttribute("isGarage")]
+    public bool IsGarage { get; set; } = false;
+
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
         Dimension doorExtendDown = Dimension.FromMillimeters(ExtendDoorDown);
@@ -47,6 +49,7 @@ public class WallCabinetModel : CabinetModelBase {
                     .WithDoors(doors)
                     .WithInside(inside)
                     .WithFinishBottom(finishBottom)
+                    .WithIsGarage(IsGarage)
                     .Build();
 
     }

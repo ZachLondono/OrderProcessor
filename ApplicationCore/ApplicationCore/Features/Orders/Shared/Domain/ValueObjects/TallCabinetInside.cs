@@ -11,6 +11,8 @@ public record TallCabinetInside {
     public int VerticalDividersUpper { get; }
     public RollOutOptions RollOutBoxes { get; }
 
+    public static TallCabinetInside Empty() => new(0, 0, 0, 0, new(Array.Empty<Dimension>(), false, RollOutBlockPosition.None));
+
     public TallCabinetInside() {
         AdjustableShelvesUpper = 0;
         VerticalDividersLower = 0;

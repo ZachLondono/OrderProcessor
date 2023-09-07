@@ -10,6 +10,7 @@ internal class TallCabinetBuilder : CabinetBuilder<TallCabinet> {
     public ToeType ToeType { get; private set; }
     public TallCabinetInside Inside { get; private set; }
     public CabinetDrawerBoxOptions BoxOptions { get; private set; }
+    public bool IsGarage { get; private set; }
 
     public TallCabinetBuilder() {
         Doors = new();
@@ -38,8 +39,14 @@ internal class TallCabinetBuilder : CabinetBuilder<TallCabinet> {
         return this;
     }
 
+    public TallCabinetBuilder WithIsGarage(bool isGarage) {
+        IsGarage = isGarage;
+        return this;
+    }
+
     public override TallCabinet Build() {
         var cabinet = TallCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, Doors, ToeType, Inside, BoxOptions);
+        cabinet.IsGarage = IsGarage;
         cabinet.ProductionNotes = ProductionNotes;
         return cabinet;
     }

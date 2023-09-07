@@ -10,6 +10,7 @@ internal class DrawerBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBa
 
     public ToeType ToeType { get; set; } = ToeType.LegLevelers;
     public Dimension[] FaceHeights { get; set; } = Array.Empty<Dimension>();
+    public bool IsGarage { get; set; }
     public List<string> ProductionNotes { get; set; } = new();
 
     public IProduct MapToProduct() {
@@ -26,6 +27,7 @@ internal class DrawerBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBa
 
         return new DrawerBaseCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             ToeType, drawers, dbOptions) {
+            IsGarage = IsGarage,
             ProductionNotes = ProductionNotes
         };
     }
@@ -65,6 +67,7 @@ internal class DrawerBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBa
         
             drawer_base_cabinets.toe_type AS ToeType,
             drawer_base_cabinets.face_heights AS FaceHeights,
+            drawer_base_cabinets.is_garage AS IsGarage,
 
         	db_config.material AS DBMaterial,
         	db_config.slide_type AS DBSlideType,

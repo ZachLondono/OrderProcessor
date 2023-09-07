@@ -10,4 +10,8 @@ public record VerticalDrawerBank {
 
     public bool Any() => FaceHeights.Any();
 
+    public static VerticalDrawerBank None() => new() {
+        FaceHeights = Array.Empty<Dimension>(),
+    };
+
 }

@@ -26,7 +26,8 @@ public partial class InsertOrder {
                 DoorExtendDown = cabinet.Doors.ExtendDown,
                 AdjShelfQty = cabinet.Inside.AdjustableShelves,
                 VertDivQty = cabinet.Inside.VerticalDividers,
-                FinishedBottom = cabinet.FinishedBottom
+                FinishedBottom = cabinet.FinishedBottom,
+                IsGarage = cabinet.IsGarage
             };
 
             await connection.ExecuteAsync("""
@@ -37,7 +38,8 @@ public partial class InsertOrder {
                         door_extend_down,
                         adj_shelf_qty,
                         vert_div_qty,
-                        finished_bottom)
+                        finished_bottom,
+                        is_garage)
                     VALUES
                         (@ProductId,
                         @DoorQty,
@@ -45,7 +47,8 @@ public partial class InsertOrder {
                         @DoorExtendDown,
                         @AdjShelfQty,
                         @VertDivQty,
-                        @FinishedBottom);
+                        @FinishedBottom,
+                        @IsGarage);
                     """, parameters, trx);
 
         }

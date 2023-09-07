@@ -12,6 +12,7 @@ internal class BaseDiagonalCornerCabinetBuilder : CabinetBuilder<BaseDiagonalCor
     public HingeSide HingeSide { get; private set; }
     public int DoorQty { get; private set; }
     public int AdjustableShelves { get; private set; }
+    public bool IsGarage { get; private set; }
 
     public BaseDiagonalCornerCabinetBuilder() {
         RightWidth = Dimension.Zero;
@@ -52,8 +53,14 @@ internal class BaseDiagonalCornerCabinetBuilder : CabinetBuilder<BaseDiagonalCor
         return this;
     }
 
+    public BaseDiagonalCornerCabinetBuilder WithIsGarage(bool isGarage) {
+        IsGarage = isGarage;
+        return this;
+    }
+
     public override BaseDiagonalCornerCabinet Build() {
         var cabinet = BaseDiagonalCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, RightWidth, RightDepth, ToeType, AdjustableShelves, HingeSide, DoorQty);
+        cabinet.IsGarage = IsGarage;
         cabinet.ProductionNotes = ProductionNotes;
         return cabinet;
     }

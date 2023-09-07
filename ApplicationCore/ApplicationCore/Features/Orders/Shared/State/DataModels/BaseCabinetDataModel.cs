@@ -17,6 +17,7 @@ internal class BaseCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
     public ShelfDepth ShelfDepth { get; set; }
     public Dimension DrawerFaceHeight { get; set; }
     public int DrawerQty { get; set; }
+    public bool IsGarage { get; set; }
     public List<string> ProductionNotes { get; set; } = new();
 
     public IProduct MapToProduct() {
@@ -43,6 +44,7 @@ internal class BaseCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
 
         return new BaseCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             doors, ToeType, drawers, inside, dbOptions) {
+            IsGarage = IsGarage,
             ProductionNotes = ProductionNotes
         };
 
@@ -88,6 +90,7 @@ internal class BaseCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
            	    base_cabinets.shelf_depth AS ShelfDepth,
            	    base_cabinets.drawer_face_height AS DrawerFaceHeight,
            	    base_cabinets.drawer_qty AS DrawerQty,
+           	    base_cabinets.is_garage AS IsGarage,
 
            	    db_config.material AS DBMaterial,
            	    db_config.slide_type AS DBSlideType,

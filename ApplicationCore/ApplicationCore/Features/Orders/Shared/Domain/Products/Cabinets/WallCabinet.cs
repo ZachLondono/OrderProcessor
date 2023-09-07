@@ -12,6 +12,7 @@ internal class WallCabinet : Cabinet, IMDFDoorContainer {
     public WallCabinetDoors Doors { get; }
     public WallCabinetInside Inside { get; }
     public bool FinishedBottom { get; }
+    public bool IsGarage { get; set; }
 
     public override string GetDescription() => $"Wall Cabinet - {Doors.Quantity} Doors";
 
@@ -136,6 +137,11 @@ internal class WallCabinet : Cabinet, IMDFDoorContainer {
 
         return parameters;
 
+    }
+
+    protected override string GetMaterialType() {
+        if (IsGarage) return "Garage";
+        return base.GetMaterialType();
     }
 
     private string GetHingeSideOption() => Doors.HingeSide switch {

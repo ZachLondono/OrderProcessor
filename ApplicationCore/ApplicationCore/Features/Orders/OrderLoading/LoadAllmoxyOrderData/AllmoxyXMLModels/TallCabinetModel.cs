@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
@@ -47,6 +46,9 @@ public class TallCabinetModel : CabinetModelBase {
     [XmlElement("rollOuts")]
     public RollOuts RollOuts { get; set; } = new();
 
+    [XmlAttribute("isGarage")]
+    public bool IsGarage { get; set; } = false;
+
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
         TallCabinetInside inside;
@@ -76,6 +78,7 @@ public class TallCabinetModel : CabinetModelBase {
                     .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
                     .WithInside(inside)
                     .WithBoxOptions(boxOptions)
+                    .WithIsGarage(IsGarage)
                     .Build();
 
     }

@@ -10,6 +10,7 @@ internal class DrawerBaseCabinetBuilder : CabinetBuilder<DrawerBaseCabinet> {
     public ToeType ToeType { get; private set; }
     public VerticalDrawerBank Drawers { get; private set; }
     public CabinetDrawerBoxOptions BoxOptions { get; private set; }
+    public bool IsGarage { get; private set; } = false;
 
     public DrawerBaseCabinetBuilder() {
         ToeType = ToeType.NoToe;
@@ -34,8 +35,14 @@ internal class DrawerBaseCabinetBuilder : CabinetBuilder<DrawerBaseCabinet> {
         return this;
     }
 
+    public DrawerBaseCabinetBuilder WithIsGarage(bool isGarage) {
+        IsGarage = isGarage;
+        return this;
+    }
+
     public override DrawerBaseCabinet Build() {
         var cabinet = DrawerBaseCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, ToeType, Drawers, BoxOptions);
+        cabinet.IsGarage = IsGarage;
         cabinet.ProductionNotes = ProductionNotes;
         return cabinet;
     }
