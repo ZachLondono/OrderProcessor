@@ -42,21 +42,21 @@ public class ExportDoorOrder {
                 return new Infrastructure.Bus.Error() {
                     Title = "Cannot Export Door Order",
                     Details = "The provided order does not contain any doors"
-                });
+                };
             }
 
             if (!File.Exists(command.TemplateFilePath)) {
                 return new Infrastructure.Bus.Error() {
                     Title = "Cannot Export Door Order",
                     Details = "The provided door order template file path does not exist"
-                });
+                };
             }
 
             if (!Directory.Exists(command.OutputDirectory)) {
                 return new Infrastructure.Bus.Error() {
                     Title = "Cannot Export Door Order",
                     Details = "The provided output directory does not exist"
-                });
+                };
             }
 
             try {

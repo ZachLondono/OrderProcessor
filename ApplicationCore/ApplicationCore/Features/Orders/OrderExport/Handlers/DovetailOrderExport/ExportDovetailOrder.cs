@@ -42,7 +42,7 @@ public class ExportDovetailOrder {
                 return new Infrastructure.Bus.Error() {
                     Title = "Could not generate dovetail order",
                     Details = "Dovetail drawer box order output directory could not be found"
-                });
+                };
             }
 
             var customer = await _getCustomerById(command.Order.CustomerId);
@@ -107,7 +107,7 @@ public class ExportDovetailOrder {
                 return new Infrastructure.Bus.Error() {
                     Title = "",
                     Details = "Dovetail drawer box order output directory could not be found"
-                });
+                };
             }
 
             return new(new DovetailOrderExportResult(filesGenerated, null));
