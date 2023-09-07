@@ -34,7 +34,6 @@ public class PPJobConverter {
         int jobId = 0;
 
         string jobName = job.Name;
-        if (jobName.Length > 30) jobName = jobName[..30];
 
         var jobDesc = new JobDescriptor() {
             LevelId = jobId,
@@ -66,7 +65,6 @@ public class PPJobConverter {
 
                 groupIdx++;
                 string levelName = $"{groupIdx}-{defaultLevelName}";
-                if (levelName.Length > 60) levelName = levelName[..60];
                 AddGroupToWriter(group, jobId, jobId + groupIdx, levelName);
 
             }
@@ -87,7 +85,6 @@ public class PPJobConverter {
             var firstGroup = room.Groups.First();
 
             string levelName = (string.IsNullOrEmpty(room.Name) ? $"{roomIdx}-{defaultLevelName}" : room.Name);
-            if (levelName.Length > 60) levelName = levelName[..60];
 
             // Every level must have catalog, material, fronts & hardware defined, even if there are no products directly within it
             var level = new LevelDescriptor() {
@@ -125,7 +122,6 @@ public class PPJobConverter {
 
                     int lvlId = jobId + roomIdx + groupIdx;
                     string subLevelName = $"{groupIdx}-{level.Name}";
-                    if (subLevelName.Length > 60) subLevelName = subLevelName[..60];
                     AddGroupToWriter(group, level.LevelId, lvlId, subLevelName);
 
                 }
