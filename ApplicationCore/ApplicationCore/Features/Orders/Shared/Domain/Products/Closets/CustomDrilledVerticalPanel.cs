@@ -55,6 +55,8 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     private static readonly string s_smallLEDToolName = "POCKET3";
     private static readonly Dimension s_smallLEDToolDiameter = Dimension.FromMillimeters(3);
 
+    private static bool IncludeTopHole = false;
+
     public string GetDescription() => "Closet Part - Custom Drilled Vertical Panel";
 
     public CustomDrilledVerticalPanel(Guid id, int qty, decimal unitPrice, int productNumber, string room, Dimension width, Dimension length, ClosetMaterial material, ClosetPaint? paint, string edgeBandingColor, string comment,
@@ -175,7 +177,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
         List<IToken> tokens = new();
 
-        if (Width > Dimension.FromInches(12)) {
+        if (Width > Dimension.FromInches(12) && IncludeTopHole) {
             // Vertical panels which are deeper than 12" have an additional hole drilled at the top of the panel which matches the first hole at the top of a 12" deep panel
             Dimension depth = DrillingType == ClosetVerticalDrillingType.DrilledThrough ? s_drillThroughDepth : s_stoppedDepth;
             tokens.Add(new Bore(s_holeDiameter.AsMillimeters(),
