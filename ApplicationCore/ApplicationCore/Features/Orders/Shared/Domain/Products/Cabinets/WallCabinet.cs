@@ -14,7 +14,7 @@ internal class WallCabinet : Cabinet, IMDFDoorContainer {
     public bool FinishedBottom { get; }
     public bool IsGarage { get; set; }
 
-    public override string GetDescription() => $"Wall Cabinet - {Doors.Quantity} Doors";
+    public override string GetDescription() => $"Wall {(IsGarage ? "Garage " : "")}Cabinet - {Doors.Quantity} Doors";
 
     public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap;
 
@@ -99,7 +99,7 @@ internal class WallCabinet : Cabinet, IMDFDoorContainer {
 
     }
 
-    protected override string GetProductSku() => $"W{Doors.Quantity}D";
+    protected override string GetProductSku() => $"{(IsGarage ? "G" : "")}W{Doors.Quantity}D";
 
     protected override IDictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {

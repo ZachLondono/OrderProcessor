@@ -18,7 +18,7 @@ internal class BaseCabinet : Cabinet, IDovetailDrawerBoxContainer, IMDFDoorConta
 
     public Dimension DoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
 
-    public override string GetDescription() => $"Base Cabinet - {Doors.Quantity} Doors, {Drawers.Quantity} Drawers";
+    public override string GetDescription() => $"Base {(IsGarage ? "Garage " : "")}Cabinet - {Doors.Quantity} Doors, {Drawers.Quantity} Drawers";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
@@ -229,7 +229,7 @@ internal class BaseCabinet : Cabinet, IDovetailDrawerBoxContainer, IMDFDoorConta
     }
 
     protected override string GetProductSku() {
-        string name = $"B{Doors.Quantity}D";
+        string name = $"{(IsGarage ? "G" : "")}B{Doors.Quantity}D";
         if (Drawers.Quantity != 0) name += $"{Drawers.Quantity}D";
         return name;
     }
