@@ -26,7 +26,8 @@ CREATE TABLE closet_pro_settings (
 	diagonal_fixed_shelf_sku TEXT NOT NULL,
 	diagonal_adjustable_shelf_sku TEXT NOT NULL,
 	doweled_drawer_box_material_finish TEXT NOT NULL,
-	vertical_panel_bottom_radius REAL NOT NULL
+	vertical_panel_bottom_radius REAL NOT NULL,
+	PRIMARY KEY (id)
 );
 
 CREATE TABLE vendors (
