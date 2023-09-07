@@ -273,6 +273,11 @@ CREATE TABLE base_cabinets (
 	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)
 );
 
+CREATE TRIGGER remove_base_cabinet_db_config AFTER DELETE ON base_cabinets 
+BEGIN
+	DELETE FROM cabinet_db_configs WHERE id = OLD.db_config_id;
+END;
+
 CREATE TABLE wall_cabinets (
 	product_id BLOB NOT NULL,
 	door_qty INTEGER NOT NULL,
@@ -297,6 +302,11 @@ CREATE TABLE drawer_base_cabinets (
 	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)
 );
 
+CREATE TRIGGER remove_drawer_base_cabinet_db_config AFTER DELETE ON drawer_base_cabinets 
+BEGIN
+	DELETE FROM cabinet_db_configs WHERE id = OLD.db_config_id;
+END;
+
 CREATE TABLE tall_cabinets (
 	product_id BLOB NOT NULL,
 	toe_type TEXT NOT NULL,
@@ -317,6 +327,11 @@ CREATE TABLE tall_cabinets (
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
 	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)
 );
+
+CREATE TRIGGER remove_tall_cabinet_db_config AFTER DELETE ON tall_cabinets 
+BEGIN
+	DELETE FROM cabinet_db_configs WHERE id = OLD.db_config_id;
+END;
 
 CREATE TABLE sink_cabinets (
 	product_id BLOB NOT NULL,
@@ -341,6 +356,11 @@ CREATE TABLE sink_cabinets (
 	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)
 );
 
+CREATE TRIGGER remove_sink_cabinet_db_config AFTER DELETE ON sink_cabinets 
+BEGIN
+	DELETE FROM cabinet_db_configs WHERE id = OLD.db_config_id;
+END;
+
 CREATE TABLE trash_cabinets (
 	product_id BLOB NOT NULL,
 	toe_type TEXT NOT NULL,
@@ -351,6 +371,11 @@ CREATE TABLE trash_cabinets (
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
 	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)
 );
+
+CREATE TRIGGER remove_trash_cabinet_db_config AFTER DELETE ON trash_cabinets 
+BEGIN
+	DELETE FROM cabinet_db_configs WHERE id = OLD.db_config_id;
+END;
 
 CREATE TABLE diagonal_base_cabinets (
 	product_id BLOB NOT NULL,
@@ -415,6 +440,11 @@ CREATE TABLE blind_base_cabinets (
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
 	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)
 );
+
+CREATE TRIGGER remove_blind_base_cabinet_db_config AFTER DELETE ON blind_base_cabinets 
+BEGIN
+	DELETE FROM cabinet_db_configs WHERE id = OLD.db_config_id;
+END;
 
 CREATE TABLE blind_wall_cabinets (
 	product_id BLOB NOT NULL,
