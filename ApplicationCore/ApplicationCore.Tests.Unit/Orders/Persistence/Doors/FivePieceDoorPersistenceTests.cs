@@ -1,9 +1,9 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 using ApplicationCore.Shared.Domain;
 
-namespace ApplicationCore.Tests.Unit.Orders.Persistence;
+namespace ApplicationCore.Tests.Unit.Orders.Persistence.Doors;
 
-public partial class OrderTests {
+public class FivePieceDoorPersistenceTests : PersistenceTests {
 
     [Fact]
     public void InsertOrderWithFivePieceDoor() {

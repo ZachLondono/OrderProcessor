@@ -2,9 +2,9 @@
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Shared.Domain;
 
-namespace ApplicationCore.Tests.Unit.Orders.Persistence;
+namespace ApplicationCore.Tests.Unit.Orders.Persistence.DrawerBoxes;
 
-public partial class OrderTests {
+public class DovetailDrawerBoxPersistenceTests : PersistenceTests {
 
     [Fact]
     public void InsertOrderWithDovetailDrawerBox() {
