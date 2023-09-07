@@ -25,4 +25,29 @@ public class ClosetPartPersistenceTest : PersistenceTests {
         InsertAndDeleteOrderWithProduct(part);
     }
 
+    [Fact]
+    public void InsertOrderWithClosetPartWithProductionNotes() {
+        var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
+                                "PC", Dimension.Zero, Dimension.Zero, new("", Features.Orders.Shared.Domain.Enums.ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
+                                    { "Param1", "Value1"},
+                                    { "Param2", "Value2"}
+                                }) {
+            ProductionNotes = new() { "A", "B", "C" }
+        };
+        InsertAndQueryOrderWithProduct(part);
+    }
+
+    [Fact]
+    public void DeleteOrderWithClosetPartWithProductionNotes() {
+        var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
+                                "PC", Dimension.Zero, Dimension.Zero, new("", Features.Orders.Shared.Domain.Enums.ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
+                                    { "Param1", "Value1"},
+                                    { "Param2", "Value2"}
+                                }) {
+            ProductionNotes = new() { "A", "B", "C" }
+        };
+        InsertAndDeleteOrderWithProduct(part);
+    }
+
+
 }

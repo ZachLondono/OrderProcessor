@@ -61,4 +61,32 @@ public class WallCabinetPersistenceTest : PersistenceTests {
         InsertAndDeleteOrderWithProduct(cabinet);
     }
 
+    [Fact]
+    public void InsertOrderWithWallCabinetWithProductionNotes() {
+        var cabinet = new WallCabinetBuilder()
+            .WithDoors(WallCabinetDoors.NoDoors())
+            .WithInside(WallCabinetInside.Empty())
+            .WithWidth(Dimension.FromInches(25))
+            .WithDepth(Dimension.FromInches(25))
+            .WithHeight(Dimension.FromInches(25))
+            .WithQty(1)
+            .WithProductionNotes(new() { "A", "B", "C" })
+            .Build();
+        InsertAndQueryOrderWithProduct(cabinet);
+    }
+
+    [Fact]
+    public void DeleteOrderWithWallCabinetWithProductionNotes() {
+        var cabinet = new WallCabinetBuilder()
+            .WithDoors(WallCabinetDoors.NoDoors())
+            .WithInside(WallCabinetInside.Empty())
+            .WithWidth(Dimension.FromInches(25))
+            .WithDepth(Dimension.FromInches(25))
+            .WithHeight(Dimension.FromInches(25))
+            .WithQty(1)
+            .WithProductionNotes(new() { "A", "B", "C" })
+            .Build();
+
+        InsertAndDeleteOrderWithProduct(cabinet);
+    }
 }

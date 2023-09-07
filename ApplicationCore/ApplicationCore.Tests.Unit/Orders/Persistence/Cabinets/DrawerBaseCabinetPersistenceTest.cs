@@ -63,4 +63,34 @@ public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
         InsertAndDeleteOrderWithProduct(cabinet);
     }
 
+    [Fact]
+    public void InsertOrderWithDrawerBaseCabinetWithProductionNotes() {
+        var cabinet = new DrawerBaseCabinetBuilder()
+            .WithDrawers(VerticalDrawerBank.None())
+            .WithToeType(ToeType.NoToe)
+            .WithWidth(Dimension.FromInches(25))
+            .WithDepth(Dimension.FromInches(25))
+            .WithHeight(Dimension.FromInches(25))
+            .WithQty(1)
+            .WithProductionNotes(new() { "A", "B", "C" })
+            .Build();
+
+        InsertAndQueryOrderWithProduct(cabinet);
+    }
+
+    [Fact]
+    public void DeleteOrderWithGarageDrawerBaseCabinetWithProductionNotes() {
+        var cabinet = new DrawerBaseCabinetBuilder()
+            .WithDrawers(VerticalDrawerBank.None())
+            .WithToeType(ToeType.NoToe)
+            .WithWidth(Dimension.FromInches(25))
+            .WithDepth(Dimension.FromInches(25))
+            .WithHeight(Dimension.FromInches(25))
+            .WithQty(1)
+            .WithProductionNotes(new() { "A", "B", "C" })
+            .Build();
+
+        InsertAndDeleteOrderWithProduct(cabinet);
+    }
+
 }

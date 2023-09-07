@@ -66,4 +66,35 @@ public class TallCabinetPersistenceTest : PersistenceTests {
         InsertAndDeleteOrderWithProduct(cabinet);
     }
 
+    [Fact]
+    public void InsertOrderWithTallCabinetWithProductionNotes() {
+        var cabinet = new TallCabinetBuilder()
+            .WithDoors(TallCabinetDoors.NoDoors())
+            .WithInside(TallCabinetInside.Empty())
+            .WithToeType(ToeType.NoToe)
+            .WithWidth(Dimension.FromInches(25))
+            .WithDepth(Dimension.FromInches(25))
+            .WithHeight(Dimension.FromInches(25))
+            .WithQty(1)
+            .WithProductionNotes(new() { "A", "B", "C" })
+            .Build();
+
+        InsertAndQueryOrderWithProduct(cabinet);
+    }
+
+    [Fact]
+    public void DeleteOrderWithTallCabinetWithProductionNotes() {
+        var cabinet = new TallCabinetBuilder()
+            .WithDoors(TallCabinetDoors.NoDoors())
+            .WithInside(TallCabinetInside.Empty())
+            .WithToeType(ToeType.NoToe)
+            .WithWidth(Dimension.FromInches(25))
+            .WithDepth(Dimension.FromInches(25))
+            .WithHeight(Dimension.FromInches(25))
+            .WithQty(1)
+            .WithProductionNotes(new() { "A", "B", "C" })
+            .Build();
+
+        InsertAndDeleteOrderWithProduct(cabinet);
+    }
 }

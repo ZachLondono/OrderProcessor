@@ -23,6 +23,27 @@ public class DoweledDrawerBoxPersistenceTests : PersistenceTests {
         InsertAndDeleteOrderWithProduct(db);
     }
 
+    [Fact]
+    public void InsertOrderWithDoweledDrawerBoxWithProductionNotes() {
+        var db = new DoweledDrawerBoxProduct(Guid.NewGuid(), 0M, 1, "", 1,
+                                            Dimension.FromInches(4.125), Dimension.FromInches(21), Dimension.FromInches(21),
+                                            new("", Dimension.Zero, false), new("", Dimension.Zero, false), new("", Dimension.Zero, false), new("", Dimension.Zero, false),
+                                            false, Dimension.Zero) {
+            ProductionNotes = new() { "A", "B", "C" }
+        };
+        InsertAndQueryOrderWithProduct(db);
+    }
+
+    [Fact]
+    public void DeleteOrderWithDoweledDrawerBoxWithProductionNotes() {
+        var db = new DoweledDrawerBoxProduct(Guid.NewGuid(), 0M, 1, "", 1,
+                                            Dimension.FromInches(4.125), Dimension.FromInches(21), Dimension.FromInches(21),
+                                            new("", Dimension.Zero, false), new("", Dimension.Zero, false), new("", Dimension.Zero, false), new("", Dimension.Zero, false),
+                                            false, Dimension.Zero) {
+            ProductionNotes = new() { "A", "B", "C" }
+        };
+        InsertAndDeleteOrderWithProduct(db);
+    }
 }
 
 

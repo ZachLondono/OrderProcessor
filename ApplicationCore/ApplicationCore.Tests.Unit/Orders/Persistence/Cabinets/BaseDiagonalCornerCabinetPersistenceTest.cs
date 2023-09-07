@@ -76,4 +76,40 @@ public class BaseDiagonalCornerCabinetPersistenceTest : PersistenceTests {
         InsertAndDeleteOrderWithProduct(cabinet);
     }
 
+    [Fact]
+    public void InsertOrderWithBaseDiagonalCornerCabinetWithProductionNotes() {
+        var cabinet = new BaseDiagonalCornerCabinetBuilder()
+            .WithRightWidth(Dimension.FromInches(12))
+            .WithRightDepth(Dimension.FromInches(12))
+            .WithHingeSide(HingeSide.NotApplicable)
+            .WithDoorQty(1)
+            .WithToeType(ToeType.NoToe)
+            .WithWidth(Dimension.FromInches(25))
+            .WithDepth(Dimension.FromInches(25))
+            .WithHeight(Dimension.FromInches(25))
+            .WithQty(1)
+            .WithProductionNotes(new() { "A", "B", "C" })
+            .Build();
+
+        InsertAndQueryOrderWithProduct(cabinet);
+    }
+
+    [Fact]
+    public void DeleteOrderWithGarageBaseDiagonalCornerCabinetWithProductionNotes() {
+        var cabinet = new BaseDiagonalCornerCabinetBuilder()
+            .WithRightWidth(Dimension.FromInches(12))
+            .WithRightDepth(Dimension.FromInches(12))
+            .WithHingeSide(HingeSide.NotApplicable)
+            .WithDoorQty(1)
+            .WithToeType(ToeType.NoToe)
+            .WithWidth(Dimension.FromInches(25))
+            .WithDepth(Dimension.FromInches(25))
+            .WithHeight(Dimension.FromInches(25))
+            .WithQty(1)
+            .WithProductionNotes(new() { "A", "B", "C" })
+            .Build();
+
+        InsertAndDeleteOrderWithProduct(cabinet);
+    }
+
 }

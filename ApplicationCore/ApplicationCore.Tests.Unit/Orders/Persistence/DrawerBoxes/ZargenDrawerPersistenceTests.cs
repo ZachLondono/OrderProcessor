@@ -25,4 +25,27 @@ public class ZargenDrawerPersistenceTests : PersistenceTests {
         InsertAndDeleteOrderWithProduct(db);
     }
 
+    [Fact]
+    public void InsertOrderWithZargenDrawerWithProductionNotes() {
+        var db = new ZargenDrawer(Guid.NewGuid(), 1, 0M, 1, "",
+                                "D93", Dimension.Zero, Dimension.Zero, Dimension.Zero, new("", Features.Orders.Shared.Domain.Enums.ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
+                                    { "Param1", "Value1"},
+                                    { "Param2", "Value2"}
+                                }) {
+            ProductionNotes = new() { "A", "B", "C" }
+        };
+        InsertAndQueryOrderWithProduct(db);
+    }
+
+    [Fact]
+    public void DeleteOrderWithZargenDrawerWithProductionNotes() {
+        var db = new ZargenDrawer(Guid.NewGuid(), 1, 0M, 1, "",
+                                "D93", Dimension.Zero, Dimension.Zero, Dimension.Zero, new("", Features.Orders.Shared.Domain.Enums.ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
+                                    { "Param1", "Value1"},
+                                    { "Param2", "Value2"}
+                                }) {
+            ProductionNotes = new() { "A", "B", "C" }
+        };
+        InsertAndDeleteOrderWithProduct(db);
+    }
 }

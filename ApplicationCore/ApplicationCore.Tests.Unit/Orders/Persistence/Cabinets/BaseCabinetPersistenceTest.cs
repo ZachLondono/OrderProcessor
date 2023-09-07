@@ -71,4 +71,38 @@ public class BaseCabinetPersistenceTest : PersistenceTests {
         InsertAndDeleteOrderWithProduct(cabinet);
     }
 
+    [Fact]
+    public void InsertOrderWithBaseCabinetWithProductionNotes() {
+        var cabinet = new BaseCabinetBuilder()
+            .WithDoors(BaseCabinetDoors.NoDoors())
+            .WithInside(BaseCabinetInside.Empty())
+            .WithDrawers(HorizontalDrawerBank.None())
+            .WithToeType(ToeType.NoToe)
+            .WithWidth(Dimension.FromInches(25))
+            .WithDepth(Dimension.FromInches(25))
+            .WithHeight(Dimension.FromInches(25))
+            .WithQty(1)
+            .WithProductionNotes(new() { "A", "B", "C" })
+            .Build();
+
+        InsertAndQueryOrderWithProduct(cabinet);
+    }
+
+    [Fact]
+    public void DeleteOrderWithGarageBaseCabinetWithProductionNotes() {
+        var cabinet = new BaseCabinetBuilder()
+            .WithDoors(BaseCabinetDoors.NoDoors())
+            .WithInside(BaseCabinetInside.Empty())
+            .WithDrawers(HorizontalDrawerBank.None())
+            .WithToeType(ToeType.NoToe)
+            .WithWidth(Dimension.FromInches(25))
+            .WithDepth(Dimension.FromInches(25))
+            .WithHeight(Dimension.FromInches(25))
+            .WithQty(1)
+            .WithProductionNotes(new() { "A", "B", "C" })
+            .Build();
+
+        InsertAndDeleteOrderWithProduct(cabinet);
+    }
+
 }
