@@ -1,9 +1,9 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 using ApplicationCore.Shared.Domain;
 
-namespace ApplicationCore.Tests.Unit.Orders.Persistence;
+namespace ApplicationCore.Tests.Unit.Orders.Persistence.ClosetParts;
 
-public partial class OrderTests {
+public class ClosetPartPersistenceTest : PersistenceTests {
 
     [Fact]
     public void InsertOrderWithClosetPart() {

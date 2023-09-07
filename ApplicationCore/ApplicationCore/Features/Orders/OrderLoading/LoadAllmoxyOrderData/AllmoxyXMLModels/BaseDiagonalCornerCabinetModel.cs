@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 using ApplicationCore.Shared.Domain;
@@ -27,6 +26,9 @@ public class BaseDiagonalCornerCabinetModel : CabinetModelBase {
     [XmlElement("adjShelfQty")]
     public int AdjShelfQty { get; set; }
 
+    [XmlAttribute("isGarage")]
+    public bool IsGarage { get; set; } = false;
+
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
         var builder = builderFactory.CreateBaseDiagonalCornerCabinetBuilder();
@@ -38,6 +40,7 @@ public class BaseDiagonalCornerCabinetModel : CabinetModelBase {
                     .WithAdjustableShelves(AdjShelfQty)
                     .WithHingeSide(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide))
                     .WithDoorQty(DoorQty)
+                    .WithIsGarage(IsGarage)
                     .Build();
 
     }

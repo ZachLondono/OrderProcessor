@@ -10,4 +10,9 @@ public record HorizontalDrawerBank {
 
     public bool Any() => Quantity > 0;
 
+    public static HorizontalDrawerBank None() => new() {
+        FaceHeight = Dimension.Zero,
+        Quantity = 0,
+    };
+
 }

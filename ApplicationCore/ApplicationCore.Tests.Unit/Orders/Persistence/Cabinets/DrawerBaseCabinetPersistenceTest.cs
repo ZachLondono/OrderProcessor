@@ -1,0 +1,66 @@
+﻿using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Shared.Domain;
+
+namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
+
+public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
+
+    [Fact]
+    public void InsertOrderWithDrawerBaseCabinet() {
+        var cabinet = new DrawerBaseCabinetBuilder()
+            .WithDrawers(VerticalDrawerBank.None())
+            .WithToeType(ToeType.NoToe)
+            .WithWidth(Dimension.FromInches(25))
+            .WithDepth(Dimension.FromInches(25))
+            .WithHeight(Dimension.FromInches(25))
+            .WithQty(1)
+            .Build();
+        InsertAndQueryOrderWithProduct(cabinet);
+    }
+
+    [Fact]
+    public void DeleteOrderWithDrawerBaseCabinet() {
+        var cabinet = new DrawerBaseCabinetBuilder()
+            .WithDrawers(VerticalDrawerBank.None())
+            .WithToeType(ToeType.NoToe)
+            .WithWidth(Dimension.FromInches(25))
+            .WithDepth(Dimension.FromInches(25))
+            .WithHeight(Dimension.FromInches(25))
+            .WithQty(1)
+            .Build();
+        InsertAndDeleteOrderWithProduct(cabinet);
+    }
+
+    [Fact]
+    public void InsertOrderWithGarageDrawerBaseCabinet() {
+        var cabinet = new DrawerBaseCabinetBuilder()
+            .WithIsGarage(true)
+            .WithDrawers(VerticalDrawerBank.None())
+            .WithToeType(ToeType.NoToe)
+            .WithWidth(Dimension.FromInches(25))
+            .WithDepth(Dimension.FromInches(25))
+            .WithHeight(Dimension.FromInches(25))
+            .WithQty(1)
+            .Build();
+
+        InsertAndQueryOrderWithProduct(cabinet);
+    }
+
+    [Fact]
+    public void DeleteOrderWithGarageDrawerBaseCabinet() {
+        var cabinet = new DrawerBaseCabinetBuilder()
+            .WithIsGarage(true)
+            .WithDrawers(VerticalDrawerBank.None())
+            .WithToeType(ToeType.NoToe)
+            .WithWidth(Dimension.FromInches(25))
+            .WithDepth(Dimension.FromInches(25))
+            .WithHeight(Dimension.FromInches(25))
+            .WithQty(1)
+            .Build();
+
+        InsertAndDeleteOrderWithProduct(cabinet);
+    }
+
+}

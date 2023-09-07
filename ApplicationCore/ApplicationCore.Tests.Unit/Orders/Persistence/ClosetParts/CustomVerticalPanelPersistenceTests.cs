@@ -1,8 +1,8 @@
 ﻿using ApplicationCore.Shared.Domain;
 
-namespace ApplicationCore.Tests.Unit.Orders.Persistence;
+namespace ApplicationCore.Tests.Unit.Orders.Persistence.ClosetParts;
 
-public partial class OrderTests {
+public class CustomVerticalPanelPersistenceTests : PersistenceTests {
 
     [Fact]
     public void InsertOrderWithCustomVerticalPanel() {

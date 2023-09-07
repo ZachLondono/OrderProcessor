@@ -1,9 +1,9 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 using ApplicationCore.Shared.Domain;
 
-namespace ApplicationCore.Tests.Unit.Orders.Persistence;
+namespace ApplicationCore.Tests.Unit.Orders.Persistence.DrawerBoxes;
 
-public partial class OrderTests {
+public class ZargenDrawerPersistenceTests : PersistenceTests {
 
     [Fact]
     public void InsertOrderWithZargenDrawer() {

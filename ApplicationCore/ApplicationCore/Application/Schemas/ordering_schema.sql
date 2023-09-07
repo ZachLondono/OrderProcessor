@@ -267,6 +267,7 @@ CREATE TABLE base_cabinets (
 	drawer_face_height REAL NOT NULL,
 	drawer_qty INTEGER NOT NULL,
 	db_config_id BLOB,
+	is_garage INTEGER NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
 	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)
@@ -280,6 +281,7 @@ CREATE TABLE wall_cabinets (
 	adj_shelf_qty INTEGER NOT NULL,
 	vert_div_qty INTEGER NOT NULL,
 	finished_bottom INTEGER NOT NULL,
+	is_garage INTEGER NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
@@ -289,6 +291,7 @@ CREATE TABLE drawer_base_cabinets (
 	toe_type TEXT NOT NULL,
 	face_heights TEXT NOT NULL,
 	db_config_id BLOB NOT NULL,
+	is_garage INTEGER NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
 	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)
@@ -309,6 +312,7 @@ CREATE TABLE tall_cabinets (
 	lower_door_height REAL NOT NULL,
 	hinge_side INTEGER NOT NULL,
 	db_config_id BLOB NOT NULL,
+	is_garage INTEGER NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
 	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)
@@ -356,6 +360,7 @@ CREATE TABLE diagonal_base_cabinets (
 	hinge_side INTEGER NOT NULL,
 	door_qty INTEGER NOT NULL,
 	adj_shelf_qty INTEGER NOT NULL,
+	is_garage INTEGER NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );

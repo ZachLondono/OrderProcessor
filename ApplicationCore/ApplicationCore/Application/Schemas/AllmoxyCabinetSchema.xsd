@@ -280,6 +280,7 @@
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="isGarage" type="xs:boolean" />
                   </xs:complexType>
                 </xs:element>
 
@@ -329,6 +330,7 @@
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="isGarage" type="xs:boolean" />
                   </xs:complexType>
                 </xs:element>
 
@@ -359,6 +361,7 @@
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="isGarage" type="xs:boolean" />
                   </xs:complexType>
                 </xs:element>
 
@@ -392,6 +395,7 @@
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="isGarage" type="xs:boolean" />
                   </xs:complexType>
                 </xs:element>
 
@@ -408,6 +412,7 @@
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="isGarage" type="xs:boolean" />
                   </xs:complexType>
                 </xs:element>
 

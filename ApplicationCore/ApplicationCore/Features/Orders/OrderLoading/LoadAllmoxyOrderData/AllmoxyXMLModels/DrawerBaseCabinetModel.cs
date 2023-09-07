@@ -36,6 +36,9 @@ public class DrawerBaseCabinetModel : CabinetModelBase {
     [XmlElement("drawerFace5")]
     public double DrawerFace5 { get; set; }
 
+    [XmlAttribute("isGarage")]
+    public bool IsGarage { get; set; } = false;
+
     public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
 
         var drawerFaces = new Dimension[DrawerQty == 1 ? 0 : DrawerQty];
@@ -57,6 +60,7 @@ public class DrawerBaseCabinetModel : CabinetModelBase {
                     .WithToeType(AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType))
                     .WithDrawers(verticalDrawerBank)
                     .WithBoxOptions(boxOptions)
+                    .WithIsGarage(IsGarage)
                     .Build();
     }
 

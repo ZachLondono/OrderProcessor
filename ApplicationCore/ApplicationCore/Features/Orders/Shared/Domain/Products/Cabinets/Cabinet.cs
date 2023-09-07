@@ -88,7 +88,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
 
     public abstract IEnumerable<Supply> GetSupplies();
 
-    protected string GetMaterialType() {
+    protected virtual string GetMaterialType() {
 
         if (BoxMaterial.Core == CabinetMaterialCore.Plywood) {
             return "Sterling 18_5";

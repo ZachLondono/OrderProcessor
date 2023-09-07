@@ -14,8 +14,9 @@ internal class DrawerBaseCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBo
     public ToeType ToeType { get; }
     public VerticalDrawerBank Drawers { get; }
     public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
+    public bool IsGarage { get; set; }
 
-    public override string GetDescription() => $"{Drawers.FaceHeights.Length} Drawer Cabinet";
+    public override string GetDescription() => $"{Drawers.FaceHeights.Length} Drawer {(IsGarage ? "Garage " : "")}Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
@@ -132,8 +133,8 @@ internal class DrawerBaseCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBo
     }
 
     protected override string GetProductSku() {
-        if (!Drawers.FaceHeights.Any()) return "DB1D";
-        return $"DB{Drawers.FaceHeights.Length}D";
+        if (!Drawers.FaceHeights.Any()) return $"{(IsGarage ? "G" : "")}DB1D";
+        return $"{(IsGarage ? "G" : "")}DB{Drawers.FaceHeights.Length}D";
     }
 
     protected override IDictionary<string, string> GetParameters() {
@@ -172,6 +173,11 @@ internal class DrawerBaseCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBo
 
         return parameters;
 
+    }
+
+    protected override string GetMaterialType() {
+        if (IsGarage) return "Garage";
+        return base.GetMaterialType();
     }
 
 }

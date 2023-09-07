@@ -10,6 +10,8 @@ public record BaseCabinetInside {
     public RollOutOptions RollOutBoxes { get; }
     public ShelfDepth ShelfDepth { get; }
 
+    public static BaseCabinetInside Empty() => new(0, 0, new(Array.Empty<Dimension>(), false, RollOutBlockPosition.None), ShelfDepth.Default);
+
     public BaseCabinetInside() {
         AdjustableShelves = 0;
         VerticalDividers = 0;

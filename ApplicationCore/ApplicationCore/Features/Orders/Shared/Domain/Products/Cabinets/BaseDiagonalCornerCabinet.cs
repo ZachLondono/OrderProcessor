@@ -15,10 +15,11 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
     public HingeSide HingeSide { get; }
     public int DoorQty { get; }
     public int AdjustableShelves { get; }
+    public bool IsGarage { get; set; }
 
     public Dimension DoorHeight => Height - ToeType.HeightAdjustment - DoorGaps.TopGap - DoorGaps.BottomGap;
 
-    public override string GetDescription() => $"Diagonal Corner Base Cabinet - {DoorQty} Doors";
+    public override string GetDescription() => $"Diagonal Corner Base {(IsGarage ? "Garage " : "")}Cabinet - {DoorQty} Doors";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
@@ -125,9 +126,9 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
     };
 
     protected override string GetProductSku() => DoorQty switch {
-        1 => "BC1D-M",
-        2 => "BC2D-M",
-        _ => "BC1D-M"
+        1 => $"{(IsGarage ? "G" : "" )}BC1D-M",
+        2 => $"{(IsGarage ? "G" : "" )}BC2D-M",
+        _ => $"{(IsGarage ? "G" : "" )}BC1D-M"
     };
 
     protected override IDictionary<string, string> GetParameters() {
@@ -162,6 +163,11 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
         }
 
         return parameters;
+    }
+
+    protected override string GetMaterialType() {
+        if (IsGarage) return "Garage";
+        return base.GetMaterialType();
     }
 
 }

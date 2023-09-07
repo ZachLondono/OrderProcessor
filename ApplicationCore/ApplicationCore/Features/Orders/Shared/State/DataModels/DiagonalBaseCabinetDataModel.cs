@@ -15,6 +15,7 @@ internal class DiagonalBaseCabinetDataModel : CabinetDataModelBase, IProductData
     public HingeSide HingeSide { get; set; }
     public int DoorQty { get; set; }
     public int AdjShelfQty { get; set; }
+    public bool IsGarage { get; set; }
     public List<string> ProductionNotes { get; set; } = new();
 
     public IProduct MapToProduct() {
@@ -26,6 +27,7 @@ internal class DiagonalBaseCabinetDataModel : CabinetDataModelBase, IProductData
 
         return new BaseDiagonalCornerCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             RightWidth, RightDepth, ToeType, AdjShelfQty, HingeSide, DoorQty) {
+            IsGarage = IsGarage,
             ProductionNotes = ProductionNotes
         };
 
@@ -69,6 +71,7 @@ internal class DiagonalBaseCabinetDataModel : CabinetDataModelBase, IProductData
                 diagonal_base_cabinets.hinge_side AS HingeSide,
                 diagonal_base_cabinets.door_qty AS DoorQty,
                 diagonal_base_cabinets.adj_shelf_qty AS AdjShelfQty,
+                diagonal_base_cabinets.is_garage AS IsGarage,
 
            	    cabinets.mdf_config_id IS NOT NULL AS ContainsMDFDoor,
            	    mdf_door_configs.framing_bead AS FramingBead,

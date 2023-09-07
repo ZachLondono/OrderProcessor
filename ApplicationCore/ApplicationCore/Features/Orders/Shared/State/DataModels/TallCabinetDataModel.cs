@@ -18,6 +18,7 @@ internal class TallCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
     public int UpperDoorQty { get; set; }
     public Dimension LowerDoorHeight { get; set; }
     public HingeSide HingeSide { get; set; }
+    public bool IsGarage { get; set; }
     public List<string> ProductionNotes { get; set; } = new();
 
     public IProduct MapToProduct() {
@@ -41,6 +42,7 @@ internal class TallCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
 
         return new TallCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             doors, ToeType, inside, dbOptions) {
+            IsGarage = IsGarage,
             ProductionNotes = ProductionNotes
         };
 
@@ -87,6 +89,7 @@ internal class TallCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
                 tall_cabinets.upper_door_qty AS UpperDoorQty,
                 tall_cabinets.lower_door_height AS LowerDoorHeight,
                 tall_cabinets.hinge_side AS HingeSide,
+                tall_cabinets.is_garage AS IsGarage,
 
            	    db_config.material AS DBMaterial,
            	    db_config.slide_type AS DBSlideType,

@@ -12,6 +12,7 @@ internal class BaseCabinetBuilder : CabinetBuilder<BaseCabinet> {
     public HorizontalDrawerBank Drawers { get; private set; }
     public BaseCabinetInside Inside { get; private set; }
     public CabinetDrawerBoxOptions BoxOptions { get; private set; }
+    public bool IsGarage { get; private set; }
 
     public BaseCabinetBuilder() {
         Inside = new();
@@ -46,8 +47,14 @@ internal class BaseCabinetBuilder : CabinetBuilder<BaseCabinet> {
         return this;
     }
 
+    public BaseCabinetBuilder WithIsGarage(bool isGarage) {
+        IsGarage = isGarage;
+        return this;
+    }
+
     public override BaseCabinet Build() {
         var cabinet = BaseCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, Doors, ToeType, Drawers, Inside, BoxOptions);
+        cabinet.IsGarage = IsGarage;
         cabinet.ProductionNotes = ProductionNotes;
         return cabinet;
     }

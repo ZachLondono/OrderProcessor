@@ -13,11 +13,12 @@ internal class TallCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxConta
     public ToeType ToeType { get; }
     public TallCabinetInside Inside { get; }
     public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
+    public bool IsGarage { get; set; }
 
     public Dimension LowerDoorHeight => Doors.UpperQuantity > 0 ? Doors.LowerDoorHeight : Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap;
     public Dimension UpperDoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - Doors.LowerDoorHeight - DoorGaps.VerticalGap;
 
-    public override string GetDescription() => $"Tall Cabinet - {Doors.UpperQuantity} Upper Doors, {Doors.LowerQuantity} Lower Doors";
+    public override string GetDescription() => $"Tall {(IsGarage ? "Garage " : "")}Cabinet - {Doors.UpperQuantity} Upper Doors, {Doors.LowerQuantity} Lower Doors";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),
@@ -189,7 +190,7 @@ internal class TallCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxConta
     }
 
     protected override string GetProductSku() {
-        string name = $"T{Doors.LowerQuantity + Doors.UpperQuantity}D";
+        string name = $"{(IsGarage ? "G" : "")}T{Doors.LowerQuantity + Doors.UpperQuantity}D";
         if (Doors.UpperQuantity != 0) name += "2S";
         return name;
     }
@@ -238,6 +239,11 @@ internal class TallCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxConta
 
         return parameters;
 
+    }
+
+    protected override string GetMaterialType() {
+        if (IsGarage) return "Garage";
+        return base.GetMaterialType();
     }
 
     private string GetHingeSideOption() => Doors.HingeSide switch {
