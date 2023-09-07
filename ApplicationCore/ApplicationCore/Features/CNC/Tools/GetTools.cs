@@ -25,10 +25,10 @@ internal class GetTools {
 
             if (data is null) {
 
-                return Response<IEnumerable<MachineToolMap>>.Error(new() {
+                return new Error() {
                     Title = "Failed to read machine tool maps",
                     Details = "No value was returned while trying to read machine tool maps from file"
-                });
+                };
 
             }
 

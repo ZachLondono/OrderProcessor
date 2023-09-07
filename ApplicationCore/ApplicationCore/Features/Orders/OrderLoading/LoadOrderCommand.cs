@@ -32,7 +32,7 @@ public class LoadOrderCommand {
 
             }
 
-            return Response<OrderData?>.Success(data);
+            return data;
 
         }
 

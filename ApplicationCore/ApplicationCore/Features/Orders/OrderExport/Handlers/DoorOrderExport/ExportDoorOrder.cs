@@ -39,21 +39,21 @@ public class ExportDoorOrder {
                                 .ToList();
 
             if (!doors.Any()) {
-                return Response<DoorOrderExportResult>.Error(new() {
+                return new Infrastructure.Bus.Error() {
                     Title = "Cannot Export Door Order",
                     Details = "The provided order does not contain any doors"
                 });
             }
 
             if (!File.Exists(command.TemplateFilePath)) {
-                return Response<DoorOrderExportResult>.Error(new() {
+                return new Infrastructure.Bus.Error() {
                     Title = "Cannot Export Door Order",
                     Details = "The provided door order template file path does not exist"
                 });
             }
 
             if (!Directory.Exists(command.OutputDirectory)) {
-                return Response<DoorOrderExportResult>.Error(new() {
+                return new Infrastructure.Bus.Error() {
                     Title = "Cannot Export Door Order",
                     Details = "The provided output directory does not exist"
                 });
@@ -62,15 +62,15 @@ public class ExportDoorOrder {
             try {
 
                 var result = await GenerateOrderForms(command.Order, doors, command.TemplateFilePath, command.OutputDirectory);
-                return Response<DoorOrderExportResult>.Success(result);
+                return result;
 
             } catch (Exception ex) {
 
                 _logger.LogError(ex, "Exception thrown while filling door order");
-                return Response<DoorOrderExportResult>.Error(new() {
+                return new Infrastructure.Bus.Error() {
                     Title = "Cannot Export Door Order",
                     Details = $"Exception thrown while filling door order - {ex.Message}"
-                });
+                };
 
             }
 

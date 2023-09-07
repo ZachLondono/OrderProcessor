@@ -32,10 +32,10 @@ public class GetOrderById {
 
             if (orderData is null) {
 
-                return Response<Order>.Error(new() {
+                return new Error() {
                     Title = "Order not found",
                     Details = $"Could not find order in database with given id {request.OrderId}"
-                });
+                };
 
             }
 
@@ -46,15 +46,15 @@ public class GetOrderById {
             try {
                 products = await GetProducts(request.OrderId, connection);
             } catch (Exception ex) {
-                return Response<Order>.Error(new() {
+                return new Error() {
                     Title = "Failed to load products",
                     Details = ex.Message
-                });
+                };
             }
 
             var order = orderData.ToDomainModel(request.OrderId, products, items);
 
-            return Response<Order>.Success(order);
+            return order;
 
         }
 

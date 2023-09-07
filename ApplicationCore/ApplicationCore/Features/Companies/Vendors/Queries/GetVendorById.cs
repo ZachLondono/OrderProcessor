@@ -66,21 +66,21 @@ internal class GetVendorById {
                 """, query);
     
                 if (data is null) {
-                    return Response<Vendor?>.Success(null);
+                    return (Vendor?) null;
                 }
     
                 var vendor = data.AsVendor();
     
-                return Response<Vendor?>.Success(vendor);
+                return vendor;
 
             } catch (Exception ex) {
 
                 _logger.LogError(ex, "Exception thrown while trying to load vendor");
 
-                return Response<Vendor?>.Error(new() {
+                return new Error() {
                     Title = "Could not Load Vendor Info From Database",
                     Details = ex.Message
-                });
+                };
 
             }
 

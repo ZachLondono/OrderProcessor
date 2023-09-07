@@ -22,7 +22,7 @@ internal class GetCustomerIdByAllmoxyId {
 
             var data = await connection.QuerySingleOrDefaultAsync<Guid?>("SELECT customer_id FROM allmoxy_ids WHERE id = @AllmoxyId;", query);
 
-            return Response<Guid?>.Success(data);
+            return data;
 
         }
 

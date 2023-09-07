@@ -22,7 +22,7 @@ internal class GetCustomerOrderPrefixById {
 
             var data = await connection.QuerySingleOrDefaultAsync<string?>("SELECT order_number_prefix FROM customers WHERE id = @Id;", query);
 
-            return Response<string?>.Success(data);
+            return data;
 
         }
 

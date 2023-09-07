@@ -22,7 +22,7 @@ internal class GetVendorNameById {
 
             var name = await connection.QuerySingleAsync<string>("SELECT name FROM vendors WHERE id = @VendorId;", query);
 
-            return Response<string>.Success(name);
+            return name ?? "";
 
         }
 

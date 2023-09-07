@@ -1,4 +1,6 @@
-﻿namespace ApplicationCore.Infrastructure.Bus;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace ApplicationCore.Infrastructure.Bus;
 
 public class Response<TSuccess> {
 
@@ -6,9 +8,17 @@ public class Response<TSuccess> {
     private readonly Error? _error;
     private readonly bool _isSuccess;
 
+    [MemberNotNullWhen(returnValue:true, member: nameof(Value))]
+    public bool IsSuccess {
+        get => _isSuccess;
+    }
+
+    [MemberNotNullWhen(returnValue:true, member: nameof(_error))]
     public bool IsError {
         get => !_isSuccess;
     }
+
+    public TSuccess? Value { get => _value; }
 
     public Response(TSuccess value) {
         _value = value;
@@ -23,6 +33,9 @@ public class Response<TSuccess> {
     public static Response<TSuccess> Success(TSuccess value) => new(value);
 
     public static Response<TSuccess> Error(Error error) => new(error);
+
+    public static implicit operator Response<TSuccess>(TSuccess value) => new(value);
+    public static implicit operator Response<TSuccess>(Error error) => new(error);
 
     public void Match(Action<TSuccess> onSuccess, Action<Error> onError) {
         switch (_isSuccess) {

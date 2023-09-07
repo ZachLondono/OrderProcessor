@@ -69,10 +69,10 @@
         bool wasMigrateSuccessful = true;
         if (_model.Mode != MigrationType.None) {
             var result = await Bus.Send(new MigrateWorkingDirectory.Command(OrderState.Order.WorkingDirectory, _model.NewDirectory, _model.Mode));
-            if (result.IsError) {
-                result.OnError(error => _error = error);
+            result.OnError(error => {
+                _error = error;
                 wasMigrateSuccessful = false;
-            }
+            });
         }
 
         OrderState.SetWorkingDirectory(_model.NewDirectory);

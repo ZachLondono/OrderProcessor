@@ -24,14 +24,14 @@ internal class GetDataFilePaths {
 
             if (data == null) {
 
-                return Response<Shared.Data.DataFilePaths>.Error(new() {
+                return new Error() {
                     Title = "Failed to load app configuration",
                     Details = "No value was read from configuration file."
-                });
+                };
 
             }
 
-            return Response<Shared.Data.DataFilePaths>.Success(data);
+            return data;
 
         }
 

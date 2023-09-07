@@ -24,14 +24,14 @@ internal class GetOrderNumberById {
 
             if (name is null) {
 
-                return Response<string>.Error(new() {
+                return new Error() {
                     Title = "Not Found",
                     Details = "No order was found with the given id"
-                });
+                };
 
             }
 
-            return Response<string>.Success(name);
+            return name;
 
         }
 

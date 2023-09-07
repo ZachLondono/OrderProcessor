@@ -22,7 +22,7 @@ internal class GetCustomerWorkingDirectoryRootById {
 
             var data = await connection.QuerySingleOrDefaultAsync<string?>("SELECT working_directory_root FROM customers WHERE id = @Id;", query);
 
-            return Response<string?>.Success(data);
+            return data;
 
         }
 

@@ -32,14 +32,14 @@ public class ExportDovetailOrder {
         public override async Task<Response<DovetailOrderExportResult>> Handle(Command command) {
 
             if (!File.Exists(command.TemplateFilePath)) {
-                return Response<DovetailOrderExportResult>.Error(new() {
+                return new Infrastructure.Bus.Error() {
                     Title = "Could not generate dovetail order",
                     Details = "Dovetail drawer box order template file could not be found"
-                });
+                };
             }
 
             if (!Directory.Exists(command.OutputDirectory)) {
-                return Response<DovetailOrderExportResult>.Error(new() {
+                return new Infrastructure.Bus.Error() {
                     Title = "Could not generate dovetail order",
                     Details = "Dovetail drawer box order output directory could not be found"
                 });
@@ -104,7 +104,7 @@ public class ExportDovetailOrder {
             GC.WaitForPendingFinalizers();
 
             if (error is not null) {
-                return Response<DovetailOrderExportResult>.Error(new() {
+                return new Infrastructure.Bus.Error() {
                     Title = "",
                     Details = "Dovetail drawer box order output directory could not be found"
                 });

@@ -80,12 +80,12 @@ internal class GetCustomerById {
                 """, query);
 
             if (data is null) {
-                return Response<Customer?>.Success(null);
+                return (Customer?) null;
             }
 
             var customer = data.AsCustomer();
 
-            return Response<Customer?>.Success(customer);
+            return customer;
 
         }
 
