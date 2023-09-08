@@ -147,6 +147,7 @@ public class AllmoxyCabinetMappingTests {
     [InlineData("Finished", CabinetSideType.Finished)]
     [InlineData("Integrated", CabinetSideType.IntegratedPanel)]
     [InlineData("Applied", CabinetSideType.AppliedPanel)]
+    [InlineData("Confirmat", CabinetSideType.ConfirmatFinished)]
     public void CabinetSideTests(string input, CabinetSideType expected) {
 
         // Arrange

@@ -23,6 +23,7 @@ internal static class AllmoxyXMLOrderProviderHelpers {
         "Finished" => CabinetSideType.Finished,
         "Integrated" => CabinetSideType.IntegratedPanel,
         "Applied" => CabinetSideType.AppliedPanel,
+        "Confirmat" => CabinetSideType.ConfirmatFinished,
         _ => CabinetSideType.Unfinished
     };
 

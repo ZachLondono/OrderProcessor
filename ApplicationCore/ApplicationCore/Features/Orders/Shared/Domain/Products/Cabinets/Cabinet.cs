@@ -163,6 +163,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
         CabinetSideType.Unfinished => "0",
         CabinetSideType.Finished => "1",
         CabinetSideType.IntegratedPanel => "2",
+        CabinetSideType.ConfirmatFinished => "3",
         _ => "0"
     };
 

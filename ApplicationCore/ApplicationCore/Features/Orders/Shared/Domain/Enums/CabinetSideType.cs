@@ -4,5 +4,6 @@ public enum CabinetSideType {
     Unfinished,
     Finished,
     IntegratedPanel,
-    AppliedPanel
+    AppliedPanel,
+    ConfirmatFinished
 }
