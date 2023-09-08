@@ -11,7 +11,9 @@ CREATE TABLE customers (
 	working_directory_root TEXT,
 	PRIMARY KEY (id),
 	FOREIGN KEY (shipping_contact_id) REFERENCES contacts(id),
+	FOREIGN KEY (shipping_address_id) REFERENCES addresses(id), 
 	FOREIGN KEY (billing_contact_id) REFERENCES contacts(id),
+	FOREIGN KEY (billing_address_id) REFERENCES addresses(id), 
 	FOREIGN KEY (closet_pro_settings_id) REFERENCES closet_pro_settings(id)
 );
 
