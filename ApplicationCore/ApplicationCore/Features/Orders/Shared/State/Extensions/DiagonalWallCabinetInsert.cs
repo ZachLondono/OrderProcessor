@@ -36,7 +36,7 @@ public partial class InsertOrder {
                         right_depth,
                         hinge_side,
                         door_qty,
-                        door_extend_down
+                        door_extend_down,
                         adj_shelf_qty)
                     VALUES
                         (@ProductId,
