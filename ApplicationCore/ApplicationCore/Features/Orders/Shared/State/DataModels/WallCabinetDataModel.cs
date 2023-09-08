@@ -23,7 +23,7 @@ internal class WallCabinetDataModel : CabinetDataModelBase, IProductDataModel, I
         var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
-        var doors = new WallCabinetDoors(HingeSide, DoorExtendDown);
+        var doors = new WallCabinetDoors(DoorQty, HingeSide, DoorExtendDown);
         var inside = new WallCabinetInside(AdjShelfQty, VertDivQty);
 
         return new WallCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment, doors, inside, FinishedBottom) {
