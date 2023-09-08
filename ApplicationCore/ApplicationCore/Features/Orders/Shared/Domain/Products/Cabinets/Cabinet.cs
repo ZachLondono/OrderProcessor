@@ -183,7 +183,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
         yield return new PPProduct(Id, Qty, Room, GetProductSku(), ProductNumber, "Royal2", GetMaterialType(), GetDoorType(), "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), GetManualOverrideParameters());
     }
 
-    protected abstract string GetProductSku();
+    public abstract string GetProductSku();
     protected virtual IDictionary<string, string> GetParameters() => new Dictionary<string, string>();
     protected virtual IDictionary<string, string> GetParameterOverrides() => new Dictionary<string, string>();
     protected virtual IDictionary<string, string> GetManualOverrideParameters() => new Dictionary<string, string>();
