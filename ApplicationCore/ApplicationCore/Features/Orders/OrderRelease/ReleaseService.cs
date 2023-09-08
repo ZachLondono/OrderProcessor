@@ -173,7 +173,8 @@ public class ReleaseService {
 
     private string GenerateEmailBody(bool includeReleaseSummary, List<ReleasedJob> jobs, string note) {
 
-        var releasedJobs = jobs.Select(job => {
+        var releasedJobs = jobs.Where(j => j.Releases.Any())
+                                .Select(job => {
 
             var usedMaterials = job.Releases
                                     .First()
