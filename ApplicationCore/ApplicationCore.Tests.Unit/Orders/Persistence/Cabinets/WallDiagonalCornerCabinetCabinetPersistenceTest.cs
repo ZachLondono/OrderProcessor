@@ -8,6 +8,9 @@ public class WallDiagonalCornerCabinetCabinetPersistenceTest : PersistenceTests 
     [Fact]
     public void InsertOrderWithWallDiagonalCornerCabinet() {
         var cabinet = new WallDiagonalCornerCabinetBuilder()
+            .WithRightDepth(Dimension.FromInches(12))
+            .WithRightWidth(Dimension.FromInches(12))
+            .WithDoorQty(1)
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
             .WithHeight(Dimension.FromInches(25))
@@ -19,6 +22,9 @@ public class WallDiagonalCornerCabinetCabinetPersistenceTest : PersistenceTests 
     [Fact]
     public void DeleteOrderWithWallDiagonalCabinet() {
         var cabinet = new WallDiagonalCornerCabinetBuilder()
+            .WithRightDepth(Dimension.FromInches(12))
+            .WithRightWidth(Dimension.FromInches(12))
+            .WithDoorQty(1)
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
             .WithHeight(Dimension.FromInches(25))
@@ -30,6 +36,9 @@ public class WallDiagonalCornerCabinetCabinetPersistenceTest : PersistenceTests 
     [Fact]
     public void InsertOrderWithWallDiagonalCabinetWithProductionNotes() {
         var cabinet = new WallDiagonalCornerCabinetBuilder()
+            .WithRightDepth(Dimension.FromInches(12))
+            .WithRightWidth(Dimension.FromInches(12))
+            .WithDoorQty(1)
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
             .WithHeight(Dimension.FromInches(25))
@@ -43,6 +52,9 @@ public class WallDiagonalCornerCabinetCabinetPersistenceTest : PersistenceTests 
     [Fact]
     public void DeleteOrderWithWallDiagonalCabinetWithProductionNotes() {
         var cabinet = new WallDiagonalCornerCabinetBuilder()
+            .WithRightDepth(Dimension.FromInches(12))
+            .WithRightWidth(Dimension.FromInches(12))
+            .WithDoorQty(1)
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
             .WithHeight(Dimension.FromInches(25))
