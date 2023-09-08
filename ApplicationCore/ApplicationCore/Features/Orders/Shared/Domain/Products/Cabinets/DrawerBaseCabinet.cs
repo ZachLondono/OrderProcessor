@@ -132,7 +132,7 @@ internal class DrawerBaseCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBo
 
     }
 
-    protected override string GetProductSku() {
+    public override string GetProductSku() {
         if (!Drawers.FaceHeights.Any()) return $"{(IsGarage ? "G" : "")}DB1D";
         return $"{(IsGarage ? "G" : "")}DB{Drawers.FaceHeights.Length}D";
     }

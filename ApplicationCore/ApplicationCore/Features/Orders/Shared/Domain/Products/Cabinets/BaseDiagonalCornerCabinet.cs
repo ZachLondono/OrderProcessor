@@ -125,7 +125,7 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
         _ => "0"
     };
 
-    protected override string GetProductSku() => DoorQty switch {
+    public override string GetProductSku() => DoorQty switch {
         1 => $"{(IsGarage ? "G" : "" )}BC1D-M",
         2 => $"{(IsGarage ? "G" : "" )}BC2D-M",
         _ => $"{(IsGarage ? "G" : "" )}BC1D-M"

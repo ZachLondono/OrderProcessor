@@ -54,7 +54,7 @@ internal class BlindBaseCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBox
         DrawerBoxOptions = drawerBoxOptions;
     }
 
-    protected override string GetProductSku() => $"BB{Doors.Quantity}D{GetDrawerCountSkuPart()}{GetBlindSideLetter()}";
+    public override string GetProductSku() => $"BB{Doors.Quantity}D{GetDrawerCountSkuPart()}{GetBlindSideLetter()}";
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
 

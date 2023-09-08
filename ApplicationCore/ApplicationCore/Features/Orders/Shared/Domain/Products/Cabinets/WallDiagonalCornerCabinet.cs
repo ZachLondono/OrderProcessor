@@ -56,7 +56,7 @@ internal class WallDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
                         Dimension rightWidth, Dimension rightDepth, int adjShelfQty, HingeSide hingeSide, int doorQty, Dimension extendedDoor)
                         => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfOptions, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, adjShelfQty, hingeSide, doorQty, extendedDoor);
 
-    protected override string GetProductSku() => DoorQty switch {
+    public override string GetProductSku() => DoorQty switch {
         1 => "WC1D-M",
         2 => "WC2D-M",
         _ => "WC1D-M"

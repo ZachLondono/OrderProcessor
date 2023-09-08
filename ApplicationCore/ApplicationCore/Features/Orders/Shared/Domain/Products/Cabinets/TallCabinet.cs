@@ -189,7 +189,7 @@ internal class TallCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxConta
 
     }
 
-    protected override string GetProductSku() {
+    public override string GetProductSku() {
         string name = $"{(IsGarage ? "G" : "")}T{Doors.LowerQuantity + Doors.UpperQuantity}D";
         if (Doors.UpperQuantity != 0) name += "2S";
         return name;

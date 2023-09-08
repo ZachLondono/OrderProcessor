@@ -99,7 +99,7 @@ internal class WallCabinet : Cabinet, IMDFDoorContainer {
 
     }
 
-    protected override string GetProductSku() => $"{(IsGarage ? "G" : "")}W{Doors.Quantity}D";
+    public override string GetProductSku() => $"{(IsGarage ? "G" : "")}W{Doors.Quantity}D";
 
     protected override IDictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {

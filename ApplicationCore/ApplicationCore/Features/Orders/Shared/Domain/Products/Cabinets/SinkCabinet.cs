@@ -163,7 +163,7 @@ internal class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxConta
 
     }
 
-    protected override string GetProductSku() => $"S{DoorQty}D{FalseDrawerQty}FD";
+    public override string GetProductSku() => $"S{DoorQty}D{FalseDrawerQty}FD";
 
     protected override IDictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {

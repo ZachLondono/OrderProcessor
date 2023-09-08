@@ -228,7 +228,7 @@ internal class BaseCabinet : Cabinet, IDovetailDrawerBoxContainer, IMDFDoorConta
 
     }
 
-    protected override string GetProductSku() {
+    public override string GetProductSku() {
         string name = $"{(IsGarage ? "G" : "")}B{Doors.Quantity}D";
         if (Drawers.Quantity != 0) name += $"{Drawers.Quantity}D";
         return name;

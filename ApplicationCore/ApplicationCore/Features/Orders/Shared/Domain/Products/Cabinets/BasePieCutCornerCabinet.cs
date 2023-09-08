@@ -102,7 +102,7 @@ internal class BasePieCutCornerCabinet : Cabinet, IMDFDoorContainer {
 
     }
 
-    protected override string GetProductSku() => "BCPC";
+    public override string GetProductSku() => "BCPC";
 
     protected override IDictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {

@@ -99,7 +99,7 @@ internal class WallPieCutCornerCabinet : Cabinet, IMDFDoorContainer {
 
     }
 
-    protected override string GetProductSku() => "WCPC";
+    public override string GetProductSku() => "WCPC";
 
     protected override IDictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {

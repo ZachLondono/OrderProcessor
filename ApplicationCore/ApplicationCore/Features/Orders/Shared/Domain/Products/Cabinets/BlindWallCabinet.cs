@@ -96,7 +96,7 @@ internal class BlindWallCabinet : Cabinet, IMDFDoorContainer {
 
     }
 
-    protected override string GetProductSku() {
+    public override string GetProductSku() {
         return $"WB{Doors.Quantity}D{GetBlindSideLetter()}";
     }
 

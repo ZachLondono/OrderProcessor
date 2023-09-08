@@ -133,7 +133,7 @@ internal class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxCont
 
     }
 
-    protected override string GetProductSku() => "BT1D1D";
+    public override string GetProductSku() => "BT1D1D";
 
     protected override IDictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string> {
