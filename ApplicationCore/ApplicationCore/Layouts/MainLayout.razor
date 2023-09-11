@@ -239,8 +239,12 @@
 		if (result.Confirmed && result.Data is DoorOrder doorOrder) {
 			var outputDirResult = await Bus.Send(new GetDoorOrderCutListDirectory.Query(doorOrder.OrderFileDirectory));
 			string outputDirectory = @"R:\Door Orders\Door Programs";
-			outputDirResult.OnSuccess(dir => outputDirectory = dir);			
-			dialog = ShowReleasePDFDialogModal(doorOrder.Customer, doorOrder.Vendor, $"{doorOrder.OrderNumber} CUTLIST", doorOrder.ReportFilePath, outputDirectory, true, "maciej@royalcabinet.com;toya@royalcabinet.com");
+			outputDirResult.OnSuccess(dir => outputDirectory = dir);
+			string emailRecipients = "maciej@royalcabinet.com";
+			if (!doorOrder.Vendor.ToLowerInvariant().Contains("royal")) {
+				emailRecipients += ";toya@royalcabinet.com";
+			}
+			dialog = ShowReleasePDFDialogModal(doorOrder.Customer, doorOrder.Vendor, $"{doorOrder.OrderNumber} DOORS CUTLIST", doorOrder.ReportFilePath, outputDirectory, true, emailRecipients);
 			_ = await dialog.Result;
 		}
 	}
