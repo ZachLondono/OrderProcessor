@@ -240,7 +240,7 @@
 			var outputDirResult = await Bus.Send(new GetDoorOrderCutListDirectory.Query(doorOrder.OrderFileDirectory));
 			string outputDirectory = @"R:\Door Orders\Door Programs";
 			outputDirResult.OnSuccess(dir => outputDirectory = dir);			
-			dialog = ShowReleasePDFDialogModal(doorOrder.Customer, doorOrder.Vendor, $"{doorOrder.OrderNumber} CUTLIST", doorOrder.ReportFilePath, outputDirectory, true, "maciej@royalcabinet.com");
+			dialog = ShowReleasePDFDialogModal(doorOrder.Customer, doorOrder.Vendor, $"{doorOrder.OrderNumber} CUTLIST", doorOrder.ReportFilePath, outputDirectory, true, "maciej@royalcabinet.com;toya@royalcabinet.com");
 			_ = await dialog.Result;
 		}
 	}
