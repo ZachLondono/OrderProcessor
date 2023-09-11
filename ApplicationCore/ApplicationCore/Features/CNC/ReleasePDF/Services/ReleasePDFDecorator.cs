@@ -219,7 +219,13 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
         var headers = data.Content.SelectMany(r => r.Keys).Distinct();
 
         table.ColumnsDefinition(c => {
-            foreach (var key in headers) c.RelativeColumn();
+            foreach (var key in headers) {
+                if (data.ColumnWidths.TryGetValue(key, out var constantWidth)) {
+                    c.ConstantColumn(constantWidth);
+                } else {
+                    c.RelativeColumn();
+                }
+            }
         });
 
         var headerStyle = config.TableHeaderStyle;
