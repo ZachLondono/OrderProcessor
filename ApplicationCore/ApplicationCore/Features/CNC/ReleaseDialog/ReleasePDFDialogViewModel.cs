@@ -105,7 +105,11 @@ internal class ReleasePDFDialogViewModel {
 				}
 
 				if (Model.SendEmail && !string.IsNullOrWhiteSpace(Model.EmailRecipients)) {
-					await SendReleaseEmail(job, filePath, Model.EmailRecipients);
+					try {
+						await SendReleaseEmail(job, filePath, Model.EmailRecipients);
+					} catch {
+						Error = "Failed to send release email";
+					}
 				}
 
 			} else {
