@@ -195,7 +195,7 @@ public class ReleaseService {
 
     private void CopyReportToWorkingDirectory(Order order, string filePath) {
         string fileName = Path.GetFileNameWithoutExtension(filePath);
-        string destFileName = _fileReader.GetAvailableFileName(order.WorkingDirectory, fileName, "xml");
+        string destFileName = _fileReader.GetAvailableFileName(order.WorkingDirectory, fileName + " (WSML)", "xml");
         File.Copy(filePath, destFileName);
     }
 
