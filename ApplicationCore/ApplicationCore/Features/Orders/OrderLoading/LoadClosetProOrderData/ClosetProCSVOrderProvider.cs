@@ -79,8 +79,8 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         List<AdditionalItem> additionalItems = new();
         additionalItems.AddRange(_partMapper.MapPickListToItems(info.PickList, out var hardwareSpread));
         _partMapper.HardwareSpread = hardwareSpread;
-        additionalItems.AddRange(_partMapper.MapAccessoriesToItems(info.Accessories));
-        additionalItems.AddRange(_partMapper.MapBuyOutPartsToItems(info.BuyOutParts));
+        additionalItems.AddRange(ClosetProPartMapper.MapAccessoriesToItems(info.Accessories));
+        additionalItems.AddRange(ClosetProPartMapper.MapBuyOutPartsToItems(info.BuyOutParts));
         List<IProduct> products = _partMapper.MapPartsToProducts(info.Parts);
 
         string orderNumber;

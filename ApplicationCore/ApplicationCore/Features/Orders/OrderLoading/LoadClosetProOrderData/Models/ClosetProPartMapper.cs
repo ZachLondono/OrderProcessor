@@ -1,18 +1,22 @@
 ﻿using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Components;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Shared;
 using ApplicationCore.Shared.Domain;
+using UglyToad.PdfPig.Outline;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
 
 public class ClosetProPartMapper {
 
-    public Dictionary<string, Func<Part, IProduct>> ProductNameMappings { get; }
+    public Dictionary<string, Func<Part, bool, IProduct>> ProductNameMappings { get; }
     public Dictionary<string, Dimension> FrontHardwareSpreads { get; }
     public Dimension HardwareSpread { get; set; } = Dimension.Zero;
     public ClosetProSettings Settings { get; set; } = new();
@@ -43,7 +47,8 @@ public class ClosetProPartMapper {
             { "Scoop Front Box", CreateDovetailDrawerBox },
             { "Zargen", CreateZargenDrawerBox },
             { "Slab", CreateSlabFront },
-            { "Filler Panel", CreateFillerPanel }
+            { "Filler Panel", CreateFillerPanel },
+            { "Backing", CreateBackingPart }
         };
 
         FrontHardwareSpreads = new();
@@ -52,104 +57,165 @@ public class ClosetProPartMapper {
 
     public List<IProduct> MapPartsToProducts(IEnumerable<Part> parts) {
 
+		List<IProduct> products = new();
+
+		parts.GroupBy(p => p.WallNum)
+            .ForEach(partsOnWall => {
+
+		        var productsOnWall = GatPartsForWall(partsOnWall);
+
+                products.AddRange(productsOnWall);
+
+            });
+
+
+		return products;
+
+	}
+
+	private IEnumerable<IProduct> GatPartsForWall(IEnumerable<Part> parts) {
+
         List<IProduct> products = new();
-        var enumerator = parts.GetEnumerator();
-        if (!enumerator.MoveNext()) {
-            throw new InvalidOperationException("No products found in order");
-        }
-        Part part = enumerator.Current;
-        while (true) {
-            
-            Part? nextPart = null;
-            if (part.PartType == "Countertop") {
 
-                if (part.Height != 0.75) {
-                    throw new InvalidOperationException($"Unsupported counter top thickness '{part.Height}', only 3/4\" is supported");
-                }
-                products.Add(CreateTopFromPart(part));
+        Dictionary<int, double> sectionDepths = parts.Where(p => p.ExportName.Contains("Vert"))
+                                                     .DistinctBy(p => p.SectionNum)
+                                                     .ToDictionary(p => p.SectionNum, p => p.Depth);
+		bool doesWallHaveBacking = parts.Any(p => p.ExportName == "Backing");
 
-            } else if (part.PartName == "Cab Door Rail") {
+		var enumerator = parts.GetEnumerator();
+		if (!enumerator.MoveNext()) {
+			throw new InvalidOperationException("No products found in order");
+		}
+		Part part = enumerator.Current;
 
-                if (!enumerator.MoveNext()) {
-                    throw new InvalidOperationException("Unexpected end of part list");
-                }
+		while (true) {
 
-                var insertPart = enumerator.Current;
-                if (insertPart.PartName != "Cab Door Insert") {
-                    throw new InvalidOperationException("Cab door rail part found without cab door insert");
-                }
+			Part? nextPart = null;
+			if (part.PartType == "Countertop") {
 
-                products.Add(CreateFrontFromParts(part, insertPart));
-                if (enumerator.MoveNext()) {
-                    part = enumerator.Current;
-                    continue;
-                } else {
-                    break;
-                }
+				if (part.Height != 0.75) {
+					throw new InvalidOperationException($"Unsupported counter top thickness '{part.Height}', only 3/4\" is supported");
+				}
+				products.Add(CreateTopFromPart(part, doesWallHaveBacking));
 
-            } else if (part.ExportName == "FixedShelf") {
+			} else if (part.PartName == "Cab Door Rail") {
 
-                if (enumerator.MoveNext()) {
+				// TODO: Cabinet door parts have a hinge direction, if that information is to be added to the product it will need to be read
 
-                    var cubbyPart = enumerator.Current;
-                    if (cubbyPart.ExportName == "Cubby-V" || cubbyPart.ExportName == "Cubby-H") {
+				if (!enumerator.MoveNext()) {
+					throw new InvalidOperationException("Unexpected end of part list");
+				}
 
-                        var accum = new CubbyAccumulator();
-                        accum.AddBottomShelf(part);
-                        if (cubbyPart.ExportName == "Cubby-V") {
-                            accum.AddVerticalPanel(cubbyPart);
-                        } else {
-                            accum.AddHorizontalPanel(cubbyPart);
+				var insertPart = enumerator.Current;
+				if (insertPart.PartName != "Cab Door Insert") {
+					throw new InvalidOperationException("Cab door rail part found without cab door insert");
+				}
+
+				products.Add(CreateFrontFromParts(part, insertPart));
+				if (enumerator.MoveNext()) {
+					part = enumerator.Current;
+					continue;
+				} else {
+					break;
+				}
+
+			} else if (part.ExportName == "FixedShelf" && enumerator.MoveNext()) {
+
+				var possibleCubbyPart = enumerator.Current;
+				if (possibleCubbyPart.ExportName == "Cubby-V" || possibleCubbyPart.ExportName == "Cubby-H") {
+
+					var cubbyProducts = CreateCubbyProducts(enumerator, part, possibleCubbyPart, doesWallHaveBacking);
+					products.AddRange(cubbyProducts);
+
+					if (enumerator.MoveNext()) {
+						part = enumerator.Current;
+						continue;
+					} else {
+						break;
+					}
+
+				} else if (ProductNameMappings.TryGetValue(part.ExportName, out var mapper)) {
+
+                    bool extendBack = false;
+                    if (sectionDepths.TryGetValue(part.SectionNum, out var depth)) {
+                        if (part.Depth == depth && doesWallHaveBacking) {
+                            extendBack = true;
                         }
+                    } 
 
-                        while (enumerator.MoveNext()) {
-                            cubbyPart = enumerator.Current;
-                            if (cubbyPart.ExportName == "Cubby-V") {
-                                accum.AddVerticalPanel(cubbyPart);
-                            } else if (cubbyPart.ExportName == "Cubby-H") {
-                                accum.AddHorizontalPanel(cubbyPart);
-                            } else if (cubbyPart.ExportName == "FixedShelf") {
-                                accum.AddTopShelf(cubbyPart);
-                                break;
-                            }
-                        }
+					products.Add(CreateFixedShelfFromPart(part, doesWallHaveBacking, extendBack));
+					nextPart = possibleCubbyPart;
 
-                        products.AddRange(accum.GetProducts(this));
+				} else {
+					throw new InvalidOperationException($"Unexpected part {part.PartName} / {part.ExportName}");
+				}
 
-                        if (enumerator.MoveNext()) {
-                            part = enumerator.Current;
-                            continue;
-                        } else {
-                            break;
-                        }
+			} else if (ProductNameMappings.TryGetValue(part.ExportName, out var mapper)) {
+				products.Add(mapper(part, doesWallHaveBacking));
+			} else {
+				throw new InvalidOperationException($"Unexpected part {part.PartName} / {part.ExportName}");
+			}
 
-                    } else {
-                        nextPart = cubbyPart;
-                    }
+			if (nextPart is not null) {
+				part = nextPart;
+			} else if (enumerator.MoveNext()) {
+				part = enumerator.Current;
+			} else {
+				break;
+			}
 
-                }
-
-            } else if (ProductNameMappings.TryGetValue(part.ExportName, out var mapper)) {
-                products.Add(mapper(part));
-            } else {
-                throw new InvalidOperationException($"Unexpected part {part.PartName} / {part.ExportName}");
-            }
-
-            if (nextPart is not null) {
-                part = nextPart;
-            } else if (enumerator.MoveNext()) {
-                part = enumerator.Current;
-            } else {
-                break;
-            }
-
-        }
+		}
 
         return products;
 
-    }
+	}
 
-    public List<AdditionalItem> MapPickListToItems(IEnumerable<PickPart> parts, out Dimension hardwareSpread) {
+	private IEnumerable<IProduct> CreateCubbyProducts(IEnumerator<Part> enumerator, Part part, Part firstCubbyPart, bool doesWallHaveBacking) {
+
+		var accum = new CubbyAccumulator();
+		accum.AddBottomShelf(part);
+		if (firstCubbyPart.ExportName == "Cubby-V") {
+			accum.AddVerticalPanel(firstCubbyPart);
+		} else {
+			accum.AddHorizontalPanel(firstCubbyPart);
+		}
+
+
+        Part cubbyPart;
+        bool areAllCubbyPartsRead = false;
+		while (!areAllCubbyPartsRead) {
+
+            if (!enumerator.MoveNext()) {
+                throw new InvalidOperationException("Ran out of parts before all cubby parts where found");
+            }
+
+			cubbyPart = enumerator.Current;
+
+            switch (cubbyPart.ExportName) {
+                case "Cubby-V":
+                    accum.AddVerticalPanel(cubbyPart);
+                    break;
+                case "Cubby-H":
+                    accum.AddHorizontalPanel(cubbyPart);
+                    break;
+                case "FixedShelf":
+                    if ((cubbyPart.PartName == "Top Fixed Shelf" || cubbyPart.PartName == "Bottom Fixed Shelf") && doesWallHaveBacking) {
+                        throw new InvalidOperationException("Cannot create a top/bottom divider shelf with extended back for back panel. A closet section/wall with a back panel must have a top & bottom fixed shelf with an 'ExtendedBack' to support the back panel, divider shelves do not support this.");
+                    }
+                    accum.AddTopShelf(cubbyPart);
+                    areAllCubbyPartsRead = true;
+                    break;
+                default:
+                    throw new InvalidOperationException("Unexpected part found within cubby parts");
+            }
+
+		}
+
+		return accum.GetProducts(this);
+        
+	}
+
+	public List<AdditionalItem> MapPickListToItems(IEnumerable<PickPart> parts, out Dimension hardwareSpread) {
 
         hardwareSpread = Dimension.Zero;
 
@@ -184,7 +250,7 @@ public class ClosetProPartMapper {
 
     }
 
-    public List<AdditionalItem> MapAccessoriesToItems(IEnumerable<Accessory> accessories) {
+    public static List<AdditionalItem> MapAccessoriesToItems(IEnumerable<Accessory> accessories) {
 
         List<AdditionalItem> items = new();
 
@@ -202,7 +268,7 @@ public class ClosetProPartMapper {
 
     }
 
-    public List<AdditionalItem> MapBuyOutPartsToItems(IEnumerable<BuyOutPart> parts) {
+    public static List<AdditionalItem> MapBuyOutPartsToItems(IEnumerable<BuyOutPart> parts) {
 
         List<AdditionalItem> items = new();
 
@@ -224,12 +290,43 @@ public class ClosetProPartMapper {
 
     }
 
-    public IProduct CreateFrontFromParts(Part rail, Part insert) {
-        // Doors are described in two parts a "Rail" and an "Insert"
-        throw new NotImplementedException();
+    public static IProduct CreateFrontFromParts(Part rail, Part insert) {
+
+        if (rail.Quantity != insert.Quantity) {
+            throw new InvalidOperationException("Unexpected mismatch in door rail and insert quantity.");
+        }
+
+        DoorFrame frame = new(Dimension.FromInches((rail.Height - insert.Height) / 2), Dimension.FromInches((rail.Width - insert.Width) / 2));
+
+        Dimension width = Dimension.FromInches(rail.Width);
+        Dimension height = Dimension.FromInches(rail.Height);
+        Dimension frameThickness = Dimension.FromInches(0.75);
+        Dimension panelThickness = Dimension.FromInches(0.25);
+        string material = rail.Color;
+
+        if (!TryParseMoneyString(rail.PartCost, out decimal unitPriceRail)) {
+            unitPriceRail = 0M;
+        }
+        if (!TryParseMoneyString(insert.PartCost, out decimal unitPriceInsert)) {
+            unitPriceInsert = 0M;
+        }
+        string room = GetRoomName(rail);
+
+        return new FivePieceDoorProduct(Guid.NewGuid(),
+                                       rail.Quantity,
+                                       unitPriceRail + unitPriceInsert,
+                                       rail.PartNum,
+                                       room,
+                                       width,
+                                       height,
+                                       frame,
+                                       frameThickness,
+                                       panelThickness,
+                                       material);
+
     }
 
-    public IProduct CreateVerticalPanelFromPart(Part part) {
+    public IProduct CreateVerticalPanelFromPart(Part part, bool wallHasBacking) {
 
         double leftDrilling = part.VertDrillL;
         double rightDrilling = part.VertDrillR;
@@ -268,7 +365,7 @@ public class ClosetProPartMapper {
         Dictionary<string, string> parameters = new() {
             { "FINLEFT", finLeft ? "1" : "0" },
             { "FINRIGHT", finRight ? "1" : "0" },
-            { "ExtendBack", "0" },
+            { "ExtendBack", wallHasBacking ? "19.05" : "0" },
             { "BottomNotchD", "0" },
             { "BottomNotchH", "0" },
             { "WallMount", isWallMount ? "1" : "0" },
@@ -284,7 +381,7 @@ public class ClosetProPartMapper {
 
     }
 
-    public IProduct CreateToeKickFromPart(Part part) {
+    public IProduct CreateToeKickFromPart(Part part, bool wallHasBacking) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
@@ -306,7 +403,9 @@ public class ClosetProPartMapper {
 
     }
 
-    public IProduct CreateFixedShelfFromPart(Part part) {
+    public IProduct CreateFixedShelfFromPart(Part part, bool wallHasBacking) => CreateFixedShelfFromPart(part, wallHasBacking, false);
+
+    public IProduct CreateFixedShelfFromPart(Part part, bool wallHasBacking, bool extendBack) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
@@ -354,11 +453,15 @@ public class ClosetProPartMapper {
 
         }
 
+        if (extendBack || (wallHasBacking && (part.PartName == "Top Fixed Shelf" || part.PartName == "Bottom Fixed Shelf"))) {
+            parameters.Add("ExtendBack", "19.05");
+        }
+
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
 
     }
 
-    public IProduct CreateAdjustableShelfFromPart(Part part) {
+    public IProduct CreateAdjustableShelfFromPart(Part part, bool wallHasBacking) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
@@ -410,7 +513,7 @@ public class ClosetProPartMapper {
 
     }
 
-    public IProduct CreateDividerShelfFromPart(Part part, int dividerCount, bool isBottom) {
+    public IProduct CreateDividerShelfFromPart(Part part, int dividerCount, bool isBottom, bool wallHasBacking) {
 
         // TODO: get the drilling type from ClosetProSettings
         var drillingType = HorizontalDividerPanelEndDrillingType.DoubleCams;
@@ -442,12 +545,12 @@ public class ClosetProPartMapper {
 
     }
 
-    public IProduct CreateDividerPanelFromPart(Part part) {
+    public IProduct CreateDividerPanelFromPart(Part part, bool wallHasBacking) {
 
         // TODO: get the drilling type from ClosetProSettings
         var drillingType = VerticalDividerPanelEndDrillingType.DoubleCams;
 
-        string sku = $"PEDV{GetDividerPanelSuffix(drillingType)}";
+        string sku = $"PCDV{GetDividerPanelSuffix(drillingType)}";
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
@@ -469,7 +572,7 @@ public class ClosetProPartMapper {
 
     }
 
-    public static IProduct CreateShoeShelfFromPart(Part part) {
+    public static IProduct CreateShoeShelfFromPart(Part part, bool wallHasBacking) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
@@ -497,7 +600,7 @@ public class ClosetProPartMapper {
 
     }
 
-    public static IProduct CreateCleatPart(Part part) {
+    public static IProduct CreateCleatPart(Part part, bool wallHasBacking) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
@@ -519,7 +622,7 @@ public class ClosetProPartMapper {
 
     }
 
-    public IProduct CreateSlabFront(Part part) {
+    public IProduct CreateSlabFront(Part part, bool wallHasBacking) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
@@ -549,7 +652,7 @@ public class ClosetProPartMapper {
 
     }
 
-    public IProduct CreateDoweledDrawerBox(Part part) {
+    public IProduct CreateDoweledDrawerBox(Part part, bool wallHasBacking) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
@@ -574,7 +677,7 @@ public class ClosetProPartMapper {
 
     }
 
-    public IProduct CreateDovetailDrawerBox(Part part) {
+    public IProduct CreateDovetailDrawerBox(Part part, bool wallHasBacking) {
 
         string notch = "Standard Notch";
         DrawerSlideType slideType = DrawerSlideType.UnderMount;
@@ -604,7 +707,7 @@ public class ClosetProPartMapper {
 
     }
 
-    public IProduct CreateTopFromPart(Part part) {
+    public static IProduct CreateTopFromPart(Part part, bool wallHasBacking) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
@@ -626,7 +729,7 @@ public class ClosetProPartMapper {
 
     }
 
-    public static IProduct CreateZargenDrawerBox(Part part) {
+    public static IProduct CreateZargenDrawerBox(Part part, bool wallHasBacking) {
         throw new NotImplementedException("Zargen drawer boxes are not yet supported");
     }
 
@@ -667,7 +770,7 @@ public class ClosetProPartMapper {
 
     }
 
-    public static IProduct CreateFillerPanel(Part part) {
+    public static IProduct CreateFillerPanel(Part part, bool wallHasBacking) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
@@ -687,5 +790,27 @@ public class ClosetProPartMapper {
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
 
     }
+
+    public static IProduct CreateBackingPart(Part part, bool wallHasBacking) {
+
+        if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
+            unitPrice = 0M;
+        }
+        string room = GetRoomName(part);
+        string sku = "BK34";
+        Dimension width = Dimension.FromInches(part.Width);
+        Dimension length = Dimension.FromInches(part.Height);
+        ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
+        ClosetPaint? paint = null;
+        string edgeBandingColor = part.InfoRecords
+                                .Where(i => i.PartName == "Edge Banding")
+                                .Select(i => i.Color)
+                                .FirstOrDefault() ?? part.Color;
+        string comment = "";
+        Dictionary<string, string> parameters = new();
+
+        return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
+
+    } 
 
 }

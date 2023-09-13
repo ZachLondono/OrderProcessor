@@ -51,8 +51,8 @@ public class CubbyAccumulator {
         int dividerCount = _verticalPanels.Count;
 
         var products = new List<IProduct>() {
-            mapper.CreateDividerShelfFromPart(_topShelf, dividerCount, false),
-            mapper.CreateDividerShelfFromPart(_bottomShelf, dividerCount, false)
+            mapper.CreateDividerShelfFromPart(_topShelf, dividerCount, false, false),
+            mapper.CreateDividerShelfFromPart(_bottomShelf, dividerCount, true, true)
         };
 
         if (_verticalPanels.Any()) {
@@ -60,12 +60,12 @@ public class CubbyAccumulator {
             foreach (var shelf in _horizontalPanels) {
                 shelf.Quantity = _verticalPanels.Count + 1;
                 shelf.Width = shelfWidth.AsInches();
-                products.Add(mapper.CreateFixedShelfFromPart(shelf));
+                products.Add(mapper.CreateFixedShelfFromPart(shelf, false));
             }
         }
 
         foreach (var divider in _verticalPanels) {
-            products.Add(mapper.CreateDividerPanelFromPart(divider));
+            products.Add(mapper.CreateDividerPanelFromPart(divider, false));
         }
 
         return products;
