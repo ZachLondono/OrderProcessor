@@ -2,7 +2,32 @@
 
 public class ReleaseEmailBodyGenerator {
 
-	public string GenerateReleaseEmailBody(Model model, bool includeSummary) {
+    public string GenerateTextReleaseEmailBody(Model model, bool includeSummary) {
+
+        string body = "Please see attached release";
+
+        if (!string.IsNullOrWhiteSpace(model.Note)) {
+            body += $"\nNote: {model.Note}";
+        }
+
+        if (!includeSummary) {
+            return body;
+        }
+
+        foreach (var job in model.ReleasedJobs) {
+
+            body += $"\n{job.JobName} Materials:\n";
+            foreach (var material in job.UsedMaterials) {
+                body += $"({material.Qty}) {material.Name} - {material.Width}x{material.Length}x{material.Thickness}\n";
+            }
+
+        }
+
+        return body;
+
+    }
+
+	public string GenerateHTMLReleaseEmailBody(Model model, bool includeSummary) {
 
         string body = "Please see attached release";
 
