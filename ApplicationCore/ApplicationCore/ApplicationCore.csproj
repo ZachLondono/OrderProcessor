@@ -14,6 +14,11 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Interop.Microsoft.Office.Interop.Outlook">
+      <HintPath>Application\Dependencies\Interop.Microsoft.Office.Interop.Outlook.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Office">
       <HintPath>Application\Dependencies\Office.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
