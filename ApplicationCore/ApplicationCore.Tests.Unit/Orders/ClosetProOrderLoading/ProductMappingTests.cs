@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Components;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
@@ -48,7 +49,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = _sut.CreateVerticalPanelFromPart(part);
+        var product = _sut.CreateVerticalPanelFromPart(part, false);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -94,7 +95,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = _sut.CreateVerticalPanelFromPart(part);
+        var product = _sut.CreateVerticalPanelFromPart(part, false);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -140,7 +141,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = _sut.CreateVerticalPanelFromPart(part);
+        var product = _sut.CreateVerticalPanelFromPart(part, false);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -186,7 +187,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = _sut.CreateVerticalPanelFromPart(part);
+        var product = _sut.CreateVerticalPanelFromPart(part, false);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -197,6 +198,64 @@ public class ProductMappingTests {
         closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("FINLEFT", "1"));
         closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("FINRIGHT", "0"));
         closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("WallMount", "1"));
+
+    }
+
+    [Fact]
+    public void SlabDoorInsert_ShouldCreateCorrectProduct() {
+
+        // Arrange
+        var part = new Part() {
+            Width = 10,
+            Height = 15,
+            Color = "White",
+            PartCost = "123.45",
+            Quantity = 1,
+            PartName = "Cab Door Insert",
+            ExportName = "Slab",
+            InfoRecords = new()
+        };
+        var helper = new PartHelper() {
+            Part = part
+        };
+
+        // Act
+        var product = _sut.CreateSlabFront(part, false);
+
+        // Assert
+        var slabDoor = helper.CompareToProduct(product);
+        slabDoor.SKU.Should().Be("DOOR");
+        slabDoor.Length.Should().Be(Dimension.FromInches(part.Height));
+        slabDoor.Width.Should().Be(Dimension.FromInches(part.Width));
+
+    }
+
+    [Fact]
+    public void SlabDrawerInsert_ShouldCreateCorrectProduct() {
+
+        // Arrange
+        var part = new Part() {
+            Width = 10,
+            Height = 15,
+            Color = "White",
+            PartCost = "123.45",
+            Quantity = 1,
+            PartName = "Drawer XX Small Insert",
+            ExportName = "Slab",
+            InfoRecords = new()
+        };
+        var helper = new PartHelper() {
+            Part = part
+        };
+
+        // Act
+        var product = _sut.CreateSlabFront(part, false);
+
+        // Assert
+        var slabDoor = helper.CompareToProduct(product);
+        slabDoor.SKU.Should().Be("DF-XX");
+        slabDoor.Length.Should().Be(Dimension.FromInches(part.Width));
+        slabDoor.Width.Should().Be(Dimension.FromInches(part.Height));
 
     }
 
