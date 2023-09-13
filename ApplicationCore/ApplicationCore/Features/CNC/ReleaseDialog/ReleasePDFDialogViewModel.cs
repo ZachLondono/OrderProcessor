@@ -147,7 +147,7 @@ internal class ReleasePDFDialogViewModel {
 		};
 		var model = new ReleaseEmail.Model(jobs, null);
 
-		var body = _emailBodyGenerator.GenerateReleaseEmailBody(model, true);
+		var body = _emailBodyGenerator.GenerateHTMLReleaseEmailBody(model, true);
         var builder = new BodyBuilder {
             TextBody = body,
             HtmlBody = body

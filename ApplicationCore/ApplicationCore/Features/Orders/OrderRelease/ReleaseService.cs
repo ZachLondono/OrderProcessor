@@ -9,9 +9,13 @@ using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Shared;
 using ApplicationCore.Shared.Services;
 using Microsoft.Extensions.Logging;
+using Microsoft.Office.Interop.Outlook;
 using MimeKit;
 using QuestPDF.Fluent;
+using System.Runtime.InteropServices;
 using UglyToad.PdfPig.Writer;
+using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
+using Exception = System.Exception;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -142,7 +146,7 @@ public class ReleaseService {
             _logger.LogError(ex, "Exception thrown while trying to generate release pdf");
         }
 
-        if (filePaths.Any() && configuration.SendReleaseEmail && configuration.ReleaseEmailRecipients is string recipients) {
+        if (filePaths.Any() && (configuration.SendReleaseEmail || configuration.PreviewReleaseEmail) && configuration.ReleaseEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending release email");
             try {
 
@@ -152,14 +156,18 @@ public class ReleaseService {
                                         orders.Where(o => !string.IsNullOrEmpty(o.Note))
                                                 .Select(o => $"{(multipleOrders ? $"{o.Number}:" : "")}{o.Note}")
                                     );
-                string body = GenerateEmailBody(configuration.IncludeMaterialSummaryInEmailBody, releases, orderNotes);
+                var body = GenerateEmailBodies(configuration.IncludeMaterialSummaryInEmailBody, releases, orderNotes);
 
                 List<string> attachments = new() { filePaths.First() };
                 if (configuration.AttachAdditionalFiles) {
                     attachments.AddRange(configuration.AdditionalFilePaths);
                 }
 
-                await SendEmailAsync(recipients, $"RELEASED: {orderNumbers} {customerName}", body, attachments);
+                if (configuration.PreviewReleaseEmail) {
+                    await CreateAndDisplayOutlookEmail(recipients, $"RELEASED: {orderNumbers} {customerName}", body.HTMLBody, body.TextBody, attachments);
+                } else {
+                    await SendEmailAsync(recipients, $"RELEASED: {orderNumbers} {customerName}", body.HTMLBody, body.TextBody, attachments);
+                }
 
             } catch (Exception ex) {
                 OnError?.Invoke($"Could not send email - '{ex.Message}'");
@@ -171,7 +179,7 @@ public class ReleaseService {
 
     }
 
-    private string GenerateEmailBody(bool includeReleaseSummary, List<ReleasedJob> jobs, string note) {
+    private (string HTMLBody, string TextBody) GenerateEmailBodies(bool includeReleaseSummary, List<ReleasedJob> jobs, string note) {
 
         var releasedJobs = jobs.Where(j => j.Releases.Any())
                                 .Select(job => {
@@ -189,7 +197,10 @@ public class ReleaseService {
 
         var model = new Model(releasedJobs, note);
 
-        return _emailBodyGenerator.GenerateReleaseEmailBody(model, includeReleaseSummary);
+        var htmlBody = _emailBodyGenerator.GenerateHTMLReleaseEmailBody(model, includeReleaseSummary);
+        var textBody = _emailBodyGenerator.GenerateHTMLReleaseEmailBody(model, includeReleaseSummary);
+
+        return (htmlBody, textBody);
 
     }
 
@@ -234,7 +245,7 @@ public class ReleaseService {
         if (filePaths.Any() && configuration.SendInvoiceEmail && configuration.InvoiceEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending invoice email");
             try {
-                await SendEmailAsync(recipients, $"INVOICE: {order.Number} {customerName}", "Please see attached invoice", new string[] { filePaths.First() });
+                await SendEmailAsync(recipients, $"INVOICE: {order.Number} {customerName}", "Please see attached invoice", "Please see attached invoice", new string[] { filePaths.First() });
             } catch (Exception ex) {
                 OnError?.Invoke($"Could not send invoice email - '{ex.Message}'");
                 _logger.LogError(ex, "Exception thrown while trying to send invoice email");
@@ -252,7 +263,7 @@ public class ReleaseService {
 
     }
 
-    private async Task SendEmailAsync(string recipients, string subject, string body, IEnumerable<string> attachments) {
+    private async Task SendEmailAsync(string recipients, string subject, string htmlBody, string textBody, IEnumerable<string> attachments) {
 
         var message = new MimeMessage();
 
@@ -270,8 +281,8 @@ public class ReleaseService {
         message.Subject = subject;
 
         var builder = new BodyBuilder {
-            TextBody = body,
-            HtmlBody = body
+            TextBody = textBody,
+            HtmlBody = htmlBody 
         };
         attachments.Where(_fileReader.DoesFileExist).ForEach(att => builder.Attachments.Add(att));
 
@@ -281,6 +292,58 @@ public class ReleaseService {
         _logger.LogInformation("Response from email client - '{Response}'", response);
         OnActionComplete?.Invoke("Email sent");
 
+    }
+
+    private async Task CreateAndDisplayOutlookEmail(string recipients, string subject, string htmlBody, string textBody, IEnumerable<string> attachments) {
+
+        var app = new OutlookApp();
+        MailItem mailItem = (MailItem)app.CreateItem(OlItemType.olMailItem);
+        mailItem.To = recipients;
+        mailItem.Subject = subject;
+        mailItem.Body = textBody;
+        mailItem.HTMLBody = htmlBody; 
+
+        attachments.Where(_fileReader.DoesFileExist).ForEach(att => mailItem.Attachments.Add(att));
+        
+        var senderMailBox = await _emailService.GetSenderAsync();
+        var sender = GetSenderOutlookAccount(app, senderMailBox.Address);
+
+        if (sender is not null) {
+            mailItem.SendUsingAccount = sender;
+        } else {
+            _logger.LogWarning("No outlook sender was found");
+        }
+        
+        mailItem.Display();
+
+        Marshal.ReleaseComObject(app);
+        Marshal.ReleaseComObject(mailItem);
+        if (sender is not null) Marshal.ReleaseComObject(sender);
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+
+    }
+
+    static Account? GetSenderOutlookAccount(OutlookApp app, string preferredEmail) {
+    
+        var accounts = app.Session.Accounts;
+        if (accounts is null || accounts.Count == 0) {
+            return null;
+        }
+    
+        Account? sender = null;
+        foreach (Account account in accounts) {
+            sender ??= account;
+            if (account.SmtpAddress == preferredEmail) {
+                sender = account;
+                break;
+            }
+        }
+    
+        return sender;
+    
     }
 
     private async Task<IEnumerable<string>> GeneratePDFAsync(IEnumerable<string> outputDirs, IEnumerable<IDocumentDecorator> decorators, string name, string customerName, IEnumerable<string> attachedFiles, bool isTemp = false) {

@@ -125,9 +125,16 @@
                 </CheckBox>
                 @if (DataContext.Configuration.SendReleaseEmail) {
                     <div class="ml-3">
-                        <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeMaterialSummaryInEmailBody">
-                            <span class="text-gray-700 text-sm">Include material summary</span>
-                        </CheckBox>
+                        <div>
+                            <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeMaterialSummaryInEmailBody">
+                                <span class="text-gray-700 text-sm">Include material summary</span>
+                            </CheckBox>
+                        </div>
+                        <div>
+                            <CheckBox @bind-IsChecked="DataContext.Configuration.PreviewReleaseEmail">
+                                <span class="text-gray-700 text-sm">Preview email before sending</span>
+                            </CheckBox>
+                        </div>
                         <label class="block text-sm font-medium text-gray-700">Email Recipients</label>
                         <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.ReleaseEmailRecipients" />
                     </div>
