@@ -86,7 +86,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         string orderNumber;
         if (customOrderNumber is null && string.IsNullOrWhiteSpace(customOrderNumber)) {
             orderNumber = await GetNextOrderNumber(customer.Id);
-            var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync(customer.Id) ?? throw new InvalidOperationException("Could not get customer data");
+            var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync(customer.Id) ?? "";
             orderNumber = $"{orderNumberPrefix}{orderNumber}";
         } else {
             orderNumber = customOrderNumber;

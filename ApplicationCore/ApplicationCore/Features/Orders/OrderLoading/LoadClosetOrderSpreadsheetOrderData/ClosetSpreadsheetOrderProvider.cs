@@ -88,7 +88,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
             string orderNumber;
             if (customOrderNumber is null && string.IsNullOrWhiteSpace(customOrderNumber)) {
                 orderNumber = await GetNextOrderNumber((Guid) customerId);
-                var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync((Guid) customerId) ?? throw new InvalidOperationException("Could not get customer data");
+                var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync((Guid) customerId) ?? "";
                 orderNumber = $"{orderNumberPrefix}{orderNumber}";
             } else {
                 orderNumber = customOrderNumber;
