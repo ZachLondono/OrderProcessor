@@ -22,7 +22,7 @@ public class ContinuousWallOfProductTests {
 	}
 
 	[Fact]
-	public void VerticalPanelsOnly() {
+	public void StandardSection() {
 
 		// Arrange
 		List<Part> parts = new() {
@@ -112,6 +112,33 @@ public class ContinuousWallOfProductTests {
 	}
 
 	[Fact]
+	public void TwoPartDrawer() {
+
+		// Arrange
+		List<Part> parts = new() {
+			CreateDrawerFrontRail(7.5, 10, "White", 1, 1),
+			CreateDrawerFrontInsert(5, 5, "White", 1, 1),
+		};
+
+		// Act
+		var products = _sut.MapPartsToProducts(parts);
+
+		// Assert
+		var doors = products.Where(p => p is FivePieceDoor);
+		doors.Should().HaveCount(1);
+
+		var door = doors.First() as FivePieceDoor;
+		door.Width.Should().Be(Dimension.FromInches(10));
+		door.Height.Should().Be(Dimension.FromInches(7.5));
+
+		door.FrameSize.LeftStile.Should().Be(Dimension.FromInches(2.5));
+		door.FrameSize.RightStile.Should().Be(Dimension.FromInches(2.5));
+		door.FrameSize.TopRail.Should().Be(Dimension.FromInches(1.25));
+		door.FrameSize.BottomRail.Should().Be(Dimension.FromInches(1.25));
+
+	}
+
+	[Fact]
 	public void WallWithBackPanel() {
 
 		// Arrange
@@ -146,13 +173,24 @@ public class ContinuousWallOfProductTests {
 					.HaveCount(3);
 
 		closetParts.Where(p => p.SKU == _sut.Settings.FixedShelfSKU)
+					.Where(p => !p.Parameters.ContainsKey("ExtendBack"))
+					.Should()
+					.HaveCount(1);
+
+		closetParts.Where(p => p.SKU == _sut.Settings.FixedShelfSKU)
 					.Where(p => p.Parameters.ContainsKey("ExtendBack"))
 					.Where(p => p.Parameters["ExtendBack"] == "19.05")
 					.Should()
 					.HaveCount(5);
 
-		closetParts.Where(p => p.SKU == _sut.Settings.FixedShelfSKU)
+		closetParts.Where(p => p.SKU == _sut.Settings.AdjustableShelfSKU)
 					.Where(p => !p.Parameters.ContainsKey("ExtendBack"))
+					.Should()
+					.HaveCount(1);
+
+		closetParts.Where(p => p.SKU == _sut.Settings.AdjustableShelfSKU)
+					.Where(p => p.Parameters.ContainsKey("ExtendBack"))
+					.Where(p => p.Parameters["ExtendBack"] == "19.05")
 					.Should()
 					.HaveCount(1);
 

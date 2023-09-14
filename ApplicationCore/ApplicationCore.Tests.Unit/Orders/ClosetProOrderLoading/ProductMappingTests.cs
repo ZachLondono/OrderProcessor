@@ -18,7 +18,7 @@ public class ProductMappingTests {
     }
 
     [Fact]
-    public void FloorMountedDrillThroughPart_ShouldCreateCorrectProduct() {
+    public void FloorMountedDrillThroughPart() {
 
         // Arrange
         string expectedSKU = "PC";
@@ -64,7 +64,7 @@ public class ProductMappingTests {
     }
 
     [Fact]
-    public void FloorMountedFinRightPart_ShouldCreateCorrectProduct() {
+    public void FloorMountedFinRightPart() {
 
         // Arrange
         string expectedSKU = "PE";
@@ -110,7 +110,7 @@ public class ProductMappingTests {
     }
 
     [Fact]
-    public void FloorMountedFinLeftPart_ShouldCreateCorrectProduct() {
+    public void FloorMountedFinLeftPart() {
 
         // Arrange
         string expectedSKU = "PE";
@@ -156,7 +156,7 @@ public class ProductMappingTests {
     }
 
     [Fact]
-    public void WallMountedPart_ShouldCreateCorrectProduct() {
+    public void WallMountedPart() {
 
         // Arrange
         string expectedSKU = "PE";
@@ -202,7 +202,7 @@ public class ProductMappingTests {
     }
 
     [Fact]
-    public void SlabDoorInsert_ShouldCreateCorrectProduct() {
+    public void SlabDoorInsert() {
 
         // Arrange
         var part = new Part() {
@@ -231,7 +231,7 @@ public class ProductMappingTests {
     }
 
     [Fact]
-    public void SlabDrawerInsert_ShouldCreateCorrectProduct() {
+    public void SlabDrawerInsert() {
 
         // Arrange
         var part = new Part() {
@@ -256,6 +256,54 @@ public class ProductMappingTests {
         slabDoor.SKU.Should().Be("DF-XX");
         slabDoor.Length.Should().Be(Dimension.FromInches(part.Width));
         slabDoor.Width.Should().Be(Dimension.FromInches(part.Height));
+
+    }
+
+    [Fact]
+    public void IslandVerticalPanel() {
+
+        // Arrange
+        string expectedSKU = "PIE";
+        Dimension panelHeight = Dimension.FromInches(24);
+        Dimension panelDepth = Dimension.FromInches(34);
+        Dimension leftDrilling = Dimension.FromInches(0);
+        Dimension rightDrilling = Dimension.FromInches(12);
+
+        var part = new Part() {
+            Depth = panelDepth.AsInches(),
+            Height = panelHeight.AsInches(),
+            Color = "White",
+            PartCost = "123.45",
+            Quantity = 123,
+            VertDrillL = leftDrilling.AsInches(),
+            VertDrillR = rightDrilling.AsInches(),
+            ExportName = "CPS FM Vert",
+            PartName = "Vertical Panel - Island",
+            VertHand = "L",
+            InfoRecords = new() {
+                new() {
+                    PartName = "Edge Banding",
+                    Color = "RED"
+                }
+            }
+        };
+        var helper = new PartHelper() {
+            Part = part
+        };
+
+        // Act
+        var product = ClosetProPartMapper.CreateVerticalIslandPanelFromPart(part, false);
+
+        // Assert
+        var closetPart = helper.CompareToProduct(product);
+        closetPart.SKU.Should().Be(expectedSKU);
+        closetPart.Width.Should().Be(panelDepth);
+        closetPart.Length.Should().Be(panelHeight);
+        closetPart.EdgeBandingColor.Should().Be("RED");
+        closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("FINLEFT", "1"));
+        closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("FINRIGHT", "0"));
+        closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("Row3Holes", "0"));
+        double.Parse(closetPart.Parameters["Row1Holes"]).Should().BeApproximately(267.8, 0.15);
 
     }
 

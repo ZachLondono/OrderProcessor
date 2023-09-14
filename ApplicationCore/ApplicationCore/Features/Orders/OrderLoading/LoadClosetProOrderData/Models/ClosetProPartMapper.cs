@@ -10,7 +10,6 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared;
 using ApplicationCore.Shared.Domain;
-using UglyToad.PdfPig.Outline;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
 
@@ -62,7 +61,7 @@ public class ClosetProPartMapper {
 		parts.GroupBy(p => p.WallNum)
             .ForEach(partsOnWall => {
 
-		        var productsOnWall = GatPartsForWall(partsOnWall);
+		        var productsOnWall = GetPartsForWall(partsOnWall);
 
                 products.AddRange(productsOnWall);
 
@@ -73,7 +72,7 @@ public class ClosetProPartMapper {
 
 	}
 
-	private IEnumerable<IProduct> GatPartsForWall(IEnumerable<Part> parts) {
+	private IEnumerable<IProduct> GetPartsForWall(IEnumerable<Part> parts) {
 
         List<IProduct> products = new();
 
@@ -91,70 +90,77 @@ public class ClosetProPartMapper {
 		while (true) {
 
 			Part? nextPart = null;
-			if (part.PartType == "Countertop") {
+            if (part.PartType == "Countertop") {
 
-				if (part.Height != 0.75) {
-					throw new InvalidOperationException($"Unsupported counter top thickness '{part.Height}', only 3/4\" is supported");
-				}
-				products.Add(CreateTopFromPart(part, doesWallHaveBacking));
+                if (part.Height != 0.75) {
+                    throw new InvalidOperationException($"Unsupported counter top thickness '{part.Height}', only 3/4\" is supported");
+                }
+                products.Add(CreateTopFromPart(part, doesWallHaveBacking));
 
-			} else if (part.PartName == "Cab Door Rail") {
+            } else if (part.PartName == "Cab Door Rail" || (part.PartName.Contains("Drawer") && part.PartName.Contains("Rail"))) {
 
-				// TODO: Cabinet door parts have a hinge direction, if that information is to be added to the product it will need to be read
+                // TODO: Cabinet door parts have a hinge direction, if that information is to be added to the product it will need to be read
 
-				if (!enumerator.MoveNext()) {
-					throw new InvalidOperationException("Unexpected end of part list");
-				}
+                if (!enumerator.MoveNext()) {
+                    throw new InvalidOperationException("Unexpected end of part list");
+                }
 
-				var insertPart = enumerator.Current;
-				if (insertPart.PartName != "Cab Door Insert") {
-					throw new InvalidOperationException("Cab door rail part found without cab door insert");
-				}
+                var insertPart = enumerator.Current;
+                if (insertPart.PartName != "Cab Door Insert" && !(insertPart.PartName.Contains("Drawer") && insertPart.PartName.Contains("Insert"))) {
+                    throw new InvalidOperationException("Door/Drawer rail part found without door/drawer insert");
+                }
 
-				products.Add(CreateFrontFromParts(part, insertPart));
-				if (enumerator.MoveNext()) {
-					part = enumerator.Current;
-					continue;
-				} else {
-					break;
-				}
+                products.Add(CreateFrontFromParts(part, insertPart));
+                if (enumerator.MoveNext()) {
+                    part = enumerator.Current;
+                    continue;
+                } else {
+                    break;
+                }
 
-			} else if (part.ExportName == "FixedShelf" && enumerator.MoveNext()) {
+            } else if (part.ExportName == "FixedShelf" && enumerator.MoveNext()) {
 
-				var possibleCubbyPart = enumerator.Current;
-				if (possibleCubbyPart.ExportName == "Cubby-V" || possibleCubbyPart.ExportName == "Cubby-H") {
+                var possibleCubbyPart = enumerator.Current;
+                if (possibleCubbyPart.ExportName == "Cubby-V" || possibleCubbyPart.ExportName == "Cubby-H") {
 
-					var cubbyProducts = CreateCubbyProducts(enumerator, part, possibleCubbyPart, doesWallHaveBacking);
-					products.AddRange(cubbyProducts);
+                    var cubbyProducts = CreateCubbyProducts(enumerator, part, possibleCubbyPart, doesWallHaveBacking);
+                    products.AddRange(cubbyProducts);
 
-					if (enumerator.MoveNext()) {
-						part = enumerator.Current;
-						continue;
-					} else {
-						break;
-					}
+                    if (enumerator.MoveNext()) {
+                        part = enumerator.Current;
+                        continue;
+                    } else {
+                        break;
+                    }
 
-				} else if (ProductNameMappings.TryGetValue(part.ExportName, out var mapper)) {
+                }
 
-                    bool extendBack = false;
-                    if (sectionDepths.TryGetValue(part.SectionNum, out var depth)) {
-                        if (part.Depth == depth && doesWallHaveBacking) {
-                            extendBack = true;
-                        }
-                    } 
+                bool extendBack = false;
+                if (sectionDepths.TryGetValue(part.SectionNum, out var depth)) {
+                    if (part.Depth == depth && doesWallHaveBacking) {
+                        extendBack = true;
+                    }
+                }
 
-					products.Add(CreateFixedShelfFromPart(part, doesWallHaveBacking, extendBack));
-					nextPart = possibleCubbyPart;
+                products.Add(CreateFixedShelfFromPart(part, doesWallHaveBacking, extendBack));
+                nextPart = possibleCubbyPart;
 
-				} else {
-					throw new InvalidOperationException($"Unexpected part {part.PartName} / {part.ExportName}");
-				}
+            } else if (part.ExportName == "AdjustableShelf") {
 
-			} else if (ProductNameMappings.TryGetValue(part.ExportName, out var mapper)) {
-				products.Add(mapper(part, doesWallHaveBacking));
-			} else {
-				throw new InvalidOperationException($"Unexpected part {part.PartName} / {part.ExportName}");
-			}
+                bool extendBack = false;
+                if (sectionDepths.TryGetValue(part.SectionNum, out var depth)) {
+                    if (part.Depth == depth && doesWallHaveBacking) {
+                        extendBack = true;
+                    }
+                }
+
+                products.Add(CreateAdjustableShelfFromPart(part, doesWallHaveBacking, extendBack));
+
+            } else if (ProductNameMappings.TryGetValue(part.ExportName, out var mapper)) {
+                products.Add(mapper(part, doesWallHaveBacking));
+            } else {
+                throw new InvalidOperationException($"Unexpected part {part.PartName} / {part.ExportName}");
+            }
 
 			if (nextPart is not null) {
 				part = nextPart;
@@ -327,6 +333,10 @@ public class ClosetProPartMapper {
     }
 
     public IProduct CreateVerticalPanelFromPart(Part part, bool wallHasBacking) {
+        
+        if (part.PartName == "Vertical Panel - Island") {
+            return CreateVerticalIslandPanelFromPart(part, wallHasBacking);
+        }
 
         double leftDrilling = part.VertDrillL;
         double rightDrilling = part.VertDrillR;
@@ -376,6 +386,54 @@ public class ClosetProPartMapper {
             var middleHoles = Dimension.FromInches(double.Min(leftDrilling, rightDrilling)) - Dimension.FromMillimeters(37);
             parameters.Add("MiddleHoles", middleHoles.AsMillimeters().ToString());
         }
+
+        return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
+
+    }
+
+    public static IProduct CreateVerticalIslandPanelFromPart(Part part, bool wallHasBacking) {
+
+        if (part.VertHand == "T") {
+            throw new InvalidOperationException("Through drilled island panels are not supported");
+        }
+
+        if (wallHasBacking) {
+            throw new InvalidOperationException("Cannot create vertical island panel with backing");
+        }
+
+        if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
+            unitPrice = 0M;
+        }
+        
+        string room = GetRoomName(part);
+
+        Dimension width = Dimension.FromInches(part.Depth);
+        Dimension length = Dimension.FromInches(part.Height);
+        ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
+        ClosetPaint? paint = null;
+        string edgeBandingColor = part.InfoRecords
+                                        .Where(i => i.PartName == "Edge Banding") // i.CornerShelfSizes contains the information about what edges to apply banding
+                                        .Select(i => i.Color)
+                                        .FirstOrDefault() ?? part.Color;
+        string comment = "";
+
+
+        var leftDrilling = Dimension.FromInches(part.VertDrillL);
+        var rightDrilling = Dimension.FromInches(part.VertDrillR);
+
+        bool finLeft = part.VertHand == "L";
+        bool finRight = part.VertHand == "R";
+
+        var sku = part.VertHand == "T" ? "PIC" : "PIE";
+
+        Dimension row1Holes = (finLeft ? rightDrilling : leftDrilling) - Dimension.FromMillimeters(37);
+
+        Dictionary<string, string> parameters = new() {
+            { "FINLEFT", finLeft ? "1" : "0" },
+            { "FINRIGHT", finRight ? "1" : "0" },
+            { "Row1Holes", row1Holes.AsMillimeters().ToString() }, // TODO: what does it look like when there is a island center panel (probably both vert drill ll and vert drill r are set), and is it even possible to have a center island panel in closet pro??
+            { "Row3Holes", "0" } // Optional drawer slide holes
+        };
 
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
 
@@ -461,7 +519,9 @@ public class ClosetProPartMapper {
 
     }
 
-    public IProduct CreateAdjustableShelfFromPart(Part part, bool wallHasBacking) {
+    public IProduct CreateAdjustableShelfFromPart(Part part, bool wallHasBacking) => CreateAdjustableShelfFromPart(part, wallHasBacking, false);
+
+    public IProduct CreateAdjustableShelfFromPart(Part part, bool wallHasBacking, bool extendBack) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
@@ -507,6 +567,11 @@ public class ClosetProPartMapper {
 
             sku = Settings.AdjustableShelfSKU;
 
+        }
+
+        // While not all types of adjustable shelves need to have the extended back parameter set, some do (SA5)
+        if (extendBack) {
+            parameters.Add("ExtendBack", "19.05");
         }
 
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
