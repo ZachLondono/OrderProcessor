@@ -398,6 +398,7 @@ CREATE TABLE diagonal_wall_cabinets (
 	door_qty INTEGER NOT NULL,
 	door_extend_down REAL NOT NULL,
 	adj_shelf_qty INTEGER NOT NULL,
+	is_garage INTEGER NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );

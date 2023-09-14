@@ -14,6 +14,7 @@ internal class DiagonalWallCabinetDataModel : CabinetDataModelBase, IProductData
     public int DoorQty { get; set; }
     public Dimension DoorExtendDown { get; set; }
     public int AdjShelfQty { get; set; }
+    public bool IsGarage { get; set; }
     public List<string> ProductionNotes { get; set; } = new();
 
     public IProduct MapToProduct() {
@@ -25,6 +26,7 @@ internal class DiagonalWallCabinetDataModel : CabinetDataModelBase, IProductData
 
         return new WallDiagonalCornerCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             RightWidth, RightDepth, AdjShelfQty, HingeSide, DoorQty, DoorExtendDown) {
+            IsGarage = IsGarage,
             ProductionNotes = ProductionNotes
         };
 
@@ -68,6 +70,7 @@ internal class DiagonalWallCabinetDataModel : CabinetDataModelBase, IProductData
                 diagonal_wall_cabinets.door_qty AS DoorQty,
                 diagonal_wall_cabinets.door_extend_down AS DoorExtendDown,
                 diagonal_wall_cabinets.adj_shelf_qty AS AdjShelfQty,
+                diagonal_wall_cabinets.is_garage AS IsGarage,
 
            	    cabinets.mdf_config_id IS NOT NULL AS ContainsMDFDoor,
            	    mdf_door_configs.framing_bead AS FramingBead,

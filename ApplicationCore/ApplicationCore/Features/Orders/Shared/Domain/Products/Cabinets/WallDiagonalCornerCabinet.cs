@@ -15,8 +15,9 @@ internal class WallDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
     public int DoorQty { get; }
     public int AdjustableShelves { get; }
     public Dimension ExtendedDoor { get; }
+    public bool IsGarage { get; set; }
 
-    public override string GetDescription() => $"Diagonal Corner Wall Cabinet - {DoorQty} Doors";
+    public override string GetDescription() => $"Diagonal Corner Wall {(IsGarage ? "Garage" : "")}Cabinet - {DoorQty} Doors";
 
     public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap;
 
@@ -57,9 +58,9 @@ internal class WallDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
                         => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfOptions, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, adjShelfQty, hingeSide, doorQty, extendedDoor);
 
     public override string GetProductSku() => DoorQty switch {
-        1 => "WC1D-M",
-        2 => "WC2D-M",
-        _ => "WC1D-M"
+        1 => $"{(IsGarage ? "G" : "" )}WC1D-M",
+        2 => $"{(IsGarage ? "G" : "" )}WC2D-M",
+        _ => $"{(IsGarage ? "G" : "" )}WC1D-M"
     };
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
@@ -164,5 +165,10 @@ internal class WallDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
         HingeSide.Right => "0",
         _ => "0"
     };
+
+    protected override string GetMaterialType() {
+        if (IsGarage) return "Garage";
+        return base.GetMaterialType();
+    }
 
 }
