@@ -18,7 +18,7 @@ internal class TallCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxConta
     public Dimension LowerDoorHeight => Doors.UpperQuantity > 0 ? Doors.LowerDoorHeight : Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap;
     public Dimension UpperDoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - Doors.LowerDoorHeight - DoorGaps.VerticalGap;
 
-    public override string GetDescription() => $"Tall {(IsGarage ? "Garage " : "")}Cabinet - {Doors.UpperQuantity} Upper Doors, {Doors.LowerQuantity} Lower Doors";
+    public override string GetDescription() => $"Tall {(IsGarage ? "Garage " : "")}Cabinet - {(Doors.UpperQuantity > 0 ? $"{Doors.UpperQuantity} Upper Doors, {Doors.LowerQuantity} Lower Doors" : $"{Doors.LowerQuantity} Full Height Doors")} ";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),
