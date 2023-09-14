@@ -11,9 +11,13 @@ namespace ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport;
 
 public class ExportEXT {
 
-    public record Command(Order Order, string JobName, string OutputDirectory) : ICommand<string>;
+    public record Command(Order Order, string JobName, string OutputDirectory) : ICommand<EXTGenerationResult>;
 
-    public class Handler : CommandHandler<Command, string> {
+    public record EXTGenerationResult(string EXTFilePath, IEnumerable<PPProductManualParameters> RequiredManualParameters);
+
+    public record PPProductManualParameters(string ProductName, int ProductSequenceNum, IDictionary<string, string> Parameters);
+
+    public class Handler : CommandHandler<Command, EXTGenerationResult> {
 
         private readonly ILogger<Handler> _logger;
         private readonly IFileReader _fileReader;
@@ -25,7 +29,7 @@ public class ExportEXT {
             _getCustomerByIdAsync = getCustomerByIdAsync;
         }
 
-        public override async Task<Response<string>> Handle(Command command) {
+        public override async Task<Response<EXTGenerationResult>> Handle(Command command) {
 
             List<PPProduct> products;
             try {
@@ -75,20 +79,9 @@ public class ExportEXT {
 
             }
 
-            /*
-            string errors = "";
-            int index = 0;
-            foreach (var product in products) {
-                index++;
-                foreach (var (key, value) in product.ManualOverrideParameters) {
+            var manualParams = products.Select(p => new PPProductManualParameters(p.Name, p.SequenceNum, p.ManualOverrideParameters));
 
-                    errors += $"[cab:{index}] {key} ==>> {value}<br>";
-
-                }
-            }
-            */
-
-            return new(filePath);
+            return new EXTGenerationResult(filePath, manualParams);
 
         }
 

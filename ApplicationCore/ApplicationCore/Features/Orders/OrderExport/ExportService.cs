@@ -152,7 +152,17 @@ internal class ExportService {
         var response = await _bus.Send(new ExportEXT.Command(order, jobName.Trim(), outputDir));
 
         response.Match(
-            file => OnFileGenerated?.Invoke(file),
+            result => {
+
+                foreach (var product in result.RequiredManualParameters) {
+                    foreach (var (key, value) in product.Parameters) {
+                        OnProgressReport?.Invoke($"[{product.ProductSequenceNum}] {product.ProductName} | {key} ==>> {value}");
+                    }
+                }
+
+                OnFileGenerated?.Invoke(result.EXTFilePath);
+
+            },
             error => OnError?.Invoke($"{error.Title} - {error.Details}")
         );
 
