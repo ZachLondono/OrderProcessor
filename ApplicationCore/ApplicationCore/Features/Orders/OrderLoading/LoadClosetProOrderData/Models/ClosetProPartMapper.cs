@@ -158,7 +158,11 @@ public class ClosetProPartMapper {
                 products.Add(CreateAdjustableShelfFromPart(part, doesWallHaveBacking, extendBack));
 
             } else if (ProductNameMappings.TryGetValue(part.ExportName, out var mapper)) {
-                products.Add(mapper(part, doesWallHaveBacking));
+                try {
+                    products.Add(mapper(part, doesWallHaveBacking));
+                } catch (Exception ex) {
+                    throw new InvalidOperationException($"Part could not be mapped to a valid product - #{part.PartNum} {part.PartName}/{part.ExportName} W{part.WallNum} S{part.SectionNum} - {ex.Message}", ex);
+                }
             } else {
                 throw new InvalidOperationException($"Unexpected part {part.PartName} / {part.ExportName}");
             }
