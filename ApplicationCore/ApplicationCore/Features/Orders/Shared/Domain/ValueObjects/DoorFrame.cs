@@ -23,7 +23,7 @@ public class DoorFrame {
         TopRail = rails;
         BottomRail = rails;
         LeftStile = stiles;
-        RightStile = rails;
+        RightStile = stiles;
     }
 
     public DoorFrame() { }
