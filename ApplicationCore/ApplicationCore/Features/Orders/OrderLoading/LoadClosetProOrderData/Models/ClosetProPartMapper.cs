@@ -47,7 +47,8 @@ public class ClosetProPartMapper {
             { "Zargen", CreateZargenDrawerBox },
             { "Slab", CreateSlabFront },
             { "Filler Panel", CreateFillerPanel },
-            { "Backing", CreateBackingPart }
+            { "Backing", CreateBackingPart },
+            { "Back-Panel", CreateBackingPart }
         };
 
         FrontHardwareSpreads = new();
