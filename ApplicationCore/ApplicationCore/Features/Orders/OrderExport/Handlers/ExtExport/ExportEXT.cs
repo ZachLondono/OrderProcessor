@@ -5,6 +5,7 @@ using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Services;
 using ApplicationCore.Shared.Services;
 using ApplicationCore.Features.Companies.Contracts;
 using ApplicationCore.Infrastructure.Bus;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport;
 
@@ -14,21 +15,37 @@ public class ExportEXT {
 
     public class Handler : CommandHandler<Command, string> {
 
+        private readonly ILogger<Handler> _logger;
         private readonly IFileReader _fileReader;
         private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
 
-        public Handler(IFileReader fileReader, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync) {
+        public Handler(ILogger<Handler> logger, IFileReader fileReader, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync) {
+            _logger = logger;
             _fileReader = fileReader;
             _getCustomerByIdAsync = getCustomerByIdAsync;
         }
 
         public override async Task<Response<string>> Handle(Command command) {
 
-            var products = command.Order.Products
-                                .Where(p => p is IPPProductContainer)
-                                .Cast<IPPProductContainer>()
-                                .SelectMany(c => c.GetPPProducts())
-                                .ToList();
+            List<PPProduct> products;
+            try {
+
+                products = command.Order
+                                    .Products
+                                    .Where(p => p is IPPProductContainer)
+                                    .Cast<IPPProductContainer>()
+                                    .SelectMany(c => c.GetPPProducts())
+                                    .ToList();
+
+            } catch (Exception ex) {
+
+                _logger.LogError(ex, "Exception thrown while trying to generate Product Planner products for order");
+                return new Error() {
+                    Title = "Failed to generate EXT file",
+                    Details = "An error occurred while trying to generate Product Planner parts for order"
+                };
+
+            }
 
             var jobName = command.JobName.Replace(".", "");
 
@@ -39,14 +56,26 @@ public class ExportEXT {
 
             string filePath = Path.Combine(command.OutputDirectory, $"{_fileReader.RemoveInvalidPathCharacters(jobName)}.ext");
 
-            var writer = new ExtWriter();
-
             string defaultLevelName = command.Order.Name;
             if (defaultLevelName.Length > 60) defaultLevelName = defaultLevelName[..60];
-            new PPJobConverter(writer).ConvertOrder(job, defaultLevelName);
 
-            writer.WriteFile(filePath);
+            try {
 
+                var writer = new ExtWriter();
+                new PPJobConverter(writer).ConvertOrder(job, defaultLevelName);
+                writer.WriteFile(filePath);
+
+            } catch (Exception ex) {
+
+                _logger.LogError(ex, "Exception thrown while trying to write EXT file");
+                return new Error() {
+                    Title = "Failed to generate EXT file",
+                    Details = "An error occurred while trying to write PSI job to EXT file"
+                };
+
+            }
+
+            /*
             string errors = "";
             int index = 0;
             foreach (var product in products) {
@@ -57,6 +86,7 @@ public class ExportEXT {
 
                 }
             }
+            */
 
             return new(filePath);
 

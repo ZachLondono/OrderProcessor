@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
 using ApplicationCore.Features.Orders.Shared.Domain.Components;
+using Error = ApplicationCore.Infrastructure.Bus.Error;
 
 namespace ApplicationCore.Features.Orders.OrderExport.Handlers.DovetailOrderExport;
 
@@ -32,89 +33,120 @@ public class ExportDovetailOrder {
         public override async Task<Response<DovetailOrderExportResult>> Handle(Command command) {
 
             if (!File.Exists(command.TemplateFilePath)) {
-                return new Infrastructure.Bus.Error() {
+                return new Error() {
                     Title = "Could not generate dovetail order",
                     Details = "Dovetail drawer box order template file could not be found"
                 };
             }
 
             if (!Directory.Exists(command.OutputDirectory)) {
-                return new Infrastructure.Bus.Error() {
+                return new Error() {
                     Title = "Could not generate dovetail order",
                     Details = "Dovetail drawer box order output directory could not be found"
                 };
             }
 
             var customer = await _getCustomerById(command.Order.CustomerId);
+            string customerName = customer?.Name ?? "";
 
-            var groups = command.Order.Products
-                                .OfType<IDovetailDrawerBoxContainer>()
-                                .SelectMany(p => p.GetDovetailDrawerBoxes(_factory.CreateDovetailDrawerBoxBuilder))
-                                .GroupBy(b => b.DrawerBoxOptions.Assembled);
-
-            Microsoft.Office.Interop.Excel.Application app = new() {
-                DisplayAlerts = false,
-                Visible = false
-            };
-
-            List<string> filesGenerated = new();
-            string? error = null;
-            var workbooks = app.Workbooks;
+            IEnumerable<DovetailDrawerBox> allBoxes;
+            
             try {
 
-                foreach (var group in groups) {
-
-                    Workbook workbook = workbooks.Open(command.TemplateFilePath, ReadOnly: true);
-
-                    var data = MapData(command.Order, customer?.Name ?? "", group);
-                    var worksheets = workbook.Worksheets;
-                    Worksheet worksheet = (Worksheet)worksheets["Order"];
-                    WriteData(worksheet, data);
-                    Marshal.ReleaseComObject(worksheets);
-                    Marshal.ReleaseComObject(worksheet);
-
-                    var filename = _fileReader.GetAvailableFileName(command.OutputDirectory, $"{command.Order.Number} - {command.Order.Name} Drawer Boxes", ".xlsm");
-                    string finalPath = Path.GetFullPath(filename);
-
-                    workbook.SaveAs(finalPath);
-                    workbook.Close(SaveChanges: false);
-                    Marshal.ReleaseComObject(workbook);
-
-                    filesGenerated.Add(finalPath);
-
-                }
+                allBoxes = command.Order
+                                  .Products
+                                  .OfType<IDovetailDrawerBoxContainer>()
+                                  .SelectMany(p => p.GetDovetailDrawerBoxes(_factory.CreateDovetailDrawerBoxBuilder));
 
             } catch (Exception ex) {
 
-                _logger.LogError(ex, "Exception thrown while filling drawer box order");
-                error = $"Error while generating drawer box order - {ex.Message}";
+                _logger.LogError(ex, "Exception thrown while trying to generate drawer boxes for order");
+                return new Error() {
+                    Title = "Could not generate dovetail order",
+                    Details = "Failed to generate drawer boxes for all products in order"
+                };
 
             }
 
-            workbooks.Close();
-            app?.Quit();
+            var groups = allBoxes.GroupBy(b => b.DrawerBoxOptions.Assembled);
 
-            Marshal.ReleaseComObject(workbooks);
-            Marshal.ReleaseComObject(app);
+            List<string> filesGenerated;
+            try {
 
-            // Clean up COM objects, calling these twice ensures it is fully cleaned up.
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+				filesGenerated = GenerateDrawerBoxOrders(command, customerName, groups);
 
-            if (error is not null) {
-                return new Infrastructure.Bus.Error() {
-                    Title = "",
-                    Details = "Dovetail drawer box order output directory could not be found"
+			} catch (Exception ex) {
+
+                _logger.LogError(ex, "Exception thrown while filling drawer box order");
+                return new Error() {
+                    Title = "Could not generate dovetail order",
+                    Details = "Error occurred while writing dovetail drawer order forms"
                 };
+
             }
 
             return new(new DovetailOrderExportResult(filesGenerated, null));
 
         }
 
-        public static DBOrder MapData(Order order, string customerName, IGrouping<bool, DovetailDrawerBox> group) {
+		private List<string> GenerateDrawerBoxOrders(Command command, string customerName, IEnumerable<IGrouping<bool, DovetailDrawerBox>> groups) {
+
+            List<string> filesGenerated = new();
+
+            Microsoft.Office.Interop.Excel.Application app = new() {
+                DisplayAlerts = false,
+                Visible = false
+            };
+
+            var workbooks = app.Workbooks;
+
+            try {
+
+			    foreach (var group in groups) {
+
+			    	Workbook workbook = workbooks.Open(command.TemplateFilePath, ReadOnly: true);
+
+			    	var data = MapData(command.Order, customerName, group);
+			    	var worksheets = workbook.Worksheets;
+			    	Worksheet worksheet = (Worksheet)worksheets["Order"];
+			    	WriteData(worksheet, data);
+			    	_ = Marshal.ReleaseComObject(worksheets);
+			    	_ = Marshal.ReleaseComObject(worksheet);
+
+			    	var filename = _fileReader.GetAvailableFileName(command.OutputDirectory, $"{command.Order.Number} - {command.Order.Name} Drawer Boxes", "xlsm");
+			    	string finalPath = Path.GetFullPath(filename);
+
+			    	workbook.SaveAs(finalPath);
+			    	workbook.Close(SaveChanges: false);
+			    	_ = Marshal.ReleaseComObject(workbook);
+
+			    	filesGenerated.Add(finalPath);
+
+			    }
+
+            } catch {
+                throw;
+            } finally {
+
+                workbooks.Close();
+                app?.Quit();
+
+                _ = Marshal.ReleaseComObject(workbooks);
+                if (app is not null) _ = Marshal.ReleaseComObject(app);
+
+                // Clean up COM objects, calling these twice ensures it is fully cleaned up.
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
+            }
+
+            return filesGenerated;
+
+		}
+
+		public static DBOrder MapData(Order order, string customerName, IGrouping<bool, DovetailDrawerBox> group) {
             return new() {
                 OrderNumber = order.Number,
                 OrderDate = order.OrderDate,
@@ -374,28 +406,28 @@ public class ExportDovetailOrder {
             }
 
             public void ReleaseObjects() {
-                if (Line is not null) Marshal.ReleaseComObject(Line);
-                if (Qty is not null) Marshal.ReleaseComObject(Qty);
-                if (Width is not null) Marshal.ReleaseComObject(Width);
-                if (Height is not null) Marshal.ReleaseComObject(Height);
-                if (Depth is not null) Marshal.ReleaseComObject(Depth);
-                if (A is not null) Marshal.ReleaseComObject(A);
-                if (B is not null) Marshal.ReleaseComObject(B);
-                if (C is not null) Marshal.ReleaseComObject(C);
-                if (Material is not null) Marshal.ReleaseComObject(Material);
-                if (Bottom is not null) Marshal.ReleaseComObject(Bottom);
-                if (Notch is not null) Marshal.ReleaseComObject(Notch);
-                if (Insert is not null) Marshal.ReleaseComObject(Insert);
-                if (Clips is not null) Marshal.ReleaseComObject(Clips);
-                if (MountingHoles is not null) Marshal.ReleaseComObject(MountingHoles);
-                if (PostFinish is not null) Marshal.ReleaseComObject(PostFinish);
-                if (ScoopFront is not null) Marshal.ReleaseComObject(ScoopFront);
-                if (Logo is not null) Marshal.ReleaseComObject(Logo);
-                if (LevelName is not null) Marshal.ReleaseComObject(LevelName);
-                if (Note is not null) Marshal.ReleaseComObject(Note);
-                if (Name is not null) Marshal.ReleaseComObject(Name);
-                if (Description is not null) Marshal.ReleaseComObject(Description);
-                if (UnitPrice is not null) Marshal.ReleaseComObject(UnitPrice);
+                if (Line is not null) _ = Marshal.ReleaseComObject(Line);
+                if (Qty is not null) _ = Marshal.ReleaseComObject(Qty);
+                if (Width is not null) _ = Marshal.ReleaseComObject(Width);
+                if (Height is not null) _ = Marshal.ReleaseComObject(Height);
+                if (Depth is not null) _ = Marshal.ReleaseComObject(Depth);
+                if (A is not null) _ = Marshal.ReleaseComObject(A);
+                if (B is not null) _ = Marshal.ReleaseComObject(B);
+                if (C is not null) _ = Marshal.ReleaseComObject(C);
+                if (Material is not null) _ = Marshal.ReleaseComObject(Material);
+                if (Bottom is not null) _ = Marshal.ReleaseComObject(Bottom);
+                if (Notch is not null) _ = Marshal.ReleaseComObject(Notch);
+                if (Insert is not null) _ = Marshal.ReleaseComObject(Insert);
+                if (Clips is not null) _ = Marshal.ReleaseComObject(Clips);
+                if (MountingHoles is not null) _ = Marshal.ReleaseComObject(MountingHoles);
+                if (PostFinish is not null) _ = Marshal.ReleaseComObject(PostFinish);
+                if (ScoopFront is not null) _ = Marshal.ReleaseComObject(ScoopFront);
+                if (Logo is not null) _ = Marshal.ReleaseComObject(Logo);
+                if (LevelName is not null) _ = Marshal.ReleaseComObject(LevelName);
+                if (Note is not null) _ = Marshal.ReleaseComObject(Note);
+                if (Name is not null) _ = Marshal.ReleaseComObject(Name);
+                if (Description is not null) _ = Marshal.ReleaseComObject(Description);
+                if (UnitPrice is not null) _ = Marshal.ReleaseComObject(UnitPrice);
             }
 
         }

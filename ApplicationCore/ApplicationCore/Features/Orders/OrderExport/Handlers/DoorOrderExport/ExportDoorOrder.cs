@@ -69,7 +69,7 @@ public class ExportDoorOrder {
                 _logger.LogError(ex, "Exception thrown while filling door order");
                 return new Infrastructure.Bus.Error() {
                     Title = "Cannot Export Door Order",
-                    Details = $"Exception thrown while filling door order - {ex.Message}"
+                    Details = $"An error occurred while trying to fill door order form - {ex.Message}"
                 };
 
             }
@@ -128,15 +128,15 @@ public class ExportDoorOrder {
                     var worksheets = workbook.Worksheets;
                     Worksheet worksheet = (Worksheet)worksheets["MDF"];
                     FillOrderSheet(order, customerName, group, worksheet, orderNumber);
-                    Marshal.ReleaseComObject(worksheet);
-                    Marshal.ReleaseComObject(worksheets);
+                    _ = Marshal.ReleaseComObject(worksheet);
+                    _ = Marshal.ReleaseComObject(worksheets);
 
                     string fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{orderNumber} - {order.Name} MDF DOORS", ".xlsm");
                     string finalPath = Path.GetFullPath(fileName);
 
                     workbook.SaveAs(finalPath);
                     workbook?.Close(SaveChanges: false);
-                    Marshal.ReleaseComObject(workbook);
+                    if (workbook is not null) _ = Marshal.ReleaseComObject(workbook);
 
                     filesGenerated.Add(finalPath);
 
@@ -156,8 +156,8 @@ public class ExportDoorOrder {
             workbooks.Close();
             app?.Quit();
 
-            Marshal.ReleaseComObject(workbooks);
-            Marshal.ReleaseComObject(app);
+			_ = Marshal.ReleaseComObject(workbooks);
+            if (app is not null) _ = Marshal.ReleaseComObject(app);
 
             // Clean up COM objects, calling these twice ensures it is fully cleaned up.
             GC.Collect();

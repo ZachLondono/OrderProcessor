@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using CADCodeProxy.Machining;
 using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.CSVTokens;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Orders.OrderExport;
 
@@ -22,13 +23,15 @@ internal class ExportService {
     public Action<string>? OnError;
     public Action<string>? OnActionComplete;
 
+    private readonly ILogger<ExportService> _logger;
     private readonly IBus _bus;
     private readonly OrderState _orderState;
     private readonly ExportOptions _options;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly IFileReader _fileReader;
 
-    public ExportService(IBus bus, OrderState orderState, IOptions<ExportOptions> options, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IFileReader fileReader) {
+    public ExportService(ILogger<ExportService> logger, IBus bus, OrderState orderState, IOptions<ExportOptions> options, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IFileReader fileReader) {
+        _logger = logger;
         _bus = bus;
         _orderState = orderState;
         _options = options.Value;
@@ -42,20 +45,28 @@ internal class ExportService {
             return;
         }
 
-        var order = _orderState.Order;
+        try {
+            var order = _orderState.Order;
 
-        var customerName = await GetCustomerName(order.CustomerId);
-        var outputDir = ReplaceTokensInDirectory(customerName, configuration.OutputDirectory);
+            var customerName = await GetCustomerName(order.CustomerId);
+            var outputDir = ReplaceTokensInDirectory(customerName, configuration.OutputDirectory);
 
-        await GenerateMDFOrders(configuration, order, outputDir);
+            await GenerateMDFOrders(configuration, order, outputDir);
 
-        await GenerateDovetailOrders(configuration, order, outputDir);
+            await GenerateDovetailOrders(configuration, order, outputDir);
 
-        await GenerateEXT(configuration, order, _options.EXTOutputDirectory);
+            await GenerateEXT(configuration, order, _options.EXTOutputDirectory);
 
-        await GenerateCSV(configuration, order, customerName, _options.CSVOutputDirectory);
+            await GenerateCSV(configuration, order, customerName, _options.CSVOutputDirectory);
 
-        OnActionComplete?.Invoke("Export Complete");
+            OnActionComplete?.Invoke("Export Complete");
+
+        } catch (Exception ex) {
+
+            OnError?.Invoke($"One or more export steps failed - {ex.Message}");
+            _logger.LogError(ex, "Exception thrown while exporting order");
+
+        }
 
     }
 
@@ -159,25 +170,36 @@ internal class ExportService {
             return;
         }
 
-        var parts = order.Products
-            .Where(p => p is ICNCPartContainer)
-            .Cast<ICNCPartContainer>()
-            .SelectMany(p => p.GetCNCParts(customerName))
-            .ToArray();
+        Part[] parts;
+
+        try {
+
+            parts = order.Products
+                .Where(p => p is ICNCPartContainer)
+                .Cast<ICNCPartContainer>()
+                .SelectMany(p => p.GetCNCParts(customerName))
+                .ToArray();
+
+        } catch (Exception ex) {
+
+            _logger.LogError(ex, "Exception thrown while trying to generate cnc parts for order");
+            OnError?.Invoke("Failed to generate CNC parts for order");
+			throw;
+
+		}
 
         if (!parts.Any()) {
             OnError?.Invoke("No parts in order to write to CSV");
             return;
         }
 
-        OnProgressReport?.Invoke("Generating CSV file");
-
         string jobName = string.IsNullOrWhiteSpace(configuration.CsvJobName) ? $"{order.Number} - {order.Name}" : configuration.CsvJobName;
-
         var batch = new Batch() {
             Name = _fileReader.RemoveInvalidPathCharacters(jobName),
             Parts = parts
         };
+
+        OnProgressReport?.Invoke("Generating CSV file");
 
         var response = await _bus.Send(new WriteTokensToCSV.Command(batch, outputDir));
 
