@@ -17,15 +17,17 @@ public class OrderState {
         _logger = logger;
     }
 
-    public async Task LoadOrder(Guid orderId) {
+    public async Task<bool> LoadOrder(Guid orderId) {
         var result = await _bus.Send(new GetOrderById.Query(orderId));
-        result.Match(
+        return result.Match(
             order => {
                 Order = order;
                 _logger.LogInformation("Current order updated to order: {OrderId}", orderId);
+                return true;
             },
             error => {
                 _logger.LogError("Error loading order while trying to set current order {Error}", error);
+                return false;
             }
         );
     }
