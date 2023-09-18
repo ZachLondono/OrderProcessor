@@ -179,8 +179,16 @@
                 <span class="text-gray-700">Send Invoice Email</span>
             </CheckBox>
             @if (DataContext.Configuration.SendInvoiceEmail) {
-                <label class="block text-sm font-medium text-gray-700">Email Recipients</label>
-                <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.InvoiceEmailRecipients"/>
+                <div class="ml-3">
+                    <div>
+                        <CheckBox @bind-IsChecked="DataContext.Configuration.PreviewInvoiceEmail">
+                            <span class="text-gray-700 text-sm">Preview email before sending</span>
+                        </CheckBox>
+                    </div>
+    
+                    <label class="block text-sm font-medium text-gray-700">Email Recipients</label>
+                    <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.InvoiceEmailRecipients"/>
+                </div>
             }
 
         </section>

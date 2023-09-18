@@ -25,5 +25,6 @@ public class ReleaseConfiguration {
     public string? InvoiceOutputDirectory { get; set; }
     public string? InvoiceEmailRecipients { get; set; }
     public bool SendInvoiceEmail { get; set; }
+    public bool PreviewInvoiceEmail { get; set; }
 
 }

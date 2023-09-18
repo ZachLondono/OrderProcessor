@@ -242,10 +242,14 @@ public class ReleaseService {
             _logger.LogError(ex, "Exception thrown while trying to generate invoice pdf");
         }
 
-        if (filePaths.Any() && configuration.SendInvoiceEmail && configuration.InvoiceEmailRecipients is string recipients) {
+        if (filePaths.Any() && (configuration.SendInvoiceEmail) && configuration.InvoiceEmailRecipients is string recipients) {
             OnProgressReport?.Invoke("Sending invoice email");
             try {
-                await SendEmailAsync(recipients, $"INVOICE: {order.Number} {customerName}", "Please see attached invoice", "Please see attached invoice", new string[] { filePaths.First() });
+                if (configuration.PreviewInvoiceEmail) {
+                    await CreateAndDisplayOutlookEmail(recipients, $"INVOICE: {order.Number} {customerName}", "Please see attached invoice", "Please see attached invoice", new string[] { filePaths.First() });
+                } else {
+                    await SendEmailAsync(recipients, $"INVOICE: {order.Number} {customerName}", "Please see attached invoice", "Please see attached invoice", new string[] { filePaths.First() });
+                }
             } catch (Exception ex) {
                 OnError?.Invoke($"Could not send invoice email - '{ex.Message}'");
                 _logger.LogError(ex, "Exception thrown while trying to send invoice email");
