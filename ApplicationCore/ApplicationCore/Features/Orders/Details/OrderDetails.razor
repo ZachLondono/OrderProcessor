@@ -279,7 +279,7 @@
                         @if (room.ClosetParts.Any()) {
                             <section class="mt-5">
                                 <h3>Closet Parts</h3>
-                                <ClosetPartProductTable UseInches="@_useInches" ClosetParts="@room.ClosetParts" />
+                                <ClosetPartProductTable UseInches="@_useInches" ClosetParts="@room.ClosetParts" OnProductsChanged="OnProductsChanged" />
                             </section>
                         }
      

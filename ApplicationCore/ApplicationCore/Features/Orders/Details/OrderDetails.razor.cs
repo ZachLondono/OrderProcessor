@@ -37,12 +37,17 @@ public partial class OrderDetails {
 
         _dueDate = OrderState.Order.DueDate;
 
+        SeparateRooms();
+
+    }
+
+    private void SeparateRooms() {
+        if (OrderState.Order is null) return;
         Rooms = OrderState.Order
                     .Products
                     .GroupBy(p => p.Room)
                     .Select(Room.FromGrouping)
                     .ToList();
-
     }
 
     public void OpenCustomerPage(Guid companyId) {
@@ -129,6 +134,13 @@ public partial class OrderDetails {
         public ProductRowModel(T product) {
             Product = product;
         }
+
+    }
+
+    public void OnProductsChanged() {
+
+        SeparateRooms();
+        StateHasChanged();
 
     }
 
