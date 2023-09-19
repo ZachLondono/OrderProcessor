@@ -81,6 +81,43 @@ public abstract class PersistenceTests {
 
     }
 
+    protected Guid InsertOrderWithProduct<T>(T product) where T : IProduct {
+
+        Order order = new OrderBuilder() {
+            Products = new() {
+                product
+            }
+        }.Build();
+
+        var insertResult = Sut.Handle(new(order)).Result;
+        insertResult.OnError(error => Assert.Fail($"Insert handler returned error {error.Title} - {error.Details}"));
+        order.Should().NotBeNull();
+
+        return order.Id;
+
+    }
+
+    protected void VerifyProductExistsInOrder<T>(Guid orderId, T product) where T : IProduct {
+
+        var logger = Substitute.For<ILogger<GetOrderById.Handler>>();
+        var sut = new GetOrderById.Handler(logger, Factory);
+
+        var result = sut.Handle(new(orderId)).Result;
+        Order? foundOrder = null;
+        result.OnSuccess(o => {
+            foundOrder = o;
+        });
+
+        // Assert
+        result.OnError(e => Assert.Fail($"Handler returned error {e}"));
+        foundOrder.Should().NotBeNull();
+
+        var foundProduct = (T)foundOrder.Products.First();
+        foundProduct.Should().NotBeNull();
+        foundProduct.Should().BeEquivalentTo(product);
+
+    }
+
     protected void EnsureAllTablesAreEmpty() {
         var connection = Factory.CreateConnection().Result;
 

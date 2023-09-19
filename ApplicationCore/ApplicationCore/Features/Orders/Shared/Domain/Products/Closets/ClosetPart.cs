@@ -8,23 +8,23 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 public class ClosetPart : IProduct, IPPProductContainer, IClosetPartProduct {
 
     public Guid Id { get; }
-    public int Qty { get; }
+    public int Qty { get; set; }
     public decimal UnitPrice { get; }
     public int ProductNumber { get; }
     public string Room { get; set; }
-    public string SKU { get; }
+    public string SKU { get; set; }
     public Dimension Width { get; }
     public Dimension Length { get; }
     public ClosetMaterial Material { get; }
     public ClosetPaint? Paint { get; }
     public string EdgeBandingColor { get; }
-    public string Comment { get; }
-    public IReadOnlyDictionary<string, string> Parameters { get; }
+    public string Comment { get; set; }
+    public IDictionary<string, string> Parameters { get; }
     public List<string> ProductionNotes { get; set; } = new();
 
     public string GetDescription() => $"Closet Part - {SKU}";
 
-    public ClosetPart(Guid id, int qty, decimal unitPrice, int productNumber, string room, string sku, Dimension width, Dimension length, ClosetMaterial material, ClosetPaint? paint, string edgeBandingColor, string comment, IReadOnlyDictionary<string, string> parameters) {
+    public ClosetPart(Guid id, int qty, decimal unitPrice, int productNumber, string room, string sku, Dimension width, Dimension length, ClosetMaterial material, ClosetPaint? paint, string edgeBandingColor, string comment, IDictionary<string, string> parameters) {
         Id = id;
         Qty = qty;
         UnitPrice = unitPrice;

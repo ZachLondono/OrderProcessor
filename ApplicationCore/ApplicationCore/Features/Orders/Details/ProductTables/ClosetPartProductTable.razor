@@ -3,6 +3,7 @@
 @using ApplicationCore.Shared.Components
 @using static ApplicationCore.Features.Orders.Details.OrderDetails;
 @using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
+@using ApplicationCore.Widgets.Products.ClosetPartEditor;
 
 <div class="overflow-x-auto rounded-md">
     <table class="table-auto">
@@ -22,7 +23,7 @@
             </tr>
         </thead>
         @foreach (var row in ClosetParts) {
-            <tbody class="hover:bg-blue-500/10 border-b">
+            <tbody class="hover:bg-blue-500/10 border-b cursor-pointer" @onclick="(async () => await OpenPartEditor(row))">
                 <tr>
                     <td class="whitespace-nowrap p-5 text-center">@row.ProductNumber</td>
                     <td class="whitespace-nowrap p-5 text-center">@row.SKU</td>
@@ -49,7 +50,7 @@
                         </td>
                     </tr>
                 }
-                @foreach(var note in row.ProductionNotes) {
+                @foreach (var note in row.ProductionNotes) {
                     <tr>
                         <td class="p-5 font-bold text-red-500" colspan="17">
                             @note
@@ -63,11 +64,33 @@
 
 
 @code {
-    
+
     [Parameter]
     public IEnumerable<IClosetPartProduct> ClosetParts { get; set; } = Enumerable.Empty<IClosetPartProduct>();
 
     [Parameter]
     public bool UseInches { get; set; }
+
+    [CascadingParameter]
+    public IModalService Modal { get; set; } = default!;
+
+    [Parameter]
+    public Action? OnProductsChanged { get; set; }
+
+    public async Task OpenPartEditor(IClosetPartProduct part) {
+
+        if (part is ClosetPart closetPart) {
+
+            var parameters = new ModalParameters() {
+				{ "Product", closetPart }
+			};
+
+            _ = await Modal.Show<ClosetPartEditor>("Edit Closet Part", parameters).Result;
+
+            OnProductsChanged?.Invoke();
+
+        }
+
+    }
 
 }
