@@ -89,7 +89,7 @@ public class ClosetPartModel : ProductModel {
 
         decimal unitPrice = AllmoxyXMLOrderProviderHelpers.StringToMoney(UnitPrice);
 
-        IReadOnlyDictionary<string, string> parameters = Parameters.ToDictionary(p => p.Name, p => p.Value).AsReadOnly();
+        IDictionary<string, string> parameters = Parameters.ToDictionary(p => p.Name, p => p.Value);
 
         string edgeBandColor = EdgeBandColor == "Match" ? MaterialFinish : EdgeBandColor;
 
