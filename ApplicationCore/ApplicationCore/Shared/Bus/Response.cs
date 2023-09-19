@@ -91,4 +91,7 @@ public class Response : Response<Unit> {
     public Response(Error error) : base(error) { }
     public static Response Success() => new();
     public new static Response Error(Error error) => new(error);
+
+    public static implicit operator Response(Error error) => new(error);
+
 }
