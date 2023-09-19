@@ -100,7 +100,13 @@ public class DovetailDrawerBoxBuilder {
 
     public static Dimension GetDrawerBoxHeightFromDrawerFaceHeight(Dimension faceHeight) {
 
-        foreach (var height in StdHeights.OrderByDescending(height => height)) {
+        var availableHeights = StdHeights.OrderByDescending(height => height).ToArray();
+
+        if (availableHeights.Last() > faceHeight) {
+            throw new ArgumentOutOfRangeException(nameof(faceHeight), "No valid drawer box height for given drawer face height");
+        }
+
+        foreach (var height in availableHeights) {
 
             if (height > faceHeight - VerticalClearance) {
                 continue;
@@ -110,7 +116,7 @@ public class DovetailDrawerBoxBuilder {
 
         }
 
-        throw new ArgumentOutOfRangeException(nameof(faceHeight), "No valid drawer box height for given drawer face height");
+        return availableHeights.Last();
 
     }
 
