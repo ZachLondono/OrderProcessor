@@ -4,10 +4,10 @@ namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadshee
 
 internal interface IWorksheetReadable<T> {
 
-	public static abstract T ReadFromWorksheet(Worksheet worksheet, int row);
+    public static abstract T ReadFromWorksheet(Worksheet worksheet, int row);
 
-	public static abstract int FirstRow { get; }
+    public static abstract int FirstRow { get; }
 
-	public static abstract int RowStep { get; }
+    public static abstract int RowStep { get; }
 
 }

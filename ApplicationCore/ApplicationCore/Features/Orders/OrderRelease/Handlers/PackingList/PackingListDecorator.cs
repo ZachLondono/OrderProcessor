@@ -621,62 +621,62 @@ internal class PackingListDecorator : IPackingListDecorator {
 
     }
 
-	public static void ComposeAdditionalItemTable(IContainer container, IEnumerable<AdditionalItem> items) {
+    public static void ComposeAdditionalItemTable(IContainer container, IEnumerable<AdditionalItem> items) {
 
-		var defaultCellStyle = (IContainer cell)
-			=> cell.Border(1)
-					.BorderColor(Colors.Grey.Lighten1)
-					.AlignMiddle()
-					.PaddingVertical(3)
-					.PaddingHorizontal(3);
+        var defaultCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .AlignMiddle()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3);
 
-		var headerCellStyle = (IContainer cell)
-			=> cell.Border(1)
-					.BorderColor(Colors.Grey.Lighten1)
-					.Background(Colors.Grey.Lighten3)
-					.AlignCenter()
-					.PaddingVertical(3)
-					.PaddingHorizontal(3)
-					.DefaultTextStyle(x => x.Bold());
+        var headerCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .Background(Colors.Grey.Lighten3)
+                    .AlignCenter()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3)
+                    .DefaultTextStyle(x => x.Bold());
 
-		container.Column(col => {
+        container.Column(col => {
 
-			col.Item()
-				.PaddingTop(10)
-				.PaddingLeft(10)
-				.Text($"Additional Items ({items.Count()})")
-				.FontSize(16)
-				.Bold()
-				.Italic();
+            col.Item()
+                .PaddingTop(10)
+                .PaddingLeft(10)
+                .Text($"Additional Items ({items.Count()})")
+                .FontSize(16)
+                .Bold()
+                .Italic();
 
-			col.Item()
-				.DefaultTextStyle(x => x.FontSize(10))
-				.Table(table => {
+            col.Item()
+                .DefaultTextStyle(x => x.FontSize(10))
+                .Table(table => {
 
-					table.ColumnsDefinition(column => {
-						column.ConstantColumn(40);
-						column.RelativeColumn();
-					});
+                    table.ColumnsDefinition(column => {
+                        column.ConstantColumn(40);
+                        column.RelativeColumn();
+                    });
 
-					table.Header(header => {
+                    table.Header(header => {
 
-						header.Cell().Element(headerCellStyle).Text("#");
-						header.Cell().Element(headerCellStyle).Text("Description");
-                        
-					});
+                        header.Cell().Element(headerCellStyle).Text("#");
+                        header.Cell().Element(headerCellStyle).Text("Description");
 
-					foreach (var item in items) {
-						table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
-						table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
-					}
+                    });
 
-				});
+                    foreach (var item in items) {
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
+                    }
 
-		});
+                });
 
-	}
+        });
 
-	private static void FormatFraction(TextDescriptor text, Dimension dim, float fontSize) {
+    }
+
+    private static void FormatFraction(TextDescriptor text, Dimension dim, float fontSize) {
 
         var fraction = dim.RoundToInchMultiple((double)1 / 64).AsInchFraction();
 

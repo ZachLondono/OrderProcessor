@@ -14,8 +14,8 @@ internal class FileHandler : IFileHandler {
 
     public bool FileExists(string path) => File.Exists(path);
 
-    public string[] GetFiles(string path, string searchPattern, SearchOption searchOption) => Directory.GetFiles(path, searchPattern, searchOption); 
+    public string[] GetFiles(string path, string searchPattern, SearchOption searchOption) => Directory.GetFiles(path, searchPattern, searchOption);
 
-    public void Move(string sourceFileName, string destFileName) => File.Move(sourceFileName, destFileName); 
+    public void Move(string sourceFileName, string destFileName) => File.Move(sourceFileName, destFileName);
 
 }

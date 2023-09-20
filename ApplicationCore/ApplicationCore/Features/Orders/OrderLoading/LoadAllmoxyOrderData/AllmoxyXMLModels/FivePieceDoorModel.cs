@@ -12,16 +12,16 @@ public class FivePieceDoorModel : ProductModel {
 
     [XmlAttribute("groupNumber")]
     public int GroupNumber { get; set; }
-    
+
     [XmlAttribute("lineNumber")]
     public int LineNumber { get; set; }
-    
+
     [XmlElement("qty")]
     public int Qty { get; set; }
-    
+
     [XmlElement("unitPrice")]
     public string UnitPrice { get; set; } = string.Empty;
-    
+
     [XmlElement("room")]
     public string Room { get; set; } = string.Empty;
 
@@ -42,7 +42,7 @@ public class FivePieceDoorModel : ProductModel {
 
     [XmlElement("width")]
     public double Width { get; set; }
-    
+
     [XmlArray("productionNotes")]
     [XmlArrayItem(ElementName = "note", Type = typeof(string))]
     public List<string> ProductionNotes { get; set; } = new();

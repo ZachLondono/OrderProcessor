@@ -2,34 +2,34 @@
 
 internal class ZargenDrawerGroup {
 
-	// TODO: ADD Paint to group key
-	public string Room { get; set; } = string.Empty;
-	public string MaterialFinish { get; set; } = string.Empty;
-	public string MaterialCore { get; set; } = string.Empty;
-	public string EdgeBandingMaterial { get; set; } = string.Empty;
-	public string EdgeBandingFinish { get; set; } = string.Empty;
+    // TODO: ADD Paint to group key
+    public string Room { get; set; } = string.Empty;
+    public string MaterialFinish { get; set; } = string.Empty;
+    public string MaterialCore { get; set; } = string.Empty;
+    public string EdgeBandingMaterial { get; set; } = string.Empty;
+    public string EdgeBandingFinish { get; set; } = string.Empty;
 
-	public List<ZargenDrawerItem> Items { get; set; } = new();
+    public List<ZargenDrawerItem> Items { get; set; } = new();
 
-	public class ZargenDrawerGroupComparer : IEqualityComparer<ZargenDrawerGroup> {
+    public class ZargenDrawerGroupComparer : IEqualityComparer<ZargenDrawerGroup> {
 
-		bool IEqualityComparer<ZargenDrawerGroup>.Equals(ZargenDrawerGroup? x, ZargenDrawerGroup? y) {
+        bool IEqualityComparer<ZargenDrawerGroup>.Equals(ZargenDrawerGroup? x, ZargenDrawerGroup? y) {
 
-			if (x is null && y is null) return true;
-			if (x is null || y is null) return false;
+            if (x is null && y is null) return true;
+            if (x is null || y is null) return false;
 
-			return x.Room == y.Room
-				&& x.MaterialFinish == y.MaterialFinish
-				&& x.MaterialCore == y.MaterialCore
-				&& x.EdgeBandingMaterial == y.EdgeBandingMaterial
-				&& x.EdgeBandingFinish == y.EdgeBandingFinish;
+            return x.Room == y.Room
+                && x.MaterialFinish == y.MaterialFinish
+                && x.MaterialCore == y.MaterialCore
+                && x.EdgeBandingMaterial == y.EdgeBandingMaterial
+                && x.EdgeBandingFinish == y.EdgeBandingFinish;
 
-		}
+        }
 
-		int IEqualityComparer<ZargenDrawerGroup>.GetHashCode(ZargenDrawerGroup obj) {
-			return HashCode.Combine(obj.Room, obj.MaterialFinish, obj.MaterialCore, obj.EdgeBandingMaterial, obj.EdgeBandingFinish);
-		}
+        int IEqualityComparer<ZargenDrawerGroup>.GetHashCode(ZargenDrawerGroup obj) {
+            return HashCode.Combine(obj.Room, obj.MaterialFinish, obj.MaterialCore, obj.EdgeBandingMaterial, obj.EdgeBandingFinish);
+        }
 
-	}
+    }
 
 }

@@ -50,7 +50,7 @@ public class ExportDovetailOrder {
             string customerName = customer?.Name ?? "";
 
             IEnumerable<DovetailDrawerBox> allBoxes;
-            
+
             try {
 
                 allBoxes = command.Order
@@ -73,9 +73,9 @@ public class ExportDovetailOrder {
             List<string> filesGenerated;
             try {
 
-				filesGenerated = GenerateDrawerBoxOrders(command, customerName, groups);
+                filesGenerated = GenerateDrawerBoxOrders(command, customerName, groups);
 
-			} catch (Exception ex) {
+            } catch (Exception ex) {
 
                 _logger.LogError(ex, "Exception thrown while filling drawer box order");
                 return new Error() {
@@ -89,7 +89,7 @@ public class ExportDovetailOrder {
 
         }
 
-		private List<string> GenerateDrawerBoxOrders(Command command, string customerName, IEnumerable<IGrouping<bool, DovetailDrawerBox>> groups) {
+        private List<string> GenerateDrawerBoxOrders(Command command, string customerName, IEnumerable<IGrouping<bool, DovetailDrawerBox>> groups) {
 
             List<string> filesGenerated = new();
 
@@ -102,27 +102,27 @@ public class ExportDovetailOrder {
 
             try {
 
-			    foreach (var group in groups) {
+                foreach (var group in groups) {
 
-			    	Workbook workbook = workbooks.Open(command.TemplateFilePath, ReadOnly: true);
+                    Workbook workbook = workbooks.Open(command.TemplateFilePath, ReadOnly: true);
 
-			    	var data = MapData(command.Order, customerName, group);
-			    	var worksheets = workbook.Worksheets;
-			    	Worksheet worksheet = (Worksheet)worksheets["Order"];
-			    	WriteData(worksheet, data);
-			    	_ = Marshal.ReleaseComObject(worksheets);
-			    	_ = Marshal.ReleaseComObject(worksheet);
+                    var data = MapData(command.Order, customerName, group);
+                    var worksheets = workbook.Worksheets;
+                    Worksheet worksheet = (Worksheet)worksheets["Order"];
+                    WriteData(worksheet, data);
+                    _ = Marshal.ReleaseComObject(worksheets);
+                    _ = Marshal.ReleaseComObject(worksheet);
 
-			    	var filename = _fileReader.GetAvailableFileName(command.OutputDirectory, $"{command.Order.Number} - {command.Order.Name} Drawer Boxes", "xlsm");
-			    	string finalPath = Path.GetFullPath(filename);
+                    var filename = _fileReader.GetAvailableFileName(command.OutputDirectory, $"{command.Order.Number} - {command.Order.Name} Drawer Boxes", "xlsm");
+                    string finalPath = Path.GetFullPath(filename);
 
-			    	workbook.SaveAs(finalPath);
-			    	workbook.Close(SaveChanges: false);
-			    	_ = Marshal.ReleaseComObject(workbook);
+                    workbook.SaveAs(finalPath);
+                    workbook.Close(SaveChanges: false);
+                    _ = Marshal.ReleaseComObject(workbook);
 
-			    	filesGenerated.Add(finalPath);
+                    filesGenerated.Add(finalPath);
 
-			    }
+                }
 
             } catch {
                 throw;
@@ -144,9 +144,9 @@ public class ExportDovetailOrder {
 
             return filesGenerated;
 
-		}
+        }
 
-		public static DBOrder MapData(Order order, string customerName, IGrouping<bool, DovetailDrawerBox> group) {
+        public static DBOrder MapData(Order order, string customerName, IGrouping<bool, DovetailDrawerBox> group) {
             return new() {
                 OrderNumber = order.Number,
                 OrderDate = order.OrderDate,

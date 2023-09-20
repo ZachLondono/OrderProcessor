@@ -25,7 +25,7 @@ public class CustomerPersistenceTests {
     public void Should_InsertCustomer_WithoutAllmoxyId() {
 
         // Arrange
-        var customer = new Customer(Guid.Empty, "Customer Name", "Shipping Method", new(), new() , new(), new(), null, new(), null);
+        var customer = new Customer(Guid.Empty, "Customer Name", "Shipping Method", new(), new(), new(), new(), null, new(), null);
 
         var connection = _factory.CreateConnection().Result;
         int startingCustomersCount = GetTableRowCount(connection, "customers");
@@ -41,7 +41,7 @@ public class CustomerPersistenceTests {
         result.IsSuccess.Should().BeTrue();
 
         GetTableRowCount(connection, "customers").Should().Be(startingCustomersCount + 1);
-        GetTableRowCount(connection,"contacts").Should().Be(startingContactsCount + 2);
+        GetTableRowCount(connection, "contacts").Should().Be(startingContactsCount + 2);
         GetTableRowCount(connection, "addresses").Should().Be(startingAddressCount + 2);
         GetTableRowCount(connection, "closet_pro_settings").Should().Be(startingCPSettingsCount + 1);
         GetTableRowCount(connection, "allmoxy_ids").Should().Be(startingAllmoxyIdsCount);
@@ -52,7 +52,7 @@ public class CustomerPersistenceTests {
     public void Should_InsertCustomer_WithAllmoxyId() {
 
         // Arrange
-        var customer = new Customer(Guid.Empty, "Customer Name", "Shipping Method", new(), new() , new(), new(), null, new(), null);
+        var customer = new Customer(Guid.Empty, "Customer Name", "Shipping Method", new(), new(), new(), new(), null, new(), null);
         int allmoxyId = 123;
 
         var connection = _factory.CreateConnection().Result;
@@ -69,14 +69,14 @@ public class CustomerPersistenceTests {
         result.IsSuccess.Should().BeTrue();
 
         GetTableRowCount(connection, "customers").Should().Be(startingCustomersCount + 1);
-        GetTableRowCount(connection,"contacts").Should().Be(startingContactsCount + 2);
+        GetTableRowCount(connection, "contacts").Should().Be(startingContactsCount + 2);
         GetTableRowCount(connection, "addresses").Should().Be(startingAddressCount + 2);
         GetTableRowCount(connection, "closet_pro_settings").Should().Be(startingCPSettingsCount + 1);
         GetTableRowCount(connection, "allmoxy_ids").Should().Be(startingAllmoxyIdsCount + 1);
 
         var queryResult = connection.QueryFirst("SELECT * FROM allmoxy_ids WHERE id = @Id", new { Id = allmoxyId });
-        ((int) queryResult.id).Should().Be(allmoxyId);
-        ((string) queryResult.customer_id).Should().Be(customer.Id.ToString());
+        ((int)queryResult.id).Should().Be(allmoxyId);
+        ((string)queryResult.customer_id).Should().Be(customer.Id.ToString());
 
     }
 
@@ -84,7 +84,7 @@ public class CustomerPersistenceTests {
     public void InsertCustomer_ShouldInsertAllData() {
 
         // Arrange
-        var customer = new Customer(Guid.NewGuid(), "Customer Name", "Shipping Method", new(), new() , new(), new(), "Order Number Prefix", new(), "Working Directory Root");
+        var customer = new Customer(Guid.NewGuid(), "Customer Name", "Shipping Method", new(), new(), new(), new(), "Order Number Prefix", new(), "Working Directory Root");
 
         var connection = _factory.CreateConnection().Result;
 
@@ -94,11 +94,11 @@ public class CustomerPersistenceTests {
         // Assert
         var queryResult = connection.QueryFirst("SELECT * FROM customers WHERE id = @Id", new { Id = customer.Id });
 
-        ((string) queryResult.id).Should().Be(customer.Id.ToString());
-        ((string) queryResult.name).Should().Be(customer.Name);
-        ((string) queryResult.order_number_prefix).Should().Be(customer.OrderNumberPrefix);
-        ((string) queryResult.shipping_method).Should().Be(customer.ShippingMethod);
-        ((string?) queryResult.working_directory_root).Should().Be(customer.WorkingDirectoryRoot);
+        ((string)queryResult.id).Should().Be(customer.Id.ToString());
+        ((string)queryResult.name).Should().Be(customer.Name);
+        ((string)queryResult.order_number_prefix).Should().Be(customer.OrderNumberPrefix);
+        ((string)queryResult.shipping_method).Should().Be(customer.ShippingMethod);
+        ((string?)queryResult.working_directory_root).Should().Be(customer.WorkingDirectoryRoot);
 
     }
 
@@ -164,7 +164,7 @@ public class CustomerPersistenceTests {
         result.Value.Should().BeEquivalentTo(customer);
 
     }
-    
+
     [Fact]
     public void InsertContact_ShouldInsertAllData() {
 
@@ -184,10 +184,10 @@ public class CustomerPersistenceTests {
 
         // Assert
         var queryResult = connection.QueryFirst("SELECT * FROM contacts WHERE id = @Id", new { Id = id });
-        ((string) queryResult.id).Should().Be(id.ToString());
-        ((string) queryResult.name).Should().Be(contact.Name.ToString());
-        ((string) queryResult.phone_number).Should().Be(contact.Phone.ToString());
-        ((string) queryResult.email).Should().Be(contact.Email.ToString());
+        ((string)queryResult.id).Should().Be(id.ToString());
+        ((string)queryResult.name).Should().Be(contact.Name.ToString());
+        ((string)queryResult.phone_number).Should().Be(contact.Phone.ToString());
+        ((string)queryResult.email).Should().Be(contact.Email.ToString());
 
     }
 
@@ -214,14 +214,14 @@ public class CustomerPersistenceTests {
 
         // Assert
         var queryResult = connection.QueryFirst("SELECT * FROM addresses WHERE id = @Id", new { Id = id });
-        ((string) queryResult.id).Should().Be(id.ToString());
-        ((string) queryResult.line1).Should().Be(address.Line1.ToString());
-        ((string) queryResult.line2).Should().Be(address.Line2.ToString());
-        ((string) queryResult.line3).Should().Be(address.Line3.ToString());
-        ((string) queryResult.city).Should().Be(address.City.ToString());
-        ((string) queryResult.state).Should().Be(address.State.ToString());
-        ((string) queryResult.zip).Should().Be(address.Zip.ToString());
-        ((string) queryResult.country).Should().Be(address.Country.ToString());
+        ((string)queryResult.id).Should().Be(id.ToString());
+        ((string)queryResult.line1).Should().Be(address.Line1.ToString());
+        ((string)queryResult.line2).Should().Be(address.Line2.ToString());
+        ((string)queryResult.line3).Should().Be(address.Line3.ToString());
+        ((string)queryResult.city).Should().Be(address.City.ToString());
+        ((string)queryResult.state).Should().Be(address.State.ToString());
+        ((string)queryResult.zip).Should().Be(address.Zip.ToString());
+        ((string)queryResult.country).Should().Be(address.Country.ToString());
 
     }
 
@@ -230,17 +230,17 @@ public class CustomerPersistenceTests {
 
         // Arrange
         var settings = new ClosetProSettings() {
-                                        AdjustableShelfSKU = "SA5",
-                                        DiagonalAdjustableShelfSKU = "ABC",
-                                        LAdjustableShelfSKU = "DEF",
-                                        DiagonalFixedShelfSKU = "GHI",
-                                        FixedShelfSKU = "JKL",
-                                        LFixedShelfSKU = "MNO",
-                                        ToeKickSKU = "PQR",
-                                        DoweledDrawerBoxMaterialFinish = "Black",
-                                        LShelfRadius = Dimension.FromInches(2),
-                                        VerticalPanelBottomRadius = Dimension.FromInches(2)
-                                    };
+            AdjustableShelfSKU = "SA5",
+            DiagonalAdjustableShelfSKU = "ABC",
+            LAdjustableShelfSKU = "DEF",
+            DiagonalFixedShelfSKU = "GHI",
+            FixedShelfSKU = "JKL",
+            LFixedShelfSKU = "MNO",
+            ToeKickSKU = "PQR",
+            DoweledDrawerBoxMaterialFinish = "Black",
+            LShelfRadius = Dimension.FromInches(2),
+            VerticalPanelBottomRadius = Dimension.FromInches(2)
+        };
 
         var connection = _factory.CreateConnection().Result;
         var trx = connection.BeginTransaction();
@@ -252,16 +252,16 @@ public class CustomerPersistenceTests {
         // Assert
         var queryResult = connection.QueryFirst("SELECT * FROM closet_pro_settings WHERE id = @Id", new { Id = id });
 
-        ((string) queryResult.toe_kick_sku).Should().Be(settings.ToeKickSKU);
-        ((string) queryResult.adjustable_shelf_sku).Should().Be(settings.AdjustableShelfSKU);
-        ((string) queryResult.fixed_shelf_sku).Should().Be(settings.FixedShelfSKU);
-        ((string) queryResult.l_fixed_shelf_sku).Should().Be(settings.LFixedShelfSKU);
-        ((string) queryResult.l_adjustable_shelf_sku).Should().Be(settings.LAdjustableShelfSKU);
-        ((double) queryResult.l_shelf_radius).Should().Be(settings.LShelfRadius.AsMillimeters());
-        ((string) queryResult.diagonal_fixed_shelf_sku).Should().Be(settings.DiagonalFixedShelfSKU);
-        ((string) queryResult.diagonal_adjustable_shelf_sku).Should().Be(settings.DiagonalAdjustableShelfSKU);
-        ((string) queryResult.doweled_drawer_box_material_finish).Should().Be(settings.DoweledDrawerBoxMaterialFinish);
-        ((double) queryResult.vertical_panel_bottom_radius).Should().Be(settings.VerticalPanelBottomRadius.AsMillimeters());
+        ((string)queryResult.toe_kick_sku).Should().Be(settings.ToeKickSKU);
+        ((string)queryResult.adjustable_shelf_sku).Should().Be(settings.AdjustableShelfSKU);
+        ((string)queryResult.fixed_shelf_sku).Should().Be(settings.FixedShelfSKU);
+        ((string)queryResult.l_fixed_shelf_sku).Should().Be(settings.LFixedShelfSKU);
+        ((string)queryResult.l_adjustable_shelf_sku).Should().Be(settings.LAdjustableShelfSKU);
+        ((double)queryResult.l_shelf_radius).Should().Be(settings.LShelfRadius.AsMillimeters());
+        ((string)queryResult.diagonal_fixed_shelf_sku).Should().Be(settings.DiagonalFixedShelfSKU);
+        ((string)queryResult.diagonal_adjustable_shelf_sku).Should().Be(settings.DiagonalAdjustableShelfSKU);
+        ((string)queryResult.doweled_drawer_box_material_finish).Should().Be(settings.DoweledDrawerBoxMaterialFinish);
+        ((double)queryResult.vertical_panel_bottom_radius).Should().Be(settings.VerticalPanelBottomRadius.AsMillimeters());
 
     }
 

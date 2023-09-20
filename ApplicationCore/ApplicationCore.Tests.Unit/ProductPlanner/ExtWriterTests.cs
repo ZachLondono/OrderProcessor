@@ -57,7 +57,7 @@ public class ExtWriterTests {
 
         // Assert
         record.Should().Contain(new KeyValuePair<string, string>("JOB", "abcdefghijklmnopqrstuvwxyzABCD"));
-        
+
     }
 
     [Fact]

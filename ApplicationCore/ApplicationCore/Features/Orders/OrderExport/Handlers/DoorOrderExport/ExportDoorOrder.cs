@@ -156,7 +156,7 @@ public class ExportDoorOrder {
             workbooks.Close();
             app?.Quit();
 
-			_ = Marshal.ReleaseComObject(workbooks);
+            _ = Marshal.ReleaseComObject(workbooks);
             if (app is not null) _ = Marshal.ReleaseComObject(app);
 
             // Clean up COM objects, calling these twice ensures it is fully cleaned up.

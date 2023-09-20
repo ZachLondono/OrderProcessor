@@ -117,105 +117,105 @@ internal class ReleasePDFDecoratorFactory {
 
     private static CoverModel CreateCover(ReleasedJob job, IEnumerable<MachineRelease> releases) {
 
-		if (!releases.Any()) return new();
+        if (!releases.Any()) return new();
 
-		Table materialTable = CreateMaterialsTable(releases);
+        Table materialTable = CreateMaterialsTable(releases);
 
-		Table programsTable = CreateProgramsTable(releases);
+        Table programsTable = CreateProgramsTable(releases);
 
-		Table partsTable = CreatePartsTable(releases);
+        Table partsTable = CreatePartsTable(releases);
 
-		var toolTables = CreateToolTables(releases);
+        var toolTables = CreateToolTables(releases);
 
-		Table? backSideMachiningTable = CreateBackSideMachiningTable(releases);
+        Table? backSideMachiningTable = CreateBackSideMachiningTable(releases);
 
-		var tables = new List<Table>();
-		tables.AddRange(toolTables);
-		if (materialTable.Content.Any()) tables.Add(materialTable);
-		tables.Add(programsTable);
-		if (partsTable.Content.Any()) tables.Add(partsTable);
-		if (backSideMachiningTable != null) {
-			tables.Add(backSideMachiningTable);
-		}
+        var tables = new List<Table>();
+        tables.AddRange(toolTables);
+        if (materialTable.Content.Any()) tables.Add(materialTable);
+        tables.Add(programsTable);
+        if (partsTable.Content.Any()) tables.Add(partsTable);
+        if (backSideMachiningTable != null) {
+            tables.Add(backSideMachiningTable);
+        }
 
-		var coverInfo = new Dictionary<string, string>() {
-			{"Vendor", job.VendorName },
-			{"Customer", job.CustomerName },
-			{"Order Date", job.OrderDate.ToShortDateString() },
-			{"Release Date", job.ReleaseDate.ToShortDateString() }
-		};
+        var coverInfo = new Dictionary<string, string>() {
+            {"Vendor", job.VendorName },
+            {"Customer", job.CustomerName },
+            {"Order Date", job.OrderDate.ToShortDateString() },
+            {"Release Date", job.ReleaseDate.ToShortDateString() }
+        };
 
-		if (job.DueDate is DateTime dueDate) {
-			coverInfo.Add("Due Date", dueDate.ToShortDateString());
-		}
+        if (job.DueDate is DateTime dueDate) {
+            coverInfo.Add("Due Date", dueDate.ToShortDateString());
+        }
 
-		var cover = new CoverModel() {
-			Title = $"{job.JobName}  [{string.Join(',', releases.Select(r => r.MachineName))}]",
-			TimeStamp = job.TimeStamp,
-			Info = coverInfo,
-			Tables = tables
-		};
+        var cover = new CoverModel() {
+            Title = $"{job.JobName}  [{string.Join(',', releases.Select(r => r.MachineName))}]",
+            TimeStamp = job.TimeStamp,
+            Info = coverInfo,
+            Tables = tables
+        };
 
-		return cover;
-	}
+        return cover;
+    }
 
-	private static Table? CreateBackSideMachiningTable(IEnumerable<MachineRelease> releases) {
-		// TODO: this might not work right with cabinets or other products that have multiple parts
-		var twoSidedPartGroups = releases.First()
-										.SinglePrograms
-										.GroupBy(part => part.ProductNumber)
-										.Where(group => group.Count() == 2)
-										.Where(group => group.Any(p => p.HasBackSideProgram))
-										.Select(group => group.ToArray());
-		var backSideMachiningTable = CreateBackSideMachiningTable(twoSidedPartGroups);
-		return backSideMachiningTable;
-	}
+    private static Table? CreateBackSideMachiningTable(IEnumerable<MachineRelease> releases) {
+        // TODO: this might not work right with cabinets or other products that have multiple parts
+        var twoSidedPartGroups = releases.First()
+                                        .SinglePrograms
+                                        .GroupBy(part => part.ProductNumber)
+                                        .Where(group => group.Count() == 2)
+                                        .Where(group => group.Any(p => p.HasBackSideProgram))
+                                        .Select(group => group.ToArray());
+        var backSideMachiningTable = CreateBackSideMachiningTable(twoSidedPartGroups);
+        return backSideMachiningTable;
+    }
 
-	private static Table CreatePartsTable(IEnumerable<MachineRelease> releases) {
-		var releasedParts = releases.First()
-											.SinglePrograms
-											.OrderBy(p => p.ProductNumber)
-											.GroupBy(p => p.PartId);
-		var partsTableContent = new List<Dictionary<string, string>>();
-		foreach (var group in releasedParts) {
-			var part = group.First();
-			partsTableContent.Add(new() {
-					{ "#", part.ProductNumber },
-					{ "Name", part.Name },
-					{ "FileName", part.FileName },
-					{ "Width", part.Width.AsMillimeters().ToString("0.00") },
-					{ "Length", part.Length.AsMillimeters().ToString("0.00") },
-				});
-		}
+    private static Table CreatePartsTable(IEnumerable<MachineRelease> releases) {
+        var releasedParts = releases.First()
+                                            .SinglePrograms
+                                            .OrderBy(p => p.ProductNumber)
+                                            .GroupBy(p => p.PartId);
+        var partsTableContent = new List<Dictionary<string, string>>();
+        foreach (var group in releasedParts) {
+            var part = group.First();
+            partsTableContent.Add(new() {
+                    { "#", part.ProductNumber },
+                    { "Name", part.Name },
+                    { "FileName", part.FileName },
+                    { "Width", part.Width.AsMillimeters().ToString("0.00") },
+                    { "Length", part.Length.AsMillimeters().ToString("0.00") },
+                });
+        }
 
-		var partsTable = new Table() {
-			Title = "Single Parts",
-			Content = partsTableContent
-		};
-		return partsTable;
-	}
+        var partsTable = new Table() {
+            Title = "Single Parts",
+            Content = partsTableContent
+        };
+        return partsTable;
+    }
 
-	private static Table CreateMaterialsTable(IEnumerable<MachineRelease> releases) {
-		var usedmaterials = releases.First()
-											.Programs
-											.Select(p => p.Material)
-											.GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained));
-		var materialTableContent = new List<Dictionary<string, string>>();
-		foreach (var mat in usedmaterials) {
-			double avgYield = mat.Sum(m => m.Yield) / mat.Count();
-			materialTableContent.Add(new() {
-					{ "Qty", mat.Count().ToString() },
-					{ "Name", mat.Key.Name },
-					{ "Width", mat.Key.Width.ToString("0.00") },
-					{ "Length", mat.Key.Length.ToString("0.00") },
-					{ "Thickness", mat.Key.Thickness.ToString("0.00") },
-					{ "Avg. Yield", avgYield.ToString("P2") }
-				});
-		}
+    private static Table CreateMaterialsTable(IEnumerable<MachineRelease> releases) {
+        var usedmaterials = releases.First()
+                                            .Programs
+                                            .Select(p => p.Material)
+                                            .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained));
+        var materialTableContent = new List<Dictionary<string, string>>();
+        foreach (var mat in usedmaterials) {
+            double avgYield = mat.Sum(m => m.Yield) / mat.Count();
+            materialTableContent.Add(new() {
+                    { "Qty", mat.Count().ToString() },
+                    { "Name", mat.Key.Name },
+                    { "Width", mat.Key.Width.ToString("0.00") },
+                    { "Length", mat.Key.Length.ToString("0.00") },
+                    { "Thickness", mat.Key.Thickness.ToString("0.00") },
+                    { "Avg. Yield", avgYield.ToString("P2") }
+                });
+        }
 
-		var materialTable = new Table() {
-			Title = "Materials Used",
-			Content = materialTableContent,
+        var materialTable = new Table() {
+            Title = "Materials Used",
+            Content = materialTableContent,
             ColumnWidths = new Dictionary<string, float> {
                 { "Qty", 20 },
                 { "Width", 40 },
@@ -223,45 +223,45 @@ internal class ReleasePDFDecoratorFactory {
                 { "Thickness", 40 },
                 { "Avg. Yield", 40 }
             }
-		};
-		return materialTable;
-	}
+        };
+        return materialTable;
+    }
 
-	private static Table CreateProgramsTable(IEnumerable<MachineRelease> releases) {
-		var programTableContent = new List<Dictionary<string, string>>();
-		releases.First().Programs.ForEach((program, i) => {
-			var programData = new Dictionary<string, string>() {
-				{ "#", (i + 1).ToString() }
-			};
+    private static Table CreateProgramsTable(IEnumerable<MachineRelease> releases) {
+        var programTableContent = new List<Dictionary<string, string>>();
+        releases.First().Programs.ForEach((program, i) => {
+            var programData = new Dictionary<string, string>() {
+                { "#", (i + 1).ToString() }
+            };
 
-			foreach (var release in releases) {
-				string programName = release.Programs.ElementAt(i).Name;
-				if (program.HasFace6) {
-					programName += ($"\n6{programName[1..]}");
-				}
-				programData.Add(release.MachineName, programName);
-			}
+            foreach (var release in releases) {
+                string programName = release.Programs.ElementAt(i).Name;
+                if (program.HasFace6) {
+                    programName += ($"\n6{programName[1..]}");
+                }
+                programData.Add(release.MachineName, programName);
+            }
 
-			programData.Add("Material", $"{program.Material.Name} - {program.Material.Width}x{program.Material.Length}x{program.Material.Thickness}");
-			programData.Add("Yield", program.Material.Yield.ToString("P2"));
-			programTableContent.Add(programData);
+            programData.Add("Material", $"{program.Material.Name} - {program.Material.Width}x{program.Material.Length}x{program.Material.Thickness}");
+            programData.Add("Yield", program.Material.Yield.ToString("P2"));
+            programTableContent.Add(programData);
 
-		});
+        });
 
-		var columnWidths = new Dictionary<string, float>() {
-			{ "#", 15 },
-			{ "Yield", 30 },
-		};
+        var columnWidths = new Dictionary<string, float>() {
+            { "#", 15 },
+            { "Yield", 30 },
+        };
 
-		releases.ForEach(release => columnWidths.Add(release.MachineName, 75));
+        releases.ForEach(release => columnWidths.Add(release.MachineName, 75));
 
-		var programsTable = new Table() {
-			Title = "Nest Programs",
-			Content = programTableContent,
-			ColumnWidths = columnWidths
-		};
-		return programsTable;
-	}
+        var programsTable = new Table() {
+            Title = "Nest Programs",
+            Content = programTableContent,
+            ColumnWidths = columnWidths
+        };
+        return programsTable;
+    }
 
     private static List<Table> CreateToolTables(IEnumerable<MachineRelease> releases) {
 
@@ -328,7 +328,7 @@ internal class ReleasePDFDecoratorFactory {
 
     }
 
-	private static string GetGuidAsBase64(Guid id) => Convert.ToBase64String(id.ToByteArray()).Replace("/", "-").Replace("+", "_").Replace("=", "");
+    private static string GetGuidAsBase64(Guid id) => Convert.ToBase64String(id.ToByteArray()).Replace("/", "-").Replace("+", "_").Replace("=", "");
 
 }
 

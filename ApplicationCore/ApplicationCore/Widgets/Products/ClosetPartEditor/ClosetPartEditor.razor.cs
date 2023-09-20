@@ -10,35 +10,35 @@ namespace ApplicationCore.Widgets.Products.ClosetPartEditor;
 
 public partial class ClosetPartEditor {
 
-	[Parameter]
-	public ClosetPart? Product { get; set; }
+    [Parameter]
+    public ClosetPart? Product { get; set; }
 
     [CascadingParameter]
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
-	[Inject]
-	public IBus? Bus { get; set; }
+    [Inject]
+    public IBus? Bus { get; set; }
 
-	[Inject]
-	public IModalService? ModalService { get; set; }
+    [Inject]
+    public IModalService? ModalService { get; set; }
 
-	public async Task Update() {
+    public async Task Update() {
 
-		if (Bus is null || Product is null) return;
+        if (Bus is null || Product is null) return;
 
-		var response = await Bus.Send(new UpdateClosetPart.Command(Product));
+        var response = await Bus.Send(new UpdateClosetPart.Command(Product));
 
-		await response.Match(
-			unit => BlazoredModal.CloseAsync(),
-			error => {
-				if (ModalService is not null) {
-					return ModalService.OpenErrorDialog(error);
-				}
-				return BlazoredModal.CloseAsync();
-			});
+        await response.Match(
+            unit => BlazoredModal.CloseAsync(),
+            error => {
+                if (ModalService is not null) {
+                    return ModalService.OpenErrorDialog(error);
+                }
+                return BlazoredModal.CloseAsync();
+            });
 
-	}
+    }
 
-	public Task Cancel() => BlazoredModal.CloseAsync();
+    public Task Cancel() => BlazoredModal.CloseAsync();
 
 }

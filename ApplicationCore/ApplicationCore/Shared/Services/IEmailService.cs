@@ -3,6 +3,6 @@
 namespace ApplicationCore.Shared.Services;
 
 public interface IEmailService {
-	public Task<MailboxAddress> GetSenderAsync();
-	public Task<string> SendMessageAsync(MimeMessage message);
+    public Task<MailboxAddress> GetSenderAsync();
+    public Task<string> SendMessageAsync(MimeMessage message);
 }

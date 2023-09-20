@@ -119,14 +119,14 @@ internal class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
                 Billing = new() {
                     PhoneNumber = "",
                     InvoiceEmail = customerInfo.Email,
-                    Address = address 
+                    Address = address
                 },
                 Shipping = new() {
                     Contact = customerInfo.Contact,
                     Method = header.ShippingMethod,
                     PhoneNumber = "",
                     Price = 0,
-                    Address = address 
+                    Address = address
                 },
                 Products = boxes
             };
@@ -245,7 +245,7 @@ internal class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
             if (Directory.Exists(workingDirectory)) {
                 incomingDirectory = CreateSubDirectories(workingDirectory);
                 return true;
-            }else if (Directory.CreateDirectory(workingDirectory).Exists) {
+            } else if (Directory.CreateDirectory(workingDirectory).Exists) {
                 incomingDirectory = CreateSubDirectories(workingDirectory);
                 return true;
             } else {
@@ -265,10 +265,10 @@ internal class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
     private static string? CreateSubDirectories(string workingDirectory) {
         var cutListDir = Path.Combine(workingDirectory, "CUTLIST");
         _ = Directory.CreateDirectory(cutListDir);
-        
+
         var ordersDir = Path.Combine(workingDirectory, "orders");
         _ = Directory.CreateDirectory(ordersDir);
-        
+
         var incomingDir = Path.Combine(workingDirectory, "incoming");
         return Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
     }

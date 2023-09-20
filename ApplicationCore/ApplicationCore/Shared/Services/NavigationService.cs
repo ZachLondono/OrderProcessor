@@ -10,13 +10,13 @@ public class NavigationService {
     private readonly NavigationManager _navigationManager;
     private readonly IModalService _modalService;
 
-	public NavigationService(OrderState orderState, NavigationManager navigationManager, IModalService modalService) {
-		_orderState = orderState;
-		_navigationManager = navigationManager;
-		_modalService = modalService;
-	}
+    public NavigationService(OrderState orderState, NavigationManager navigationManager, IModalService modalService) {
+        _orderState = orderState;
+        _navigationManager = navigationManager;
+        _modalService = modalService;
+    }
 
-	public async Task NavigateToOrderPage(Guid orderId) {
+    public async Task NavigateToOrderPage(Guid orderId) {
         if (await _orderState.LoadOrder(orderId)) {
             _navigationManager.NavigateTo("/orders/details", true);
         } else {

@@ -5,8 +5,7 @@ using System.Text;
 
 namespace ApplicationCore.Shared.Services;
 
-class ExcelApplicationRetriever
-{
+class ExcelApplicationRetriever {
 
     [DllImport("Oleacc.dll")]
     public static extern int AccessibleObjectFromWindow(
@@ -26,14 +25,12 @@ class ExcelApplicationRetriever
     private EnumChildCallback cb;
     public ExcelApplication? xl = null;
 
-    public ExcelApplicationRetriever(int winHandle)
-    {
+    public ExcelApplicationRetriever(int winHandle) {
         // We need to enumerate the child windows to find one that
         // supports accessibility. To do this, instantiate the
         // delegate and wrap the callback method in it, then call
         // EnumChildWindows, passing the delegate as the 2nd arg.
-        if (winHandle != 0)
-        {
+        if (winHandle != 0) {
             int hwndChild = 0;
             cb = new EnumChildCallback(EnumChildProc);
             EnumChildWindows(winHandle, cb, ref hwndChild);
@@ -43,8 +40,7 @@ class ExcelApplicationRetriever
             // OBJID_NATIVEOM (defined in winuser.h) and
             // IID_IDispatch - we want an IDispatch pointer
             // into the native object model.
-            if (hwndChild != 0)
-            {
+            if (hwndChild != 0) {
                 const uint OBJID_NATIVEOM = 0xFFFFFFF0;
                 Guid IID_IDispatch = new Guid(
                      "{00020400-0000-0000-C000-000000000046}");
@@ -53,8 +49,7 @@ class ExcelApplicationRetriever
                 int hr = AccessibleObjectFromWindow(
                       hwndChild, OBJID_NATIVEOM,
                      IID_IDispatch.ToByteArray(), ref ptr);
-                if (hr >= 0)
-                {
+                if (hr >= 0) {
                     // If we successfully got a native OM
                     // IDispatch pointer, we can QI this for
                     // an Excel Application (using the implicit
@@ -65,12 +60,10 @@ class ExcelApplicationRetriever
         }
     }
 
-    public bool EnumChildProc(int hwndChild, ref int lParam)
-    {
+    public bool EnumChildProc(int hwndChild, ref int lParam) {
         StringBuilder buf = new StringBuilder(128);
         GetClassName(hwndChild, buf, 128);
-        if (buf.ToString() == "EXCEL7")
-        {
+        if (buf.ToString() == "EXCEL7") {
             lParam = hwndChild;
             return false;
         }

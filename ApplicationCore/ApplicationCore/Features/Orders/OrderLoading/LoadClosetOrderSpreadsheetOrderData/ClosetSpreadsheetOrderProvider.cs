@@ -18,7 +18,7 @@ namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadshee
 
 public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
-	public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
+    public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
 
     private readonly IFileReader _fileReader;
     private readonly GetCustomerOrderPrefixByIdAsync _getCustomerOrderPrefixByIdAsync;
@@ -26,15 +26,15 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
     private readonly GetCustomerIdByNameAsync _getCustomerIdByNameAsync;
     private readonly IOrderingDbConnectionFactory _dbConnectionFactory; // TODO: don't reference this directly, create a delegate like the ones above
 
-	public ClosetSpreadsheetOrderProvider(IFileReader fileReader, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync, IOrderingDbConnectionFactory dbConnectionFactory, GetCustomerIdByNameAsync getCustomerIdByNameAsync) {
-		_fileReader = fileReader;
-		_getCustomerOrderPrefixByIdAsync = getCustomerOrderPrefixByIdAsync;
-		_getCustomerWorkingDirectoryRootByIdAsync = getCustomerWorkingDirectoryRootByIdAsync;
-		_dbConnectionFactory = dbConnectionFactory;
-		_getCustomerIdByNameAsync = getCustomerIdByNameAsync;
-	}
+    public ClosetSpreadsheetOrderProvider(IFileReader fileReader, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync, IOrderingDbConnectionFactory dbConnectionFactory, GetCustomerIdByNameAsync getCustomerIdByNameAsync) {
+        _fileReader = fileReader;
+        _getCustomerOrderPrefixByIdAsync = getCustomerOrderPrefixByIdAsync;
+        _getCustomerWorkingDirectoryRootByIdAsync = getCustomerWorkingDirectoryRootByIdAsync;
+        _dbConnectionFactory = dbConnectionFactory;
+        _getCustomerIdByNameAsync = getCustomerIdByNameAsync;
+    }
 
-	public async Task<OrderData?> LoadOrderData(string data) {
+    public async Task<OrderData?> LoadOrderData(string data) {
 
         var parts = data.Split('*');
 
@@ -68,13 +68,13 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
             };
 
             workbook = app.Workbooks.Open(source, ReadOnly: true);
-			if (!TryGetWorksheet(workbook, "Cover", out Worksheet? coverSheet) || coverSheet is null) return null;
-			if (!TryGetWorksheet(workbook, "Closet Parts", out Worksheet? closetPartSheet) || closetPartSheet is null) return null;
-			if (!TryGetWorksheet(workbook, "Corner Shelves", out Worksheet? cornerShelfSheet) || cornerShelfSheet is null) return null;
-			if (!TryGetWorksheet(workbook, "Zargen", out Worksheet? zargenSheet) || zargenSheet is null) return null;
-			if (!TryGetWorksheet(workbook, "Dovetail", out Worksheet? dovetailSheet) || dovetailSheet is null) return null;
-			if (!TryGetWorksheet(workbook, "Melamine DB", out Worksheet? melaDbSheet) || melaDbSheet is null) return null;
-			if (!TryGetWorksheet(workbook, "MDF Fronts", out Worksheet? mdfFrontSheet) || mdfFrontSheet is null) return null;
+            if (!TryGetWorksheet(workbook, "Cover", out Worksheet? coverSheet) || coverSheet is null) return null;
+            if (!TryGetWorksheet(workbook, "Closet Parts", out Worksheet? closetPartSheet) || closetPartSheet is null) return null;
+            if (!TryGetWorksheet(workbook, "Corner Shelves", out Worksheet? cornerShelfSheet) || cornerShelfSheet is null) return null;
+            if (!TryGetWorksheet(workbook, "Zargen", out Worksheet? zargenSheet) || zargenSheet is null) return null;
+            if (!TryGetWorksheet(workbook, "Dovetail", out Worksheet? dovetailSheet) || dovetailSheet is null) return null;
+            if (!TryGetWorksheet(workbook, "Melamine DB", out Worksheet? melaDbSheet) || melaDbSheet is null) return null;
+            if (!TryGetWorksheet(workbook, "MDF Fronts", out Worksheet? mdfFrontSheet) || mdfFrontSheet is null) return null;
 
             var cover = Cover.ReadFromWorksheet(coverSheet);
 
@@ -87,8 +87,8 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
             string orderNumber;
             if (customOrderNumber is null && string.IsNullOrWhiteSpace(customOrderNumber)) {
-                orderNumber = await GetNextOrderNumber((Guid) customerId);
-                var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync((Guid) customerId) ?? "";
+                orderNumber = await GetNextOrderNumber((Guid)customerId);
+                var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync((Guid)customerId) ?? "";
                 orderNumber = $"{orderNumberPrefix}{orderNumber}";
             } else {
                 orderNumber = customOrderNumber;
@@ -96,7 +96,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
             string? workingDirectoryRoot = customWorkingDirectoryRoot;
             if (workingDirectoryRoot is null) {
-                workingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync((Guid) customerId);
+                workingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync((Guid)customerId);
             }
             if (workingDirectoryRoot is null) {
                 workingDirectoryRoot = @"R\Job Scans\Closets";
@@ -117,10 +117,10 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
             var zargens = LoadItemsFromWorksheet<Zargen>(zargenSheet);
 
             var dovetailDBHeader = DovetailDBHeader.ReadFromWorksheet(dovetailSheet);
-			var dovetailDBs = LoadItemsFromWorksheet<DovetailDB>(dovetailSheet);
+            var dovetailDBs = LoadItemsFromWorksheet<DovetailDB>(dovetailSheet);
 
             var melamineDBHeader = MelamineDBHeader.ReadFromWorksheet(melaDbSheet);
-			var melamineDBs = LoadItemsFromWorksheet<MelamineDB>(melaDbSheet);
+            var melamineDBs = LoadItemsFromWorksheet<MelamineDB>(melaDbSheet);
 
             var mdfFrontHeader = MDFFrontHeader.ReadFromWorksheet(mdfFrontSheet);
             var mdfFronts = LoadItemsFromWorksheet<MDFFront>(mdfFrontSheet);
@@ -158,7 +158,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
                 Method = cover.ShippingInformation,
                 PhoneNumber = cover.CustomerPhone,
                 Price = cover.DeliveryCharge,
-                Address = address 
+                Address = address
             };
 
             var info = new Dictionary<string, string>();
@@ -175,7 +175,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
                 PriceAdjustment = cover.ManualCharge,
                 OrderDate = cover.OrderDate,
                 DueDate = cover.DueDate,
-                CustomerId = (Guid) customerId,
+                CustomerId = (Guid)customerId,
                 VendorId = vendorId,
                 AdditionalItems = additionalItems,
                 Products = products,
@@ -202,8 +202,8 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
         return null;
 
-	}
-    
+    }
+
     private IEnumerable<IProduct> MapClosetPartToProduct(Cover cover, IEnumerable<ClosetPart> closetParts) {
 
         foreach (var closetPart in closetParts) {
@@ -219,7 +219,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
         }
 
     }
- 
+
     private IEnumerable<IProduct> MapCornerShelfToProduct(Cover cover, IEnumerable<CornerShelf> cornerShelves) {
 
         foreach (var cornerShelf in cornerShelves) {
@@ -240,7 +240,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
     private IEnumerable<IProduct> MapZargenToProduct(Cover cover, IEnumerable<Zargen> zargens) {
 
         int line = 1;
-        
+
         foreach (var zargen in zargens) {
 
             if (!zargen.Item.StartsWith('D') || !double.TryParse(zargen.Item[1..], out double height)) {
@@ -264,19 +264,19 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
         foreach (var melamine in melamineDBs) {
 
             yield return new DoweledDrawerBoxProduct(Guid.NewGuid(),
-													 melamine.UnitPrice,
-													 melamine.Qty,
-													 "",
-													 melamine.LineNumber,
-													 Dimension.FromInches(melamine.Height),
-													 Dimension.FromInches(melamine.Width),
-													 Dimension.FromInches(melamine.Depth),
-													 new(header.BoxMaterial, Dimension.FromInches(0.75), true),
-													 new(header.BoxMaterial, Dimension.FromInches(0.75), true),
-													 new(header.BoxMaterial, Dimension.FromInches(0.75), true),
-													 new(header.BottomMaterial, Dimension.FromInches(0.75), true),
-													 false,
-													 Dimension.Zero);
+                                                     melamine.UnitPrice,
+                                                     melamine.Qty,
+                                                     "",
+                                                     melamine.LineNumber,
+                                                     Dimension.FromInches(melamine.Height),
+                                                     Dimension.FromInches(melamine.Width),
+                                                     Dimension.FromInches(melamine.Depth),
+                                                     new(header.BoxMaterial, Dimension.FromInches(0.75), true),
+                                                     new(header.BoxMaterial, Dimension.FromInches(0.75), true),
+                                                     new(header.BoxMaterial, Dimension.FromInches(0.75), true),
+                                                     new(header.BottomMaterial, Dimension.FromInches(0.75), true),
+                                                     false,
+                                                     Dimension.Zero);
 
         }
 
@@ -289,24 +289,24 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
         foreach (var dovetail in dovetailDBs) {
 
             yield return DovetailDrawerBoxProduct.Create(dovetail.UnitPrice,
-														 dovetail.Qty,
-														 "",
-														 dovetail.LineNumber,
-														 Dimension.FromInches(dovetail.Height),
-														 Dimension.FromInches(dovetail.Width),
-														 Dimension.FromInches(dovetail.Depth),
-														 dovetail.Note,
-														 new Dictionary<string, string>(),
-														 new DovetailDrawerBoxConfig(
-															 header.BoxMaterial,
-															 header.BoxMaterial,
-															 header.BoxMaterial,
-															 header.BottomMaterial,
-															 header.Clips,
-															 header.Notch,
-															 accessory,
-															 Shared.Domain.Enums.LogoPosition.None,
-															 header.PostFinish));
+                                                         dovetail.Qty,
+                                                         "",
+                                                         dovetail.LineNumber,
+                                                         Dimension.FromInches(dovetail.Height),
+                                                         Dimension.FromInches(dovetail.Width),
+                                                         Dimension.FromInches(dovetail.Depth),
+                                                         dovetail.Note,
+                                                         new Dictionary<string, string>(),
+                                                         new DovetailDrawerBoxConfig(
+                                                             header.BoxMaterial,
+                                                             header.BoxMaterial,
+                                                             header.BoxMaterial,
+                                                             header.BottomMaterial,
+                                                             header.Clips,
+                                                             header.Notch,
+                                                             accessory,
+                                                             Shared.Domain.Enums.LogoPosition.None,
+                                                             header.PostFinish));
 
         }
 
@@ -317,56 +317,56 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
         foreach (var front in mdfFronts) {
 
             yield return MDFDoorProduct.Create(front.UnitPrice,
-											   "",
-											   front.Qty,
-											   front.LineNumber,
-											   Shared.Domain.Enums.DoorType.Door,
-											   Dimension.FromInches(front.Height),
-											   Dimension.FromInches(front.Width),
-											   front.Note,
-											   new(Dimension.FromInches(header.FrameSize)),
-											   "MDF-3/4",
-											   Dimension.FromInches(0.75),
-											   header.Style,
-											   "Square",
-											   "Flat",
-											   Dimension.Zero,
-											   DoorOrientation.Vertical,
-											   Array.Empty<AdditionalOpening>(),
-											   string.IsNullOrWhiteSpace(header.PaintColor) ? null : "");
+                                               "",
+                                               front.Qty,
+                                               front.LineNumber,
+                                               Shared.Domain.Enums.DoorType.Door,
+                                               Dimension.FromInches(front.Height),
+                                               Dimension.FromInches(front.Width),
+                                               front.Note,
+                                               new(Dimension.FromInches(header.FrameSize)),
+                                               "MDF-3/4",
+                                               Dimension.FromInches(0.75),
+                                               header.Style,
+                                               "Square",
+                                               "Flat",
+                                               Dimension.Zero,
+                                               DoorOrientation.Vertical,
+                                               Array.Empty<AdditionalOpening>(),
+                                               string.IsNullOrWhiteSpace(header.PaintColor) ? null : "");
 
         }
 
     }
 
-	private IEnumerable<T> LoadItemsFromWorksheet<T>(Worksheet worksheet) where T : IWorksheetReadable<T>, new() {
+    private IEnumerable<T> LoadItemsFromWorksheet<T>(Worksheet worksheet) where T : IWorksheetReadable<T>, new() {
 
-		List<T> items = new();
+        List<T> items = new();
 
-		int row = T.FirstRow;
-		while (true) {
+        int row = T.FirstRow;
+        while (true) {
 
-			var lineVal = worksheet.Range[$"B{row}"].Value2;
-			if (lineVal is null || lineVal.ToString() == "") {
-				break;
-			}
+            var lineVal = worksheet.Range[$"B{row}"].Value2;
+            if (lineVal is null || lineVal.ToString() == "") {
+                break;
+            }
 
-			try {
-				items.Add(T.ReadFromWorksheet(worksheet, row));
-			} catch (Exception ex) {
-				OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Error reading item at row {row}");
-				// TODO: log exception
-			}
+            try {
+                items.Add(T.ReadFromWorksheet(worksheet, row));
+            } catch (Exception ex) {
+                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Error reading item at row {row}");
+                // TODO: log exception
+            }
 
-			row += T.RowStep;
+            row += T.RowStep;
 
-		}
+        }
 
-		return items;
+        return items;
 
-	}
+    }
 
-	private static Address ParseCustomerAddress(string line1, string line2) {
+    private static Address ParseCustomerAddress(string line1, string line2) {
 
         var parts = line2.Split(' ').Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
         string city = "", state = "", zip = "";
@@ -387,7 +387,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
         };
     }
 
-	private bool TryGetWorksheet(Workbook workbook, string name,  out Worksheet? worksheet) {
+    private bool TryGetWorksheet(Workbook workbook, string name, out Worksheet? worksheet) {
         worksheet = (Worksheet?)workbook.Sheets[name];
         if (worksheet is null) {
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not find sheet '{name}' in workbook");
@@ -405,7 +405,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
             if (Directory.Exists(workingDirectory)) {
                 incomingDirectory = CreateSubDirectories(workingDirectory);
                 return true;
-            }else if (Directory.CreateDirectory(workingDirectory).Exists) {
+            } else if (Directory.CreateDirectory(workingDirectory).Exists) {
                 incomingDirectory = CreateSubDirectories(workingDirectory);
                 return true;
             } else {
@@ -425,10 +425,10 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
     private static string? CreateSubDirectories(string workingDirectory) {
         var cutListDir = Path.Combine(workingDirectory, "CUTLIST");
         _ = Directory.CreateDirectory(cutListDir);
-        
+
         var ordersDir = Path.Combine(workingDirectory, "orders");
         _ = Directory.CreateDirectory(ordersDir);
-        
+
         var incomingDir = Path.Combine(workingDirectory, "incoming");
         return Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
     }

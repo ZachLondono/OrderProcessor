@@ -48,7 +48,7 @@ public class GetOpenClosetOrders {
 
                             try {
 
-								string[] orderNumParts = (worksheet.Range["OrderNum"].Value2.ToString() as string).Split(' ', 2, StringSplitOptions.None);
+                                string[] orderNumParts = (worksheet.Range["OrderNum"].Value2.ToString() as string).Split(' ', 2, StringSplitOptions.None);
                                 string customerName = worksheet.Range["CustomerName"].Value2.ToString();
                                 string jobNumber = orderNumParts[0];
                                 string jobName = orderNumParts[1];
@@ -75,7 +75,7 @@ public class GetOpenClosetOrders {
 
             return Task.FromResult(Response<IEnumerable<ClosetOrder>>.Success(closetOrders));
 
-         }
+        }
 
     }
 

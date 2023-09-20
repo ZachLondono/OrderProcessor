@@ -67,7 +67,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                                         var material = report.Materials[pattern.MaterialId];
                                                                         double area = material.XDim * material.YDim;
                                                                         double usedArea = pattern.Parts
-                                                                                              .Select<PatternPart,(int qty, Part part)>(part => (part.Locations.Count(), report.Parts[part.PartId]))
+                                                                                              .Select<PatternPart, (int qty, Part part)>(part => (part.Locations.Count(), report.Parts[part.PartId]))
                                                                                               .Sum(data => data.qty * data.part.Width * data.part.Length);
                                                                         double yield = usedArea / area;
                                                                         return new ReleasedProgram() {

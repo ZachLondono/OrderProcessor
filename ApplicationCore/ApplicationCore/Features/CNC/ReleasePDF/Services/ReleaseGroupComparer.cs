@@ -6,7 +6,7 @@ namespace ApplicationCore.Features.CNC.ReleasePDF.Services;
 public class ReleaseGroupComparer : IEqualityComparer<MachineRelease> {
 
     public bool Equals(MachineRelease? x, MachineRelease? y) {
-        
+
         if (x is null && y is null) return true;
         if (x is null || y is null) return false;
 

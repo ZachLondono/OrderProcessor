@@ -8,12 +8,12 @@ public class Response<TSuccess> {
     private readonly Error? _error;
     private readonly bool _isSuccess;
 
-    [MemberNotNullWhen(returnValue:true, member: nameof(Value))]
+    [MemberNotNullWhen(returnValue: true, member: nameof(Value))]
     public bool IsSuccess {
         get => _isSuccess;
     }
 
-    [MemberNotNullWhen(returnValue:true, member: nameof(_error))]
+    [MemberNotNullWhen(returnValue: true, member: nameof(_error))]
     public bool IsError {
         get => !_isSuccess;
     }

@@ -16,12 +16,12 @@ internal class GetVendorById {
         private readonly ICompaniesDbConnectionFactory _factory;
         private readonly ILogger<Handler> _logger;
 
-		public Handler(ICompaniesDbConnectionFactory factory, ILogger<Handler> logger) {
-			_factory = factory;
-			_logger = logger;
-		}
+        public Handler(ICompaniesDbConnectionFactory factory, ILogger<Handler> logger) {
+            _factory = factory;
+            _logger = logger;
+        }
 
-		public override async Task<Response<Vendor?>> Handle(Query query) {
+        public override async Task<Response<Vendor?>> Handle(Query query) {
 
             using var connection = await _factory.CreateConnection();
 
@@ -64,13 +64,13 @@ internal class GetVendorById {
 
                 WHERE vendors.id = @Id;
                 """, query);
-    
+
                 if (data is null) {
-                    return (Vendor?) null;
+                    return (Vendor?)null;
                 }
-    
+
                 var vendor = data.AsVendor();
-    
+
                 return vendor;
 
             } catch (Exception ex) {

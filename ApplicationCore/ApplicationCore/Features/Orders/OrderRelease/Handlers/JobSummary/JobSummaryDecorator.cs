@@ -483,7 +483,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         header.Cell().ColumnSpan(1).Element(e => applyDefaultCellStyle(e, true, true)).PaddingLeft(5).Text($"{group.BoxCore} - {group.BoxFinish}");
                         header.Cell().ColumnSpan(1).Element(headerCellStyle).Text("Fronts");
                         header.Cell().ColumnSpan(4).Element(e => applyDefaultCellStyle(e, true, true)).PaddingLeft(5).Text(group.Fronts);
-                        
+
                         header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Fin Material");
                         header.Cell().ColumnSpan(1).Element(e => applyDefaultCellStyle(e, true, true)).PaddingLeft(5).Text($"{group.FinishCore} - {group.FinishFinish}");
                         header.Cell().ColumnSpan(1).Element(headerCellStyle).Text("Paint");
@@ -520,7 +520,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                             (c => c.AlignCenter().Text(item.FinLeft ? "X" : "")),
                             (c => c.AlignCenter().Text(item.FinRight ? "X" : ""))
 
-                        }.ForEach(action => 
+                        }.ForEach(action =>
                             action(table.Cell().Element(e => applyDefaultCellStyle(e, !containsComments, true)))
                         );
 
@@ -618,86 +618,86 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
     }
 
-	private static void ComposeZargenDrawerTable(IContainer container, ZargenDrawerGroup group) {
+    private static void ComposeZargenDrawerTable(IContainer container, ZargenDrawerGroup group) {
 
-		var defaultCellStyle = (IContainer cell)
-			=> cell.Border(1)
-					.BorderColor(Colors.Grey.Lighten1)
-					.AlignMiddle()
-					.PaddingVertical(3)
-					.PaddingHorizontal(3);
+        var defaultCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .AlignMiddle()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3);
 
-		var headerCellStyle = (IContainer cell)
-			=> cell.Border(1)
-					.BorderColor(Colors.Grey.Lighten1)
-					.Background(Colors.Grey.Lighten3)
-					.AlignCenter()
-					.PaddingVertical(3)
-					.PaddingHorizontal(3)
-					.DefaultTextStyle(x => x.Bold());
+        var headerCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .Background(Colors.Grey.Lighten3)
+                    .AlignCenter()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3)
+                    .DefaultTextStyle(x => x.Bold());
 
-		container.Column(col => {
+        container.Column(col => {
 
-			col.Item()
-				.PaddingTop(10)
-				.PaddingLeft(10)
-				.Text($"{(group.Room == "" ? "" : $"{group.Room} - ")}Closet Parts ({group.Items.Sum(i => i.Qty)})")
-				.FontSize(16)
-				.Bold()
-				.Italic();
+            col.Item()
+                .PaddingTop(10)
+                .PaddingLeft(10)
+                .Text($"{(group.Room == "" ? "" : $"{group.Room} - ")}Closet Parts ({group.Items.Sum(i => i.Qty)})")
+                .FontSize(16)
+                .Bold()
+                .Italic();
 
-			col.Item()
-				.DefaultTextStyle(x => x.FontSize(10))
-				.Table(table => {
+            col.Item()
+                .DefaultTextStyle(x => x.FontSize(10))
+                .Table(table => {
 
-					table.ColumnsDefinition(column => {
-						column.ConstantColumn(40);
-						column.ConstantColumn(40);
-						column.ConstantColumn(45);
-						column.ConstantColumn(155);
-						column.ConstantColumn(45);
-						column.ConstantColumn(45);
-						column.ConstantColumn(45);
-					});
+                    table.ColumnsDefinition(column => {
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(155);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                    });
 
 
-					table.Header(header => {
+                    table.Header(header => {
 
-						header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Material");
-						header.Cell().ColumnSpan(4).Element(defaultCellStyle).PaddingLeft(5).Text($"{group.MaterialCore} - {group.MaterialFinish}");
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Material");
+                        header.Cell().ColumnSpan(4).Element(defaultCellStyle).PaddingLeft(5).Text($"{group.MaterialCore} - {group.MaterialFinish}");
 
-						header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Edge Banding");
-						header.Cell().ColumnSpan(4).Element(defaultCellStyle).PaddingLeft(5).Text($"{group.EdgeBandingMaterial} - {group.EdgeBandingFinish}");
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Edge Banding");
+                        header.Cell().ColumnSpan(4).Element(defaultCellStyle).PaddingLeft(5).Text($"{group.EdgeBandingMaterial} - {group.EdgeBandingFinish}");
 
-						header.Cell().Element(headerCellStyle).Text("#");
-						header.Cell().Element(headerCellStyle).Text("Qty");
-						header.Cell().Element(headerCellStyle).Text("Sku");
-						header.Cell().Element(headerCellStyle).Text("Description");
-						header.Cell().Element(headerCellStyle).Text("OpeningWidth");
-						header.Cell().Element(headerCellStyle).Text("Height");
-						header.Cell().Element(headerCellStyle).Text("Depth");
+                        header.Cell().Element(headerCellStyle).Text("#");
+                        header.Cell().Element(headerCellStyle).Text("Qty");
+                        header.Cell().Element(headerCellStyle).Text("Sku");
+                        header.Cell().Element(headerCellStyle).Text("Description");
+                        header.Cell().Element(headerCellStyle).Text("OpeningWidth");
+                        header.Cell().Element(headerCellStyle).Text("Height");
+                        header.Cell().Element(headerCellStyle).Text("Depth");
 
-					});
+                    });
 
-					foreach (var item in group.Items) {
+                    foreach (var item in group.Items) {
 
-						table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
-						table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
-						table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Sku);
-						table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description);
-						table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.OpeningWidth, 10));
-						table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
-						table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Sku);
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description);
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.OpeningWidth, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
 
-					}
+                    }
 
-				});
+                });
 
-		});
+        });
 
-	}
+    }
 
-	private static void ComposeDoorTable(IContainer container, MDFDoorGroup group) {
+    private static void ComposeDoorTable(IContainer container, MDFDoorGroup group) {
 
         var defaultCellStyle = (IContainer cell)
             => cell.Border(1)

@@ -7,10 +7,10 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 
 public class ZargenDrawer : IProduct, IPPProductContainer {
 
-	public Guid Id { get; }
-	public int Qty { get; }
-	public decimal UnitPrice { get; }
-	public int ProductNumber { get; }
+    public Guid Id { get; }
+    public int Qty { get; }
+    public decimal UnitPrice { get; }
+    public int ProductNumber { get; }
     public string Room { get; set; }
     public string SKU { get; }
     public Dimension OpeningWidth { get; set; }
@@ -57,7 +57,7 @@ public class ZargenDrawer : IProduct, IPPProductContainer {
 
     public string GetDescription() => "Zargen Drawer Parts";
 
-	public IEnumerable<PPProduct> GetPPProducts() {
+    public IEnumerable<PPProduct> GetPPProducts() {
 
         (string materialType, string finishMaterial, string ebMaterial) = Material.Core switch {
             ClosetMaterialCore.ParticleBoard => ("Melamine", "Mela", "PVC"),
@@ -88,7 +88,7 @@ public class ZargenDrawer : IProduct, IPPProductContainer {
 
         return new List<PPProduct>() { new PPProduct(Id, Qty, Room, SKU, ProductNumber, "Royal_c", materialType, "slab", "standard", Comment, finishMaterials, ebMaterials, parameters, new Dictionary<string, string>(), new Dictionary<string, string>()) };
 
-	}
+    }
 
     public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
 

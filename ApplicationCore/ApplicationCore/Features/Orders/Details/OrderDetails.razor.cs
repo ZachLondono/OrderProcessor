@@ -17,7 +17,7 @@ public partial class OrderDetails {
     public List<Room> Rooms { get; set; } = new();
 
     private string _note = string.Empty;
-    private DateTime? _dueDate = null; 
+    private DateTime? _dueDate = null;
     private string? _customerName = null;
     private string? _vendorName = null;
 
@@ -73,7 +73,7 @@ public partial class OrderDetails {
     private void OnDueDateChanged(ChangeEventArgs args) {
         string newDueDateStr = args.Value?.ToString() ?? "";
 
-        if (DateTime.TryParse(newDueDateStr, out DateTime newDueDate)) { 
+        if (DateTime.TryParse(newDueDateStr, out DateTime newDueDate)) {
             _dueDate = newDueDate;
             OrderState.SetDueDate(newDueDate);
         }

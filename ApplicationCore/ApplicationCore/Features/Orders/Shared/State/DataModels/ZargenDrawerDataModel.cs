@@ -8,22 +8,22 @@ namespace ApplicationCore.Features.Orders.Shared.State.DataModels;
 
 internal class ZargenDrawerDataModel : ProductDataModelBase, IProductDataModel, IQueryableProductDataModel {
 
-	public string Sku { get; set; } = string.Empty;
-	public Dimension OpeningWidth { get; set; }
-	public Dimension Height { get; set; }
-	public Dimension Depth { get; set; }
-	public string MaterialFinish { get; set; } = string.Empty;
-	public ClosetMaterialCore MaterialCore { get; set; }
-	public string? PaintColor { get; set; }
-	public PaintedSide PaintedSide { get; set; }
-	public string EdgeBandingFinish { get; set; } = string.Empty;
-	public string Comment { get; set; } = string.Empty;
-	public IDictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
+    public string Sku { get; set; } = string.Empty;
+    public Dimension OpeningWidth { get; set; }
+    public Dimension Height { get; set; }
+    public Dimension Depth { get; set; }
+    public string MaterialFinish { get; set; } = string.Empty;
+    public ClosetMaterialCore MaterialCore { get; set; }
+    public string? PaintColor { get; set; }
+    public PaintedSide PaintedSide { get; set; }
+    public string EdgeBandingFinish { get; set; } = string.Empty;
+    public string Comment { get; set; } = string.Empty;
+    public IDictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
     public List<string> ProductionNotes { get; set; } = new();
 
-	public static string GetQueryByOrderId
-		=>
-		"""
+    public static string GetQueryByOrderId
+        =>
+        """
         SELECT 
         
         	products.id,
@@ -53,11 +53,11 @@ internal class ZargenDrawerDataModel : ProductDataModelBase, IProductDataModel, 
             products.order_id = @OrderId;
         """;
 
-	public IProduct MapToProduct() {
-		ClosetPaint? paint = PaintColor is null ? null : new(PaintColor, PaintedSide);
+    public IProduct MapToProduct() {
+        ClosetPaint? paint = PaintColor is null ? null : new(PaintColor, PaintedSide);
         return new ZargenDrawer(Id, Qty, UnitPrice, ProductNumber, Room, Sku, OpeningWidth, Height, Depth, new(MaterialFinish, MaterialCore), paint, EdgeBandingFinish, Comment, Parameters.AsReadOnly()) {
             ProductionNotes = ProductionNotes
         };
-	}
+    }
 
 }

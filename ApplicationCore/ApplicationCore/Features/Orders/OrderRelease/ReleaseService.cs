@@ -37,20 +37,20 @@ public class ReleaseService {
     private readonly IEmailService _emailService;
     private readonly ReleaseEmailBodyGenerator _emailBodyGenerator;
 
-	public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, ReleaseEmailBodyGenerator emailBodyGenerator) {
-		_fileReader = fileReader;
-		_invoiceDecoratorFactory = invoiceDecoratorFactory;
-		_packingListDecoratorFactory = packingListDecoratorFactory;
-		_cncReleaseDecoratorFactory = cncReleaseDecoratorFactory;
-		_jobSummaryDecoratorFactory = jobSummaryDecoratorFactory;
-		_logger = logger;
-		_getCustomerByIdAsync = getCustomerByIdAsync;
-		_getVendorByIdAsync = getVendorByIdAsync;
-		_emailService = emailService;
-		_emailBodyGenerator = emailBodyGenerator;
-	}
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, ReleaseEmailBodyGenerator emailBodyGenerator) {
+        _fileReader = fileReader;
+        _invoiceDecoratorFactory = invoiceDecoratorFactory;
+        _packingListDecoratorFactory = packingListDecoratorFactory;
+        _cncReleaseDecoratorFactory = cncReleaseDecoratorFactory;
+        _jobSummaryDecoratorFactory = jobSummaryDecoratorFactory;
+        _logger = logger;
+        _getCustomerByIdAsync = getCustomerByIdAsync;
+        _getVendorByIdAsync = getVendorByIdAsync;
+        _emailService = emailService;
+        _emailBodyGenerator = emailBodyGenerator;
+    }
 
-	public async Task Release(List<Order> orders, ReleaseConfiguration configuration) {
+    public async Task Release(List<Order> orders, ReleaseConfiguration configuration) {
 
         if (orders.Count == 0) {
             throw new InvalidOperationException("No orders selected to include in release");
@@ -184,16 +184,16 @@ public class ReleaseService {
         var releasedJobs = jobs.Where(j => j.Releases.Any())
                                 .Select(job => {
 
-            var usedMaterials = job.Releases
-                                    .First()
-                                    .Programs
-                                    .Select(p => p.Material)
-                                    .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained))
-                                    .Select(g => new UsedMaterial(g.Count(), g.Key.Name, g.Key.Width, g.Key.Length, g.Key.Thickness));
+                                    var usedMaterials = job.Releases
+                                                            .First()
+                                                            .Programs
+                                                            .Select(p => p.Material)
+                                                            .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained))
+                                                            .Select(g => new UsedMaterial(g.Count(), g.Key.Name, g.Key.Width, g.Key.Length, g.Key.Thickness));
 
-            return new Job(job.JobName, usedMaterials);
+                                    return new Job(job.JobName, usedMaterials);
 
-        });
+                                });
 
         var model = new Model(releasedJobs, note);
 
@@ -286,7 +286,7 @@ public class ReleaseService {
 
         var builder = new BodyBuilder {
             TextBody = textBody,
-            HtmlBody = htmlBody 
+            HtmlBody = htmlBody
         };
         attachments.Where(_fileReader.DoesFileExist).ForEach(att => builder.Attachments.Add(att));
 
@@ -305,10 +305,10 @@ public class ReleaseService {
         mailItem.To = recipients;
         mailItem.Subject = subject;
         mailItem.Body = textBody;
-        mailItem.HTMLBody = htmlBody; 
+        mailItem.HTMLBody = htmlBody;
 
         attachments.Where(_fileReader.DoesFileExist).ForEach(att => mailItem.Attachments.Add(att));
-        
+
         var senderMailBox = await _emailService.GetSenderAsync();
         var sender = GetSenderOutlookAccount(app, senderMailBox.Address);
 
@@ -317,7 +317,7 @@ public class ReleaseService {
         } else {
             _logger.LogWarning("No outlook sender was found");
         }
-        
+
         mailItem.Display();
 
         Marshal.ReleaseComObject(app);
@@ -331,12 +331,12 @@ public class ReleaseService {
     }
 
     static Account? GetSenderOutlookAccount(OutlookApp app, string preferredEmail) {
-    
+
         var accounts = app.Session.Accounts;
         if (accounts is null || accounts.Count == 0) {
             return null;
         }
-    
+
         Account? sender = null;
         foreach (Account account in accounts) {
             sender ??= account;
@@ -345,9 +345,9 @@ public class ReleaseService {
                 break;
             }
         }
-    
+
         return sender;
-    
+
     }
 
     private async Task<IEnumerable<string>> GeneratePDFAsync(IEnumerable<string> outputDirs, IEnumerable<IDocumentDecorator> decorators, string name, string customerName, IEnumerable<string> attachedFiles, bool isTemp = false) {

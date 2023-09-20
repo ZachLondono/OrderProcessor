@@ -15,7 +15,7 @@ public class TestCompaniesConnectionFactory : ICompaniesDbConnectionFactory {
     }
 
     public Task<IDbConnection> CreateConnection() {
-        
+
         if (_connection is null) {
 
             var schema = File.ReadAllText(_schemaFilePath);

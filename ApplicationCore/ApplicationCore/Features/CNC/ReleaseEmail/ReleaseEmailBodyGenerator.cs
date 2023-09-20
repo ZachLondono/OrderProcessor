@@ -27,7 +27,7 @@ public class ReleaseEmailBodyGenerator {
 
     }
 
-	public string GenerateHTMLReleaseEmailBody(Model model, bool includeSummary) {
+    public string GenerateHTMLReleaseEmailBody(Model model, bool includeSummary) {
 
         string body = "Please see attached release";
 
@@ -108,6 +108,6 @@ public class ReleaseEmailBodyGenerator {
 
         return body;
 
-	}
+    }
 
 }

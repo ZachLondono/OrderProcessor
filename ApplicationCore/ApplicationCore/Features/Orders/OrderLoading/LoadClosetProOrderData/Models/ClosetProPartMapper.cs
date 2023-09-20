@@ -57,40 +57,40 @@ public class ClosetProPartMapper {
 
     public List<IProduct> MapPartsToProducts(IEnumerable<Part> parts) {
 
-		List<IProduct> products = new();
+        List<IProduct> products = new();
 
-		parts.GroupBy(p => p.WallNum)
+        parts.GroupBy(p => p.WallNum)
             .ForEach(partsOnWall => {
 
-		        var productsOnWall = GetPartsForWall(partsOnWall);
+                var productsOnWall = GetPartsForWall(partsOnWall);
 
                 products.AddRange(productsOnWall);
 
             });
 
 
-		return products;
+        return products;
 
-	}
+    }
 
-	private IEnumerable<IProduct> GetPartsForWall(IEnumerable<Part> parts) {
+    private IEnumerable<IProduct> GetPartsForWall(IEnumerable<Part> parts) {
 
         List<IProduct> products = new();
 
         Dictionary<int, double> sectionDepths = parts.Where(p => p.ExportName.Contains("Vert"))
                                                      .DistinctBy(p => p.SectionNum)
                                                      .ToDictionary(p => p.SectionNum, p => p.Depth);
-		bool doesWallHaveBacking = parts.Any(p => p.ExportName == "Backing");
+        bool doesWallHaveBacking = parts.Any(p => p.ExportName == "Backing");
 
-		var enumerator = parts.GetEnumerator();
-		if (!enumerator.MoveNext()) {
-			throw new InvalidOperationException("No products found in order");
-		}
-		Part part = enumerator.Current;
+        var enumerator = parts.GetEnumerator();
+        if (!enumerator.MoveNext()) {
+            throw new InvalidOperationException("No products found in order");
+        }
+        Part part = enumerator.Current;
 
-		while (true) {
+        while (true) {
 
-			Part? nextPart = null;
+            Part? nextPart = null;
             if (part.PartType == "Countertop") {
 
                 if (part.Height != 0.75) {
@@ -167,40 +167,40 @@ public class ClosetProPartMapper {
                 throw new InvalidOperationException($"Unexpected part {part.PartName} / {part.ExportName}");
             }
 
-			if (nextPart is not null) {
-				part = nextPart;
-			} else if (enumerator.MoveNext()) {
-				part = enumerator.Current;
-			} else {
-				break;
-			}
+            if (nextPart is not null) {
+                part = nextPart;
+            } else if (enumerator.MoveNext()) {
+                part = enumerator.Current;
+            } else {
+                break;
+            }
 
-		}
+        }
 
         return products;
 
-	}
+    }
 
-	private IEnumerable<IProduct> CreateCubbyProducts(IEnumerator<Part> enumerator, Part part, Part firstCubbyPart, bool doesWallHaveBacking) {
+    private IEnumerable<IProduct> CreateCubbyProducts(IEnumerator<Part> enumerator, Part part, Part firstCubbyPart, bool doesWallHaveBacking) {
 
-		var accum = new CubbyAccumulator();
-		accum.AddBottomShelf(part);
-		if (firstCubbyPart.ExportName == "Cubby-V") {
-			accum.AddVerticalPanel(firstCubbyPart);
-		} else {
-			accum.AddHorizontalPanel(firstCubbyPart);
-		}
+        var accum = new CubbyAccumulator();
+        accum.AddBottomShelf(part);
+        if (firstCubbyPart.ExportName == "Cubby-V") {
+            accum.AddVerticalPanel(firstCubbyPart);
+        } else {
+            accum.AddHorizontalPanel(firstCubbyPart);
+        }
 
 
         Part cubbyPart;
         bool areAllCubbyPartsRead = false;
-		while (!areAllCubbyPartsRead) {
+        while (!areAllCubbyPartsRead) {
 
             if (!enumerator.MoveNext()) {
                 throw new InvalidOperationException("Ran out of parts before all cubby parts where found");
             }
 
-			cubbyPart = enumerator.Current;
+            cubbyPart = enumerator.Current;
 
             switch (cubbyPart.ExportName) {
                 case "Cubby-V":
@@ -220,13 +220,13 @@ public class ClosetProPartMapper {
                     throw new InvalidOperationException("Unexpected part found within cubby parts");
             }
 
-		}
+        }
 
-		return accum.GetProducts(this);
-        
-	}
+        return accum.GetProducts(this);
 
-	public List<AdditionalItem> MapPickListToItems(IEnumerable<PickPart> parts, out Dimension hardwareSpread) {
+    }
+
+    public List<AdditionalItem> MapPickListToItems(IEnumerable<PickPart> parts, out Dimension hardwareSpread) {
 
         hardwareSpread = Dimension.Zero;
 
@@ -338,7 +338,7 @@ public class ClosetProPartMapper {
     }
 
     public IProduct CreateVerticalPanelFromPart(Part part, bool wallHasBacking) {
-        
+
         if (part.PartName == "Vertical Panel - Island") {
             return CreateVerticalIslandPanelFromPart(part, wallHasBacking);
         }
@@ -409,7 +409,7 @@ public class ClosetProPartMapper {
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
-        
+
         string room = GetRoomName(part);
 
         Dimension width = Dimension.FromInches(part.Depth);
@@ -881,6 +881,6 @@ public class ClosetProPartMapper {
 
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
 
-    } 
+    }
 
 }

@@ -194,9 +194,9 @@ internal class ExportService {
 
             _logger.LogError(ex, "Exception thrown while trying to generate cnc parts for order");
             OnError?.Invoke("Failed to generate CNC parts for order");
-			throw;
+            throw;
 
-		}
+        }
 
         if (!parts.Any()) {
             OnError?.Invoke("No parts in order to write to CSV");

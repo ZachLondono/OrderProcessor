@@ -35,7 +35,7 @@ public record UMSlideSpecs {
             ResizeForUMSlides = worksheet.GetRangeStringValue("ResizeForUMSlides") == "Yes",
             ResizeAmount = worksheet.GetRangeValue<double>("ResizeAmountForUMSlides", 0),
             MachineFrontsForClips = worksheet.GetRangeStringValue("MachineFrontsForClips") == "Yes",
-            DistanceFromClipsToFace = worksheet.GetRangeValue<double>("ClipsFromFace", 0) 
+            DistanceFromClipsToFace = worksheet.GetRangeValue<double>("ClipsFromFace", 0)
         };
     }
 

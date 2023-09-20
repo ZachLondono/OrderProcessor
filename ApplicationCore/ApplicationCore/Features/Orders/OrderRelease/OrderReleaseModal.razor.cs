@@ -28,7 +28,7 @@ public partial class OrderReleaseModal {
         await DataContext.LoadConfiguration(Orders);
 
     }
-    
+
     private void RemoveAdditionalFile(string filePath) {
         DataContext.Configuration.AdditionalFilePaths.Remove(filePath);
         StateHasChanged();

@@ -12,7 +12,7 @@ namespace ApplicationCore.Tests.Unit.Orders.ClosetProOrderLoading;
 public class ProductMappingTests {
 
     private readonly ClosetProPartMapper _sut;
-    
+
     public ProductMappingTests() {
         _sut = new(new ComponentBuilderFactory());
     }

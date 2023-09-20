@@ -58,9 +58,9 @@ internal class WallDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
                         => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfOptions, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, adjShelfQty, hingeSide, doorQty, extendedDoor);
 
     public override string GetProductSku() => DoorQty switch {
-        1 => $"{(IsGarage ? "G" : "" )}WC1D-M",
-        2 => $"{(IsGarage ? "G" : "" )}WC2D-M",
-        _ => $"{(IsGarage ? "G" : "" )}WC1D-M"
+        1 => $"{(IsGarage ? "G" : "")}WC1D-M",
+        2 => $"{(IsGarage ? "G" : "")}WC2D-M",
+        _ => $"{(IsGarage ? "G" : "")}WC1D-M"
     };
 
     public bool ContainsDoors() => MDFDoorOptions is not null;

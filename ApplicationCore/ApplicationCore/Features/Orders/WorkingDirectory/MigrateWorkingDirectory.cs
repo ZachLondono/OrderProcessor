@@ -47,8 +47,8 @@ internal class MigrateWorkingDirectory {
 
                 await Task.Run(() => {
 
-                   files.Select(file => (file, Path.Combine(command.NewWorkingDirectory, Path.GetFileName(file))))
-                        .ForEach(files => operation(files.file, files.Item2));
+                    files.Select(file => (file, Path.Combine(command.NewWorkingDirectory, Path.GetFileName(file))))
+                         .ForEach(files => operation(files.file, files.Item2));
 
                     if (_fileHandler.GetFiles(command.OldWorkingDirectory, "*", SearchOption.AllDirectories).Length == 0) {
                         _fileHandler.DeleteFile(command.OldWorkingDirectory);

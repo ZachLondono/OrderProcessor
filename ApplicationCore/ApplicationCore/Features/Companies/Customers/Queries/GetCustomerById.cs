@@ -80,7 +80,7 @@ internal class GetCustomerById {
                 """, query);
 
             if (data is null) {
-                return (Customer?) null;
+                return (Customer?)null;
             }
 
             var customer = data.AsCustomer();
