@@ -1,0 +1,138 @@
+﻿@using ApplicationCore.Features.BricsCAD.EnumerateDrawings;
+@using ApplicationCore.Features.BricsCAD.SaveDrawing;
+@using ApplicationCore.Infrastructure.Bus;
+@using ApplicationCore.Shared.Components
+@using static ApplicationCore.Shared.Components.Button;
+@inject IBus Bus
+
+@if (_error is not null) {
+    <div class="text-red-600 mb-5">
+        <h3>@_error.Title</h3>
+        <p>@_error.Details</p>
+    </div>
+}
+
+@if (_availableDrawings.Any()) {
+
+    <table>
+
+        <thead>
+            <tr>
+                <td>Drawing</td>
+                <td>File Name</td>
+            </tr>
+        </thead>
+
+        @foreach (var drawing in _availableDrawings) {
+            <tbody class="cursor-pointer">
+
+                <tr>
+                    <td>
+                        <CheckBox @bind-IsChecked="drawing.SaveToOutputDirectory">
+                            @drawing.DocumentName
+                        </CheckBox>
+                    </td>
+                    <td>
+                        <InputText class="input-text" @bind-Value="drawing.OutputFileName" />
+                    </td>
+                </tr>
+
+            </tbody>
+
+        }
+
+    </table>
+
+    <Button OnClickAsync="SaveFiles" Color="ButtonColor.Primary">Save Files</Button>
+
+} else {
+
+    <p>No drawings found</p>
+
+    <Button OnClickAsync="LoadOpenFiles" Color="ButtonColor.Primary">Refresh</Button>
+
+}
+
+
+@code {
+
+    [Parameter]
+    public string? OutputDirectory { get; set; }
+
+    [CascadingParameter]
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    private List<AvailableDrawing> _availableDrawings { get; set; } = new();
+    private Error? _error = null;
+
+    private bool _value = false;
+
+    public async Task LoadOpenFiles() {
+
+        var response = await Bus.Send(new EnumerateOpenDrawings.Command());
+
+        response.Match(
+            drawings => _availableDrawings = new(drawings.Select(doc => new AvailableDrawing(doc))),
+            error => _error = error
+        );
+
+        StateHasChanged();
+
+    }
+
+    public async Task SaveFiles() {
+
+        if (OutputDirectory is null || !_availableDrawings.Any()) return;
+
+        var items = _availableDrawings
+                .Where(d => d.SaveToOutputDirectory)
+                .Select(d =>
+                        new SaveOpenDrawings.SaveItem(d.DocumentName, Path.Combine(OutputDirectory, d.OutputFileName)));
+
+        if (!items.Any()) {
+
+            _error = new() {
+                    Title = "No Files Copied",
+                    Details = "No documents where selected to copy"
+                };
+
+            StateHasChanged();
+
+            return;
+
+        }
+
+        var response = await Bus.Send(new SaveOpenDrawings.Command(items));
+
+        response.OnError(error => _error = error);
+
+        if (response.IsSuccess) {
+
+            await BlazoredModal.CloseAsync();
+
+        }
+
+        StateHasChanged();
+
+    }
+
+    private void ToggleItem(bool isChecked, AvailableDrawing drawing) {
+        drawing.SaveToOutputDirectory = isChecked;
+    }
+
+    public class AvailableDrawing {
+
+        public string DocumentName { get; set; }
+
+        public string OutputFileName { get; set; }
+
+        public bool SaveToOutputDirectory { get; set; } = false;
+
+        public AvailableDrawing(string documentName) {
+            DocumentName = documentName;
+            OutputFileName = documentName;
+        }
+
+    }
+
+}

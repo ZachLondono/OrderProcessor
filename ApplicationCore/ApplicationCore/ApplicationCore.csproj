@@ -9,6 +9,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <COMReference Include="BricscadDb">
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>20</VersionMajor>
+      <Guid>539382e8-e650-422e-9ca1-349897e08aa1</Guid>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="BricscadApp">
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>20</VersionMajor>
+      <Guid>ab9569c1-7a65-42f7-8fba-41fc754e7a87</Guid>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Interop.Microsoft.Office.Interop.Excel">
       <HintPath>Application\Dependencies\Interop.Microsoft.Office.Interop.Excel.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
