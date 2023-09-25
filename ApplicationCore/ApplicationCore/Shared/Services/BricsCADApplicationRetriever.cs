@@ -1,5 +1,4 @@
-﻿using BricscadApp;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security;
 namespace ApplicationCore.Shared.Services;
@@ -10,8 +9,8 @@ public class BricsCADApplicationRetriever {
     internal const string OLEAUT32 = "oleaut32.dll";
     internal const string OLE32 = "ole32.dll";
 
-    public static AcadApplication? GetAcadApplication() {
-        return GetActiveObject(strProgId) as AcadApplication;
+    public static dynamic? GetAcadApplication() {
+        return GetActiveObject(strProgId);
     }
 
 

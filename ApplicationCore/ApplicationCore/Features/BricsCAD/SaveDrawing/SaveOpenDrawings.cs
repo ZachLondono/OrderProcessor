@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Shared.Services;
-using BricscadApp;
 
 namespace ApplicationCore.Features.BricsCAD.SaveDrawing;
 
@@ -14,7 +13,7 @@ internal class SaveOpenDrawings {
 
         public override Task<Response> Handle(Command command) {
 
-            AcadApplication? app;
+            dynamic? app;
 
             try {
 
@@ -40,7 +39,7 @@ internal class SaveOpenDrawings {
 
             List<string> unsavedDocuments = new();
 
-            AcadDocuments? allDocuments;
+            dynamic? allDocuments;
             
             try {
 
@@ -61,9 +60,9 @@ internal class SaveOpenDrawings {
 
                 try {
 
-                    foreach (var documentObj in allDocuments) {
+                    foreach (dynamic? document in allDocuments) {
 
-                        if (documentObj is not AcadDocument document) continue;
+                        if (document is null) continue;
 
                         if (document.Name != item.DocumentName) continue;
 
