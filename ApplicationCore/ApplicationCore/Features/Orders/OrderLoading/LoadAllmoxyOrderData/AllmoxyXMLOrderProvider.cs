@@ -133,7 +133,7 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 
         string? customerWorkingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customerId);
         string allmoxyDefaultWorkingDirectory = @"R:\Job Scans\Allmoxy"; // TODO: Get base directory from configuration file
-        string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? allmoxyDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{data.Number} - {data.Customer.Company} - {data.Name}", ' '));
+        string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? allmoxyDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{number} - {data.Customer.Company} - {data.Name}", ' '));
         if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDir) && incomingDir is not null) {
             string dataFile = _fileReader.GetAvailableFileName(incomingDir, "Incoming", ".xml");
             await File.WriteAllTextAsync(dataFile, exportXML);
