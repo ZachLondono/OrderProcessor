@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Shared.Services;
+using BricscadApp;
 
 namespace ApplicationCore.Features.BricsCAD.EnumerateDrawings;
 
@@ -13,7 +14,7 @@ public class EnumerateOpenDrawings {
 
         public override Task<Response<IEnumerable<string>>> Handle(Command command) {
             
-            dynamic? app;
+            AcadApplication? app;
 
             try {
 
@@ -37,7 +38,7 @@ public class EnumerateOpenDrawings {
 
             }
 
-            dynamic? allDocuments;
+            AcadDocuments? allDocuments;
             
             try {
 
@@ -54,7 +55,7 @@ public class EnumerateOpenDrawings {
 
             List<string> documentNames = new();
 
-            foreach (dynamic? document in allDocuments) {
+            foreach (AcadDocument? document in allDocuments) {
 
                 if (document is null) continue;
 

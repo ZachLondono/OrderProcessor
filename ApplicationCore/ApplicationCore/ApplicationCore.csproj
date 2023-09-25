@@ -9,6 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="BricscadApp">
+      <HintPath>Application\Dependencies\BricscadApp.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="BricscadDb">
+      <HintPath>Application\Dependencies\BricscadDb.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Interop.Microsoft.Office.Interop.Excel">
       <HintPath>Application\Dependencies\Interop.Microsoft.Office.Interop.Excel.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
