@@ -7,12 +7,11 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 
-internal class WallCabinet : Cabinet, IMDFDoorContainer {
+internal class WallCabinet : GarageCabinet, IMDFDoorContainer {
 
     public WallCabinetDoors Doors { get; }
     public WallCabinetInside Inside { get; }
     public bool FinishedBottom { get; }
-    public bool IsGarage { get; set; }
 
     public override string GetDescription() => $"Wall {(IsGarage ? "Garage " : "")}Cabinet - {Doors.Quantity} Doors";
 
@@ -137,11 +136,6 @@ internal class WallCabinet : Cabinet, IMDFDoorContainer {
 
         return parameters;
 
-    }
-
-    protected override string GetMaterialType() {
-        if (IsGarage) return "Garage";
-        return base.GetMaterialType();
     }
 
     private string GetHingeSideOption() => Doors.HingeSide switch {

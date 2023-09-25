@@ -105,7 +105,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
 
     }
 
-    protected Dictionary<string, PPMaterial> GetFinishMaterials() {
+    protected virtual Dictionary<string, PPMaterial> GetFinishMaterials() {
         string finishMaterial = GetFinishMaterialType(FinishMaterial.Core);
         string boxMaterial = GetFinishMaterialType(BoxMaterial.Core);
         var materials = new Dictionary<string, PPMaterial> {
@@ -135,7 +135,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
         _ => "Mela"
     };
 
-    protected Dictionary<string, PPMaterial> GetEBMaterials() {
+    protected virtual Dictionary<string, PPMaterial> GetEBMaterials() {
         string finishEBMaterial = GetEBMaterialType(FinishMaterial.Core);
         string boxEBMaterial = GetEBMaterialType(BoxMaterial.Core);
         return new Dictionary<string, PPMaterial>() {

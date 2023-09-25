@@ -7,7 +7,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 
-internal class WallDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
+internal class WallDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer {
 
     public Dimension RightWidth { get; }
     public Dimension RightDepth { get; }
@@ -15,7 +15,6 @@ internal class WallDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
     public int DoorQty { get; }
     public int AdjustableShelves { get; }
     public Dimension ExtendedDoor { get; }
-    public bool IsGarage { get; set; }
 
     public override string GetDescription() => $"Diagonal Corner Wall {(IsGarage ? "Garage" : "")}Cabinet - {DoorQty} Doors";
 
@@ -165,10 +164,5 @@ internal class WallDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
         HingeSide.Right => "0",
         _ => "0"
     };
-
-    protected override string GetMaterialType() {
-        if (IsGarage) return "Garage";
-        return base.GetMaterialType();
-    }
 
 }

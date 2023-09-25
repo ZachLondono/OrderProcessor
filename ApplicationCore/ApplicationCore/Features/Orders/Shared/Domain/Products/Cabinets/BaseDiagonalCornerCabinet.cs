@@ -7,7 +7,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 
-internal class BaseDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
+internal class BaseDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer {
 
     public Dimension RightWidth { get; }
     public Dimension RightDepth { get; }
@@ -15,7 +15,6 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
     public HingeSide HingeSide { get; }
     public int DoorQty { get; }
     public int AdjustableShelves { get; }
-    public bool IsGarage { get; set; }
 
     public Dimension DoorHeight => Height - ToeType.HeightAdjustment - DoorGaps.TopGap - DoorGaps.BottomGap;
 
@@ -163,11 +162,6 @@ internal class BaseDiagonalCornerCabinet : Cabinet, IMDFDoorContainer {
         }
 
         return parameters;
-    }
-
-    protected override string GetMaterialType() {
-        if (IsGarage) return "Garage";
-        return base.GetMaterialType();
     }
 
 }

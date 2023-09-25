@@ -7,14 +7,13 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 
-internal class DrawerBaseCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer {
+internal class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer {
 
     // TODO: add option for no doors
 
     public ToeType ToeType { get; }
     public VerticalDrawerBank Drawers { get; }
     public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
-    public bool IsGarage { get; set; }
 
     public override string GetDescription() => $"{Drawers.FaceHeights.Length} Drawer {(IsGarage ? "Garage " : "")}Cabinet";
 
@@ -173,11 +172,6 @@ internal class DrawerBaseCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBo
 
         return parameters;
 
-    }
-
-    protected override string GetMaterialType() {
-        if (IsGarage) return "Garage";
-        return base.GetMaterialType();
     }
 
 }

@@ -7,14 +7,13 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 
-internal class BaseCabinet : Cabinet, IDovetailDrawerBoxContainer, IMDFDoorContainer {
+internal class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorContainer {
 
     public BaseCabinetDoors Doors { get; }
     public ToeType ToeType { get; }
     public HorizontalDrawerBank Drawers { get; }
     public BaseCabinetInside Inside { get; }
     public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
-    public bool IsGarage { get; set; }
 
     public Dimension DoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
 
@@ -332,10 +331,5 @@ internal class BaseCabinet : Cabinet, IDovetailDrawerBoxContainer, IMDFDoorConta
         RollOutBlockPosition.Right => "3",
         _ => "0"
     };
-
-    protected override string GetMaterialType() {
-        if (IsGarage) return "Garage";
-        return base.GetMaterialType();
-    }
 
 }
