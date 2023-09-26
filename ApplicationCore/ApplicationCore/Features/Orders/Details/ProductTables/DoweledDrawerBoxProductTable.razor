@@ -27,6 +27,7 @@
                 <th class="p-5">Machine for UM</th>
                 <th class="p-5">Unit $</th>
                 <th class="p-5">Ext. $</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -53,11 +54,16 @@
                         <td class="whitespace-nowrap p-5 text-center">@(row.MachineThicknessForUMSlides ? "Y" : "N")</td>
                         <td class="whitespace-nowrap p-5 text-center">$@row.UnitPrice.ToString("0.00")</td>
                         <td class="whitespace-nowrap p-5 text-center">$@((row.UnitPrice * row.Qty).ToString("0.00"))</td>
+                        <td class="p-5">
+                            @if (ActionColumn is not null) {
+                                @ActionColumn(row)
+                            }
+                        </td>
                     </tr>
 
                     @foreach(var note in row.ProductionNotes) {
                         <tr>
-                            <td class="p-5 font-bold text-red-500" colspan="17">
+                            <td class="p-5 font-bold text-red-500" colspan="14">
                                 @note
                             </td>
                         </tr>
@@ -70,6 +76,9 @@
 </div>
 
 @code {
+
+    [Parameter]
+    public RenderFragment<DoweledDrawerBoxProduct>? ActionColumn { get; set; } = null;
 
     [Parameter]
     public IEnumerable<DoweledDrawerBoxProduct> DrawerBoxes { get; set; } = Enumerable.Empty<DoweledDrawerBoxProduct>();

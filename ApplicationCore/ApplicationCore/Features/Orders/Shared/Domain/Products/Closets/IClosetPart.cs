@@ -5,6 +5,7 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 
 public interface IClosetPartProduct {
 
+    public Guid Id { get; }
     public int Qty { get; }
     public decimal UnitPrice { get; }
     public int ProductNumber { get; }

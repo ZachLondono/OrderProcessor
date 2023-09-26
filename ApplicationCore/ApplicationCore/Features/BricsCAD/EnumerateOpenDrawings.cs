@@ -2,7 +2,7 @@
 using ApplicationCore.Shared.Services;
 using BricscadApp;
 
-namespace ApplicationCore.Features.BricsCAD.EnumerateDrawings;
+namespace ApplicationCore.Features.BricsCAD;
 
 public class EnumerateOpenDrawings {
 
@@ -13,7 +13,7 @@ public class EnumerateOpenDrawings {
         // TODO: check if the document contains a FILENAME layer with text, and return that with the document name. It can be used as the file name when saving the drawing
 
         public override Task<Response<IEnumerable<string>>> Handle(Command command) {
-            
+
             AcadApplication? app;
 
             try {
@@ -39,7 +39,7 @@ public class EnumerateOpenDrawings {
             }
 
             AcadDocuments? allDocuments;
-            
+
             try {
 
                 allDocuments = app.Documents;

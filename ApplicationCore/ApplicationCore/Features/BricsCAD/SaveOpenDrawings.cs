@@ -2,7 +2,7 @@
 using ApplicationCore.Shared.Services;
 using BricscadApp;
 
-namespace ApplicationCore.Features.BricsCAD.SaveDrawing;
+namespace ApplicationCore.Features.BricsCAD;
 
 internal class SaveOpenDrawings {
 
@@ -41,7 +41,7 @@ internal class SaveOpenDrawings {
             List<string> unsavedDocuments = new();
 
             AcadDocuments? allDocuments;
-            
+
             try {
 
                 allDocuments = app.Documents;
@@ -69,14 +69,10 @@ internal class SaveOpenDrawings {
 
                         document.SaveAs(item.FileName);
                         wasSaved = true;
-                        
+
                     }
 
-                } catch (Exception ex) {
-
-                    // TODO: log exception
-
-                }
+                } catch { }
 
                 if (!wasSaved) unsavedDocuments.Add(item.DocumentName);
 
@@ -90,7 +86,7 @@ internal class SaveOpenDrawings {
                 }));
 
             }
-            
+
             return Task.FromResult(Response.Success());
 
         }

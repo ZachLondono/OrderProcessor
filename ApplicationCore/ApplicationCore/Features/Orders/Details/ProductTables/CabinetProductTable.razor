@@ -26,6 +26,7 @@
                 <th class="p-5">Assembled</th>
                 <th class="p-5">Unit $</th>
                 <th class="p-5">Ext. $</th>
+                <th></th>
             </tr>
         </thead>
             @foreach (var row in Cabinets) {
@@ -54,6 +55,11 @@
                         <td class="whitespace-nowrap p-5 text-center">@(row.Assembled ? "Yes" : "No")</td>
                         <td class="whitespace-nowrap p-5 text-center">@row.UnitPrice.ToString("$0.00")</td>
                         <td class="whitespace-nowrap p-5 text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
+                        <td class="p-5">
+                            @if (ActionColumn is not null) {
+                                @ActionColumn(row)
+                            }
+                        </td>
                     </tr>
 
                     @if(row.Comment != string.Empty) {
@@ -76,6 +82,9 @@
 </div>
 
 @code {
+
+    [Parameter]
+    public RenderFragment<Cabinet>? ActionColumn { get; set; } = null;
 
     [Parameter]
     public IEnumerable<Cabinet> Cabinets { get; set; } = Enumerable.Empty<Cabinet>();

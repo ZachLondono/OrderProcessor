@@ -18,6 +18,7 @@
                 <th class="p-5">Paint</th>
                 <th class="p-5">Unit $</th>
                 <th class="p-5">Ext. $</th>
+                <th></th>
             </tr>
         </thead>
         @foreach (var row in MDFDoors) {
@@ -41,12 +42,17 @@
                     }
                     <td class="whitespace-nowrap p-5 text-center">@(row.PaintColor is null ? "N/A" : row.PaintColor)</td>
                     <td class="whitespace-nowrap p-5 text-center">@row.UnitPrice.ToString("$0.00")</td>
-                    <td class="whitespace-nowrap p-5 text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
+                    <td class="whitespace-nowrap p-5 text-center">@((row.UnitPrice * row.Qty).ToString(".00"))</td>
+                    <td class="p-5">
+                        @if (ActionColumn is not null) {
+                            @ActionColumn(row)
+                        }
+                    </td>
                 </tr>
 
                 @if (row.Note != string.Empty) {
                     <tr>
-                        <td class="p-5 font-bold text-red-500" colspan="10">
+                        <td class="p-5 font-bold text-red-500" colspan="11">
                             Note: @row.Note
                         </td>
                     </tr>                        
@@ -54,7 +60,7 @@
 
                 @foreach(var note in row.ProductionNotes) {
                     <tr>
-                        <td class="p-5 font-bold text-red-500" colspan="17">
+                        <td class="p-5 font-bold text-red-500" colspan="11">
                             @note
                         </td>
                     </tr>
@@ -67,6 +73,9 @@
 
 
 @code {
+    
+    [Parameter]
+    public RenderFragment<MDFDoorProduct>? ActionColumn { get; set; } = null;
 
     [Parameter]
     public IEnumerable<MDFDoorProduct> MDFDoors { get; set; } = Enumerable.Empty<MDFDoorProduct>();

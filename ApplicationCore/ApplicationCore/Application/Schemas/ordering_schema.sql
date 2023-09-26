@@ -83,6 +83,15 @@ CREATE TABLE products (
 	FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
+CREATE TABLE product_drawings (
+	id BLOB NOT NULL,
+	product_id BLOB NOT NULL,
+	dxf_data BLOB NOT NULL,
+	name TEXT NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
 CREATE TABLE five_piece_door_products (
 	product_id BLOB NOT NULL,
 	width REAL NOT NULL,
