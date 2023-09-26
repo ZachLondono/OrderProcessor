@@ -19,6 +19,7 @@
                 <th class="p-5">EB Color</th>
                 <th class="p-5">Unit $</th>
                 <th class="p-5">Ext. $</th>
+                <th></th>
             </tr>
         </thead>
         @foreach (var row in ZargenDrawers) {
@@ -43,11 +44,16 @@
                     <td class="whitespace-nowrap p-5 text-center">@row.EdgeBandingColor</td>
                     <td class="whitespace-nowrap p-5 text-center">@row.UnitPrice.ToString("$0.00")</td>
                     <td class="whitespace-nowrap p-5 text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
+                    <td class="p-5">
+                        @if (ActionColumn is not null) {
+                            @ActionColumn(row)
+                        }
+                    </td>
                 </tr>
 
                 @if (row.Comment != string.Empty) {
                     <tr>
-                        <td class="p-5 font-bold text-red-500" colspan="11">
+                        <td class="p-5 font-bold text-red-500" colspan="12">
                             @row.Comment
                         </td>
                     </tr>
@@ -55,7 +61,7 @@
 
                 @foreach(var note in row.ProductionNotes) {
                     <tr>
-                        <td class="p-5 font-bold text-red-500" colspan="17">
+                        <td class="p-5 font-bold text-red-500" colspan="12">
                             @note
                         </td>
                     </tr>
@@ -68,6 +74,9 @@
 
 
 @code {
+
+    [Parameter]
+    public RenderFragment<ZargenDrawer>? ActionColumn { get; set; } = null;
 
     [Parameter]
     public IEnumerable<ZargenDrawer> ZargenDrawers { get; set; } = Enumerable.Empty<ZargenDrawer>();

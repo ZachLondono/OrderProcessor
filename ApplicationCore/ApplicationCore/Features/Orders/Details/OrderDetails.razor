@@ -4,6 +4,7 @@
 @using ApplicationCore.Features.Orders.Details.WorkingDirectory
 @using ApplicationCore.Features.Orders.OrderExport;
 @using ApplicationCore.Features.Orders.Shared.Domain
+@using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 @using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 @using ApplicationCore.Features.Orders.OrderRelease
 @using ApplicationCore.Features.Orders.Shared.State;
@@ -258,42 +259,69 @@
                         @if (room.DovetailDrawerBoxes.Any()) {
                             <section class="mt-5">
                                 <h3>Dovetail Drawer Boxes</h3>
-                                <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@room.DovetailDrawerBoxes" />
+                                <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@room.DovetailDrawerBoxes" Context="product">
+                                    <ActionColumn>
+                                        <Button OnClickAsync="() => OpenProductDrawingManager(product.Id)">DXFs</Button>
+                                    </ActionColumn>
+                                </DovetailDrawerBoxProductTable>
                             </section>
                         }
 
                         @if (room.DoweledDrawerBoxes.Any()) {
                             <section class="mt-5">
                                 <h3>Doweled Drawer Boxes</h3>
-                                <DoweledDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@room.DoweledDrawerBoxes" />
+                                <DoweledDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@room.DoweledDrawerBoxes" Context="product">
+                                    <ActionColumn>
+                                        <Button OnClickAsync="() => OpenProductDrawingManager(product.Id)">DXFs</Button>
+                                    </ActionColumn>
+                                </DoweledDrawerBoxProductTable>
                             </section>
                         }
        
                         @if (room.Cabinets.Any()) {
                             <section class="mt-5">
                                 <h3>Cabinets</h3>
-                                <CabinetProductTable UseInches="@_useInches" Cabinets="@room.Cabinets" />
+                                <CabinetProductTable UseInches="@_useInches" Cabinets="@room.Cabinets" Context="product">
+                                    <ActionColumn>
+                                        <Button OnClickAsync="() => OpenProductDrawingManager(product.Id)">DXFs</Button>
+                                    </ActionColumn>
+                                </CabinetProductTable>
                             </section>
                         }
     
                         @if (room.ClosetParts.Any()) {
                             <section class="mt-5">
                                 <h3>Closet Parts</h3>
-                                <ClosetPartProductTable UseInches="@_useInches" ClosetParts="@room.ClosetParts" OnProductsChanged="OnProductsChanged" />
+                                <ClosetPartProductTable UseInches="@_useInches" ClosetParts="@room.ClosetParts" Context="product">
+                                    <ActionColumn>
+                                        @if (product is ClosetPart) {
+                                            <Button OnClickAsync="() => OpenPartEditor(product)" class="mr-5">Edit</Button>
+                                        }
+                                        <Button OnClickAsync="() => OpenProductDrawingManager(product.Id)">DXFs</Button>
+                                    </ActionColumn>
+                                </ClosetPartProductTable>
                             </section>
                         }
      
                         @if (room.ZargenDrawers.Any()) {
                             <section class="mt-5">
                                 <h3>Zargen Drawers</h3>
-                                <ZargenDrawerProductTable UseInches="@_useInches" ZargenDrawers="@room.ZargenDrawers" />
+                                <ZargenDrawerProductTable UseInches="@_useInches" ZargenDrawers="@room.ZargenDrawers" Context="product">
+                                    <ActionColumn>
+                                        <Button OnClickAsync="() => OpenProductDrawingManager(product.Id)">DXFs</Button>
+                                    </ActionColumn>
+                                </ZargenDrawerProductTable>
                             </section>
                         }
     
                         @if (room.MDFDoors.Any()) {
                             <section class="mt-5">
                                 <h3>MDF Doors</h3>
-                                <MDFDoorProductTable UseInches="@_useInches" MDFDoors="@room.MDFDoors" />
+                                <MDFDoorProductTable UseInches="@_useInches" MDFDoors="@room.MDFDoors" Context="product">
+                                    <ActionColumn>
+                                        <Button OnClickAsync="() => OpenProductDrawingManager(product.Id)">DXFs</Button>
+                                    </ActionColumn>
+                                </MDFDoorProductTable>
                             </section>
                         }
                     </div>

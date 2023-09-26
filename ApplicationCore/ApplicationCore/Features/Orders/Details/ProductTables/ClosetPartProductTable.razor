@@ -20,10 +20,11 @@
                 <th class="p-5">EB Color</th>
                 <th class="p-5">Unit $</th>
                 <th class="p-5">Ext. $</th>
+                <th></th>
             </tr>
         </thead>
         @foreach (var row in ClosetParts) {
-            <tbody class="hover:bg-blue-500/10 border-b cursor-pointer" @onclick="(async () => await OpenPartEditor(row))">
+            <tbody class="hover:bg-blue-500/10 border-b">
                 <tr>
                     <td class="whitespace-nowrap p-5 text-center">@row.ProductNumber</td>
                     <td class="whitespace-nowrap p-5 text-center">@row.SKU</td>
@@ -41,18 +42,25 @@
                     <td class="whitespace-nowrap p-5 text-center">@row.EdgeBandingColor</td>
                     <td class="whitespace-nowrap p-5 text-center">@row.UnitPrice.ToString("$0.00")</td>
                     <td class="whitespace-nowrap p-5 text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
+                    <td class="p-5">
+                    </td>
+                    <td class="p-5">
+                        @if (ActionColumn is not null) {
+                            @ActionColumn(row)
+                        }
+                    </td>
                 </tr>
 
                 @if (row.Comment != string.Empty) {
                     <tr>
-                        <td class="p-5 font-bold text-red-500" colspan="11">
+                        <td class="p-5 font-bold text-red-500" colspan="13">
                             @row.Comment
                         </td>
                     </tr>
                 }
                 @foreach (var note in row.ProductionNotes) {
                     <tr>
-                        <td class="p-5 font-bold text-red-500" colspan="17">
+                        <td class="p-5 font-bold text-red-500" colspan="13">
                             @note
                         </td>
                     </tr>
@@ -66,31 +74,12 @@
 @code {
 
     [Parameter]
+    public RenderFragment<IClosetPartProduct>? ActionColumn { get; set; } = null;
+
+    [Parameter]
     public IEnumerable<IClosetPartProduct> ClosetParts { get; set; } = Enumerable.Empty<IClosetPartProduct>();
 
     [Parameter]
     public bool UseInches { get; set; }
-
-    [CascadingParameter]
-    public IModalService Modal { get; set; } = default!;
-
-    [Parameter]
-    public Action? OnProductsChanged { get; set; }
-
-    public async Task OpenPartEditor(IClosetPartProduct part) {
-
-        if (part is ClosetPart closetPart) {
-
-            var parameters = new ModalParameters() {
-				{ "Product", closetPart }
-			};
-
-            _ = await Modal.Show<ClosetPartEditor>("Edit Closet Part", parameters).Result;
-
-            OnProductsChanged?.Invoke();
-
-        }
-
-    }
 
 }
