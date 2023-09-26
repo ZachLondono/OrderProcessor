@@ -16,14 +16,14 @@
 } else {
     <EditForm Model="@DataContext.Configuration" OnSubmit="@DataContext.SaveChanges">
     
-        <div>
+        <div class="flex flex-row space-x-3 mb-5 items-center">
             <label>Ordering Database</label>
-            <InputText @bind-Value="DataContext.Configuration.OrderingDBPath" />
+            <InputText @bind-Value="DataContext.Configuration.OrderingDBPath" class="input-text flex-1" />
         </div>
     
-        <div>
+        <div class="flex flex-grow space-x-3 mb-5 items-center">
             <label>Companies Database</label>
-            <InputText @bind-Value="DataContext.Configuration.CompaniesDBPath" />
+            <InputText @bind-Value="DataContext.Configuration.CompaniesDBPath" class="input-text flex-1" />
         </div>
 
         <div>
