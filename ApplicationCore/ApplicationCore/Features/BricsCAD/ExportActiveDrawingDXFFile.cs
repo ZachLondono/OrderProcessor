@@ -4,9 +4,9 @@ using BricscadApp;
 
 namespace ApplicationCore.Features.BricsCAD;
 
-public class ExportDrawingDXFFile {
+public class ExportActiveDrawingDXFFile {
 
-    public record Command(string DrawingName, string ExportFileName) : ICommand;
+    public record Command(string ExportFileName) : ICommand;
 
     public class Handler : CommandHandler<Command> {
 

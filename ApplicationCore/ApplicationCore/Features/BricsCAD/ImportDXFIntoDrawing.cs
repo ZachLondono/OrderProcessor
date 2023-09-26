@@ -6,9 +6,10 @@ namespace ApplicationCore.Features.BricsCAD;
 
 public class ImportDXFIntoDrawing {
 
-    public record Command(string DrawingName, string DXFFilePath, ImportMode Mode) : ICommand;
+    public record Command(string DXFFilePath, ImportMode Mode) : ICommand;
 
     public enum ImportMode {
+        New,
         Import,
         Replace
     }
@@ -16,11 +17,11 @@ public class ImportDXFIntoDrawing {
     public class Handler : CommandHandler<Command> {
 
         public override async Task<Response> Handle(Command command) {
-            
+
             AcadApplication? app = null;
 
             try {
-                app = BricsCADApplicationRetriever.GetAcadApplication();
+                app = BricsCADApplicationRetriever.GetAcadApplication(command.Mode == ImportMode.New);
             } catch { }
 
             if (app is null) {
@@ -32,15 +33,30 @@ public class ImportDXFIntoDrawing {
 
             AcadDocument? document = null;
 
-            try {
-                document = app.ActiveDocument;
-            } catch { }
+            if (command.Mode == ImportMode.New) {
 
-            if (document is null) {
-                return new Error() {
-                    Title = "No Document Found",
-                    Details = "Failed to get active BricsCAD document."
-                };
+                document = app.Documents.Add();
+
+                if (document is null) {
+                    return new Error() {
+                        Title = "Could not Create Document",
+                        Details = "Failed to create new BricsCAD document."
+                    };
+                }
+
+            } else {
+
+                try {
+                    document = app.ActiveDocument;
+                } catch { }
+
+                if (document is null) {
+                    return new Error() {
+                        Title = "No Document Found",
+                        Details = "Failed to get active BricsCAD document."
+                    };
+                }
+
             }
 
             try {
