@@ -129,7 +129,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
     /// <summary>
     /// Returns the ProductPlanner finish "Material" value for a given material core
     /// </summary>
-    private static string GetFinishMaterialType(CabinetMaterialCore core) => core switch {
+    public static string GetFinishMaterialType(CabinetMaterialCore core) => core switch {
         CabinetMaterialCore.ParticleBoard => "Mela",
         CabinetMaterialCore.Plywood => "Veneer",
         _ => "Mela"
@@ -146,7 +146,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
         };
     }
 
-    private static string GetEBMaterialType(CabinetMaterialCore core) => core switch {
+    public static string GetEBMaterialType(CabinetMaterialCore core) => core switch {
         CabinetMaterialCore.ParticleBoard => "PVC",
         CabinetMaterialCore.Plywood => "Veneer",
         _ => "PVC"

@@ -288,6 +288,17 @@
                                 </CabinetProductTable>
                             </section>
                         }
+
+                        @if (room.CabinetParts.Any()) {
+                            <section class="mt-5">
+                                <h3>Cabinet Extra Parts</h3>
+                                <CabinetPartProductTable UseInches="@_useInches" CabinetParts="@room.CabinetParts" Context="product" >
+                                    <ActionColumn>
+                                        <Button OnClickAsync="() => OpenProductDrawingManager(product.Id)">DXFs</Button>
+                                    </ActionColumn>
+                                </CabinetPartProductTable>
+                            </section>
+                        }
     
                         @if (room.ClosetParts.Any()) {
                             <section class="mt-5">
