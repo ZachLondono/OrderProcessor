@@ -22,13 +22,13 @@ public class DeleteProductDrawing {
 
                 using var connection = await _connectionFactory.CreateConnection();
 
-                var result = await connection.ExecuteAsync("DELETE FROM product_drawings WHERE id = @ID");
+                var result = await connection.ExecuteAsync("DELETE FROM product_drawings WHERE id = @DrawingId", command);
 
                 if (result < 1) {
 
                     return new Error() {
-                        Title = "",
-                        Details = ""
+                        Title = "Failed to Delete Product Drawing",
+                        Details = "No rows where affected when trying to delete drawing."
                     };
 
                 }

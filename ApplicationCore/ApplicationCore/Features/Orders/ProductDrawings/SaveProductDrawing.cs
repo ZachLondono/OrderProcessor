@@ -22,7 +22,7 @@ public class SaveProductDrawing {
 
                 using var connection = await _connectionFactory.CreateConnection();
 
-                int? exists = await connection.QueryFirstOrDefaultAsync<int>("SELECT 1 FROM product_drawings WHERE id = @Id;", command);
+                int? exists = await connection.QueryFirstOrDefaultAsync<int>("SELECT 1 FROM product_drawings WHERE id = @Id;", command.Drawing);
 
                 if (exists is int n && n == 1) {
 
@@ -32,7 +32,7 @@ public class SaveProductDrawing {
                         SET name = @Name, dxf_data = @DXFData
                         WHERE id = @Id;
                         """,
-                        command);
+                        command.Drawing);
 
                 } else {
 
@@ -44,13 +44,13 @@ public class SaveProductDrawing {
                             dxf_data,
                             name)
                         VALUES (
-                            Id,
-                            ProductId,
-                            DXFData,
-                            Name
+                            @Id,
+                            @ProductId,
+                            @DXFData,
+                            @Name
                         );
                         """,
-                        command);
+                        command.Drawing);
 
                 }
 
