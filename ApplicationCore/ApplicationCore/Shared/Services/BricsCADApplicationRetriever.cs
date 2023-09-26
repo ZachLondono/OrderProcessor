@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using BricscadApp;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security;
 namespace ApplicationCore.Shared.Services;
@@ -9,8 +10,30 @@ public class BricsCADApplicationRetriever {
     internal const string OLEAUT32 = "oleaut32.dll";
     internal const string OLE32 = "ole32.dll";
 
-    public static dynamic? GetAcadApplication() {
-        return GetActiveObject(strProgId);
+    public static AcadApplication? GetAcadApplication(bool createIfNotOpen = false) {
+
+        try {
+            return GetActiveObject(strProgId) as AcadApplication;
+        } catch {
+
+            if (!createIfNotOpen) {
+                throw;
+            } 
+
+            if (Type.GetTypeFromProgID(strProgId) is not Type type) {
+                throw;
+            }
+
+            var instance = Activator.CreateInstance(type) as AcadApplication;
+            
+            if (instance is null) {
+                throw;
+            }
+
+            instance.Visible = true;
+            return instance;
+
+        }
     }
 
 
