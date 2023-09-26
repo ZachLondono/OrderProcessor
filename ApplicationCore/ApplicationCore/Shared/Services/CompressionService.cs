@@ -16,6 +16,7 @@ internal class CompressionService {
     
     public static byte[] Compress(byte[] bytes) {
 
+        /*
         using var msi = new MemoryStream(bytes);
         using var mso = new MemoryStream();
         using var gs = new GZipStream(mso, CompressionMode.Compress);
@@ -23,6 +24,16 @@ internal class CompressionService {
         CopyTo(msi, gs);
     
         return mso.ToArray();
+        */
+
+        using (var msi = new MemoryStream(bytes))
+        using (var mso = new MemoryStream()) {
+            using (var gs = new GZipStream(mso, CompressionMode.Compress)) {
+                CopyTo(msi, gs);
+            }
+    
+            return mso.ToArray();
+        }
 
     }
     
