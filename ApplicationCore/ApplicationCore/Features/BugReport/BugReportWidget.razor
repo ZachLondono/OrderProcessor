@@ -7,7 +7,7 @@
 @using Microsoft.Extensions.Options;
 @using MimeKit;
 @using static ApplicationCore.Shared.Components.Button;
-@inject EmailService EmailService
+@inject IEmailService EmailService
 @inject IFileReader FileReader
 
 @if (_isSent) {
