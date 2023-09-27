@@ -50,6 +50,7 @@ public class OrderModel {
     [XmlArrayItem("fivePieceDoor", typeof(FivePieceDoorModel))]
     [XmlArrayItem("dovetailDrawerBox", typeof(DovetailDrawerBoxModel))]
     [XmlArrayItem("doweledDrawerBox", typeof(DoweledDrawerBoxModel))]
+    [XmlArrayItem("additionalItem", typeof(AdditionalItemModel))]
     public List<ProductOrItemModel> Products { get; set; } = new();
 
 }
