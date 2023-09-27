@@ -1,13 +1,15 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
+using OneOf;
 using System.Xml.Serialization;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 
-public class DoweledDrawerBoxModel : ProductModel {
+public class DoweledDrawerBoxModel : ProductOrItemModel {
 
     [XmlAttribute("groupNumber")]
     public int GroupNumber { get; set; }
@@ -53,7 +55,7 @@ public class DoweledDrawerBoxModel : ProductModel {
 
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
-    public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
+    public override OneOf<IProduct, AdditionalItem> CreateProductOrItem(ProductBuilderFactory builderFactory) {
 
         var height = Dimension.FromMillimeters(Height);
         var width = Dimension.FromMillimeters(Width);

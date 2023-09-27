@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 
-public abstract class CabinetModelBase : ProductModel {
+public abstract class CabinetModelBase : ProductOrItemModel {
 
     [XmlAttribute("groupNumber")]
     public int GroupNumber { get; set; }

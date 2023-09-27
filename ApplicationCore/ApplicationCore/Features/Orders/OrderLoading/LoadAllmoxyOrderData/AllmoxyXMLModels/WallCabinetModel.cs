@@ -1,8 +1,10 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
+using OneOf;
 using System.Xml.Serialization;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
@@ -30,7 +32,7 @@ public class WallCabinetModel : CabinetModelBase {
     [XmlAttribute("isGarage")]
     public bool IsGarage { get; set; } = false;
 
-    public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
+    public override OneOf<IProduct, AdditionalItem> CreateProductOrItem(ProductBuilderFactory builderFactory) {
 
         Dimension doorExtendDown = Dimension.FromMillimeters(ExtendDoorDown);
         WallCabinetDoors doors = DoorQty switch {

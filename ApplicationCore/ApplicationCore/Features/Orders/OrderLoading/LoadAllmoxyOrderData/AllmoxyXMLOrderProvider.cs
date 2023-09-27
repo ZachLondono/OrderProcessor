@@ -18,6 +18,7 @@ using ApplicationCore.Shared.Services;
 using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.XMLValidation;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
 using Microsoft.Extensions.Logging;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData;
 
@@ -117,7 +118,8 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
         };
 
         List<IProduct> products = new();
-        data.Products.ForEach(c => MapAndAddProduct(c, products));
+        List<AdditionalItem> items = new();
+        data.Products.ForEach(c => MapAndAddProduct(c, products, items));
 
         // 'Folder 1' is the default allmoxy folder name, if that is the only folder name than it can be removed
         var roomNames = products.Select(p => p.Room).Distinct().ToList();
@@ -152,7 +154,7 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
             DueDate = null,
             CustomerId = customerId,
             VendorId = Guid.Parse(_configuration.VendorId),
-            AdditionalItems = new(),
+            AdditionalItems = items,
             Products = products,
             Rush = data.Shipping.Method.Contains("Rush"),
             Info = info
@@ -286,15 +288,22 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 
     }
 
-    private void MapAndAddProduct(ProductModel data, List<IProduct> products) {
+    private void MapAndAddProduct(ProductOrItemModel data, List<IProduct> products, List<AdditionalItem> items) {
 
         try {
 
-            var product = data.CreateProduct(_builderFactory);
-            if (product.Room == "folder_name") {
-                product.Room = string.Empty;
-            }
-            products.Add(product);
+            var productOrItem = data.CreateProductOrItem(_builderFactory);
+
+            productOrItem.Switch(
+                product => {
+
+                    if (product.Room == "folder_name") {
+                        product.Room = string.Empty;
+                    }
+                    products.Add(product);
+
+                },
+                items.Add);
 
         } catch (Exception ex) {
 

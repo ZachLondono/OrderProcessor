@@ -1,13 +1,15 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using OneOf;
 using System.Xml.Serialization;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 
-public class CabinetPartModel : ProductModel {
+public class CabinetPartModel : ProductOrItemModel {
 
     [XmlAttribute("groupNumber")]
     public int GroupNumber { get; set; }
@@ -53,7 +55,7 @@ public class CabinetPartModel : ProductModel {
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
 
-    public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
+    public override OneOf<IProduct, AdditionalItem> CreateProductOrItem(ProductBuilderFactory builderFactory) {
 
         CabinetMaterialCore core = MaterialCore switch {
             AllmoxyXMLOrderProviderHelpers.PARTICLE_BOARD_CORE_CODE => CabinetMaterialCore.ParticleBoard,

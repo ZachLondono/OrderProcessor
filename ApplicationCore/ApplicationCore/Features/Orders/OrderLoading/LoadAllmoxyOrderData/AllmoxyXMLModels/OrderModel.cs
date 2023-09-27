@@ -50,6 +50,6 @@ public class OrderModel {
     [XmlArrayItem("fivePieceDoor", typeof(FivePieceDoorModel))]
     [XmlArrayItem("dovetailDrawerBox", typeof(DovetailDrawerBoxModel))]
     [XmlArrayItem("doweledDrawerBox", typeof(DoweledDrawerBoxModel))]
-    public List<ProductModel> Products { get; set; } = new();
+    public List<ProductOrItemModel> Products { get; set; } = new();
 
 }
