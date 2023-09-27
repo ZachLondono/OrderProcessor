@@ -1,15 +1,17 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
+using OneOf;
 using System.Xml.Serialization;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 
-public class MDFDoorModel : ProductModel {
+public class MDFDoorModel : ProductOrItemModel {
 
     [XmlAttribute("groupNumber")]
     public int GroupNumber { get; set; }
@@ -86,7 +88,7 @@ public class MDFDoorModel : ProductModel {
 
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
-    public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
+    public override OneOf<IProduct, AdditionalItem> CreateProductOrItem(ProductBuilderFactory builderFactory) {
 
         decimal unitPrice = AllmoxyXMLOrderProviderHelpers.StringToMoney(UnitPrice);
         var type = DoorType.Door;

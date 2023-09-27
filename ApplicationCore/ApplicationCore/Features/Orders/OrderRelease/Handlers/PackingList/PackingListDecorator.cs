@@ -55,6 +55,10 @@ internal class PackingListDecorator : IPackingListDecorator {
                         ComposeCabinetTable(column.Item(), _packingList.Cabinets);
                     }
 
+                    if (_packingList.CabinetParts.Any()) {
+                        ComposeCabinetPartTable(column.Item(), _packingList.CabinetParts);
+                    }
+
                     if (_packingList.ClosetParts.Any()) {
                         ComposeClosetPartTable(column.Item(), _packingList.ClosetParts);
                     }
@@ -263,6 +267,59 @@ internal class PackingListDecorator : IPackingListDecorator {
 
         });
     }
+
+    public static void ComposeCabinetPartTable(IContainer container, IEnumerable<CabinetPartItem> items) {
+        var defaultCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .AlignMiddle()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3);
+
+        var headerCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .Background(Colors.Grey.Lighten3)
+                    .AlignCenter()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3)
+                    .DefaultTextStyle(x => x.Bold());
+
+        container.Column(col => {
+
+            col.Item()
+                .PaddingTop(20)
+                .DefaultTextStyle(x => x.FontSize(10))
+                .Table(table => {
+
+                    table.ColumnsDefinition(column => {
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(40);
+                        column.RelativeColumn();
+                    });
+
+
+                    table.Header(header => {
+
+                        header.Cell().ColumnSpan(3).PaddingLeft(10).Text($"Cabinet Extras ({items.Sum(i => i.Qty)})").FontSize(16).Bold().Italic();
+
+                        header.Cell().Element(headerCellStyle).Text("#");
+                        header.Cell().Element(headerCellStyle).Text("Qty");
+                        header.Cell().Element(headerCellStyle).Text("Description");
+
+                    });
+
+                    foreach (var item in items) {
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
+                    }
+
+                });
+
+        });
+    }
+
 
     public static void ComposeClosetPartTable(IContainer container, IEnumerable<ClosetPartItem> items) {
         var defaultCellStyle = (IContainer cell)
@@ -742,6 +799,13 @@ internal class PackingListDecorator : IPackingListDecorator {
                                 Depth = cab.Depth,
                                 Description = cab.GetDescription()
                             }).ToList(),
+            CabinetParts = order.Products
+                                .OfType<CabinetPart>()
+                                .Select(cabPart => new CabinetPartItem() {
+                                    Line = cabPart.ProductNumber,
+                                    Qty = cabPart.Qty,
+                                    Description = cabPart.GetDescription()
+                                }).ToList(),
             Doors = order.Products
                             .OfType<MDFDoorProduct>()
                             .Select(cab => new MDFDoorItem() {

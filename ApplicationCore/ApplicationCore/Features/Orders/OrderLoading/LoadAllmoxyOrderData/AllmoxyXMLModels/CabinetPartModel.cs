@@ -2,16 +2,14 @@
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Shared.Domain;
 using OneOf;
 using System.Xml.Serialization;
-using ClosetPaintedSide = ApplicationCore.Features.Orders.Shared.Domain.ValueObjects.PaintedSide;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 
-public class ClosetPartModel : ProductOrItemModel {
+public class CabinetPartModel : ProductOrItemModel {
 
     [XmlAttribute("groupNumber")]
     public int GroupNumber { get; set; }
@@ -25,12 +23,6 @@ public class ClosetPartModel : ProductOrItemModel {
     [XmlElement("sku")]
     public string SKU { get; set; } = string.Empty;
 
-    [XmlElement("width")]
-    public double Width { get; set; }
-
-    [XmlElement("length")]
-    public double Length { get; set; }
-
     [XmlElement("qty")]
     public int Qty { get; set; }
 
@@ -43,14 +35,11 @@ public class ClosetPartModel : ProductOrItemModel {
     [XmlElement("materialFinish")]
     public string MaterialFinish { get; set; } = string.Empty;
 
+    [XmlElement("materialFinishType")]
+    public string MaterialFinishType { get; set; } = string.Empty;
+
     [XmlElement("materialCore")]
     public string MaterialCore { get; set; } = string.Empty;
-
-    [XmlElement("paintColor")]
-    public string PaintColor { get; set; } = string.Empty;
-
-    [XmlElement("paintedSide")]
-    public string PaintedSide { get; set; } = string.Empty;
 
     [XmlElement("comment")]
     public string Comment { get; set; } = string.Empty;
@@ -65,29 +54,24 @@ public class ClosetPartModel : ProductOrItemModel {
 
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
+
     public override OneOf<IProduct, AdditionalItem> CreateProductOrItem(ProductBuilderFactory builderFactory) {
 
-        ClosetMaterialCore core = MaterialCore switch {
-            AllmoxyXMLOrderProviderHelpers.PARTICLE_BOARD_CORE_CODE => ClosetMaterialCore.ParticleBoard,
-            AllmoxyXMLOrderProviderHelpers.PLYWOOD_CORE_CODE => ClosetMaterialCore.Plywood,
+        CabinetMaterialCore core = MaterialCore switch {
+            AllmoxyXMLOrderProviderHelpers.PARTICLE_BOARD_CORE_CODE => CabinetMaterialCore.ParticleBoard,
+            AllmoxyXMLOrderProviderHelpers.PLYWOOD_CORE_CODE => CabinetMaterialCore.Plywood,
             _ => throw new InvalidOperationException($"Unexpected material core type '{MaterialCore}'"),
         };
 
-        ClosetMaterial material = new(MaterialFinish, core);
+        CabinetMaterialFinishType finishType = MaterialFinishType switch {
+            AllmoxyXMLOrderProviderHelpers.MELAMINE_FINISH_CODE => CabinetMaterialFinishType.Melamine,
+            AllmoxyXMLOrderProviderHelpers.VENEER_FINISH_CODE => CabinetMaterialFinishType.Veneer,
+            AllmoxyXMLOrderProviderHelpers.PAINT_FINISH_CODE => CabinetMaterialFinishType.Paint,
+            AllmoxyXMLOrderProviderHelpers.NO_FINISH_CODE => CabinetMaterialFinishType.None,
+            _ => throw new InvalidOperationException($"Unrecognized material finish type '{MaterialFinishType}'")
+        };
 
-        string? paintColor = string.IsNullOrWhiteSpace(PaintColor) ? null : PaintColor;
-        ClosetPaint? paint = null;
-        if (paintColor is not null) {
-            if (Enum.TryParse(PaintedSide, out ClosetPaintedSide paintedSide)) {
-                paint = new(paintColor, paintedSide);
-            } else {
-                paint = new(paintColor, ClosetPaintedSide.Custom);
-            }
-
-        }
-
-        Dimension width = Dimension.FromMillimeters(Width);
-        Dimension length = Dimension.FromMillimeters(Length);
+        CabinetMaterial material = new(MaterialFinish, finishType, core);
 
         decimal unitPrice = AllmoxyXMLOrderProviderHelpers.StringToMoney(UnitPrice);
 
@@ -95,11 +79,7 @@ public class ClosetPartModel : ProductOrItemModel {
 
         string edgeBandColor = EdgeBandColor == "Match" ? MaterialFinish : EdgeBandColor;
 
-        return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, SKU, width, length, material, paint, edgeBandColor, Comment, parameters) {
-            ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList()
-        };
-
+        return new CabinetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), SKU, Room, material, edgeBandColor, Comment, parameters, ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList());
     }
-
 
 }

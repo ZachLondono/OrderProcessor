@@ -1,18 +1,17 @@
 ﻿namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 
-internal class ZargenDrawerGroup {
+internal class CabinetPartGroup {
 
-    // TODO: ADD Paint to group key
     public string Room { get; set; } = string.Empty;
     public string MaterialFinish { get; set; } = string.Empty;
     public string MaterialCore { get; set; } = string.Empty;
     public string EdgeBandingFinish { get; set; } = string.Empty;
 
-    public List<ZargenDrawerItem> Items { get; set; } = new();
+    public List<CabinetPartItem> Items { get; set; } = new();
 
-    public class ZargenDrawerGroupComparer : IEqualityComparer<ZargenDrawerGroup> {
+    public class CabinetPartGroupComparer : IEqualityComparer<CabinetPartGroup> {
 
-        bool IEqualityComparer<ZargenDrawerGroup>.Equals(ZargenDrawerGroup? x, ZargenDrawerGroup? y) {
+        bool IEqualityComparer<CabinetPartGroup>.Equals(CabinetPartGroup? x, CabinetPartGroup? y) {
 
             if (x is null && y is null) return true;
             if (x is null || y is null) return false;
@@ -24,7 +23,7 @@ internal class ZargenDrawerGroup {
 
         }
 
-        int IEqualityComparer<ZargenDrawerGroup>.GetHashCode(ZargenDrawerGroup obj) {
+        int IEqualityComparer<CabinetPartGroup>.GetHashCode(CabinetPartGroup obj) {
             return HashCode.Combine(obj.Room, obj.MaterialFinish, obj.MaterialCore, obj.EdgeBandingFinish);
         }
 

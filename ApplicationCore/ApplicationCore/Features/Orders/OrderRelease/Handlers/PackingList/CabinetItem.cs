@@ -17,4 +17,3 @@ internal class CabinetItem {
     public Dimension Depth { get; set; }
 
 }
-

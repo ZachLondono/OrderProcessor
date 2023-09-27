@@ -42,6 +42,7 @@ public class OrderModel {
     [XmlArrayItem("blindBaseCabinet", typeof(BlindBaseCabinetModel))]
     [XmlArrayItem("blindWallCabinet", typeof(BlindWallCabinetModel))]
     [XmlArrayItem("trashCabinet", typeof(TrashCabinetModel))]
+    [XmlArrayItem("cabinetPart", typeof(CabinetPartModel))]
     [XmlArrayItem("closetPart", typeof(ClosetPartModel))]
     [XmlArrayItem("zargenDrawer", typeof(ZargenDrawerModel))]
     [XmlArrayItem("customDrillingVerticalPanel", typeof(CustomDrillingVerticalPanelModel))]
@@ -49,6 +50,7 @@ public class OrderModel {
     [XmlArrayItem("fivePieceDoor", typeof(FivePieceDoorModel))]
     [XmlArrayItem("dovetailDrawerBox", typeof(DovetailDrawerBoxModel))]
     [XmlArrayItem("doweledDrawerBox", typeof(DoweledDrawerBoxModel))]
-    public List<ProductModel> Products { get; set; } = new();
+    [XmlArrayItem("additionalItem", typeof(AdditionalItemModel))]
+    public List<ProductOrItemModel> Products { get; set; } = new();
 
 }

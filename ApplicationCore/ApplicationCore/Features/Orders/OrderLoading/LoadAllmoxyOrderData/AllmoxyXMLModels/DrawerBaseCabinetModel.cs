@@ -1,8 +1,10 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
+using OneOf;
 using System.Xml.Serialization;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
@@ -39,7 +41,7 @@ public class DrawerBaseCabinetModel : CabinetModelBase {
     [XmlAttribute("isGarage")]
     public bool IsGarage { get; set; } = false;
 
-    public override IProduct CreateProduct(ProductBuilderFactory builderFactory) {
+    public override OneOf<IProduct, AdditionalItem> CreateProductOrItem(ProductBuilderFactory builderFactory) {
 
         var drawerFaces = new Dimension[DrawerQty == 1 ? 0 : DrawerQty];
         if (DrawerQty > 1) drawerFaces[0] = Dimension.FromMillimeters(DrawerFace1); // For 1 drawer box cabinets, the drawer box size is calculated

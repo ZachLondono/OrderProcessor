@@ -223,6 +223,19 @@ CREATE TABLE zargen_drawers (
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
+CREATE TABLE cabinet_parts (
+	product_id BLOB NOT NULL,
+	sku TEXT NOT NULL,
+	material_core INTEGER NOT NULL,
+	material_finish TEXT NOT NULL,
+	material_finish_type TEXT NOT NULL,
+	edge_banding_finish TEXT NOT NULL,
+	comment TEXT NOT NULL,
+	parameters TEXT NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
 CREATE TABLE cabinets (
 	product_id BLOB NOT NULL,
 	height REAL NOT NULL,
