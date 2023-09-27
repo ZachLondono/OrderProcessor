@@ -42,6 +42,7 @@ public class OrderModel {
     [XmlArrayItem("blindBaseCabinet", typeof(BlindBaseCabinetModel))]
     [XmlArrayItem("blindWallCabinet", typeof(BlindWallCabinetModel))]
     [XmlArrayItem("trashCabinet", typeof(TrashCabinetModel))]
+    [XmlArrayItem("cabinetPart", typeof(CabinetPartModel))]
     [XmlArrayItem("closetPart", typeof(ClosetPartModel))]
     [XmlArrayItem("zargenDrawer", typeof(ZargenDrawerModel))]
     [XmlArrayItem("customDrillingVerticalPanel", typeof(CustomDrillingVerticalPanelModel))]
