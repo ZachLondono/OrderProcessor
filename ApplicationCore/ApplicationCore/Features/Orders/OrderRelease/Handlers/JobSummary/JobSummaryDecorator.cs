@@ -17,6 +17,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.ZargenDrawerGroup;
 using ApplicationCore.Shared;
+using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.CabinetPartGroup;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 
@@ -81,6 +82,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                     });
 
                                     int cabQty = jobSummary.Cabinets.Sum(p => p.Items.Sum(i => i.Qty));
+                                    int cabPartQty = jobSummary.CabinetParts.Sum(p => p.Items.Sum(i => i.Qty));
                                     int cpQty = jobSummary.ClosetParts.Sum(p => p.Items.Sum(i => i.Qty));
                                     int zargenQty = jobSummary.ZargenDrawers.Sum(p => p.Items.Sum(i => i.Qty));
                                     int doorQty = jobSummary.Doors.Sum(p => p.Items.Sum(i => i.Qty));
@@ -90,6 +92,11 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                     if (cabQty > 0) {
                                         table.Cell().AlignRight().PaddingRight(5).Text("Cabinets:");
                                         table.Cell().AlignCenter().Text(cabQty == 0 ? "-" : cabQty.ToString());
+                                    }
+
+                                    if (cabPartQty > 0) {
+                                        table.Cell().AlignRight().PaddingRight(5).Text("Cabinet Extras:");
+                                        table.Cell().AlignCenter().Text(cabPartQty == 0 ? "-" : cabPartQty.ToString());
                                     }
 
                                     if (cpQty > 0) {
@@ -174,6 +181,10 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                     if (jobSummary.ShowItemsInSummary) {
                         foreach (var group in jobSummary.Cabinets) {
                             ComposeCabinetTable(column.Item(), group);
+                        }
+
+                        foreach (var group in jobSummary.CabinetParts) {
+                            ComposeCabinetPartTable(column.Item(), group);
                         }
 
                         foreach (var group in jobSummary.ClosetParts) {
@@ -311,7 +322,10 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
         var zargens = order.Products
                     .OfType<ZargenDrawer>()
                     .GroupBy(z => new ZargenDrawerGroup() {
-
+                        EdgeBandingFinish = z.EdgeBandingColor,
+                        MaterialCore = z.Material.Core.ToString(),
+                        MaterialFinish = z.Material.Finish,
+                        Room = z.Room
                     }, new ZargenDrawerGroupComparer())
                     .Select(g => {
 
@@ -331,6 +345,30 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
                     })
                     .ToList();
+
+        var cabParts = order.Products
+                            .OfType<CabinetPart>()
+                            .GroupBy(p => new CabinetPartGroup() {
+                                Room = p.Room,
+                                MaterialCore = p.Material.Core.ToString(),
+                                MaterialFinish = p.Material.Finish,
+                                EdgeBandingFinish = p.EdgeBandingColor,
+                            }, new CabinetPartGroupComparer())
+                            .Select(g => {
+
+                                g.Key.Items = g.Select(i => new CabinetPartItem() {
+                                    Line = i.ProductNumber,
+                                    Qty = i.Qty,
+                                    Sku = i.SKU,
+                                    Description = i.GetDescription()
+                                })
+                                .OrderBy(i => i.Line)
+                                .ToList();
+
+                                return g.Key;
+
+                            })
+                            .ToList();
 
         var cabs = order.Products
                         .OfType<Cabinet>()
@@ -416,6 +454,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
             ShowItemsInSummary = _showItems,
             Cabinets = cabs,
+            CabinetParts = cabParts,
             ClosetParts = cp,
             ZargenDrawers = zargens,
             Doors = doors,
@@ -533,6 +572,76 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                 .AlignLeft()
                                 .Text(comment);
                         });
+
+                    }
+
+                });
+
+        });
+
+    }
+
+    private static void ComposeCabinetPartTable(IContainer container, CabinetPartGroup group) {
+
+        var defaultCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .AlignMiddle()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3);
+
+        var headerCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .Background(Colors.Grey.Lighten3)
+                    .AlignCenter()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3)
+                    .DefaultTextStyle(x => x.Bold());
+
+        container.Column(col => {
+
+            col.Item()
+                .PaddingTop(10)
+                .PaddingLeft(10)
+                .Text($"{(group.Room == "" ? "" : $"{group.Room} - ")}Cabinet Extras ({group.Items.Sum(i => i.Qty)})")
+                .FontSize(16)
+                .Bold()
+                .Italic();
+
+            col.Item()
+                .DefaultTextStyle(x => x.FontSize(10))
+                .Table(table => {
+
+                    table.ColumnsDefinition(column => {
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(200);
+                    });
+
+
+                    table.Header(header => {
+
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Material");
+                        header.Cell().ColumnSpan(2).Element(defaultCellStyle).PaddingLeft(5).Text($"{group.MaterialCore} - {group.MaterialFinish}");
+
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Edge Banding");
+                        header.Cell().ColumnSpan(2).Element(defaultCellStyle).PaddingLeft(5).Text(group.EdgeBandingFinish);
+
+                        header.Cell().Element(headerCellStyle).Text("#");
+                        header.Cell().Element(headerCellStyle).Text("Qty");
+                        header.Cell().Element(headerCellStyle).Text("Sku");
+                        header.Cell().Element(headerCellStyle).Text("Description");
+
+                    });
+
+                    foreach (var item in group.Items) {
+
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Sku);
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description);
 
                     }
 
@@ -667,7 +776,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         header.Cell().ColumnSpan(4).Element(defaultCellStyle).PaddingLeft(5).Text($"{group.MaterialCore} - {group.MaterialFinish}");
 
                         header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Edge Banding");
-                        header.Cell().ColumnSpan(4).Element(defaultCellStyle).PaddingLeft(5).Text($"{group.EdgeBandingMaterial} - {group.EdgeBandingFinish}");
+                        header.Cell().ColumnSpan(4).Element(defaultCellStyle).PaddingLeft(5).Text(group.EdgeBandingFinish);
 
                         header.Cell().Element(headerCellStyle).Text("#");
                         header.Cell().Element(headerCellStyle).Text("Qty");

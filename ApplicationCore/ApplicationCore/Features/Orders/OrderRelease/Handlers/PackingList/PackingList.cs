@@ -20,6 +20,8 @@ internal record PackingList {
 
     public List<CabinetItem> Cabinets { get; set; } = new();
 
+    public List<CabinetPartItem> CabinetParts { get; set; } = new();
+
     public List<ClosetPartItem> ClosetParts { get; set; } = new();
 
     public List<ZargenDrawerItem> ZargenDrawers { get; set; } = new();

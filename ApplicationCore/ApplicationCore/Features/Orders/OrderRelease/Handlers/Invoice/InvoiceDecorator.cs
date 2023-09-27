@@ -55,8 +55,16 @@ internal class InvoiceDecorator : IInvoiceDecorator {
                         ComposeCabinetTable(column.Item(), invoice.Cabinets);
                     }
 
+                    if (invoice.CabinetParts.Any()) {
+                        ComposeCabinetPartTable(column.Item(), invoice.CabinetParts);
+                    }
+
                     if (invoice.ClosetParts.Any()) {
                         ComposeClosetPartTable(column.Item(), invoice.ClosetParts);
+                    }
+
+                    if (invoice.ZargenDrawers.Any()) {
+                        ComposeZargenDrawerTable(column.Item(), invoice.ZargenDrawers);
                     }
 
                     if (invoice.MDFDoors.Any()) {
@@ -280,6 +288,72 @@ internal class InvoiceDecorator : IInvoiceDecorator {
                     }
 
                     table.Cell().ColumnSpan(6).PaddingVertical(3).PaddingRight(5).AlignRight().Text("Sub Total: ").SemiBold();
+                    table.Cell().ColumnSpan(2).Border(1).BorderColor(Colors.Grey.Lighten1).Background(Colors.Grey.Lighten3).PaddingVertical(3).PaddingRight(10).AlignCenter().Text(items.Sum(i => i.Qty * i.UnitPrice).ToString("$0.00"));
+
+                });
+
+        });
+    }
+
+    private static void ComposeCabinetPartTable(IContainer container, IEnumerable<CabinetPartItem> items) {
+        var defaultCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .AlignMiddle()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3);
+
+        var headerCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .Background(Colors.Grey.Lighten3)
+                    .AlignCenter()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3)
+                    .DefaultTextStyle(x => x.Bold());
+
+        container.Column(col => {
+
+            col.Item()
+                .PaddingTop(10)
+                .PaddingLeft(10)
+                .Text($"Cabinet Extras ({items.Sum(i => i.Qty)})")
+                .FontSize(16)
+                .Bold()
+                .Italic();
+
+            col.Item()
+                .DefaultTextStyle(x => x.FontSize(10))
+                .Table(table => {
+
+                    table.ColumnsDefinition(column => {
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(40);
+                        column.RelativeColumn();
+                        column.ConstantColumn(55);
+                        column.ConstantColumn(55);
+                    });
+
+
+                    table.Header(header => {
+
+                        header.Cell().Element(headerCellStyle).Text("#");
+                        header.Cell().Element(headerCellStyle).Text("Qty");
+                        header.Cell().Element(headerCellStyle).Text("Description");
+                        header.Cell().Element(headerCellStyle).Text("Unit $");
+                        header.Cell().Element(headerCellStyle).Text("Ext $");
+
+                    });
+
+                    foreach (var item in items) {
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.UnitPrice.ToString("0.00"));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text((item.UnitPrice * item.Qty).ToString("$0.00"));
+                    }
+
+                    table.Cell().ColumnSpan(3).PaddingVertical(3).PaddingRight(5).AlignRight().Text("Sub Total: ").SemiBold();
                     table.Cell().ColumnSpan(2).Border(1).BorderColor(Colors.Grey.Lighten1).Background(Colors.Grey.Lighten3).PaddingVertical(3).PaddingRight(10).AlignCenter().Text(items.Sum(i => i.Qty * i.UnitPrice).ToString("$0.00"));
 
                 });
@@ -799,6 +873,14 @@ internal class InvoiceDecorator : IInvoiceDecorator {
                                 Description = cab.GetDescription(),
                                 UnitPrice = cab.UnitPrice,
                             }).ToList(),
+            CabinetParts = order.Products
+                                .OfType<CabinetPart>()
+                                .Select(cab => new CabinetPartItem() {
+                                    Line = cab.ProductNumber,
+                                    Qty = cab.Qty,
+                                    Description = cab.GetDescription(),
+                                    UnitPrice = cab.UnitPrice
+                                }).ToList(),
             MDFDoors = order.Products
                             .OfType<MDFDoorProduct>()
                             .Select(cab => new MDFDoorItem() {
