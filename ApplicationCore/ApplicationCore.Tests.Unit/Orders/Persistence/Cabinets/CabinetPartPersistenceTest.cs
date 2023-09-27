@@ -1,0 +1,44 @@
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
+
+namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
+
+public class CabinetPartPersistenceTest : PersistenceTests {
+
+    [Fact]
+    public void InsertOrderWithCabinetPart() {
+
+        var cabPart = new CabinetPart(Guid.NewGuid(), 1, 123.0M, 123, "ABC123", "DEF456", new("White", CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard), "Beige", "Comment", new Dictionary<string, string>() {
+            { "Param A", "Value A" }
+        }, new());
+            
+        InsertAndQueryOrderWithProduct(cabPart);
+
+    }
+
+    [Fact]
+    public void DeleteOrderWithBaseCabinet() {
+
+        var cabPart = new CabinetPart(Guid.NewGuid(), 1, 123.0M, 123, "ABC123", "DEF456", new("White", CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard), "Beige", "Comment", new Dictionary<string, string>() {
+            { "Param A", "Value A" }
+        }, new());
+ 
+        InsertAndDeleteOrderWithProduct(cabPart);
+
+    }
+
+    [Fact]
+    public void InsertOrderWithBaseCabinetWithProductionNotes() {
+
+        var cabPart = new CabinetPart(Guid.NewGuid(), 1, 123.0M, 123, "ABC123", "DEF456", new("White", CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard), "Beige", "Comment", new Dictionary<string, string>() {
+            { "Param A", "Value A" }
+        }, new() {
+            "Note A",
+            "Note B"
+        });
+
+        InsertAndQueryOrderWithProduct(cabPart);
+        
+    }
+
+}
