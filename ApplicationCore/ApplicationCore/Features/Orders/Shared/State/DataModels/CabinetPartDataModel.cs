@@ -27,13 +27,13 @@ internal class CabinetPartDataModel : ProductDataModelBase, IProductDataModel, I
             products.room,
             products.production_notes AS ProductionNotes,
 
-            closet_parts.sku,
-            closet_parts.material_core AS MaterialCore,
-            closet_parts.material_finish AS MaterialFinish,
-            closet_parts.material_finish_type AS MaterialFinishType,
-            closet_parts.edge_banding_finish AS EdgeBandingFinish,
-            closet_parts.comment,
-            closet_parts.parameters
+            cabinet_parts.sku,
+            cabinet_parts.material_core AS MaterialCore,
+            cabinet_parts.material_finish AS MaterialFinish,
+            cabinet_parts.material_finish_type AS MaterialFinishType,
+            cabinet_parts.edge_banding_finish AS EdgeBandingFinish,
+            cabinet_parts.comment,
+            cabinet_parts.parameters
         
          FROM cabinet_parts
         
@@ -44,7 +44,7 @@ internal class CabinetPartDataModel : ProductDataModelBase, IProductDataModel, I
         """;
 
     public IProduct MapToProduct() {
-        return new CabinetPart(Id, Qty, UnitPrice, ProductNumber, Room, Sku, new(MaterialFinish, MaterialFinishType, MaterialCore), EdgeBandingFinish, Comment, Parameters, ProductionNotes);
+        return new CabinetPart(Id, Qty, UnitPrice, ProductNumber, Sku, Room, new(MaterialFinish, MaterialFinishType, MaterialCore), EdgeBandingFinish, Comment, Parameters, ProductionNotes);
     }
 
 }
