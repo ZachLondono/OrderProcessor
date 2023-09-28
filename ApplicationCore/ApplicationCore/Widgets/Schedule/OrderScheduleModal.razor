@@ -1,0 +1,146 @@
+﻿@using ApplicationCore.Features.Companies.Contracts;
+@using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+@using ApplicationCore.Features.Schedule;
+@using ApplicationCore.Infrastructure.Bus;
+@using ApplicationCore.Shared.Components
+@using System.Diagnostics;
+@using static ApplicationCore.Shared.Components.Button;
+@inject IBus Bus
+@inject CompanyDirectory.GetCustomerNameByIdAsync GetCustomerNameAsync
+
+@if (_isLoading) {
+    <span>Loading...</span>
+} else {
+    
+    <EditForm Model="_model" OnValidSubmit="ScheduleJob">
+
+        <div>
+            <label>Number</label>
+            <InputText @bind-Value="_model.JobNumber" class="input-text w-full" />
+        </div>
+
+        <div>
+            <label>Customer</label>
+            <InputText @bind-Value="_model.CustomerName" class="input-text w-full" />
+        </div>
+
+        <div>
+            <label>Name</label>
+            <InputText @bind-Value="_model.JobName" class="input-text w-full" />
+        </div>
+
+        <div>
+            <label>JC</label>
+            <InputText @bind-Value="_model.JC" class="input-text w-full" />
+        </div>
+
+        <div>
+            <label>SC</label>
+            <InputText @bind-Value="_model.SC" class="input-text w-full" />
+        </div>
+
+        <div>
+            <label>EC</label>
+            <InputText @bind-Value="_model.EC" class="input-text w-full" />
+        </div>
+
+        <div>
+            <label>DD</label>
+            <InputText @bind-Value="_model.DD" class="input-text w-full" />
+        </div>
+
+        <div>
+            <label>Booking Date</label>
+            <InputDate @bind-Value="_model.BookingDate" />
+        </div>
+
+        <div>
+            <label>Approval Date</label>
+            <InputDate @bind-Value="_model.ApprovalDate" />
+        </div>
+
+        <div>
+            <label>Requested Date</label>
+            <InputDate @bind-Value="_model.RequestedDate" />
+        </div>
+
+        <Button Color="ButtonColor.Primary" Type="submit">Schedule</Button>
+
+    </EditForm>
+
+}
+
+@code {
+
+    [Parameter]
+    public Order? Order { get; set; }
+
+    private Model _model = new();
+    private bool _isLoading = false;
+
+    [CascadingParameter]
+    private BlazoredModalInstance ModalInstance { get; set; } = default!;
+
+    [CascadingParameter]
+    public IModalService ModalService { get; set; } = default!;
+
+    protected override async Task OnParametersSetAsync() {
+
+        Debug.WriteLine("Params Set");
+
+        if (Order is null) {
+            return;
+        }
+
+        _isLoading = true;
+        StateHasChanged();
+
+        string? customerName = await GetCustomerNameAsync(Order.CustomerId);
+
+        _model = new() {
+            JobNumber = Order.Number,
+            CustomerName = customerName ?? "",
+            JobName = Order.Name,
+            JC = "C",
+            SC = "1",
+            EC = "",
+            DD = "",
+            BookingDate = Order.OrderDate,
+            ApprovalDate = Order.OrderDate,
+            RequestedDate = Order.DueDate ?? Order.OrderDate 
+        };
+
+        _isLoading = false;
+        StateHasChanged();
+
+    }
+
+    private async Task ScheduleJob() {
+
+        _isLoading = true;
+        StateHasChanged();
+
+        var response = await Bus.Send(new AddLineToSchedule.Command(
+            _model.JobNumber,
+            _model.CustomerName,
+            _model.JobName,
+            _model.JC,
+            _model.SC,
+            _model.EC,
+            _model.DD,
+            _model.BookingDate,
+            _model.ApprovalDate,
+            _model.RequestedDate));
+
+        _isLoading = false;
+        StateHasChanged();
+
+        await ModalInstance.CloseAsync();
+
+        response.OnError(
+            error => ModalService.OpenErrorDialog(error)
+        );
+        
+    }
+
+}

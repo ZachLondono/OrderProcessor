@@ -8,6 +8,7 @@
 @using ApplicationCore.Widgets.Orders.OrderExport
 @using ApplicationCore.Widgets.Orders.OrderRelationshipList
 @using ApplicationCore.Widgets.Orders.OrderRelease
+@using ApplicationCore.Widgets.Schedule
 @inject OrderState OrderState
 @inject NavigationService Nav
 
@@ -20,6 +21,7 @@
                 <OrderReleaseWidget Orders="GetOrder()" />
                 <OrderDeleteWidget OrderId="OrderState.Order?.Id ?? Guid.Empty" OnOrderDeleted="OnOrderDeleted" />
                 <BricsCADFileSaveWidget OutputDirectory="@OrderState.Order?.WorkingDirectory"/>
+                <AddToScheduleWidget Order="OrderState.Order" />
             </div>
         </OrderDetails>
     </section>
