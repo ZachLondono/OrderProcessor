@@ -103,9 +103,12 @@ internal class AddLineToSchedule {
 				foreach (var excelApp in excelApps) {
 
 					foreach (Workbook workbook in excelApp.Workbooks) {
-						if (workbook.FullName == fullPath) {
+						if (0 == string.Compare(Path.GetFullPath(workbook.FullName),
+										Path.GetFullPath(fullPath),
+										StringComparison.InvariantCultureIgnoreCase)) {
 							App = excelApp;
 							Workbook = workbook;
+							_wasCreated = false;
 							return;
 						}
 					}
