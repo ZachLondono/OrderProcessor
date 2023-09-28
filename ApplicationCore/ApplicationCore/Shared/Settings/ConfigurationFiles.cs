@@ -13,4 +13,7 @@ public class ConfigurationFiles {
     [ConfigurationKeyName("Email")]
     public string EmailConfigFile { get; set; } = string.Empty;
 
+    [ConfigurationKeyName("Paths")]
+    public string PathsConfigFile { get; set; } = string.Empty;
+
 }

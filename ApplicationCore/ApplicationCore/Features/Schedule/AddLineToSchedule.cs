@@ -1,8 +1,11 @@
 ﻿using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Shared.Services;
+using ApplicationCore.Shared.Settings;
+using Microsoft.Extensions.Options;
 using Microsoft.Office.Interop.Excel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using ExcelApplication = Microsoft.Office.Interop.Excel.Application;
 using Range = Microsoft.Office.Interop.Excel.Range;
 
@@ -14,13 +17,31 @@ internal class AddLineToSchedule {
 
 	public class Handler : CommandHandler<Command> {
 
-		public override async Task<Response> Handle(Command command) {
+		private readonly string _pathsFilePath;
+		private readonly IFileReader _fileReader;
+
+        public Handler(IOptions<ConfigurationFiles> option, IFileReader fileReader) {
+            _pathsFilePath = option.Value.PathsConfigFile;
+            _fileReader = fileReader;
+        }
+
+        public override async Task<Response> Handle(Command command) {
 
 			try {
 
+		        using var stream = _fileReader.OpenReadFileStream(_pathsFilePath);
+		        var paths = await JsonSerializer.DeserializeAsync<Paths>(stream);
+
+				if (paths is null) {
+					return new Infrastructure.Bus.Error() {
+						Title = "Failed to Schedule Order",
+						Details = "Cannot Find Path to Scheduling Workbook"
+					};
+				};
+
 				await Task.Run(() => {
 
-					string workbookPath = @"C:\Users\Zachary Londono\Desktop\2017 Schedule.xls";
+					string workbookPath = paths.ScheduleWorkbookPath;
 
 					var manager = new ExcelInstanceManager();
 

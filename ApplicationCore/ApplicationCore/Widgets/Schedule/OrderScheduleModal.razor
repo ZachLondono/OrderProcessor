@@ -3,7 +3,6 @@
 @using ApplicationCore.Features.Schedule;
 @using ApplicationCore.Infrastructure.Bus;
 @using ApplicationCore.Shared.Components
-@using System.Diagnostics;
 @using static ApplicationCore.Shared.Components.Button;
 @inject IBus Bus
 @inject CompanyDirectory.GetCustomerNameByIdAsync GetCustomerNameAsync
@@ -85,8 +84,6 @@
     public IModalService ModalService { get; set; } = default!;
 
     protected override async Task OnParametersSetAsync() {
-
-        Debug.WriteLine("Params Set");
 
         if (Order is null) {
             return;
