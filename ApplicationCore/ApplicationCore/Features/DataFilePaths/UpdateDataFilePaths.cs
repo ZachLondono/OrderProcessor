@@ -6,7 +6,7 @@ namespace ApplicationCore.Features.DataFilePaths;
 
 internal class UpdateDataFilePaths {
 
-    public record Command(string FilePath, Shared.Data.DataFilePaths Configuration) : ICommand;
+    public record Command(string FilePath, Shared.Settings.DataFilePaths Configuration) : ICommand;
 
     public class Handler : CommandHandler<Command> {
 

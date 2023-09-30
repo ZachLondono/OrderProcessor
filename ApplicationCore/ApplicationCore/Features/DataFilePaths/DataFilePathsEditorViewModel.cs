@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Features.DataFilePaths;
 using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 
@@ -10,8 +9,8 @@ internal class DataFilePathsEditorViewModel {
 
     public Action? OnPropertyChanged { get; set; }
 
-    private Shared.Data.DataFilePaths? _configuration = null;
-    public Shared.Data.DataFilePaths? Configuration {
+    private Shared.Settings.DataFilePaths? _configuration = null;
+    public Shared.Settings.DataFilePaths? Configuration {
         get => _configuration;
         private set {
             _configuration = value;

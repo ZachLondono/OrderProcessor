@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.Text.Json.Serialization;
 
-namespace ApplicationCore.Shared.Data;
+namespace ApplicationCore.Shared.Settings;
 
 public class DataFilePaths {
 

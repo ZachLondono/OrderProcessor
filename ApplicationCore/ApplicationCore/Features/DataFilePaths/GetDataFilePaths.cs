@@ -6,9 +6,9 @@ namespace ApplicationCore.Features.DataFilePaths;
 
 internal class GetDataFilePaths {
 
-    public record Query(string FilePath) : IQuery<Shared.Data.DataFilePaths>;
+    public record Query(string FilePath) : IQuery<Shared.Settings.DataFilePaths>;
 
-    public class Handler : QueryHandler<Query, Shared.Data.DataFilePaths> {
+    public class Handler : QueryHandler<Query, Shared.Settings.DataFilePaths> {
 
         private readonly IFileReader _fileReader;
 
@@ -16,7 +16,7 @@ internal class GetDataFilePaths {
             _fileReader = fileReader;
         }
 
-        public override async Task<Response<Shared.Data.DataFilePaths>> Handle(Query query) {
+        public override async Task<Response<Shared.Settings.DataFilePaths>> Handle(Query query) {
 
             using var stream = _fileReader.OpenReadFileStream(query.FilePath);
 
