@@ -33,22 +33,11 @@
     </EditForm>
 }
 
-<div>
-    <Button OnClick="OpenFile" Style="ButtonStyle.Text" Size="ButtonSize.XSmall">Open Data File</Button>
-</div>
-
 @code {
 
     protected override async Task OnInitializedAsync() {
         await base.OnInitializedAsync();
         DataContext.OnPropertyChanged += StateHasChanged;
-        await DataContext.LoadConfiguration();
-    }
-
-    private void OpenFile() {
-
-        DataContext.OpenFile(); 
-
     }
 
 }

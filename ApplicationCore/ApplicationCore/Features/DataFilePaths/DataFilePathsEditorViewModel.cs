@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.DataFilePaths;
 using ApplicationCore.Infrastructure.Bus;
+using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 
@@ -27,46 +28,19 @@ internal class DataFilePathsEditorViewModel {
         }
     }
 
-    private readonly IBus _bus;
-    private readonly string _filePath;
+    private readonly IWritableOptions<Shared.Settings.DataFilePaths> _options;
 
-    public DataFilePathsEditorViewModel(IBus bus) {
-        _bus = bus;
-
-#if DEBUG
-        _filePath = "Configuration\\data.Development.json";
-#else
-        _filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), @"OrderProcessor\Configuration\data.json");
-#endif
-
+    public DataFilePathsEditorViewModel(IWritableOptions<Shared.Settings.DataFilePaths> options) {
+        _options = options;
+        _configuration = _options.Value;
     }
 
-    public async Task LoadConfiguration() {
-        var result = await _bus.Send(new GetDataFilePaths.Query(_filePath));
-        result.Match(
-            config => Configuration = config,
-            error => ErrorMessage = $"{error.Title} - {error.Details}"
-        );
-    }
-
-    public async Task SaveChanges() {
+    public void SaveChanges() {
         if (Configuration is null) return;
-        var result = await _bus.Send(new UpdateDataFilePaths.Command(_filePath, Configuration));
-        result.OnError(error => ErrorMessage = $"{error.Title} - {error.Details}");
-    }
-
-    public void OpenFile() {
-        try {
-
-            var psi = new ProcessStartInfo {
-                FileName = Path.GetFullPath(_filePath),
-                UseShellExecute = true
-            };
-            Process.Start(psi);
-
-        } catch (Exception ex) {
-            Debug.WriteLine(ex);
-        }
+        _options.Update(option => {
+            option.OrderingDBPath = Configuration.OrderingDBPath;
+            option.CompaniesDBPath = Configuration.CompaniesDBPath;
+        });
     }
 
 }

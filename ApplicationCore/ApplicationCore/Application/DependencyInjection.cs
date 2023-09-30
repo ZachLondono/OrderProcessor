@@ -59,7 +59,7 @@ public static class DependencyInjection {
 
         services.Configure<ConfigurationFiles>(configuration.GetRequiredSection("ConfigurationFiles"));
         services.Configure<Paths>(configuration.GetRequiredSection("paths"));
-        services.Configure<DataFilePaths>(configuration.GetRequiredSection("data"));
+        services.ConfigureWritable<DataFilePaths>(configuration.GetRequiredSection("data"));
 
         services.AddBus(configuration);
         services.AddSingleton<IUIBus, UIBus>();
