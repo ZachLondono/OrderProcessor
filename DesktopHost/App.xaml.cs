@@ -50,7 +50,7 @@ public partial class App : Application {
 #if DEBUG
         configDirectory = "Configuration";
 #else
-        configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), @"OrderProcessor\Configuration");
+        configDirectory = @"C:\ProgramData\OrderProcessor\Configuration";
 #endif
 
         string[] configFiles = new string[] {
