@@ -18,7 +18,7 @@ internal class UpdateDataFilePaths {
 
         public override async Task<Response> Handle(Command command) {
 
-            var json = JsonSerializer.Serialize(command.Configuration, new JsonSerializerOptions() {
+            var json = JsonSerializer.Serialize(new DataFilePathsWrapper(command.Configuration), new JsonSerializerOptions() {
                 WriteIndented = true
             });
 

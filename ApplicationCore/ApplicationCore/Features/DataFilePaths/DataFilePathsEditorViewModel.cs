@@ -31,9 +31,15 @@ internal class DataFilePathsEditorViewModel {
     private readonly IBus _bus;
     private readonly string _filePath;
 
-    public DataFilePathsEditorViewModel(IBus bus, IOptions<ConfigurationFiles> fileOptions) {
+    public DataFilePathsEditorViewModel(IBus bus) {
         _bus = bus;
-        _filePath = fileOptions.Value.DataConfigFile;
+
+#if DEBUG
+        _filePath = "Configuration\\data.Development.json";
+#else
+        _filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), @"OrderProcessor\Configuration\data.json");
+#endif
+
     }
 
     public async Task LoadConfiguration() {

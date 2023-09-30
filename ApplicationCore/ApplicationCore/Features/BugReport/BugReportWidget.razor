@@ -71,7 +71,7 @@
         var body = builder.ToMessageBody();
 
         var message = new MimeMessage();
-        var sender = await EmailService.GetSenderAsync();
+        var sender = EmailService.GetSender();
         message.From.Add(sender);
         message.To.Add(new MailboxAddress(recipientName, recipientEmail));
         message.Subject = subject;

@@ -20,7 +20,7 @@ internal class GetDataFilePaths {
 
             using var stream = _fileReader.OpenReadFileStream(query.FilePath);
 
-            var data = await JsonSerializer.DeserializeAsync<Shared.Data.DataFilePaths>(stream);
+            var data = await JsonSerializer.DeserializeAsync<DataFilePathsWrapper>(stream);
 
             if (data == null) {
 
@@ -31,7 +31,7 @@ internal class GetDataFilePaths {
 
             }
 
-            return data;
+            return data.FilePaths;
 
         }
 

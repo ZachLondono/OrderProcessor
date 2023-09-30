@@ -58,6 +58,8 @@ public static class DependencyInjection {
         services.AddTransient<ProgressModalViewModel>();
 
         services.Configure<ConfigurationFiles>(configuration.GetRequiredSection("ConfigurationFiles"));
+        services.Configure<Paths>(configuration.GetRequiredSection("paths"));
+        services.Configure<DataFilePaths>(configuration.GetRequiredSection("data"));
 
         services.AddBus(configuration);
         services.AddSingleton<IUIBus, UIBus>();
