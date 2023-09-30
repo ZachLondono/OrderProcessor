@@ -26,14 +26,10 @@ public class WritableOptions<T> : IWritableOptions<T> where T : class, new() {
         var obj = JsonSerializer.Deserialize<JsonObject>(File.ReadAllText(filePath));
 
         if (obj is null || !obj.TryGetPropertyValue(_section, out JsonNode? node)) {
-            return;
+            throw new InvalidOperationException($"Section '{_section}' not found in file '{_file}'");
         }
 
-        var section = JsonSerializer.Deserialize<T>(node);
-
-        if (section is null) {
-            return;
-        }
+        var section = JsonSerializer.Deserialize<T>(node) ?? throw new InvalidOperationException($"Section '{_section}' could not map to type {typeof(T).Name}");
 
         applyChanges(section);
 
