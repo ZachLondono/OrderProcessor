@@ -131,7 +131,7 @@ internal class ReleasePDFDialogViewModel {
         recipients.Split(';')
                     .Where(s => !string.IsNullOrWhiteSpace(s))
                     .ForEach(r => message.To.Add(new MailboxAddress(r, r)));
-        var sender = await _emailService.GetSenderAsync();
+        var sender = _emailService.GetSender();
         message.From.Add(sender);
         message.Subject = $"RELEASED: {job.JobName} - {job.CustomerName}";
 

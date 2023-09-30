@@ -1,264 +1,268 @@
-[
-  {
-    "machine_name": "ANDI STRATOS",
-    "tool_position_count": 10,
-    "tools": [
+{
+  "tools": {
+    "machine_tool_maps": [
       {
-        "name": "POCKET44",
-        "position": 3,
-        "alternative_names": []
+        "machine_name": "ANDI STRATOS",
+        "tool_position_count": 10,
+        "tools": [
+          {
+            "name": "POCKET44",
+            "position": 3,
+            "alternative_names": []
+          },
+          {
+            "name": "3-8Comp",
+            "position": 1,
+            "alternative_names": []
+          },
+          {
+            "name": "2MMRADIUS",
+            "position": 2,
+            "alternative_names": []
+          },
+          {
+            "name": "3-32Bead",
+            "position": 2,
+            "alternative_names": []
+          },
+          {
+            "name": "Peanut",
+            "position": 2,
+            "alternative_names": []
+          },
+          {
+            "name": "1-2Dado",
+            "position": 3,
+            "alternative_names": []
+          },
+          {
+            "name": "6MMRADIUS",
+            "position": 4,
+            "alternative_names": []
+          },
+          {
+            "name": "3-4BOWL",
+            "position": 4,
+            "alternative_names": []
+          },
+          {
+            "name": "19CHAMFER",
+            "position": 4,
+            "alternative_names": []
+          },
+          {
+            "name": "5-16CORE",
+            "position": 4,
+            "alternative_names": []
+          },
+          {
+            "name": "3-4CORE",
+            "position": 4,
+            "alternative_names": []
+          },
+          {
+            "name": "RC-1109",
+            "position": 4,
+            "alternative_names": []
+          },
+          {
+            "name": "45BEVEL",
+            "position": 5,
+            "alternative_names": []
+          },
+          {
+            "name": "3-32Straight",
+            "position": 5,
+            "alternative_names": []
+          },
+          {
+            "name": "140V",
+            "position": 5,
+            "alternative_names": []
+          },
+          {
+            "name": "1-4Strt",
+            "position": 5,
+            "alternative_names": []
+          },
+          {
+            "name": "RC-1045",
+            "position": 5,
+            "alternative_names": []
+          },
+          {
+            "name": "POCKET9",
+            "position": 6,
+            "alternative_names": []
+          },
+          {
+            "name": "3-8RAD",
+            "position": 6,
+            "alternative_names": []
+          },
+          {
+            "name": "TRIPLESTEP",
+            "position": 7,
+            "alternative_names": []
+          },
+          {
+            "name": "3-4OGEE",
+            "position": 7,
+            "alternative_names": []
+          },
+          {
+            "name": "1-8DOWN",
+            "position": 8,
+            "alternative_names": []
+          },
+          {
+            "name": "POCKET3",
+            "position": 8,
+            "alternative_names": []
+          },
+          {
+            "name": "1-8Down",
+            "position": 8,
+            "alternative_names": []
+          },
+          {
+            "name": "Sander",
+            "position": 9,
+            "alternative_names": []
+          }
+        ]
       },
       {
-        "name": "3-8Comp",
-        "position": 1,
-        "alternative_names": []
-      },
-      {
-        "name": "2MMRADIUS",
-        "position": 2,
-        "alternative_names": []
-      },
-      {
-        "name": "3-32Bead",
-        "position": 2,
-        "alternative_names": []
-      },
-      {
-        "name": "Peanut",
-        "position": 2,
-        "alternative_names": []
-      },
-      {
-        "name": "1-2Dado",
-        "position": 3,
-        "alternative_names": []
-      },
-      {
-        "name": "6MMRADIUS",
-        "position": 4,
-        "alternative_names": []
-      },
-      {
-        "name": "3-4BOWL",
-        "position": 4,
-        "alternative_names": []
-      },
-      {
-        "name": "19CHAMFER",
-        "position": 4,
-        "alternative_names": []
-      },
-      {
-        "name": "5-16CORE",
-        "position": 4,
-        "alternative_names": []
-      },
-      {
-        "name": "3-4CORE",
-        "position": 4,
-        "alternative_names": []
-      },
-      {
-        "name": "RC-1109",
-        "position": 4,
-        "alternative_names": []
-      },
-      {
-        "name": "45BEVEL",
-        "position": 5,
-        "alternative_names": []
-      },
-      {
-        "name": "3-32Straight",
-        "position": 5,
-        "alternative_names": []
-      },
-      {
-        "name": "140V",
-        "position": 5,
-        "alternative_names": []
-      },
-      {
-        "name": "1-4Strt",
-        "position": 5,
-        "alternative_names": []
-      },
-      {
-        "name": "RC-1045",
-        "position": 5,
-        "alternative_names": []
-      },
-      {
-        "name": "POCKET9",
-        "position": 6,
-        "alternative_names": []
-      },
-      {
-        "name": "3-8RAD",
-        "position": 6,
-        "alternative_names": []
-      },
-      {
-        "name": "TRIPLESTEP",
-        "position": 7,
-        "alternative_names": []
-      },
-      {
-        "name": "3-4OGEE",
-        "position": 7,
-        "alternative_names": []
-      },
-      {
-        "name": "1-8DOWN",
-        "position": 8,
-        "alternative_names": []
-      },
-      {
-        "name": "POCKET3",
-        "position": 8,
-        "alternative_names": []
-      },
-      {
-        "name": "1-8Down",
-        "position": 8,
-        "alternative_names": []
-      },
-      {
-        "name": "Sander",
-        "position": 9,
-        "alternative_names": []
-      }
-    ]
-  },
-  {
-    "machine_name": "OMNITECH",
-    "tool_position_count": 8,
-    "tools": [
-      {
-        "name": "3-8Comp",
-        "position": 1,
-        "alternative_names": []
-      },
-      {
-        "name": "3-8Comp",
-        "position": 1,
-        "alternative_names": []
-      },
-      {
-        "name": "2MMRADIUS",
-        "position": 2,
-        "alternative_names": []
-      },
-      {
-        "name": "3-32Bead",
-        "position": 2,
-        "alternative_names": []
-      },
-      {
-        "name": "Peanut",
-        "position": 2,
-        "alternative_names": []
-      },
-      {
-        "name": "POCKET44",
-        "position": 3,
-        "alternative_names": []
-      },
-      {
-        "name": "1-2Dado",
-        "position": 3,
-        "alternative_names": []
-      },
-      {
-        "name": "6MMRADIUS",
-        "position": 4,
-        "alternative_names": []
-      },
-      {
-        "name": "3-4BOWL",
-        "position": 4,
-        "alternative_names": []
-      },
-      {
-        "name": "19CHAMFER",
-        "position": 4,
-        "alternative_names": []
-      },
-      {
-        "name": "5-16CORE",
-        "position": 4,
-        "alternative_names": []
-      },
-      {
-        "name": "3-4CORE",
-        "position": 4,
-        "alternative_names": []
-      },
-      {
-        "name": "RC-1109",
-        "position": 4,
-        "alternative_names": []
-      },
-      {
-        "name": "45BEVEL",
-        "position": 5,
-        "alternative_names": []
-      },
-      {
-        "name": "3-32Straight",
-        "position": 5,
-        "alternative_names": []
-      },
-      {
-        "name": "140V",
-        "position": 5,
-        "alternative_names": []
-      },
-      {
-        "name": "1-4Strt",
-        "position": 5,
-        "alternative_names": []
-      },
-      {
-        "name": "RC-1045",
-        "position": 5,
-        "alternative_names": []
-      },
-      {
-        "name": "POCKET9",
-        "position": 6,
-        "alternative_names": []
-      },
-      {
-        "name": "3-8RAD",
-        "position": 6,
-        "alternative_names": []
-      },
-      {
-        "name": "SANDER",
-        "position": 7,
-        "alternative_names": []
-      },
-      {
-        "name": "TRIPLESTEP",
-        "position": 7,
-        "alternative_names": []
-      },
-      {
-        "name": "3-4OGEE",
-        "position": 7,
-        "alternative_names": []
-      },
-      {
-        "name": "1-8DOWN",
-        "position": 8,
-        "alternative_names": []
-      },
-      {
-        "name": "POCKET3",
-        "position": 8,
-        "alternative_names": []
+        "machine_name": "OMNITECH",
+        "tool_position_count": 8,
+        "tools": [
+          {
+            "name": "3-8Comp",
+            "position": 1,
+            "alternative_names": []
+          },
+          {
+            "name": "3-8Comp",
+            "position": 1,
+            "alternative_names": []
+          },
+          {
+            "name": "2MMRADIUS",
+            "position": 2,
+            "alternative_names": []
+          },
+          {
+            "name": "3-32Bead",
+            "position": 2,
+            "alternative_names": []
+          },
+          {
+            "name": "Peanut",
+            "position": 2,
+            "alternative_names": []
+          },
+          {
+            "name": "POCKET44",
+            "position": 3,
+            "alternative_names": []
+          },
+          {
+            "name": "1-2Dado",
+            "position": 3,
+            "alternative_names": []
+          },
+          {
+            "name": "6MMRADIUS",
+            "position": 4,
+            "alternative_names": []
+          },
+          {
+            "name": "3-4BOWL",
+            "position": 4,
+            "alternative_names": []
+          },
+          {
+            "name": "19CHAMFER",
+            "position": 4,
+            "alternative_names": []
+          },
+          {
+            "name": "5-16CORE",
+            "position": 4,
+            "alternative_names": []
+          },
+          {
+            "name": "3-4CORE",
+            "position": 4,
+            "alternative_names": []
+          },
+          {
+            "name": "RC-1109",
+            "position": 4,
+            "alternative_names": []
+          },
+          {
+            "name": "45BEVEL",
+            "position": 5,
+            "alternative_names": []
+          },
+          {
+            "name": "3-32Straight",
+            "position": 5,
+            "alternative_names": []
+          },
+          {
+            "name": "140V",
+            "position": 5,
+            "alternative_names": []
+          },
+          {
+            "name": "1-4Strt",
+            "position": 5,
+            "alternative_names": []
+          },
+          {
+            "name": "RC-1045",
+            "position": 5,
+            "alternative_names": []
+          },
+          {
+            "name": "POCKET9",
+            "position": 6,
+            "alternative_names": []
+          },
+          {
+            "name": "3-8RAD",
+            "position": 6,
+            "alternative_names": []
+          },
+          {
+            "name": "SANDER",
+            "position": 7,
+            "alternative_names": []
+          },
+          {
+            "name": "TRIPLESTEP",
+            "position": 7,
+            "alternative_names": []
+          },
+          {
+            "name": "3-4OGEE",
+            "position": 7,
+            "alternative_names": []
+          },
+          {
+            "name": "1-8DOWN",
+            "position": 8,
+            "alternative_names": []
+          },
+          {
+            "name": "POCKET3",
+            "position": 8,
+            "alternative_names": []
+          }
+        ]
       }
     ]
   }
-]
+}

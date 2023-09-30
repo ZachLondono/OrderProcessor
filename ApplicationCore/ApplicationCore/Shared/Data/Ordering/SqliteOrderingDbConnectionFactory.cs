@@ -1,9 +1,9 @@
-﻿using ApplicationCore.Shared.Data;
-using ApplicationCore.Shared.Data.Ordering;
+﻿using ApplicationCore.Shared.Settings;
 using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Data;
 
 namespace ApplicationCore.Shared.Data.Ordering;
@@ -15,34 +15,31 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
 
     private readonly IConfiguration _configuration;
     private readonly ILogger<SqliteOrderingDbConnectionFactory> _logger;
-    private readonly DataFilePaths.GetConfiguration _getConfiguration;
+    private readonly string _dataSource;
 
-    public SqliteOrderingDbConnectionFactory(IConfiguration configuration, ILogger<SqliteOrderingDbConnectionFactory> logger, DataFilePaths.GetConfiguration getConfiguration) {
+    public SqliteOrderingDbConnectionFactory(IConfiguration configuration, ILogger<SqliteOrderingDbConnectionFactory> logger, IOptionsMonitor<DataFilePaths> options) {
         _configuration = configuration;
         _logger = logger;
-        _getConfiguration = getConfiguration;
+        _dataSource = options.CurrentValue.OrderingDBPath;
     }
 
     public async Task<IDbConnection> CreateConnection() {
 
         await semaphore.WaitAsync();
 
-        var result = await _getConfiguration();
-        string? datasource = result?.OrderingDBPath ?? null;
-
-        if (datasource is null) {
+        if (_dataSource is null) {
             semaphore.Release();
             throw new InvalidOperationException("Could not find companies database data source");
         }
 
         var builder = new SqliteConnectionStringBuilder {
-            DataSource = datasource,
+            DataSource = _dataSource,
             Pooling = false
         };
 
         var connection = new SqliteConnection(builder.ConnectionString);
 
-        if (File.Exists(datasource)) {
+        if (File.Exists(_dataSource)) {
 
             int dbVersion = await GetDatabaseVersion(connection);
             if (dbVersion != DB_VERSION) {
@@ -91,7 +88,7 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
 
     }
 
-    private async Task<int> GetDatabaseVersion(SqliteConnection connection) {
+    private static async Task<int> GetDatabaseVersion(SqliteConnection connection) {
         return await connection.QuerySingleAsync<int>("PRAGMA schema_version;");
     }
 

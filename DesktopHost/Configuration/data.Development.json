@@ -1,4 +1,6 @@
 {
-  "ordering_db_path": "./ordering.sqlite",
-  "companies_db_path": "./companies.sqlite"
+  "data": {
+    "ordering_db_path": "./ordering.sqlite",
+    "companies_db_path": "./companies.sqlite"
+  }
 }

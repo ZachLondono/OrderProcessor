@@ -10,6 +10,8 @@ using DesktopHost.Error;
 using Serilog;
 using System.Windows.Threading;
 using ApplicationCore.Application;
+using System.IO;
+using System.Collections.Generic;
 
 namespace DesktopHost;
 
@@ -42,15 +44,48 @@ public partial class App : Application {
 
     }
 
-    private static IConfiguration BuildConfiguration()
-        => new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    private static IConfiguration BuildConfiguration() {
+
+        string configDirectory;
 #if DEBUG
-                .AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true)
+        configDirectory = "Configuration";
+#else
+        configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), @"OrderProcessor\Configuration");
 #endif
-                .AddJsonFile("Configuration/pdfconfig.json", optional: false, reloadOnChange: true)
-                .AddJsonFile("Configuration/credentials.json", optional: false, reloadOnChange: true)
-                .Build();
+
+        string[] configFiles = new string[] {
+            "paths.json",
+            "email.json",
+            "pdfconfig.json",
+            "tools.json",
+#if DEBUG
+            "data.Development.json"
+#else
+            "data.json"
+#endif
+        };
+
+        var builder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("Configuration/credentials.json", optional: false, reloadOnChange: true);
+
+        foreach (var fileName in configFiles) {
+
+            var finalPath = Path.Combine(configDirectory, fileName);
+
+#if !DEBUG
+            if (!File.Exists(finalPath)) {
+                File.Copy(Path.Combine("Configuration", fileName), finalPath);
+            }
+#endif
+
+            builder.AddJsonFile(finalPath, optional: false, reloadOnChange: true);
+
+        }
+
+        return builder.Build();
+
+    }
 
     private static IServiceProvider BuildServiceProvider(IConfiguration configuration) {
         var services = new ServiceCollection()

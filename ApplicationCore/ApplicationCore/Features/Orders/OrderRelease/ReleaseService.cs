@@ -164,7 +164,7 @@ public class ReleaseService {
                 }
 
                 if (configuration.PreviewReleaseEmail) {
-                    await CreateAndDisplayOutlookEmail(recipients, $"RELEASED: {orderNumbers} {customerName}", body.HTMLBody, body.TextBody, attachments);
+                    CreateAndDisplayOutlookEmail(recipients, $"RELEASED: {orderNumbers} {customerName}", body.HTMLBody, body.TextBody, attachments);
                 } else {
                     await SendEmailAsync(recipients, $"RELEASED: {orderNumbers} {customerName}", body.HTMLBody, body.TextBody, attachments);
                 }
@@ -246,7 +246,7 @@ public class ReleaseService {
             OnProgressReport?.Invoke("Sending invoice email");
             try {
                 if (configuration.PreviewInvoiceEmail) {
-                    await CreateAndDisplayOutlookEmail(recipients, $"INVOICE: {order.Number} {customerName}", "Please see attached invoice", "Please see attached invoice", new string[] { filePaths.First() });
+                    CreateAndDisplayOutlookEmail(recipients, $"INVOICE: {order.Number} {customerName}", "Please see attached invoice", "Please see attached invoice", new string[] { filePaths.First() });
                 } else {
                     await SendEmailAsync(recipients, $"INVOICE: {order.Number} {customerName}", "Please see attached invoice", "Please see attached invoice", new string[] { filePaths.First() });
                 }
@@ -280,7 +280,7 @@ public class ReleaseService {
             return;
         }
 
-        var sender = await _emailService.GetSenderAsync();
+        var sender = _emailService.GetSender();
         message.From.Add(sender);
         message.Subject = subject;
 
@@ -298,7 +298,7 @@ public class ReleaseService {
 
     }
 
-    private async Task CreateAndDisplayOutlookEmail(string recipients, string subject, string htmlBody, string textBody, IEnumerable<string> attachments) {
+    private void CreateAndDisplayOutlookEmail(string recipients, string subject, string htmlBody, string textBody, IEnumerable<string> attachments) {
 
         var app = new OutlookApp();
         MailItem mailItem = (MailItem)app.CreateItem(OlItemType.olMailItem);
@@ -309,7 +309,7 @@ public class ReleaseService {
 
         attachments.Where(_fileReader.DoesFileExist).ForEach(att => mailItem.Attachments.Add(att));
 
-        var senderMailBox = await _emailService.GetSenderAsync();
+        var senderMailBox = _emailService.GetSender();
         var sender = GetSenderOutlookAccount(app, senderMailBox.Address);
 
         if (sender is not null) {

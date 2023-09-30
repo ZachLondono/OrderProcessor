@@ -1,4 +1,6 @@
 {
-  "ordering_db_path": "C:/ProgramData/OrderProcessor/ordering.sqlite",
-  "companies_db_path": "C:/ProgramData/OrderProcessor/companies.sqlite"
+  "data": {
+    "ordering_db_path": "C:/ProgramData/OrderProcessor/Data/ordering.sqlite",
+    "companies_db_path": "C:/ProgramData/OrderProcessor/Data/companies.sqlite"
+  }
 }

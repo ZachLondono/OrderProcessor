@@ -1,15 +1,16 @@
-﻿using System.Text.Json.Serialization;
+﻿using Microsoft.Extensions.Configuration;
+using System.Text.Json.Serialization;
 
-namespace ApplicationCore.Shared.Data;
+namespace ApplicationCore.Shared.Settings;
 
 public class DataFilePaths {
 
     [JsonPropertyName("ordering_db_path")]
+    [ConfigurationKeyName("ordering_db_path")]
     public string OrderingDBPath { get; set; } = string.Empty;
 
     [JsonPropertyName("companies_db_path")]
+    [ConfigurationKeyName("companies_db_path")]
     public string CompaniesDBPath { get; set; } = string.Empty;
-
-    public delegate Task<DataFilePaths?> GetConfiguration();
 
 }

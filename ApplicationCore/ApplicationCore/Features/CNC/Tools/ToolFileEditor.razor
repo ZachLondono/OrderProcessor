@@ -1,5 +1,5 @@
-﻿@using ApplicationCore.Shared.Components
-@using ApplicationCore.Features.CNC.Tools.Domain;
+﻿@using ApplicationCore.Shared.Settings.Tools;
+@using ApplicationCore.Shared.Components
 @using static ApplicationCore.Shared.Components.Button;
 @inject ToolFileEditorViewModel DataContext
 
@@ -10,7 +10,7 @@
     </div>
 }
 
-@foreach (var map in DataContext.ToolMaps) {
+@foreach (var map in DataContext.Configuration.MachineToolMaps) {
    
     <EditForm Model="@map" class="mb-6">
         <label class="font-bold">Machine</label>
@@ -53,11 +53,8 @@
 }
 
 <div>
-    <Button OnClickAsync="SaveChanges" Color="ButtonColor.Primary">Save</Button>
+    <Button OnClick="DataContext.SaveToolFile" Color="ButtonColor.Primary">Save</Button>
     <Button OnClick="AddMachine" Color="ButtonColor.Secondary">+ Add Machine</Button>
-</div>
-<div>
-    <Button OnClick="OpenFile" Style="ButtonStyle.Text" Size="ButtonSize.XSmall">Open Tool File</Button>
 </div>
 
 @code {
@@ -65,14 +62,12 @@
 
     protected override async Task OnInitializedAsync() {
         await base.OnInitializedAsync();
-
         DataContext.OnPropertyChanged += StateHasChanged;
-        await DataContext.LoadToolFile();
     }
 
     private void AddMachine() {
 
-        DataContext.ToolMaps.Add(new());
+        DataContext.Configuration.MachineToolMaps.Add(new());
         StateHasChanged();
 
     }
@@ -90,18 +85,6 @@
 
         map.Tools.Remove(tool);
         StateHasChanged();
-
-    }
-
-    private async Task SaveChanges() {
-
-        await DataContext.SaveToolFile();
-
-    }
-
-    private void OpenFile() {
-
-        DataContext.OpenFile(); 
 
     }
 

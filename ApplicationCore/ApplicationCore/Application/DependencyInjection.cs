@@ -17,6 +17,7 @@ using ApplicationCore.Features.DataFilePaths;
 using ApplicationCore.Features.Updates;
 using ApplicationCore.Widgets.Orders;
 using ApplicationCore.Widgets.Companies;
+using ApplicationCore.Shared.Settings.Tools;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -58,6 +59,9 @@ public static class DependencyInjection {
         services.AddTransient<ProgressModalViewModel>();
 
         services.Configure<ConfigurationFiles>(configuration.GetRequiredSection("ConfigurationFiles"));
+        services.Configure<Paths>(configuration.GetRequiredSection("paths"));
+        services.ConfigureWritable<DataFilePaths>(configuration.GetRequiredSection("data"), "Configuration\\data.json");
+        services.ConfigureWritable<ToolConfiguration>(configuration.GetRequiredSection("tools"), "Configuration\\tools.json");
 
         services.AddBus(configuration);
         services.AddSingleton<IUIBus, UIBus>();
