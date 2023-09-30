@@ -1,10 +1,11 @@
 ﻿using QuestPDF.Infrastructure;
-using ApplicationCore.Features.CNC.Tools.Contracts;
 using ApplicationCore.Features.CNC.ReleasePDF.Services;
 using ApplicationCore.Features.CNC.ReleasePDF.WSXML;
 using ApplicationCore.Features.CNC.Contracts;
 using ApplicationCore.Features.CNC.Domain;
 using ApplicationCore.Shared.Domain;
+using ApplicationCore.Shared.Settings.Tools;
+using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF;
 
@@ -13,21 +14,20 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
     private ReleasedJob? _jobData = null;
 
     private readonly ReleasePDFDecoratorFactory _pdfService;
-    private readonly CNCToolBox.GetToolCarousels _getToolCarousels;
+    private readonly ToolConfiguration _toolConfig;
 
-    public CNCReleaseDecorator(ReleasePDFDecoratorFactory pdfService, CNCToolBox.GetToolCarousels getToolCarousels) {
+    public CNCReleaseDecorator(ReleasePDFDecoratorFactory pdfService, IOptions<ToolConfiguration> options) {
         _pdfService = pdfService;
-        _getToolCarousels = getToolCarousels;
+        _toolConfig = options.Value;
     }
 
     public async Task<ReleasedJob?> LoadDataFromFile(string reportFilePath, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
 
-        var toolCarousels = await _getToolCarousels();
-        var report = WSXMLParser.ParseWSXMLReport(reportFilePath);
+        var report = await Task.Run(() => WSXMLParser.ParseWSXMLReport(reportFilePath));
         if (report is null) {
             return null;
         }
-        _jobData = MapDataToReleasedJob(report, orderDate, dueDate, customerName, vendorName, toolCarousels);
+        _jobData = MapDataToReleasedJob(report, orderDate, dueDate, customerName, vendorName, _toolConfig.MachineToolMaps);
         return _jobData;
 
     }
@@ -50,7 +50,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
 
     }
 
-    private static ReleasedJob MapDataToReleasedJob(WSXMLReport report, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName, IEnumerable<ToolCarousel> toolCarousels) {
+    private static ReleasedJob MapDataToReleasedJob(WSXMLReport report, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName, IEnumerable<MachineToolMap> toolMaps) {
 
         var allToolNames = report.OperationGroups.Where(g => g.PartId is not null)
                                         .SelectMany(g => g.ToolName)
@@ -60,7 +60,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                 .GroupBy(sched => GetMachineName(sched.Name))
                                                 .Select(group => new MachineRelease() {
                                                     MachineName = group.Key,
-                                                    ToolTable = CreateMachineToolTable(group.Key, toolCarousels, allToolNames),
+                                                    ToolTable = CreateMachineToolTable(group.Key, toolMaps, allToolNames),
                                                     MachineTableOrientation = GetTableOrientationFromMachineName(group.Key),
                                                     Programs = group.SelectMany(group => group.Patterns)
                                                                     .Select(pattern => {
@@ -185,15 +185,15 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
 
     }
 
-    private static IReadOnlyDictionary<int, string> CreateMachineToolTable(string machineName, IEnumerable<ToolCarousel> toolCarousels, IEnumerable<string> usedToolNames) {
+    private static IReadOnlyDictionary<int, string> CreateMachineToolTable(string machineName, IEnumerable<MachineToolMap> toolMaps, IEnumerable<string> usedToolNames) {
 
         var toolTable = new Dictionary<int, string>();
 
-        var machineCarousel = toolCarousels.FirstOrDefault(c => c.MachineName == machineName);
+        var machineCarousel = toolMaps.FirstOrDefault(c => c.MachineName == machineName);
 
         if (machineCarousel is null) return toolTable;
 
-        for (int i = 0; i < machineCarousel.PositionCount; i++) {
+        for (int i = 0; i < machineCarousel.ToolPositionCount; i++) {
             toolTable[i + 1] = "";
         }
 

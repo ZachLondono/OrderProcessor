@@ -1,8 +1,4 @@
-﻿using ApplicationCore.Features.DataFilePaths;
-using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Shared.Settings;
-using Microsoft.Extensions.Options;
-using System.Diagnostics;
+﻿using ApplicationCore.Shared.Settings;
 
 namespace ApplicationCore.Features.Configuration;
 

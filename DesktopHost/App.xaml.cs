@@ -57,6 +57,7 @@ public partial class App : Application {
             "paths.json",
             "email.json",
             "pdfconfig.json",
+            "tools.json",
 #if DEBUG
             "data.Development.json"
 #else

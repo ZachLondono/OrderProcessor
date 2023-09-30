@@ -1,21 +1,16 @@
-﻿using ApplicationCore.Features.CNC.Tools.Domain;
-using ApplicationCore.Infrastructure.Bus;
+﻿using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Shared.Settings;
-using Microsoft.Extensions.Options;
-using System.Diagnostics;
+using ApplicationCore.Shared.Settings.Tools;
 
 namespace ApplicationCore.Features.CNC.Tools;
 
 internal class ToolFileEditorViewModel {
 
-    private readonly IBus _bus;
-    private readonly string _filePath;
-
-    private List<MachineToolMap> _toolMaps = new();
-    public List<MachineToolMap> ToolMaps {
-        get => _toolMaps;
+    private ToolConfiguration _configuration = new();
+    public ToolConfiguration Configuration {
+        get => _configuration;
         set {
-            _toolMaps = value;
+            _configuration = value;
             OnPropertyChanged?.Invoke();
         }
     }
@@ -31,63 +26,17 @@ internal class ToolFileEditorViewModel {
 
     public Action? OnPropertyChanged { get; set; }
 
-    public ToolFileEditorViewModel(IBus bus, IOptions<ConfigurationFiles> fileOptions) {
-        _bus = bus;
-        _filePath = fileOptions.Value.ToolConfigFile;
+    private readonly IWritableOptions<ToolConfiguration> _options;
+
+    public ToolFileEditorViewModel(IWritableOptions<ToolConfiguration> options) {
+        _options = options;
+        Configuration = options.Value;
     }
 
-    public async Task LoadToolFile() {
-
-        try {
-
-            var result = await _bus.Send(new GetTools.Query(_filePath));
-
-            result.Match(
-               tools => ToolMaps = new(tools),
-               error => Error = error);
-
-        } catch (Exception ex) {
-
-            Error = new() {
-                Title = "Failed to Load Data",
-                Details = $"Exception thrown while trying to retrieve tool data from file : {ex.Message}"
-            };
-
-        }
-
-    }
-
-    public async Task SaveToolFile() {
-
-        try {
-            var result = await _bus.Send(new SetTools.Command(_filePath, ToolMaps));
-
-            result.OnError(
-                error => Error = error);
-
-        } catch (Exception ex) {
-
-            Error = new() {
-                Title = "Failed to Save Changes",
-                Details = $"Exception thrown while trying to save changes : {ex.Message}"
-            };
-
-        }
-
-    }
-
-    public void OpenFile() {
-        try {
-
-            var psi = new ProcessStartInfo {
-                FileName = Path.GetFullPath(_filePath),
-                UseShellExecute = true
-            };
-            Process.Start(psi);
-
-        } catch (Exception ex) {
-            Debug.WriteLine(ex);
-        }
+    public void SaveToolFile() {
+        _options.Update(config => {
+            config.MachineToolMaps = Configuration.MachineToolMaps;
+        });
     }
 
 }

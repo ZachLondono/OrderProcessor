@@ -1,8 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ApplicationCore.Features.CNC.Tools.Domain;
+namespace ApplicationCore.Shared.Settings.Tools;
 
-internal class Tool {
+internal class Tool
+{
 
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
