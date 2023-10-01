@@ -12,6 +12,7 @@ using System.Windows.Threading;
 using ApplicationCore.Application;
 using System.IO;
 using System.Collections.Generic;
+using ApplicationCore.Shared.Settings;
 
 namespace DesktopHost;
 
@@ -45,46 +46,11 @@ public partial class App : Application {
     }
 
     private static IConfiguration BuildConfiguration() {
-
-        string configDirectory;
-#if DEBUG
-        configDirectory = "Configuration";
-#else
-        configDirectory = @"C:\ProgramData\OrderProcessor\Configuration";
-#endif
-
-        string[] configFiles = new string[] {
-            "paths.json",
-            "email.json",
-            "pdfconfig.json",
-            "tools.json",
-#if DEBUG
-            "data.Development.json"
-#else
-            "data.json"
-#endif
-        };
-
-        var builder = new ConfigurationBuilder()
+        return new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile("Configuration/credentials.json", optional: false, reloadOnChange: true);
-
-        foreach (var fileName in configFiles) {
-
-            var finalPath = Path.Combine(configDirectory, fileName);
-
-#if !DEBUG
-            if (!File.Exists(finalPath)) {
-                File.Copy(Path.Combine("Configuration", fileName), finalPath);
-            }
-#endif
-
-            builder.AddJsonFile(finalPath, optional: false, reloadOnChange: true);
-
-        }
-
-        return builder.Build();
-
+                .AddJsonFile("Configuration/credentials.json", optional: false, reloadOnChange: true)
+                .AddSettingsFiles()
+                .Build();
     }
 
     private static IServiceProvider BuildServiceProvider(IConfiguration configuration) {
@@ -94,7 +60,8 @@ public partial class App : Application {
                             .AddSingleton<IFilePicker, FilePicker>()
                             .AddSingleton<IMessageBoxService, WPFMessageBox>()
                             .AddSingleton(configuration)
-                            .AddLogging(ConfigureLogging);
+                            .AddLogging(ConfigureLogging)
+                            .ConfigureSettings(configuration);
 
         services.AddWpfBlazorWebView();
 #if DEBUG
