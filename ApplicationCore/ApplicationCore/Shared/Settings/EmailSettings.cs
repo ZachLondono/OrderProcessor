@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Shared.Settings;
 
-public class Email {
+public class EmailSettings {
 
     public string SenderName { get; set; } = string.Empty;
 

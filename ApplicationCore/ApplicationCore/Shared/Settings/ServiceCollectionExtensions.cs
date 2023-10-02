@@ -7,30 +7,25 @@ namespace ApplicationCore.Shared.Settings;
 
 public static class Extensions {
 
-    public static IConfigurationBuilder AddSettingsFiles(this IConfigurationBuilder builder) {
-
-        string configDirectory;
 #if DEBUG
-        configDirectory = "Configuration";
+    private static string _configDirectory = "Configuration";
 #else
-        configDirectory = @"C:\ProgramData\OrderProcessor\Configuration";
+    private static string _configDirectory = @"C:\ProgramData\OrderProcessor\Configuration";
 #endif
 
-        string[] configFiles = new string[] {
+    private static string[] _configFiles = new string[] {
             "paths.json",
             "email.json",
             "pdfconfig.json",
             "tools.json",
-#if DEBUG
-            "data.Development.json"
-#else
             "data.json"
-#endif
         };
 
-        foreach (var fileName in configFiles) {
+    public static IConfigurationBuilder AddSettingsFiles(this IConfigurationBuilder builder) {
 
-            var finalPath = Path.Combine(configDirectory, fileName);
+        foreach (var fileName in _configFiles) {
+
+            var finalPath = Path.Combine(_configDirectory, fileName);
 
 #if !DEBUG
             if (!File.Exists(finalPath)) {
@@ -48,11 +43,11 @@ public static class Extensions {
 
     public static IServiceCollection ConfigureSettings(this IServiceCollection services, IConfiguration configuration) {
 
-        services.ConfigureWritable<DataFilePaths>(configuration.GetRequiredSection("data"), "Configuration\\data.json");
-        services.ConfigureWritable<ToolConfiguration>(configuration.GetRequiredSection("tools"), "Configuration\\tools.json");
+        services.ConfigureWritable<DataFilePaths>(configuration.GetRequiredSection("data"), Path.Combine(_configDirectory, "data.json"));
+        services.ConfigureWritable<ToolConfiguration>(configuration.GetRequiredSection("tools"), Path.Combine(_configDirectory, "tools.json"));
+        services.ConfigureWritable<EmailSettings>(configuration.GetRequiredSection("Email"), Path.Combine(_configDirectory, "email.json"));
         services.Configure<ConfigurationFiles>(configuration.GetRequiredSection("ConfigurationFiles"));
         services.Configure<Paths>(configuration.GetRequiredSection("paths"));
-        services.Configure<Email>(configuration.GetRequiredSection("Email"));
 
         return services;
 

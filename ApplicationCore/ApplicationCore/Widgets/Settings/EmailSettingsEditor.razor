@@ -1,0 +1,80 @@
+﻿@using ApplicationCore.Shared.Components
+@using ApplicationCore.Shared.Settings;
+@using static ApplicationCore.Shared.Components.Button;
+
+@if (_settings is null) {
+    
+    <div>
+        <h3>Error</h3>
+        <span>Settings could not be loaded</span>
+    </div>
+
+} else {
+    
+    <EditForm Model="_settings" OnValidSubmit="SaveChanges">
+
+        <div>
+            <label>Sender Name</label>
+            <InputText @bind-Value="_settings.SenderName" class="input-text w-full" />
+        </div>
+
+        <div>
+            <label>Sender Email</label>
+            <InputText @bind-Value="_settings.SenderEmail" class="input-text w-full" />
+        </div>
+
+        <div>
+            <label>Protected Password</label>
+            <InputText @bind-Value="_settings.ProtectedPassword" class="input-text w-full" />
+        </div>
+
+        <hr class="my-5"/>
+
+        <div>
+            <label>Host</label>
+            <InputText @bind-Value="_settings.Host" class="input-text w-full" />
+        </div>
+
+        <div>
+            <label>Port</label>
+            <InputNumber @bind-Value="_settings.Port" class="input-text w-full" step="1" />
+        </div>
+
+        <div class="my-5">
+            <Button type="submit" Color="ButtonColor.Primary">Save</Button>
+        </div>
+
+    </EditForm>
+
+}
+
+@code {
+
+    private EmailSettings? _settings = null;
+
+    [Inject]
+    public IWritableOptions<EmailSettings>? Options { get; set; }
+
+    protected override void OnInitialized() {
+
+        if (Options is null) return;
+
+        _settings = Options.Value;
+
+    }
+
+    private void SaveChanges() {
+
+        if (Options is null || _settings is null) return;
+
+        Options.Update(settings => {
+            settings.Port = _settings.Port;
+            settings.Host = _settings.Host;
+            settings.SenderName = _settings.SenderName;
+            settings.SenderEmail = _settings.SenderEmail;
+            settings.ProtectedPassword = _settings.ProtectedPassword;
+        });
+
+    }
+
+}

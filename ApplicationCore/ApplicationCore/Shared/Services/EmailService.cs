@@ -9,9 +9,9 @@ namespace ApplicationCore.Shared.Services;
 
 public class EmailService : IEmailService {
 
-    private readonly Email _settings;
+    private readonly EmailSettings _settings;
 
-    public EmailService(IOptions<Email> option) {
+    public EmailService(IOptions<EmailSettings> option) {
         _settings = option.Value;
     }
 
