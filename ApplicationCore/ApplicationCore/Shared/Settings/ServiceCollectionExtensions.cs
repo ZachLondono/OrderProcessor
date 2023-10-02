@@ -29,7 +29,7 @@ public static class Extensions {
 
 #if !DEBUG
             if (!File.Exists(finalPath)) {
-                File.Copy(Path.Combine("Configuration", fileName), finalPath);
+                File.Copy(Path.Combine(@".\Configuration", fileName), finalPath);
             }
 #endif
 
