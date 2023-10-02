@@ -12,6 +12,7 @@ using CADCodeProxy.Machining;
 using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.CSVTokens;
 using Microsoft.Extensions.Logging;
+using ApplicationCore.Shared.Settings;
 
 namespace ApplicationCore.Features.Orders.OrderExport;
 
@@ -26,11 +27,11 @@ internal class ExportService {
     private readonly ILogger<ExportService> _logger;
     private readonly IBus _bus;
     private readonly OrderState _orderState;
-    private readonly ExportOptions _options;
+    private readonly ExportSettings _options;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly IFileReader _fileReader;
 
-    public ExportService(ILogger<ExportService> logger, IBus bus, OrderState orderState, IOptions<ExportOptions> options, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IFileReader fileReader) {
+    public ExportService(ILogger<ExportService> logger, IBus bus, OrderState orderState, IOptions<ExportSettings> options, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IFileReader fileReader) {
         _logger = logger;
         _bus = bus;
         _orderState = orderState;

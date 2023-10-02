@@ -36,7 +36,7 @@ public static class DependencyInjection {
         services.AddTransient<IFileHandler, FileHandler>();
 
         AddReleaseServices(services);
-        AddExportServices(services, configuration);
+        AddExportServices(services);
 
         services.AddTransient<Ordering.GetOrderNumberById>(sp => {
 
@@ -72,8 +72,7 @@ public static class DependencyInjection {
         services.AddTransient<ReleaseService>();
     }
 
-    private static void AddExportServices(IServiceCollection services, IConfiguration configuration) {
-        services.Configure<ExportOptions>(configuration.GetRequiredSection("ExportOptions"));
+    private static void AddExportServices(IServiceCollection services) {
         services.AddTransient<ExportService>();
         services.AddTransient<IExtWriter, ExtWriter>();
         services.AddTransient<OrderExportModalViewModel>();

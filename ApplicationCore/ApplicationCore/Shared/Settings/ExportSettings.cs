@@ -1,6 +1,6 @@
-﻿namespace ApplicationCore.Features.Orders.OrderExport;
+﻿namespace ApplicationCore.Shared.Settings;
 
-public class ExportOptions {
+public class ExportSettings {
 
     public string DovetailTemplateFilePath { get; set; } = string.Empty;
 
