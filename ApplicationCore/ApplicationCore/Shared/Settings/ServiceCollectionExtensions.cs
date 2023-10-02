@@ -46,7 +46,6 @@ public static class Extensions {
         services.ConfigureWritable<DataFilePaths>(configuration.GetRequiredSection("data"), Path.Combine(_configDirectory, "data.json"));
         services.ConfigureWritable<ToolConfiguration>(configuration.GetRequiredSection("tools"), Path.Combine(_configDirectory, "tools.json"));
         services.ConfigureWritable<EmailSettings>(configuration.GetRequiredSection("Email"), Path.Combine(_configDirectory, "email.json"));
-        services.Configure<ConfigurationFiles>(configuration.GetRequiredSection("ConfigurationFiles"));
         services.Configure<Paths>(configuration.GetRequiredSection("paths"));
 
         return services;
