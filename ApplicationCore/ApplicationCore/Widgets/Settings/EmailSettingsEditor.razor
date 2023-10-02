@@ -1,15 +1,17 @@
-﻿@using ApplicationCore.Shared.Components
+﻿@using ApplicationCore.Infrastructure.Bus;
+@using ApplicationCore.Shared.Components
 @using ApplicationCore.Shared.Settings;
+@using Microsoft.Extensions.Logging;
 @using static ApplicationCore.Shared.Components.Button;
 
-@if (_settings is null) {
+@if (_error is not null) {
     
-    <div>
-        <h3>Error</h3>
-        <span>Settings could not be loaded</span>
+    <div class="text-red-600">
+        <h3>@_error.Title</h3>
+        <span>@_error.Details</span>
     </div>
 
-} else {
+} else if (_settings is not null) {
     
     <EditForm Model="_settings" OnValidSubmit="SaveChanges">
 
@@ -50,16 +52,36 @@
 
 @code {
 
+    private Error? _error = null;
+
     private EmailSettings? _settings = null;
 
     [Inject]
     public IWritableOptions<EmailSettings>? Options { get; set; }
 
+    [Inject]
+    public ILogger<ExportSettingsEditor>? Logger { get; set; }
+
     protected override void OnInitialized() {
 
         if (Options is null) return;
 
-        _settings = Options.Value;
+        try {
+            _settings = Options.Value;
+        } catch (Exception ex) {
+            Logger?.LogError(ex, "Exception thrown while trying to load email settings.");
+        }
+
+        if (_settings is null) {
+
+            _error = new() {
+                Title = "Error",
+                Details = "Settings could not be loaded"
+            };
+
+        } else {
+            _error = null;
+        }
 
     }
 
@@ -67,13 +89,28 @@
 
         if (Options is null || _settings is null) return;
 
-        Options.Update(settings => {
-            settings.Port = _settings.Port;
-            settings.Host = _settings.Host;
-            settings.SenderName = _settings.SenderName;
-            settings.SenderEmail = _settings.SenderEmail;
-            settings.ProtectedPassword = _settings.ProtectedPassword;
-        });
+        try {
+
+            Options.Update(settings => {
+                settings.Port = _settings.Port;
+                settings.Host = _settings.Host;
+                settings.SenderName = _settings.SenderName;
+                settings.SenderEmail = _settings.SenderEmail;
+                settings.ProtectedPassword = _settings.ProtectedPassword;
+            });
+
+            _error = null;
+
+        } catch (Exception ex) {
+
+            Logger?.LogError(ex, "Exception thrown while trying to save email settings.");
+
+            _error = new() {
+                Title = "Error",
+                Details = "Changes could not be saved"
+            };
+
+        }
 
     }
 

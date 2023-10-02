@@ -30,13 +30,36 @@ internal class ToolFileEditorViewModel {
 
     public ToolFileEditorViewModel(IWritableOptions<ToolConfiguration> options) {
         _options = options;
-        Configuration = options.Value;
+        try {
+            Configuration = options.Value;
+            Error = null;
+        } catch {
+            Error = new() {
+                Title = "Error",
+                Details = "Settings could not be loaded"
+            };
+        }
     }
 
     public void SaveToolFile() {
-        _options.Update(config => {
-            config.MachineToolMaps = Configuration.MachineToolMaps;
-        });
+
+        try {
+
+            _options.Update(config => {
+                config.MachineToolMaps = Configuration.MachineToolMaps;
+            });
+
+            Error = null;
+
+        } catch {
+
+            Error = new() {
+                Title = "Error",
+                Details = "Changes could not be saved"
+            };
+
+        }
+
     }
 
 }

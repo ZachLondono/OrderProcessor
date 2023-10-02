@@ -1,15 +1,17 @@
-﻿@using ApplicationCore.Shared.Components
+﻿@using ApplicationCore.Infrastructure.Bus;
+@using ApplicationCore.Shared.Components
 @using ApplicationCore.Shared.Settings;
+@using Microsoft.Extensions.Logging;
 @using static ApplicationCore.Shared.Components.Button;
 
-@if (_settings is null) {
+@if (_error is not null) {
     
-    <div>
-        <h3>Error</h3>
-        <span>Settings could not be loaded</span>
+    <div class="text-red-600">
+        <h3>@_error.Title</h3>
+        <span>@_error.Details</span>
     </div>
 
-} else {
+} else if (_settings is not null) {
 
     <EditForm Model="_settings" OnValidSubmit="SaveChanges">
 
@@ -33,25 +35,53 @@
             <InputText @bind-Value="_settings.DovetailTemplateFilePath" class="input-text w-full" />
         </div>
 
-        <div class="my-5">
-            <Button type="submit" Color="ButtonColor.Primary">Save</Button>
-        </div>
+        @if (_allowSaving) {
+            <div class="my-5">
+                <Button type="submit" Color="ButtonColor.Primary">Save</Button>
+            </div>
+        }
 
     </EditForm>
 
 }
 @code {
 
+    #if DEBUG
+    private readonly bool _allowSaving = true;
+#else 
+    private readonly bool _allowSaving = false;
+#endif
+
+    private Error? _error = null;
+
     private ExportSettings? _settings = null;
 
     [Inject]
     public IWritableOptions<ExportSettings>? Options { get; set; }
 
+    [Inject]
+    public ILogger<ExportSettingsEditor>? Logger { get; set; }
+
     protected override void OnInitialized() {
 
         if (Options is null) return;
 
-        _settings = Options.Value;
+        try {
+            _settings = Options.Value;
+        } catch (Exception ex) {
+            Logger?.LogError(ex, "Exception thrown while trying to load export settings.");
+        }
+
+        if (_settings is null) {
+
+            _error = new() {
+                Title = "Error",
+                Details = "Settings could not be loaded"
+            };
+
+        } else {
+            _error = null;
+        }
 
     }
 
@@ -59,12 +89,27 @@
 
         if (Options is null || _settings is null) return;
 
-        Options.Update(settings => {
-            settings.EXTOutputDirectory = _settings.EXTOutputDirectory;
-            settings.CSVOutputDirectory = _settings.CSVOutputDirectory;
-            settings.MDFDoorTemplateFilePath = _settings.MDFDoorTemplateFilePath;
-            settings.DovetailTemplateFilePath = _settings.DovetailTemplateFilePath;
-        });
+        try {
+
+            Options.Update(settings => {
+                settings.EXTOutputDirectory = _settings.EXTOutputDirectory;
+                settings.CSVOutputDirectory = _settings.CSVOutputDirectory;
+                settings.MDFDoorTemplateFilePath = _settings.MDFDoorTemplateFilePath;
+                settings.DovetailTemplateFilePath = _settings.DovetailTemplateFilePath;
+            });
+
+            _error = null;
+
+        } catch (Exception ex) {
+
+            Logger?.LogError(ex, "Exception thrown while trying to save export settings.");
+
+            _error = new() {
+                Title = "Error",
+                Details = "Changes could not be saved"
+            };
+
+        }
 
     }
 

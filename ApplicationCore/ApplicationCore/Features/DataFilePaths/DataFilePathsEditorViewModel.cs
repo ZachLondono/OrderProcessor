@@ -28,15 +28,33 @@ internal class DataFilePathsEditorViewModel {
 
     public DataFilePathsEditorViewModel(IWritableOptions<Shared.Settings.DataFilePaths> options) {
         _options = options;
-        _configuration = _options.Value;
+
+        try {
+            _configuration = _options.Value;
+            ErrorMessage = null;
+        } catch {
+            ErrorMessage = "Settings could not be loaded";
+        }
     }
 
     public void SaveChanges() {
         if (Configuration is null) return;
-        _options.Update(option => {
-            option.OrderingDBPath = Configuration.OrderingDBPath;
-            option.CompaniesDBPath = Configuration.CompaniesDBPath;
-        });
+
+        try {
+
+            _options.Update(option => {
+                option.OrderingDBPath = Configuration.OrderingDBPath;
+                option.CompaniesDBPath = Configuration.CompaniesDBPath;
+            });
+
+            ErrorMessage = null;
+
+        } catch {
+
+            ErrorMessage = "Changes could not be saved";
+
+        }
+
     }
 
 }
