@@ -14,7 +14,7 @@ public static class Extensions {
 #endif
 
     private static string[] _configFiles = new string[] {
-            "paths.json",
+            "schedule.json",
             "email.json",
             "pdfconfig.json",
             "tools.json",
@@ -46,7 +46,7 @@ public static class Extensions {
         services.ConfigureWritable<DataFilePaths>(configuration.GetRequiredSection("data"), Path.Combine(_configDirectory, "data.json"));
         services.ConfigureWritable<ToolConfiguration>(configuration.GetRequiredSection("tools"), Path.Combine(_configDirectory, "tools.json"));
         services.ConfigureWritable<EmailSettings>(configuration.GetRequiredSection("Email"), Path.Combine(_configDirectory, "email.json"));
-        services.Configure<Paths>(configuration.GetRequiredSection("paths"));
+        services.ConfigureWritable<ScheduleSettings>(configuration.GetRequiredSection("schedule"), Path.Combine(_configDirectory, "schedule.json"));
 
         return services;
 

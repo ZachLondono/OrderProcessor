@@ -16,9 +16,9 @@ internal class AddLineToSchedule {
 
 	public class Handler : CommandHandler<Command> {
 
-		private readonly Paths _paths;
+		private readonly ScheduleSettings _paths;
 
-        public Handler(IOptions<Paths> option) {
+        public Handler(IOptions<ScheduleSettings> option) {
 			_paths = option.Value;
         }
 		
