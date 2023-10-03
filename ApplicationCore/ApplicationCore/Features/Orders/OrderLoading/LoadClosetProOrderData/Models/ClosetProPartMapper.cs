@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Components;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
@@ -31,6 +30,7 @@ public class ClosetProPartMapper {
             { "CPS WM Vert", CreateVerticalPanelFromPart },
             { "CPS WM Vert Radius", CreateVerticalPanelFromPart },
             { "CPS WM Vert Straight", CreateVerticalPanelFromPart },
+            { "VP-Hutch", CreateVerticalHutchPanelFromPart },
             { "VP-Corner Floor Mount", CreateVerticalPanelFromPart },
             { "VP-Corner Wall Hung", CreateVerticalPanelFromPart },
             { "FixedShelf", CreateFixedShelfFromPart },
@@ -334,6 +334,71 @@ public class ClosetProPartMapper {
                                        frameThickness,
                                        panelThickness,
                                        material);
+
+    }
+
+    public static IProduct CreateVerticalHutchPanelFromPart(Part part, bool wallHasBacking) {
+
+        bool finLeft = part.VertHand == "Left";
+        bool finRight = part.VertHand == "Right";
+
+        if (!finLeft && !finRight && part.VertDrillL != part.VertDrillR) {
+            throw new InvalidOperationException("Hutch transition panels are not supported");
+        }
+
+        string[]? dims;
+        if (finRight) {
+            dims = part.UnitR.Split('|');
+        } else {
+            dims = part.UnitL.Split('|');
+        }
+
+        if (dims is null || dims.Length != 4) {
+            throw new InvalidOperationException("Invalid hutch panel dimensions");
+        }
+
+        if (!double.TryParse(dims[0], out double baseDepth)) throw new InvalidOperationException($"Invalid hutch panel base depth value '{dims[0]}'");
+        if (!double.TryParse(dims[1], out double baseHeight)) throw new InvalidOperationException($"Invalid hutch panel base height value '{dims[1]}'");
+        if (!double.TryParse(dims[2], out double topDepth)) throw new InvalidOperationException($"Invalid hutch panel top depth value '{dims[2]}'");
+        if (!double.TryParse(dims[3], out double topHeight)) throw new InvalidOperationException($"Invalid hutch panel top height value '{dims[3]}'");
+
+        if (baseHeight + topHeight != part.Height) {
+            throw new InvalidOperationException($"Hutch panel height does not match sum of top and base heights | panel:{part.Height} top:{topHeight} base:{baseHeight}");
+        }
+
+        if (baseDepth != part.Depth) {
+            throw new InvalidOperationException($"Hutch panel depth does not match base depth | panel:{part.Depth} base:{baseDepth}");
+        }
+
+        if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
+            unitPrice = 0M;
+        }
+        string room = GetRoomName(part);
+        string sku = (finLeft || finRight) ? "PEH" : "PCH";
+        
+        Dimension width = Dimension.FromInches(part.Depth);
+        Dimension length = Dimension.FromInches(part.Height);
+        ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
+        ClosetPaint? paint = null;
+        string edgeBandingColor = part.InfoRecords
+                                        .Where(i => i.PartName == "Edge Banding") // i.CornerShelfSizes contains the information about what edges to apply banding
+                                        .Select(i => i.Color)
+                                        .FirstOrDefault() ?? part.Color;
+        string comment = "";
+
+        Dictionary<string, string> parameters = new() {
+            { "FINLEFT", finLeft ? "1" : "0" },
+            { "FINRIGHT", finRight ? "1" : "0" },
+            { "ExtendBack", wallHasBacking ? "19.05" : "0" },
+            { "BottomNotchD", "0" },
+            { "BottomNotchH", "0" },
+            { "TopDepth", Dimension.FromInches(topDepth).AsMillimeters().ToString() },
+            { "DwrPanelH", Dimension.FromInches(baseHeight).AsMillimeters().ToString() },
+            //{ "WallMount", isWallMount ? "1" : "0" },  // Closet pro does not allow wall hung hutch panels
+            //{ "BottomRadius", hasRadiusBottom ? Settings.VerticalPanelBottomRadius.AsMillimeters().ToString() : "0" },
+        };
+        
+        return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
 
     }
 
