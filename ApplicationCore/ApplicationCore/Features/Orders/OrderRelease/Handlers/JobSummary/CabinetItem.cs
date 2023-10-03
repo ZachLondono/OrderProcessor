@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Shared.Domain;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 
@@ -10,8 +11,8 @@ internal class CabinetItem {
     public Dimension Width { get; set; }
     public Dimension Height { get; set; }
     public Dimension Depth { get; set; }
-    public bool FinLeft { get; set; }
-    public bool FinRight { get; set; }
+    public CabinetSideType LeftSide { get; set; }
+    public CabinetSideType RightSide { get; set; }
     public string[] Comments { get; set; } = Array.Empty<string>();
 
 }

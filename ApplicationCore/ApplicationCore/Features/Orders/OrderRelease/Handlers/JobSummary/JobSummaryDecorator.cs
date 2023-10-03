@@ -395,8 +395,8 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                     Height = i.Height,
                                     Width = i.Width,
                                     Depth = i.Depth,
-                                    FinLeft = i.LeftSideType == CabinetSideType.Finished,
-                                    FinRight = i.RightSideType == CabinetSideType.Finished,
+                                    LeftSide = i.LeftSideType,
+                                    RightSide = i.RightSideType,
                                     Comments = comments.ToArray()
                                 };
                             })
@@ -536,13 +536,22 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                             "Width",
                             "Height",
                             "Depth",
-                            "Fin L",
-                            "Fin R"
+                            "L Side",
+                            "R Side"
                         }.ForEach(title =>
                             header.Cell().Element(headerCellStyle).Text(title)
                         );
 
                     });
+
+                    var cabSide = (CabinetSideType sideType) => sideType switch {
+                        CabinetSideType.Unfinished => "",
+                        CabinetSideType.Finished => "F",
+                        CabinetSideType.ConfirmatFinished => "G",
+                        CabinetSideType.AppliedPanel => "AP",
+                        CabinetSideType.IntegratedPanel => "IP",
+                        _ => sideType.ToString()
+                    };
 
                     foreach (var item in group.Items) {
 
@@ -556,8 +565,8 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                             (c => c.AlignCenter().Text(text => FormatFraction(text, item.Width, 10))),
                             (c => c.AlignCenter().Text(text => FormatFraction(text, item.Height, 10))),
                             (c => c.AlignCenter().Text(text => FormatFraction(text, item.Depth, 10))),
-                            (c => c.AlignCenter().Text(item.FinLeft ? "X" : "")),
-                            (c => c.AlignCenter().Text(item.FinRight ? "X" : ""))
+                            (c => c.AlignCenter().Text(cabSide(item.LeftSide))),
+                            (c => c.AlignCenter().Text(cabSide(item.RightSide)))
 
                         }.ForEach(action =>
                             action(table.Cell().Element(e => applyDefaultCellStyle(e, !containsComments, true)))
