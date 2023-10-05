@@ -10,9 +10,9 @@ using DesktopHost.Error;
 using Serilog;
 using System.Windows.Threading;
 using ApplicationCore.Application;
-using System.IO;
-using System.Collections.Generic;
 using ApplicationCore.Shared.Settings;
+using System.Runtime.InteropServices;
+using System.Windows.Interop;
 
 namespace DesktopHost;
 
@@ -21,6 +21,9 @@ namespace DesktopHost;
 /// </summary>
 public partial class App : Application {
 
+    [DllImport("user32")]
+    public static extern int FlashWindow(IntPtr hwnd, bool bInvert);
+    
     private void Application_Startup(object sender, StartupEventArgs e) {
 
         Current.DispatcherUnhandledException += AppDispatcherUnhandledException;
@@ -34,12 +37,16 @@ public partial class App : Application {
 
         } catch (Exception ex) {
 
-            new ErrorWindow {
+            var errorWindow = new ErrorWindow {
                 DataContext = new ErrorWindowViewModel() {
                     Title = "Error Initializing Application",
                     Message = ex.Message
                 }
-            }.Show();
+            };
+
+            errorWindow.Show();
+            var wih = new WindowInteropHelper(errorWindow); 
+            _ = FlashWindow(wih.Handle, true);
 
         }
 
@@ -64,9 +71,7 @@ public partial class App : Application {
                             .ConfigureSettings(configuration);
 
         services.AddWpfBlazorWebView();
-#if DEBUG
         services.AddBlazorWebViewDeveloperTools();
-#endif
 
         return services.BuildServiceProvider();
 
