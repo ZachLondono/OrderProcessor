@@ -18,8 +18,9 @@ public static class Extensions {
             "email.json",
             "pdfconfig.json",
             "tools.json",
-            "data.json"
-        };
+            "data.json",
+            "data.Development.json"
+    };
 
     public static IConfigurationBuilder AddSettingsFiles(this IConfigurationBuilder builder) {
 
@@ -43,7 +44,12 @@ public static class Extensions {
 
     public static IServiceCollection ConfigureSettings(this IServiceCollection services, IConfiguration configuration) {
 
+#if DEBUG
+        services.ConfigureWritable<DataFilePaths>(configuration.GetRequiredSection("data"), Path.Combine(_configDirectory, "data.Development.json"));
+#else
         services.ConfigureWritable<DataFilePaths>(configuration.GetRequiredSection("data"), Path.Combine(_configDirectory, "data.json"));
+#endif
+
         services.ConfigureWritable<ToolConfiguration>(configuration.GetRequiredSection("tools"), Path.Combine(_configDirectory, "tools.json"));
         services.ConfigureWritable<EmailSettings>(configuration.GetRequiredSection("Email"), Path.Combine(_configDirectory, "email.json"));
         services.ConfigureWritable<ScheduleSettings>(configuration.GetRequiredSection("schedule"), Path.Combine(_configDirectory, "schedule.json"));
