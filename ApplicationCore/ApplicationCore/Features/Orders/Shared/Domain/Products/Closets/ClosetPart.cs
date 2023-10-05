@@ -5,7 +5,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 
-public class ClosetPart : IProduct, IPPProductContainer, IClosetPartProduct {
+public class ClosetPart : IPPProductContainer, IClosetPartProduct {
 
     public Guid Id { get; }
     public int Qty { get; set; }

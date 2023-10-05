@@ -1,13 +1,17 @@
 ﻿@page "/orders/details"
 @using ApplicationCore.Features.Orders.Details
 @using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+@using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 @using ApplicationCore.Features.Orders.Shared.State;
+@using ApplicationCore.Shared.Components
 @using ApplicationCore.Shared.Services;
 @using ApplicationCore.Widgets.BricsCADFileCopy
 @using ApplicationCore.Widgets.Orders.OrderDelete
 @using ApplicationCore.Widgets.Orders.OrderExport
 @using ApplicationCore.Widgets.Orders.OrderRelationshipList
 @using ApplicationCore.Widgets.Orders.OrderRelease
+@using ApplicationCore.Widgets.Products.ClosetPartEditor;
+@using ApplicationCore.Widgets.Products.ProductDrawingManager
 @using ApplicationCore.Widgets.Schedule
 @inject OrderState OrderState
 @inject NavigationService Nav
@@ -15,14 +19,24 @@
 <div class="grid grid-cols-1 gap-5">
 
     <section id="orderDetails">
-        <OrderDetails>
-            <div class="flex flex-col space-y-5">
-                <OrderExportWidget Order="OrderState.Order" />
-                <OrderReleaseWidget Orders="GetOrder()" />
-                <OrderDeleteWidget OrderId="OrderState.Order?.Id ?? Guid.Empty" OnOrderDeleted="OnOrderDeleted" />
-                <BricsCADFileSaveWidget OutputDirectory="@OrderState.Order?.WorkingDirectory"/>
-                <AddToScheduleWidget Order="OrderState.Order" />
-            </div>
+        <OrderDetails @ref="_detailsRef">
+            <ActionPanel>
+                <div class="flex flex-col space-y-5">
+                    <OrderExportWidget Order="OrderState.Order" />
+                    <OrderReleaseWidget Orders="GetOrder()" />
+                    <OrderDeleteWidget OrderId="OrderState.Order?.Id ?? Guid.Empty" OnOrderDeleted="OnOrderDeleted" />
+                    <BricsCADFileSaveWidget OutputDirectory="@OrderState.Order?.WorkingDirectory"/>
+                    <AddToScheduleWidget Order="OrderState.Order" />
+                </div>
+            </ActionPanel>
+            <ProductActionsColumn Context="product">
+                <div class="flex flex-row">
+                    <ProductDrawingManagerButton ProductId="@product.Id" />
+                    @if (product is ClosetPart closetPart) {
+                        <Button OnClickAsync="() => OpenPartEditor(closetPart)" class="ml-5">Edit</Button>
+                    }
+                </div>
+            </ProductActionsColumn>
         </OrderDetails>
     </section>
 
@@ -35,6 +49,11 @@
 
 @code {
 
+    [CascadingParameter]
+    public IModalService Modal { get; set; } = default!;
+
+    private OrderDetails? _detailsRef;
+
     public List<Order> GetOrder() {
         if (OrderState.Order is null) {
             return new() ;
@@ -44,6 +63,23 @@
 
     public void OnOrderDeleted() {
         Nav.NavigateToOrderListPage();
+    }
+
+    public async Task OpenPartEditor(IClosetPartProduct part) {
+
+        if (part is ClosetPart closetPart) {
+
+            var parameters = new ModalParameters() {
+                { "Product", closetPart }
+            };
+
+            _ = await Modal.Show<ClosetPartEditor>("Edit Closet Part", parameters).Result;
+
+            // TODO: Do this better
+            _detailsRef?.OnProductsChanged();
+
+        }
+
     }
 
 }

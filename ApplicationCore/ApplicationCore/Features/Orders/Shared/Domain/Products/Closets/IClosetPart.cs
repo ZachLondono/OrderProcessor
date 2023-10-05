@@ -3,13 +3,8 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 
-public interface IClosetPartProduct {
+public interface IClosetPartProduct : IProduct {
 
-    public Guid Id { get; }
-    public int Qty { get; }
-    public decimal UnitPrice { get; }
-    public int ProductNumber { get; }
-    public string Room { get; set; }
     public string SKU { get; }
     public Dimension Width { get; }
     public Dimension Length { get; }
@@ -17,7 +12,5 @@ public interface IClosetPartProduct {
     public ClosetPaint? Paint { get; }
     public string EdgeBandingColor { get; }
     public string Comment { get; }
-    public string GetDescription();
-    public List<string> ProductionNotes { get; set; }
 
 }

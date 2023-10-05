@@ -1,9 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 using ApplicationCore.Features.Orders.Shared.State;
-using ApplicationCore.Widgets.Products.ClosetPartEditor;
-using ApplicationCore.Widgets.Products.ProductDrawingManager;
-using Blazored.Modal;
 using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
@@ -13,7 +9,10 @@ namespace ApplicationCore.Features.Orders.Details;
 public partial class OrderDetails {
 
     [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    public RenderFragment? ActionPanel { get; set; }
+
+    [Parameter]
+    public RenderFragment<IProduct>? ProductActionsColumn { get; set; }
 
     [CascadingParameter]
     public IModalService Modal { get; set; } = default!;
@@ -142,41 +141,8 @@ public partial class OrderDetails {
     }
 
     public void OnProductsChanged() {
-
         SeparateRooms();
         StateHasChanged();
-
-    }
-
-    public async Task OpenProductDrawingManager(Guid productId) {
-
-        var dialog = Modal.Show<ProductDrawingManagerWidget>("Product Drawings",
-            new ModalParameters() {
-                { "ProductId", productId }
-            },
-            new ModalOptions() {
-                DisableBackgroundCancel = true
-            });
-
-        await dialog.Result;
-
-    }
-
-
-    public async Task OpenPartEditor(IClosetPartProduct part) {
-
-        if (part is ClosetPart closetPart) {
-
-            var parameters = new ModalParameters() {
-                { "Product", closetPart }
-            };
-
-            _ = await Modal.Show<ClosetPartEditor>("Edit Closet Part", parameters).Result;
-
-            OnProductsChanged();
-
-        }
-
     }
 
 }

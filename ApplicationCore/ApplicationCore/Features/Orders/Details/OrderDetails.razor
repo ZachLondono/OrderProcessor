@@ -69,9 +69,11 @@
         </div>
     </section>
 
-    <section class="mt-10" id="actions">
-        @ChildContent
-    </section>
+    @if (ActionPanel is not null) {
+        <section class="mt-10" id="actions">
+            @ActionPanel
+        </section>
+    }
 
     <section class="mt-10" id="companyInfo">
         <div>
@@ -261,7 +263,7 @@
                                 <h3>Dovetail Drawer Boxes</h3>
                                 <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@room.DovetailDrawerBoxes" Context="product">
                                     <ActionColumn>
-                                        <Button OnClickAsync="() => OpenProductDrawingManager(product.Id)">DXFs</Button>
+                                        @ProductActionsColumn?.Invoke(product)
                                     </ActionColumn>
                                 </DovetailDrawerBoxProductTable>
                             </section>
@@ -272,7 +274,7 @@
                                 <h3>Doweled Drawer Boxes</h3>
                                 <DoweledDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@room.DoweledDrawerBoxes" Context="product">
                                     <ActionColumn>
-                                        <Button OnClickAsync="() => OpenProductDrawingManager(product.Id)">DXFs</Button>
+                                        @ProductActionsColumn?.Invoke(product)
                                     </ActionColumn>
                                 </DoweledDrawerBoxProductTable>
                             </section>
@@ -283,7 +285,7 @@
                                 <h3>Cabinets</h3>
                                 <CabinetProductTable UseInches="@_useInches" Cabinets="@room.Cabinets" Context="product">
                                     <ActionColumn>
-                                        <Button OnClickAsync="() => OpenProductDrawingManager(product.Id)">DXFs</Button>
+                                        @ProductActionsColumn?.Invoke(product)
                                     </ActionColumn>
                                 </CabinetProductTable>
                             </section>
@@ -294,7 +296,7 @@
                                 <h3>Cabinet Extra Parts</h3>
                                 <CabinetPartProductTable UseInches="@_useInches" CabinetParts="@room.CabinetParts" Context="product" >
                                     <ActionColumn>
-                                        <Button OnClickAsync="() => OpenProductDrawingManager(product.Id)">DXFs</Button>
+                                        @ProductActionsColumn?.Invoke(product)
                                     </ActionColumn>
                                 </CabinetPartProductTable>
                             </section>
@@ -305,12 +307,7 @@
                                 <h3>Closet Parts</h3>
                                 <ClosetPartProductTable UseInches="@_useInches" ClosetParts="@room.ClosetParts" Context="product">
                                     <ActionColumn>
-                                        <div class="flex flex-row">
-                                            <Button OnClickAsync="() => OpenProductDrawingManager(product.Id)">DXFs</Button>
-                                            @if (product is ClosetPart) {
-                                                <Button OnClickAsync="() => OpenPartEditor(product)" class="mr-5">Edit</Button>
-                                            }
-                                        </div>
+                                        @ProductActionsColumn?.Invoke(product)
                                     </ActionColumn>
                                 </ClosetPartProductTable>
                             </section>
@@ -321,7 +318,7 @@
                                 <h3>Zargen Drawers</h3>
                                 <ZargenDrawerProductTable UseInches="@_useInches" ZargenDrawers="@room.ZargenDrawers" Context="product">
                                     <ActionColumn>
-                                        <Button OnClickAsync="() => OpenProductDrawingManager(product.Id)">DXFs</Button>
+                                        @ProductActionsColumn?.Invoke(product)
                                     </ActionColumn>
                                 </ZargenDrawerProductTable>
                             </section>
@@ -332,7 +329,7 @@
                                 <h3>MDF Doors</h3>
                                 <MDFDoorProductTable UseInches="@_useInches" MDFDoors="@room.MDFDoors" Context="product">
                                     <ActionColumn>
-                                        <Button OnClickAsync="() => OpenProductDrawingManager(product.Id)">DXFs</Button>
+                                        @ProductActionsColumn?.Invoke(product)
                                     </ActionColumn>
                                 </MDFDoorProductTable>
                             </section>

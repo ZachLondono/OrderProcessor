@@ -93,7 +93,7 @@
                         <td class="whitespace-nowrap p-5 text-center">@row.DrawerBoxOptions.FixedDividersCounts?.DeepCount</td>
                         <td class="whitespace-nowrap p-5 text-center">$@row.UnitPrice.ToString("0.00")</td>
                         <td class="whitespace-nowrap p-5 text-center">$@((row.UnitPrice * row.Qty).ToString("0.00"))</td>
-                        <td p-5>
+                        <td class="p-5">
                             @if (ActionColumn is not null) {
                                 @ActionColumn(row)
                             }

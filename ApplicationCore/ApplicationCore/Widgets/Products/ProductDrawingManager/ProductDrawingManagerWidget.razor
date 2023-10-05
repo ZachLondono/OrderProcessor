@@ -44,6 +44,7 @@
                         } else if (row.IsBeingDeleted) {
                             <td colspan="2" class="py-5">
                                 <div class="text-center">
+                                    Delete '@row.Name'?
                                     <Button OnClickAsync="() => RemoveDrawing(row)" Color="ButtonColor.Danger">Confirm</Button>
                                     <Button OnClick="() => CancelDeletingDrawing(row)" Color="ButtonColor.Secondary">Cancel</Button>
                                 </div>
