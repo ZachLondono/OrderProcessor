@@ -17,7 +17,7 @@ public class CabinetPartPersistenceTest : PersistenceTests {
     }
 
     [Fact]
-    public void DeleteOrderWithBaseCabinet() {
+    public void DeleteOrderWithCabinetPart() {
 
         var cabPart = new CabinetPart(Guid.NewGuid(), 1, 123.0M, 123, "ABC123", "DEF456", new("White", CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard), "Beige", "Comment", new Dictionary<string, string>() {
             { "Param A", "Value A" }
@@ -28,7 +28,7 @@ public class CabinetPartPersistenceTest : PersistenceTests {
     }
 
     [Fact]
-    public void InsertOrderWithBaseCabinetWithProductionNotes() {
+    public void InsertOrderWithCabinetPartWithProductionNotes() {
 
         var cabPart = new CabinetPart(Guid.NewGuid(), 1, 123.0M, 123, "ABC123", "DEF456", new("White", CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard), "Beige", "Comment", new Dictionary<string, string>() {
             { "Param A", "Value A" }
