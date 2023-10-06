@@ -61,24 +61,27 @@ public partial class OrderDetails {
         NavigationService.NavigateToVendorPage(companyId);
     }
 
-    private void AddDueDate() {
+    private async Task AddDueDate() {
         _dueDate = DateTime.Today;
         OrderState.SetDueDate(_dueDate);
+        await OrderState.SaveDueDate();
         StateHasChanged();
     }
 
-    private void RemoveDueDate() {
+    private async Task RemoveDueDate() {
         _dueDate = null;
         OrderState.SetDueDate(null);
+        await OrderState.SaveDueDate();
         StateHasChanged();
     }
 
-    private void OnDueDateChanged(ChangeEventArgs args) {
+    private async Task OnDueDateChanged(ChangeEventArgs args) {
         string newDueDateStr = args.Value?.ToString() ?? "";
 
         if (DateTime.TryParse(newDueDateStr, out DateTime newDueDate)) {
             _dueDate = newDueDate;
             OrderState.SetDueDate(newDueDate);
+            await OrderState.SaveDueDate();
         }
     }
 
@@ -86,10 +89,10 @@ public partial class OrderDetails {
         _useInches = !_useInches;
     }
 
-    private async Task SaveChangesAsync() {
+    private async Task SaveNoteAsync() {
 
         try {
-            await OrderState.SaveChanges();
+            await OrderState.SaveNote();
         } catch (Exception ex) {
             Debug.WriteLine("Exception thrown while saving changes");
             Debug.WriteLine(ex);
@@ -125,9 +128,15 @@ public partial class OrderDetails {
 
     }
 
+    private async Task WorkingDirectoryChanged() {
+        await OrderState.SaveWorkingDirectory();
+        StateHasChanged();
+    }
+
     private static void OnRoomNameChanged(ChangeEventArgs args, Room room) {
         room.Name = args.Value?.ToString() ?? "";
     }
+
 
     public abstract class ProductRowModel<T> where T : IProduct {
 

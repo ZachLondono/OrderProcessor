@@ -58,13 +58,13 @@
             @if (_dueDate is DateTime dueDate) {
                 <!--<InputDate @oninput="OnDueDateChanged" TValue="DateTime" ValueExpression="() => dueDate" />-->
                 <input class="text-lg" type="date" value="@dueDate.ToString("yyyy-MM-dd")" @oninput="OnDueDateChanged" />
-                <Button Size="ButtonSize.XSmall" Style="ButtonStyle.Outline" Color="ButtonColor.Danger" OnClick="RemoveDueDate">
+                <Button Size="ButtonSize.XSmall" Style="ButtonStyle.Outline" Color="ButtonColor.Danger" OnClickAsync="RemoveDueDate">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-2 h-2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </Button>
             } else {
-                <Button Size="ButtonSize.Small" Style="ButtonStyle.Link" OnClick="AddDueDate">+ Add Due Date</Button>
+                <Button Size="ButtonSize.Small" Style="ButtonStyle.Link" OnClickAsync="AddDueDate">+ Add Due Date</Button>
             }
         </div>
     </section>
@@ -98,13 +98,16 @@
         </div>
     </section>
 
-    <section class="mt-10" id="editSection">
-        <div>
-            <Button OnClickAsync="@SaveChangesAsync" Size="ButtonSize.XSmall" Style="ButtonStyle.Text" Disabled="!OrderState.IsDirty">Save</Button>
+    <section class="mt-10" id="order_note">
+        <div class="mb-5">
+            <label for="note" class="mr-5">Note</label>
+            <Button OnClickAsync="@SaveNoteAsync" Size="ButtonSize.XSmall" Style="ButtonStyle.Text" Disabled="!OrderState.IsNoteDirty">Save</Button>
+            <textarea id="note" placeholder="Order Note..." class="w-full" @oninput="OnNoteChanged">@_note</textarea>
         </div>
-        <label for="note">Note</label>
-        <textarea id="note" placeholder="Order Note..." class="w-full" @oninput="OnNoteChanged">@_note</textarea>
-        <WorkingDirectoryWidget WorkingDirectory="@OrderState.Order.WorkingDirectory" OnWorkingDirectoryChanged="StateHasChanged" />
+
+        <div>
+            <WorkingDirectoryWidget WorkingDirectory="@OrderState.Order.WorkingDirectory" OnWorkingDirectoryChanged="WorkingDirectoryChanged" />
+        </div>
     </section>
 
     <section class="mt-10" id="shipping">

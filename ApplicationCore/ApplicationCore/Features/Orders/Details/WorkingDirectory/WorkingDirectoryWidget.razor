@@ -13,7 +13,7 @@
     public string WorkingDirectory { get; set; } = string.Empty;
 
     [Parameter]
-    public Action? OnWorkingDirectoryChanged { get; set; }
+    public Func<Task>? OnWorkingDirectoryChanged { get; set; }
 
     [CascadingParameter]
     public IModalService Modal { get; set; } = default!;
@@ -30,7 +30,9 @@
 
         StateHasChanged();
 
-        OnWorkingDirectoryChanged?.Invoke();
+        if (OnWorkingDirectoryChanged is not null) {
+            await OnWorkingDirectoryChanged();
+        }
 
     }
 

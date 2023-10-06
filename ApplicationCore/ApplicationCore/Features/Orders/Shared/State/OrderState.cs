@@ -7,7 +7,9 @@ namespace ApplicationCore.Features.Orders.Shared.State;
 public class OrderState {
 
     public Order? Order { get; private set; }
-    public bool IsDirty { get; private set; }
+    public bool IsNoteDirty { get; private set; }
+    public bool IsWorkingDirectoryDirty { get; private set; }
+    public bool IsDueDateDirty { get; private set; }
 
     private readonly IBus _bus;
     private readonly ILogger<OrderState> _logger;
@@ -40,25 +42,37 @@ public class OrderState {
     public void SetDueDate(DateTime? dueDate) {
         if (Order is null) return;
         Order.DueDate = dueDate;
-        IsDirty = true;
+        IsDueDateDirty = true;
     }
 
     public void SetNote(string note) {
         if (Order is null) return;
         Order.Note = note;
-        IsDirty = true;
+        IsNoteDirty = true;
     }
 
     public void SetWorkingDirectory(string workingDirectory) {
         if (Order is null) return;
         Order.WorkingDirectory = workingDirectory;
-        IsDirty = true;
+        IsWorkingDirectoryDirty = true;
     }
 
-    public async Task SaveChanges() {
-        if (Order is null || !IsDirty) return;
-        await _bus.Send(new SaveChanges.Command(Order));
-        IsDirty = false;
+    public async Task SaveNote() {
+        if (Order is null || !IsNoteDirty) return;
+        await _bus.Send(new UpdateOrderNote.Command(Order.Id, Order.Note));
+        IsNoteDirty = false;
+    }
+
+    public async Task SaveWorkingDirectory() {
+        if (Order is null || !IsWorkingDirectoryDirty) return;
+        await _bus.Send(new UpdateOrderWorkingDirectory.Command(Order.Id, Order.WorkingDirectory));
+        IsWorkingDirectoryDirty = false;
+    }
+
+    public async Task SaveDueDate() {
+        if (Order is null || !IsDueDateDirty) return;
+        await _bus.Send(new UpdateOrderDueDate.Command(Order.Id, Order.DueDate));
+        IsDueDateDirty = false;
     }
 
 }

@@ -1,13 +1,12 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Shared.Data.Ordering;
+﻿using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 
 namespace ApplicationCore.Features.Orders.Shared.State;
 
-public class SaveChanges {
+public class UpdateOrderWorkingDirectory {
 
-    public record Command(Order Order) : ICommand;
+    public record Command(Guid OrderId, string WorkingDirectory) : ICommand;
 
     public class Handler : CommandHandler<Command> {
 
@@ -24,17 +23,13 @@ public class SaveChanges {
             const string sql = """
                                UPDATE orders
                                SET
-                                note = @Note,
-                                working_directory = @WorkingDirectory,
-                                due_date = @DueDate
-                               WHERE id = @Id;
+                                working_directory = @WorkingDirectory
+                               WHERE id = @OrderId;
                                """;
 
             int rowsAffected = await connection.ExecuteAsync(sql, new {
-                command.Order.Note,
-                command.Order.WorkingDirectory,
-                command.Order.DueDate,
-                command.Order.Id
+                command.WorkingDirectory,
+                command.OrderId
             });
 
             if (rowsAffected < 1) {
