@@ -141,6 +141,11 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
             await File.WriteAllTextAsync(dataFile, exportXML);
         }
 
+        DateTime? dueDate = null;
+        if (DateTime.TryParse(data.Shipping.Date, out DateTime parsedDate)) {
+            dueDate = parsedDate;
+        }
+
         OrderData? order = new() {
             Number = number,
             Name = data.Name,
@@ -151,7 +156,7 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
             Tax = AllmoxyXMLOrderProviderHelpers.StringToMoney(data.Invoice.Tax),
             PriceAdjustment = 0M,
             OrderDate = orderDate,
-            DueDate = null,
+            DueDate = dueDate,
             CustomerId = customerId,
             VendorId = Guid.Parse(_configuration.VendorId),
             AdditionalItems = items,
