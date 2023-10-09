@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Desktop": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "-v"
     },
     "Console": {
       "commandName": "Project",

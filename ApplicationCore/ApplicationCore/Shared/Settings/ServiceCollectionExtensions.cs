@@ -22,7 +22,9 @@ public static class Extensions {
             "data.Development.json"
     };
 
-    public static IConfigurationBuilder AddSettingsFiles(this IConfigurationBuilder builder) {
+    public static IConfigurationBuilder AddSettingsFiles(this IConfigurationBuilder builder, Action<string> logVerbose) {
+
+        logVerbose($"Starting to add Json configuration files from directory: '{_configDirectory}'");
 
         foreach (var fileName in _configFiles) {
 
@@ -30,10 +32,12 @@ public static class Extensions {
 
 #if !DEBUG
             if (!File.Exists(finalPath)) {
+                logVerbose($"Copying configuration file '{fileName}' to '{finalPath}'");
                 File.Copy(Path.Combine(@".\Configuration", fileName), finalPath);
             }
 #endif
 
+            logVerbose($"Adding json configuration file: {finalPath}");
             builder.AddJsonFile(finalPath, optional: false, reloadOnChange: true);
 
         }
@@ -42,11 +46,15 @@ public static class Extensions {
 
     }
 
-    public static IServiceCollection ConfigureSettings(this IServiceCollection services, IConfiguration configuration) {
+    public static IServiceCollection ConfigureSettings(this IServiceCollection services, IConfiguration configuration, Action<string> logVerbose) {
+
+        logVerbose($"Adding settings to service provider from directory: '{_configDirectory}'");
 
 #if DEBUG
+        logVerbose($"Adding 'Development' version of settings to service provider");
         services.ConfigureWritable<DataFilePaths>(configuration.GetRequiredSection("data"), Path.Combine(_configDirectory, "data.Development.json"));
 #else
+        logVerbose($"Adding standard version of settings to service provider");
         services.ConfigureWritable<DataFilePaths>(configuration.GetRequiredSection("data"), Path.Combine(_configDirectory, "data.json"));
 #endif
 

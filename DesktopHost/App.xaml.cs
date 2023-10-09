@@ -13,6 +13,8 @@ using ApplicationCore.Application;
 using ApplicationCore.Shared.Settings;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
+using System.Linq;
+using Serilog.Events;
 
 namespace DesktopHost;
 
@@ -26,10 +28,13 @@ public partial class App : Application {
     
     private void Application_Startup(object sender, StartupEventArgs e) {
 
+        bool verboseLogging = e.Args.Contains("-v");
+
         Current.DispatcherUnhandledException += AppDispatcherUnhandledException;
 
         try {
 
+            CreateLogger(verboseLogging);
             var configuration = BuildConfiguration();
             var serviceProvider = BuildServiceProvider(configuration);
 
@@ -48,27 +53,35 @@ public partial class App : Application {
             var wih = new WindowInteropHelper(errorWindow); 
             _ = FlashWindow(wih.Handle, true);
 
+            try {
+                Log.Error(ex, "Exception thrown while trying to initialize application");
+            } catch { }
+
         }
 
     }
 
     private static IConfiguration BuildConfiguration() {
+        LogVerbose("Building configuration");
         return new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile("Configuration/credentials.json", optional: false, reloadOnChange: true)
-                .AddSettingsFiles()
+                .AddSettingsFiles(LogVerbose)
                 .Build();
     }
 
     private static IServiceProvider BuildServiceProvider(IConfiguration configuration) {
+
+        LogVerbose("Building service provider");
+
         var services = new ServiceCollection()
                             .AddMediatR(typeof(MainWindow))
                             .AddApplicationCoreServices(configuration)
                             .AddSingleton<IFilePicker, FilePicker>()
                             .AddSingleton<IMessageBoxService, WPFMessageBox>()
                             .AddSingleton(configuration)
-                            .AddLogging(ConfigureLogging)
-                            .ConfigureSettings(configuration);
+                            .AddLogging(builder => builder.ClearProviders().AddSerilog())
+                            .ConfigureSettings(configuration, LogVerbose);
 
         services.AddWpfBlazorWebView();
         services.AddBlazorWebViewDeveloperTools();
@@ -77,13 +90,29 @@ public partial class App : Application {
 
     }
 
-    private static void ConfigureLogging(ILoggingBuilder loggingBuilder) {
+    private static void CreateLogger(bool verbose) {
+
+        LogEventLevel level;
+        if (verbose) {
+            level = LogEventLevel.Verbose;
+        } else {
+#if DEBUG
+            level = LogEventLevel.Debug;
+#else
+            level = LogEventLevel.Information;
+#endif
+        }
+
         Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Is(level)
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
             .WriteTo.Debug()
             .WriteTo.SQLite(@"C:\ProgramData\OrderProcessor\Logs\logs.db")
             .CreateLogger();
+    }
 
-        loggingBuilder.ClearProviders().AddSerilog();
+    private static void LogVerbose(string message) {
+        Log.Logger.Verbose(message);
     }
 
     private void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e) {
