@@ -7,6 +7,8 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 
 public class DoweledDrawerBoxProduct : DoweledDrawerBox, IProduct, ICNCPartContainer {
 
+    // TODO: add property for Under Mount Notch
+
     public Guid Id { get; }
     public int ProductNumber { get; }
     public decimal UnitPrice { get; }
@@ -21,7 +23,7 @@ public class DoweledDrawerBoxProduct : DoweledDrawerBox, IProduct, ICNCPartConta
         Room = room;
     }
 
-    public string GetDescription() => $"Doweled Drawer Box{(MachineThicknessForUMSlides ? "" : " - With UM Notch")}";
+    public string GetDescription() => $"Doweled Drawer Box";
 
     // TODO: maybe add option to include slides, clips etc.
     public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
