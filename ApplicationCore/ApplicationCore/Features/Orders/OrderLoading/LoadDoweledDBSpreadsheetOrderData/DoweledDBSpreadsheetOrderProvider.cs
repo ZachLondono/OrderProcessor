@@ -229,7 +229,7 @@ internal class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
         }
         string workingDirectory = Path.Combine((customerWorkingDirectory ?? _options.DefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {customerName} - {orderName}", ' '));
         if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDirectory) && incomingDirectory is not null) {
-            string dataFile = _fileReader.GetAvailableFileName(incomingDirectory, "Incoming", ".csv");
+            string dataFile = _fileReader.GetAvailableFileName(incomingDirectory, "Incoming", Path.GetExtension(source));
             File.Copy(source, dataFile);
         }
 
