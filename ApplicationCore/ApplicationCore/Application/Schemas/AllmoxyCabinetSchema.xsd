@@ -280,7 +280,7 @@
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
-                    <xs:attribute name="isGarage" type="xs:boolean" />
+                    <xs:attribute name="isGarage" type="xs:boolean" use="required" />
                   </xs:complexType>
                 </xs:element>
 
@@ -330,7 +330,7 @@
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
-                    <xs:attribute name="isGarage" type="xs:boolean" />
+                    <xs:attribute name="isGarage" type="xs:boolean" use="required" />
                   </xs:complexType>
                 </xs:element>
 
@@ -361,7 +361,7 @@
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
-                    <xs:attribute name="isGarage" type="xs:boolean" />
+                    <xs:attribute name="isGarage" type="xs:boolean" use="required" />
                   </xs:complexType>
                 </xs:element>
 
@@ -395,7 +395,7 @@
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
-                    <xs:attribute name="isGarage" type="xs:boolean" />
+                    <xs:attribute name="isGarage" type="xs:boolean" use="required" />
                   </xs:complexType>
                 </xs:element>
 
@@ -412,7 +412,7 @@
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
-                    <xs:attribute name="isGarage" type="xs:boolean" />
+                    <xs:attribute name="isGarage" type="xs:boolean" use="required" />
                   </xs:complexType>
                 </xs:element>
 
