@@ -15,7 +15,7 @@ public class XMLValidator : IXMLValidator {
 
     public IEnumerable<XMLValidationError> ValidateXML(Stream xmlDataStream, string schemaFilePath) {
 
-        XDocument doc = XDocument.Load(xmlDataStream);
+        XDocument doc = XDocument.Load(xmlDataStream, LoadOptions.PreserveWhitespace | LoadOptions.SetLineInfo);
 
         using var schemaStream = _fileReader.OpenReadFileStream(schemaFilePath);
         using XmlReader schemaReader = XmlReader.Create(schemaStream);

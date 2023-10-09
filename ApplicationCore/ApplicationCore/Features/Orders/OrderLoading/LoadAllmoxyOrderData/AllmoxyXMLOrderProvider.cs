@@ -247,10 +247,23 @@ internal abstract class AllmoxyXMLOrderProvider : IOrderProvider {
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
             var directory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+            if (directory is null) {
+                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Failed to get directory of Allmoxy XML Schema");
+                _logger.LogError("Failed to get directory of Allmoxy XML Schema from assembly location {AssemblyLocation}", System.Reflection.Assembly.GetExecutingAssembly().Location);
+                return false;
+            }
+
             var fullPath = Path.Combine(directory, _configuration.SchemaFilePath);
             var errors = _validator.ValidateXML(stream, fullPath);
 
-            errors.ForEach(error => OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Error] [{error.Severity}] {error.Exception.Message}"));
+            errors.ForEach(error => {
+                string message = error.Exception.Message;
+                if (error.Exception is XmlSchemaValidationException schemaEx) {
+                    message = $"L{schemaEx.LineNumber}P{schemaEx.LinePosition} " + message;
+                }
+                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Error] [{error.Severity}] {message}");
+            });
 
             return !errors.Any();
 
