@@ -261,8 +261,8 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
         };
 
         var part = new Part() {
-            Width = Width.AsMillimeters(),
-            Length = Length.AsMillimeters(),
+            Width = Length.AsMillimeters(),
+            Length = Width.AsMillimeters(),
             Thickness = s_panelThickness.AsMillimeters(),
             Material = $"{Material.Finish} Mela {Material.Core}",
             IsGrained = true,

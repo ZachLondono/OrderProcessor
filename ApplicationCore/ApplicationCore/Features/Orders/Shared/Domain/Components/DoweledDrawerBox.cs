@@ -61,8 +61,8 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
         return new Part() {
             Qty = qty,
-            Width = frontLength.AsMillimeters(),
-            Length = (Height - FrontBackHeightAdjustment).AsMillimeters(),
+            Width = (Height - FrontBackHeightAdjustment).AsMillimeters(),
+            Length = frontLength.AsMillimeters(),
             Thickness = FrontMaterial.Thickness.AsMillimeters(),
             Material = FrontMaterial.Name,
             IsGrained = FrontMaterial.IsGrained,
@@ -96,8 +96,8 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
         return new Part() {
             Qty = qty,
-            Width = backLength.AsMillimeters(),
-            Length = (Height - FrontBackHeightAdjustment).AsMillimeters(),
+            Width = (Height - FrontBackHeightAdjustment).AsMillimeters(),
+            Length = backLength.AsMillimeters(),
             Thickness = BackMaterial.Thickness.AsMillimeters(),
             Material = BackMaterial.Name,
             IsGrained = BackMaterial.IsGrained,
@@ -165,8 +165,8 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
         var left = new Part() {
             Qty = qty,
-            Width = Depth.AsMillimeters(),
-            Length = Height.AsMillimeters(),
+            Width = Height.AsMillimeters(),
+            Length = Depth.AsMillimeters(),
             Thickness = SideMaterial.Thickness.AsMillimeters(),
             Material = SideMaterial.Name,
             IsGrained = SideMaterial.IsGrained,
@@ -193,8 +193,8 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
         var right = new Part() {
             Qty = qty,
-            Width = Depth.AsMillimeters(),
-            Length = Height.AsMillimeters(),
+            Width = Height.AsMillimeters(),
+            Length = Depth.AsMillimeters(),
             Thickness = SideMaterial.Thickness.AsMillimeters(),
             Material = SideMaterial.Name,
             IsGrained = SideMaterial.IsGrained,
@@ -236,12 +236,14 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
         string toolName;
         Dimension toolDiameter;
+        int numberOfPasses = 1;
         if (height >= construction.LargeBottomDadoToolMinimum) {
             toolName = construction.LargeBottomDadoToolName;
             toolDiameter = construction.LargeBottomDadoToolDiameter;
         } else {
             toolName = construction.SmallBottomDadoToolName;
             toolDiameter = construction.SmallBottomDadoToolDiameter;
+            numberOfPasses = 2;
         }
 
         var passCount = Dimension.CeilingMM(height / toolDiameter).AsMillimeters();
@@ -280,7 +282,8 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
                 StartDepth = construction.BottomDadoDepth.AsMillimeters(),
                 EndDepth = construction.BottomDadoDepth.AsMillimeters(),
                 Offset = routeOffset,
-                ToolName = toolName
+                ToolName = toolName,
+                NumberOfPasses = numberOfPasses
             });
 
         }
@@ -310,7 +313,8 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
             StartDepth = construction.BottomDadoDepth.AsMillimeters(),
             EndDepth = construction.BottomDadoDepth.AsMillimeters(),
             Offset = routeOffset,
-            ToolName = toolName
+            ToolName = toolName,
+            NumberOfPasses = numberOfPasses
         });
 
         return tokens;
@@ -484,8 +488,8 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
             },
         DowelDepth = Dimension.FromMillimeters(10),
         DowelDiameter = Dimension.FromMillimeters(8),
-        SmallBottomDadoToolName = "1-4Strt",
-        SmallBottomDadoToolDiameter = Dimension.FromMillimeters(6.35),
+        SmallBottomDadoToolName = "1-8Down",
+        SmallBottomDadoToolDiameter = Dimension.FromMillimeters(3.175),
         LargeBottomDadoToolName = "1-2Dado",
         LargeBottomDadoToolDiameter = Dimension.FromMillimeters(12.7),
         LargeBottomDadoToolMinimum = Dimension.FromMillimeters(12.7),
