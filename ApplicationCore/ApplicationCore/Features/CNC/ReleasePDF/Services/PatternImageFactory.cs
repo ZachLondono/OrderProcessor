@@ -5,37 +5,60 @@ using System.Runtime.InteropServices;
 using Image = System.Drawing.Image;
 using ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
 using ApplicationCore.Features.CNC.Domain;
+using Serilog;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF.Services;
 
 public class PatternImageFactory {
 
+    private static ILogger _logger = Log.Logger.ForContext<PatternImageFactory>();
+
     public static byte[] CreatePatternImage(string imagePath, TableOrientation orientation, double sheetWidth, double sheetLength, IEnumerable<ImageText> text) {
 
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+            _logger.Warning("Cannot create image for cnc pattern on platforms other than Windows");
             // TODO: use skia sharp for cross platform support
             return Array.Empty<byte>();
         } else {
 
             try {
+
+                _logger.Verbose("Loading bitmap from metafile at path {imagePath}", imagePath);
                 var bitmap = GetBitmapFromMetaFile(imagePath);
 
                 bool wasFlipedX = false;
                 if (orientation == TableOrientation.Rotated) {
+
                     var rotationType = (sheetWidth > sheetLength) ? RotateFlipType.RotateNoneFlipXY : RotateFlipType.Rotate90FlipXY;
+
+                    _logger.Verbose("Flipping image because table orientation was set to rotated. Rotate/Flip Type: {FlipType}", rotationType);
+                    _logger.Verbose("Bitmap size before rotate/flip: w{Width} x h{Height}", bitmap.Width, bitmap.Height);
+
                     bitmap.RotateFlip(rotationType);
                     wasFlipedX = true;
+
                     // When rotating a bitmap that changes it's dimensions drawing can only be done within the original bitmaps dimension, so it must be saved and created as a new bitmap
+                    _logger.Verbose("Copying the rotated/flipped bitmap to a new bitmap to save new image dimensions");
+
                     using var stream = new MemoryStream();
                     bitmap.Save(stream, ImageFormat.Png);
                     var bitmap2 = new Bitmap(stream);
                     bitmap.Dispose();
                     bitmap = bitmap2;
+
+                    _logger.Verbose("Bitmap size after rotate/flip: w{Width} x h{Height}", bitmap.Width, bitmap.Height);
+
+                } else {
+                    _logger.Verbose("Not flipping image along X axis because table orientation is not set to rotated");
                 }
 
                 AddTextToBitmap(bitmap, text, sheetWidth, sheetLength, wasFlipedX);
+
                 return GetBitmapData(bitmap);
-            } catch {
+                
+            } catch (Exception ex) {
+
+                _logger.Warning(ex, "Exception thrown while trying to create pattern image");
 
                 float fontSize = 14;
                 using var font = new Font("Tahoma", fontSize, FontStyle.Regular);
@@ -64,8 +87,12 @@ public class PatternImageFactory {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
     static void AddTextToBitmap(Bitmap bitmap, IEnumerable<ImageText> patternTexts, double sheetWidth, double sheetLength, bool flipX) {
 
+        _logger.Verbose("Adding part label text to bitmap");
+
         double mmToPxScaleX = bitmap.Width / sheetLength;
         double mmToPxScaleY = bitmap.Height / sheetWidth;
+
+        _logger.Verbose("mm to PX scale X:{ScaleX} Y:{ScaleY}", mmToPxScaleX, mmToPxScaleY);
 
         float fontSize = 12;
         using var font = new Font("Tahoma", fontSize, FontStyle.Bold);
@@ -142,11 +169,15 @@ public class PatternImageFactory {
         }
 
         if (rightMost == 0 && bottomMost == 0 && leftMost == w && topMost == h) {
+            _logger.Verbose("Not trimming bitmap whitespace because there is none");
             return bitmap;
         }
 
         int croppedWidth = rightMost - leftMost + 1;
         int croppedHeight = bottomMost - topMost + 1;
+
+        _logger.Verbose("Trimming whitespace from image to new size: w{CroppedWidth} h{CroppedHeight}", croppedWidth, croppedHeight);
+        _logger.Verbose("Trimming values are top={Top} bottom={Bottom} left={Left} right={Right}", topMost, bottomMost, leftMost, rightMost);
 
         try {
             Bitmap target = new Bitmap(croppedWidth, croppedHeight);
@@ -158,6 +189,7 @@ public class PatternImageFactory {
             }
             return target;
         } catch (Exception ex) {
+            _logger.Error(ex, "Exception thrown while trying to cop bitmap to remove whitespace");
             throw new Exception(string.Format("Values are top={0} bottom={1} left={2} right={3}", topMost, bottomMost, leftMost, rightMost), ex);
         }
     }
@@ -165,12 +197,22 @@ public class PatternImageFactory {
     static Bitmap GetBitmapFromMetaFile(string path) {
 
         using Metafile? img = Image.FromFile(path) as Metafile;
-        if (img is null) return new Bitmap(0, 0);
+        if (img is null) {
+            _logger.Verbose("File from path {MetaFilePath} could not be loaded to metafile", path);
+            return new Bitmap(0, 0);
+        }
 
         MetafileHeader header = img.GetMetafileHeader();
         float scale = header.DpiX / 96f;
 
-        var bitmap = new Bitmap((int)(scale * img.Width / header.DpiX * 100), (int)(scale * img.Height / header.DpiY * 100));
+        _logger.Verbose("Metafile to bitmap scale: {Scale}", scale);
+
+        var width = (int)(scale * img.Width / header.DpiX * 100);
+        var height = (int)(scale * img.Height / header.DpiY * 100);
+
+        _logger.Verbose("Scaled Size: w{ScaledWidth} h{ScaledHeight}", width, height);
+
+        var bitmap = new Bitmap(width, height);
         using var g = Graphics.FromImage(bitmap);
 
         g.Clear(Color.White);
