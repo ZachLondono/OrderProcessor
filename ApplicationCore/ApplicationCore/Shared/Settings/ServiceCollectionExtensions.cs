@@ -26,14 +26,17 @@ public static class Extensions {
 
         logVerbose($"Starting to add Json configuration files from directory: '{_configDirectory}'");
 
+        var localConfigParentDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
         foreach (var fileName in _configFiles) {
 
             var finalPath = Path.Combine(_configDirectory, fileName);
 
 #if !DEBUG
-            if (!File.Exists(finalPath)) {
-                logVerbose($"Copying configuration file '{fileName}' to '{finalPath}'");
-                File.Copy(Path.Combine(@".\Configuration", fileName), finalPath);
+            if (!File.Exists(finalPath) && localConfigParentDir is not null) {
+                var localFile = Path.Combine(localConfigParentDir, "Configuration", fileName);
+                logVerbose($"Copying configuration file '{localFile}' to '{finalPath}'");
+                File.Copy(localFile, finalPath);
             }
 #endif
 
