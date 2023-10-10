@@ -43,7 +43,7 @@
       </uap:VisualElements>
       <Extensions>
         <uap3:Extension Category="windows.appExecutionAlias"   
-                        Executable="$targetnametoken$.exe"
+                        Executable="DesktopHost\DesktopHost.exe"
                         EntryPoint="Windows.FullTrustApplication">
           <uap3:AppExecutionAlias>
             <desktop:ExecutionAlias Alias="OrderProcessor.exe" />
