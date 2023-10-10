@@ -128,45 +128,65 @@ public class PatternImageFactory {
 
         bool IsAllWhiteRow(int row) {
             for (int i = 0; i < w; i++) {
-                if (bitmap.GetPixel(i, row).R != 255) {
+                var pixel = bitmap.GetPixel(i, row);
+                if (row == 1069) {
+                    _logger.Verbose($"Pixel ({i}, {row})\t=>\t{pixel.A} {pixel.R} {pixel.G} {pixel.B}");
+                }
+                if (pixel.R != 255) {
+                    _logger.Verbose($"Pixel ({i}, {row})\t=>\t{pixel.A} {pixel.R} {pixel.G} {pixel.B}");
                     return false;
                 }
             }
+            if (row == 1069) _logger.Verbose($"Row {row} is all white");
             return true;
         }
 
         bool IsAllWhiteColumn(int col) {
             for (int i = 0; i < h; i++) {
-                if (bitmap.GetPixel(col, i).R != 255) {
+                var pixel = bitmap.GetPixel(col, i);
+                if (col == 544) {
+                    _logger.Verbose($"Pixel ({col}, {i}) => {pixel.A} {pixel.R} {pixel.G} {pixel.B}");
+                }
+                if (pixel.R != 255) {
+                    _logger.Verbose($"Pixel ({col}, {i}) => {pixel.A} {pixel.R} {pixel.G} {pixel.B}");
                     return false;
                 }
             }
+            if (col == 544) _logger.Verbose($"Column {col} is all white");
             return true;
         }
 
+        _logger.Verbose("Checking for left most used pixel");
         int leftMost = 0;
         for (int col = 0; col < w; col++) {
             if (IsAllWhiteColumn(col)) leftMost = col + 1;
             else break;
         }
+        _logger.Verbose($"Left most {leftMost}");
 
+        _logger.Verbose("Checking for right most used pixel");
         int rightMost = w - 1;
         for (int col = rightMost; col > 0; col--) {
             if (IsAllWhiteColumn(col)) rightMost = col - 1;
             else break;
         }
+        _logger.Verbose($"Right most {rightMost}");
 
+        _logger.Verbose("Checking for top most used pixel");
         int topMost = 0;
         for (int row = 0; row < h; row++) {
             if (IsAllWhiteRow(row)) topMost = row + 1;
             else break;
         }
+        _logger.Verbose($"Top most {topMost}");
 
+        _logger.Verbose("Checking for bottom most used pixel");
         int bottomMost = h - 1;
         for (int row = bottomMost; row > 0; row--) {
             if (IsAllWhiteRow(row)) bottomMost = row - 1;
             else break;
         }
+        _logger.Verbose($"Bottom most {bottomMost}");
 
         if (rightMost == 0 && bottomMost == 0 && leftMost == w && topMost == h) {
             _logger.Verbose("Not trimming bitmap whitespace because there is none");
