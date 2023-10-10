@@ -25,7 +25,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
     private JobSummary? _jobSummary = null;
     private bool _showItems = false;
-    private bool _showSupplies = false;
+    private SupplyOptions _supplyOptions = new();
     private bool _showInvoiceSummary = false;
 
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
@@ -36,9 +36,9 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
         _getCustomerByIdAsync = getCustomerByIdAsync;
     }
 
-    public async Task AddData(Order order, bool showItems, bool showSupplies, bool showInvoiceSummary) {
+    public async Task AddData(Order order, bool showItems, SupplyOptions supplyOptions, bool showInvoiceSummary) {
         _showItems = showItems;
-        _showSupplies = showSupplies;
+        _supplyOptions = supplyOptions;
         _showInvoiceSummary = showInvoiceSummary;
         _jobSummary = await GetJobSummaryModel(order);
     }
@@ -208,7 +208,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         }
                     }
 
-                    if (jobSummary.ShowSuppliesInSummary && jobSummary.Supplies.Any()) {
+                    if (jobSummary.Supplies.Any()) {
                         ComposeSuppliesTable(column.Item(), jobSummary.Supplies);
                     }
 
@@ -238,8 +238,9 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
         var supplies = order.Products
                             .OfType<Cabinet>()
                             .SelectMany(c => c.GetSupplies())
+                            .Where(s => _supplyOptions.IncludeSupply(s.Type))
                             .GroupBy(s => s.Name)
-                            .Select(g => new Supply(g.Sum(g => g.Qty), g.Key))
+                            .Select(g => new Supply(g.Sum(g => g.Qty), g.Key, g.First().Type))
                             .ToList();
 
         var dovetailDb = order.Products
@@ -462,7 +463,6 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             DoweledDrawerBoxes = doweledDb,
             AdditionalItems = order.AdditionalItems.Where(i => !i.IsService).Count(),
 
-            ShowSuppliesInSummary = _showSupplies,
             Supplies = supplies,
 
         };

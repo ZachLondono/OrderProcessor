@@ -1,4 +1,6 @@
-﻿namespace ApplicationCore.Features.Orders.OrderRelease;
+﻿using ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
+
+namespace ApplicationCore.Features.Orders.OrderRelease;
 
 public class ReleaseConfiguration {
 
@@ -10,7 +12,7 @@ public class ReleaseConfiguration {
     public bool GeneratePackingList { get; set; }
     public bool GenerateJobSummary { get; set; }
     public bool IncludeProductTablesInSummary { get; set; }
-    public bool IncludeSuppliesInSummary { get; set; }
+    public SupplyOptions SupplyOptions { get; set; } = new();
     public bool IncludeInvoiceInRelease { get; set; }
     public bool IncludeInvoiceSummary { get; set; }
     public string? ReleaseEmailRecipients { get; set; }

@@ -39,14 +39,59 @@
                         </CheckBox>
                     </div>
                     <div>
-                        <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeSuppliesInSummary">
-                            <span class="text-gray-700 text-sm">Include supplies in summary</span>
-                        </CheckBox>
-                    </div>
-                    <div>
                         <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeInvoiceSummary">
                             <span class="text-gray-700 text-sm">Include invoice in summary</span>
                         </CheckBox>
+                    </div>
+                    <div>
+                        <CheckBox @bind-IsChecked="DataContext.IncludeSuppliesInSummary">
+                            <span class="text-gray-700 text-sm">Include supplies in summary</span>
+                        </CheckBox>
+                        @if (DataContext.IncludeSuppliesInSummary) {
+                            <table class="ml-5">
+                                <tr>
+                                    <td class="w-24">
+                                        <CheckBox @bind-IsChecked="DataContext.Configuration.SupplyOptions.IncludeHinges">
+                                            <span class="text-xs text-gray-700">hinges</span>
+                                        </CheckBox>
+                                    </td>
+                                    <td class="w-24">
+                                        <CheckBox @bind-IsChecked="DataContext.Configuration.SupplyOptions.IncludeDoorPulls">
+                                            <span class="text-xs text-gray-700">door pulls</span>
+                                        </CheckBox>
+                                    </td>
+                                    <td class="w-24">
+                                        <CheckBox @bind-IsChecked="DataContext.Configuration.SupplyOptions.IncludeSlides">
+                                            <span class="text-xs text-gray-700">drawer slides</span>
+                                        </CheckBox>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="w-24">
+                                        <CheckBox @bind-IsChecked="DataContext.Configuration.SupplyOptions.IncludeCams">
+                                            <span class="text-xs text-gray-700">rafix cams</span>
+                                        </CheckBox>
+                                    </td>
+                                    <td class="w-24">
+                                        <CheckBox @bind-IsChecked="DataContext.Configuration.SupplyOptions.IncludeShelfPins">
+                                            <span class="text-xs text-gray-700">shelf pins</span>
+                                        </CheckBox>
+                                    </td>
+                                    <td class="w-24">
+                                        <CheckBox @bind-IsChecked="DataContext.Configuration.SupplyOptions.IncludeCabinetLegs">
+                                            <span class="text-xs text-gray-700">cabinet legs</span>
+                                        </CheckBox>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="w-24">
+                                        <CheckBox @bind-IsChecked="DataContext.Configuration.SupplyOptions.IncludeMiscellaneous">
+                                            <span class="text-xs text-gray-700">miscellaneous</span>
+                                        </CheckBox>
+                                    </td>
+                                </tr>
+                            </table>
+                        }
                     </div>
                 </div>
             } else {

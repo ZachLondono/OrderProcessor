@@ -88,7 +88,7 @@ public class ReleaseService {
 
         foreach (var order in orders) {
             if (configuration.GenerateJobSummary) {
-                var decorator = await _jobSummaryDecoratorFactory.CreateDecorator(order, configuration.IncludeProductTablesInSummary, configuration.IncludeSuppliesInSummary, configuration.IncludeInvoiceSummary);
+                var decorator = await _jobSummaryDecoratorFactory.CreateDecorator(order, configuration.IncludeProductTablesInSummary, configuration.SupplyOptions, configuration.IncludeInvoiceSummary);
                 decorators.Add(decorator);
             }
 

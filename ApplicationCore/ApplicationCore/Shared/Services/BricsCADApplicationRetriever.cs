@@ -18,14 +18,14 @@ public class BricsCADApplicationRetriever {
 
             if (!createIfNotOpen) {
                 throw;
-            } 
+            }
 
             if (Type.GetTypeFromProgID(strProgId) is not Type type) {
                 throw;
             }
 
             var instance = Activator.CreateInstance(type) as AcadApplication;
-            
+
             if (instance is null) {
                 throw;
             }
