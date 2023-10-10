@@ -41,15 +41,6 @@
         <uap:SplashScreen Image="Images\SplashScreen.png" />
       </uap:VisualElements>
     </Application>
-    <Application EntryPoint="Windows.FullTrustApplication" Executable="AI_STUBS\AiStub.exe" Id="EnvironmentVariables">
-      <Extensions>
-        <uap5:Extension Category="windows.appExecutionAlias" EntryPoint="Windows.FullTrustApplication" Executable="OrderProcessor.exe">
-          <uap5:AppExecutionAlias>
-            <uap5:ExecutionAlias Alias="OrderProcessor.exe" />
-          </uap5:AppExecutionAlias>
-        </uap5:Extension>
-      </Extensions>
-    </Application>
   </Applications>
 
   <Capabilities>
