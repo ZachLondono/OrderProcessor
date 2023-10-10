@@ -2,8 +2,7 @@
 
 namespace ApplicationCore.Shared.Settings.Tools;
 
-internal class Tool
-{
+internal class Tool {
 
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;

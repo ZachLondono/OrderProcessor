@@ -32,6 +32,24 @@ public class OrderReleaseModalViewModel {
         }
     }
 
+    public bool IncludeSuppliesInSummary {
+        get => _includeSuppliesInSummary;
+        set {
+
+            _includeSuppliesInSummary = value;
+
+            if (value) {
+                Configuration.SupplyOptions.AllSupplies();
+            } else {
+                Configuration.SupplyOptions.NoSupplies();
+            }
+
+            OnPropertyChanged?.Invoke();
+
+        }
+    }
+
+    private bool _includeSuppliesInSummary = false;
     private bool _isLoadingConfiguration = false;
     private bool _isReportLoadingFiles = false;
     private ReleaseConfiguration _configuration = new();
@@ -90,8 +108,8 @@ public class OrderReleaseModalViewModel {
             ReleaseEmailRecipients = vendor.ReleaseProfile.ReleaseEmailRecipients,
             GenerateJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
             IncludeProductTablesInSummary = false,
-            IncludeSuppliesInSummary = false,
             IncludeInvoiceSummary = true,
+            SupplyOptions = new(),                      // TODO: add this to the vendor release profile
             GeneratePackingList = vendor.ReleaseProfile.GeneratePackingList,
             IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
             ReleaseFileName = $"{orderNumbers} CUTLIST",

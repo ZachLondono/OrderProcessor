@@ -18,7 +18,7 @@ public partial class ProductDrawingManagerWidget {
 
     private bool _isLoading = false;
     public bool IsLoading {
-        get => _isLoading; 
+        get => _isLoading;
         set {
             _isLoading = value;
             StateHasChanged();
@@ -109,7 +109,7 @@ public partial class ProductDrawingManagerWidget {
         };
 
         var saveResponse = await Bus.Send(new SaveProductDrawing.Command(drawing));
-        
+
         saveResponse.OnError(e => {
             _error = e;
             StateHasChanged();
@@ -158,7 +158,7 @@ public partial class ProductDrawingManagerWidget {
         drawing.DXFData = compressedData;
 
         var saveResponse = await Bus.Send(new SaveProductDrawing.Command(drawing));
-        
+
         saveResponse.OnError(e => {
             _error = e;
             StateHasChanged();
@@ -207,7 +207,7 @@ public partial class ProductDrawingManagerWidget {
 
         IsLoading = false;
 
-    } 
+    }
 
     private void StartEditingDrawing(ProductDrawingRow row) {
         row.Edit();
@@ -273,7 +273,7 @@ public partial class ProductDrawingManagerWidget {
             IsBeingDeleted = false;
             IsBeingEdited = false;
             Name = Drawing.Name;
-        } 
+        }
 
     }
 

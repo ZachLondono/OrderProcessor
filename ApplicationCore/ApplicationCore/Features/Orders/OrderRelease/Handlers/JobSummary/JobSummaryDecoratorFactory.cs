@@ -11,9 +11,9 @@ public class JobSummaryDecoratorFactory {
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<IJobSummaryDecorator> CreateDecorator(Order order, bool showItems, bool showSupplies, bool showInvoiceSummary) {
+    public async Task<IJobSummaryDecorator> CreateDecorator(Order order, bool showItems, SupplyOptions supplyOptions, bool showInvoiceSummary) {
         var decorator = _serviceProvider.GetRequiredService<IJobSummaryDecorator>();
-        await decorator.AddData(order, showItems, showSupplies, showInvoiceSummary);
+        await decorator.AddData(order, showItems, supplyOptions, showInvoiceSummary);
         return decorator;
     }
 

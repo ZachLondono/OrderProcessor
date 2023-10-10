@@ -375,7 +375,7 @@ public class ClosetProPartMapper {
         }
         string room = GetRoomName(part);
         string sku = (finLeft || finRight) ? "PEH" : "PCH";
-        
+
         Dimension width = Dimension.FromInches(part.Depth);
         Dimension length = Dimension.FromInches(part.Height);
         ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
@@ -397,7 +397,7 @@ public class ClosetProPartMapper {
             //{ "WallMount", isWallMount ? "1" : "0" },  // Closet pro does not allow wall hung hutch panels
             //{ "BottomRadius", hasRadiusBottom ? Settings.VerticalPanelBottomRadius.AsMillimeters().ToString() : "0" },
         };
-        
+
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
 
     }
