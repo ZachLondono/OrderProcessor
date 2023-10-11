@@ -11,7 +11,7 @@ public class OrderModel {
     [XmlElement("name")]
     public string Name { get; set; } = string.Empty;
 
-    [XmlElement("date")]
+    [XmlElement("orderDate")]
     public string OrderDate { get; set; } = string.Empty;
 
     [XmlElement("note")]
