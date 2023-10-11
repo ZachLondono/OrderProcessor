@@ -61,6 +61,7 @@ public class ClosetProCSVReader {
                 case "Subtotal":
                 case "Total":           // End of cut list
                 case "Applied Tax Rate":
+                case "Base Shipping Costs":
                 case "Grand Total":     // End of data
                 case "Wall #":
                 case "Part Type":

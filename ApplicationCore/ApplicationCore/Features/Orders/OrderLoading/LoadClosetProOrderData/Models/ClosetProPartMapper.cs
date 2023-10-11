@@ -91,7 +91,11 @@ public class ClosetProPartMapper {
         while (true) {
 
             Part? nextPart = null;
-            if (part.PartType == "Countertop") {
+            if (part.PartName == "Melamine") {
+
+                products.Add(CreatePanelFromPart(part));
+
+            } else if (part.PartType == "Countertop") {
 
                 if (part.Height != 0.75) {
                     throw new InvalidOperationException($"Unsupported counter top thickness '{part.Height}', only 3/4\" is supported");
@@ -298,6 +302,34 @@ public class ClosetProPartMapper {
         }
 
         return items;
+
+    }
+
+    public static IProduct CreatePanelFromPart(Part part) {
+        
+        Dimension width = Dimension.FromInches(part.Width);
+        Dimension length = Dimension.FromInches(part.Height);
+        ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
+        ClosetPaint? paint = null;
+        string edgeBandingColor = part.InfoRecords
+                                        .Where(i => i.PartName == "Edge Banding") // i.CornerShelfSizes contains the information about what edges to apply banding
+                                        .Select(i => i.Color)
+                                        .FirstOrDefault() ?? part.Color;
+        string comment = "";
+
+        Dictionary<string, string> parameters = new();
+
+        string room = GetRoomName(part);
+
+        if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
+            unitPrice = 0M;
+        }
+
+        return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, "PANEL", width, length, material, paint, edgeBandingColor, comment, parameters) {
+            ProductionNotes = new() {
+                "Custom Entered Material"
+            }
+        };
 
     }
 

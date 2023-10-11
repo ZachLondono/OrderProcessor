@@ -47,17 +47,17 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
     public record FrontHardware(string Name, Dimension Spread);
 
-    public async Task<OrderData?> LoadOrderData(string data) {
+    public async Task<OrderData?> LoadOrderData(string sourceObj) {
 
-        var parts = data.Split('*');
+        var sourceObjParts = sourceObj.Split('*');
 
-        if (parts.Length != 3) {
+        if (sourceObjParts.Length != 3) {
             throw new InvalidOperationException("Invalid data source");
         }
 
-        string source = parts[0];
-        string? customOrderNumber = string.IsNullOrWhiteSpace(parts[1]) ? null : parts[1];
-        string? customWorkingDirectoryRoot = string.IsNullOrWhiteSpace(parts[2]) ? null : parts[2];
+        string source = sourceObjParts[0];
+        string? customOrderNumber = string.IsNullOrWhiteSpace(sourceObjParts[1]) ? null : sourceObjParts[1];
+        string? customWorkingDirectoryRoot = string.IsNullOrWhiteSpace(sourceObjParts[2]) ? null : sourceObjParts[2];
 
         var csvData = await GetCSVDataFromSourceAsync(source);
 
