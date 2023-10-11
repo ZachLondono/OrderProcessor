@@ -773,7 +773,7 @@ public class ClosetProPartMapper {
             unitPrice = 0M;
         }
         string room = GetRoomName(part);
-        string sku = "CLEAT";
+        string sku = "NL1";
         Dimension width = Dimension.FromInches(part.Height);
         Dimension length = Dimension.FromInches(part.Width);
         ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
