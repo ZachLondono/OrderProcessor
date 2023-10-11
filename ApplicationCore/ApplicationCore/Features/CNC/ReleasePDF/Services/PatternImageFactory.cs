@@ -128,76 +128,52 @@ public class PatternImageFactory {
 
         bool IsAllWhiteRow(int row) {
             for (int i = 0; i < w; i++) {
-                var pixel = bitmap.GetPixel(i, row);
-                if (row == 1069) {
-                    _logger.Verbose($"Pixel ({i}, {row})\t=>\t{pixel.A} {pixel.R} {pixel.G} {pixel.B}");
-                }
-                if (pixel.R != 255) {
-                    _logger.Verbose($"Pixel ({i}, {row})\t=>\t{pixel.A} {pixel.R} {pixel.G} {pixel.B}");
+                if (bitmap.GetPixel(i, row).R != 255) {
                     return false;
                 }
             }
-            if (row == 1069) _logger.Verbose($"Row {row} is all white");
             return true;
         }
 
         bool IsAllWhiteColumn(int col) {
             for (int i = 0; i < h; i++) {
-                var pixel = bitmap.GetPixel(col, i);
-                if (col == 544) {
-                    _logger.Verbose($"Pixel ({col}, {i}) => {pixel.A} {pixel.R} {pixel.G} {pixel.B}");
-                }
-                if (pixel.R != 255) {
-                    _logger.Verbose($"Pixel ({col}, {i}) => {pixel.A} {pixel.R} {pixel.G} {pixel.B}");
+                if (bitmap.GetPixel(col, i).R != 255) {
                     return false;
                 }
             }
-            if (col == 544) _logger.Verbose($"Column {col} is all white");
             return true;
         }
 
-        _logger.Verbose("Checking for left most used pixel");
         int leftMost = 0;
         for (int col = 0; col < w; col++) {
             if (IsAllWhiteColumn(col)) leftMost = col + 1;
             else break;
         }
-        _logger.Verbose($"Left most {leftMost}");
 
-        _logger.Verbose("Checking for right most used pixel");
         int rightMost = w - 1;
         for (int col = rightMost; col > 0; col--) {
             if (IsAllWhiteColumn(col)) rightMost = col - 1;
             else break;
         }
-        _logger.Verbose($"Right most {rightMost}");
 
-        _logger.Verbose("Checking for top most used pixel");
         int topMost = 0;
         for (int row = 0; row < h; row++) {
             if (IsAllWhiteRow(row)) topMost = row + 1;
             else break;
         }
-        _logger.Verbose($"Top most {topMost}");
 
-        _logger.Verbose("Checking for bottom most used pixel");
         int bottomMost = h - 1;
         for (int row = bottomMost; row > 0; row--) {
             if (IsAllWhiteRow(row)) bottomMost = row - 1;
             else break;
         }
-        _logger.Verbose($"Bottom most {bottomMost}");
 
         if (rightMost == 0 && bottomMost == 0 && leftMost == w && topMost == h) {
-            _logger.Verbose("Not trimming bitmap whitespace because there is none");
             return bitmap;
         }
 
         int croppedWidth = rightMost - leftMost + 1;
         int croppedHeight = bottomMost - topMost + 1;
-
-        _logger.Verbose("Trimming whitespace from image to new size: w{CroppedWidth} h{CroppedHeight}", croppedWidth, croppedHeight);
-        _logger.Verbose("Trimming values are top={Top} bottom={Bottom} left={Left} right={Right}", topMost, bottomMost, leftMost, rightMost);
 
         try {
             Bitmap target = new Bitmap(croppedWidth, croppedHeight);
@@ -218,21 +194,18 @@ public class PatternImageFactory {
 
         using Metafile? img = Image.FromFile(path) as Metafile;
         if (img is null) {
-            _logger.Verbose("File from path {MetaFilePath} could not be loaded to metafile", path);
             return new Bitmap(0, 0);
         }
 
         MetafileHeader header = img.GetMetafileHeader();
         float scale = header.DpiX / 96f;
 
-        _logger.Verbose("Metafile to bitmap scale: {Scale}", scale);
-
         var width = (int)(scale * img.Width / header.DpiX * 100);
         var height = (int)(scale * img.Height / header.DpiY * 100);
 
-        _logger.Verbose("Scaled Size: w{ScaledWidth} h{ScaledHeight}", width, height);
-
         var bitmap = new Bitmap(width, height);
+        bitmap.SetResolution(header.DpiX, header.DpiY);
+
         using var g = Graphics.FromImage(bitmap);
 
         g.Clear(Color.White);
