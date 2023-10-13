@@ -345,7 +345,7 @@ public class ClosetProPartMapper {
         Dimension height = Dimension.FromInches(rail.Height);
         Dimension frameThickness = Dimension.FromInches(0.75);
         Dimension panelThickness = Dimension.FromInches(0.25);
-        string material = rail.Color;
+        string color = rail.Color;
 
         if (!TryParseMoneyString(rail.PartCost, out decimal unitPriceRail)) {
             unitPriceRail = 0M;
@@ -355,17 +355,45 @@ public class ClosetProPartMapper {
         }
         string room = GetRoomName(rail);
 
-        return new FivePieceDoorProduct(Guid.NewGuid(),
-                                       rail.Quantity,
-                                       unitPriceRail + unitPriceInsert,
-                                       rail.PartNum,
-                                       room,
-                                       width,
-                                       height,
-                                       frame,
-                                       frameThickness,
-                                       panelThickness,
-                                       material);
+        if (rail.ExportName.Contains("MDF")) {
+
+            DoorType type = rail.PartName.Contains("Drawer") ? DoorType.DrawerFront : DoorType.Door;
+
+            return new MDFDoorProduct(Guid.NewGuid(),
+                                        unitPriceRail + unitPriceInsert,
+                                        room,
+                                        rail.Quantity,
+                                        rail.PartNum,
+                                        type,
+                                        height,
+                                        width,
+                                        string.Empty,
+                                        frame,
+                                        $"MDF-{frameThickness.AsInchFraction()}\"",
+                                        frameThickness,
+                                        "Shaker",
+                                        "Square",
+                                        "Flat",
+                                        Dimension.FromInches(0.25),
+                                        DoorOrientation.Vertical,
+                                        Array.Empty<AdditionalOpening>(),
+                                        color);
+
+        } else {
+
+            return new FivePieceDoorProduct(Guid.NewGuid(),
+                                           rail.Quantity,
+                                           unitPriceRail + unitPriceInsert,
+                                           rail.PartNum,
+                                           room,
+                                           width,
+                                           height,
+                                           frame,
+                                           frameThickness,
+                                           panelThickness,
+                                           color);
+
+        }
 
     }
 
