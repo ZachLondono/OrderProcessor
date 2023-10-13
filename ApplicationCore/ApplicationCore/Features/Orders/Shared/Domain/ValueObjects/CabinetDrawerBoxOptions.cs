@@ -16,8 +16,8 @@ public record CabinetDrawerBoxOptions(CabinetDrawerBoxMaterial Material, DrawerS
     }
 
     private static string GetNotchFromSlideType(DrawerSlideType slide) => slide switch {
-        DrawerSlideType.UnderMount => "Standard Notch",
-        DrawerSlideType.SideMount => "No Notch",
+        DrawerSlideType.UnderMount => "Std_Notch",
+        DrawerSlideType.SideMount => "No_Notch",
         _ => ""
     };
 
