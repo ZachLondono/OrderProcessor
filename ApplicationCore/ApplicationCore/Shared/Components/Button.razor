@@ -1,5 +1,5 @@
 ﻿
-<button @onclick="async () => { OnClick(); await OnClickAsync(); }" class="@Classes()" disabled="@Disabled" type="@Type">@ChildContent</button>
+<button @onclick:stopPropagation="StopPropagation" @onclick:preventDefault="PreventDefault" @onclick="async () => { OnClick(); await OnClickAsync(); }" class="@Classes()" disabled="@Disabled" type="@Type">@ChildContent</button>
 
 @code {
 
@@ -32,6 +32,12 @@
 
     [Parameter]
     public string Type { get; set; } = "button";
+
+    [Parameter]
+    public bool StopPropagation { get; set; } = false;
+
+    [Parameter]
+    public bool PreventDefault { get; set; } = false;
 
     private string Classes() {
 
