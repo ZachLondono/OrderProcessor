@@ -45,9 +45,11 @@
             }
         );
 
-        _ = await modal.Result;
+        var result = await modal.Result;
 
         _isDeleting = false;
+
+        if (result.Cancelled) return;
 
         OnOrderDeleted?.Invoke();
 
