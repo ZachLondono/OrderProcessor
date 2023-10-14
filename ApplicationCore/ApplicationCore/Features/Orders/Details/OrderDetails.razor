@@ -220,28 +220,7 @@
 	    </section>
     }
 
-    @if(OrderState.Order.AdditionalItems.Count() != 0) {
-        <section class="mt-10" id="additionalItems">
-		    <table class="table-auto">
-			    <thead class="border-b border-slate-300">
-                    <tr>
-					    <th class="px-3">Description</th>
-					    <th class="px-3">Price</th>
-				    </tr>
-			    </thead>
-			    <tbody>
-                    @foreach (var item in OrderState.Order.AdditionalItems) {
-                        <tr>
-                            <td class="px-3 border-b font-medium">@item.Description</td>
-                            <td class="px-3 border-b">$@item.Price.ToString("0.00")</td>
-				        </tr>
-                    }
-			    </tbody>
-		    </table>
-	    </section>
-    }
-
-    <section class="mt-10" id="products">
+    <section class="mt-16" id="products">
         <header>
             <h3>Products (@OrderState.Order.Products.Sum(b => b.Qty))</h3>
         </header>
@@ -249,7 +228,7 @@
             <button disabled="@_useInches" @onclick="ToggleUnits" class="btn-secondary px-3.5 py-1 rounded-r-none rounded-l-md w-14 transition ease-in-out duration-300">in</button><!--
          --><button disabled="@(!_useInches)" @onclick="ToggleUnits" class="btn-secondary px-3.5 py-1 rounded-l-none rounded-r-md w-14 transition ease-in-out duration-300">mm</button>
 		</div>
-        @if (OrderState.Order.Products.Count() == 0) {
+        @if (OrderState.Order.Products.Count == 0) {
             <span>No products in order</span>
         } else {
 
@@ -346,5 +325,39 @@
 
         }
     </section>
+
+    <section class="mt-10" id="additionalItems">
+
+        <div class="mb-5">
+            <span class="font-bold text-xl">@OrderState.Order.AdditionalItems.Count Additional Items</span>
+        </div>
+
+        <div class="border rounded-md">
+	        <table class="table-auto w-full">
+		        <thead class="border-b bg-gray-100">
+                    <tr>
+		    		    <th class="p-5">Description</th>
+		    		    <th class="p-5">Price</th>
+		    	    </tr>
+		        </thead>
+		        <tbody>
+                    @if (OrderState.Order.AdditionalItems.Count == 0) {
+                        <tr>
+                            <td colspan="2" class="text-center p-5 font-medium">No Additional Items in Order</td>
+                        </tr>
+                    }
+                    @foreach (var item in OrderState.Order.AdditionalItems) {
+                        <tr class="text-center hover:bg-blue-500/10 cursor-pointer">
+                            <td class="p-5 border-b font-medium">@item.Description</td>
+                            <td class="p-5 border-b">$@item.Price.ToString("0.00")</td>
+		    	        </tr>
+                    }
+		        </tbody>
+	        </table>
+        </div>
+
+	</section>
+
+
 
 }
