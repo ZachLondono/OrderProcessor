@@ -43,7 +43,7 @@ public class OrderDataModel {
     public string BillingZip { get; set; } = string.Empty;
     public string BillingCountry { get; set; } = string.Empty;
 
-    public Order ToDomainModel(Guid orderId, IEnumerable<IProduct> products, IEnumerable<AdditionalItem> items) {
+    public Order ToDomainModel(Guid orderId, IReadOnlyCollection<IProduct> products, IReadOnlyCollection<AdditionalItem> items) {
 
         ShippingInfo shippingInfo = new() {
             Contact = ShippingContact,
