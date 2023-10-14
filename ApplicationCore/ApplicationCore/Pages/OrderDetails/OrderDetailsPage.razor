@@ -21,7 +21,7 @@
     <section id="orderDetails">
         <OrderDetails @ref="_detailsRef">
             <ActionPanel>
-                <div class="flex flex-col space-y-5">
+                <div class="flex flex-col space-y-3 items-center text-center">
                     <OrderExportWidget Order="OrderState.Order" />
                     <OrderReleaseWidget Orders="GetOrder()" />
                     <OrderDeleteWidget OrderId="OrderState.Order?.Id ?? Guid.Empty" OnOrderDeleted="OnOrderDeleted" />

@@ -37,65 +37,90 @@
     <span>Order was not found or could not be loaded</span>
 } else {
     
-    <section id="summary">
-        <div class="mb-4">
-            <label id="number" class="text-lg w-24 inline-block">Number</label>
-            <span class="text-xl w-64 border-b-2 border-gray-400">@OrderState.Order.Number</span>
-            @if (OrderState.Order.Rush) {
-                <span class="p-2 text-white font-bold bg-red-500">RUSH</span>
-            }
-        </div>
-        <div>
-            <label id="name" class="text-lg w-24 inline-block">Name</label>
-            <span class="text-xl w-64 border-b-2 border-gray-400">@OrderState.Order.Name</span>
-        </div>
-        <div>
-            <label id="orderdate" class="text-md w-24 inline-block">Order Date</label>
-            <span class="text-lg">@OrderState.Order.OrderDate.ToShortDateString()</span>
-        </div>
-        <div>
-            <label id="duedate" class="text-md w-24 inline-block">Due Date</label>
-            @if (_dueDate is DateTime dueDate) {
-                <!--<InputDate @oninput="OnDueDateChanged" TValue="DateTime" ValueExpression="() => dueDate" />-->
-                <input class="text-lg" type="date" value="@dueDate.ToString("yyyy-MM-dd")" @oninput="OnDueDateChanged" />
-                <Button Size="ButtonSize.XSmall" Style="ButtonStyle.Outline" Color="ButtonColor.Danger" OnClickAsync="RemoveDueDate">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-2 h-2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </Button>
-            } else {
-                <Button Size="ButtonSize.Small" Style="ButtonStyle.Link" OnClickAsync="AddDueDate">+ Add Due Date</Button>
-            }
-        </div>
-    </section>
+    <section class="grid grid-cols-2 mb-10">
 
-    @if (ActionPanel is not null) {
-        <section class="mt-10" id="actions">
-            @ActionPanel
-        </section>
-    }
+        <div id="header" class="pl-10">
+            <div>
+                <label id="number" class="text-lg font-bold w-24 inline-block">Number</label>
+                <span class="text-xl font-semibold">@OrderState.Order.Number</span>
+                @if (OrderState.Order.Rush) {
+                    <span class="p-2 text-white font-bold bg-red-500">RUSH</span>
+                }
+            </div>
+            <div>
+                <label id="name" class="text-lg font-bold w-24 inline-block">Name</label>
+                <span class="text-xl font-semibold">@OrderState.Order.Name</span>
+            </div>
+            <div>
+                <label id="orderdate" class="w-24 inline-block font-medium">Order Date</label>
+                <span>@OrderState.Order.OrderDate.ToShortDateString()</span>
+            </div>
+            <div>
+                <label id="duedate" class="w-24 inline-block font-medium">Due Date</label>
+                @if (_dueDate is DateTime dueDate) {
+                    <!--<InputDate @oninput="OnDueDateChanged" TValue="DateTime" ValueExpression="() => dueDate" />-->
+                    <input type="date" value="@dueDate.ToString("yyyy-MM-dd")" @oninput="OnDueDateChanged" />
+                    <Button Size="ButtonSize.XSmall" Style="ButtonStyle.Outline" Color="ButtonColor.Danger" OnClickAsync="RemoveDueDate">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-2 h-2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </Button>
+                } else {
+                    <Button Size="ButtonSize.Small" Style="ButtonStyle.Link" OnClickAsync="AddDueDate">+ Add Due Date</Button>
+                }
+            </div>
+            <div>
+                @if (_customerName is not null) {
+                    <label id="customer" class="w-24 inline-block font-medium">Customer</label>
+                    <span class="hover:underline cursor-pointer h-5 align-middle" @onclick="() => OpenCustomerPage(OrderState.Order.CustomerId)">@_customerName</span>
+                } else {
+                    <span>No customer info</span>
+                }
+            </div>
+            <div>
+                @if(_vendorName is not null) {
+                    <label id="vendor" class="w-24 inline-block font-medium">Vendor</label>
+                    <span class="hover:underline cursor-pointer h-5 align-middle" @onclick="() => OpenVendorPage(OrderState.Order.VendorId)">@_vendorName</span>
+                } else {
+                    <span>No vendor info</span>
+                }
+            </div>
+            <div>
+                <label id="comment" class="w-24 inline-block font-medium">Comment</label>
+                <span>@OrderState.Order.CustomerComment</span>
+            </div>
 
-    <section class="mt-10" id="companyInfo">
-        <div>
-            @if (_customerName is not null) {
-                <label id="customer" class="text-md w-24 inline-block h-5 align-middle">Customer</label>
-                <span class="text-lg hover:underline cursor-pointer h-5 align-middle" @onclick="() => OpenCustomerPage(OrderState.Order.CustomerId)">@_customerName</span>
-            } else {
-                <span>No customer info</span>
+            @if (OrderState.Order.Info.Count != 0) {
+                <div class="mt-5">
+                    <span class="text-xs ml-1 text-gray-400">Other info</span>
+                    <table>
+                        <tbody>
+                            @if (!OrderState.Order.Info.Any()) {
+                                <tr><td colspan="2">No other order info</td></tr>
+                            }
+                            @foreach (var item in OrderState.Order.Info) {
+                                <tr>
+                                    <td class="pr-3 font-medium">@item.Key</td>
+                                    <td>@item.Value</td>
+                                </tr>
+                            }
+                            <!--
+                            <tr>
+                                <td class="text-center cursor-pointer font-semibold hover:bg-blue-100 hover:text-blue-700 rounded-md">+ Add</td>
+                            </tr>
+                            -->
+                        </tbody>
+                    </table>
+                </div>
             }
         </div>
-        <div>
-            @if(_vendorName is not null) {
-                <label id="vendor" class="text-md w-24 inline-block h-5 align-middle">Vendor</label>
-                <span class="text-lg hover:underline cursor-pointer h-5 align-middle" @onclick="() => OpenVendorPage(OrderState.Order.VendorId)">@_vendorName</span>
-            } else {
-                <span>No vendor info</span>
-            }
-        </div>
-        <div>
-            <label id="comment" class="text-md w-24 inline-block">Comment</label>
-            <span class="text-lg">@OrderState.Order.CustomerComment</span>
-        </div>
+    
+        @if (ActionPanel is not null){
+            <div id="actions">
+                @ActionPanel
+            </div>
+        }
+    
     </section>
 
     <section class="mt-10" id="order_note">
@@ -199,35 +224,31 @@
         </div>
     </section>
 
-    @if (OrderState.Order.Info.Count() != 0) {
-        <section class="mt-10" id="dynamicValues">
-            <table>
-                <thead class="border-b border-slate-300">
-                    <tr>
-                        <th class="px-3">Name</th>
-                        <th class="px-3">Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in OrderState.Order.Info) {
-                        <tr class="border-b">
-                            <td class="px-3 font-medium">@item.Key</td>
-                            <td class="px-3">@item.Value</td>
-		                </tr>
-                    }
-                </tbody>
-            </table>
-	    </section>
-    }
-
     <section class="mt-16" id="products">
+
         <header class="mb-5">
             <h2 class="font-bold text-xl">@OrderState.Order.Products.Sum(b => b.Qty) Products</h2>
         </header>
-        <div class="my-2">
-            <button disabled="@_useInches" @onclick="ToggleUnits" class="btn-secondary px-3.5 py-1 rounded-r-none rounded-l-md w-14 transition ease-in-out duration-300">in</button><!--
-         --><button disabled="@(!_useInches)" @onclick="ToggleUnits" class="btn-secondary px-3.5 py-1 rounded-l-none rounded-r-md w-14 transition ease-in-out duration-300">mm</button>
+
+        <!--
+        <div class="flex space-x-3 mb-5">
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-900 text-white">All</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-100 hover:bg-gray-200">Closet Parts</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-100 hover:bg-gray-200">Cabinets</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-100 hover:bg-gray-200">Cabinet Parts</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-100 hover:bg-gray-200">Doweled DBs</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-100 hover:bg-gray-200">Doweled DBs</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-100 hover:bg-gray-200">Zargen DBs</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-100 hover:bg-gray-200">MDF Doors</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-100 hover:bg-gray-200">5-Piece Doors</button>
+        </div>
+        -->
+
+        <div class="mb-5">
+            <button disabled="@_useInches" @onclick="ToggleUnits" class="bg-gray-100 disabled:bg-black disabled:text-white px-3.5 py-1 rounded-r-none rounded-l-md w-14 transition ease-in-out duration-300">in</button><!--
+         --><button disabled="@(!_useInches)" @onclick="ToggleUnits" class="bg-gray-100 disabled:bg-black disabled:text-white px-3.5 py-1 rounded-l-none rounded-r-md w-14 transition ease-in-out duration-300">mm</button>
 		</div>
+
         @if (OrderState.Order.Products.Count == 0) {
             <span>No products in order</span>
         } else {
@@ -243,7 +264,7 @@
                             <Button OnClickAsync="() => SaveRoomNameChange(room)" Size="ButtonSize.XSmall" Style="ButtonStyle.Text" Disabled="!room.IsDirty">Save</Button>
                         </div>
                     </header>
-                    <div class="bg-white px-3 py-5 space-y-5">
+                    <div class="bg-white px-3 py-10 space-y-5">
                         @if (room.DovetailDrawerBoxes.Any()) {
                             <div>
                                 <h3 class="font-semibold text-lg pl-3">Dovetail Drawer Boxes (@room.DovetailDrawerBoxes.Count)</h3>
@@ -327,9 +348,10 @@
             }
 
         }
+
     </section>
 
-    <section class="mt-10" id="additionalItems">
+    <section class="mt-16" id="additionalItems">
 
         <div class="mb-5">
             <span class="font-bold text-xl">@OrderState.Order.AdditionalItems.Count Additional Items</span>
@@ -360,7 +382,5 @@
         </div>
 
 	</section>
-
-
 
 }
