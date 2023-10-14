@@ -4,18 +4,14 @@
 @using static ApplicationCore.Features.Orders.Details.OrderDetails;
 @using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 
-<div class="overflow-x-auto rounded-md">
-    <table class="table-auto">
-        <thead class="border-b border-slate-300">
+<div class="overflow-x-auto">
+    <table class="table-auto w-full">
+        <thead class="border-b">
             <tr>
                 <th class="p-5">#</th>
                 <th class="p-5">Qty</th>
                 <th class="p-5">Width</th>
                 <th class="p-5">Length</th>
-                <th class="p-5">Framing Bead</th>
-                <th class="p-5">Edge Detail</th>
-                <th class="p-5">Panel Drop</th>
-                <th class="p-5">Paint</th>
                 <th class="p-5">Unit $</th>
                 <th class="p-5">Ext. $</th>
                 <th></th>
@@ -33,14 +29,6 @@
                         <td class="whitespace-nowrap p-5 text-center">@row.Width.AsMillimeters().ToString("0.00")</td>
                         <td class="whitespace-nowrap p-5 text-center">@row.Height.AsMillimeters().ToString("0.00")</td>
                     }
-                    <td class="whitespace-nowrap p-5 text-center">@row.FramingBead</td>
-                    <td class="whitespace-nowrap p-5 text-center">@row.EdgeDetail</td>
-                    @if (UseInches){
-                        <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.PanelDrop.GetFormatedFraction())"</td>
-                    } else {
-                        <td class="whitespace-nowrap p-5 text-center">@row.PanelDrop.AsMillimeters().ToString("0.00")</td>
-                    }
-                    <td class="whitespace-nowrap p-5 text-center">@(row.PaintColor is null ? "N/A" : row.PaintColor)</td>
                     <td class="whitespace-nowrap p-5 text-center">@row.UnitPrice.ToString("$0.00")</td>
                     <td class="whitespace-nowrap p-5 text-center">@((row.UnitPrice * row.Qty).ToString(".00"))</td>
                     <td class="p-5">
@@ -52,15 +40,15 @@
 
                 @if (row.Note != string.Empty) {
                     <tr>
-                        <td class="p-5 font-bold text-red-500" colspan="11">
-                            Note: @row.Note
+                        <td class="p-5 font-bold text-red-500" colspan="7">
+                            Customer Note: @row.Note
                         </td>
                     </tr>                        
                 }
 
                 @foreach(var note in row.ProductionNotes) {
                     <tr>
-                        <td class="p-5 font-bold text-red-500" colspan="11">
+                        <td class="p-5 font-bold text-red-500" colspan="7">
                             @note
                         </td>
                     </tr>
@@ -75,7 +63,7 @@
 @code {
     
     [Parameter]
-    public RenderFragment<MDFDoorProduct>? ActionColumn { get; set; } = null;
+    public RenderFragment<IProduct>? ActionColumn { get; set; } = null;
 
     [Parameter]
     public IEnumerable<MDFDoorProduct> MDFDoors { get; set; } = Enumerable.Empty<MDFDoorProduct>();

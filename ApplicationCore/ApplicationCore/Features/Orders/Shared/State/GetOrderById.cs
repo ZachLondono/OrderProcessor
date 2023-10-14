@@ -40,9 +40,9 @@ public class GetOrderById {
             }
 
             var itemData = await connection.QueryAsync<AdditionalItemDataModel>(AdditionalItemDataModel.GetQueryByOrderId(), request);
-            var items = itemData.Select(i => i.ToDomainModel());
+            var items = itemData.Select(i => i.ToDomainModel()).ToList();
 
-            IEnumerable<IProduct> products;
+            IReadOnlyCollection<IProduct> products;
             try {
                 products = await GetProducts(request.OrderId, connection);
             } catch (Exception ex) {
@@ -58,7 +58,7 @@ public class GetOrderById {
 
         }
 
-        private async Task<IEnumerable<IProduct>> GetProducts(Guid orderId, IDbConnection connection) {
+        private async Task<IReadOnlyCollection<IProduct>> GetProducts(Guid orderId, IDbConnection connection) {
 
             List<IProductDataModel> productData = new();
 
@@ -85,7 +85,7 @@ public class GetOrderById {
             await AddProductDataToCollection<BlindWallCabinetDataModel>(productData, orderId, connection);
             await AddProductDataToCollection<BlindBaseCabinetDataModel>(productData, orderId, connection);
 
-            return productData.Aggregate(new List<IProduct>(), ProductAggregator);
+            return productData.Aggregate(new List<IProduct>(), ProductAggregator).ToList();
 
         }
 

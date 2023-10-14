@@ -6,14 +6,14 @@ namespace ApplicationCore.Widgets.Orders.OrderRelationshipList;
 internal class OrderRelationshipListWidgetViewModel {
 
     private readonly IBus _bus;
-    private IEnumerable<RelatedOrder> _relatedOrders = Enumerable.Empty<RelatedOrder>();
+    private List<RelatedOrder> _relatedOrders = new();
 
     public Action? OnPropertyChanged { get; set; }
 
-    public IEnumerable<RelatedOrder> RelatedOrders {
+    public List<RelatedOrder> RelatedOrders {
         get => _relatedOrders;
         set {
-            _relatedOrders = value;
+            _relatedOrders = new(value);
             OnPropertyChanged?.Invoke();
         }
     }
@@ -26,7 +26,7 @@ internal class OrderRelationshipListWidgetViewModel {
 
         var response = await _bus.Send(new GetRelatedOrders.Query(orderId));
 
-        response.OnSuccess(orders => RelatedOrders = orders);
+        response.OnSuccess(orders => RelatedOrders = new(orders));
 
     }
 

@@ -6,7 +6,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 
 namespace ApplicationCore.Features.Orders.Details;
 
-public class Room {
+public class RoomModel {
 
     private string _name;
 
@@ -28,7 +28,7 @@ public class Room {
     public List<DoweledDrawerBoxProduct> DoweledDrawerBoxes { get; private set; }
     public List<MDFDoorProduct> MDFDoors { get; private set; }
 
-    public Room(string name, List<IProduct> products) {
+    public RoomModel(string name, List<IProduct> products) {
 
         _name = name;
         Products = products;
@@ -56,7 +56,7 @@ public class Room {
 
     }
 
-    public static Room FromGrouping(IGrouping<string, IProduct> productGrouping) {
+    public static RoomModel FromGrouping(IGrouping<string, IProduct> productGrouping) {
         return new(productGrouping.Key, productGrouping.ToList());
     }
 

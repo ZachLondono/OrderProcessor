@@ -10,21 +10,15 @@
 @using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 @inject IBus Bus
 
-<div class="overflow-x-auto rounded-md">
-    <table class="table-auto">
-        <thead class="border-b border-slate-300">
+<div class="overflow-x-auto">
+    <table class="table-auto w-full">
+        <thead class="border-b">
             <tr>
                 <th class="p-5">#</th>
                 <th class="p-5">Qty</th>
                 <th class="p-5">Height</th>
                 <th class="p-5">Width</th>
                 <th class="p-5">Depth</th>
-                <th class="p-5">F/B Adj.</th>
-                <th class="p-5">Front Material</th>
-                <th class="p-5">Side Material</th>
-                <th class="p-5">Back Material</th>
-                <th class="p-5">Bottom Material</th>
-                <th class="p-5">Machine for UM</th>
                 <th class="p-5">Unit $</th>
                 <th class="p-5">Ext. $</th>
                 <th></th>
@@ -40,18 +34,11 @@
                             <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Height.GetFormatedFraction())"</td>
                             <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Width.GetFormatedFraction())"</td>
                             <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Depth.GetFormatedFraction())"</td>
-                            <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.FrontBackHeightAdjustment.GetFormatedFraction())</td>
                         } else {
                             <td class="whitespace-nowrap p-5 text-center">@row.Height.AsMillimeters().ToString("0.00")</td>
                             <td class="whitespace-nowrap p-5 text-center">@row.Width.AsMillimeters().ToString("0.00")</td>
                             <td class="whitespace-nowrap p-5 text-center">@row.Depth.AsMillimeters().ToString("0.00")</td>
-                            <td class="whitespace-nowrap p-5 text-center">@row.FrontBackHeightAdjustment.AsMillimeters().ToString("0.00")</td>
                         }
-                        <td class="whitespace-nowrap p-5">@((MarkupString)MaterialString(row.FrontMaterial, UseInches))</td>
-                        <td class="whitespace-nowrap p-5">@((MarkupString)MaterialString(row.SideMaterial,UseInches))</td>
-                        <td class="whitespace-nowrap p-5">@((MarkupString)MaterialString(row.BackMaterial,UseInches))</td>
-                        <td class="whitespace-nowrap p-5">@((MarkupString)MaterialString(row.BottomMaterial,UseInches))</td>
-                        <td class="whitespace-nowrap p-5 text-center">@(row.MachineThicknessForUMSlides ? "Y" : "N")</td>
                         <td class="whitespace-nowrap p-5 text-center">$@row.UnitPrice.ToString("0.00")</td>
                         <td class="whitespace-nowrap p-5 text-center">$@((row.UnitPrice * row.Qty).ToString("0.00"))</td>
                         <td class="p-5">
@@ -63,7 +50,7 @@
 
                     @foreach(var note in row.ProductionNotes) {
                         <tr>
-                            <td class="p-5 font-bold text-red-500" colspan="14">
+                            <td class="p-5 font-bold text-red-500" colspan="8">
                                 @note
                             </td>
                         </tr>
@@ -78,7 +65,7 @@
 @code {
 
     [Parameter]
-    public RenderFragment<DoweledDrawerBoxProduct>? ActionColumn { get; set; } = null;
+    public RenderFragment<IProduct>? ActionColumn { get; set; } = null;
 
     [Parameter]
     public IEnumerable<DoweledDrawerBoxProduct> DrawerBoxes { get; set; } = Enumerable.Empty<DoweledDrawerBoxProduct>();

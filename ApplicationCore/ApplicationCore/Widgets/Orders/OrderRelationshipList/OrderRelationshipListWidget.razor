@@ -2,26 +2,30 @@
 @inject OrderRelationshipListWidgetViewModel DataContext
 @inject NavigationService Navigation
 
-@if (DataContext.RelatedOrders.Any()) {
-    <table>
-        <thead class="border-b border-slate-300">
+<div class="mb-5">
+    <h2 class="font-bold text-xl">@DataContext.RelatedOrders.Count Related Orders</h2>
+</div>
+<div class="border rounded-md">
+    <table class="table-auto w-full">
+        <thead class="border-b bg-gray-100">
             <tr>
-                <th class="p-5 text-gray-700">#</th>
-                <th class="p-5 text-gray-700">Name</th>
+                <th class="p-5">#</th>
+                <th class="p-5">Name</th>
             </tr>
         </thead>
         <tbody>
+            @if (!DataContext.RelatedOrders.Any()) {
+                <tr><td colspan="2" class="text-center p-5 font-medium">No Related Orders</td></tr>
+            }
             @foreach (var order in DataContext.RelatedOrders) {
-                <tr @onclick="async () => await OpenOrder(order.Id)" class="justify-center hover:bg-slate-200 cursor-pointer">
-                    <td class="p-5 whitespace-nowrap border-b">@order.Number</td>
-                    <td class="p-5 whitespace-nowrap border-b">@order.Name</td>
+                <tr @onclick="async () => await OpenOrder(order.Id)" class="text-center hover:bg-blue-500/10 cursor-pointer">
+                    <td class="p-5 whitespace-nowrap">@order.Number</td>
+                    <td class="p-5 whitespace-nowrap">@order.Name</td>
                 </tr>
             } 
         </tbody>
     </table>
-} else {
-    <span>No related orders</span>
-}
+</div>
 
 @code {
 
