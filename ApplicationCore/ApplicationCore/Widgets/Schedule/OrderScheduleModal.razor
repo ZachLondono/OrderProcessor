@@ -63,7 +63,8 @@
             <InputDate @bind-Value="_model.RequestedDate" />
         </div>
 
-        <Button Color="ButtonColor.Primary" Type="submit">Schedule</Button>
+        <Button Color="ButtonColor.Primary" Style="ButtonStyle.Text" Type="submit">Schedule</Button>
+        <Button Color="ButtonColor.Secondary" Style="ButtonStyle.Text" OnClickAsync="Close">Cancel</Button>
 
     </EditForm>
 
@@ -137,7 +138,11 @@
         response.OnError(
             error => ModalService.OpenErrorDialog(error)
         );
-        
+
+    }
+
+    private async Task Close() {
+        await ModalInstance.CloseAsync();
     }
 
 }
