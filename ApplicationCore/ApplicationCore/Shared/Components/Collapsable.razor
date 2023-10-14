@@ -1,6 +1,6 @@
 ﻿@if (IsHidden) {
 
-    <div @onclick="Toggle" class="cursor-pointer">
+    <div @onclick="Toggle" class="cursor-pointer rounded-md py-3 px-10 bg-gray-100 hover:bg-gray-200">
 
         @Summary
 
@@ -12,7 +12,7 @@
     
 } else {
     
-    <div>
+    <div class="rounded-md py-3 px-10 bg-gray-100">
 
         @Content
 
