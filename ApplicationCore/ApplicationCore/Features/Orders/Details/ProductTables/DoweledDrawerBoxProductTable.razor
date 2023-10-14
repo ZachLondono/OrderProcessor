@@ -34,12 +34,10 @@
                             <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Height.GetFormatedFraction())"</td>
                             <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Width.GetFormatedFraction())"</td>
                             <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Depth.GetFormatedFraction())"</td>
-                            <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.FrontBackHeightAdjustment.GetFormatedFraction())</td>
                         } else {
                             <td class="whitespace-nowrap p-5 text-center">@row.Height.AsMillimeters().ToString("0.00")</td>
                             <td class="whitespace-nowrap p-5 text-center">@row.Width.AsMillimeters().ToString("0.00")</td>
                             <td class="whitespace-nowrap p-5 text-center">@row.Depth.AsMillimeters().ToString("0.00")</td>
-                            <td class="whitespace-nowrap p-5 text-center">@row.FrontBackHeightAdjustment.AsMillimeters().ToString("0.00")</td>
                         }
                         <td class="whitespace-nowrap p-5 text-center">$@row.UnitPrice.ToString("0.00")</td>
                         <td class="whitespace-nowrap p-5 text-center">$@((row.UnitPrice * row.Qty).ToString("0.00"))</td>
