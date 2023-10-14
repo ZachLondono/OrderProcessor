@@ -1,4 +1,5 @@
 ﻿@using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
+@using ApplicationCore.Features.Orders.Shared.Domain.Products;
 
 <div class="overflow-x-auto">
     <table class="table-auto w-full">
@@ -50,7 +51,7 @@
 @code {
 
     [Parameter]
-    public RenderFragment<CabinetPart>? ActionColumn { get; set; } = null;
+    public RenderFragment<IProduct>? ActionColumn { get; set; } = null;
 
     [Parameter]
     public IEnumerable<CabinetPart> CabinetParts { get; set; } = Enumerable.Empty<CabinetPart>();

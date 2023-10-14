@@ -73,7 +73,7 @@
 @code {
 
     [Parameter]
-    public RenderFragment<DovetailDrawerBoxProduct>? ActionColumn { get; set; } = null;
+    public RenderFragment<IProduct>? ActionColumn { get; set; } = null;
 
     [Parameter]
     public IEnumerable<DovetailDrawerBoxProduct> DrawerBoxes { get; set; } = Enumerable.Empty<DovetailDrawerBoxProduct>();

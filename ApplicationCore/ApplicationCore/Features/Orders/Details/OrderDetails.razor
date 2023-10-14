@@ -17,18 +17,12 @@
 @using ApplicationCore.Features.Orders.Shared.Domain.Products;
 @using ApplicationCore.Features.Orders.Shared;
 @using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-@using ApplicationCore.Infrastructure.Bus;
 @using ApplicationCore.Pages.OrderDetails;
 @using ApplicationCore.Infrastructure.UI
 @using static ApplicationCore.Shared.Components.DropDown;
 @using static ApplicationCore.Shared.Components.Button;
-@using static ApplicationCore.Features.Orders.Details.ProductTables.MDFDoorProductTable;
-@using static ApplicationCore.Features.Orders.Details.ProductTables.DovetailDrawerBoxProductTable;
-@using static ApplicationCore.Features.Orders.Details.ProductTables.ClosetPartProductTable;
-@using static ApplicationCore.Features.Orders.Details.ProductTables.CabinetProductTable;
 @using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 @using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
-@inject IBus Bus
 @inject OrderState OrderState
 @inject IFilePicker FilePicker
 @inject NavigationService NavigationService
@@ -327,95 +321,12 @@
             var first = Rooms.FirstOrDefault();
             var last = Rooms.LastOrDefault();
             foreach (var room in Rooms) {
-
-                <div class="py-3 bg-gray-100 cursor-pointer hover:bg-gray-200 border border-gray-200 @(room.Equals(first) ? "rounded-t-md" : "") @(room.Equals(last) ? "rounded-b-md" : "")">
-                    <header>
-                        <input type="text" placeholder="Room @(Rooms.IndexOf(room) + 1)" @oninput="a => OnRoomNameChanged(a, room)" value="@room.Name" class="bg-transparent font-bold text-xl pl-3 pt-3"/>
-                        <div class="pl-3">
-                            <Button OnClickAsync="() => SaveRoomNameChange(room)" Size="ButtonSize.XSmall" Style="ButtonStyle.Text" Disabled="!room.IsDirty">Save</Button>
-                        </div>
-                    </header>
-                    <div class="bg-white px-3 py-10 space-y-5">
-                        @if (room.DovetailDrawerBoxes.Any()) {
-                            <div>
-                                <h3 class="font-semibold text-lg pl-3">Dovetail Drawer Boxes (@room.DovetailDrawerBoxes.Count)</h3>
-                                <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@room.DovetailDrawerBoxes" Context="product">
-                                    <ActionColumn>
-                                        @ProductActionsColumn?.Invoke(product)
-                                    </ActionColumn>
-                                </DovetailDrawerBoxProductTable>
-                            </div>
-                        }
-
-                        @if (room.DoweledDrawerBoxes.Any()) {
-                            <div>
-                                <h3 class="font-semibold text-lg pl-3">Doweled Drawer Boxes (@room.DoweledDrawerBoxes.Count)</h3>
-                                <DoweledDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@room.DoweledDrawerBoxes" Context="product">
-                                    <ActionColumn>
-                                        @ProductActionsColumn?.Invoke(product)
-                                    </ActionColumn>
-                                </DoweledDrawerBoxProductTable>
-                            </div>
-                        }
-       
-                        @if (room.Cabinets.Any()) {
-                            <div>
-                                <h3 class="font-semibold text-lg pl-3">Cabinets (@room.Cabinets.Count)</h3>
-                                <CabinetProductTable UseInches="@_useInches" Cabinets="@room.Cabinets" Context="product">
-                                    <ActionColumn>
-                                        @ProductActionsColumn?.Invoke(product)
-                                    </ActionColumn>
-                                </CabinetProductTable>
-                            </div>
-                        }
-
-                        @if (room.CabinetParts.Any()) {
-                            <div>
-                                <h3 class="font-semibold text-lg pl-3">Cabinet Extra Parts (@room.CabinetParts.Count)</h3>
-                                <CabinetPartProductTable UseInches="@_useInches" CabinetParts="@room.CabinetParts" Context="product" >
-                                    <ActionColumn>
-                                        @ProductActionsColumn?.Invoke(product)
-                                    </ActionColumn>
-                                </CabinetPartProductTable>
-                            </div>
-                        }
-    
-                        @if (room.ClosetParts.Any()) {
-                            <div>
-                                <h3 class="font-semibold text-lg pl-3">Closet Parts (@room.ClosetParts.Count)</h3>
-                                <ClosetPartProductTable UseInches="@_useInches" ClosetParts="@room.ClosetParts" Context="product">
-                                    <ActionColumn>
-                                        @ProductActionsColumn?.Invoke(product)
-                                    </ActionColumn>
-                                </ClosetPartProductTable>
-                            </div>
-                        }
-     
-                        @if (room.ZargenDrawers.Any()) {
-                            <div>
-                                <h3 class="font-semibold text-lg pl-3">Zargen Drawers (@room.ZargenDrawers.Count)</h3>
-                                <ZargenDrawerProductTable UseInches="@_useInches" ZargenDrawers="@room.ZargenDrawers" Context="product">
-                                    <ActionColumn>
-                                        @ProductActionsColumn?.Invoke(product)
-                                    </ActionColumn>
-                                </ZargenDrawerProductTable>
-                            </div>
-                        }
-    
-                        @if (room.MDFDoors.Any()) {
-                            <div>
-                                <h3 class="font-semibold text-lg pl-3">MDF Doors (@room.MDFDoors.Count)</h3>
-                                <MDFDoorProductTable UseInches="@_useInches" MDFDoors="@room.MDFDoors" Context="product">
-                                    <ActionColumn>
-                                        @ProductActionsColumn?.Invoke(product)
-                                    </ActionColumn>
-                                </MDFDoorProductTable>
-                            </div>
-                        }
-                    </div>
-                </div>
-
-
+                <Room Model="room"
+                    Index="Rooms.IndexOf(room)"
+                    IsFirst="first!.Equals(room)"
+                    IsLast="last!.Equals(room)"
+                    UseInches="_useInches"
+                    ProductActionsColumn="ProductActionsColumn" />
             }
 
         }

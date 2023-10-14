@@ -17,7 +17,7 @@ public partial class OrderDetails {
     [CascadingParameter]
     public IModalService Modal { get; set; } = default!;
 
-    public List<Room> Rooms { get; set; } = new();
+    public List<RoomModel> Rooms { get; set; } = new();
 
     private string _note = string.Empty;
     private DateTime? _dueDate = null;
@@ -49,7 +49,7 @@ public partial class OrderDetails {
         Rooms = OrderState.Order
                     .Products
                     .GroupBy(p => p.Room)
-                    .Select(Room.FromGrouping)
+                    .Select(RoomModel.FromGrouping)
                     .ToList();
     }
 
@@ -107,36 +107,10 @@ public partial class OrderDetails {
         OrderState.SetNote(_note);
     }
 
-    private async Task SaveRoomNameChange(Room room) {
-
-        if (!room.IsDirty) return;
-
-        foreach (var product in room.Products) {
-
-            try {
-                product.Room = room.Name;
-                await Bus.Send(new UpdateProduct.Command(product));
-            } catch (Exception ex) {
-                Debug.Write("Exception thrown while saving product room name change");
-                Debug.WriteLine(ex);
-            }
-
-        }
-
-        room.IsDirty = false;
-        StateHasChanged();
-
-    }
-
     private async Task WorkingDirectoryChanged() {
         await OrderState.SaveWorkingDirectory();
         StateHasChanged();
     }
-
-    private static void OnRoomNameChanged(ChangeEventArgs args, Room room) {
-        room.Name = args.Value?.ToString() ?? "";
-    }
-
 
     public abstract class ProductRowModel<T> where T : IProduct {
 
