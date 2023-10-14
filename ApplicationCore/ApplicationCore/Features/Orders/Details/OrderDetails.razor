@@ -221,8 +221,8 @@
     }
 
     <section class="mt-16" id="products">
-        <header>
-            <h3>Products (@OrderState.Order.Products.Sum(b => b.Qty))</h3>
+        <header class="mb-5">
+            <h2 class="font-bold text-xl">@OrderState.Order.Products.Sum(b => b.Qty) Products</h2>
         </header>
         <div class="my-2">
             <button disabled="@_useInches" @onclick="ToggleUnits" class="btn-secondary px-3.5 py-1 rounded-r-none rounded-l-md w-14 transition ease-in-out duration-300">in</button><!--
@@ -232,94 +232,97 @@
             <span>No products in order</span>
         } else {
 
+            var first = Rooms.FirstOrDefault();
+            var last = Rooms.LastOrDefault();
             foreach (var room in Rooms) {
 
-                <div class="bg-slate-100">
-                    <input type="text" placeholder="Room @(Rooms.IndexOf(room) + 1)" @oninput="a => OnRoomNameChanged(a, room)" value="@room.Name" class="bg-transparent font-bold text-xl pl-3 pt-3"/>
-                    <div class="pl-3">
-                        <Button OnClickAsync="() => SaveRoomNameChange(room)" Size="ButtonSize.XSmall" Style="ButtonStyle.Text" Disabled="!room.IsDirty">Save</Button>
-                    </div>
-                    <div class="pl-5">
+                <div class="py-3 bg-gray-100 cursor-pointer hover:bg-gray-200 border border-gray-200 @(room.Equals(first) ? "rounded-t-md" : "") @(room.Equals(last) ? "rounded-b-md" : "")">
+                    <header>
+                        <input type="text" placeholder="Room @(Rooms.IndexOf(room) + 1)" @oninput="a => OnRoomNameChanged(a, room)" value="@room.Name" class="bg-transparent font-bold text-xl pl-3 pt-3"/>
+                        <div class="pl-3">
+                            <Button OnClickAsync="() => SaveRoomNameChange(room)" Size="ButtonSize.XSmall" Style="ButtonStyle.Text" Disabled="!room.IsDirty">Save</Button>
+                        </div>
+                    </header>
+                    <div class="bg-white px-3 py-5 space-y-5">
                         @if (room.DovetailDrawerBoxes.Any()) {
-                            <section class="mt-5">
-                                <h3>Dovetail Drawer Boxes</h3>
+                            <div>
+                                <h3 class="font-semibold text-lg pl-3">Dovetail Drawer Boxes (@room.DovetailDrawerBoxes.Count)</h3>
                                 <DovetailDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@room.DovetailDrawerBoxes" Context="product">
                                     <ActionColumn>
                                         @ProductActionsColumn?.Invoke(product)
                                     </ActionColumn>
                                 </DovetailDrawerBoxProductTable>
-                            </section>
+                            </div>
                         }
 
                         @if (room.DoweledDrawerBoxes.Any()) {
-                            <section class="mt-5">
-                                <h3>Doweled Drawer Boxes</h3>
+                            <div>
+                                <h3 class="font-semibold text-lg pl-3">Doweled Drawer Boxes (@room.DoweledDrawerBoxes.Count)</h3>
                                 <DoweledDrawerBoxProductTable UseInches="@_useInches" DrawerBoxes="@room.DoweledDrawerBoxes" Context="product">
                                     <ActionColumn>
                                         @ProductActionsColumn?.Invoke(product)
                                     </ActionColumn>
                                 </DoweledDrawerBoxProductTable>
-                            </section>
+                            </div>
                         }
        
                         @if (room.Cabinets.Any()) {
-                            <section class="mt-5">
-                                <h3>Cabinets</h3>
+                            <div>
+                                <h3 class="font-semibold text-lg pl-3">Cabinets (@room.Cabinets.Count)</h3>
                                 <CabinetProductTable UseInches="@_useInches" Cabinets="@room.Cabinets" Context="product">
                                     <ActionColumn>
                                         @ProductActionsColumn?.Invoke(product)
                                     </ActionColumn>
                                 </CabinetProductTable>
-                            </section>
+                            </div>
                         }
 
                         @if (room.CabinetParts.Any()) {
-                            <section class="mt-5">
-                                <h3>Cabinet Extra Parts</h3>
+                            <div>
+                                <h3 class="font-semibold text-lg pl-3">Cabinet Extra Parts (@room.CabinetParts.Count)</h3>
                                 <CabinetPartProductTable UseInches="@_useInches" CabinetParts="@room.CabinetParts" Context="product" >
                                     <ActionColumn>
                                         @ProductActionsColumn?.Invoke(product)
                                     </ActionColumn>
                                 </CabinetPartProductTable>
-                            </section>
+                            </div>
                         }
     
                         @if (room.ClosetParts.Any()) {
-                            <section class="mt-5">
-                                <h3>Closet Parts</h3>
+                            <div>
+                                <h3 class="font-semibold text-lg pl-3">Closet Parts (@room.ClosetParts.Count)</h3>
                                 <ClosetPartProductTable UseInches="@_useInches" ClosetParts="@room.ClosetParts" Context="product">
                                     <ActionColumn>
                                         @ProductActionsColumn?.Invoke(product)
                                     </ActionColumn>
                                 </ClosetPartProductTable>
-                            </section>
+                            </div>
                         }
      
                         @if (room.ZargenDrawers.Any()) {
-                            <section class="mt-5">
-                                <h3>Zargen Drawers</h3>
+                            <div>
+                                <h3 class="font-semibold text-lg pl-3">Zargen Drawers (@room.ZargenDrawers.Count)</h3>
                                 <ZargenDrawerProductTable UseInches="@_useInches" ZargenDrawers="@room.ZargenDrawers" Context="product">
                                     <ActionColumn>
                                         @ProductActionsColumn?.Invoke(product)
                                     </ActionColumn>
                                 </ZargenDrawerProductTable>
-                            </section>
+                            </div>
                         }
     
                         @if (room.MDFDoors.Any()) {
-                            <section class="mt-5">
-                                <h3>MDF Doors</h3>
+                            <div>
+                                <h3 class="font-semibold text-lg pl-3">MDF Doors (@room.MDFDoors.Count)</h3>
                                 <MDFDoorProductTable UseInches="@_useInches" MDFDoors="@room.MDFDoors" Context="product">
                                     <ActionColumn>
                                         @ProductActionsColumn?.Invoke(product)
                                     </ActionColumn>
                                 </MDFDoorProductTable>
-                            </section>
+                            </div>
                         }
                     </div>
                 </div>
 
-                <hr class="my-5"/>
 
             }
 
