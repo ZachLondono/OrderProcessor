@@ -5,6 +5,8 @@
 @using ApplicationCore.Features.Orders.OrderExport;
 @using ApplicationCore.Features.Orders.Shared.Domain
 @using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
+@using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
+@using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 @using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 @using ApplicationCore.Features.Orders.OrderRelease
 @using ApplicationCore.Features.Orders.Shared.State;
@@ -37,9 +39,9 @@
     <span>Order was not found or could not be loaded</span>
 } else {
     
-    <section class="grid grid-cols-2 mb-10">
+    <section class="grid grid-cols-2" id="header">
 
-        <div id="header" class="pl-10">
+        <div class="pl-10">
             <div>
                 <label id="number" class="text-lg font-bold w-24 inline-block">Number</label>
                 <span class="text-xl font-semibold">@OrderState.Order.Number</span>
@@ -124,104 +126,173 @@
     </section>
 
     <section class="mt-10" id="order_note">
-        <div class="mb-5">
+        <div class="px-12">
             <label for="note" class="mr-5">Note</label>
             <Button OnClickAsync="@SaveNoteAsync" Size="ButtonSize.XSmall" Style="ButtonStyle.Text" Disabled="!OrderState.IsNoteDirty">Save</Button>
             <textarea id="note" placeholder="Order Note..." class="w-full" @oninput="OnNoteChanged">@_note</textarea>
         </div>
+    </section>
 
-        <div>
+    <section class="mt-10" id="working_directory">
+        <div class="px-12">
             <WorkingDirectoryWidget WorkingDirectory="@OrderState.Order.WorkingDirectory" OnWorkingDirectoryChanged="WorkingDirectoryChanged" />
         </div>
     </section>
 
-    <section class="mt-10" id="shipping">
+    <section class="mt-10 grid grid-cols-2 gap-12" id="shipping_invoice">
 
-        <div>
-            <label id="shippingmethod" class="text-md w-24 inline-block">Method</label>
-            <span class="text-lg">@OrderState.Order.Shipping.Method</span>
+        <div id="shipping" >
+            <Collapsable>
+                <Summary>
+                    <h2 class="font-semibold text-lg">Shipping</h2>
+                    
+                    <div>
+                        <label id="shippingmethod" class="text-md w-24 inline-block">Method</label>
+                        <span class="text-lg">@OrderState.Order.Shipping.Method</span>
+                    </div>
+                </Summary>
+                <Content>
+                    <h2 class="font-semibold text-lg">
+                        Shipping
+                    </h2>
+
+                    <div>
+                        <label id="shippingmethod" class="text-md w-24 inline-block">Method</label>
+                        <span class="text-lg">@OrderState.Order.Shipping.Method</span>
+                    </div>
+                    
+                    <div>
+                        <label id="shippingcontact" class="text-md w-24 inline-block">Contact</label>
+                        <span class="text-lg">@OrderState.Order.Shipping.Contact</span>
+                    </div>
+                    
+                    <div>
+                        <label id="shippingphone" class="text-md w-24 inline-block">Phone</label>
+                        <span class="text-lg">@OrderState.Order.Shipping.PhoneNumber</span>
+                    </div>
+                    
+                    <div>                                                                                                                               
+                        <h3 class="text-md w-24 inline-block">Address</h3>
+                        <div class="ml-5">
+                            <div>
+                                <label id="shippingline1" class="text-sm w-24 inline-block">Line 1</label>
+                                <span class="text-md">@OrderState.Order.Shipping.Address.Line1</span>
+                            </div>
+                    
+                            <div>
+                                <label id="shippingline2" class="text-sm w-24 inline-block">Line 2</label>
+                                <span class="text-md">@OrderState.Order.Shipping.Address.Line2</span>
+                            </div>
+                    
+                            <div>
+                                <label id="shippingline3" class="text-sm w-24 inline-block">Line 3</label>
+                                <span class="text-md">@OrderState.Order.Shipping.Address.Line3</span>
+                            </div>
+                    
+                            <div>
+                                <label id="shippingcity" class="text-sm w-24 inline-block">City</label>
+                                <span class="text-md">@OrderState.Order.Shipping.Address.City</span>
+                            </div>
+                    
+                            <div>
+                                <label id="shippingstate" class="text-sm w-24 inline-block">State</label>
+                                <span class="text-md">@OrderState.Order.Shipping.Address.State</span>
+                            </div>
+                    
+                            <div>
+                                <label id="shippingzip" class="text-sm w-24 inline-block">Zip</label>
+                                <span class="text-md">@OrderState.Order.Shipping.Address.Zip</span>
+                            </div>
+                    
+                            <div>
+                                <label id="shippingcountry" class="text-sm w-24 inline-block">Country</label>
+                                <span class="text-md">@OrderState.Order.Shipping.Address.Country</span>
+                            </div>
+                        </div>
+                    </div>
+                </Content>
+            </Collapsable>
         </div>
 
-        <div>
-            <label id="shippingcontact" class="text-md w-24 inline-block">Contact</label>
-            <span class="text-lg">@OrderState.Order.Shipping.Contact</span>
+        <div id="invoice">
+            <Collapsable>
+                <Summary>
+                    <h2 class="font-semibold text-lg">Invoice</h2>
+                    
+                    <div>
+                        <label id="totalprice" class="text-md w-24 inline-block">Total Price</label>
+                        <span class="text-lg">$@(OrderState.Order.Total.ToString("0.00"))</span>
+                    </div>
+                </Summary>
+                <Content>
+                    <h2 class="font-semibold text-lg">Invoice</h2>
+                    
+                    <table class="w-full">
+                        <tbody>
+                            <tr>
+                                <td>Dovetail DBs</td>
+                                <td>$@(OrderState.Order.Products.Where(p => p is DovetailDrawerBoxProduct).Sum(p => p.UnitPrice * p.Qty).ToString("0.00"))</td>
+                            </tr>
+                            <tr>
+                                <td>Doweled DBs</td>
+                                <td>$@(OrderState.Order.Products.Where(p => p is DoweledDrawerBoxProduct).Sum(p => p.UnitPrice * p.Qty).ToString("0.00"))</td>
+                            </tr>
+                            <tr>
+                                <td>Cabinets</td>
+                                <td>$@(OrderState.Order.Products.Where(p => p is Cabinet).Sum(p => p.UnitPrice * p.Qty).ToString("0.00"))</td>
+                            </tr>
+                            <tr>
+                                <td>Cabinet Parts</td>
+                                <td>$@(OrderState.Order.Products.Where(p => p is CabinetPart).Sum(p => p.UnitPrice * p.Qty).ToString("0.00"))</td>
+                            </tr>
+                            <tr>
+                                <td>Closet Parts</td>
+                                <td>$@(OrderState.Order.Products.Where(p => p is IClosetPartProduct).Sum(p => p.UnitPrice * p.Qty).ToString("0.00"))</td>
+                            </tr>
+                            <tr>
+                                <td>Zargen DBs</td>
+                                <td>$@(OrderState.Order.Products.Where(p => p is ZargenDrawer).Sum(p => p.UnitPrice * p.Qty).ToString("0.00"))</td>
+                            </tr>
+                            <tr>
+                                <td>MDF Doors</td>
+                                <td>$@(OrderState.Order.Products.Where(p => p is MDFDoorProduct).Sum(p => p.UnitPrice * p.Qty).ToString("0.00"))</td>
+                            </tr>
+                            <tr>
+                                <td>Others</td>
+                                <td>$@(OrderState.Order.AdditionalItems.Sum(p => p.Price).ToString("0.00"))</td>
+                            </tr>
+                            <tr class="border-t-2">
+                                <td class="w-1/3 font-medium">Sub Total</td>
+                                <td>$@(OrderState.Order.SubTotal.ToString("0.00"))</td>
+                            </tr>
+                            @if(OrderState.Order.PriceAdjustment != 0M) {
+                                <tr>
+                                    <td class="w-1/3">Price Adj.</td>
+                                    <td>$@(OrderState.Order.PriceAdjustment.ToString("0.00"))</td>
+                                </tr>
+                                <tr>
+                                    <td class="w-1/3">Net Total</td>
+                                    <td>$@(OrderState.Order.AdjustedSubTotal.ToString("0.00"))</td>
+                                </tr>
+                            }
+                            <tr>
+                                <td class="w-1/3">Tax</td>
+                                <td>$@(OrderState.Order.Tax.ToString("0.00"))</td>
+                            </tr>
+                            <tr>
+                                <td class="w-1/3">Shipping</td>
+                                <td>$@(OrderState.Order.Shipping.Price.ToString("0.00"))</td>
+                            </tr>
+                            <tr class="border-t-2">
+                                <td class="w-1/3 font-semibold">Total Price</td>
+                                <td>$@(OrderState.Order.Total.ToString("0.00"))</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </Content>
+            </Collapsable>
         </div>
 
-        <div>
-            <label id="shippingphone" class="text-md w-24 inline-block">Phone</label>
-            <span class="text-lg">@OrderState.Order.Shipping.PhoneNumber</span>
-        </div>
-
-
-        <div>
-            <h3 class="text-md w-24 inline-block">Address</h3>
-            <div class="ml-5">
-                <div>
-                    <label id="shippingline1" class="text-sm w-24 inline-block">Line 1</label>
-                    <span class="text-md">@OrderState.Order.Shipping.Address.Line1</span>
-                </div>
-
-                <div>
-                    <label id="shippingline2" class="text-sm w-24 inline-block">Line 2</label>
-                    <span class="text-md">@OrderState.Order.Shipping.Address.Line2</span>
-                </div>
-
-                <div>
-                    <label id="shippingline3" class="text-sm w-24 inline-block">Line 3</label>
-                    <span class="text-md">@OrderState.Order.Shipping.Address.Line3</span>
-                </div>
-
-                <div>
-                    <label id="shippingcity" class="text-sm w-24 inline-block">City</label>
-                    <span class="text-md">@OrderState.Order.Shipping.Address.City</span>
-                </div>
-
-                <div>
-                    <label id="shippingstate" class="text-sm w-24 inline-block">State</label>
-                    <span class="text-md">@OrderState.Order.Shipping.Address.State</span>
-                </div>
-
-                <div>
-                    <label id="shippingzip" class="text-sm w-24 inline-block">Zip</label>
-                    <span class="text-md">@OrderState.Order.Shipping.Address.Zip</span>
-                </div>
-
-                <div>
-                    <label id="shippingcountry" class="text-sm w-24 inline-block">Country</label>
-                    <span class="text-md">@OrderState.Order.Shipping.Address.Country</span>
-                </div>
-            </div>
-        </div>
-
-    </section>
-
-    <section class="mt-10" id="prices">
-        <div>
-            <label id="subtotal" class="text-md w-24 inline-block">Sub Total</label>
-            <span class="text-lg">$@(OrderState.Order.SubTotal.ToString("0.00"))</span>
-        </div>
-        @if(OrderState.Order.PriceAdjustment != 0M) {
-            <div>
-                <label id="subtotal" class="text-md w-24 inline-block">Price Adj.</label>
-                <span class="text-lg">$@(OrderState.Order.PriceAdjustment.ToString("0.00"))</span>
-            </div>
-            <div>
-                <label id="subtotal" class="text-md w-24 inline-block">Net Total</label>
-                <span class="text-lg">$@(OrderState.Order.AdjustedSubTotal.ToString("0.00"))</span>
-            </div>
-        }
-        <div>
-            <label id="tax" class="text-md w-24 inline-block">Tax</label>
-            <span class="text-lg">$@(OrderState.Order.Tax.ToString("0.00"))</span>
-        </div>
-        <div>
-            <label id="shipping" class="text-md w-24 inline-block">Shipping</label>
-            <span class="text-lg">$@(OrderState.Order.Shipping.Price.ToString("0.00"))</span>
-        </div>
-        <div>
-            <label id="totalprice" class="text-md w-24 inline-block">Total Price</label>
-            <span class="text-lg">$@(OrderState.Order.Total.ToString("0.00"))</span>
-        </div>
     </section>
 
     <section class="mt-16" id="products">
@@ -351,7 +422,7 @@
 
     </section>
 
-    <section class="mt-16" id="additionalItems">
+    <section class="mt-16" id="additional_items">
 
         <div class="mb-5">
             <span class="font-bold text-xl">@OrderState.Order.AdditionalItems.Count Additional Items</span>
