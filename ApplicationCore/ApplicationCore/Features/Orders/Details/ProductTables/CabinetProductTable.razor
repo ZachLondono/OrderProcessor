@@ -5,25 +5,16 @@
 @using static ApplicationCore.Features.Orders.Details.OrderDetails;
 @using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 
-<div class="overflow-x-auto rounded-md">
-    <table class="table-auto">
-        <thead class="border-b border-slate-300">
+<div class="overflow-x-auto">
+    <table class="table-auto w-full">
+        <thead class="border-b">
             <tr>
                 <th class="p-5">#</th>
-                <th class="p-5">SKU</th>
                 <th class="p-5">Qty</th>
+                <th class="p-5">SKU</th>
                 <th class="p-5">Height</th>
                 <th class="p-5">Width</th>
                 <th class="p-5">Depth</th>
-                <th class="p-5">Box Material</th>
-                <th class="p-5">Fin Material</th>
-                <th class="p-5">Fin Paint</th>
-                <th class="p-5">Doors</th>
-                <th class="p-5">Door Paint</th>
-                <th class="p-5">EB Color</th>
-                <th class="p-5">Left</th>
-                <th class="p-5">Right</th>
-                <th class="p-5">Assembled</th>
                 <th class="p-5">Unit $</th>
                 <th class="p-5">Ext. $</th>
                 <th></th>
@@ -33,8 +24,8 @@
                 <tbody class="hover:bg-blue-500/10 border-b">
                     <tr>
                         <td class="whitespace-nowrap p-5 text-center">@row.ProductNumber</td>
-                        <td class="whitespace-nowrap p-5 text-center">@row.GetProductSku()</td>
                         <td class="whitespace-nowrap p-5 text-center">@row.Qty</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.GetProductSku()</td>
                         @if (UseInches) {
                             <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Height.GetFormatedFraction())"</td>
                             <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Width.GetFormatedFraction())"</td>
@@ -44,15 +35,6 @@
                             <td class="whitespace-nowrap p-5 text-center">@row.Width.AsMillimeters().ToString("0.00")</td>
                             <td class="whitespace-nowrap p-5 text-center">@row.Depth.AsMillimeters().ToString("0.00")</td>
                         }
-                        <td class="whitespace-nowrap p-5 text-center">@($"{row.BoxMaterial.Finish}/{row.BoxMaterial.FinishType}/{row.BoxMaterial.Core}")</td>
-                        <td class="whitespace-nowrap p-5 text-center">@($"{row.FinishMaterial.Finish}/{row.FinishMaterial.FinishType}/{row.FinishMaterial.Core}")</td>
-                        <td class="whitespace-nowrap p-5 text-center">@($"{row.FinishMaterial.PaintColor ?? "N/A"}")</td>
-                        <td class="whitespace-nowrap p-5 text-center">@(GetDoorMaterialStyle(row))</td>
-                        <td class="whitespace-nowrap p-5 text-center">@(GetDoorPaint(row))</td>
-                        <td class="whitespace-nowrap p-5 text-center">@row.EdgeBandingColor</td>
-                        <td class="whitespace-nowrap p-5 text-center">@row.LeftSideType.ToString()</td>
-                        <td class="whitespace-nowrap p-5 text-center">@row.RightSideType.ToString()</td>
-                        <td class="whitespace-nowrap p-5 text-center">@(row.Assembled ? "Yes" : "No")</td>
                         <td class="whitespace-nowrap p-5 text-center">@row.UnitPrice.ToString("$0.00")</td>
                         <td class="whitespace-nowrap p-5 text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
                         <td class="p-5">
@@ -64,14 +46,14 @@
 
                     @if(row.Comment != string.Empty) {
                         <tr>
-                            <td class="p-5 font-bold text-red-500" colspan="18">
-                                @row.Comment
+                            <td class="p-5 font-bold text-red-500" colspan="9">
+                                Customer Comment @row.Comment
                             </td>
                         </tr>
                     }
                     @foreach(var note in row.ProductionNotes) {
                         <tr>
-                            <td class="p-5 font-bold text-red-500" colspan="18">
+                            <td class="p-5 font-bold text-red-500" colspan="9">
                                 @note
                             </td>
                         </tr>
