@@ -297,21 +297,21 @@
 
         <!--
         <div class="flex space-x-3 mb-5">
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-900 text-white">All</button>
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-100 hover:bg-gray-200">Closet Parts</button>
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-100 hover:bg-gray-200">Cabinets</button>
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-100 hover:bg-gray-200">Cabinet Parts</button>
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-100 hover:bg-gray-200">Doweled DBs</button>
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-100 hover:bg-gray-200">Doweled DBs</button>
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-100 hover:bg-gray-200">Zargen DBs</button>
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-100 hover:bg-gray-200">MDF Doors</button>
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-gray-100 hover:bg-gray-200">5-Piece Doors</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-900 text-white">All</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Closet Parts</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Cabinets</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Cabinet Parts</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Doweled DBs</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Doweled DBs</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Zargen DBs</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">MDF Doors</button>
+            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">5-Piece Doors</button>
         </div>
         -->
 
         <div class="mb-5">
-            <button disabled="@_useInches" @onclick="ToggleUnits" class="bg-gray-100 disabled:bg-black disabled:text-white px-3.5 py-1 rounded-r-none rounded-l-md w-14 transition ease-in-out duration-300">in</button><!--
-         --><button disabled="@(!_useInches)" @onclick="ToggleUnits" class="bg-gray-100 disabled:bg-black disabled:text-white px-3.5 py-1 rounded-l-none rounded-r-md w-14 transition ease-in-out duration-300">mm</button>
+            <button disabled="@_useInches" @onclick="ToggleUnits" class="bg-slate-100 disabled:bg-black disabled:text-white px-3.5 py-1 rounded-r-none rounded-l-md w-14 transition ease-in-out duration-300">in</button><!--
+         --><button disabled="@(!_useInches)" @onclick="ToggleUnits" class="bg-slate-100 disabled:bg-black disabled:text-white px-3.5 py-1 rounded-l-none rounded-r-md w-14 transition ease-in-out duration-300">mm</button>
 		</div>
 
         @if (OrderState.Order.Products.Count == 0) {
@@ -339,9 +339,9 @@
             <span class="font-bold text-xl">@OrderState.Order.AdditionalItems.Count Additional Items</span>
         </div>
 
-        <div class="border rounded-md">
+        <div class="rounded-md">
 	        <table class="table-auto w-full">
-		        <thead class="border-b bg-gray-100">
+		        <thead class="border-b bg-slate-100">
                     <tr>
 		    		    <th class="p-5">Description</th>
 		    		    <th class="p-5">Price</th>

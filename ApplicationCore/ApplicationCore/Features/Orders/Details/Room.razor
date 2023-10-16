@@ -16,7 +16,7 @@
 
     @if (_isHidden) {
 
-        <div @onclick="Toggle" class="py-3 bg-gray-100 cursor-pointer hover:bg-gray-200 border border-gray-200 @(IsFirst ? "rounded-t-md" : "") @(IsLast ? "rounded-b-md" : "")">
+        <div @onclick="Toggle" class="py-3 bg-slate-100 cursor-pointer hover:bg-slate-200 border-gray-200 @(IsFirst ? "rounded-t-md" : "") @(IsLast ? "rounded-b-md" : "border-b")">
             <div class="font-bold text-xl pl-3 py-3">
                 @if (!string.IsNullOrWhiteSpace(Model.Name)) {
                     <span>@Model.Name@(Model.IsDirty ? "*" : "")</span>
@@ -27,7 +27,7 @@
         </div>
 
     } else {
-        <div class="py-3 bg-gray-100 cursor-pointer border border-gray-200 @(IsFirst ? "rounded-t-md" : "") @(IsLast ? "rounded-b-md" : "")">
+        <div class="py-3 bg-slate-100 cursor-pointer border-gray-200 @(IsFirst ? "rounded-t-md" : "") @(IsLast ? "rounded-b-md" : "border-b")">
             <header @onclick="Toggle">
                 <input @onclick:stopPropagation="true" @onclick:preventDefault="true" type="text" placeholder="Room @(Index + 1)" @oninput="a => OnRoomNameChanged(a, Model)" value="@Model.Name" class="bg-transparent font-bold text-xl pl-3 pt-3"/>
                 <div class="pl-3">
