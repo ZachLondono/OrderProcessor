@@ -40,6 +40,9 @@ public partial record PSIMaterial(string Side1Color, string Side1FinishType, str
 
         (string side2Color, string side2Finish) = splitColorAndMaterial(rightSplit[1]);
 
+        if (side1Color == string.Empty || side1Finish == string.Empty ||
+            side2Color == string.Empty || side2Finish == string.Empty) return false;
+
         var rightSplit2 = rightSplit[0].Split(' ');
         if (rightSplit2.Length != 2) return false;
         string thicknessStr = rightSplit2[0];
