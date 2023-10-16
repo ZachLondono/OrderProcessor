@@ -64,12 +64,19 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                     MachineTableOrientation = GetTableOrientationFromMachineName(group.Key),
                                                     Programs = group.SelectMany(group => group.Patterns)
                                                                     .Select(pattern => {
+
                                                                         var material = report.Materials[pattern.MaterialId];
+                                                                        string materialName = material.Name;
+                                                                        if (PSIMaterial.TryParse(materialName, out var psiMat)) {
+                                                                            materialName = psiMat.ToSimpleName();
+                                                                        }
+
                                                                         double area = material.XDim * material.YDim;
                                                                         double usedArea = pattern.Parts
                                                                                               .Select<PatternPart, (int qty, Part part)>(part => (part.Locations.Count(), report.Parts[part.PartId]))
                                                                                               .Sum(data => data.qty * data.part.Width * data.part.Length);
                                                                         double yield = usedArea / area;
+
                                                                         return new ReleasedProgram() {
                                                                             Name = pattern.Name,
                                                                             HasFace6 = false,
@@ -77,7 +84,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                                             Material = new() {
                                                                                 IsGrained = false,
                                                                                 Yield = yield,
-                                                                                Name = material.Name,
+                                                                                Name = materialName,
                                                                                 Width = material.YDim,
                                                                                 Length = material.XDim,
                                                                                 Thickness = material.ZDim

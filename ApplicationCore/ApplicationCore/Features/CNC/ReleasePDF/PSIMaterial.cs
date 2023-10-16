@@ -1,0 +1,71 @@
+﻿using System.Text.RegularExpressions;
+
+namespace ApplicationCore.Features.CNC.ReleasePDF;
+
+public partial record PSIMaterial(string Side1Color, string Side1FinishType, string Side2Color, string Side2FinishType, string CoreType, double Thickness) {
+
+    public static bool TryParse(string materialName, out PSIMaterial material) {
+
+        var regex = PSIMaterialNamePatternRegex();
+
+        material = new("", "", "", "", "", 0);
+
+        var cleanName = materialName.Replace(" (tops) ", " ")
+                                    .Replace(" (tops)", " ")
+                                    .Replace("(tops) ", " ")
+                                    .Replace("(tops)", "");
+
+        if (!regex.IsMatch(cleanName)) return false;
+
+        var split1 = cleanName.Split("     ");
+
+        if (split1.Length != 2) return false;
+
+        var leftSplit = split1[0].Split("  ");
+        if (leftSplit.Length != 2) return false;
+
+        if (leftSplit[0] != "Grained") return false;
+
+        (string, string) splitColorAndMaterial(string substring) {
+            var split = substring.Split(" ");
+            if (split.Length < 2) return ("", "");
+            var color = string.Join(' ', split[..^1]);
+            var finish = split[^1];
+            return (color, finish);
+        };
+
+        (string side1Color, string side1Finish) = splitColorAndMaterial(leftSplit[1]);
+
+        var rightSplit = split1[1].Split("  ");
+
+        (string side2Color, string side2Finish) = splitColorAndMaterial(rightSplit[1]);
+
+        var rightSplit2 = rightSplit[0].Split(' ');
+        if (rightSplit2.Length != 2) return false;
+        string thicknessStr = rightSplit2[0];
+        string coreType = rightSplit2[1];
+
+        if (!double.TryParse(thicknessStr, out double thickness)) {
+            thickness = 0;
+        }
+
+        material = new(side1Color, side1Finish, side2Color, side2Finish, coreType, thickness);
+
+        return true;
+
+    }
+
+    public string ToSimpleName() {
+
+        if (Side1Color == Side2Color && Side1FinishType == Side2FinishType) {
+            return $"{Side1Color} {Side1FinishType}";
+        } else {
+            return $"{Side1Color} {Side1FinishType} / {Side2Color} {Side2FinishType}";
+        }
+
+    }
+
+    [GeneratedRegex("Grained+\\s{2}(.+)\\s{1}[A-Za-z]+\\s{5}[0-9]*\\.[0-9]+\\s{1}[A-Za-z]+\\s{2}(.+)\\s{1}[A-Za-z]+", RegexOptions.IgnoreCase, "en-US")]
+    private static partial Regex PSIMaterialNamePatternRegex();
+
+}
