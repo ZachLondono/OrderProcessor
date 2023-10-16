@@ -31,6 +31,9 @@ internal class JobSummary {
     public List<MDFDoorGroup> Doors { get; set; } = new();
     public int AdditionalItems { get; set; } = new();
 
+    public bool ShowMaterialTypesInSummary { get; set; } = false;
+    public List<string> MaterialTypes { get; set; } = new();
+
     public List<Supply> Supplies { get; set; } = new();
 
 }

@@ -27,6 +27,8 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
     private bool _showItems = false;
     private SupplyOptions _supplyOptions = new();
     private bool _showInvoiceSummary = false;
+    private string[] _materialTypes = Array.Empty<string>();
+    private bool _showMaterialTypes = false;
 
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
@@ -36,10 +38,12 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
         _getCustomerByIdAsync = getCustomerByIdAsync;
     }
 
-    public async Task AddData(Order order, bool showItems, SupplyOptions supplyOptions, bool showInvoiceSummary) {
+    public async Task AddData(Order order, bool showItems, SupplyOptions supplyOptions, bool showInvoiceSummary, string[] materialTypes, bool showMaterialTypes) {
         _showItems = showItems;
         _supplyOptions = supplyOptions;
         _showInvoiceSummary = showInvoiceSummary;
+        _materialTypes = materialTypes;
+        _showMaterialTypes = showMaterialTypes;
         _jobSummary = await GetJobSummaryModel(order);
     }
 
@@ -68,7 +72,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                 .Column(column => {
 
                     column.Item()
-                        .PaddingVertical(30)
+                        .PaddingTop(30)
                         .Row(row => {
 
                             row.RelativeItem(1)
@@ -164,7 +168,31 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
                         });
 
-                    column.Item().PaddingLeft(10).PaddingTop(10).Text("Special Requirements").Italic().Bold().FontSize(16);
+                    if (jobSummary.ShowMaterialTypesInSummary && jobSummary.MaterialTypes.Any()) {
+                        column.Item()
+                            .PaddingTop(30)
+                            .AlignLeft()
+                            .Text("Materials:")
+                            .FontSize(12)
+                            .Bold();
+
+                         jobSummary.MaterialTypes
+                                     .Select((mat, idx) => (mat, idx))
+                                     .ForEach(item =>
+                                         column.Item()
+                                              .AlignLeft()
+                                              .Text($"    {item.idx + 1})  {item.mat}")
+                                              .FontSize(10));
+                    }
+
+                    column.Item()
+                            .PaddingLeft(10)
+                            .PaddingTop(20)
+                            .Text("Special Requirements")
+                            .Italic()
+                            .Bold()
+                            .FontSize(16);
+
                     column.Item()
                             .Border(1)
                             .BorderColor(Colors.Grey.Medium)
@@ -462,6 +490,9 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             DovetailDrawerBoxes = dovetailDb,
             DoweledDrawerBoxes = doweledDb,
             AdditionalItems = order.AdditionalItems.Where(i => !i.IsService).Count(),
+
+            ShowMaterialTypesInSummary = _showMaterialTypes,
+            MaterialTypes = new(_materialTypes),
 
             Supplies = supplies,
 

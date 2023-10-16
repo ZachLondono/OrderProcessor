@@ -86,9 +86,39 @@ public class ReleaseService {
 
         List<IDocumentDecorator> decorators = new();
 
+        List<ReleasedJob> releases = new();
+        List<ICNCReleaseDecorator> cncReleaseDecorators = new();
+        if (configuration.GenerateCNCRelease) {
+            foreach (var filePath in configuration.CNCDataFilePaths) {
+
+                if (Path.GetExtension(filePath) != ".xml") {
+                    OnError?.Invoke("CADCode report file is an invalid file type");
+                    continue;
+                }
+
+                var (decorator, jobData) = await _cncReleaseDecoratorFactory.Create(filePath, orderDate, dueDate, customerName, vendorName);
+                if (jobData is not null) {
+                    releases.Add(jobData);
+                }
+
+                if (configuration.CopyCNCReportToWorkingDirectory) {
+                    foreach (var order in orders) {
+                        CopyReportToWorkingDirectory(order, filePath);
+                    }
+                }
+
+            }
+        }
+
         foreach (var order in orders) {
             if (configuration.GenerateJobSummary) {
-                var decorator = await _jobSummaryDecoratorFactory.CreateDecorator(order, configuration.IncludeProductTablesInSummary, configuration.SupplyOptions, configuration.IncludeInvoiceSummary);
+                string[] materials = releases.SelectMany(r => r.Releases)
+                                            .SelectMany(r => r.Programs)
+                                            .Select(p => p.Material.Name)
+                                            .Distinct()
+                                            .ToArray();
+
+                var decorator = await _jobSummaryDecoratorFactory.CreateDecorator(order, configuration.IncludeProductTablesInSummary, configuration.SupplyOptions, configuration.IncludeInvoiceSummary, materials, true);
                 decorators.Add(decorator);
             }
 
@@ -103,29 +133,7 @@ public class ReleaseService {
             }
         }
 
-        List<ReleasedJob> releases = new();
-        if (configuration.GenerateCNCRelease) {
-            foreach (var filePath in configuration.CNCDataFilePaths) {
-
-                if (Path.GetExtension(filePath) != ".xml") {
-                    OnError?.Invoke("CADCode report file is an invalid file type");
-                    continue;
-                }
-
-                var (decorator, jobData) = await _cncReleaseDecoratorFactory.Create(filePath, orderDate, dueDate, customerName, vendorName);
-                decorators.Add(decorator);
-                if (jobData is not null) {
-                    releases.Add(jobData);
-                }
-
-                if (configuration.CopyCNCReportToWorkingDirectory) {
-                    foreach (var order in orders) {
-                        CopyReportToWorkingDirectory(order, filePath);
-                    }
-                }
-
-            }
-        }
+        decorators.AddRange(cncReleaseDecorators);
 
         var directories = (configuration.ReleaseOutputDirectory ?? "").Split(';').Where(s => !string.IsNullOrWhiteSpace(s));
 
