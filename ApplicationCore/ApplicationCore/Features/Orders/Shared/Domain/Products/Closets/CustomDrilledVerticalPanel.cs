@@ -147,8 +147,8 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
         };
 
         var parameters = new Dictionary<string, string>() {
-            ["FinLeft"] = DrillingType == ClosetVerticalDrillingType.FinishedLeft ? "Y" : "N",
-            ["FinRight"] = DrillingType == ClosetVerticalDrillingType.FinishedRight ? "Y" : "N",
+            ["FinLeft"] = DrillingType == ClosetVerticalDrillingType.FinishedLeft ? "1" : "0",
+            ["FinRight"] = DrillingType == ClosetVerticalDrillingType.FinishedRight ? "1" : "0",
             ["ExtendBack"] = ExtendBack.AsMillimeters().ToString(),
             ["ExtendFront"] = ExtendFront.AsMillimeters().ToString(),
             ["HoleDimFromBot"] = HoleDimensionFromBottom.AsMillimeters().ToString(),
