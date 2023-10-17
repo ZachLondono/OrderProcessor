@@ -60,10 +60,9 @@ public class PSIMaterialTests {
     public void Should_ParseValidMultiWordColorMaterial() {
 
         // Arrange
-        string sideColorBase = "FREE SPIRIT - L580 K";
-        string side1Color = $"{sideColorBase} (tops)";
+        string side1Color = "FREE SPIRIT - L580 K";
         string side1Finish = "mela";
-        string side2Color = $"{sideColorBase} (tops)";
+        string side2Color = "FREE SPIRIT - L580 K";
         string side2Finish = "mela";
         string coreType = "PB";
         double thickness = 19;
@@ -74,9 +73,9 @@ public class PSIMaterialTests {
 
         // Assert
         isValid.Should().BeTrue();
-        psiMat.Side1Color.Should().Be(sideColorBase);
+        psiMat.Side1Color.Should().Be(side1Color);
         psiMat.Side1FinishType.Should().Be(side1Finish);
-        psiMat.Side2Color.Should().Be(sideColorBase);
+        psiMat.Side2Color.Should().Be(side2Color);
         psiMat.Side2FinishType.Should().Be(side2Finish);
         psiMat.CoreType.Should().Be(coreType);
         psiMat.Thickness.Should().Be(thickness);
@@ -87,8 +86,7 @@ public class PSIMaterialTests {
     public void Should_Parse2DifferentSidedMaterial() {
 
         // Arrange
-        string side1ColorBase = "FREE SPIRIT - L580 K";
-        string side1Color = $"{side1ColorBase} (tops)";
+        string side1Color = "FREE SPIRIT - L580 K";
         string side1Finish = "mela";
         string side2Color = "Pre-Finished Birch";
         string side2Finish = "Veneer";
@@ -101,7 +99,7 @@ public class PSIMaterialTests {
 
         // Assert
         isValid.Should().BeTrue();
-        psiMat.Side1Color.Should().Be(side1ColorBase);
+        psiMat.Side1Color.Should().Be(side1Color);
         psiMat.Side1FinishType.Should().Be(side1Finish);
         psiMat.Side2Color.Should().Be(side2Color);
         psiMat.Side2FinishType.Should().Be(side2Finish);
@@ -109,6 +107,7 @@ public class PSIMaterialTests {
         psiMat.Thickness.Should().Be(thickness);
 
     }
+
     [Fact]
     public void ShouldNot_ParseInValid2WordCoreMaterial() {
 
@@ -126,6 +125,51 @@ public class PSIMaterialTests {
 
         // Assert
         isValid.Should().BeFalse();
+
+    }
+
+    [Fact]
+    public void CleanMaterialName_TopsMaterialNameSuffix_RemoveSuffixFromMaterialName() {
+
+        // Arrange
+        string materialNameBase = "Other Material Information";
+        string materialName = $"{materialNameBase} (tops)";
+
+        // Act
+        var clean = PSIMaterial.CleanMaterialName(materialName);
+
+        // Assert
+        clean.Should().Be(materialNameBase);
+
+    }
+
+    [Fact]
+    public void CleanMaterialName_TopsMaterialNamePrefix_RemovePrefixFromMaterialName() {
+
+        // Arrange
+        string materialNameBase = "Other Material Information";
+        string materialName = $"(tops) {materialNameBase}";
+
+        // Act
+        var clean = PSIMaterial.CleanMaterialName(materialName);
+
+        // Assert
+        clean.Should().Be(materialNameBase);
+
+    }
+
+    [Fact]
+    public void CleanMaterialName_TopsInMiddleOfMaterialName_RemoveTopsFromMaterialName() {
+
+        // Arrange
+        string materialNameBase = "Other Material Information";
+        string materialName = materialNameBase.Replace(" ", " (tops) ");
+
+        // Act
+        var clean = PSIMaterial.CleanMaterialName(materialName);
+
+        // Assert
+        clean.Should().Be(materialNameBase);
 
     }
 

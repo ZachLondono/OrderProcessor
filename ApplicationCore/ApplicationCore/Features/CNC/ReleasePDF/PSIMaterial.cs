@@ -10,14 +10,11 @@ public partial record PSIMaterial(string Side1Color, string Side1FinishType, str
 
         material = new("", "", "", "", "", 0);
 
-        var cleanName = materialName.Replace(" (tops) ", " ")
-                                    .Replace(" (tops)", " ")
-                                    .Replace("(tops) ", " ")
-                                    .Replace("(tops)", "");
+        materialName = CleanMaterialName(materialName);
 
-        if (!regex.IsMatch(cleanName)) return false;
+        if (!regex.IsMatch(materialName)) return false;
 
-        var split1 = cleanName.Split("     ");
+        var split1 = materialName.Split("     ");
 
         if (split1.Length != 2) return false;
 
@@ -55,6 +52,20 @@ public partial record PSIMaterial(string Side1Color, string Side1FinishType, str
         material = new(side1Color, side1Finish, side2Color, side2Finish, coreType, thickness);
 
         return true;
+
+    }
+
+    public static string CleanMaterialName(string materialName) {
+
+        if (!materialName.Contains("(tops)")) {
+            return materialName;
+        }
+
+        return materialName.Replace(" (tops) ", " ")
+                           .Replace(" (tops)", " ")
+                           .Replace("(tops) ", " ")
+                           .Replace("(tops)", "")
+                           .Trim();
 
     }
 
