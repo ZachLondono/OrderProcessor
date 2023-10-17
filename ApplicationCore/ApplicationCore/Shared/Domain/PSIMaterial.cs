@@ -81,7 +81,7 @@ public partial record PSIMaterial(string Side1Color, string Side1FinishType, str
 
     public string ToLongName() {
 
-        return $"Grained  {Side1Color} {Side1FinishType}     {Thickness:0.00} {CoreType}  {Side2Color} {Side2FinishType}";
+        return $"Grained  {Side1Color.ToUpperInvariant()} {Side1FinishType.ToUpperInvariant()}     {Thickness:0.00} {CoreType.ToUpperInvariant()}  {Side2Color.ToUpperInvariant()} {Side2FinishType.ToUpperInvariant()}";
 
     }
 

@@ -178,7 +178,7 @@ public class PSIMaterialTests {
     public void ToLongName_ShouldReturnOriginalName() {
 
         // Arrange
-        string materialName = $"Grained  Pre-Finished Birch Ply     19.00 PB  White Mela";
+        string materialName = $"Grained  PRE-FINISHED BIRCH PLY     19.00 PB  WHITE MELA";
 
         // Act
         var isValid = PSIMaterial.TryParse(materialName, out var psiMaterial);
