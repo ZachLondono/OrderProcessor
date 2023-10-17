@@ -100,6 +100,7 @@ public class ReleaseService {
                 if (jobData is not null) {
                     releases.Add(jobData);
                 }
+                cncReleaseDecorators.Add(decorator);
 
                 if (configuration.CopyCNCReportToWorkingDirectory) {
                     foreach (var order in orders) {
