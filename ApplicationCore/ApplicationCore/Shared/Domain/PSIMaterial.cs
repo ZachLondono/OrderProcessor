@@ -79,6 +79,12 @@ public partial record PSIMaterial(string Side1Color, string Side1FinishType, str
 
     }
 
+    public string ToLongName() {
+
+        return $"Grained  {Side1Color} {Side1FinishType}     {Thickness:0.00} {CoreType}  {Side2Color} {Side2FinishType}";
+
+    }
+
     [GeneratedRegex("Grained+\\s{2}(.+)\\s{1}[A-Za-z]+\\s{5}[0-9]*\\.[0-9]+\\s{1}[A-Za-z]+\\s{2}(.+)\\s{1}[A-Za-z]+", RegexOptions.IgnoreCase, "en-US")]
     private static partial Regex PSIMaterialNamePatternRegex();
 

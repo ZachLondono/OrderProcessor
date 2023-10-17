@@ -1,7 +1,8 @@
 ﻿using ApplicationCore.Features.CNC.ReleasePDF;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.CNC;
+namespace ApplicationCore.Tests.Unit.Shared;
+
 public class PSIMaterialTests {
 
     [Fact]
@@ -170,6 +171,21 @@ public class PSIMaterialTests {
 
         // Assert
         clean.Should().Be(materialNameBase);
+
+    }
+
+    [Fact]
+    public void ToLongName_ShouldReturnOriginalName() {
+
+        // Arrange
+        string materialName = $"Grained  Pre-Finished Birch Ply     19.00 PB  White Mela";
+
+        // Act
+        var isValid = PSIMaterial.TryParse(materialName, out var psiMaterial);
+
+        // Assert
+        isValid.Should().BeTrue();
+        psiMaterial.ToLongName().Should().Be(materialName);
 
     }
 
