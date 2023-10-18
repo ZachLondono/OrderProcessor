@@ -19,9 +19,13 @@ public partial class OrderListPage {
 
     protected override async Task OnInitializedAsync() {
         await DataContext.LoadCompanies();
-        if (_orderList is not null) {
+    }
+
+    protected override void OnAfterRender(bool firstRender) {
+        if (firstRender && _orderList is not null) {
             _orderList.SelectedOrdersChanged += OnSelectedOrdersChanged;
         }
+        base.OnAfterRender(firstRender);
     }
 
     public void OnSelectedOrdersChanged(HashSet<OrderListItem> selectedOrders) {
