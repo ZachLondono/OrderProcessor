@@ -887,7 +887,7 @@ public class ClosetProPartMapper {
         string room = GetRoomName(part);
         string materialName = DovetailDrawerBoxConfig.FINGER_JOINT_BIRCH;
         string bottomMaterial = "1/4\" Ply";
-        string clips = "Blum";
+        string clips = "Hettich";
         string accessory = "None";
         bool scoopFront = part.ExportName == "Scoop Front Box";
 
