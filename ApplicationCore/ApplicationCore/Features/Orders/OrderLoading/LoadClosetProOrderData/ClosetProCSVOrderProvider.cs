@@ -98,7 +98,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         } else {
             workingDirectoryRoot = customWorkingDirectoryRoot;
         }
-        string workingDirectory = CreateWorkingDirectory(source, info, orderNumber, workingDirectoryRoot);
+        string workingDirectory = await CreateWorkingDirectory(source, info, orderNumber, workingDirectoryRoot);
 
         return new OrderData() {
             VendorId = vendorId,
@@ -132,12 +132,12 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
     }
 
-    private string CreateWorkingDirectory(string source, ClosetProOrderInfo info, string orderNumber, string? customerWorkingDirectoryRoot) {
+    private async Task<string> CreateWorkingDirectory(string csvData, ClosetProOrderInfo info, string orderNumber, string? customerWorkingDirectoryRoot) {
         string cpDefaultWorkingDirectory = @"R:\Job Scans\ClosetProSoftware"; // TODO: Get base directory from configuration file
         string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? cpDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {info.Header.DesignerCompany} - {info.Header.OrderName}", ' '));
         if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDir) && incomingDir is not null) {
             string dataFile = _fileReader.GetAvailableFileName(incomingDir, "Incoming", ".csv");
-            File.Copy(source, dataFile);
+            await File.WriteAllTextAsync(dataFile, csvData);
         }
 
         return workingDirectory;
