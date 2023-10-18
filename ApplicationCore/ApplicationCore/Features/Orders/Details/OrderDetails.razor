@@ -350,11 +350,11 @@
 		        <tbody>
                     @if (OrderState.Order.AdditionalItems.Count == 0) {
                         <tr>
-                            <td colspan="2" class="text-center p-5 font-medium">No Additional Items in Order</td>
+                            <td colspan="3" class="text-center p-5 font-medium">No Additional Items in Order</td>
                         </tr>
                     }
                     @foreach (var item in OrderState.Order.AdditionalItems) {
-                        <tr class="text-center hover:bg-blue-500/10 cursor-pointer">
+                        <tr class="text-center hover:bg-blue-500/10 cursor-pointer" @onclick="async () => await OpenAdditionalItemModal(item)">
                             <td class="p-5 border-b font-medium">@item.Description</td>
                             <td class="p-5 border-b">$@item.Price.ToString("0.00")</td>
 		    	        </tr>

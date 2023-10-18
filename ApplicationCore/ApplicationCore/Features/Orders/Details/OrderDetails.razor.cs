@@ -1,5 +1,9 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
+﻿using ApplicationCore.Features.Orders.Details.AdditionalItems;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.State;
+using ApplicationCore.Shared.Services;
+using Blazored.Modal;
 using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
@@ -83,6 +87,27 @@ public partial class OrderDetails {
             OrderState.SetDueDate(newDueDate);
             await OrderState.SaveDueDate();
         }
+    }
+
+    private async Task OpenAdditionalItemModal(AdditionalItem item) {
+
+        var modal = Modal.Show<AdditionalItemModal>("Item Editor", new ModalParameters() {
+            { "Item", item }
+        });
+
+        var result = await modal.Result;
+
+        if (result.Confirmed) {
+
+            // Force a refresh
+            await NavigationService.NavigateToOrderPage(OrderState.Order!.Id);
+
+            if (result.Data is AdditionalItem) {
+                // TODO: update order model and call state has changed, rather than refreshing page
+            }
+        }
+
+
     }
 
     private void ToggleUnits() {
