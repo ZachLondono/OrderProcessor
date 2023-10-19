@@ -185,7 +185,7 @@ public class PSIMaterialTests {
 
         // Assert
         isValid.Should().BeTrue();
-        psiMaterial.ToLongName().Should().Be(materialName);
+        psiMaterial.GetLongName().Should().Be(materialName);
 
     }
 

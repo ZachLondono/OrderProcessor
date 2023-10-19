@@ -264,7 +264,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             Width = Length.AsMillimeters(),
             Length = Width.AsMillimeters(),
             Thickness = s_panelThickness.AsMillimeters(),
-            Material = Material.ToPSIMaterial(s_panelThickness).ToLongName(),
+            Material = Material.ToPSIMaterial(s_panelThickness).GetLongName(),
             IsGrained = true,
             Qty = Qty,
             PrimaryFace = new() {

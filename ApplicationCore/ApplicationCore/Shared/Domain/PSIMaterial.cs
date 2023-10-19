@@ -69,7 +69,7 @@ public partial record PSIMaterial(string Side1Color, string Side1FinishType, str
 
     }
 
-    public string ToSimpleName() {
+    public string GetSimpleName() {
 
         if (Side1Color == Side2Color && Side1FinishType == Side2FinishType) {
             return $"{Side1Color} {Side1FinishType}";
@@ -79,7 +79,7 @@ public partial record PSIMaterial(string Side1Color, string Side1FinishType, str
 
     }
 
-    public string ToLongName() {
+    public string GetLongName() {
 
         return $"Grained  {Side1Color.ToUpperInvariant()} {Side1FinishType.ToUpperInvariant()}     {Thickness:0.00} {CoreType.ToUpperInvariant()}  {Side2Color.ToUpperInvariant()} {Side2FinishType.ToUpperInvariant()}";
 

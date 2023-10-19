@@ -68,7 +68,7 @@ internal class CNCReleaseDecorator : ICNCReleaseDecorator {
                                                                         var material = report.Materials[pattern.MaterialId];
                                                                         string materialName = material.Name;
                                                                         if (PSIMaterial.TryParse(materialName, out var psiMat)) {
-                                                                            materialName = psiMat.ToSimpleName();
+                                                                            materialName = psiMat.GetSimpleName();
                                                                         }
 
                                                                         double area = material.XDim * material.YDim;
