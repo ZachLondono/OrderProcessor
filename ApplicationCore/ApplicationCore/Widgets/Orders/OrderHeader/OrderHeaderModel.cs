@@ -11,4 +11,5 @@ public class OrderHeaderModel {
     public Guid CustomerId { get; set; }
     public DateTime OrderDate { get; set; }
     public DateTime? DueDate { get; set; }
+    public bool Rush { get; set; }
 }

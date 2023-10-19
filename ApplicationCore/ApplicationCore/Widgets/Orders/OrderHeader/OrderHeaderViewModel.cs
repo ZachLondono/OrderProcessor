@@ -54,6 +54,7 @@ public class OrderHeaderViewModel {
                 Model.VendorId = header.VendorId;
                 Model.OrderDate = header.OrderDate;
                 Model.DueDate = header.DueDate;
+                Model.Rush = header.Rush;
                 
                 var customerResponse = await _bus.Send(new GetCustomerNameById.Query(Model.CustomerId));
                 customerResponse.OnSuccess(name => Model.CustomerName = name);

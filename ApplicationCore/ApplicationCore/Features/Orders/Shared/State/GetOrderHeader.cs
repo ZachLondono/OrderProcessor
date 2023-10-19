@@ -17,6 +17,7 @@ public class GetOrderHeader {
         public Guid CustomerId  { get; init; }
         public DateTime OrderDate  { get; init; }
         public DateTime? DueDate { get; init; } = null;
+        public bool Rush { get; init; } = false;
     }
 
     public class Handler : QueryHandler<Query, OrderHeader> {
@@ -41,7 +42,8 @@ public class GetOrderHeader {
                     vendor_id AS VendorId,
                     customer_id AS CustomerId,
                     order_date AS OrderDate,
-                    due_date AS DueDate
+                    due_date AS DueDate,
+                    rush
                 FROM orders
                 WHERE id = @OrderId;
                 """,

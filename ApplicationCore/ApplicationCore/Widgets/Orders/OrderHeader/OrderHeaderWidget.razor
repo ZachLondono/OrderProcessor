@@ -46,11 +46,9 @@
     <div>
         <label id="number" class="text-lg font-bold w-24 inline-block">Number</label>
         <span class="text-xl font-semibold">@DataContext.Model.Number</span>
-        <!--
-        @if (OrderState.Order.Rush) {
+        @if (DataContext.Model.Rush) {
             <span class="p-2 text-white font-bold bg-red-500">RUSH</span>
         }
-        -->
     </div>
     <div>
         <label id="name" class="text-lg font-bold w-24 inline-block">Name</label>
