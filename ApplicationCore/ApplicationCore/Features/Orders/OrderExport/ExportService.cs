@@ -26,28 +26,25 @@ internal class ExportService {
 
     private readonly ILogger<ExportService> _logger;
     private readonly IBus _bus;
-    private readonly OrderState _orderState;
     private readonly ExportSettings _options;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly IFileReader _fileReader;
 
-    public ExportService(ILogger<ExportService> logger, IBus bus, OrderState orderState, IOptions<ExportSettings> options, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IFileReader fileReader) {
+    public ExportService(ILogger<ExportService> logger, IBus bus, IOptions<ExportSettings> options, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IFileReader fileReader) {
         _logger = logger;
         _bus = bus;
-        _orderState = orderState;
         _options = options.Value;
         _getCustomerByIdAsync = getCustomerByIdAsync;
         _fileReader = fileReader;
     }
 
-    public async Task Export(ExportConfiguration configuration) {
+    public async Task Export(Order order, ExportConfiguration configuration) {
 
-        if (_orderState.Order is null || configuration.OutputDirectory is null) {
+        if (configuration.OutputDirectory is null) {
             return;
         }
 
         try {
-            var order = _orderState.Order;
 
             var customerName = await GetCustomerName(order.CustomerId);
             var outputDir = ReplaceTokensInDirectory(customerName, configuration.OutputDirectory);
