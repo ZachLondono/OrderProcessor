@@ -23,6 +23,7 @@
 @using static ApplicationCore.Shared.Components.Button;
 @using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 @using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
+@using ApplicationCore.Widgets.Orders.OrderHeader
 @inject OrderState OrderState
 @inject IFilePicker FilePicker
 @inject NavigationService NavigationService
@@ -36,55 +37,8 @@
     <section class="grid grid-cols-2" id="header">
 
         <div class="pl-10">
-            <div>
-                <label id="number" class="text-lg font-bold w-24 inline-block">Number</label>
-                <span class="text-xl font-semibold">@OrderState.Order.Number</span>
-                @if (OrderState.Order.Rush) {
-                    <span class="p-2 text-white font-bold bg-red-500">RUSH</span>
-                }
-            </div>
-            <div>
-                <label id="name" class="text-lg font-bold w-24 inline-block">Name</label>
-                <span class="text-xl font-semibold">@OrderState.Order.Name</span>
-            </div>
-            <div>
-                <label id="orderdate" class="w-24 inline-block font-medium">Order Date</label>
-                <span>@OrderState.Order.OrderDate.ToShortDateString()</span>
-            </div>
-            <div>
-                <label id="duedate" class="w-24 inline-block font-medium">Due Date</label>
-                @if (_dueDate is DateTime dueDate) {
-                    <!--<InputDate @oninput="OnDueDateChanged" TValue="DateTime" ValueExpression="() => dueDate" />-->
-                    <input type="date" value="@dueDate.ToString("yyyy-MM-dd")" @oninput="OnDueDateChanged" />
-                    <Button Size="ButtonSize.XSmall" Style="ButtonStyle.Outline" Color="ButtonColor.Danger" OnClickAsync="RemoveDueDate">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-2 h-2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </Button>
-                } else {
-                    <Button Size="ButtonSize.Small" Style="ButtonStyle.Link" OnClickAsync="AddDueDate">+ Add Due Date</Button>
-                }
-            </div>
-            <div>
-                @if (_customerName is not null) {
-                    <label id="customer" class="w-24 inline-block font-medium">Customer</label>
-                    <span class="hover:underline cursor-pointer h-5 align-middle" @onclick="() => OpenCustomerPage(OrderState.Order.CustomerId)">@_customerName</span>
-                } else {
-                    <span>No customer info</span>
-                }
-            </div>
-            <div>
-                @if(_vendorName is not null) {
-                    <label id="vendor" class="w-24 inline-block font-medium">Vendor</label>
-                    <span class="hover:underline cursor-pointer h-5 align-middle" @onclick="() => OpenVendorPage(OrderState.Order.VendorId)">@_vendorName</span>
-                } else {
-                    <span>No vendor info</span>
-                }
-            </div>
-            <div>
-                <label id="comment" class="w-24 inline-block font-medium">Comment</label>
-                <span>@OrderState.Order.CustomerComment</span>
-            </div>
+            
+            <OrderHeaderWidget OrderId="OrderState.Order.Id" />
 
             @if (OrderState.Order.Info.Count != 0) {
                 <div class="mt-5">
