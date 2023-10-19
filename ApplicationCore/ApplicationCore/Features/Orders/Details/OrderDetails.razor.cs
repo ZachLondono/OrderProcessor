@@ -132,11 +132,6 @@ public partial class OrderDetails {
         OrderState.SetNote(_note);
     }
 
-    private async Task WorkingDirectoryChanged() {
-        await OrderState.SaveWorkingDirectory();
-        StateHasChanged();
-    }
-
     public abstract class ProductRowModel<T> where T : IProduct {
 
         public T Product { get; init; }

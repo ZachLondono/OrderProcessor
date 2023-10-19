@@ -1,7 +1,6 @@
 ﻿@using ApplicationCore.Features.Companies.Contracts;
 @using ApplicationCore.Features.Orders.Details;
 @using ApplicationCore.Features.Orders.Details.ProductTables
-@using ApplicationCore.Features.Orders.Details.WorkingDirectory
 @using ApplicationCore.Features.Orders.OrderExport;
 @using ApplicationCore.Features.Orders.Shared.Domain
 @using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
@@ -24,6 +23,7 @@
 @using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 @using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 @using ApplicationCore.Widgets.Orders.OrderHeader
+@using ApplicationCore.Widgets.Orders.WorkingDirectory
 @inject OrderState OrderState
 @inject IFilePicker FilePicker
 @inject NavigationService NavigationService
@@ -83,7 +83,7 @@
 
     <section class="mt-10" id="working_directory">
         <div class="px-12">
-            <WorkingDirectoryWidget WorkingDirectory="@OrderState.Order.WorkingDirectory" OnWorkingDirectoryChanged="WorkingDirectoryChanged" />
+            <WorkingDirectoryWidget OrderId="@OrderState.Order.Id" />
         </div>
     </section>
 
