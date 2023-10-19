@@ -19,6 +19,7 @@ internal class OrderExportModalViewModel {
         }
     }
 
+    private Order? _order;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly ExportService _service;
 
@@ -28,6 +29,8 @@ internal class OrderExportModalViewModel {
     }
 
     public async Task LoadConfiguration(Order order) {
+
+        _order = order;
 
         var vendor = await _getVendorByIdAsync(order.VendorId);
 
@@ -66,11 +69,15 @@ internal class OrderExportModalViewModel {
     }
 
     public ModalParameters CreateExportProgressModalParameters() {
+
+        if (_order is null) throw new InvalidOperationException("Cannot create export modal parameters before order is loaded");
+
         return new ModalParameters() {
-            { "ActionRunner",  new ExportActionRunner(_service, Configuration) },
+            { "ActionRunner",  new ExportActionRunner(_order, _service, Configuration) },
             { "InProgressTitle", "Exporting Order..." },
             { "CompleteTitle", "Export Complete" }
         };
+
     }
 
 }
