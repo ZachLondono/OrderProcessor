@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Widgets.Orders.CreateOrderRelationships;
+using ApplicationCore.Widgets.Orders.OrderHeader;
 using ApplicationCore.Widgets.Orders.OrderList;
 using ApplicationCore.Widgets.Orders.OrderRelationshipList;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +13,8 @@ internal static class DependencyInjection {
         return services.AddTransient<OrderReleaseModalViewModel>()
                         .AddTransient<OrderListWidgetViewModel>()
                         .AddTransient<OrderRelationshipListWidgetViewModel>()
-                        .AddTransient<CreateOrderRelationshipsWidgetViewModel>();
+                        .AddTransient<CreateOrderRelationshipsWidgetViewModel>()
+                        .AddTransient<OrderHeaderViewModel>();
     }
 
 }

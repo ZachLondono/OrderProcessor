@@ -1,0 +1,91 @@
+﻿@using ApplicationCore.Shared.Components
+@using static ApplicationCore.Shared.Components.Button;
+@inject OrderHeaderViewModel DataContext;
+
+@if (DataContext.IsLoading) {
+
+    <div class="mb-3">
+        <!-- Number -->
+        <div class="w-24 h-6 mr-1.5 bg-gray-300 animate-pulse inline-block"></div>
+        <div class="w-32 h-6 bg-gray-300 animate-pulse inline-block"></div>
+    </div>
+
+    <div class="mb-1.5">
+        <!-- Name -->
+        <div class="w-24 h-6 mr-1.5 bg-gray-300 animate-pulse inline-block"></div>
+        <div class="w-32 h-6 bg-gray-300 animate-pulse inline-block"></div>
+    </div>
+
+    <div class="mb-1.5">
+        <!-- Order Date -->
+        <div class="w-24 h-5 mr-1.5 bg-gray-300 animate-pulse inline-block"></div>
+        <div class="w-24 h-5 bg-gray-300 animate-pulse inline-block"></div>
+    </div>
+
+    <div class="mb-1.5">
+        <!-- Due Date -->
+        <div class="w-24 h-5 mr-1.5 bg-gray-300 animate-pulse inline-block"></div>
+        <div class="w-24 h-5 bg-gray-300 animate-pulse inline-block"></div>
+    </div>
+
+    <div class="mb-1.5">
+        <!-- Customer Name -->
+        <div class="w-24 h-5 mr-1.5 bg-gray-300 animate-pulse inline-block"></div>
+        <div class="w-24 h-5 bg-gray-300 animate-pulse inline-block"></div>
+    </div>
+
+    <div class="mb-1.5">
+        <!-- Vendor Name -->
+        <div class="w-24 h-5 mr-1.5 bg-gray-300 animate-pulse inline-block"></div>
+        <div class="w-24 h-5 bg-gray-300 animate-pulse inline-block"></div>
+    </div>
+        
+
+} else {
+
+    <div>
+        <label id="number" class="text-lg font-bold w-24 inline-block">Number</label>
+        <span class="text-xl font-semibold">@DataContext.Model.Number</span>
+        <!--
+        @if (OrderState.Order.Rush) {
+            <span class="p-2 text-white font-bold bg-red-500">RUSH</span>
+        }
+        -->
+    </div>
+    <div>
+        <label id="name" class="text-lg font-bold w-24 inline-block">Name</label>
+        <span class="text-xl font-semibold">@DataContext.Model.Name</span>
+    </div>
+    <div>
+        <label id="orderdate" class="w-24 inline-block font-medium">Order Date</label>
+        <span>@DataContext.Model.OrderDate.ToShortDateString()</span>
+    </div>
+    <div>
+        <label id="duedate" class="w-24 inline-block font-medium">Due Date</label>
+        @if (DataContext.Model.DueDate is DateTime dueDate) {
+            <!--<InputDate @oninput="OnDueDateChanged" TValue="DateTime" ValueExpression="() => dueDate" />-->
+            <input type="date" value="@dueDate.ToString("yyyy-MM-dd")" @oninput="OnDueDateChanged" />
+            <Button Size="ButtonSize.XSmall" Style="ButtonStyle.Outline" Color="ButtonColor.Danger" OnClickAsync="DataContext.RemoveDueDateAsync">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-2 h-2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </Button>
+        } else {
+            <Button Size="ButtonSize.Small" Style="ButtonStyle.Link" OnClickAsync="DataContext.AddDueDateAsync">+ Add Due Date</Button>
+        }
+    </div>
+    <div>
+        <label id="customer" class="w-24 inline-block font-medium">Customer</label>
+        <span class="hover:underline cursor-pointer h-5 align-middle" @onclick="() => DataContext.OpenCustomerPageAsync()">@DataContext.Model.CustomerName</span>
+    </div>
+    <div>
+        <label id="vendor" class="w-24 inline-block font-medium">Vendor</label>
+        <span class="hover:underline cursor-pointer h-5 align-middle" @onclick="() => DataContext.OpenVendorPage()">@DataContext.Model.VendorName</span>
+    </div>
+    <div>
+        <label id="comment" class="w-24 inline-block font-medium">Comment</label>
+        <span>@DataContext.Model.CustomerComment</span>
+    </div>
+
+
+}
