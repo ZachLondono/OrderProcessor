@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using ApplicationCore.Features.CNC.ReleasePDF;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 using CADCodeProxy.Enums;
 using CADCodeProxy.Machining;
@@ -64,7 +65,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
             Width = (Height - FrontBackHeightAdjustment).AsMillimeters(),
             Length = frontLength.AsMillimeters(),
             Thickness = FrontMaterial.Thickness.AsMillimeters(),
-            Material = FrontMaterial.Name,
+            Material = FrontMaterial.ToPSIMaterial().GetLongName(),
             IsGrained = FrontMaterial.IsGrained,
             InfoFields = new() {
                 { "ProductName", "Front" },
@@ -99,7 +100,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
             Width = (Height - FrontBackHeightAdjustment).AsMillimeters(),
             Length = backLength.AsMillimeters(),
             Thickness = BackMaterial.Thickness.AsMillimeters(),
-            Material = BackMaterial.Name,
+            Material = BackMaterial.ToPSIMaterial().GetLongName(),
             IsGrained = BackMaterial.IsGrained,
             InfoFields = new() {
                 { "ProductName", "Back" },
@@ -168,7 +169,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
             Width = Height.AsMillimeters(),
             Length = Depth.AsMillimeters(),
             Thickness = SideMaterial.Thickness.AsMillimeters(),
-            Material = SideMaterial.Name,
+            Material = SideMaterial.ToPSIMaterial().GetLongName(),
             IsGrained = SideMaterial.IsGrained,
             InfoFields = new() {
                 { "ProductName", "Left" },
@@ -196,7 +197,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
             Width = Height.AsMillimeters(),
             Length = Depth.AsMillimeters(),
             Thickness = SideMaterial.Thickness.AsMillimeters(),
-            Material = SideMaterial.Name,
+            Material = SideMaterial.ToPSIMaterial().GetLongName(),
             IsGrained = SideMaterial.IsGrained,
             InfoFields = new() {
                 { "ProductName", "Right" },
@@ -328,7 +329,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
             Width = (Width - 2 * SideMaterial.Thickness - construction.BottomUndersize + 2 * construction.BottomDadoDepth).AsMillimeters(),
             Length = (Depth - FrontMaterial.Thickness - BackMaterial.Thickness - construction.BottomUndersize + 2 * construction.BottomDadoDepth).AsMillimeters(),
             Thickness = BottomMaterial.Thickness.AsMillimeters(),
-            Material = BottomMaterial.Name,
+            Material = BottomMaterial.ToPSIMaterial().GetLongName(),
             IsGrained = BottomMaterial.IsGrained,
             InfoFields = new() {
                 { "ProductName", "Bottom" },
