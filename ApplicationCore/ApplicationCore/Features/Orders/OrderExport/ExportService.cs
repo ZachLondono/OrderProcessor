@@ -41,6 +41,10 @@ internal class ExportService {
     public async Task Export(Order order, ExportConfiguration configuration) {
 
         if (configuration.OutputDirectory is null) {
+
+            OnError?.Invoke("No export output directory is set");
+            _logger.LogError("Export cancelled because no configuration does not have a output directory set {ExportConfiguration}", configuration);
+
             return;
         }
 
