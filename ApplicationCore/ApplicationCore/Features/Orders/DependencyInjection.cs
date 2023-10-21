@@ -31,7 +31,6 @@ public static class DependencyInjection {
         services.AddOrderLoading(configuration);
         services.AddSingleton<ProductBuilderFactory>();
         services.AddSingleton<ComponentBuilderFactory>();
-        services.AddSingleton<OrderState>();
 
         services.AddTransient<IFileHandler, FileHandler>();
 

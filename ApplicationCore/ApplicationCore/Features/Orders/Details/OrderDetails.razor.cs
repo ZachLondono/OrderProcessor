@@ -1,7 +1,8 @@
 ﻿using ApplicationCore.Features.Orders.Details.AdditionalItems;
+using ApplicationCore.Features.Orders.Details.Commands;
+using ApplicationCore.Features.Orders.Details.Queries;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Shared.Services;
 using Blazored.Modal;
 using Blazored.Modal.Services;
@@ -13,7 +14,10 @@ namespace ApplicationCore.Features.Orders.Details;
 public partial class OrderDetails {
 
     [Parameter]
-    public RenderFragment? ActionPanel { get; set; }
+    public Guid OrderId { get; set; }
+
+    [Parameter]
+    public RenderFragment<Order>? ActionPanel { get; set; }
 
     [Parameter]
     public RenderFragment<IProduct>? ProductActionsColumn { get; set; }
@@ -23,34 +27,28 @@ public partial class OrderDetails {
 
     public List<RoomModel> Rooms { get; set; } = new();
 
+    private Order? _order = null;
+    private bool _isNoteDirty = false;
     private string _note = string.Empty;
-    private DateTime? _dueDate = null;
-    private string? _customerName = null;
-    private string? _vendorName = null;
-
     private bool _useInches = false;
 
-    protected override async Task OnInitializedAsync() {
+    protected override async Task OnParametersSetAsync() {
 
-        if (OrderState.Order is null) return;
+        var result = await Bus.Send(new GetOrderById.Query(OrderId));
 
-        var vendor = await GetVendorByIdAsync(OrderState.Order.VendorId);
-        var customer = await GetCustomerByIdAsync(OrderState.Order.CustomerId);
+        result.OnSuccess(order => {
 
-        _vendorName = vendor?.Name ?? "";
-        _customerName = customer?.Name ?? "";
+            _order = order;
+            _note = order.Note;
+            SeparateRooms();
 
-        _note = OrderState.Order.Note;
-
-        _dueDate = OrderState.Order.DueDate;
-
-        SeparateRooms();
+        });
 
     }
 
     private void SeparateRooms() {
-        if (OrderState.Order is null) return;
-        Rooms = OrderState.Order
+        if (_order is null) return;
+        Rooms = _order
                     .Products
                     .GroupBy(p => p.Room)
                     .Select(RoomModel.FromGrouping)
@@ -65,31 +63,9 @@ public partial class OrderDetails {
         NavigationService.NavigateToVendorPage(companyId);
     }
 
-    private async Task AddDueDate() {
-        _dueDate = DateTime.Today;
-        OrderState.SetDueDate(_dueDate);
-        await OrderState.SaveDueDate();
-        StateHasChanged();
-    }
-
-    private async Task RemoveDueDate() {
-        _dueDate = null;
-        OrderState.SetDueDate(null);
-        await OrderState.SaveDueDate();
-        StateHasChanged();
-    }
-
-    private async Task OnDueDateChanged(ChangeEventArgs args) {
-        string newDueDateStr = args.Value?.ToString() ?? "";
-
-        if (DateTime.TryParse(newDueDateStr, out DateTime newDueDate)) {
-            _dueDate = newDueDate;
-            OrderState.SetDueDate(newDueDate);
-            await OrderState.SaveDueDate();
-        }
-    }
-
     private async Task OpenAdditionalItemModal(AdditionalItem item) {
+
+        if (_order is null) return;
 
         var modal = Modal.Show<AdditionalItemModal>("Item Editor", new ModalParameters() {
             { "Item", item }
@@ -100,7 +76,7 @@ public partial class OrderDetails {
         if (result.Confirmed) {
 
             // Force a refresh
-            await NavigationService.NavigateToOrderPage(OrderState.Order!.Id);
+            NavigationService.NavigateToOrderPage(_order.Id);
 
             if (result.Data is AdditionalItem) {
                 // TODO: update order model and call state has changed, rather than refreshing page
@@ -116,8 +92,10 @@ public partial class OrderDetails {
 
     private async Task SaveNoteAsync() {
 
+        if (_order is null) return;
+
         try {
-            await OrderState.SaveNote();
+            await Bus.Send(new UpdateOrderNote.Command(_order.Id, _note));
         } catch (Exception ex) {
             Debug.WriteLine("Exception thrown while saving changes");
             Debug.WriteLine(ex);
@@ -128,8 +106,10 @@ public partial class OrderDetails {
     }
 
     private void OnNoteChanged(ChangeEventArgs args) {
+        if (_order is null) return;
         _note = args.Value?.ToString() ?? "";
-        OrderState.SetNote(_note);
+        _order.Note = _note;
+        _isNoteDirty = true;
     }
 
     public abstract class ProductRowModel<T> where T : IProduct {

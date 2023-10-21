@@ -9,6 +9,7 @@ using NSubstitute;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Shared.Data;
+using ApplicationCore.Features.Orders.Details.Queries;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence;
 

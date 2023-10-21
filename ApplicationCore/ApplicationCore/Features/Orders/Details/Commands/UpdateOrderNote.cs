@@ -2,7 +2,7 @@
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 
-namespace ApplicationCore.Features.Orders.Shared.State;
+namespace ApplicationCore.Features.Orders.Details.Commands;
 
 public class UpdateOrderNote {
 

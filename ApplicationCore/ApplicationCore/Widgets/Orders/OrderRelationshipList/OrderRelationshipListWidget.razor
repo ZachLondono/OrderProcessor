@@ -18,7 +18,7 @@
                 <tr><td colspan="2" class="text-center p-5 font-medium">No Related Orders</td></tr>
             }
             @foreach (var order in DataContext.RelatedOrders) {
-                <tr @onclick="async () => await OpenOrder(order.Id)" class="text-center hover:bg-blue-500/10 cursor-pointer">
+                <tr @onclick="() => OpenOrder(order.Id)" class="text-center hover:bg-blue-500/10 cursor-pointer">
                     <td class="p-5 whitespace-nowrap">@order.Number</td>
                     <td class="p-5 whitespace-nowrap">@order.Name</td>
                 </tr>
@@ -41,8 +41,8 @@
 
     }
 
-    private async Task OpenOrder(Guid orderId) {
-        await Navigation.NavigateToOrderPage(orderId);
+    private void OpenOrder(Guid orderId) {
+        Navigation.NavigateToOrderPage(orderId);
     }
 
 }

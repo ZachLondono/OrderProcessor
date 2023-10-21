@@ -8,7 +8,7 @@ using Dapper;
 using Microsoft.Extensions.Logging;
 using System.Data;
 
-namespace ApplicationCore.Features.Orders.Shared.State;
+namespace ApplicationCore.Features.Orders.Details.Queries;
 
 public class GetOrderById {
 

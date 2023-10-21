@@ -1,4 +1,4 @@
-﻿@page "/orders/details"
+﻿@page "/orders/details/{OrderIdStr}"
 @using ApplicationCore.Features.Orders.Details
 @using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 @using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
@@ -13,38 +13,44 @@
 @using ApplicationCore.Widgets.Products.ClosetPartEditor;
 @using ApplicationCore.Widgets.Products.ProductDrawingManager
 @using ApplicationCore.Widgets.Schedule
-@inject OrderState OrderState
 @inject NavigationService Nav
 
-<div class="grid grid-cols-1">
+@if (OrderId == Guid.Empty) {
 
-    <section id="orderDetails">
-        <OrderDetails @ref="_detailsRef">
-            <ActionPanel>
-                <div class="flex flex-col space-y-3 items-center text-center">
-                    <OrderExportWidget Order="OrderState.Order" />
-                    <OrderReleaseWidget Orders="GetOrder()" />
-                    <OrderDeleteWidget OrderId="OrderState.Order?.Id ?? Guid.Empty" OnOrderDeleted="OnOrderDeleted" />
-                    <BricsCADFileSaveWidget OutputDirectory="@OrderState.Order?.WorkingDirectory"/>
-                    <AddToScheduleWidget Order="OrderState.Order" />
-                </div>
-            </ActionPanel>
-            <ProductActionsColumn Context="product">
-                <div class="flex flex-row">
-                    <ProductDrawingManagerButton ProductId="@product.Id" />
-                    @if (product is ClosetPart closetPart) {
-                        <Button OnClickAsync="() => OpenPartEditor(closetPart)" class="ml-5">Edit</Button>
-                    }
-                </div>
-            </ProductActionsColumn>
-        </OrderDetails>
-    </section>
-
-    <section class="mt-16">
-        <OrderRelationshipListWidget OrderId="OrderState.Order?.Id"/>
-    </section>
-
-</div>
+    <p>No Order To Display</p>
+    
+} else {
+    
+    <div class="grid grid-cols-1">
+    
+        <section id="orderDetails">
+            <OrderDetails OrderId="OrderId" @ref="_detailsRef">
+                <ActionPanel Context="order">
+                    <div class="flex flex-col space-y-3 items-center text-center">
+                        <OrderExportWidget Order="order" />
+                        <OrderReleaseWidget Orders="GetOrder(order)" />
+                        <OrderDeleteWidget OrderId="order.Id" OnOrderDeleted="OnOrderDeleted" />
+                        <BricsCADFileSaveWidget OutputDirectory="@order.WorkingDirectory"/>
+                        <AddToScheduleWidget Order="order" />
+                    </div>
+                </ActionPanel>
+                <ProductActionsColumn Context="product">
+                    <div class="flex flex-row">
+                        <ProductDrawingManagerButton ProductId="@product.Id" />
+                        @if (product is ClosetPart closetPart) {
+                            <Button OnClickAsync="() => OpenPartEditor(closetPart)" class="ml-5">Edit</Button>
+                        }
+                    </div>
+                </ProductActionsColumn>
+            </OrderDetails>
+        </section>
+    
+        <section class="mt-16">
+            <OrderRelationshipListWidget OrderId="OrderId"/>
+        </section>
+    
+    </div>
+}
 
 @code {
 
@@ -53,11 +59,17 @@
 
     private OrderDetails? _detailsRef;
 
-    public List<Order> GetOrder() {
-        if (OrderState.Order is null) {
-            return new() ;
+    [Parameter]
+    public string OrderIdStr { get; set; } = string.Empty;
+
+    public Guid OrderId { get; set; }
+
+    public static List<Order> GetOrder(Order order) => new() { order };
+
+    protected override void OnParametersSet() {
+        if (Guid.TryParse(OrderIdStr, out Guid orderId)) {
+            OrderId = orderId;            
         }
-        return new() { OrderState.Order };
     }
 
     public void OnOrderDeleted() {

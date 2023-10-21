@@ -71,12 +71,12 @@
                             <input type="checkbox" checked="@SelectedOrders.Contains(order)" />
                         </td>
                     }
-                    <td class="p-5 whitespace-nowrap border-b" @onclick="async () => await OpenOrder(order.Id)">@order.Number</td>
-                    <td class="p-5 whitespace-nowrap border-b" @onclick="async () => await OpenOrder(order.Id)">@order.Name</td>
+                    <td class="p-5 whitespace-nowrap border-b" @onclick="() => OpenOrder(order.Id)">@order.Number</td>
+                    <td class="p-5 whitespace-nowrap border-b" @onclick="() => OpenOrder(order.Id)">@order.Name</td>
                     <td class="p-5 whitespace-nowrap border-b hover:underline" @onclick="() => DataContext.OpenCustomerPage(order.CustomerId)">@order.CustomerName</td>
                     <td class="p-5 whitespace-nowrap border-b hover:text-underline hover:underline" @onclick="() => DataContext.OpenVendorPage(order.VendorId)">@order.VendorName</td>
-                    <td class="p-5 whitespace-nowrap text-center border-b" @onclick="async () => await OpenOrder(order.Id)">@order.ItemCount</td>
-                    <td class="p-5 whitespace-nowrap text-center border-b" @onclick="async () => await OpenOrder(order.Id)">@order.OrderDate.ToShortDateString()</td>
+                    <td class="p-5 whitespace-nowrap text-center border-b" @onclick="() => OpenOrder(order.Id)">@order.ItemCount</td>
+                    <td class="p-5 whitespace-nowrap text-center border-b" @onclick="() => OpenOrder(order.Id)">@order.OrderDate.ToShortDateString()</td>
                 </tr>
             }
         </tbody>
@@ -174,16 +174,16 @@
     private async Task OpenOrder(Guid orderId) {
 
         try {
-            await DataContext.OpenOrder(orderId);
+            DataContext.OpenOrder(orderId);
         } catch (IncompatibleDatabaseVersion ex) {
 
-            Logger.LogWarning(ex, "Tried to load orders from an incompatable database version");
+            Logger.LogWarning(ex, "Tried to load orders from an incompatible database version");
 
             DataContext.ErrorMessage = ex.Message;
 
             await ModalService.OpenErrorDialog(new() {
                     Title = "Could not Load Order",
-                    Details = $"Database version is incompatable with application version. Make sure application is up to date and database is the correct version for the application.<br><br><small>Error Message:<br>{ex.Message}</small>"
+                    Details = $"Database version is incompatible with application version. Make sure application is up to date and database is the correct version for the application.<br><br><small>Error Message:<br>{ex.Message}</small>"
                 }, ModalSize.Automatic);
 
         } catch (Exception ex) {

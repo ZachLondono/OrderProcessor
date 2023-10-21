@@ -93,8 +93,8 @@ public class OrderListWidgetViewModel {
         _getCustomerNameById = getCustomerNameById;
     }
 
-    public async Task OpenOrder(Guid orderId) {
-        await _navigationService.NavigateToOrderPage(orderId);
+    public void OpenOrder(Guid orderId) {
+        _navigationService.NavigateToOrderPage(orderId);
     }
 
     public async Task LoadOrders(Guid? customerId, Guid? vendorId, string? searchTerm) {

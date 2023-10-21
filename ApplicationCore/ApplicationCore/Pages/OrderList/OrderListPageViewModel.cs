@@ -1,8 +1,8 @@
 ﻿using ApplicationCore.Features.Companies.Customers.List;
 using ApplicationCore.Features.Companies.Vendors.List;
+using ApplicationCore.Features.Orders.Details.Queries;
 using ApplicationCore.Features.Orders.List;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Infrastructure.Bus;
 
 namespace ApplicationCore.Pages.OrderList;

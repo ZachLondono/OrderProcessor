@@ -121,7 +121,7 @@
         if (DataContext.LoadedOrderId == Guid.Empty) {
             return;
         }
-        await NavigationService.NavigateToOrderPage(DataContext.LoadedOrderId);
+        NavigationService.NavigateToOrderPage(DataContext.LoadedOrderId);
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Components;
+﻿using ApplicationCore.Features.CNC.ReleasePDF;
+using ApplicationCore.Features.Orders.Shared.Domain.Components;
 using ApplicationCore.Shared.Domain;
 using ApplicationCore.Tests.Unit.Orders.Products.DoweledDrawerBoxTests;
 using FluentAssertions;
@@ -16,6 +17,7 @@ public class DoweledDrawerBoxTests {
         var frontThickness = Dimension.FromMillimeters(20);
         var backThickness = Dimension.FromMillimeters(20);
         var sideThickness = Dimension.FromMillimeters(20);
+        var bottomThickness = Dimension.FromMillimeters(6.35);
         var materialName = "Material Name";
 
         var dadoDepth = Dimension.FromMillimeters(10);
@@ -25,7 +27,7 @@ public class DoweledDrawerBoxTests {
             SideMaterial = new("", sideThickness, false),
             FrontMaterial = new("", frontThickness, false),
             BackMaterial = new("", backThickness, false),
-            BottomMaterial = new(materialName, Dimension.Zero, false),
+            BottomMaterial = new(materialName, bottomThickness, false),
             Width = boxWidth,
             Depth = boxDepth
         }.Build();
@@ -36,8 +38,8 @@ public class DoweledDrawerBoxTests {
             DowelPositionsByHeight = DoweledDrawerBox.Construction.DowelPositionsByHeight
         }.Build();
 
-        var expectedBottomWidth = boxWidth - 2 * sideThickness + 2 * dadoDepth - bottomUndersize;
-        var expectedBottomDepth = boxDepth - frontThickness - backThickness + 2 * dadoDepth - bottomUndersize;
+        var expectedBottomWidth = boxDepth - frontThickness - backThickness + 2 * dadoDepth - bottomUndersize;
+        var expectedBottomDepth = boxWidth - 2 * sideThickness + 2 * dadoDepth - bottomUndersize;
 
         // Act
         var part = box.GetBottomPart(construction, 1, 1, "", "");
@@ -45,7 +47,7 @@ public class DoweledDrawerBoxTests {
         // Assert
         part.Width.Should().Be(expectedBottomWidth.AsMillimeters());
         part.Length.Should().Be(expectedBottomDepth.AsMillimeters());
-        part.Material.Should().Be(materialName);
+        part.Material.Should().Be(new PSIMaterial(materialName, "Mela", materialName, "Mela", "PB", bottomThickness.AsMillimeters()).GetLongName());
 
     }
 
@@ -80,8 +82,8 @@ public class DoweledDrawerBoxTests {
             DowelPositionsByHeight = DoweledDrawerBox.Construction.DowelPositionsByHeight
         }.Build();
 
-        var expectedFrontWidth = boxWidth - 2 * sideThickness;
-        var expectedFrontLength = boxHeight;
+        var expectedFrontWidth = boxHeight;
+        var expectedFrontLength = boxWidth - 2 * sideThickness;
 
         // Act
         var part = box.GetFrontPart(construction, 1, 1, "", "");
@@ -89,7 +91,7 @@ public class DoweledDrawerBoxTests {
         // Assert
         part.Width.Should().Be(expectedFrontWidth.AsMillimeters());
         part.Length.Should().Be(expectedFrontLength.AsMillimeters());
-        part.Material.Should().Be(materialName);
+        part.Material.Should().Be(new PSIMaterial(materialName, "Mela", materialName, "Mela", "PB", frontThickness.AsMillimeters()).GetLongName());
 
     }
 
@@ -124,8 +126,8 @@ public class DoweledDrawerBoxTests {
             DowelPositionsByHeight = DoweledDrawerBox.Construction.DowelPositionsByHeight
         }.Build();
 
-        var expectedSideWidth = boxDepth;
-        var expectedSideLength = boxHeight;
+        var expectedSideWidth = boxHeight;
+        var expectedSideLength = boxDepth;
 
         // Act
         var (left, right) = box.GetSideParts(construction, 1, 1, "", "");
@@ -133,7 +135,7 @@ public class DoweledDrawerBoxTests {
         // Assert
         left.Width.Should().Be(expectedSideWidth.AsMillimeters());
         left.Length.Should().Be(expectedSideLength.AsMillimeters());
-        left.Material.Should().Be(materialName);
+        left.Material.Should().Be(new PSIMaterial(materialName, "Mela", materialName, "Mela", "PB", sideThickness.AsMillimeters()).GetLongName());
 
         left.Width.Should().Be(right.Width);
         left.Length.Should().Be(right.Length);
