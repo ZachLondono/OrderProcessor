@@ -2,7 +2,7 @@
 using ApplicationCore.Shared.Services;
 using BricscadApp;
 
-namespace ApplicationCore.Features.BricsCAD;
+namespace ApplicationCore.Features.Orders.ProductDrawings.Commands;
 
 public class ExportActiveDrawingDXFFile {
 

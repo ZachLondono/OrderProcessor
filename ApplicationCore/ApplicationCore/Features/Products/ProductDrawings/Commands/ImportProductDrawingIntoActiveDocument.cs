@@ -1,12 +1,13 @@
-﻿using ApplicationCore.Infrastructure.Bus;
+﻿using ApplicationCore.Features.Orders.ProductDrawings.Models;
+using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Shared.Services;
 using BricscadApp;
 
-namespace ApplicationCore.Features.BricsCAD;
+namespace ApplicationCore.Features.Orders.ProductDrawings.Commands;
 
-public class ImportDXFIntoDrawing {
+public class ImportProductDrawingIntoActiveDocument {
 
-    public record Command(string DXFFilePath, ImportMode Mode) : ICommand;
+    public record Command(ProductDrawing Drawing, ImportMode Mode) : ICommand;
 
     public enum ImportMode {
         New,
@@ -59,28 +60,23 @@ public class ImportDXFIntoDrawing {
 
             }
 
-            try {
+            var uncompressed = CompressionService.Uncompress(command.Drawing.DXFData);
+    
+            var dxfAscii = System.Text.Encoding.ASCII.GetString(uncompressed);
+    
+            var tmpFilePath = Path.GetTempPath() + Guid.NewGuid().ToString() + ".dxf";
+    
+            await File.WriteAllTextAsync(tmpFilePath, dxfAscii);
 
-                await Task.Run(() => {
-
-                    if (command.Mode is ImportMode.Replace) {
-                        document.SendCommand("SELECT ALL  ERASE ");
-                    }
-
-                    var insertionPoint = new double[] { 0, 0, 0 };
-                    var scale = 1.0;
-                    document.Import(command.DXFFilePath, insertionPoint, scale);
-
-                });
-
-            } catch {
-
-                return new Error() {
-                    Title = "Failed to Insert DXF",
-                    Details = "An error occurred while trying to insert DXF data into active document."
-                };
-
+            if (command.Mode is ImportMode.Replace) {
+                document.SendCommand("SELECT ALL  ERASE ");
             }
+            
+            var insertionPoint = new double[] { 0, 0, 0 };
+            var scale = 1.0;
+            document.Import(tmpFilePath, insertionPoint, scale);
+
+            File.Delete(tmpFilePath);
 
             return Response.Success();
 

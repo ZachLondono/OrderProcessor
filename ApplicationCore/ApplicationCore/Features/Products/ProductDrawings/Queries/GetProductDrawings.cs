@@ -1,8 +1,9 @@
-﻿using ApplicationCore.Infrastructure.Bus;
+﻿using ApplicationCore.Features.Orders.ProductDrawings.Models;
+using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Shared.Data.Ordering;
 using Dapper;
 
-namespace ApplicationCore.Features.Orders.ProductDrawings;
+namespace ApplicationCore.Features.Orders.ProductDrawings.Queries;
 
 public class GetProductDrawings {
 

@@ -2,7 +2,7 @@
 using ApplicationCore.Shared.Data.Ordering;
 using Dapper;
 
-namespace ApplicationCore.Features.Orders.ProductDrawings;
+namespace ApplicationCore.Features.Orders.ProductDrawings.Commands;
 
 public class DeleteProductDrawing {
 

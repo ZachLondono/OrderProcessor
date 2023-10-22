@@ -1,0 +1,74 @@
+﻿@using ApplicationCore.Features.Orders.ProductDrawings.Models;
+@using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
+@using ApplicationCore.Shared.Components
+@using static ApplicationCore.Shared.Components.Button;
+@using static ApplicationCore.Features.Orders.ProductDrawings.Commands.ImportProductDrawingIntoActiveDocument;
+
+@if (DataContext is null || Row is null) {
+
+    <p>Error Loading Drawing</p>
+
+} else if (DataContext.IsLoading) {
+
+    <tr>
+        <td colspan="2" class="py-5">
+            <div class="w-full h-6 mr-1.5 bg-gray-300 animate-pulse inline-block"></div>
+        </td>
+    </tr>
+    
+} else {
+
+    <tr class="border-b border-slate-300">
+        @if (Row.IsBeingEdited) {
+            <td colspan="2" class="py-5">
+                <div class="flex flex-row space-x-1.5">
+                    <InputText class="input-text flex-1" @bind-Value="Row.Name"></InputText>
+                    <Button OnClickAsync="() => DataContext.UpdateDrawingName(Row)" Color="ButtonColor.Primary">Save</Button>
+                    <Button OnClick="() => DataContext.CancelEditingDrawing(Row)" Color="ButtonColor.Secondary">Cancel</Button>
+                </div>
+            </td>
+        } else if (Row.IsBeingDeleted) {
+            <td colspan="2" class="py-5">
+                <div class="text-center">
+                    Delete '@Row.Name'?
+                    <Button OnClickAsync="() => OnRowDeleted?.Invoke(Row)" Color="ButtonColor.Danger">Confirm</Button>
+                    <Button OnClick="() => DataContext.CancelDeletingDrawing(Row)" Color="ButtonColor.Secondary">Cancel</Button>
+                </div>
+            </td>
+        } else {
+            <td class="py-5">@Row.Drawing.Name</td>
+            <td class="py-5">
+                <div class="text-center">
+                    <Button OnClickAsync="() => DataContext.ImportIntoDocument(Row.Drawing, ImportMode.New)" Color="ButtonColor.Secondary">Open</Button>
+                    <Button OnClickAsync="() => DataContext.ImportIntoDocument(Row.Drawing, ImportMode.Replace)" Color="ButtonColor.Secondary">Replace</Button>
+                    <Button OnClickAsync="() => DataContext.UpdateDrawingFromDocument(Row.Drawing)" Color="ButtonColor.Secondary">Replace</Button>
+                    <Button OnClick="() => DataContext.StartEditingDrawing(Row)" Color="ButtonColor.Secondary">Edit</Button>
+                    <Button OnClick="() => DataContext.StartDeletingDrawing(Row)" Color="ButtonColor.Danger">X</Button>
+                </div>                     
+            </td>
+        }
+    </tr>
+    
+}
+
+@code {
+
+    [Parameter]
+    [EditorRequired]
+    public ProductDrawingRowModel? Row { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public Func<ProductDrawingRowModel, Task>? OnRowDeleted { get; set; }
+
+    [Inject]
+    public ProductDrawingRowViewModel? DataContext { get; set; }
+
+    protected override void OnInitialized() {
+
+        if (DataContext is null) return;
+        DataContext.OnPropertyChanged += StateHasChanged;
+
+    }
+
+}

@@ -16,7 +16,7 @@ using ApplicationCore.Features.DataFilePaths;
 using ApplicationCore.Features.Updates;
 using ApplicationCore.Widgets.Orders;
 using ApplicationCore.Widgets.Companies;
-using ApplicationCore.Widgets.Products.ProductDrawingManager;
+using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 

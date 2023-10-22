@@ -2,7 +2,7 @@
 using ApplicationCore.Shared.Data.Ordering;
 using Dapper;
 
-namespace ApplicationCore.Features.Orders.ProductDrawings;
+namespace ApplicationCore.Features.Orders.ProductDrawings.Queries;
 
 public class GetProductDrawingsCount {
 
@@ -25,7 +25,7 @@ public class GetProductDrawingsCount {
                 int count = await connection.QuerySingleOrDefaultAsync<int>(
                     """
                     SELECT
-                        COUNT(id)
+                        COUNT(*)
                     FROM product_drawings
                     WHERE product_id = @ProductId;
                     """, query);

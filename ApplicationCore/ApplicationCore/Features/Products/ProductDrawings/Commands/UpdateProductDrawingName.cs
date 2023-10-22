@@ -1,0 +1,34 @@
+﻿using ApplicationCore.Infrastructure.Bus;
+using ApplicationCore.Shared.Data.Ordering;
+using Dapper;
+
+namespace ApplicationCore.Features.Orders.ProductDrawings.Commands;
+
+public class UpdateProductDrawingName {
+
+    public record Command(Guid DrawingId, string DrawingName) : ICommand;
+
+    public class Handler : CommandHandler<Command> {
+
+        private readonly IOrderingDbConnectionFactory _connectionFactory;
+
+        public Handler(IOrderingDbConnectionFactory connectionFactory) {
+            _connectionFactory = connectionFactory;
+        }
+        public override async Task<Response> Handle(Command command) {
+
+            using var connection = await _connectionFactory.CreateConnection();
+
+            await connection.ExecuteAsync(
+                """
+                UPDATE product_drawings
+                    SET name = @DrawingName
+                WHERE id = @DrawingId;
+                """, command);
+
+            return Response.Success();
+
+        }
+    }
+
+}

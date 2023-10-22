@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Orders.ProductDrawings;
+﻿namespace ApplicationCore.Features.Orders.ProductDrawings.Models;
 
 public class ProductDrawing {
 
