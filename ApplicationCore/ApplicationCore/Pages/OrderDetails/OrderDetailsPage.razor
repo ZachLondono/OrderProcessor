@@ -4,6 +4,7 @@
 @using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Features.Products.ProductDrawings.Views
+@using ApplicationCore.Features.Schedule
 @using ApplicationCore.Shared.Components
 @using ApplicationCore.Shared.Services;
 @using ApplicationCore.Widgets.BricsCADFileCopy
@@ -12,7 +13,6 @@
 @using ApplicationCore.Widgets.Orders.OrderRelationshipList
 @using ApplicationCore.Widgets.Orders.OrderRelease
 @using ApplicationCore.Widgets.Products.ClosetPartEditor;
-@using ApplicationCore.Widgets.Schedule
 @inject NavigationService Nav
 
 @if (OrderId == Guid.Empty) {
@@ -31,7 +31,7 @@
                         <OrderReleaseWidget Orders="GetOrder(order)" />
                         <OrderDeleteWidget OrderId="order.Id" OnOrderDeleted="OnOrderDeleted" />
                         <BricsCADFileSaveWidget OutputDirectory="@order.WorkingDirectory"/>
-                        <AddToScheduleWidget Order="order" />
+                        <AddToScheduleButton Order="order" />
                     </div>
                 </ActionPanel>
                 <ProductActionsColumn Context="product">
