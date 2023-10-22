@@ -2,7 +2,7 @@
 using ApplicationCore.Shared.Data.Companies;
 using Dapper;
 
-namespace ApplicationCore.Features.Companies.AllmoxyId;
+namespace ApplicationCore.Features.Companies.AllmoxyId.Commands;
 
 internal class InsertAllmoxyId {
 
