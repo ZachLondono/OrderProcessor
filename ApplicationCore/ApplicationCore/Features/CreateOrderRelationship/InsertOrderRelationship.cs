@@ -2,7 +2,7 @@
 using ApplicationCore.Shared.Data.Ordering;
 using Dapper;
 
-namespace ApplicationCore.Features.Orders.OrderRelationships;
+namespace ApplicationCore.Features.CreateOrderRelationship;
 
 internal class InsertOrderRelationship {
 
