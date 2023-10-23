@@ -2,6 +2,7 @@
 using ApplicationCore.Features.Companies.AllmoxyId;
 using ApplicationCore.Features.CreateOrderRelationship;
 using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
+using ApplicationCore.Widgets.Orders.OrderRelationshipList;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationCore;
@@ -22,7 +23,8 @@ public static class DependencyInjection {
         return services
                     .AddTransient<ProductDrawingManagerViewModel>()
                     .AddTransient<ProductDrawingManagerButtonViewModel>()
-                    .AddTransient<ProductDrawingRowViewModel>();
+                    .AddTransient<ProductDrawingRowViewModel>()
+                    .AddTransient<OrderRelationshipListWidgetViewModel>();
 
     }
 
