@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.Contracts;
 using ApplicationCore.Infrastructure.Bus;
 
-namespace ApplicationCore.Features.Orders.Delete;
+namespace ApplicationCore.Features.DeleteOrder;
 
 public class DeleteOrderConfirmationModalViewModel {
 

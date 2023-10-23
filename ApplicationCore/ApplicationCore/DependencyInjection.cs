@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.ClosetOrderSelector;
 using ApplicationCore.Features.Companies.AllmoxyId;
 using ApplicationCore.Features.CreateOrderRelationship;
+using ApplicationCore.Features.DeleteOrder;
 using ApplicationCore.Features.OrderRelationshipList;
 using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +16,8 @@ public static class DependencyInjection {
                 .AddTransient<CustomerAllmoxyIdViewModel>()
                 .AddTransient<CreateOrderRelationshipsViewModel>()
                 .AddTransient<ClosetOrderSelectorViewModel>()
-                .AddTransient<OrderRelationshipListViewModel>();
+                .AddTransient<OrderRelationshipListViewModel>()
+                .AddTransient<DeleteOrderConfirmationModalViewModel>();
 
     }
 
@@ -24,8 +26,7 @@ public static class DependencyInjection {
         return services
                     .AddTransient<ProductDrawingManagerViewModel>()
                     .AddTransient<ProductDrawingManagerButtonViewModel>()
-                    .AddTransient<ProductDrawingRowViewModel>()
-                    .AddTransient<OrderRelationshipListViewModel>();
+                    .AddTransient<ProductDrawingRowViewModel>();
 
     }
 

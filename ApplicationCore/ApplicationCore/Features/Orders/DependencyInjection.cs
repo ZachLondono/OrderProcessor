@@ -11,11 +11,11 @@ using ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ApplicationCore.Features.Orders.Delete;
 using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Features.Orders.CustomerOrderNumber;
 using ApplicationCore.Features.Orders.WorkingDirectory;
+using ApplicationCore.Features.DeleteOrder;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -78,7 +78,6 @@ public static class DependencyInjection {
 
     private static IServiceCollection AddViewModels(this IServiceCollection services)
         => services.AddTransient<ChooseOrderProviderViewModel>()
-                    .AddTransient<DeleteOrderConfirmationModalViewModel>()
                     .AddTransient<CustomerOrderNumberViewModel>();
 
 }

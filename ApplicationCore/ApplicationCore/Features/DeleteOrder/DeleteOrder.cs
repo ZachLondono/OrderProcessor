@@ -2,7 +2,7 @@
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 
-namespace ApplicationCore.Features.Orders.Delete;
+namespace ApplicationCore.Features.DeleteOrder;
 
 public class DeleteOrder {
 
