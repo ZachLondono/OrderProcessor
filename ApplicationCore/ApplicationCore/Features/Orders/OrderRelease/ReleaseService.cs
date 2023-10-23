@@ -104,7 +104,7 @@ public class ReleaseService {
 
                 if (configuration.CopyCNCReportToWorkingDirectory) {
                     foreach (var order in orders) {
-                        CopyReportToWorkingDirectory(order, filePath);
+                        CopyReportToWorkingDirectory(order.WorkingDirectory, filePath);
                     }
                 }
 
@@ -213,9 +213,9 @@ public class ReleaseService {
 
     }
 
-    private void CopyReportToWorkingDirectory(Order order, string filePath) {
+    private void CopyReportToWorkingDirectory(string workingDirectory, string filePath) {
         string fileName = Path.GetFileNameWithoutExtension(filePath);
-        string destFileName = _fileReader.GetAvailableFileName(order.WorkingDirectory, fileName + " (WSML)", "xml");
+        string destFileName = _fileReader.GetAvailableFileName(workingDirectory, fileName + " (WSML)", "xml");
         File.Copy(filePath, destFileName);
     }
 
