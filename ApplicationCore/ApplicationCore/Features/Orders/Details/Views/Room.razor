@@ -1,4 +1,4 @@
-﻿@using ApplicationCore.Features.Orders.Details.ProductTables
+﻿@using ApplicationCore.Features.Orders.Details.Views.ProductTables
 @using ApplicationCore.Features.Orders.Shared.Domain.Products;
 @using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 @using ApplicationCore.Features.Orders.Shared.State;
@@ -6,10 +6,11 @@
 @using ApplicationCore.Shared.Components
 @using System.Diagnostics;
 @using static ApplicationCore.Shared.Components.Button;
-@using static ApplicationCore.Features.Orders.Details.ProductTables.MDFDoorProductTable;
-@using static ApplicationCore.Features.Orders.Details.ProductTables.DovetailDrawerBoxProductTable;
-@using static ApplicationCore.Features.Orders.Details.ProductTables.ClosetPartProductTable;
-@using static ApplicationCore.Features.Orders.Details.ProductTables.CabinetProductTable;
+@using static ApplicationCore.Features.Orders.Details.Views.ProductTables.MDFDoorProductTable;
+@using static ApplicationCore.Features.Orders.Details.Views.ProductTables.DovetailDrawerBoxProductTable;
+@using static ApplicationCore.Features.Orders.Details.Views.ProductTables.ClosetPartProductTable;
+@using static ApplicationCore.Features.Orders.Details.Views.ProductTables.CabinetProductTable;
+@using ApplicationCore.Features.Orders.Details.Models;
 @inject IBus Bus;
 
 @if (Model is not null) {

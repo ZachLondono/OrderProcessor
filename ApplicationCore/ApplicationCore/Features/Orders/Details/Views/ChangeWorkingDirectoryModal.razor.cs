@@ -4,8 +4,9 @@ using ApplicationCore.Features.Orders.WorkingDirectory;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.AspNetCore.Components;
 using Blazored.Modal.Services;
+using ApplicationCore.Features.Orders.Details.Models;
 
-namespace ApplicationCore.Widgets.Orders.WorkingDirectory;
+namespace ApplicationCore.Features.Orders.Details.Views;
 
 public partial class ChangeWorkingDirectoryModal {
 
@@ -16,7 +17,7 @@ public partial class ChangeWorkingDirectoryModal {
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
     private bool _isLoading = true;
-    private EditModel _model = new();
+    private WorkingDirectoryEditModel _model = new();
     private Error? _error = null;
 
     protected override async Task OnInitializedAsync() {

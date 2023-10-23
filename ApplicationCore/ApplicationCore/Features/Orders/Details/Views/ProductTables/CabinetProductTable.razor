@@ -1,14 +1,9 @@
 ﻿@using ApplicationCore.Features.Orders.Shared.Domain.Products;
-@using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 @using ApplicationCore.Features.Orders.Shared.Domain;
+@using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 @using ApplicationCore.Shared.Components
-@using ApplicationCore.Infrastructure;
-@using ApplicationCore.Features.Orders.Shared;
-@using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-@using static ApplicationCore.Features.Orders.Details.OrderDetails;
-@using ApplicationCore.Infrastructure.Bus;
-@using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
-@inject IBus Bus
+@using static ApplicationCore.Features.Orders.Details.Views.OrderDetails;
+@using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 
 <div class="overflow-x-auto">
     <table class="table-auto w-full">
@@ -16,6 +11,7 @@
             <tr>
                 <th class="p-5">#</th>
                 <th class="p-5">Qty</th>
+                <th class="p-5">SKU</th>
                 <th class="p-5">Height</th>
                 <th class="p-5">Width</th>
                 <th class="p-5">Depth</th>
@@ -24,12 +20,12 @@
                 <th></th>
             </tr>
         </thead>
-        <tbody>
-            @{
-                foreach (var row in DrawerBoxes) {
-                    <tr class="hover:bg-blue-500/10 border-b">
+            @foreach (var row in Cabinets) {
+                <tbody class="hover:bg-blue-500/10 border-b">
+                    <tr>
                         <td class="whitespace-nowrap p-5 text-center">@row.ProductNumber</td>
                         <td class="whitespace-nowrap p-5 text-center">@row.Qty</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.GetProductSku()</td>
                         @if (UseInches) {
                             <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Height.GetFormatedFraction())"</td>
                             <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Width.GetFormatedFraction())"</td>
@@ -39,8 +35,8 @@
                             <td class="whitespace-nowrap p-5 text-center">@row.Width.AsMillimeters().ToString("0.00")</td>
                             <td class="whitespace-nowrap p-5 text-center">@row.Depth.AsMillimeters().ToString("0.00")</td>
                         }
-                        <td class="whitespace-nowrap p-5 text-center">$@row.UnitPrice.ToString("0.00")</td>
-                        <td class="whitespace-nowrap p-5 text-center">$@((row.UnitPrice * row.Qty).ToString("0.00"))</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.UnitPrice.ToString("$0.00")</td>
+                        <td class="whitespace-nowrap p-5 text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
                         <td class="p-5">
                             @if (ActionColumn is not null) {
                                 @ActionColumn(row)
@@ -48,17 +44,22 @@
                         </td>
                     </tr>
 
+                    @if(row.Comment != string.Empty) {
+                        <tr>
+                            <td class="p-5 font-bold text-red-500" colspan="9">
+                                Customer Comment @row.Comment
+                            </td>
+                        </tr>
+                    }
                     @foreach(var note in row.ProductionNotes) {
                         <tr>
-                            <td class="p-5 font-bold text-red-500" colspan="8">
+                            <td class="p-5 font-bold text-red-500" colspan="9">
                                 @note
                             </td>
                         </tr>
                     }
-
-                }
+                </tbody>
             }
-        </tbody>
     </table>
 </div>
 
@@ -68,17 +69,44 @@
     public RenderFragment<IProduct>? ActionColumn { get; set; } = null;
 
     [Parameter]
-    public IEnumerable<DoweledDrawerBoxProduct> DrawerBoxes { get; set; } = Enumerable.Empty<DoweledDrawerBoxProduct>();
+    public IEnumerable<Cabinet> Cabinets { get; set; } = Enumerable.Empty<Cabinet>();
 
     [Parameter]
-    public bool UseInches { get; set; } = false;
+    public bool UseInches { get; set; }
 
-    public string MaterialString(DoweledDrawerBoxMaterial material, bool useInches) {
+    public string GetDoorMaterialStyle(Cabinet cabinet) {
 
-        if (useInches) {
-            return $"{material.Name}\\{material.Thickness.GetFormatedFraction()}\\Grained:{(material.IsGrained ? "Y" : "N")}";
+        if (cabinet.SlabDoorMaterial is null && cabinet.MDFDoorOptions is null) {
+            return "N/A";
         }
-        return $"{material.Name}\\{material.Thickness.AsMillimeters().ToString("0.00")}\\Grained:{(material.IsGrained ? "Y" : "N")}";
+
+        if (cabinet.SlabDoorMaterial is CabinetSlabDoorMaterial slabMaterial) {
+            return $"{slabMaterial.Finish}/{slabMaterial.FinishType}/{slabMaterial.Core}";
+        }
+
+        if (cabinet.MDFDoorOptions is MDFDoorOptions mdfDoorOptions) {
+            return $"{mdfDoorOptions.Material} {mdfDoorOptions.FramingBead}";
+        }
+
+        return "Unknown/Buyout";
+
+    }
+
+    public string GetDoorPaint(Cabinet cabinet) {
+
+        if (cabinet.SlabDoorMaterial is null && cabinet.MDFDoorOptions is null) {
+            return "N/A";
+        }
+
+        if (cabinet.SlabDoorMaterial is CabinetSlabDoorMaterial slabMaterial) {
+            return $"{slabMaterial.PaintColor ?? "N/A"}";
+        }
+
+        if (cabinet.MDFDoorOptions is MDFDoorOptions mdfDoorOptions) {
+            return $"{mdfDoorOptions.PaintColor ?? "N/A"}";
+        }
+
+        return "Unknown/Buyout";
 
     }
 

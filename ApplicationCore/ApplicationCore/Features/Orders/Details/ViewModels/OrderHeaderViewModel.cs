@@ -1,11 +1,12 @@
 ﻿using ApplicationCore.Features.Companies.Customers.Queries;
 using ApplicationCore.Features.Companies.Vendors.Queries;
+using ApplicationCore.Features.Orders.Details.Models;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Shared.Services;
 using Microsoft.Extensions.Logging;
 
-namespace ApplicationCore.Widgets.Orders.OrderHeader;
+namespace ApplicationCore.Features.Orders.Details.ViewModels;
 
 public class OrderHeaderViewModel {
 
@@ -13,9 +14,9 @@ public class OrderHeaderViewModel {
     private readonly ILogger<OrderHeaderViewModel> _logger;
     private readonly NavigationService _navService;
 
-    public Action<Error>? OnErrorOccurred { get; set;}
-    public Action? OnPropertyChanged { get; set;}
-    
+    public Action<Error>? OnErrorOccurred { get; set; }
+    public Action? OnPropertyChanged { get; set; }
+
     private OrderHeaderModel _model = new();
     public OrderHeaderModel Model {
         get => _model;
@@ -24,7 +25,7 @@ public class OrderHeaderViewModel {
             OnPropertyChanged?.Invoke();
         }
     }
-    
+
     private bool _isLoading = true;
     public bool IsLoading {
         get => _isLoading;
@@ -41,7 +42,7 @@ public class OrderHeaderViewModel {
     }
 
     public async Task LoadOrderHeaderAsync(Guid orderId) {
-     
+
         try {
 
             var response = await _bus.Send(new GetOrderHeader.Query(orderId));
@@ -56,17 +57,17 @@ public class OrderHeaderViewModel {
                 Model.DueDate = header.DueDate;
                 Model.Rush = header.Rush;
                 Model.CustomerComment = header.CustomerComment;
-                
+
                 var customerResponse = await _bus.Send(new GetCustomerNameById.Query(Model.CustomerId));
                 customerResponse.OnSuccess(name => Model.CustomerName = name);
 
                 var vendorResponse = await _bus.Send(new GetVendorNameById.Query(Model.VendorId));
                 vendorResponse.OnSuccess(name => Model.VendorName = name);
-             
+
                 IsLoading = false;
-            
+
             });
-        
+
         } catch (Exception ex) {
 
             _logger.LogError(ex, "An exception occurred while trying to load order header");
@@ -74,12 +75,12 @@ public class OrderHeaderViewModel {
         }
 
     }
-    
+
     public async Task SetDueDateAsync(DateTime date) {
         Model.DueDate = date;
         await UpdateDueDateAsync();
     }
-    
+
     public async Task RemoveDueDateAsync() {
         Model.DueDate = null;
         await UpdateDueDateAsync();
@@ -91,7 +92,7 @@ public class OrderHeaderViewModel {
     }
 
     private async Task UpdateDueDateAsync() {
-        
+
         try {
 
             var result = await _bus.Send(new UpdateOrderDueDate.Command(Model.OrderId, Model.DueDate));
@@ -110,9 +111,9 @@ public class OrderHeaderViewModel {
         }
 
     }
-    
+
     public void OpenCustomerPageAsync() => _navService.NavigateToCustomerPage(Model.CustomerId);
 
     public void OpenVendorPage() => _navService.NavigateToVendorPage(Model.VendorId);
-    
+
 }

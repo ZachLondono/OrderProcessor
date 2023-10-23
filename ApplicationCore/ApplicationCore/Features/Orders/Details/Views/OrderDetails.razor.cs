@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Details.AdditionalItems;
-using ApplicationCore.Features.Orders.Details.Commands;
+﻿using ApplicationCore.Features.Orders.Details.Commands;
+using ApplicationCore.Features.Orders.Details.Models;
 using ApplicationCore.Features.Orders.Details.Queries;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
@@ -9,7 +9,7 @@ using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
 
-namespace ApplicationCore.Features.Orders.Details;
+namespace ApplicationCore.Features.Orders.Details.Views;
 
 public partial class OrderDetails {
 

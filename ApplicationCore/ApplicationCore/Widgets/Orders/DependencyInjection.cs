@@ -1,6 +1,4 @@
-﻿using ApplicationCore.Features.OrderList;
-using ApplicationCore.Features.Orders.OrderRelease;
-using ApplicationCore.Widgets.Orders.OrderHeader;
+﻿using ApplicationCore.Features.Orders.OrderRelease;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationCore.Widgets.Orders;
@@ -8,8 +6,7 @@ namespace ApplicationCore.Widgets.Orders;
 internal static class DependencyInjection {
 
     public static IServiceCollection AddOrderWidgets(this IServiceCollection services) {
-        return services.AddTransient<OrderReleaseModalViewModel>()
-                        .AddTransient<OrderHeaderViewModel>();
+        return services.AddTransient<OrderReleaseModalViewModel>();
     }
 
 }

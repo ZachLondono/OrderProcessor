@@ -5,7 +5,7 @@ using Blazored.Modal.Services;
 using System.Diagnostics;
 using ApplicationCore.Features.Orders.Shared.State;
 
-namespace ApplicationCore.Widgets.Orders.WorkingDirectory;
+namespace ApplicationCore.Features.Orders.Details.Views;
 
 public partial class WorkingDirectoryWidget {
 

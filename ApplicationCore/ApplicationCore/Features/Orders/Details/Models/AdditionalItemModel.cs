@@ -1,6 +1,6 @@
-﻿namespace ApplicationCore.Features.Orders.Details.AdditionalItems;
+﻿namespace ApplicationCore.Features.Orders.Details.Models;
 
-public class Model {
+public class AdditionalItemModel {
 
     public required Guid Id { get; set; }
     public required string Description { get; set; }

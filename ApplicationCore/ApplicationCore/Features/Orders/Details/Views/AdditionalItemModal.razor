@@ -3,6 +3,7 @@
 @using ApplicationCore.Infrastructure.Bus;
 @using ApplicationCore.Shared.Components
 @using static ApplicationCore.Shared.Components.Button;
+@using ApplicationCore.Features.Orders.Details.Models;
 @inject IBus Bus;
 
 @if (_editModel is null) {
@@ -47,7 +48,7 @@
     [CascadingParameter]
     private BlazoredModalInstance ModalInstance { get; set; } = default!;
 
-    private Model? _editModel;
+    private AdditionalItemModel? _editModel;
 
     private Error? _error;
 

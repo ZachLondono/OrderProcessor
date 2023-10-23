@@ -1,8 +1,8 @@
 ﻿using ApplicationCore.Features.Orders.WorkingDirectory;
 
-namespace ApplicationCore.Widgets.Orders.WorkingDirectory;
+namespace ApplicationCore.Features.Orders.Details.Models;
 
-internal class EditModel {
+internal class WorkingDirectoryEditModel {
 
     public string OriginalDirectory { get; set; } = string.Empty;
 

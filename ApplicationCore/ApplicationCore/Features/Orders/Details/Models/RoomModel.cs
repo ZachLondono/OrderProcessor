@@ -4,7 +4,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 
-namespace ApplicationCore.Features.Orders.Details;
+namespace ApplicationCore.Features.Orders.Details.Models;
 
 public class RoomModel {
 

@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Widgets.Orders.OrderHeader;
+﻿namespace ApplicationCore.Features.Orders.Details.Models;
 
 public class OrderHeaderModel {
     public Guid OrderId { get; set; }
