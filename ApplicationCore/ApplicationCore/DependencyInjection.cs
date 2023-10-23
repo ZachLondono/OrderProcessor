@@ -7,6 +7,7 @@ using ApplicationCore.Features.OrderRelationshipList;
 using ApplicationCore.Features.Orders.Details.ViewModels;
 using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
+using ApplicationCore.Features.Settings;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationCore;
@@ -40,6 +41,13 @@ public static class DependencyInjection {
 
         return services
                 .AddTransient<OrderHeaderViewModel>();
+
+    }
+
+    public static IServiceCollection SettingsViewModels(this IServiceCollection services) {
+
+        return services
+                .AddTransient<ToolFileEditorViewModel>();
 
     }
 

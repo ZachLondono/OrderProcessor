@@ -4,7 +4,6 @@ using ApplicationCore.Features.CNC.ReleaseEmail;
 using ApplicationCore.Features.CNC.ReleasePDF;
 using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
 using ApplicationCore.Features.CNC.ReleasePDF.Services;
-using ApplicationCore.Features.CNC.Tools;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,7 +17,6 @@ public static class DependencyInjection {
         services.Configure<PDFConfiguration>(configuration.GetRequiredSection("ReleasePDFConfig"));
         services.AddTransient<ReleasePDFDialogViewModel>();
         services.AddTransient<ReleaseEmailBodyGenerator>();
-        services.AddToolEditor();
         return services;
 
     }

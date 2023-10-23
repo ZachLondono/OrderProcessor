@@ -2,7 +2,7 @@
 using ApplicationCore.Shared.Settings;
 using ApplicationCore.Shared.Settings.Tools;
 
-namespace ApplicationCore.Features.CNC.Tools;
+namespace ApplicationCore.Features.Settings;
 
 internal class ToolFileEditorViewModel {
 
