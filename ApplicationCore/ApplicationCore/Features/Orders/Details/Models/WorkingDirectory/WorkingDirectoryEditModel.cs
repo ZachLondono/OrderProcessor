@@ -1,6 +1,4 @@
-﻿using ApplicationCore.Features.Orders.WorkingDirectory;
-
-namespace ApplicationCore.Features.Orders.Details.Models;
+﻿namespace ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
 
 internal class WorkingDirectoryEditModel {
 

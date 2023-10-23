@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Orders.WorkingDirectory;
+﻿namespace ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
 
 public enum MigrationType {
     None,

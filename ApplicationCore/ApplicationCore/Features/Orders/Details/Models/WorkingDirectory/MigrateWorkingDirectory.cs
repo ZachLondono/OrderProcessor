@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Shared;
 
-namespace ApplicationCore.Features.Orders.WorkingDirectory;
+namespace ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
 
 internal class MigrateWorkingDirectory {
 

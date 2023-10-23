@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Features.Orders.CustomerOrderNumber;
-using ApplicationCore.Features.Orders.WorkingDirectory;
+using ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
 
 namespace ApplicationCore.Features.Orders;
 
