@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Widgets.Schedule;
+﻿namespace ApplicationCore.Features.Schedule;
 
 internal class Model {
 

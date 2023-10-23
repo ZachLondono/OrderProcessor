@@ -1,19 +1,18 @@
 ﻿@page "/orders/details/{OrderIdStr}"
-@    using ApplicationCore.Features.Orders.Details
-@    using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-@    using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
-@    using ApplicationCore.Features.Orders.Shared.State;
-@    using ApplicationCore.Features.Products.ProductDrawings.Views
-@    using ApplicationCore.Features.Schedule
-@    using ApplicationCore.Shared.Components
-@    using ApplicationCore.Shared.Services;
-@    using ApplicationCore.Widgets.BricsCADFileCopy
-@    using ApplicationCore.Widgets.Orders.OrderDelete
-@    using ApplicationCore.Widgets.Orders.OrderExport
-@    using ApplicationCore.Widgets.Orders.OrderRelationshipList
-@    using ApplicationCore.Widgets.Orders.OrderRelease
-@    using ApplicationCore.Widgets.Products.ClosetPartEditor;
-    using ApplicationCore.Features.Products.UpdateClosetPart;
+@using ApplicationCore.Features.BricsCAD
+@using ApplicationCore.Features.Orders.Details
+@using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+@using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
+@using ApplicationCore.Features.Orders.Shared.State;
+@using ApplicationCore.Features.Products.ProductDrawings.Views
+@using ApplicationCore.Features.Schedule
+@using ApplicationCore.Shared.Components
+@using ApplicationCore.Shared.Services;
+@using ApplicationCore.Widgets.Orders.OrderDelete
+@using ApplicationCore.Widgets.Orders.OrderExport
+@using ApplicationCore.Widgets.Orders.OrderRelationshipList
+@using ApplicationCore.Widgets.Orders.OrderRelease
+@using ApplicationCore.Features.Products.UpdateClosetPart;
 @inject NavigationService Nav
 
 @if (OrderId == Guid.Empty) {

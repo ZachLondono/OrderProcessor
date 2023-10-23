@@ -15,7 +15,6 @@ using ApplicationCore.Infrastructure.UI;
 using ApplicationCore.Features.DataFilePaths;
 using ApplicationCore.Features.Updates;
 using ApplicationCore.Widgets.Orders;
-using ApplicationCore.Widgets.Companies;
 using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
@@ -33,7 +32,6 @@ public static class DependencyInjection {
         services.AddTransient<NavigationService>();
 
         services.AddCompanies();
-        services.AddCompanyWidgets();
 
         services.AddOrderFeatures(configuration);
         services.AddOrderWidgets();
