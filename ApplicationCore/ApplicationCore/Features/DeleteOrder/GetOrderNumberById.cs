@@ -2,7 +2,7 @@
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 
-namespace ApplicationCore.Features.Orders.Contracts;
+namespace ApplicationCore.Features.DeleteOrder;
 
 internal class GetOrderNumberById {
 

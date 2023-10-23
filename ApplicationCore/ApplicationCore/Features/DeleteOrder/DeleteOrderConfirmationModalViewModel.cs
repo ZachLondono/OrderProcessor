@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Contracts;
-using ApplicationCore.Infrastructure.Bus;
+﻿using ApplicationCore.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.DeleteOrder;
 
