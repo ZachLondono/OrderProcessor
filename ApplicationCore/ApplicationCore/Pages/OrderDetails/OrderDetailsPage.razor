@@ -1,15 +1,15 @@
 ﻿@page "/orders/details/{OrderIdStr}"
-@using ApplicationCore.Features.BricsCAD
+@using ApplicationCore.Features.DeleteOrder
 @using ApplicationCore.Features.OrderRelationshipList
 @using ApplicationCore.Features.Orders.Details
 @using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 @using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Features.Products.ProductDrawings.Views
+@using ApplicationCore.Features.SaveOrderDrawings
 @using ApplicationCore.Features.Schedule
 @using ApplicationCore.Shared.Components
 @using ApplicationCore.Shared.Services;
-@using ApplicationCore.Widgets.Orders.OrderDelete
 @using ApplicationCore.Widgets.Orders.OrderExport
 @using ApplicationCore.Widgets.Orders.OrderRelease
 @using ApplicationCore.Features.Products.UpdateClosetPart;
@@ -29,7 +29,7 @@
                     <div class="flex flex-col space-y-3 items-center text-center">
                         <OrderExportWidget Order="order" />
                         <OrderReleaseWidget Orders="GetOrder(order)" />
-                        <OrderDeleteWidget OrderId="order.Id" OnOrderDeleted="OnOrderDeleted" />
+                        <OrderDeleteButton OrderId="order.Id" OnOrderDeleted="OnOrderDeleted" />
                         <BricsCADFileSaveWidget OutputDirectory="@order.WorkingDirectory"/>
                         <AddToScheduleButton Order="order" />
                     </div>
