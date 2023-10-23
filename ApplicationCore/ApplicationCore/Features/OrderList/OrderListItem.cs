@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Orders.List;
+﻿namespace ApplicationCore.Features.OrderList;
 
 public record OrderListItem {
 

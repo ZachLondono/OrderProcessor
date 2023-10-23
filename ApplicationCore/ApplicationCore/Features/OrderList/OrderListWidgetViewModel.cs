@@ -2,9 +2,8 @@
 using ApplicationCore.Shared.Services;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Logging;
-using ApplicationCore.Features.Orders.List;
 
-namespace ApplicationCore.Widgets.Orders.OrderList;
+namespace ApplicationCore.Features.OrderList;
 
 public class OrderListWidgetViewModel {
 
@@ -106,7 +105,7 @@ public class OrderListWidgetViewModel {
         countResponse.OnSuccess(
             totalOrders => {
                 TotalOrderCount = totalOrders;
-                PageCount = (int)Math.Ceiling((float)totalOrders / (float)PageSize);
+                PageCount = (int)Math.Ceiling(totalOrders / (float)PageSize);
             });
 
         var response = await _bus.Send(new GetOrderList.Query(customerId, vendorId, searchTerm, Page, PageSize));

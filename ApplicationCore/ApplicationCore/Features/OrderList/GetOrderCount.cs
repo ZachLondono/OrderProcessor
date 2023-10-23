@@ -2,7 +2,7 @@
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 
-namespace ApplicationCore.Features.Orders.List;
+namespace ApplicationCore.Features.OrderList;
 
 public class GetOrderCount {
 
@@ -33,7 +33,7 @@ public class GetOrderCount {
 
             var query = $"""
                         SELECT
-                            COUNT(id) 
+                            COUNT(*) 
                         FROM orders{queryFilter};
                         """;
 

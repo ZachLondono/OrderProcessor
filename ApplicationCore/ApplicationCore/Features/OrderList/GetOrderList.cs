@@ -2,7 +2,7 @@
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 
-namespace ApplicationCore.Features.Orders.List;
+namespace ApplicationCore.Features.OrderList;
 
 public class GetOrderList {
 
