@@ -14,8 +14,6 @@ using ApplicationCore.Shared.Bus;
 using ApplicationCore.Infrastructure.UI;
 using ApplicationCore.Features.DataFilePaths;
 using ApplicationCore.Features.Updates;
-using ApplicationCore.Widgets.Orders;
-using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
