@@ -1,5 +1,6 @@
 ﻿@page "/orders/details/{OrderIdStr}"
 @using ApplicationCore.Features.BricsCAD
+@using ApplicationCore.Features.OrderRelationshipList
 @using ApplicationCore.Features.Orders.Details
 @using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 @using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
@@ -10,7 +11,6 @@
 @using ApplicationCore.Shared.Services;
 @using ApplicationCore.Widgets.Orders.OrderDelete
 @using ApplicationCore.Widgets.Orders.OrderExport
-@using ApplicationCore.Widgets.Orders.OrderRelationshipList
 @using ApplicationCore.Widgets.Orders.OrderRelease
 @using ApplicationCore.Features.Products.UpdateClosetPart;
 @inject NavigationService Nav
@@ -46,7 +46,7 @@
         </section>
     
         <section class="mt-16">
-            <OrderRelationshipListWidget OrderId="OrderId"/>
+            <OrderRelationshipList OrderId="OrderId"/>
         </section>
     
     </div>

@@ -1,5 +1,5 @@
 ﻿@using ApplicationCore.Shared.Services;
-@inject OrderRelationshipListWidgetViewModel DataContext
+@inject OrderRelationshipListViewModel DataContext
 @inject NavigationService Navigation
 
 <div class="mb-5">
@@ -14,7 +14,9 @@
             </tr>
         </thead>
         <tbody>
-            @if (!DataContext.RelatedOrders.Any()) {
+            @if (DataContext.Error is string error) {
+                <tr><td colspan="2" class="text-center p-5 font-medium">@error</td></tr>
+            } else if (!DataContext.RelatedOrders.Any()) {
                 <tr><td colspan="2" class="text-center p-5 font-medium">No Related Orders</td></tr>
             }
             @foreach (var order in DataContext.RelatedOrders) {
