@@ -2,18 +2,19 @@
 @using ApplicationCore.Infrastructure.Bus;
 @using ApplicationCore.Shared.Components
 @using static ApplicationCore.Shared.Components.Button;
-@inject IBus Bus
+@inject ClosetOrderSelectorViewModel DataContext;
+
 <h3>Open Closet Orders</h3>
 
-@if (!string.IsNullOrEmpty(_error)) {
-    <span class="text-red-500">@_error</span>
+@if (!string.IsNullOrEmpty(DataContext.Error)) {
+    <span class="text-red-500">@DataContext.Error</span>
 }
 
-@if (_isLoading) {
+@if (DataContext.IsLoading) {
     <span>Loading...</span>
 } else {
 
-    @if (_openClosetOrders.Any()) {
+    @if (DataContext.OpenClosetOrders.Any()) {
         <table class="table-auto">
             <thead class="border-b border-slate-300">
                 <tr>
@@ -23,7 +24,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var order in _openClosetOrders) {
+                @foreach (var order in DataContext.OpenClosetOrders) {
                     <tr class="text-center border-b cursor-pointer hover:bg-slate-200" onclick="@(() => SelectOrder(order))">
                         <td class="p-5">@order.OrderNumber</td>
                         <td class="p-5">@order.OrderName</td>
@@ -40,7 +41,7 @@
 
     <div class="mt-5">
         <Button OnClickAsync="Close" Color="ButtonColor.Danger">Close</Button>
-        <Button OnClick="LoadOpenOrders" Color="ButtonColor.Secondary">Refresh</Button>
+        <Button OnClickAsync="DataContext.LoadOpenOrders" Color="ButtonColor.Secondary">Refresh</Button>
     </div>
 }
 
@@ -50,33 +51,12 @@
     [CascadingParameter]
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
-    private bool _isLoading = true;
-    private List<ClosetOrder> _openClosetOrders = new();
-    private string _error = "";
-
-    protected override void OnInitialized() {
+    protected override async Task OnInitializedAsync() {
         base.OnInitialized();
-        LoadOpenOrders();
+        DataContext.OnPropertyChanged += StateHasChanged;
+        await DataContext.LoadOpenOrders();
     }
 
-    private void LoadOpenOrders() {
-
-        _isLoading = true;
-        StateHasChanged();
-
-        _ = Task.Run(() => {
-
-            var response = Bus.Send(new GetOpenClosetOrders.Query()).Result;
-            response.Match(
-                orders => _openClosetOrders = new(orders),
-                error => _error = $"{error.Title} - {error.Details}"
-            );
-            _isLoading = false;
-            InvokeAsync(StateHasChanged);
-
-        });
-
-    }
 
     private async Task SelectOrder(ClosetOrder selectedOrder) {
         await BlazoredModal.CloseAsync(ModalResult.Ok(selectedOrder));
