@@ -34,8 +34,6 @@ public static class DependencyInjection {
         services.AddCompanies();
 
         services.AddOrderFeatures(configuration);
-        services.AddOrderWidgets();
-        services.AddTransient<ProductDrawingManagerButtonViewModel>();
 
         services.AddCNC(configuration);
 

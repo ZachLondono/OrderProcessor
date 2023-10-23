@@ -5,6 +5,7 @@ using ApplicationCore.Features.DeleteOrder;
 using ApplicationCore.Features.OrderList;
 using ApplicationCore.Features.OrderRelationshipList;
 using ApplicationCore.Features.Orders.Details.ViewModels;
+using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,7 +22,8 @@ public static class DependencyInjection {
                 .AddTransient<ClosetOrderSelectorViewModel>()
                 .AddTransient<OrderRelationshipListViewModel>()
                 .AddTransient<DeleteOrderConfirmationModalViewModel>()
-                .AddTransient<OrderListWidgetViewModel>();
+                .AddTransient<OrderListWidgetViewModel>()
+                .AddTransient<OrderReleaseModalViewModel>();
 
     }
 
