@@ -7,6 +7,7 @@ using ApplicationCore.Features.OrderRelationshipList;
 using ApplicationCore.Features.Orders.Details.ViewModels;
 using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
+using ApplicationCore.Features.Products.UpdateClosetPart;
 using ApplicationCore.Features.Settings;
 using ApplicationCore.Layouts.MainLayout.ReleaseDialog;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +20,8 @@ public static class DependencyInjection {
         return services
                 .ProductDrawingsViewModels()
                 .OrderDetailsViewModels()
+                .ProductEditorViewModels()
+                .SettingsViewModels()
                 .AddTransient<CustomerAllmoxyIdViewModel>()
                 .AddTransient<CreateOrderRelationshipsViewModel>()
                 .AddTransient<ClosetOrderSelectorViewModel>()
@@ -43,6 +46,13 @@ public static class DependencyInjection {
 
         return services
                 .AddTransient<OrderHeaderViewModel>();
+
+    }
+
+    public static IServiceCollection ProductEditorViewModels(this IServiceCollection services) {
+
+        return services
+                .AddTransient<ClosetPartEditorViewModel>();
 
     }
 
