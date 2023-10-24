@@ -43,13 +43,11 @@ internal class ReleasePDFDialogViewModel {
     private readonly ICNCReleaseDecorator _cncReleaseDecorator;
     private readonly IFileReader _fileReader;
     private readonly IEmailService _emailService;
-    private readonly ReleaseEmailBodyGenerator _emailBodyGenerator;
 
-    public ReleasePDFDialogViewModel(ICNCReleaseDecorator cncReleaseDecorator, IFileReader fileReader, IEmailService emailService, ReleaseEmailBodyGenerator emailBodyGenerator) {
+    public ReleasePDFDialogViewModel(ICNCReleaseDecorator cncReleaseDecorator, IFileReader fileReader, IEmailService emailService) {
         _cncReleaseDecorator = cncReleaseDecorator;
         _fileReader = fileReader;
         _emailService = emailService;
-        _emailBodyGenerator = emailBodyGenerator;
         Model.OutputDirectory = @"R:\Door Orders\Door Programs";
     }
 
@@ -147,7 +145,7 @@ internal class ReleasePDFDialogViewModel {
         };
         var model = new ReleaseEmail.Model(jobs, null);
 
-        var body = _emailBodyGenerator.GenerateHTMLReleaseEmailBody(model, true);
+        var body = ReleaseEmailBodyGenerator.GenerateHTMLReleaseEmailBody(model, true);
         var builder = new BodyBuilder {
             TextBody = body,
             HtmlBody = body
