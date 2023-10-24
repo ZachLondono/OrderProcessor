@@ -2,8 +2,8 @@
 using ApplicationCore.Features.CNC.ReleaseDialog;
 using ApplicationCore.Features.CNC.ReleaseEmail;
 using ApplicationCore.Features.CNC.ReleasePDF;
-using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
 using ApplicationCore.Features.CNC.ReleasePDF.Services;
+using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

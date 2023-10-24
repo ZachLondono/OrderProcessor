@@ -1,8 +1,8 @@
 ﻿using ApplicationCore.Features.CNC.Contracts;
-using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
 using ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
 using ApplicationCore.Features.CNC.ReleasePDF.Styling;
 using ApplicationCore.Shared;
+using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.CNC.ReleasePDF.Services;

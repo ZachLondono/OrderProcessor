@@ -1,7 +1,7 @@
-﻿using ApplicationCore.Features.CNC.ReleasePDF.Configuration;
-using ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
+﻿using ApplicationCore.Features.CNC.ReleasePDF.PDFModels;
 using ApplicationCore.Features.CNC.ReleasePDF.Styling;
 using ApplicationCore.Shared;
+using ApplicationCore.Shared.Settings;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
