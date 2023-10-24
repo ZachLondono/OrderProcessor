@@ -157,14 +157,15 @@ public partial class WSXMLParser {
                                                                                                         Y = nestPart.location.Insert.Y + (nestPart.location.IsRotated ? part.Width : part.Length) / 2
                                                                                                     },
                                                                                                     IsRotated = nestPart.location.IsRotated,
-                                                                                                    Description = part.Description,
+                                                                                                    Description = label.Fields.GetValueOrEmpty("Description"),
                                                                                                     ProductNumber = label.Fields.GetValueOrEmpty("Cabinet Number"),
                                                                                                     ProductId = productId,
                                                                                                     PartId = nestPart.partId,
                                                                                                     ImageData = label.Fields.GetValueOrEmpty("Machining Picture"),
                                                                                                     HasFace6 = part.Variables.ContainsKey("Face6FileName"),
                                                                                                     Face6FileName = part.Variables.ContainsKey("Face6FileName") ? part.Variables["Face6FileName"] : null,
-                                                                                                    HasBackSideProgram = label.Fields.GetValueOrEmpty("HasBackSideProgram") == "Y"
+                                                                                                    HasBackSideProgram = label.Fields.GetValueOrEmpty("HasBackSideProgram") == "Y",
+                                                                                                    Note = label.Fields.GetValueOrEmpty("PEFinishedSide")
                                                                                                 };
                                                                                             })
                                                                                             .ToList()
@@ -185,7 +186,7 @@ public partial class WSXMLParser {
                                                             FileName = part.Variables.GetValueOrEmpty("Face5Filename"),
                                                             Width = Dimension.FromMillimeters(part.Width),
                                                             Length = Dimension.FromMillimeters(part.Length),
-                                                            Description = part.Description,
+                                                            Description = label.Fields.GetValueOrEmpty("Description"),
                                                             PartId = part.Id,
                                                             ProductNumber = label.Fields.GetValueOrEmpty("Cabinet Number"),
                                                             HasBackSideProgram = label.Fields.GetValueOrEmpty("HasBackSideProgram") == "Y"

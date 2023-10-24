@@ -19,5 +19,6 @@ public class NestedPart {
     public string PartId { get; init; } = string.Empty;
     public bool IsRotated { get; init; } = false;
     public bool HasBackSideProgram { get; init; } = false;
+    public string Note { get; init; } = string.Empty;
 
 }

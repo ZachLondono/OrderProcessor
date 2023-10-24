@@ -70,6 +70,7 @@ internal class ReleasePDFDecoratorFactory {
 
             bool containsFace6 = face6FileNames.Any();
             bool containsBackSideProgram = partGroups.Any(group => group.Any(part => part.HasBackSideProgram));
+            bool containsNote = partGroups.Any(group => group.Any(part => !string.IsNullOrWhiteSpace(part.Note)));
 
             var partsTableContent = new List<Dictionary<string, string>>();
             foreach (var group in partGroups) {
@@ -77,12 +78,12 @@ internal class ReleasePDFDecoratorFactory {
                 var fields = new Dictionary<string, string> {
                         { "Product", part.ProductNumber },
                         { "Qty", group.Count().ToString() },
-                        { "Name", part.Name },
                         { "Width", part.Width.AsMillimeters().ToString("0.00") },
                         { "Length", part.Length.AsMillimeters().ToString("0.00") },
-                        { "Description", part.Description },
-                        { "File Name", part.FileName }
+                        { "File Name", part.FileName },
+                        { "Description", part.Description }
                     };
+                if (containsNote) fields.Add("Note", part.Note);
                 if (containsFace6) fields.Add("Face 6", part.Face6FileName ?? "");
                 if (containsBackSideProgram) fields.Add("Back Side", part.HasBackSideProgram ? "Y" : "");
                 partsTableContent.Add(fields);
@@ -181,8 +182,8 @@ internal class ReleasePDFDecoratorFactory {
             var part = group.First();
             partsTableContent.Add(new() {
                     { "#", part.ProductNumber },
-                    { "Name", part.Name },
                     { "FileName", part.FileName },
+                    { "Description", part.Description },
                     { "Width", part.Width.AsMillimeters().ToString("0.00") },
                     { "Length", part.Length.AsMillimeters().ToString("0.00") },
                 });

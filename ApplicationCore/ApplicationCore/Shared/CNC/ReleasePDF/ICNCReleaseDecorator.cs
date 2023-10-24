@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Shared;
-using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
+﻿using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
 
 namespace ApplicationCore.Shared.CNC.ReleasePDF;
 
