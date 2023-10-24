@@ -53,7 +53,6 @@ public static class DependencyInjection {
         services.AddTransient<ProgressModalViewModel>();
 
         services.AddBus(configuration);
-        services.AddSingleton<IUIBus, UIBus>();
 
         SqlMapping.AddSqlMaps();
 

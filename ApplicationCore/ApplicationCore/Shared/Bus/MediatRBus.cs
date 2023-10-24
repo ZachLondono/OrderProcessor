@@ -10,10 +10,6 @@ internal class MediatRBus : IBus {
         _mediator = mediator;
     }
 
-    public Task Publish<TNotification>(TNotification notification, CancellationToken cancellationToken = default) where TNotification : IDomainNotification {
-        return _mediator.Publish(notification, cancellationToken);
-    }
-
     public Task<Response<TResponse>> Send<TResponse>(IQuery<TResponse> request, CancellationToken cancellationToken = default) {
         return _mediator.Send(request, cancellationToken);
     }
