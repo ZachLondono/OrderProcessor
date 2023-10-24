@@ -1,8 +1,11 @@
-﻿@using ApplicationCore.Features.Orders.OrderExport;
+﻿@using ApplicationCore.Features.Orders.Details.Queries;
+@using ApplicationCore.Features.Orders.OrderExport;
 @using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 @using ApplicationCore.Features.Orders.Shared.State;
+@using ApplicationCore.Infrastructure.Bus;
 @using ApplicationCore.Shared.Components
 @using static ApplicationCore.Shared.Components.Button;
+@inject IBus Bus
 
 <Button Type="button" OnClickAsync="ExportOrder" Disabled="_isExporting" Class="flex justify-center items-center h-10 w-36" Color="ButtonColor.Secondary">
     @if (_isExporting) {
@@ -20,21 +23,30 @@
     public IModalService Modal { get; set; } = default!;
 
     [Parameter]
-    public Order? Order { get; set; } = null;
+    public Guid OrderId { get; set; }
 
     private bool _isExporting = false;
 
     private async Task ExportOrder() {
 
-        if (_isExporting == true || Order is null) {
+        if (_isExporting == true || OrderId == Guid.Empty) {
             return;
         }
 
         _isExporting = true;
 
+        Order? order = null;
+        var response = await Bus.Send(new GetOrderById.Query(OrderId));
+        response.OnSuccess(o => order = o);
+
+        if (order is null) {
+            _isExporting = false;
+            return;
+        }
+
         var dialog = Modal.Show<OrderExportModal>("Export Setup",
             new ModalParameters() {
-                { "Order", Order }
+                { "Order", order }
             }, new ModalOptions() {
                 HideHeader = false,
                 HideCloseButton = true,
