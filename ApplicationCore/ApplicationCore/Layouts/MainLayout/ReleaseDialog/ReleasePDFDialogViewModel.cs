@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.CNC.WorkOrderReleaseEmail;
-using ApplicationCore.Shared;
+﻿using ApplicationCore.Shared;
 using ApplicationCore.Shared.CNC.ReleasePDF;
 using ApplicationCore.Shared.CNC.WorkOrderReleaseEmail;
 using ApplicationCore.Shared.CNC.WSXML;

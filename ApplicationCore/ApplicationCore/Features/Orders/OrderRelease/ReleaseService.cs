@@ -14,7 +14,6 @@ using System.Runtime.InteropServices;
 using UglyToad.PdfPig.Writer;
 using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
 using Exception = System.Exception;
-using ApplicationCore.Features.CNC.WorkOrderReleaseEmail;
 using ApplicationCore.Shared.CNC.ReleasePDF;
 using ApplicationCore.Shared.CNC.WorkOrderReleaseEmail;
 using ApplicationCore.Shared.CNC.WSXML;

@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.CNC.Domain;
-using ApplicationCore.Shared.CNC.WSXML;
+﻿using ApplicationCore.Shared.CNC.Domain;
 using System.Xml.Linq;
 
 namespace ApplicationCore.Shared.CNC.WSXML.Report;
