@@ -1,7 +1,8 @@
 ﻿using ApplicationCore.Infrastructure.Bus;
+using ApplicationCore.Shared.Components;
 using Blazored.Modal;
 using Blazored.Modal.Services;
-using static ApplicationCore.Shared.InformationDialog;
+using static ApplicationCore.Shared.Components.InformationDialog;
 
 namespace ApplicationCore.Shared;
 

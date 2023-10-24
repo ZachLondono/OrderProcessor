@@ -1,0 +1,59 @@
+﻿@using ApplicationCore.Shared.Components
+@using static ApplicationCore.Shared.Components.Button;
+
+@if (DataContext is null || DataContext.Product is null) {
+    
+    <p>No product to update</p>
+    <Button Color="ButtonColor.Secondary" OnClickAsync="Cancel">Close</Button>
+
+} else {
+
+    <EditForm Model="@DataContext.Product" >
+    
+        <div>
+            <label class="block">Qty</label>
+            <InputNumber @bind-Value="DataContext.Product.Qty" TValue="int" class="mt-1 w-24 px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+        </div>
+    
+        <label class="block">SKU</label>
+        <InputText @bind-Value="DataContext.Product.SKU" class="input-text w-full" />
+    
+        <label class="block">Comment</label>
+        <InputText @bind-Value="DataContext.Product.Comment" class="input-text w-full" />
+    
+        <label class="block">Room</label>
+        <InputText @bind-Value="DataContext.Product.Room" class="input-text w-full" />
+
+        <hr class="my-5" />
+
+        <table>
+            <caption>Ask Parameters</caption>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+    
+                @foreach(var parameter in DataContext.Product.Parameters) {
+                    <tr>
+                        <td></td>
+                        <td>@parameter.Key</td>
+                        <td>@parameter.Value</td>
+                    </tr>
+                }
+    
+            </tbody>
+        </table>
+    
+        <div>
+            <Button Type="submit" Color="ButtonColor.Primary" OnClickAsync="DataContext.Update">Update</Button>
+            <Button Color="ButtonColor.Secondary" OnClickAsync="Cancel">Cancel</Button>
+        </div>
+    
+    </EditForm>
+
+}
+

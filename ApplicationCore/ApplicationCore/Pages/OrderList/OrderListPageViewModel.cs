@@ -1,8 +1,8 @@
 ﻿using ApplicationCore.Features.Companies.Customers.List;
 using ApplicationCore.Features.Companies.Vendors.List;
-using ApplicationCore.Features.Orders.List;
+using ApplicationCore.Features.OrderList;
+using ApplicationCore.Features.Orders.Details.Queries;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Infrastructure.Bus;
 
 namespace ApplicationCore.Pages.OrderList;
@@ -29,19 +29,6 @@ public class OrderListPageViewModel {
 
         vendorsResponse.OnSuccess(Vendors.AddRange);
         customersResponse.OnSuccess(Customers.AddRange);
-
-    }
-
-    public async Task<List<Order>> GetSelectedOrdersAsync() {
-
-        List<Order> orders = new();
-
-        foreach (var item in SelectedOrders) {
-            var response = await _bus.Send(new GetOrderById.Query(item.Id));
-            response.OnSuccess(orders.Add);
-        }
-
-        return orders;
 
     }
 

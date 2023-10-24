@@ -1,0 +1,84 @@
+﻿@using ApplicationCore.Features.Orders.Shared.Domain.Products;
+@using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+@using ApplicationCore.Features.Orders.Shared.Domain;
+@using ApplicationCore.Shared.Components
+@using ApplicationCore.Infrastructure;
+@using ApplicationCore.Features.Orders.Shared;
+@using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+@using static ApplicationCore.Features.Orders.Details.Views.OrderDetails;
+@using ApplicationCore.Infrastructure.Bus;
+@using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
+@inject IBus Bus
+
+<div class="overflow-x-auto">
+    <table class="table-auto w-full">
+        <thead class="border-b">
+            <tr>
+                <th class="p-5">#</th>
+                <th class="p-5">Qty</th>
+                <th class="p-5">Height</th>
+                <th class="p-5">Width</th>
+                <th class="p-5">Depth</th>
+                <th class="p-5">Unit $</th>
+                <th class="p-5">Ext. $</th>
+                <th></th>
+            </tr>
+        </thead>
+        @{
+            foreach (var row in DrawerBoxes) {
+                <tbody class="hover:bg-blue-500/10 border-b">
+                    <tr>
+                        <td class="whitespace-nowrap p-5 text-center">@row.ProductNumber</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.Qty</td>
+                        @if (UseInches) {
+                            <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Height.GetFormatedFraction())"</td>
+                            <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Width.GetFormatedFraction())"</td>
+                            <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Depth.GetFormatedFraction())"</td>
+                        } else {
+                            <td class="whitespace-nowrap p-5 text-center">@row.Height.AsMillimeters().ToString("0.00")</td>
+                            <td class="whitespace-nowrap p-5 text-center">@row.Width.AsMillimeters().ToString("0.00")</td>
+                            <td class="whitespace-nowrap p-5 text-center">@row.Depth.AsMillimeters().ToString("0.00")</td>
+                        }
+                        <td class="whitespace-nowrap p-5 text-center">$@row.UnitPrice.ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 text-center">$@((row.UnitPrice * row.Qty).ToString("0.00"))</td>
+                        <td class="p-5">
+                            @if (ActionColumn is not null) {
+                                @ActionColumn(row)
+                            }
+                        </td>
+                    </tr>
+
+                    @if (row.Note != string.Empty) {
+                        <tr>
+                            <td class="p-5 font-bold text-red-500" colspan="8">
+                                Customer Note: @row.Note
+                            </td>
+                        </tr>                        
+                    }
+
+                    @foreach(var note in row.ProductionNotes) {
+                        <tr>
+                            <td class="p-5 font-bold text-red-500" colspan="8">
+                                @note
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            }
+        }
+    </table>
+</div>
+
+@code {
+
+    [Parameter]
+    public RenderFragment<IProduct>? ActionColumn { get; set; } = null;
+
+    [Parameter]
+    public IEnumerable<DovetailDrawerBoxProduct> DrawerBoxes { get; set; } = Enumerable.Empty<DovetailDrawerBoxProduct>();
+    
+    [Parameter]
+    public bool UseInches { get; set; } = false;
+
+}

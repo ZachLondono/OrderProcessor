@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Notifications;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Data.Ordering;
@@ -50,10 +49,6 @@ public partial class InsertOrder {
                 await InsertProducts(order.Products, order.Id, connection, trx);
 
                 trx.Commit();
-
-                await _bus.Publish(new OrderCreatedNotification() {
-                    Order = order
-                });
 
                 return Response.Success();
 

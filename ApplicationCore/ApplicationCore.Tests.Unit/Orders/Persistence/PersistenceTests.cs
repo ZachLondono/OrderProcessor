@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Delete;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
@@ -9,6 +8,8 @@ using NSubstitute;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Shared.Data;
+using ApplicationCore.Features.Orders.Details.Queries;
+using ApplicationCore.Features.DeleteOrder;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence;
 

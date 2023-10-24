@@ -1,0 +1,131 @@
+﻿using ApplicationCore.Features.Orders.Details.Commands;
+using ApplicationCore.Features.Orders.Details.Models;
+using ApplicationCore.Features.Orders.Details.Queries;
+using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Shared.Services;
+using Blazored.Modal;
+using Blazored.Modal.Services;
+using Microsoft.AspNetCore.Components;
+using System.Diagnostics;
+
+namespace ApplicationCore.Features.Orders.Details.Views;
+
+public partial class OrderDetails {
+
+    [Parameter]
+    public Guid OrderId { get; set; }
+
+    [Parameter]
+    public RenderFragment<Order>? ActionPanel { get; set; }
+
+    [Parameter]
+    public RenderFragment<IProduct>? ProductActionsColumn { get; set; }
+
+    [CascadingParameter]
+    public IModalService Modal { get; set; } = default!;
+
+    public List<RoomModel> Rooms { get; set; } = new();
+
+    private Order? _order = null;
+    private bool _isNoteDirty = false;
+    private string _note = string.Empty;
+    private bool _useInches = false;
+
+    protected override async Task OnParametersSetAsync() {
+
+        var result = await Bus.Send(new GetOrderById.Query(OrderId));
+
+        result.OnSuccess(order => {
+
+            _order = order;
+            _note = order.Note;
+            SeparateRooms();
+
+        });
+
+    }
+
+    private void SeparateRooms() {
+        if (_order is null) return;
+        Rooms = _order
+                    .Products
+                    .GroupBy(p => p.Room)
+                    .Select(RoomModel.FromGrouping)
+                    .ToList();
+    }
+
+    public void OpenCustomerPage(Guid companyId) {
+        NavigationService.NavigateToCustomerPage(companyId);
+    }
+
+    public void OpenVendorPage(Guid companyId) {
+        NavigationService.NavigateToVendorPage(companyId);
+    }
+
+    private async Task OpenAdditionalItemModal(AdditionalItem item) {
+
+        if (_order is null) return;
+
+        var modal = Modal.Show<AdditionalItemModal>("Item Editor", new ModalParameters() {
+            { "Item", item }
+        });
+
+        var result = await modal.Result;
+
+        if (result.Confirmed) {
+
+            // Force a refresh
+            NavigationService.NavigateToOrderPage(_order.Id);
+
+            if (result.Data is AdditionalItem) {
+                // TODO: update order model and call state has changed, rather than refreshing page
+            }
+        }
+
+
+    }
+
+    private void ToggleUnits() {
+        _useInches = !_useInches;
+    }
+
+    private async Task SaveNoteAsync() {
+
+        if (_order is null) return;
+
+        try {
+            await Bus.Send(new UpdateOrderNote.Command(_order.Id, _note));
+        } catch (Exception ex) {
+            Debug.WriteLine("Exception thrown while saving changes");
+            Debug.WriteLine(ex);
+        }
+
+        StateHasChanged();
+
+    }
+
+    private void OnNoteChanged(ChangeEventArgs args) {
+        if (_order is null) return;
+        _note = args.Value?.ToString() ?? "";
+        _order.Note = _note;
+        _isNoteDirty = true;
+    }
+
+    public abstract class ProductRowModel<T> where T : IProduct {
+
+        public T Product { get; init; }
+        public bool IsComplete { get; set; } = false;
+
+        public ProductRowModel(T product) {
+            Product = product;
+        }
+
+    }
+
+    public void OnProductsChanged() {
+        SeparateRooms();
+        StateHasChanged();
+    }
+
+}

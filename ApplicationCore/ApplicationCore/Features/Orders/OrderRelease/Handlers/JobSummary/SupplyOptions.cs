@@ -20,7 +20,7 @@ public class SupplyOptions {
         IncludeShelfPins = false;
         IncludeCams = false;
         IncludeCabinetLegs = false;
-    } 
+    }
 
     public void AllSupplies() {
         IncludeMiscellaneous = true;

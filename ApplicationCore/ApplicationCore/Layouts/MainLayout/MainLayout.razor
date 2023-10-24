@@ -1,0 +1,299 @@
+﻿@using ApplicationCore.Features.BugReport;
+@using ApplicationCore.Features.CNC.ReleaseDialog;
+@using ApplicationCore.Features.ClosetOrderSelector;
+@using ApplicationCore.Features.Companies.Customers.Create;
+@using ApplicationCore.Features.DoorOrderCutListDirectory;
+@using ApplicationCore.Features.DoorOrderSelector;
+@using ApplicationCore.Features.OpenDoorOrders;
+@using ApplicationCore.Features.Orders
+@using ApplicationCore.Features.Orders.OrderLoading
+@using ApplicationCore.Features.Orders.OrderLoading.Dialog;
+@using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
+@using ApplicationCore.Features.Orders.Shared.State;
+@using ApplicationCore.Features.Updates;
+@using ApplicationCore.Shared.Services;
+@using ApplicationCore.Infrastructure
+@using System.Diagnostics;
+@using static ApplicationCore.Shared.Components.InformationDialog;
+@using ApplicationCore.Features.Orders.Shared;
+@using ApplicationCore.Infrastructure.Bus;
+@inherits LayoutComponentBase
+@inject IJSRuntime JSRuntime
+@inject NavigationService NavigationService 
+@inject IBus Bus
+@inject IFilePicker FilePicker
+
+<div class="page">
+	<header class="w-48 h-screen fixed top-0 left-0 bg-slate-100">
+        <nav>
+			<section>
+				<div class="grid grid-cols-2 text-white">
+					<div @onclick="GoBack" class="grid justify-items-center cursor-pointer p-2 ease-out duration-300 hover:bg-slate-200 text-gray-500 hover:text-black">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+						</svg>
+					</div>
+					<div @onclick="GoForward"  class="grid justify-items-center cursor-pointer p-2 ease-out duration-300 hover:bg-slate-200 text-gray-500 hover:text-black">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+						</svg>						  
+					</div>
+				</div>
+			</section>
+
+			<div class="px-2 my-2 divide-slate-100">
+				<hr />
+			</div>
+
+			<section class="text-gray-500">
+				<NavLink href="/" Match="NavLinkMatch.All" ActiveClass="text-blue-500" class="nav-link block cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 hover:text-black">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 inline-block">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
+                    </svg>
+					<span class="h-6 align-middle">Home</span>
+				</NavLink>
+				<NavLink href="/orders/list" ActiveClass="text-blue-500" class="nav-link block cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 hover:text-black">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 inline-block">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+					</svg>
+					<span class="h-6 align-middle">Orders</span>
+				</NavLink>
+				<NavLink href="/allcompanies" ActiveClass="text-blue-500" class="nav-link block cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 hover:text-black">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 inline-block">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
+					</svg>					  
+					<span class="h-6 align-middle">Companies</span>
+				</NavLink>
+				<NavLink href="/settings" ActiveClass="text-blue-500" class="nav-link block cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 hover:text-black">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 inline-block">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+						<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+					</svg>
+					<span class="h-6 align-middle">Settings</span>
+				</NavLink>
+			</section>
+				
+			<div class="px-2 my-2">
+				<hr />
+			</div>
+
+			<section>
+				<div @onclick="LoadOrder" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 text-gray-500 hover:text-black">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 inline-block">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+					</svg>						  
+					<span class="h-6 align-middle">Upload Order</span>
+				</div>
+				<div @onclick="CreateCustomer" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 text-gray-500 hover:text-black">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 inline-block">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+					</svg>
+					<span class="h-6 align-middle">Add Customer</span>
+				</div>
+			</section>
+
+			<div class="px-2 my-2">
+				<hr />
+			</div>
+
+			<section>
+				<div @onclick="OpenCNCReleaseDialog" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 text-gray-500 hover:text-black">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 inline-block">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+					</svg>
+					<span class="h-6 align-middle">Release CNC PDF</span>
+				</div>
+				<div @onclick="OpenDoorOrdersDialog" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 dark:hover:bg-slate-600  text-gray-500 hover:text-black dark:hover:text-white">
+					<svg fill="#000000" width="800px" height="800px" viewBox="0 0 24 24" id="door" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" class="w-6 h-6 mr-2 inline-block fill-current">
+						<line id="secondary-upstroke" x1="10.45" y1="12" x2="10.55" y2="12" style="fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"></line>
+						<path id="primary" d="M18,21H6V4A1,1,0,0,1,7,3H17a1,1,0,0,1,1,1ZM5,21H19" style="fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"></path>
+					</svg>
+					<span class="h-6 align-middle">Door Order Files</span>
+				</div>
+				<div @onclick="OpenClosetOrdersDialog" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 dark:hover:bg-slate-600  text-gray-500 hover:text-black dark:hover:text-white">
+					<svg fill="#000000" height="800px" width="800px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="w-6 h-6 mr-2 inline-block fill-current" viewBox="0 0 512 512" xml:space="preserve">
+						<g>
+							<g>
+								<path d="M469.333,0h-192H42.667C30.885,0,21.333,9.551,21.333,21.333v128v213.333V448v42.667c0,11.782,9.551,21.333,21.333,21.333
+									C54.449,512,64,502.449,64,490.667v-21.333h213.333H448v21.333c0,11.782,9.551,21.333,21.333,21.333
+									c11.782,0,21.333-9.551,21.333-21.333V448V341.333V234.667V128V21.333C490.667,9.551,481.115,0,469.333,0z M64,170.667h42.667V192
+									c0,11.782,9.551,21.333,21.333,21.333c11.782,0,21.333-9.551,21.333-21.333v-21.333h21.333V192
+									c0,11.782,9.551,21.333,21.333,21.333s21.333-9.551,21.333-21.333v-21.333H256v64v106.667H64V170.667z M448,213.333H298.667v-64
+									H448V213.333z M298.667,256H448v64H298.667V256z M448,106.667H298.667v-64H448V106.667z M64,42.667h192V128h-42.667v-21.333
+									c0-11.782-9.551-21.333-21.333-21.333s-21.333,9.551-21.333,21.333V128h-21.333v-21.333c0-11.782-9.551-21.333-21.333-21.333
+									c-11.782,0-21.333,9.551-21.333,21.333V128H64V42.667z M64,384h192v42.667H64V384z M298.667,362.667H448v64H298.667V362.667z"/>
+							</g>
+						</g>
+					</svg>
+					<span class="h-6 align-middle">Closet Order Files</span>
+				</div>
+			</section>
+
+			<div class="px-2 my-2">
+				<hr />
+			</div>
+
+			<section>
+				<div @onclick="OpenUpdatesDialog" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 dark:hover:bg-slate-600  text-gray-500 hover:text-black dark:hover:text-white">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 inline-block">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z" />
+					</svg>
+					<span class="h-6 align-middle">Update</span>
+				</div>
+				<div @onclick="OpenBugReportDialog" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 text-gray-500 hover:text-black">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 inline-block">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M16.712 4.33a9.027 9.027 0 011.652 1.306c.51.51.944 1.064 1.306 1.652M16.712 4.33l-3.448 4.138m3.448-4.138a9.014 9.014 0 00-9.424 0M19.67 7.288l-4.138 3.448m4.138-3.448a9.014 9.014 0 010 9.424m-4.138-5.976a3.736 3.736 0 00-.88-1.388 3.737 3.737 0 00-1.388-.88m2.268 2.268a3.765 3.765 0 010 2.528m-2.268-4.796a3.765 3.765 0 00-2.528 0m4.796 4.796c-.181.506-.475.982-.88 1.388a3.736 3.736 0 01-1.388.88m2.268-2.268l4.138 3.448m0 0a9.027 9.027 0 01-1.306 1.652c-.51.51-1.064.944-1.652 1.306m0 0l-3.448-4.138m3.448 4.138a9.014 9.014 0 01-9.424 0m5.976-4.138a3.765 3.765 0 01-2.528 0m0 0a3.736 3.736 0 01-1.388-.88 3.737 3.737 0 01-.88-1.388m2.268 2.268L7.288 19.67m0 0a9.024 9.024 0 01-1.652-1.306 9.027 9.027 0 01-1.306-1.652m0 0l4.138-3.448M4.33 16.712a9.014 9.014 0 010-9.424m4.138 5.976a3.765 3.765 0 010-2.528m0 0c.181-.506.475-.982.88-1.388a3.736 3.736 0 011.388-.88m-2.268 2.268L4.33 7.288m6.406 1.18L7.288 4.33m0 0a9.024 9.024 0 00-1.652 1.306A9.025 9.025 0 004.33 7.288" />
+					</svg>
+					<span class="h-6 align-middle">Report Bug</span>
+				</div>
+			</section>
+
+		</nav>
+    </header>
+	<main class="ml-48">
+        @*<article class="content px-4">*@
+		<article class="container mx-auto my-12 px-0 sm:px-10">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+
+	[CascadingParameter]
+	public IModalService Modal { get; set; } = default!;
+
+	private async Task LoadOrder() {
+
+		try {
+
+			var sourceTypePickerResult = await Modal.Show<ChooseOrderProviderDialog>("Choose Order Source").Result;
+			if (sourceTypePickerResult.Cancelled || sourceTypePickerResult.Data is not SourceConfig sourceConfig) {
+				return;
+			}
+
+			var sourceDialogResult = await Modal.Show(sourceConfig.SourcePickerDialogType, sourceConfig.DialogTitle).Result;
+			if (sourceDialogResult.Data is not string orderSource || string.IsNullOrWhiteSpace(orderSource)) {
+				return;
+			}
+
+			var parameters = new ModalParameters() {
+				{ "SourceType", sourceConfig.SourceType },
+				{ "Source", orderSource.Trim() }
+			};
+
+			var options = new ModalOptions() {
+				DisableBackgroundCancel = true,
+				HideHeader = true
+			};
+
+			_ = await Modal.Show<OrderLoadWidget>("Loading Order", parameters, options).Result;
+
+		} catch (Exception e) {
+
+			_ = await Modal.OpenErrorDialog(new Error() {
+				Title = e.Message,
+				Details = e.ToString()
+			});
+
+		}
+
+	}
+
+	private async Task CreateCustomer() {
+		var dialog = Modal.Show<CreateCustomerDialog>("", new ModalOptions() {
+			HideHeader = true
+		});
+		_ = await dialog.Result;
+	}
+
+	private async Task OpenCNCReleaseDialog() {
+		var dialog = ShowReleasePDFDialogModal();
+		_ = await dialog.Result;
+	}
+
+	private async Task OpenBugReportDialog() {
+		var dialog = Modal.Show<BugReportWidget>("Bug Reporter", new ModalOptions() {
+			DisableBackgroundCancel = true,
+			HideHeader = true
+		});
+		_ = await dialog.Result;
+	}
+
+	private async Task OpenUpdatesDialog() {
+		var dialog = Modal.Show<UpdatesDialog>("Updates", new ModalOptions() {
+			Size = ModalSize.Automatic
+		});
+		_ = await dialog.Result;
+	}
+
+	private async Task OpenDoorOrdersDialog() {
+		var dialog = Modal.Show<DoorOrderSelectorWidget>("", new ModalOptions() {
+			Size = ModalSize.Automatic,
+			HideHeader = true,
+			DisableBackgroundCancel = true
+		});
+		var result = await dialog.Result;
+		if (result.Confirmed && result.Data is DoorOrder doorOrder) {
+			var outputDirResult = await Bus.Send(new GetDoorOrderCutListDirectory.Query(doorOrder.OrderFileDirectory));
+			string outputDirectory = @"R:\Door Orders\Door Programs";
+			outputDirResult.OnSuccess(dir => outputDirectory = dir);
+			string emailRecipients = "maciej@royalcabinet.com";
+			if (!doorOrder.Vendor.ToLowerInvariant().Contains("royal")) {
+				emailRecipients += ";toya@royalcabinet.com";
+			}
+			dialog = ShowReleasePDFDialogModal(doorOrder.Customer, doorOrder.Vendor, $"{doorOrder.OrderNumber} DOORS CUTLIST", doorOrder.ReportFilePath, outputDirectory, true, emailRecipients);
+			_ = await dialog.Result;
+		}
+	}
+
+	private async Task OpenClosetOrdersDialog() {
+		var dialog = Modal.Show<ClosetOrderSelectorWidget>("", new ModalOptions() {
+			Size = ModalSize.Automatic,
+			HideHeader = true,
+			DisableBackgroundCancel = true
+		});
+		var result = await dialog.Result;	
+		if (result.Confirmed && result.Data is ClosetOrder closetOrder) {
+
+			string directory = "";// @"X:\_CUTLISTS  Incoming";
+			if (Path.GetDirectoryName(closetOrder.OrderFileDirectory) is string baseDirectory) {
+				string workingDirectory = Path.Combine(baseDirectory, "CUTLIST");
+				if (!Directory.Exists(workingDirectory)) {
+					Directory.CreateDirectory(workingDirectory);
+				}
+				directory = workingDirectory; //+= ";" + workingDirectory;
+			}
+
+			dialog = ShowReleasePDFDialogModal(closetOrder.Customer, "Royal Cabinet", $"{closetOrder.OrderNumber} CUTLIST", closetOrder.ReportFilePath, directory, false, "maciej@royalcabinet.com;purchasing@royalcabinet.com");
+			_ = await dialog.Result;
+
+		}
+	}
+	private async Task GoBack() {
+		await JSRuntime.InvokeVoidAsync("history.back");
+	}
+
+	private async Task GoForward() {
+		await JSRuntime.InvokeVoidAsync("history.forward");
+	}
+
+	private IModalReference ShowReleasePDFDialogModal(string? customerName = null, string? vendorName = null, string? fileName = null, string? reportFilePath = null, string? outputDirectory = null, bool? sendEmail = null, string? emailRecipients = null) {
+
+		var parameters = new ModalParameters();
+		if (customerName is not null) parameters.Add("CustomerName", customerName);
+		if (vendorName is not null) parameters.Add("VendorName", vendorName);
+		if (fileName is not null) parameters.Add("FileName", fileName);
+		if (reportFilePath is not null) parameters.Add("ReportFilePath", reportFilePath);
+		if (outputDirectory is not null) parameters.Add("OutputDirectory", outputDirectory);
+		if (sendEmail is not null) parameters.Add("SendEmail", sendEmail);
+		if (emailRecipients is not null) parameters.Add("EmailRecipients", emailRecipients);
+		
+		return Modal.Show<ReleasePDFDialog>("CNC Release PDF", parameters, new ModalOptions() {
+			DisableBackgroundCancel = true,
+			Size = ModalSize.ExtraLarge
+		});
+
+	}
+
+}

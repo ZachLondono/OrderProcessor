@@ -6,17 +6,13 @@ using Blazored.Modal;
 using ApplicationCore.Features.Orders;
 using ApplicationCore.Features.Companies;
 using ApplicationCore.Shared.Services;
-using ApplicationCore.Features.CNC;
 using ApplicationCore.Shared.Components.ProgressModal;
 using ApplicationCore.Pages.OrderList;
 using ApplicationCore.Shared.Data;
 using ApplicationCore.Shared.Bus;
-using ApplicationCore.Infrastructure.UI;
 using ApplicationCore.Features.DataFilePaths;
 using ApplicationCore.Features.Updates;
-using ApplicationCore.Widgets.Orders;
-using ApplicationCore.Widgets.Companies;
-using ApplicationCore.Widgets.Products.ProductDrawingManager;
+using ApplicationCore.Shared.CNC;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -33,13 +29,10 @@ public static class DependencyInjection {
         services.AddTransient<NavigationService>();
 
         services.AddCompanies();
-        services.AddCompanyWidgets();
 
         services.AddOrderFeatures(configuration);
-        services.AddOrderWidgets();
-        services.AddTransient<ProductDrawingManagerButtonViewModel>();
 
-        services.AddCNC(configuration);
+        services.AddCNCServices();
 
         services.AddConfiguration();
 
@@ -59,7 +52,6 @@ public static class DependencyInjection {
         services.AddTransient<ProgressModalViewModel>();
 
         services.AddBus(configuration);
-        services.AddSingleton<IUIBus, UIBus>();
 
         SqlMapping.AddSqlMaps();
 

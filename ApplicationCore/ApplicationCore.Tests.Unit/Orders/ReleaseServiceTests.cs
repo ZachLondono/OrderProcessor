@@ -25,7 +25,6 @@ public class ReleaseServiceTests {
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly IEmailService _emailService;
-    private readonly ReleaseEmailBodyGenerator _emailBodyGenerator;
 
     public ReleaseServiceTests() {
         _fileReader = new FileReader();
@@ -38,9 +37,8 @@ public class ReleaseServiceTests {
         _packingListDecorator = new(sp);
         _jobSummaryDecorator = new(sp);
         _emailService = Substitute.For<IEmailService>();
-        _emailBodyGenerator = Substitute.For<ReleaseEmailBodyGenerator>();
 
-        _sut = new ReleaseService(_logger, _fileReader, _invoiceDecorator, _packingListDecorator, _cncReleaseDecoratorFactory, _jobSummaryDecorator, _getCustomerByIdAsync, _getVendorByIdAsync, _emailService, _emailBodyGenerator);
+        _sut = new ReleaseService(_logger, _fileReader, _invoiceDecorator, _packingListDecorator, _cncReleaseDecoratorFactory, _jobSummaryDecorator, _getCustomerByIdAsync, _getVendorByIdAsync, _emailService);
     }
 
     [Fact]

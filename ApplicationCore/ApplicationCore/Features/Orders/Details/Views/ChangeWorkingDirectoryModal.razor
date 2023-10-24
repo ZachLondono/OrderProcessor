@@ -1,0 +1,54 @@
+﻿@using ApplicationCore.Features.Orders.Shared.State;
+@using ApplicationCore.Infrastructure.Bus;
+@using ApplicationCore.Shared.Components
+@using static ApplicationCore.Shared.Components.Button;
+@inject IBus Bus
+
+<EditForm Model="@_model" OnSubmit="@UpdateWorkingDirectory" >
+
+    @if (_error is not null) {
+        <div>
+            <h3>@_error.Title</h3>
+            <p>@_error.Details</p>
+        </div>
+    }
+
+    @if (_isLoading) {
+
+        <div>
+            <div class="w-24 h-5 mb-1.5 bg-gray-300 animate-pulse"></div>
+            <div class="w-full h-8 mb-1.5 bg-gray-300 animate-pulse"></div>
+        </div>
+
+        <div class="my-5">
+            <div class="w-24 h-5 mr-1.5 bg-gray-300 animate-pulse inline-block"></div>
+            <div class="w-12 h-5 bg-gray-300 animate-pulse inline-block"></div>
+        </div>
+        
+        <Button class="mt-5" Color="ButtonColor.Secondary" OnClickAsync="Cancel">Cancel</Button>
+
+    } else {
+        
+        <label>
+            New Directory
+            <InputText @bind-Value="_model.NewDirectory" class="input-text w-full"/>
+        </label>
+
+        <div class="my-5">
+            Migration Mode
+            <InputSelect @bind-Value="_model.Mode">
+                <option>None</option>
+                <option>Copy</option>
+                <option>Move</option>
+                <option>Delete</option>
+            </InputSelect>
+        </div>
+
+        <Button type="submit" Color="ButtonColor.Primary">Update</Button>
+        <Button Color="ButtonColor.Secondary" OnClickAsync="Cancel">Cancel</Button>
+
+    }
+
+</EditForm>
+
+

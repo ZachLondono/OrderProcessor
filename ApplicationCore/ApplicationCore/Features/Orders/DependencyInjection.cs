@@ -3,20 +3,16 @@ using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Services;
 using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.OrderLoading;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.State;
-using ApplicationCore.Features.Orders.Contracts;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
-using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ApplicationCore.Features.Orders.Delete;
 using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Features.Orders.CustomerOrderNumber;
-using ApplicationCore.Features.Orders.WorkingDirectory;
+using ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -31,31 +27,11 @@ public static class DependencyInjection {
         services.AddOrderLoading(configuration);
         services.AddSingleton<ProductBuilderFactory>();
         services.AddSingleton<ComponentBuilderFactory>();
-        services.AddSingleton<OrderState>();
 
         services.AddTransient<IFileHandler, FileHandler>();
 
         AddReleaseServices(services);
         AddExportServices(services);
-
-        services.AddTransient<Ordering.GetOrderNumberById>(sp => {
-
-            var bus = sp.GetRequiredService<IBus>();
-            return async (id) => {
-
-                var response = await bus.Send(new GetOrderNumberById.Query(id));
-
-                string number = "";
-                response.Match(
-                    result => number = result,
-                    error => number = "Unknown"
-                );
-
-                return number;
-
-            };
-
-        });
 
         return services;
 
@@ -80,7 +56,6 @@ public static class DependencyInjection {
 
     private static IServiceCollection AddViewModels(this IServiceCollection services)
         => services.AddTransient<ChooseOrderProviderViewModel>()
-                    .AddTransient<DeleteOrderConfirmationModalViewModel>()
                     .AddTransient<CustomerOrderNumberViewModel>();
 
 }

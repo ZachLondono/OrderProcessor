@@ -176,13 +176,13 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                             .FontSize(12)
                             .Bold();
 
-                         jobSummary.MaterialTypes
-                                     .Select((mat, idx) => (mat, idx))
-                                     .ForEach(item =>
-                                         column.Item()
-                                              .AlignLeft()
-                                              .Text($"    {item.idx + 1})  {item.mat}")
-                                              .FontSize(10));
+                        jobSummary.MaterialTypes
+                                    .Select((mat, idx) => (mat, idx))
+                                    .ForEach(item =>
+                                        column.Item()
+                                             .AlignLeft()
+                                             .Text($"    {item.idx + 1})  {item.mat}")
+                                             .FontSize(10));
                     }
 
                     column.Item()
@@ -1160,7 +1160,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
             col.Item().Row(row => {
 
-                (string numberPrefix, string number) = SplitOrderNumber(jobSummary.Number); 
+                (string numberPrefix, string number) = SplitOrderNumber(jobSummary.Number);
 
                 row.RelativeItem()
                     .PaddingRight(10)
@@ -1236,7 +1236,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
     private static (string prefix, string orderNumber) SplitOrderNumber(string orderNumber) {
 
-        int prefixFirstIndex = orderNumber.IndexOfAny(new char[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
+        int prefixFirstIndex = orderNumber.IndexOfAny(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
         var numberPrefix = orderNumber[..prefixFirstIndex];
         var number = orderNumber[prefixFirstIndex..];
 

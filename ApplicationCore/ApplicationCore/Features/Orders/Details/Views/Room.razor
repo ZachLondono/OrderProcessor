@@ -1,0 +1,180 @@
+﻿@using ApplicationCore.Features.Orders.Details.Views.ProductTables
+@using ApplicationCore.Features.Orders.Shared.Domain.Products;
+@using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
+@using ApplicationCore.Features.Orders.Shared.State;
+@using ApplicationCore.Infrastructure.Bus;
+@using ApplicationCore.Shared.Components
+@using System.Diagnostics;
+@using static ApplicationCore.Shared.Components.Button;
+@using static ApplicationCore.Features.Orders.Details.Views.ProductTables.MDFDoorProductTable;
+@using static ApplicationCore.Features.Orders.Details.Views.ProductTables.DovetailDrawerBoxProductTable;
+@using static ApplicationCore.Features.Orders.Details.Views.ProductTables.ClosetPartProductTable;
+@using static ApplicationCore.Features.Orders.Details.Views.ProductTables.CabinetProductTable;
+@using ApplicationCore.Features.Orders.Details.Models;
+@inject IBus Bus;
+
+@if (Model is not null) {
+
+    @if (_isHidden) {
+
+        <div @onclick="Toggle" class="py-3 bg-slate-100 cursor-pointer hover:bg-slate-200 border-gray-200 @(IsFirst ? "rounded-t-md" : "") @(IsLast ? "rounded-b-md" : "border-b")">
+            <div class="font-bold text-xl pl-3 py-3">
+                @if (!string.IsNullOrWhiteSpace(Model.Name)) {
+                    <span>@Model.Name@(Model.IsDirty ? "*" : "")</span>
+                } else {
+                    <span>Room @(Index + 1)</span>
+                }
+            </div>
+        </div>
+
+    } else {
+        <div class="py-3 bg-slate-100 cursor-pointer border-gray-200 @(IsFirst ? "rounded-t-md" : "") @(IsLast ? "rounded-b-md" : "border-b")">
+            <header @onclick="Toggle">
+                <input @onclick:stopPropagation="true" @onclick:preventDefault="true" type="text" placeholder="Room @(Index + 1)" @oninput="a => OnRoomNameChanged(a, Model)" value="@Model.Name" class="bg-transparent font-bold text-xl pl-3 pt-3"/>
+                <div class="pl-3">
+                    <Button StopPropagation="true" PreventDefault="true" OnClickAsync="SaveRoomNameChange" Size="ButtonSize.XSmall" Style="ButtonStyle.Text" Disabled="!Model.IsDirty">Save</Button>
+                </div>
+            </header>
+            <div class="bg-white px-3 py-10 space-y-5">
+                @if (Model.DovetailDrawerBoxes.Any())
+                {
+                    <div>
+                        <h3 class="font-semibold text-lg pl-3">Dovetail Drawer Boxes (@Model.DovetailDrawerBoxes.Count)</h3>
+                        <DovetailDrawerBoxProductTable
+                        DrawerBoxes="@Model.DovetailDrawerBoxes"
+                        ActionColumn="ProductActionsColumn"
+                        UseInches="@UseInches"
+                        Context="product" />
+                    </div>
+                }
+
+                @if (Model.DoweledDrawerBoxes.Any())
+                {
+                    <div>
+                        <h3 class="font-semibold text-lg pl-3">Doweled Drawer Boxes (@Model.DoweledDrawerBoxes.Count)</h3>
+                        <DoweledDrawerBoxProductTable 
+                        DrawerBoxes="@Model.DoweledDrawerBoxes"
+                        ActionColumn="ProductActionsColumn"
+                        UseInches="@UseInches"
+                        Context="product" />
+                    </div>
+                }
+
+                @if (Model.Cabinets.Any())
+                {
+                    <div>
+                        <h3 class="font-semibold text-lg pl-3">Cabinets (@Model.Cabinets.Count)</h3>
+                        <CabinetProductTable
+                        Cabinets="@Model.Cabinets"
+                        ActionColumn="ProductActionsColumn"
+                        UseInches="@UseInches"
+                        Context="product" />
+                    </div>
+                }
+
+                @if (Model.CabinetParts.Any())
+                {
+                    <div>
+                        <h3 class="font-semibold text-lg pl-3">Cabinet Extra Parts (@Model.CabinetParts.Count)</h3>
+                        <CabinetPartProductTable
+                        CabinetParts="@Model.CabinetParts"
+                        ActionColumn="ProductActionsColumn"
+                        UseInches="@UseInches"
+                        Context="product" />
+                    </div>
+                }
+
+                @if (Model.ClosetParts.Any())
+                {
+                    <div>
+                        <h3 class="font-semibold text-lg pl-3">Closet Parts (@Model.ClosetParts.Count)</h3>
+                        <ClosetPartProductTable 
+                        ClosetParts="@Model.ClosetParts"
+                        ActionColumn="ProductActionsColumn"
+                        UseInches="@UseInches"
+                        Context="product" />
+                    </div>
+                }
+
+                @if (Model.ZargenDrawers.Any())
+                {
+                    <div>
+                        <h3 class="font-semibold text-lg pl-3">Zargen Drawers (@Model.ZargenDrawers.Count)</h3>
+                        <ZargenDrawerProductTable
+                        ZargenDrawers="@Model.ZargenDrawers"
+                        ActionColumn="ProductActionsColumn"
+                        UseInches="@UseInches"
+                        Context="product" />
+                    </div>
+                }
+
+                @if (Model.MDFDoors.Any())
+                {
+                    <div>
+                        <h3 class="font-semibold text-lg pl-3">MDF Doors (@Model.MDFDoors.Count)</h3>
+                        <MDFDoorProductTable 
+                        MDFDoors="@Model.MDFDoors"
+                        ActionColumn="ProductActionsColumn"
+                        UseInches="@UseInches"
+                        Context="product" />
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+}
+
+@code {
+
+    [Parameter]
+    public RoomModel? Model { get; set; }
+
+    [Parameter]
+    public int Index { get; set; } = 0;
+
+    [Parameter]
+    public bool IsFirst { get; set; } = false;
+
+    [Parameter]
+    public bool IsLast { get; set; } = false;
+
+    [Parameter]
+    public bool UseInches { get; set; } = false;
+
+    [Parameter]
+    public RenderFragment<IProduct>? ProductActionsColumn { get; set; }
+
+    private bool _isHidden = true;
+
+    private static void OnRoomNameChanged(ChangeEventArgs args, RoomModel room) {
+        room.Name = args.Value?.ToString() ?? "";
+    }
+
+    private void Toggle() {
+        _isHidden = !_isHidden;
+        StateHasChanged();
+    }
+
+    private async Task SaveRoomNameChange() {
+
+        if (Model is null || !Model.IsDirty) return;
+
+        foreach (var product in Model.Products) {
+
+            try {
+                product.Room = Model.Name;
+                await Bus.Send(new UpdateProduct.Command(product));
+            } catch (Exception ex) {
+                Debug.Write("Exception thrown while saving product room name change");
+                Debug.WriteLine(ex);
+            }
+
+        }
+
+        Model.IsDirty = false;
+        StateHasChanged();
+
+    }
+
+}

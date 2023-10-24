@@ -3,16 +3,15 @@ using ApplicationCore.Features.Orders.OrderExport.Handlers.DoorOrderExport;
 using ApplicationCore.Features.Orders.OrderExport.Handlers.DovetailOrderExport;
 using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Shared;
 using ApplicationCore.Shared.Services;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Options;
 using CADCodeProxy.Machining;
 using ApplicationCore.Features.Orders.Shared.Domain;
-using ApplicationCore.Features.CSVTokens;
 using Microsoft.Extensions.Logging;
 using ApplicationCore.Shared.Settings;
+using CADCodeProxy.CSV;
 
 namespace ApplicationCore.Features.Orders.OrderExport;
 
@@ -26,28 +25,29 @@ internal class ExportService {
 
     private readonly ILogger<ExportService> _logger;
     private readonly IBus _bus;
-    private readonly OrderState _orderState;
     private readonly ExportSettings _options;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly IFileReader _fileReader;
 
-    public ExportService(ILogger<ExportService> logger, IBus bus, OrderState orderState, IOptions<ExportSettings> options, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IFileReader fileReader) {
+    public ExportService(ILogger<ExportService> logger, IBus bus, IOptions<ExportSettings> options, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, IFileReader fileReader) {
         _logger = logger;
         _bus = bus;
-        _orderState = orderState;
         _options = options.Value;
         _getCustomerByIdAsync = getCustomerByIdAsync;
         _fileReader = fileReader;
     }
 
-    public async Task Export(ExportConfiguration configuration) {
+    public async Task Export(Order order, ExportConfiguration configuration) {
 
-        if (_orderState.Order is null || configuration.OutputDirectory is null) {
+        if (configuration.OutputDirectory is null) {
+
+            OnError?.Invoke("No export output directory is set");
+            _logger.LogError("Export cancelled because no configuration does not have a output directory set {ExportConfiguration}", configuration);
+
             return;
         }
 
         try {
-            var order = _orderState.Order;
 
             var customerName = await GetCustomerName(order.CustomerId);
             var outputDir = ReplaceTokensInDirectory(customerName, configuration.OutputDirectory);
@@ -58,7 +58,7 @@ internal class ExportService {
 
             await GenerateEXT(configuration, order, _options.EXTOutputDirectory);
 
-            await GenerateCSV(configuration, order, customerName, _options.CSVOutputDirectory);
+            GenerateCSV(configuration, order, customerName, _options.CSVOutputDirectory);
 
             OnActionComplete?.Invoke("Export Complete");
 
@@ -169,7 +169,7 @@ internal class ExportService {
 
     }
 
-    private async Task GenerateCSV(ExportConfiguration configuration, Order order, string customerName, string outputDir) {
+    private void GenerateCSV(ExportConfiguration configuration, Order order, string customerName, string outputDir) {
 
         if (!configuration.GenerateCSV) {
             OnProgressReport?.Invoke("Not generating CSV file");
@@ -204,20 +204,25 @@ internal class ExportService {
             return;
         }
 
-        string jobName = string.IsNullOrWhiteSpace(configuration.CsvJobName) ? $"{order.Number} - {order.Name}" : configuration.CsvJobName;
-        var batch = new Batch() {
-            Name = _fileReader.RemoveInvalidPathCharacters(jobName),
-            Parts = parts
-        };
-
         OnProgressReport?.Invoke("Generating CSV file");
 
-        var response = await _bus.Send(new WriteTokensToCSV.Command(batch, outputDir));
+        try {
 
-        response.Match(
-            file => OnFileGenerated?.Invoke(file),
-            error => OnError?.Invoke($"{error.Title} - {error.Details}")
-        );
+            string jobName = string.IsNullOrWhiteSpace(configuration.CsvJobName) ? $"{order.Number} - {order.Name}" : configuration.CsvJobName;
+            var batch = new Batch() {
+                Name = _fileReader.RemoveInvalidPathCharacters(jobName),
+                Parts = parts
+            };
+
+            var filePath = new CSVTokenWriter().WriteBatchCSV(batch, outputDir);
+            OnFileGenerated?.Invoke(filePath);
+
+        } catch (Exception ex) {
+
+            _logger.LogError(ex, "Exception thrown while trying to write CADCode CSV token file");
+            OnError?.Invoke("Failed to generate CSV token file");
+
+        }
 
     }
 
@@ -246,6 +251,5 @@ internal class ExportService {
         }
 
     }
-
 
 }

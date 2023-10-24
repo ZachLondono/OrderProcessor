@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.WorkingDirectory;
+﻿using ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
 using ApplicationCore.Infrastructure.Bus;
 using FluentAssertions;
 using NSubstitute;

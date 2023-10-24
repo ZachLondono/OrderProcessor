@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using System.Linq;
 using Serilog.Events;
+using ApplicationCore;
 
 namespace DesktopHost;
 
@@ -81,6 +82,7 @@ public partial class App : Application {
                             .AddSingleton<IMessageBoxService, WPFMessageBox>()
                             .AddSingleton(configuration)
                             .AddLogging(builder => builder.ClearProviders().AddSerilog())
+                            .AddViewModels()
                             .ConfigureSettings(configuration, LogVerbose);
 
         services.AddWpfBlazorWebView();

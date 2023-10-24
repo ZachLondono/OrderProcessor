@@ -20,6 +20,6 @@ public partial class Collapsable {
         IsHidden = !IsHidden;
         await IsHiddenChanged.InvokeAsync(IsHidden);
         StateHasChanged();
-    } 
-    
+    }
+
 }

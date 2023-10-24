@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Orders.List;
-using ApplicationCore.Widgets.Orders.OrderList;
+﻿using ApplicationCore.Features.OrderList;
 using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
 

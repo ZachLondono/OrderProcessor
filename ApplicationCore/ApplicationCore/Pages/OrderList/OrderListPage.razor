@@ -1,8 +1,8 @@
 ﻿@page "/orders/list"
+@using ApplicationCore.Features.CreateOrderRelationship
+@using ApplicationCore.Features.OrderList
+@using ApplicationCore.Features.Orders.OrderRelease
 @using ApplicationCore.Shared.Components
-@using ApplicationCore.Widgets.Orders.CreateOrderRelationships
-@using ApplicationCore.Widgets.Orders.OrderList
-@using ApplicationCore.Widgets.Orders.OrderRelease
 @inject OrderListPageViewModel DataContext 
 
 <h1 class="text-3xl mb-2">Orders</h1>
@@ -34,10 +34,10 @@
     <div class="my-5 flex space-x-5">
         @if (DataContext.SelectedOrders.Any()) {
             <div class="flex-none">
-                <OrderReleaseWidget GetOrdersAsync="DataContext.GetSelectedOrdersAsync"/>
+                <OrderReleaseWidget OrderIds="DataContext.SelectedOrders.Select(o => o.Id)"/>
             </div>
             <div class="flex-none">
-                <CreateOrderRelationshipsWidget OrderIds="DataContext.SelectedOrders.Select(o => o.Id)" />
+                <CreateOrderRelationshipsButton OrderIds="DataContext.SelectedOrders.Select(o => o.Id)"/>
             </div>
         }
     </div>

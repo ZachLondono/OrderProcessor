@@ -1,0 +1,69 @@
+﻿@using ApplicationCore.Features.ClosetOrderSelector;
+@using ApplicationCore.Infrastructure.Bus;
+@using ApplicationCore.Shared.Components
+@using static ApplicationCore.Shared.Components.Button;
+@inject ClosetOrderSelectorViewModel DataContext;
+
+<h3>Open Closet Orders</h3>
+
+@if (!string.IsNullOrEmpty(DataContext.Error)) {
+    <span class="text-red-500">@DataContext.Error</span>
+}
+
+@if (DataContext.IsLoading) {
+    <span>Loading...</span>
+} else {
+
+    @if (DataContext.OpenClosetOrders.Any()) {
+        <table class="table-auto">
+            <thead class="border-b border-slate-300">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Customer</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in DataContext.OpenClosetOrders) {
+                    <tr class="text-center border-b cursor-pointer hover:bg-slate-200" onclick="@(() => SelectOrder(order))">
+                        <td class="p-5">@order.OrderNumber</td>
+                        <td class="p-5">@order.OrderName</td>
+                        <td class="p-5">@order.Customer</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    } else {
+        <div>
+            <span>No open closet orders were found</span>
+        </div>
+    }
+
+    <div class="mt-5">
+        <Button OnClickAsync="Close" Color="ButtonColor.Danger">Close</Button>
+        <Button OnClickAsync="DataContext.LoadOpenOrders" Color="ButtonColor.Secondary">Refresh</Button>
+    </div>
+}
+
+
+@code {
+
+    [CascadingParameter]
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync() {
+        base.OnInitialized();
+        DataContext.OnPropertyChanged += StateHasChanged;
+        await DataContext.LoadOpenOrders();
+    }
+
+
+    private async Task SelectOrder(ClosetOrder selectedOrder) {
+        await BlazoredModal.CloseAsync(ModalResult.Ok(selectedOrder));
+    }
+
+    private async Task Close() {
+        await BlazoredModal.CloseAsync();
+    }
+
+}
