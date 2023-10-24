@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.CNC.Contracts;
+﻿using ApplicationCore.Shared.CNC.ReleasePDF;
+using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
@@ -11,11 +12,11 @@ public class CNCReleaseDecoratorFactory {
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<(ICNCReleaseDecorator, ReleasedJob?)> Create(string reportFilePath, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
+    public ICNCReleaseDecorator Create(ReleasedJob job) {
 
         var decorator = _serviceProvider.GetRequiredService<ICNCReleaseDecorator>();
-        var job = await decorator.LoadDataFromFile(reportFilePath, orderDate, dueDate, customerName, vendorName);
-        return (decorator, job);
+        decorator.AddData(job);
+        return decorator;
 
     }
 

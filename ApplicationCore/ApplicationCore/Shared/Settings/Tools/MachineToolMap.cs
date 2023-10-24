@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace ApplicationCore.Shared.Settings.Tools;
 
-internal class MachineToolMap {
+public class MachineToolMap {
 
     [ConfigurationKeyName("machine_name")]
     [JsonPropertyName("machine_name")]

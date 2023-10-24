@@ -205,7 +205,7 @@ internal class ExportService {
         }
 
         OnProgressReport?.Invoke("Generating CSV file");
-    
+
         try {
 
             string jobName = string.IsNullOrWhiteSpace(configuration.CsvJobName) ? $"{order.Number} - {order.Name}" : configuration.CsvJobName;

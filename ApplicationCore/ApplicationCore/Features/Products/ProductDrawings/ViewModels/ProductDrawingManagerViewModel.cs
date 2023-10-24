@@ -70,7 +70,7 @@ public class ProductDrawingManagerViewModel {
                 _ => {
                     DrawingRows.Remove(row);
                     Error = null;
-                }, 
+                },
                 error => Error = error
             );
 
@@ -104,23 +104,23 @@ public class ProductDrawingManagerViewModel {
         try {
 
             string name = GetNewDrawingName();
-    
+
             var drawing = new ProductDrawing() {
                 Id = Guid.NewGuid(),
                 ProductId = _productId,
                 Name = name,
                 DXFData = Array.Empty<byte>(),
             };
-    
+
             var saveResponse = await _bus.Send(new SaveActiveDrawingToProduct.Command(drawing.ProductId, drawing.Id, name));
-    
+
             saveResponse.Match(
                 _ => {
                     DrawingRows.Add(new(drawing));
                     Error = null;
                 },
                 e => Error = e);
-    
+
         } catch (Exception ex) {
 
             Error = new() {

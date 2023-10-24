@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using ApplicationCore.Features.CNC.ReleasePDF.Styling;
+using ApplicationCore.Shared.CNC.ReleasePDF.Styling;
 
 namespace ApplicationCore.Shared.Settings;
 

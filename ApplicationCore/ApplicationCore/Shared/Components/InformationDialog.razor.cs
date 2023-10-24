@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace ApplicationCore.Shared.Components;
 
-public partial class InformationDialog
-{
+public partial class InformationDialog {
 
     [CascadingParameter]
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
@@ -19,15 +18,13 @@ public partial class InformationDialog
     [Parameter]
     public string Details { get; set; } = string.Empty;
 
-    public enum MessageType
-    {
+    public enum MessageType {
         Error,
         Warning,
         Information
     }
 
-    private async Task CloseDialog()
-    {
+    private async Task CloseDialog() {
         await BlazoredModal.CloseAsync(ModalResult.Ok());
     }
 

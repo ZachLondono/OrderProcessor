@@ -61,17 +61,17 @@ public class ImportProductDrawingIntoActiveDocument {
             }
 
             var uncompressed = CompressionService.Uncompress(command.Drawing.DXFData);
-    
+
             var dxfAscii = System.Text.Encoding.ASCII.GetString(uncompressed);
-    
+
             var tmpFilePath = Path.GetTempPath() + Guid.NewGuid().ToString() + ".dxf";
-    
+
             await File.WriteAllTextAsync(tmpFilePath, dxfAscii);
 
             if (command.Mode is ImportMode.Replace) {
                 document.SendCommand("SELECT ALL  ERASE ");
             }
-            
+
             var insertionPoint = new double[] { 0, 0, 0 };
             var scale = 1.0;
             document.Import(tmpFilePath, insertionPoint, scale);

@@ -1,6 +1,4 @@
-﻿using ApplicationCore.Features.CNC.Contracts;
-using ApplicationCore.Features.CNC.ReleaseEmail;
-using ApplicationCore.Features.Companies.Contracts;
+﻿using ApplicationCore.Features.Companies.Contracts;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
@@ -16,6 +14,12 @@ using System.Runtime.InteropServices;
 using UglyToad.PdfPig.Writer;
 using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
 using Exception = System.Exception;
+using ApplicationCore.Features.CNC.WorkOrderReleaseEmail;
+using ApplicationCore.Shared.CNC.ReleasePDF;
+using ApplicationCore.Shared.CNC.WorkOrderReleaseEmail;
+using ApplicationCore.Shared.CNC.WSXML;
+using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
+using ApplicationCore.Shared.CNC.WSXML.Report;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -35,9 +39,9 @@ public class ReleaseService {
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly IEmailService _emailService;
-    private readonly ReleaseEmailBodyGenerator _emailBodyGenerator;
+    private readonly WSXMLParser _wsxmlParser;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, ReleaseEmailBodyGenerator emailBodyGenerator) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, WSXMLParser wsxmlParser) {
         _fileReader = fileReader;
         _invoiceDecoratorFactory = invoiceDecoratorFactory;
         _packingListDecoratorFactory = packingListDecoratorFactory;
@@ -47,7 +51,7 @@ public class ReleaseService {
         _getCustomerByIdAsync = getCustomerByIdAsync;
         _getVendorByIdAsync = getVendorByIdAsync;
         _emailService = emailService;
-        _emailBodyGenerator = emailBodyGenerator;
+        _wsxmlParser = wsxmlParser;
     }
 
     public async Task Release(List<Order> orders, ReleaseConfiguration configuration) {
@@ -96,10 +100,17 @@ public class ReleaseService {
                     continue;
                 }
 
-                var (decorator, jobData) = await _cncReleaseDecoratorFactory.Create(filePath, orderDate, dueDate, customerName, vendorName);
-                if (jobData is not null) {
-                    releases.Add(jobData);
+                ReleasedJob? jobData = null;
+                if (WSXMLParser.ParseWSXMLReport(filePath) is WSXMLReport report) {
+                    jobData = _wsxmlParser.MapDataToReleasedJob(report, orderDate, dueDate, customerName, vendorName);
                 }
+
+                if (jobData is null) {
+                    continue;
+                }
+
+                releases.Add(jobData);
+                var decorator = _cncReleaseDecoratorFactory.Create(jobData);
                 cncReleaseDecorators.Add(decorator);
 
                 if (configuration.CopyCNCReportToWorkingDirectory) {
@@ -204,10 +215,10 @@ public class ReleaseService {
 
                                 });
 
-        var model = new Model(releasedJobs, note);
+        var model = new ReleasedWorkOrderSummary(releasedJobs, note);
 
         var htmlBody = ReleaseEmailBodyGenerator.GenerateHTMLReleaseEmailBody(model, includeReleaseSummary);
-        var textBody = ReleaseEmailBodyGenerator.GenerateHTMLReleaseEmailBody(model, includeReleaseSummary);
+        var textBody = ReleaseEmailBodyGenerator.GenerateTextReleaseEmailBody(model, includeReleaseSummary);
 
         return (htmlBody, textBody);
 

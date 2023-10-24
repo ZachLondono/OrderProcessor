@@ -11,7 +11,7 @@ public class ClosetPartEditorViewModel {
     public Func<Task>? CloseAsync { get; set; }
 
     // TODO: load a model specifically for the editor
-    public ClosetPart? Product {  get; set; }
+    public ClosetPart? Product { get; set; }
 
     private Error? error;
     public Error? Error {

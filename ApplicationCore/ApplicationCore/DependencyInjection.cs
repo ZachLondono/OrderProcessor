@@ -8,6 +8,7 @@ using ApplicationCore.Features.Orders.Details.ViewModels;
 using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
 using ApplicationCore.Features.Settings;
+using ApplicationCore.Layouts.MainLayout.ReleaseDialog;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationCore;
@@ -24,7 +25,8 @@ public static class DependencyInjection {
                 .AddTransient<OrderRelationshipListViewModel>()
                 .AddTransient<DeleteOrderConfirmationModalViewModel>()
                 .AddTransient<OrderListWidgetViewModel>()
-                .AddTransient<OrderReleaseModalViewModel>();
+                .AddTransient<OrderReleaseModalViewModel>()
+                .AddTransient<ReleasePDFDialogViewModel>();
 
     }
 

@@ -13,9 +13,9 @@ public class GetOrderHeader {
         public string Number { get; init; } = string.Empty;
         public string Name { get; init; } = string.Empty;
         public string CustomerComment { get; init; } = string.Empty;
-        public Guid VendorId  { get; init; }
-        public Guid CustomerId  { get; init; }
-        public DateTime OrderDate  { get; init; }
+        public Guid VendorId { get; init; }
+        public Guid CustomerId { get; init; }
+        public DateTime OrderDate { get; init; }
         public DateTime? DueDate { get; init; } = null;
         public bool Rush { get; init; } = false;
     }

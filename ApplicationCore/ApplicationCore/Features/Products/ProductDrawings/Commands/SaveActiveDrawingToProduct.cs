@@ -31,7 +31,7 @@ public class SaveActiveDrawingToProduct {
                     Name = command.DrawingName,
                     DXFData = Array.Empty<byte>()
                 };
-                
+
                 Error? error = null;
                 getDataResponse.Match(
                     data => drawing.DXFData = data,
@@ -95,64 +95,64 @@ public class SaveActiveDrawingToProduct {
             var exportResponse = ExportActiveDocument(tmpPath);
 
             tmpPath += ".dxf";
-    
+
             Error? error = null;
             exportResponse.OnError(e => error = e);
-    
+
             if (error is not null) {
                 return error!;
             }
-    
+
             var data = await File.ReadAllBytesAsync(tmpPath);
             File.Delete(tmpPath);
-    
+
             return CompressionService.Compress(data);
-    
+
         }
 
         private Response ExportActiveDocument(string exportFileName) {
 
-            AcadApplication? app = null; 
+            AcadApplication? app = null;
 
             try {
                 app ??= BricsCADApplicationRetriever.GetAcadApplication(false);
             } catch { }
-        
+
             if (app is null) {
-    
+
                 return new Error() {
                     Title = "BricsCAD Not Found",
                     Details = "Failed to get instance of BricsCAD application."
                 };
-    
-            }       
-    
+
+            }
+
             AcadDocument? document = null;
-    
+
             try {
                 document = app.ActiveDocument;
             } catch { }
-    
+
             if (document is null) {
                 return new Error() {
                     Title = "No Document Found",
                     Details = "Failed to get active BricsCAD document."
                 };
             }
-    
+
             try {
-    
+
                 document.Export(exportFileName, "dxf", document.ActiveSelectionSet);
-    
+
             } catch {
-    
+
                 return new Error() {
                     Title = "Could Not Export DXF",
                     Details = "Error occurred while trying to export dxf from BricsCAD"
                 };
-    
+
             }
-    
+
             return Response.Success();
 
         }

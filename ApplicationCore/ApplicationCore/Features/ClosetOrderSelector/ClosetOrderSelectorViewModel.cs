@@ -17,7 +17,7 @@ public class ClosetOrderSelectorViewModel {
         }
     }
 
-    private bool _isLoading = false; 
+    private bool _isLoading = false;
     public bool IsLoading {
         get => _isLoading;
         set {
@@ -26,7 +26,7 @@ public class ClosetOrderSelectorViewModel {
         }
     }
 
-    private string _error = ""; 
+    private string _error = "";
     public string Error {
         get => _error;
         set {

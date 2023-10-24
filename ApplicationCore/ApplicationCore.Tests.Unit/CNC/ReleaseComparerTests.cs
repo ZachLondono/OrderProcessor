@@ -1,5 +1,6 @@
-﻿using ApplicationCore.Features.CNC.Contracts;
-using ApplicationCore.Features.CNC.ReleasePDF.Services;
+﻿using ApplicationCore.Shared.CNC.Domain;
+using ApplicationCore.Shared.CNC.ReleasePDF.Services;
+using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
 using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.CNC;
@@ -63,7 +64,7 @@ public class ReleaseComparerTests {
         // Arrange
         MachineRelease? a = new() {
             MachineName = "Machine Name",
-            MachineTableOrientation = Features.CNC.Domain.TableOrientation.Standard,
+            MachineTableOrientation = TableOrientation.Standard,
             ToolTable = new Dictionary<int, string>() {
                 [1] = "A",
                 [2] = "B",
@@ -87,7 +88,7 @@ public class ReleaseComparerTests {
 
         MachineRelease? b = new() {
             MachineName = "Machine Name",
-            MachineTableOrientation = Features.CNC.Domain.TableOrientation.Standard,
+            MachineTableOrientation = TableOrientation.Standard,
             ToolTable = new Dictionary<int, string>() {
                 [1] = "A",
                 [2] = "B",
@@ -123,7 +124,7 @@ public class ReleaseComparerTests {
         // Arrange
         MachineRelease? a = new() {
             MachineName = "Machine Name",
-            MachineTableOrientation = Features.CNC.Domain.TableOrientation.Standard,
+            MachineTableOrientation = TableOrientation.Standard,
             ToolTable = new Dictionary<int, string>() {
                 [1] = "A",
                 [2] = "B",
@@ -147,7 +148,7 @@ public class ReleaseComparerTests {
 
         MachineRelease? b = new() {
             MachineName = "Machine Name",
-            MachineTableOrientation = Features.CNC.Domain.TableOrientation.Standard,
+            MachineTableOrientation = TableOrientation.Standard,
             ToolTable = new Dictionary<int, string>() {
                 [1] = "A",
                 [2] = "B",
@@ -183,7 +184,7 @@ public class ReleaseComparerTests {
         // Arrange
         MachineRelease? a = new() {
             MachineName = "Machine Name A",
-            MachineTableOrientation = Features.CNC.Domain.TableOrientation.Standard,
+            MachineTableOrientation = TableOrientation.Standard,
             ToolTable = new Dictionary<int, string>() {
                 [1] = "A",
                 [2] = "B",
@@ -207,7 +208,7 @@ public class ReleaseComparerTests {
 
         MachineRelease? b = new() {
             MachineName = "Machine Name B",
-            MachineTableOrientation = Features.CNC.Domain.TableOrientation.Rotated,
+            MachineTableOrientation = TableOrientation.Rotated,
             ToolTable = new Dictionary<int, string>() {
                 [1] = "A",
                 [2] = "B",

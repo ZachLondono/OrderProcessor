@@ -61,11 +61,11 @@ public class ProductDrawingRowViewModel {
         try {
 
             var response = await _bus.Send(new ImportProductDrawingIntoActiveDocument.Command(drawing, mode));
-    
+
             response.Match(
                 _ => Error = null,
                 e => Error = e);
-    
+
         } catch (Exception ex) {
 
             Error = new() {
@@ -86,7 +86,7 @@ public class ProductDrawingRowViewModel {
         try {
 
             var saveResponse = await _bus.Send(new SaveActiveDrawingToProduct.Command(drawing.ProductId, drawing.Id, drawing.Name));
-    
+
             saveResponse.Match(
                 _ => Error = null,
                 e => Error = e);

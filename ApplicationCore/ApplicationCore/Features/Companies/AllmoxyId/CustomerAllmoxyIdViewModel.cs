@@ -47,7 +47,7 @@ public class CustomerAllmoxyIdViewModel {
 
         if (CustomerId is null) return;
 
-        var response = await _bus.Send(new GetAllmoxyId.Query((Guid) CustomerId));
+        var response = await _bus.Send(new GetAllmoxyId.Query((Guid)CustomerId));
 
         int? allmoxyId = response.Match(
                 allmoxyId => allmoxyId,

@@ -306,7 +306,7 @@ public class ClosetProPartMapper {
     }
 
     public static IProduct CreatePanelFromPart(Part part) {
-        
+
         Dimension width = Dimension.FromInches(part.Width);
         Dimension length = Dimension.FromInches(part.Height);
         ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
