@@ -206,8 +206,8 @@ public class ReleaseService {
 
         var model = new Model(releasedJobs, note);
 
-        var htmlBody = _emailBodyGenerator.GenerateHTMLReleaseEmailBody(model, includeReleaseSummary);
-        var textBody = _emailBodyGenerator.GenerateHTMLReleaseEmailBody(model, includeReleaseSummary);
+        var htmlBody = ReleaseEmailBodyGenerator.GenerateHTMLReleaseEmailBody(model, includeReleaseSummary);
+        var textBody = ReleaseEmailBodyGenerator.GenerateHTMLReleaseEmailBody(model, includeReleaseSummary);
 
         return (htmlBody, textBody);
 

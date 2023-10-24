@@ -32,17 +32,4 @@ public class OrderListPageViewModel {
 
     }
 
-    public async Task<List<Order>> GetSelectedOrdersAsync() {
-
-        List<Order> orders = new();
-
-        foreach (var item in SelectedOrders) {
-            var response = await _bus.Send(new GetOrderById.Query(item.Id));
-            response.OnSuccess(orders.Add);
-        }
-
-        return orders;
-
-    }
-
 }

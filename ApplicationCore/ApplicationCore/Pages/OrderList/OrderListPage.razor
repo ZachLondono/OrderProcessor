@@ -34,7 +34,7 @@
     <div class="my-5 flex space-x-5">
         @if (DataContext.SelectedOrders.Any()) {
             <div class="flex-none">
-                <OrderReleaseWidget GetOrdersAsync="DataContext.GetSelectedOrdersAsync"/>
+                <OrderReleaseWidget OrderIds="DataContext.SelectedOrders.Select(o => o.Id)"/>
             </div>
             <div class="flex-none">
                 <CreateOrderRelationshipsButton OrderIds="DataContext.SelectedOrders.Select(o => o.Id)"/>
