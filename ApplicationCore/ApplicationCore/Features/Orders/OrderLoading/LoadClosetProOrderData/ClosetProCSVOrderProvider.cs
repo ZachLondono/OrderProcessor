@@ -98,7 +98,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         } else {
             workingDirectoryRoot = customWorkingDirectoryRoot;
         }
-        string workingDirectory = await CreateWorkingDirectory(source, info, orderNumber, workingDirectoryRoot);
+        string workingDirectory = await CreateWorkingDirectory(csvData, info, orderNumber, workingDirectoryRoot);
 
         return new OrderData() {
             VendorId = vendorId,
