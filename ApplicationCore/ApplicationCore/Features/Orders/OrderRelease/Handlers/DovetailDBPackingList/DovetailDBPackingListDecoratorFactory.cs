@@ -46,7 +46,8 @@ public class DovetailDBPackingListDecoratorFactory {
                                 Qty = db.Qty,
                                 Height = db.Height,
                                 Width = db.Width,
-                                Depth = db.Depth
+                                Depth = db.Depth,
+                                Description = db.GetDescription()
                             })
                             .ToList()
             }

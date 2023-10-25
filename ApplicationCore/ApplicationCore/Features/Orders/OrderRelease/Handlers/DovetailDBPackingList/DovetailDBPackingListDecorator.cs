@@ -165,6 +165,7 @@ public class DovetailDBPackingListDecorator : IDocumentDecorator {
         container.Column(col => {
 
             col.Item()
+                .AlignCenter()
                 .PaddingTop(20)
                 .DefaultTextStyle(x => x.FontSize(10))
                 .Table(table => {
@@ -172,6 +173,7 @@ public class DovetailDBPackingListDecorator : IDocumentDecorator {
                     table.ColumnsDefinition(column => {
                         column.ConstantColumn(40);
                         column.ConstantColumn(40);
+                        column.RelativeColumn();
                         column.ConstantColumn(45);
                         column.ConstantColumn(45);
                         column.ConstantColumn(45);
@@ -183,12 +185,13 @@ public class DovetailDBPackingListDecorator : IDocumentDecorator {
 
                     table.Header(header => {
 
-                        header.Cell().ColumnSpan(2).PaddingLeft(10).Text($"Dovetail Drawer Boxes ({boxes.Sum(i => i.Qty)})").FontSize(16).Bold().Italic();
+                        header.Cell().ColumnSpan(3).PaddingLeft(10).Text($"{boxes.Sum(i => i.Qty)} Boxes").FontSize(16).Bold().Italic();
                         header.Cell().ColumnSpan(3).Element(headerCellStyle).Text("Inches");
                         header.Cell().ColumnSpan(3).Element(headerCellStyle).Text("Millimeters");
 
                         header.Cell().Element(headerCellStyle).Text("#");
                         header.Cell().Element(headerCellStyle).Text("Qty");
+                        header.Cell().Element(headerCellStyle).Text("Description");
                         header.Cell().Element(headerCellStyle).Text("Width");
                         header.Cell().Element(headerCellStyle).Text("Height");
                         header.Cell().Element(headerCellStyle).Text("Depth");
@@ -201,6 +204,7 @@ public class DovetailDBPackingListDecorator : IDocumentDecorator {
                     foreach (var item in boxes) {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description);
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Depth, 10));
