@@ -110,7 +110,7 @@ public class ProductDrawingRowViewModel {
 
         try {
 
-            var response = await _bus.Send(new UpdateProductDrawingName.Command(row.Drawing.Id, row.Drawing.Name));
+            var response = await _bus.Send(new UpdateProductDrawingName.Command(row.Drawing.Id, row.Name));
             response.Match(
                 _ => {
                     row.Commit();
