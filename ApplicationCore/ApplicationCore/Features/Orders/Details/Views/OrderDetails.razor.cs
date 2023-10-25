@@ -95,7 +95,10 @@ public partial class OrderDetails {
         if (_order is null) return;
 
         try {
-            await Bus.Send(new UpdateOrderNote.Command(_order.Id, _note));
+
+            var result = await Bus.Send(new UpdateOrderNote.Command(_order.Id, _note));
+            result.OnSuccess(_ => _isNoteDirty = false);
+
         } catch (Exception ex) {
             Debug.WriteLine("Exception thrown while saving changes");
             Debug.WriteLine(ex);

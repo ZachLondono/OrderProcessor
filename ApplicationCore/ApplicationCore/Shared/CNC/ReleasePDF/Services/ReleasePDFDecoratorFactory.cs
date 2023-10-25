@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Shared;
-using ApplicationCore.Shared.CNC.ReleasePDF.PDFModels;
+﻿using ApplicationCore.Shared.CNC.ReleasePDF.PDFModels;
 using ApplicationCore.Shared.CNC.ReleasePDF.Styling;
 using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
 using ApplicationCore.Shared.Settings;
@@ -38,7 +37,7 @@ internal class ReleasePDFDecoratorFactory {
 
         // If the releases contains a release for the Omnitech, use that one, otherwise just use the first one
         var releaseData = releases.First();
-        if (releases.FirstOrDefault(r => r.MachineName.ToLowerInvariant().Contains("omni")) is MachineRelease omniRelease) {
+        if (releases.FirstOrDefault(r => r.MachineName.Contains("omni", StringComparison.InvariantCultureIgnoreCase)) is MachineRelease omniRelease) {
             releaseData = omniRelease;
         }
 
@@ -63,17 +62,20 @@ internal class ReleasePDFDecoratorFactory {
                                         .Select(p => p.Face6FileName)
                                         .Where(f => f is not null).Cast<string>();
 
-            var partGroups = program.Parts
-                                    .Where(p => !face6FileNames.Contains(p.FileName))
-                                    .OrderBy(p => p.ProductNumber)
-                                    .GroupBy(p => p.PartId);
+            var parts = program.Parts
+                               .Where(p => !face6FileNames.Contains(p.FileName))
+                               .GroupBy(p => p.PartId)
+                               .OrderBy(g => {
+                                   if (int.TryParse(g.First().ProductNumber, out int productNumber)) return productNumber;
+                                   return 0;
+                                });
 
             bool containsFace6 = face6FileNames.Any();
-            bool containsBackSideProgram = partGroups.Any(group => group.Any(part => part.HasBackSideProgram));
-            bool containsNote = partGroups.Any(group => group.Any(part => !string.IsNullOrWhiteSpace(part.Note)));
+            bool containsBackSideProgram = parts.Any(group => group.Any(part => part.HasBackSideProgram));
+            bool containsNote = parts.Any(group => group.Any(part => !string.IsNullOrWhiteSpace(part.Note)));
 
             var partsTableContent = new List<Dictionary<string, string>>();
-            foreach (var group in partGroups) {
+            foreach (var group in parts) {
                 var part = group.First();
                 var fields = new Dictionary<string, string> {
                         { "Product", part.ProductNumber },
@@ -91,8 +93,6 @@ internal class ReleasePDFDecoratorFactory {
 
             var material = program.Material;
 
-            // TODO: add an option to use the file name or the line number (in the pattern)
-            //int index = 1;
             var imgtxts = program.Parts.Select(p => new ImageText() { Text = $"{p.ProductNumber}-{p.FileName}", Location = p.Center });
             byte[] imageData = PatternImageFactory.CreatePatternImage(program.ImagePath, releaseData.MachineTableOrientation, program.Material.Width, program.Material.Length, imgtxts);
 
@@ -105,7 +105,14 @@ internal class ReleasePDFDecoratorFactory {
                 ImageData = imageData,
                 Parts = new Table() {
                     Title = "Parts on Sheet",
-                    Content = partsTableContent
+                    Content = partsTableContent,
+                    ColumnWidths = new Dictionary<string, float>() {
+                        { "Product", 50 },
+                        { "Qty", 30 },
+                        { "Width", 50 },
+                        { "Length", 50 },
+                        { "Note", 75 },
+                    }
                 },
             });
 
@@ -161,25 +168,40 @@ internal class ReleasePDFDecoratorFactory {
     }
 
     private static Table? CreateBackSideMachiningTable(IEnumerable<MachineRelease> releases) {
+
         // TODO: this might not work right with cabinets or other products that have multiple parts
-        var twoSidedPartGroups = releases.First()
-                                        .SinglePrograms
-                                        .GroupBy(part => part.ProductNumber)
-                                        .Where(group => group.Count() == 2)
-                                        .Where(group => group.Any(p => p.HasBackSideProgram))
-                                        .Select(group => group.ToArray());
-        var backSideMachiningTable = CreateBackSideMachiningTable(twoSidedPartGroups);
-        return backSideMachiningTable;
+        var content = releases.First()
+                              .SinglePrograms
+                              .GroupBy(part => part.ProductNumber)
+                              .Where(group => group.Count() == 2)
+                              .Where(group => group.Any(p => p.HasBackSideProgram))
+                              .Select(group => (group.First(), group.Skip(1).First()))
+                              .Select(group => new Dictionary<string, string>() {
+                                      { "#", group.Item1.ProductNumber },
+                                      { "SideA", group.Item1.FileName },
+                                      { "SideB", group.Item2.FileName }
+                              }).ToList();
+
+        return new Table() {
+            Title = "Back Side Machining",
+            Content = content
+        };
+
     }
 
     private static Table CreatePartsTable(IEnumerable<MachineRelease> releases) {
+
         var releasedParts = releases.First()
-                                            .SinglePrograms
-                                            .OrderBy(p => p.ProductNumber)
-                                            .GroupBy(p => p.PartId);
+                                    .SinglePrograms
+                                    .GroupBy(p => p.PartId)
+                                    .Select(g => g.First())
+                                    .OrderBy(p => {
+                                        if (int.TryParse(p.ProductNumber, out int productNumber)) return productNumber;
+                                        return 0;
+                                    });
+
         var partsTableContent = new List<Dictionary<string, string>>();
-        foreach (var group in releasedParts) {
-            var part = group.First();
+        foreach (var part in releasedParts) {
             partsTableContent.Add(new() {
                     { "#", part.ProductNumber },
                     { "FileName", part.FileName },
@@ -191,7 +213,12 @@ internal class ReleasePDFDecoratorFactory {
 
         var partsTable = new Table() {
             Title = "Single Parts",
-            Content = partsTableContent
+            Content = partsTableContent,
+            ColumnWidths = new Dictionary<string, float> {
+                { "#", 50 },
+                { "Width", 50 },
+                { "Length", 50 }
+            }
         };
         return partsTable;
     }
@@ -296,36 +323,6 @@ internal class ReleasePDFDecoratorFactory {
         }
 
         return toolTables;
-
-    }
-
-    private static Table? CreateBackSideMachiningTable(IEnumerable<SinglePartProgram[]> twoSidedParts) {
-
-        if (!twoSidedParts.Any()) return null;
-
-        List<Dictionary<string, string>> content = new();
-
-        twoSidedParts.ForEach(group => {
-
-            if (group.Length != 2) {
-                return;
-            }
-
-            var sideA = group[0];
-            var sideB = group[1];
-
-            content.Add(new() {
-                { "#", sideA.ProductNumber },
-                { "SideA", sideA.FileName },
-                { "SideB", sideB.FileName }
-            });
-
-        });
-
-        return new Table() {
-            Title = "Back Side Machining",
-            Content = content
-        };
 
     }
 

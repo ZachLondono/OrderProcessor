@@ -79,16 +79,19 @@ public class OrderHeaderViewModel {
     public async Task SetDueDateAsync(DateTime date) {
         Model.DueDate = date;
         await UpdateDueDateAsync();
+        OnPropertyChanged?.Invoke();
     }
 
     public async Task RemoveDueDateAsync() {
         Model.DueDate = null;
         await UpdateDueDateAsync();
+        OnPropertyChanged?.Invoke();
     }
 
     public async Task AddDueDateAsync() {
         Model.DueDate = DateTime.Today;
         await UpdateDueDateAsync();
+        OnPropertyChanged?.Invoke();
     }
 
     private async Task UpdateDueDateAsync() {
