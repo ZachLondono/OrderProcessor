@@ -13,6 +13,7 @@ using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Features.Orders.CustomerOrderNumber;
 using ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
+using ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -45,6 +46,7 @@ public static class DependencyInjection {
         services.AddTransient<InvoiceDecoratorFactory>();
         services.AddTransient<IPackingListDecorator, PackingListDecorator>();
         services.AddTransient<PackingListDecoratorFactory>();
+        services.AddTransient<DovetailDBPackingListDecoratorFactory>();
         services.AddTransient<ReleaseService>();
     }
 

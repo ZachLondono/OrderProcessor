@@ -19,6 +19,8 @@ using ApplicationCore.Shared.CNC.WorkOrderReleaseEmail;
 using ApplicationCore.Shared.CNC.WSXML;
 using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
 using ApplicationCore.Shared.CNC.WSXML.Report;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
+using ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -33,6 +35,7 @@ public class ReleaseService {
     private readonly IFileReader _fileReader;
     private readonly InvoiceDecoratorFactory _invoiceDecoratorFactory;
     private readonly PackingListDecoratorFactory _packingListDecoratorFactory;
+    private readonly DovetailDBPackingListDecoratorFactory _dovetailDBPackingListDecoratorFactory;
     private readonly CNCReleaseDecoratorFactory _cncReleaseDecoratorFactory;
     private readonly JobSummaryDecoratorFactory _jobSummaryDecoratorFactory;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
@@ -40,7 +43,7 @@ public class ReleaseService {
     private readonly IEmailService _emailService;
     private readonly WSXMLParser _wsxmlParser;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, WSXMLParser wsxmlParser) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, WSXMLParser wsxmlParser, DovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory) {
         _fileReader = fileReader;
         _invoiceDecoratorFactory = invoiceDecoratorFactory;
         _packingListDecoratorFactory = packingListDecoratorFactory;
@@ -51,6 +54,7 @@ public class ReleaseService {
         _getVendorByIdAsync = getVendorByIdAsync;
         _emailService = emailService;
         _wsxmlParser = wsxmlParser;
+        _dovetailDBPackingListDecoratorFactory = dovetailDBPackingListDecoratorFactory;
     }
 
     public async Task Release(List<Order> orders, ReleaseConfiguration configuration) {
@@ -137,6 +141,11 @@ public class ReleaseService {
             if (configuration.GeneratePackingList) {
                 var decorator = await _packingListDecoratorFactory.CreateDecorator(order);
                 decorators.Add(decorator);
+
+                if (order.Products.Any(p => p is DovetailDrawerBoxProduct)) {
+                    var dovetailDecorator = await _dovetailDBPackingListDecoratorFactory.CreateDecorator(order);
+                    decorators.Add(dovetailDecorator);
+                }
             }
 
             if (configuration.IncludeInvoiceInRelease) {
