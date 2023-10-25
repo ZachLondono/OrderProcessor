@@ -52,13 +52,12 @@ internal class ExportService {
             var customerName = await GetCustomerName(order.CustomerId);
             var outputDir = ReplaceTokensInDirectory(customerName, configuration.OutputDirectory);
 
-            await GenerateMDFOrders(configuration, order, outputDir);
-
-            await GenerateDovetailOrders(configuration, order, outputDir);
-
-            await GenerateEXT(configuration, order, _options.EXTOutputDirectory);
-
-            GenerateCSV(configuration, order, customerName, _options.CSVOutputDirectory);
+            await Task.WhenAll(new Task[] {
+                GenerateMDFOrders(configuration, order, outputDir),
+                GenerateDovetailOrders(configuration, order, outputDir),
+                GenerateEXT(configuration, order, _options.EXTOutputDirectory),
+                GenerateCSV(configuration, order, customerName, _options.CSVOutputDirectory),
+            });
 
             OnActionComplete?.Invoke("Export Complete");
 
@@ -85,7 +84,7 @@ internal class ExportService {
 
         OnProgressReport?.Invoke("Generating MDF Door Orders");
 
-        var response = await _bus.Send(new ExportDoorOrder.Command(order, _options.MDFDoorTemplateFilePath, outputDir));
+        var response = await Task.Run(() => _bus.Send(new ExportDoorOrder.Command(order, _options.MDFDoorTemplateFilePath, outputDir)));
 
         response.Match(
             result => {
@@ -117,7 +116,7 @@ internal class ExportService {
 
         OnProgressReport?.Invoke("Generating Dovetail Drawer Box Orders");
 
-        var response = await _bus.Send(new ExportDovetailOrder.Command(order, _options.DovetailTemplateFilePath, outputDir));
+        var response = await Task.Run(() => _bus.Send(new ExportDovetailOrder.Command(order, _options.DovetailTemplateFilePath, outputDir)));
 
         response.Match(
             result => {
@@ -150,7 +149,7 @@ internal class ExportService {
         OnProgressReport?.Invoke("Generating EXT File");
         string jobName = string.IsNullOrWhiteSpace(configuration.ExtJobName) ? $"{order.Number} - {order.Name}" : configuration.ExtJobName;
 
-        var response = await _bus.Send(new ExportEXT.Command(order, jobName.Trim(), outputDir));
+        var response = await Task.Run(() => _bus.Send(new ExportEXT.Command(order, jobName.Trim(), outputDir)));
 
         response.Match(
             result => {
@@ -169,7 +168,7 @@ internal class ExportService {
 
     }
 
-    private void GenerateCSV(ExportConfiguration configuration, Order order, string customerName, string outputDir) {
+    private async Task GenerateCSV(ExportConfiguration configuration, Order order, string customerName, string outputDir) {
 
         if (!configuration.GenerateCSV) {
             OnProgressReport?.Invoke("Not generating CSV file");
@@ -214,7 +213,8 @@ internal class ExportService {
                 Parts = parts
             };
 
-            var filePath = new CSVTokenWriter().WriteBatchCSV(batch, outputDir);
+            var filePath = await Task.Run(() => new CSVTokenWriter().WriteBatchCSV(batch, outputDir));
+
             OnFileGenerated?.Invoke(filePath);
 
         } catch (Exception ex) {

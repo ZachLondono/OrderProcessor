@@ -94,7 +94,8 @@ internal class ReleasePDFDialogViewModel {
         try {
 
             ReleasedJob? job = null;
-            if (WSXMLParser.ParseWSXMLReport(Model.ReportFilePath) is WSXMLReport report) {
+            WSXMLReport? report = WSXMLParser.ParseWSXMLReport(Model.ReportFilePath);
+            if (report is not null) {
                 job = _wsxmlParser.MapDataToReleasedJob(report, Model.OrderDate, Model.DueDate, Model.CustomerName, Model.VendorName);
             }
 

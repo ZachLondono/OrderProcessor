@@ -100,7 +100,8 @@ public class ReleaseService {
                 }
 
                 ReleasedJob? jobData = null;
-                if (WSXMLParser.ParseWSXMLReport(filePath) is WSXMLReport report) {
+                WSXMLReport? report = await Task.Run(() => WSXMLParser.ParseWSXMLReport(filePath));
+                if (report is not null) {
                     jobData = _wsxmlParser.MapDataToReleasedJob(report, orderDate, dueDate, customerName, vendorName);
                 }
 
@@ -114,7 +115,7 @@ public class ReleaseService {
 
                 if (configuration.CopyCNCReportToWorkingDirectory) {
                     foreach (var order in orders) {
-                        CopyReportToWorkingDirectory(order.WorkingDirectory, filePath);
+                        await Task.Run(() => CopyReportToWorkingDirectory(order.WorkingDirectory, filePath));
                     }
                 }
 
@@ -157,6 +158,7 @@ public class ReleaseService {
 
         var filename = configuration.ReleaseFileName ?? $"{orderNumbers} RELEASE";
 
+        OnProgressReport?.Invoke("Generating release PDF");
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
             filePaths = await GeneratePDFAsync(directories, decorators, filename, customerName, configuration.AttachAdditionalFiles ? configuration.AdditionalFilePaths : Enumerable.Empty<string>());
@@ -169,13 +171,15 @@ public class ReleaseService {
             OnProgressReport?.Invoke("Sending release email");
             try {
 
-                bool multipleOrders = orders.Count > 1;
-                string orderNotes = string.Join(
-                                        ';',
-                                        orders.Where(o => !string.IsNullOrEmpty(o.Note))
-                                                .Select(o => $"{(multipleOrders ? $"{o.Number}:" : "")}{o.Note}")
-                                    );
-                var body = GenerateEmailBodies(configuration.IncludeMaterialSummaryInEmailBody, releases, orderNotes);
+                var body = await Task.Run(() => {
+                    bool multipleOrders = orders.Count > 1;
+                    string orderNotes = string.Join(
+                                            ';',
+                                            orders.Where(o => !string.IsNullOrEmpty(o.Note))
+                                                    .Select(o => $"{(multipleOrders ? $"{o.Number}:" : "")}{o.Note}")
+                                        );
+                    return GenerateEmailBodies(configuration.IncludeMaterialSummaryInEmailBody, releases, orderNotes);
+                }); 
 
                 List<string> attachments = new() { filePaths.First() };
                 if (configuration.AttachAdditionalFiles) {
@@ -183,7 +187,7 @@ public class ReleaseService {
                 }
 
                 if (configuration.PreviewReleaseEmail) {
-                    CreateAndDisplayOutlookEmail(recipients, $"RELEASED: {orderNumbers} {customerName}", body.HTMLBody, body.TextBody, attachments);
+                    await Task.Run(() => CreateAndDisplayOutlookEmail(recipients, $"RELEASED: {orderNumbers} {customerName}", body.HTMLBody, body.TextBody, attachments));
                 } else {
                     await SendEmailAsync(recipients, $"RELEASED: {orderNumbers} {customerName}", body.HTMLBody, body.TextBody, attachments);
                 }
@@ -265,7 +269,7 @@ public class ReleaseService {
             OnProgressReport?.Invoke("Sending invoice email");
             try {
                 if (configuration.PreviewInvoiceEmail) {
-                    CreateAndDisplayOutlookEmail(recipients, $"INVOICE: {order.Number} {customerName}", "Please see attached invoice", "Please see attached invoice", new string[] { filePaths.First() });
+                    await Task.Run(() => CreateAndDisplayOutlookEmail(recipients, $"INVOICE: {order.Number} {customerName}", "Please see attached invoice", "Please see attached invoice", new string[] { filePaths.First() }));
                 } else {
                     await SendEmailAsync(recipients, $"INVOICE: {order.Number} {customerName}", "Please see attached invoice", "Please see attached invoice", new string[] { filePaths.First() });
                 }
@@ -311,7 +315,7 @@ public class ReleaseService {
 
         message.Body = builder.ToMessageBody();
 
-        var response = await _emailService.SendMessageAsync(message);
+        var response = await Task.Run(() => _emailService.SendMessageAsync(message));
         _logger.LogInformation("Response from email client - '{Response}'", response);
         OnActionComplete?.Invoke("Email sent");
 
@@ -376,21 +380,26 @@ public class ReleaseService {
             return Enumerable.Empty<string>();
         }
 
-        Document document = Document.Create(doc => {
+        List<string> files = new();
 
-            foreach (var decorator in decorators) {
-                try {
-                    decorator.Decorate(doc);
-                } catch (Exception ex) {
-                    OnError?.Invoke($"Error adding pages to document '{name}' - '{ex.Message}'");
+        var documentBytes = await Task.Run(() => {
+
+            var document = Document.Create(doc => {
+
+                foreach (var decorator in decorators) {
+                    try {
+                        decorator.Decorate(doc);
+                    } catch (Exception ex) {
+                        OnError?.Invoke($"Error adding pages to document '{name}' - '{ex.Message}'");
+                    }
                 }
-            }
+
+            });
+            
+            return document.GeneratePdf();
 
         });
 
-        List<string> files = new();
-
-        var documentBytes = document.GeneratePdf();
         if (attachedFiles.Any()) {
 
             List<byte[]> documents = new() {
@@ -401,7 +410,7 @@ public class ReleaseService {
                 documents.Add(await File.ReadAllBytesAsync(file));
             }
 
-            documentBytes = PdfMerger.Merge(documents);
+            documentBytes = await Task.Run(() => PdfMerger.Merge(documents));
 
         }
 

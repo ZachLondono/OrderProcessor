@@ -32,10 +32,10 @@ public class GetOrderHeader {
 
             using var connection = await _factory.CreateConnection();
 
-            return await connection.QuerySingleAsync<OrderHeader>(
+            var header = await connection.QuerySingleAsync<OrderHeader>(
                 """
                 SELECT 
-                    id,
+                    id AS OrderId,
                     number,
                     name,
                     customer_comment AS CustomerComment,
@@ -48,6 +48,8 @@ public class GetOrderHeader {
                 WHERE id = @OrderId;
                 """,
                 query);
+
+            return header;
 
         }
 

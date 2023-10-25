@@ -1,6 +1,4 @@
-﻿using QuestPDF.Fluent;
-
-namespace ApplicationCore.Shared.CNC.ReleasePDF.Styling;
+﻿namespace ApplicationCore.Shared.CNC.ReleasePDF.Styling;
 
 public class Table {
 
