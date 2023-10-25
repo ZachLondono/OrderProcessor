@@ -182,6 +182,8 @@ internal class ReleasePDFDecoratorFactory {
                                       { "SideB", group.Item2.FileName }
                               }).ToList();
 
+        if (!content.Any()) return null;
+
         return new Table() {
             Title = "Back Side Machining",
             Content = content
