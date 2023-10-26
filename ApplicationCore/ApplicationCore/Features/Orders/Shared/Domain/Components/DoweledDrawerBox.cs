@@ -61,16 +61,17 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
         /*
          *  CUSTOM DRAWER FRONT DRILLING FOR HAFELE
+         */ 
         bool drillFront = true;
         if (drillFront) {
 
             double boreDiameter = 5;
-            double boreDepth = SideMaterial.Thickness.AsMillimeters();
+            double boreDepth = (SideMaterial.Thickness + Dimension.FromMillimeters(1)).AsMillimeters();
 
             var topHoleY = Height - Dimension.FromInches(1);
             var topHoleX = Dimension.FromInches(1);
 
-            var botHoleY = BottomMaterial.Thickness + Dimension.FromInches(0.5) + Dimension.FromInches(1);
+            var botHoleY = Dimension.FromInches(1.75);
             var botHoleX = Dimension.FromInches(1.5);
 
             tokens.Add(new Bore(boreDiameter, new(topHoleX.AsMillimeters(),topHoleY.AsMillimeters()), boreDepth));
@@ -80,7 +81,6 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
             tokens.Add(new Bore(boreDiameter, new((frontLength - botHoleX).AsMillimeters(),botHoleY.AsMillimeters()), boreDepth));
 
         }
-         */ 
 
         return new Part() {
             Qty = qty,
