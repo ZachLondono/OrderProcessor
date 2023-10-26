@@ -13,27 +13,27 @@
     }
 
     @if (DataContext.Scripts.Any()) {
-        <table>
-            <thead>
+    <table>
+        <thead>
                 <tr>
                     <th>Name</th>
                     <th>File</th>
                     <th></th>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var script in DataContext.Scripts) {
-                    <tr>
-                        <td>@script.Name</td>
-                        <td>@script.FilePath</td>
-                        <td>
-                            <Button OnClickAsync="() => DataContext.ShowEditScriptModal(ModalService, script.Id)">Edit</Button>
-                            <Button Color="ButtonColor.Danger" OnClickAsync="() => DataContext.DeleteScript(script.Id)">Delete</Button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        </thead>
+        <tbody>
+            @foreach (var script in DataContext.Scripts) {
+                <tr>
+                    <td>@script.Name</td>
+                    <td>@script.FilePath</td>
+                    <td>
+                        <Button OnClickAsync="() => DataContext.ShowEditScriptModal(ModalService, script.Id)">Edit</Button>
+                        <Button Color="ButtonColor.Danger" OnClickAsync="() => DataContext.DeleteScript(script.Id)">Delete</Button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
     } else {
         <p>No Scripts Save to Order</p>
     }
