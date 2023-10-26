@@ -54,9 +54,19 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
             });
 
         page.Footer()
-            .AlignLeft()
-            .Text(summary.TimeStamp.ToString("g"))
-            .FontSize(8);
+            .Row(row => {
+
+                row.RelativeItem()
+                    .AlignLeft()
+                    .Text(summary.TimeStamp.ToString("g"))
+                    .FontSize(8);
+
+                row.RelativeItem()
+                    .AlignRight()
+                    .Text(summary.ApplicationVersion)
+                    .FontSize(8);
+
+            });
 
         page.Content().Column(c => {
 

@@ -3,6 +3,7 @@ using ApplicationCore.Shared.CNC.ReleasePDF.Styling;
 using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
 using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Options;
+using Windows.ApplicationModel;
 
 namespace ApplicationCore.Shared.CNC.ReleasePDF.Services;
 
@@ -160,11 +161,22 @@ internal class ReleasePDFDecoratorFactory {
         var cover = new CoverModel() {
             Title = $"{job.JobName}  [{string.Join(',', releases.Select(r => r.MachineName))}]",
             TimeStamp = job.TimeStamp,
+            ApplicationVersion = GetApplicationVersion(),
             Info = coverInfo,
             Tables = tables
         };
 
         return cover;
+    }
+
+    private static string GetApplicationVersion() {
+
+        try {
+            return Package.Current.Id.Version.ToString() ?? "0.0.0.0";
+        } catch { }
+
+        return  "0.0.0.0";
+
     }
 
     private static Table? CreateBackSideMachiningTable(IEnumerable<MachineRelease> releases) {
