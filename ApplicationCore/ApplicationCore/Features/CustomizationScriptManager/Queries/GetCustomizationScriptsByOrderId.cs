@@ -5,7 +5,7 @@ using Dapper;
 
 namespace ApplicationCore.Features.CustomizationScripts.Queries;
 
-internal class GetCustomizationScripts {
+internal class GetCustomizationScriptsByOrderId {
 
     public record Query(Guid OrderId) : IQuery<IEnumerable<CustomizationScript>>;
 
