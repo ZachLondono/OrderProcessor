@@ -1,0 +1,49 @@
+﻿@using ApplicationCore.Features.CustomizationScripts.ViewModels;
+@using ApplicationCore.Shared.Components
+@using static ApplicationCore.Shared.Components.Button;
+@inject CustomizationScriptManagerViewModel DataContext
+@inject IModalService ModalService
+
+<div>
+
+    <table>
+        <thead>
+
+        </thead>
+        <tbody>
+            @foreach (var script in DataContext.Scripts) {
+                <tr>
+                    <td>@script.Name</td>
+                    <td>@script.FilePath</td>
+                    <td>
+                        <Button OnClickAsync="() => DataContext.ShowEditScriptModal(ModalService, script.Id)">Edit</Button>
+                        <Button Color="ButtonColor.Danger" OnClickAsync="() => DataContext.DeleteScript(script.Id)">Delete</Button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <Button OnClickAsync="() => DataContext.ShowAddScriptModal(ModalService, OrderId)">+Add</Button>
+
+</div>
+
+@code {
+
+    [CascadingParameter]
+    public BlazoredModalInstance? ModalInstance { get; set; }
+
+    [Parameter]
+    public Guid OrderId { get; set; }
+
+    public Task CloseAsync() => ModalInstance?.CloseAsync() ?? Task.CompletedTask;
+
+    protected override void OnInitialized() {
+        DataContext.OnPropertyChanged += StateHasChanged;
+    }
+
+    protected async override Task OnParametersSetAsync() {
+        await DataContext.Loaded(OrderId);
+    }
+
+}

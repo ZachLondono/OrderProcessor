@@ -2,10 +2,12 @@
 using ApplicationCore.Features.CustomizationScripts.Models;
 using ApplicationCore.Features.CustomizationScripts.Queries;
 using ApplicationCore.Infrastructure.Bus;
+using Blazored.Modal;
+using Blazored.Modal.Services;
 
 namespace ApplicationCore.Features.CustomizationScripts.ViewModels;
 
-public class CustomizationScriptListViewModel {
+public class CustomizationScriptManagerViewModel {
 
     private readonly IBus _bus;
 
@@ -29,7 +31,7 @@ public class CustomizationScriptListViewModel {
         }
     }
 
-    public CustomizationScriptListViewModel(IBus bus) {
+    public CustomizationScriptManagerViewModel(IBus bus) {
         _bus = bus;
     }
 
@@ -39,7 +41,7 @@ public class CustomizationScriptListViewModel {
 
             Error = null;
 
-            var response = await _bus.Send(new GetCustomizationScripts.Query(orderId));
+            var response = await _bus.Send(new GetCustomizationScriptsByOrderId.Query(orderId));
 
             response.Match(
                 scripts => Scripts = new(scripts),
@@ -61,8 +63,15 @@ public class CustomizationScriptListViewModel {
 
             var response = await _bus.Send(new DeleteCustomizationScript.Command(scriptId));
 
-            response.OnError(error => Error = $"{error.Title} - {error.Details}");
+            response.Match(
+                _ => {
 
+                    var deletedScript = Scripts.First(s => s.Id == scriptId);
+                    Scripts.Remove(deletedScript);
+                    OnPropertyChanged?.Invoke();
+
+                },
+                error => Error = $"{error.Title} - {error.Details}");
 
         } catch (Exception ex) {
 
@@ -72,6 +81,26 @@ public class CustomizationScriptListViewModel {
 
     }
 
-    public Task AddScript() => throw new NotImplementedException();
+    public async Task ShowAddScriptModal(IModalService modalService, Guid orderId) {
+
+        var modal = modalService.Show<CustomizationScriptManager.Views.AddCustomizationScript>(
+            "New Customization Script",
+            new ModalParameters() {
+                { "OrderId", orderId }
+            },
+            new ModalOptions() {
+                DisableBackgroundCancel = true,
+                HideHeader = true
+            });
+
+        var result = await modal.Result;
+
+        if (result.Confirmed) {
+            await Loaded(orderId);
+        }
+
+    }
+
+    public Task ShowEditScriptModal(IModalService modalService, Guid scriptId) => throw new NotImplementedException();
 
 }
