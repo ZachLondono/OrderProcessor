@@ -60,4 +60,21 @@ public static class ExcelExtensions {
 
     }
 
+    public static DateTime GetRangeDateTimeValue(this Worksheet worksheet, string rangeAddress, int rowOffset = 0, int colOffset = 0, DateTime defaultValue = default) {
+
+        try {
+
+            var rng = worksheet.Range[rangeAddress];
+            var value = rng.Offset[rowOffset, colOffset].GetStringValue();
+
+            return DateTime.FromOADate(double.Parse(value));
+
+        } catch {
+
+            return defaultValue;
+
+        }
+
+    }
+
 }

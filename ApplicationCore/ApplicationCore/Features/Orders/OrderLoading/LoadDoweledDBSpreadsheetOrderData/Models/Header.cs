@@ -33,14 +33,8 @@ public record Header {
                 worksheet.GetRangeStringValue("SpecialInstructions_12"),
             };
 
-        string orderDateStr = worksheet.GetRangeStringValue("OrderDate");
-        if (!DateTime.TryParse(orderDateStr, out DateTime orderDate)) {
-            orderDate = DateTime.Today;
-        }
-        string dueDateStr = worksheet.GetRangeStringValue("DueDate");
-        if (!DateTime.TryParse(dueDateStr, out DateTime dueDate)) {
-            dueDate = DateTime.Today;
-        }
+        DateTime orderDate = worksheet.GetRangeDateTimeValue("OrderDate", defaultValue:DateTime.Today);
+        DateTime dueDate = worksheet.GetRangeDateTimeValue("DueDate", defaultValue:DateTime.Today);
 
         return new() {
             OrderDate = orderDate,
