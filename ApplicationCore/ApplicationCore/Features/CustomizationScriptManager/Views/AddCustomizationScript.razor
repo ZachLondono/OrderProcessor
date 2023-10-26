@@ -1,0 +1,51 @@
+﻿@using ApplicationCore.Features.CustomizationScripts.ViewModels;
+@using ApplicationCore.Shared.Components
+@using static ApplicationCore.Shared.Components.Button;
+@inject AddNewScriptViewModel DataContext;
+
+@if (DataContext.IsFileBeingPicked) {
+
+    <p>Select File...</p>
+    
+} else {
+    
+    <div>
+
+        <div>
+            <label>Script name</label>
+            <input type="text" class="input-text w-full" @bind="DataContext.ScriptName" />
+        </div>
+
+        <div>
+            <label>File Path</label>
+            <a @onclick="DataContext.OpenScriptFile">@DataContext.FilePath</a>
+            <Button Size="ButtonSize.Small" OnClick="DataContext.PickFile">Choose File</Button>
+        </div>
+
+        <div>
+            <Button OnClickAsync="DataContext.AddScript">Create</Button>
+            <Button OnClickAsync="ModalInstance.CancelAsync">Cancel</Button>
+        </div>
+
+    </div>
+
+
+}
+
+@code {
+
+    [CascadingParameter]
+    public BlazoredModalInstance ModalInstance { get; set; }
+
+    [Parameter]
+    public Guid OrderId { get; set; }
+
+    protected override void OnInitialized() {
+        DataContext.CloseView += ModalInstance.CloseAsync;
+        DataContext.OnPropertyChanged += StateHasChanged;
+
+        DataContext.PickFile();
+
+    }
+
+}

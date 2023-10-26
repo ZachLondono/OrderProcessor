@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.ClosetOrderSelector;
 using ApplicationCore.Features.Companies.AllmoxyId;
 using ApplicationCore.Features.CreateOrderRelationship;
+using ApplicationCore.Features.CustomizationScripts.ViewModels;
 using ApplicationCore.Features.DeleteOrder;
 using ApplicationCore.Features.OrderList;
 using ApplicationCore.Features.OrderRelationshipList;
@@ -60,6 +61,14 @@ public static class DependencyInjection {
 
         return services
                 .AddTransient<ToolFileEditorViewModel>();
+
+    }
+
+    public static IServiceCollection CustomizationScriptsManagerViewModels(this IServiceCollection services) {
+
+        return services
+                .AddTransient<CustomizationScriptManagerViewModel>()
+                .AddTransient<AddNewScriptViewModel>();
 
     }
 

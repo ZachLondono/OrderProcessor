@@ -111,4 +111,6 @@ public class AddNewScriptViewModel {
 
     }
 
+    public void OpenScriptFile() => throw new NotImplementedException();
+
 }
