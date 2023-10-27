@@ -1,6 +1,7 @@
-﻿namespace ApplicationCore.Features.CustomizationScripts.Models;
+﻿namespace ApplicationCore.Shared.CustomizationScripts.Models;
 
-public class CustomizationScript {
+public class CustomizationScript
+{
 
     public Guid Id { get; set; }
     public Guid OrderId { get; set; }
