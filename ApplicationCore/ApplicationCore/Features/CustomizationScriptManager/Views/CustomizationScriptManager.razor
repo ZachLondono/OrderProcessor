@@ -6,23 +6,37 @@
 
 <div>
 
-    <table>
-        <thead>
+    @if (DataContext.Error is not null) {
+        <p class="text-red-600">
+            @DataContext.Error
+        </p>
+    }
 
-        </thead>
-        <tbody>
-            @foreach (var script in DataContext.Scripts) {
+    @if (DataContext.Scripts.Any()) {
+        <table>
+            <thead>
                 <tr>
-                    <td>@script.Name</td>
-                    <td>@script.FilePath</td>
-                    <td>
-                        <Button OnClickAsync="() => DataContext.ShowEditScriptModal(ModalService, script.Id)">Edit</Button>
-                        <Button Color="ButtonColor.Danger" OnClickAsync="() => DataContext.DeleteScript(script.Id)">Delete</Button>
-                    </td>
+                    <th>Name</th>
+                    <th>File</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var script in DataContext.Scripts) {
+                    <tr>
+                        <td>@script.Name</td>
+                        <td>@script.FilePath</td>
+                        <td>
+                            <Button OnClickAsync="() => DataContext.ShowEditScriptModal(ModalService, script.Id)">Edit</Button>
+                            <Button Color="ButtonColor.Danger" OnClickAsync="() => DataContext.DeleteScript(script.Id)">Delete</Button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    } else {
+        <p>No Scripts Save to Order</p>
+    }
 
     <Button OnClickAsync="() => DataContext.ShowAddScriptModal(ModalService, OrderId)">+Add</Button>
 
