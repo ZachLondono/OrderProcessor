@@ -26,7 +26,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
     public bool ContainsCNCParts() => true;
 
-    public IEnumerable<Part> GetCNCParts(int qty, int productNumber, string customerName, string room) {
+    public virtual IEnumerable<Part> GetCNCParts(int qty, int productNumber, string customerName, string room) {
         // TODO: maybe pass in the construction object to this method
         // TODO: make the bellow methods static, maybe
         yield return GetFrontPart(Construction, qty, productNumber, customerName, room);
@@ -37,7 +37,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
         yield return GetBottomPart(Construction, qty, productNumber, customerName, room);
     }
 
-    public Part GetFrontPart(DoweledDrawerBoxConstruction construction, int qty, int productNumber, string customerName, string room) {
+    public virtual Part GetFrontPart(DoweledDrawerBoxConstruction construction, int qty, int productNumber, string customerName, string room) {
 
         Dimension frontLength = Width - 2 * SideMaterial.Thickness;
 
@@ -61,17 +61,16 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
         /*
          *  CUSTOM DRAWER FRONT DRILLING FOR HAFELE
-         */ 
         bool drillFront = true;
         if (drillFront) {
 
             double boreDiameter = 5;
-            double boreDepth = (SideMaterial.Thickness + Dimension.FromMillimeters(1)).AsMillimeters();
+            double boreDepth = SideMaterial.Thickness.AsMillimeters();
 
             var topHoleY = Height - Dimension.FromInches(1);
             var topHoleX = Dimension.FromInches(1);
 
-            var botHoleY = Dimension.FromInches(1.75);
+            var botHoleY = BottomMaterial.Thickness + Dimension.FromInches(0.5) + Dimension.FromInches(1);
             var botHoleX = Dimension.FromInches(1.5);
 
             tokens.Add(new Bore(boreDiameter, new(topHoleX.AsMillimeters(),topHoleY.AsMillimeters()), boreDepth));
@@ -81,6 +80,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
             tokens.Add(new Bore(boreDiameter, new((frontLength - botHoleX).AsMillimeters(),botHoleY.AsMillimeters()), boreDepth));
 
         }
+         */ 
 
         return new Part() {
             Qty = qty,
@@ -110,7 +110,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
     }
 
-    public Part GetBackPart(DoweledDrawerBoxConstruction construction, int qty, int productNumber, string customerName, string room) {
+    public virtual Part GetBackPart(DoweledDrawerBoxConstruction construction, int qty, int productNumber, string customerName, string room) {
 
         Dimension backLength = Width - 2 * SideMaterial.Thickness;
 
@@ -144,21 +144,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
     }
 
-    public static Dimension[] GetDowelPositions(IDictionary<Dimension, Dimension[]> dowelPositionsByHeight, Dimension boxHeight) {
-
-        foreach (var kv in dowelPositionsByHeight.OrderBy(kv => kv.Key)) {
-
-            if (boxHeight <= kv.Key) {
-                return kv.Value;
-            }
-
-        }
-
-        throw new InvalidOperationException("Invalid drawer box height");
-
-    }
-
-    public (Part Left, Part Right) GetSideParts(DoweledDrawerBoxConstruction construction, int qty, int productNumber, string customerName, string room) {
+    public virtual (Part Left, Part Right) GetSideParts(DoweledDrawerBoxConstruction construction, int qty, int productNumber, string customerName, string room) {
 
         Dimension dadoLengthAdj = (FrontMaterial.Thickness < BackMaterial.Thickness ? FrontMaterial : BackMaterial).Thickness - construction.BottomDadoDepth;
 
@@ -246,7 +232,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
     }
 
-    public IEnumerable<IToken> CreateBottomDadoTokens(DoweledDrawerBoxConstruction construction, Dimension partLength, double offEdgeMM, bool mirror = false) {
+    public virtual IEnumerable<IToken> CreateBottomDadoTokens(DoweledDrawerBoxConstruction construction, Dimension partLength, double offEdgeMM, bool mirror = false) {
 
         var routeOffset = Offset.Right;
         if (mirror) {
@@ -345,7 +331,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
     }
 
-    public Part GetBottomPart(DoweledDrawerBoxConstruction construction, int qty, int productNumber, string customerName, string room) {
+    public virtual Part GetBottomPart(DoweledDrawerBoxConstruction construction, int qty, int productNumber, string customerName, string room) {
         return new Part() {
             Qty = qty,
             Width = (Width - 2 * SideMaterial.Thickness - construction.BottomUndersize + 2 * construction.BottomDadoDepth).AsMillimeters(),
@@ -369,6 +355,20 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
                 Tokens = Array.Empty<IToken>()
             }
         };
+    }
+
+    public static Dimension[] GetDowelPositions(IDictionary<Dimension, Dimension[]> dowelPositionsByHeight, Dimension boxHeight) {
+
+        foreach (var kv in dowelPositionsByHeight.OrderBy(kv => kv.Key)) {
+
+            if (boxHeight <= kv.Key) {
+                return kv.Value;
+            }
+
+        }
+
+        throw new InvalidOperationException("Invalid drawer box height");
+
     }
 
     public static DoweledDrawerBoxConstruction Construction = new() {
