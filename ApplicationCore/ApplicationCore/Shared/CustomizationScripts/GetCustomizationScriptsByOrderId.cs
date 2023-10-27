@@ -1,9 +1,9 @@
-﻿using ApplicationCore.Features.CustomizationScripts.Models;
-using ApplicationCore.Infrastructure.Bus;
+﻿using ApplicationCore.Infrastructure.Bus;
+using ApplicationCore.Shared.CustomizationScripts.Models;
 using ApplicationCore.Shared.Data.Ordering;
 using Dapper;
 
-namespace ApplicationCore.Features.CustomizationScripts.Queries;
+namespace ApplicationCore.Shared.CustomizationScripts;
 
 internal class GetCustomizationScriptsByOrderId {
 
