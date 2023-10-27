@@ -75,12 +75,16 @@ public class AddNewScriptViewModel {
 
     public void PickFile() {
 
+        IsFileBeingPicked = true;
         _filePicker.PickFile(new() {
             Title = "Pick Script File",
             Filter = new("CSharp Script File", ".csx"),
             InitialDirectory = _baseDirectory
         }, file => {
             FilePath = file;
+            IsFileBeingPicked = false;
+        }, () => {
+            IsFileBeingPicked = false;
         });
 
     }

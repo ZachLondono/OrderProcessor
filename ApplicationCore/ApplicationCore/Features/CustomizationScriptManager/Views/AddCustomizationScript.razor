@@ -11,18 +11,22 @@
     
     <div>
 
+        @if (DataContext.Error is not null) {
+            <p class="text-red-600 mb-3">DataContext.Editor</p>
+        }
+
         <div>
             <label>Script name</label>
             <input type="text" class="input-text w-full" @bind="DataContext.ScriptName" />
         </div>
 
-        <div>
+        <div class="mt-3">
             <label>File Path</label>
             <a @onclick="DataContext.OpenScriptFile">@DataContext.FilePath</a>
-            <Button Size="ButtonSize.Small" OnClick="DataContext.PickFile">Choose File</Button>
+            <Button Size="ButtonSize.Small" Disabled="DataContext.IsFileBeingPicked" OnClick="DataContext.PickFile">Choose File</Button>
         </div>
 
-        <div>
+        <div class="mt-3">
             <Button OnClickAsync="DataContext.AddScript">Create</Button>
             <Button OnClickAsync="ModalInstance.CancelAsync">Cancel</Button>
         </div>
@@ -35,14 +39,17 @@
 @code {
 
     [CascadingParameter]
-    public BlazoredModalInstance ModalInstance { get; set; }
+    public BlazoredModalInstance? ModalInstance { get; set; }
 
     [Parameter]
     public Guid OrderId { get; set; }
 
-    protected override void OnInitialized() {
+    protected override async Task OnInitializedAsync() {
+
         DataContext.CloseView += ModalInstance.CloseAsync;
         DataContext.OnPropertyChanged += StateHasChanged;
+
+        await DataContext.Loaded(OrderId);
 
         DataContext.PickFile();
 
