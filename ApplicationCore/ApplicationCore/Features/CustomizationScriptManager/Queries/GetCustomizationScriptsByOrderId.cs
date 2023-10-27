@@ -26,13 +26,14 @@ internal class GetCustomizationScriptsByOrderId {
                 SELECT
                     id,
                     order_id AS OrderId,
+                    name,
                     script_file_path AS FilePath,
                     type
                 FROM order_customization_scripts
                 WHERE order_id = @OrderId;
                 """, query);
 
-            return (Response<IEnumerable<CustomizationScript>>)scripts;
+            return Response<IEnumerable<CustomizationScript>>.Success(scripts);
 
         }
 
