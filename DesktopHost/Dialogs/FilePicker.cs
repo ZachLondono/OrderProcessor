@@ -10,16 +10,22 @@ public class FilePicker : IFilePicker {
     public void PickFile(FilePickerOptions options, Action<string> onFilePicked) {
         PickFile(options, false, (dialog) => {
             onFilePicked(dialog.FileName);
-        });
+        }, () => { });
+    }
+
+    public void PickFile(FilePickerOptions options, Action<string> onFilePicked, Action onCanceled) {
+        PickFile(options, false, (dialog) => {
+            onFilePicked(dialog.FileName);
+        }, onCanceled);
     }
 
     public void PickFiles(FilePickerOptions options, Action<string[]> onFilePicked) {
         PickFile(options, true, (dialog) => {
             onFilePicked(dialog.FileNames);
-        });
+        }, () => { });
     }
 
-    private static void PickFile(FilePickerOptions options, bool multiSelect, Action<OpenFileDialog> onFilePicked) {
+    private static void PickFile(FilePickerOptions options, bool multiSelect, Action<OpenFileDialog> onFilePicked, Action onCanceled) {
 
         /*
          * Show a modal dialog after the current event handler is completed, to avoid potential reentrancy caused by running a nested message loop in the WebView2 event handler.
@@ -48,6 +54,8 @@ public class FilePicker : IFilePicker {
 
                     if (result is not null && (bool)result) {
                         onFilePicked(dialog);
+                    } else {
+                        onCanceled();
                     }
 
                 }, null);
