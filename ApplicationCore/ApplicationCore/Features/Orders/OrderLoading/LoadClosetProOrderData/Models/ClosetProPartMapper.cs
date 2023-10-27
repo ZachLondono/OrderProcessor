@@ -874,11 +874,11 @@ public class ClosetProPartMapper {
 
     public IProduct CreateDovetailDrawerBox(Part part, bool wallHasBacking) {
 
-        string notch = "Standard Notch";
+        string notch = "Std_Notch";
         DrawerSlideType slideType = DrawerSlideType.UnderMount;
         if (part.PartName.Contains("Sidemount")) {
             slideType = DrawerSlideType.SideMount;
-            notch = "No Notch";
+            notch = "No_Notch";
         }
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
