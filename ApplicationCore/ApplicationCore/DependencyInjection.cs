@@ -23,6 +23,7 @@ public static class DependencyInjection {
                 .OrderDetailsViewModels()
                 .ProductEditorViewModels()
                 .SettingsViewModels()
+                .CustomizationScriptsManagerViewModels()
                 .AddTransient<CustomerAllmoxyIdViewModel>()
                 .AddTransient<CreateOrderRelationshipsViewModel>()
                 .AddTransient<ClosetOrderSelectorViewModel>()
