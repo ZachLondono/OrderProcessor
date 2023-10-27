@@ -1,6 +1,4 @@
 ﻿using ApplicationCore.Features.CustomizationScripts.Commands;
-using ApplicationCore.Features.CustomizationScripts.Models;
-using ApplicationCore.Features.CustomizationScripts.Queries;
 using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Shared.CustomizationScripts;
 using ApplicationCore.Shared.CustomizationScripts.Models;
