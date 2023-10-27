@@ -24,9 +24,9 @@ internal class AddCustomizationScript {
             await connection.ExecuteAsync(
                 """
                 INSERT INTO order_customization_scripts
-                (id, order_id, script_file_path, type)
+                (id, order_id, name, script_file_path, type)
                 VALUES
-                (@Id, @OrderId, @FilePath, @Type);
+                (@Id, @OrderId, @Name, @FilePath, @Type);
                 """, command.Script);
 
             return Response.Success();
