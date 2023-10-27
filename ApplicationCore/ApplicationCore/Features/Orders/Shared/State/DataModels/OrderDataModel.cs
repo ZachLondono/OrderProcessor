@@ -84,6 +84,7 @@ public class OrderDataModel {
         => @"SELECT
 
                 orders.id,
+                orders.source,
                 orders.number,
                 orders.name,
                 orders.note,
