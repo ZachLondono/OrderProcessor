@@ -12,6 +12,10 @@ using ApplicationCore.Features.Orders.Shared.Domain;
 using Microsoft.Extensions.Logging;
 using ApplicationCore.Shared.Settings;
 using CADCodeProxy.CSV;
+using ApplicationCore.Shared.CustomizationScripts.Models;
+using ApplicationCore.Shared.CustomizationScripts;
+using ApplicationCore.Features.Orders.OrderExport.Scripts;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 
 namespace ApplicationCore.Features.Orders.OrderExport;
 
@@ -180,13 +184,18 @@ internal class ExportService {
             return;
         }
 
+        var cncPartContainers = order.Products
+                                    .Where(p => p is ICNCPartContainer)
+                                    .Cast<ICNCPartContainer>()
+                                    .ToList();
+
+        await Task.Run(() => UpdateDoweledDrawerBoxes(order.Id, cncPartContainers));
+
         Part[] parts;
 
         try {
 
-            parts = order.Products
-                .Where(p => p is ICNCPartContainer)
-                .Cast<ICNCPartContainer>()
+            parts = cncPartContainers
                 .SelectMany(p => p.GetCNCParts(customerName))
                 .ToArray();
 
@@ -223,6 +232,66 @@ internal class ExportService {
             OnError?.Invoke("Failed to generate CSV token file");
 
         }
+
+    }
+
+    private async Task UpdateDoweledDrawerBoxes(Guid orderId, List<ICNCPartContainer> cncPartContainers) {
+        IEnumerable<CustomizationScript> customizationScripts = await GetCustomizationScripts(orderId);
+        var doweledDbScript = GetDoweledDrawerBoxScriptService(customizationScripts);
+        if (doweledDbScript is not null) {
+
+            var indexes = cncPartContainers.Where(p => p is DoweledDrawerBoxProduct).Select(p => cncPartContainers.IndexOf(p)).ToList();
+            foreach (var idx in indexes) {
+                cncPartContainers[idx] = await doweledDbScript.RunScript((DoweledDrawerBoxProduct)cncPartContainers[idx]);
+            }
+
+        }
+    }
+
+    private async Task<IEnumerable<CustomizationScript>> GetCustomizationScripts(Guid orderId) {
+
+        IEnumerable<CustomizationScript> customizationScripts = Enumerable.Empty<CustomizationScript>();
+
+        try {
+
+            var scriptsResult = await _bus.Send(new GetCustomizationScriptsByOrderId.Query(orderId));
+    
+            scriptsResult.Match(
+                scripts => customizationScripts = scripts,
+                error => OnError?.Invoke(error.Title));
+    
+
+        } catch (Exception ex) {
+
+            _logger.LogError(ex, "Exception thrown while trying to load customization scripts");
+            OnError?.Invoke("Failed to load CSV customization scripts");
+
+        }
+
+        return customizationScripts;
+
+    }
+
+    public ScriptService<DoweledDrawerBoxProduct, DoweledDrawerBoxProduct>? GetDoweledDrawerBoxScriptService(IEnumerable<CustomizationScript> scripts) {
+
+        var doweledDBCustomizationScript = scripts.FirstOrDefault(script => script.Type is CustomizationType.DoweledDrawerBox);
+
+        if (doweledDBCustomizationScript is null) return null;
+
+        try {
+        
+            ScriptService<DoweledDrawerBoxProduct, DoweledDrawerBoxProduct> scriptService = new(doweledDBCustomizationScript.FilePath);
+            scriptService.LoadScript(new Type[] { typeof(Part) });
+            return scriptService;
+        
+        } catch (Exception ex) {
+        
+            _logger.LogError(ex, $"Exception thrown trying to create script service - {doweledDBCustomizationScript.Name}");
+            OnError?.Invoke($"Failed to initialize script - {doweledDBCustomizationScript.Name}");
+        
+        }
+
+        return null;
 
     }
 
