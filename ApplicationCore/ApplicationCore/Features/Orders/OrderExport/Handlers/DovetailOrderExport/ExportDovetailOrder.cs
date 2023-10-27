@@ -149,11 +149,12 @@ public class ExportDovetailOrder {
         public static DBOrder MapData(Order order, string customerName, IGrouping<bool, DovetailDrawerBox> group) {
             return new() {
                 OrderNumber = order.Number,
+                OrderName = order.Name,
                 OrderDate = order.OrderDate,
-                OrderSource = order.Source,
+                OrderSource = "Order Processor",
                 BoxCount = group.Count(),
                 RushMessage = order.Rush ? "RUSH" : "",
-                OrderSourceLink = "",
+                OrderSourceLink = order.Source,
                 SubTotal = order.SubTotal,
                 Tax = order.Tax,
                 ShippingCost = order.Shipping.Price,
@@ -170,8 +171,22 @@ public class ExportDovetailOrder {
                     Zip = order.Shipping.Address.Zip,
                     Phone = order.Shipping.PhoneNumber,
                 },
-                Vendor = new(),
-                Supplier = new(),
+                Vendor = new() {
+                    Name = "Metro Cabinet Parts",
+                    Line1 = "15E Easy St",
+                    Line2 = "",
+                    City = "Bound Brook",
+                    State = "NJ",
+                    Zip = "08805"
+                },
+                Supplier = new() {
+                    Name = "Metro Cabinet Parts",
+                    Line1 = "15E Easy St",
+                    Line2 = "",
+                    City = "Bound Brook",
+                    State = "NJ",
+                    Zip = "08805"
+                },
                 Items = group.Select(b => new DBOrder.LineItem() {
                     Line = b.ProductNumber,
                     Qty = b.Qty,
@@ -238,6 +253,8 @@ public class ExportDovetailOrder {
             cells.ReleaseObjects();
 
             ws.Range["OrderNumber"].Value = order.OrderNumber;
+            ws.Range["OrderField_Key_1"].Value = "Order Name";
+            ws.Range["OrderField_Value_1"].Value = order.OrderName;
             ws.Range["OrderDate"].Value = order.OrderDate;
             ws.Range["OrderSource"].Value = order.OrderSource;
             ws.Range["BoxCount"].Value = order.BoxCount;
@@ -272,6 +289,7 @@ public class ExportDovetailOrder {
         public class DBOrder {
 
             public string OrderNumber { get; set; } = string.Empty;
+            public string OrderName { get; set; } = string.Empty;
             public DateTime OrderDate { get; set; }
             public string OrderSource { get; set; } = string.Empty;
             public int BoxCount { get; set; }
