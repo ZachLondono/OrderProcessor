@@ -200,6 +200,10 @@
                                 <td>$@(_order.Products.Where(p => p is MDFDoorProduct).Sum(p => p.UnitPrice * p.Qty).ToString("0.00"))</td>
                             </tr>
                             <tr>
+                                <td>Five-Piece Doors</td>
+                                <td>$@(_order.Products.Where(p => p is FivePieceDoorProduct).Sum(p => p.UnitPrice * p.Qty).ToString("0.00"))</td>
+                            </tr>
+                            <tr>
                                 <td>Others</td>
                                 <td>$@(_order.AdditionalItems.Sum(p => p.Price).ToString("0.00"))</td>
                             </tr>

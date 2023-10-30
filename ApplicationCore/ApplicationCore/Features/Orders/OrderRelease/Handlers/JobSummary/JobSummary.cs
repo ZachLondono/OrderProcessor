@@ -28,7 +28,8 @@ internal class JobSummary {
     public List<ZargenDrawerGroup> ZargenDrawers { get; set; } = new();
     public List<DovetailDrawerBoxGroup> DovetailDrawerBoxes { get; set; } = new();
     public List<DoweledDrawerBoxGroup> DoweledDrawerBoxes { get; set; } = new();
-    public List<MDFDoorGroup> Doors { get; set; } = new();
+    public List<MDFDoorGroup> MDFDoors { get; set; } = new();
+    public List<FivePieceDoorGroup> FivePieceDoors { get; set; } = new();
     public int AdditionalItems { get; set; } = new();
 
     public bool ShowMaterialTypesInSummary { get; set; } = false;

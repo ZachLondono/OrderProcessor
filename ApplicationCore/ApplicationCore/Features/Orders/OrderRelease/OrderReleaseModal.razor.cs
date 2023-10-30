@@ -18,6 +18,7 @@ public partial class OrderReleaseModal {
     public IModalService ModalService { get; set; } = default!;
 
     private string? _errorMessage = null;
+    public bool _isReleasing = false;
 
     protected override async Task OnInitializedAsync() {
 
@@ -74,9 +75,16 @@ public partial class OrderReleaseModal {
 
     private async Task ShowReleaseProgressModal() {
 
+        _isReleasing = true;
         _errorMessage = null;
 
-        if (!Orders.Any()) return;
+        StateHasChanged();
+
+        if (!Orders.Any()) {
+            _isReleasing = false;
+            StateHasChanged();
+            return;
+        }
 
         var parameters = DataContext.CreateReleaseProgressModalParameters(Orders);
 
@@ -92,6 +100,9 @@ public partial class OrderReleaseModal {
         _ = await dialog.Result;
 
         await ModalInstance.CloseAsync();
+
+        _isReleasing = false;
+        StateHasChanged();
     }
 
 }

@@ -238,8 +238,8 @@
         </section>
 
         <section>
-            <Button Color="ButtonColor.Primary" Style="ButtonStyle.Text" OnClickAsync="ShowReleaseProgressModal">Release</Button>
-            <Button Color="ButtonColor.Secondary" Style="ButtonStyle.Text" OnClickAsync="Cancel">Cancel</Button>
+            <Button Color="ButtonColor.Primary" Style="ButtonStyle.Text" OnClickAsync="ShowReleaseProgressModal" Disabled="_isReleasing">Release</Button>
+            <Button Color="ButtonColor.Secondary" Style="ButtonStyle.Text" OnClickAsync="Cancel" Disabled="_isReleasing">Cancel</Button>
         </section>
 
     </div>

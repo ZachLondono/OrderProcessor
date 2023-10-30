@@ -9,7 +9,7 @@ internal class MDFDoorGroup {
 
     public List<MDFDoorItem> Items { get; set; } = new();
 
-    public class DoorGroupComparer : IEqualityComparer<MDFDoorGroup> {
+    public class MDFDoorGroupComparer : IEqualityComparer<MDFDoorGroup> {
 
         bool IEqualityComparer<MDFDoorGroup>.Equals(MDFDoorGroup? x, MDFDoorGroup? y) {
 

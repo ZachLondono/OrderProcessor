@@ -67,8 +67,12 @@ internal class PackingListDecorator : IPackingListDecorator {
                         ComposeZargenDrawerTable(column.Item(), _packingList.ZargenDrawers);
                     }
 
-                    if (_packingList.Doors.Any()) {
-                        ComposeMDFDoorTable(column.Item(), _packingList.Doors);
+                    if (_packingList.MDFDoors.Any()) {
+                        ComposeMDFDoorTable(column.Item(), _packingList.MDFDoors);
+                    }
+
+                    if (_packingList.FivePieceDoors.Any()) {
+                        ComposeFivePieceDoorTable(column.Item(), _packingList.FivePieceDoors);
                     }
 
                     if (_packingList.DovetailDrawerBoxes.Any()) {
@@ -497,7 +501,75 @@ internal class PackingListDecorator : IPackingListDecorator {
 
                     table.Header(header => {
 
-                        header.Cell().ColumnSpan(3).PaddingLeft(10).Text($"Doors ({items.Sum(i => i.Qty)})").FontSize(16).Bold().Italic();
+                        header.Cell().ColumnSpan(3).PaddingLeft(10).Text($"MDF Doors ({items.Sum(i => i.Qty)})").FontSize(16).Bold().Italic();
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Inches");
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Millimeters");
+
+                        header.Cell().Element(headerCellStyle).Text("#");
+                        header.Cell().Element(headerCellStyle).Text("Qty");
+                        header.Cell().Element(headerCellStyle).Text("Description");
+                        header.Cell().Element(headerCellStyle).Text("Width");
+                        header.Cell().Element(headerCellStyle).Text("Height");
+                        header.Cell().Element(headerCellStyle).Text("Width");
+                        header.Cell().Element(headerCellStyle).Text("Height");
+
+                    });
+
+                    foreach (var item in items) {
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Width.AsMillimeters().ToString("0"));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Height.AsMillimeters().ToString("0"));
+                    }
+
+                });
+
+        });
+
+    }
+
+    public static void ComposeFivePieceDoorTable(IContainer container, IEnumerable<FivePieceDoorItem> items) {
+
+        var defaultCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .AlignMiddle()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3);
+
+        var headerCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .Background(Colors.Grey.Lighten3)
+                    .AlignCenter()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3)
+                    .DefaultTextStyle(x => x.Bold());
+
+        container.Column(col => {
+
+            col.Item()
+                .PaddingTop(20)
+                .DefaultTextStyle(x => x.FontSize(10))
+                .Table(table => {
+
+                    table.ColumnsDefinition(column => {
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(40);
+                        column.RelativeColumn();
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                    });
+
+
+                    table.Header(header => {
+
+                        header.Cell().ColumnSpan(3).PaddingLeft(10).Text($"Five-Piece Doors ({items.Sum(i => i.Qty)})").FontSize(16).Bold().Italic();
                         header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Inches");
                         header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Millimeters");
 
@@ -806,9 +878,18 @@ internal class PackingListDecorator : IPackingListDecorator {
                                     Qty = cabPart.Qty,
                                     Description = cabPart.GetDescription()
                                 }).ToList(),
-            Doors = order.Products
+            MDFDoors = order.Products
                             .OfType<MDFDoorProduct>()
                             .Select(cab => new MDFDoorItem() {
+                                Line = cab.ProductNumber,
+                                Qty = cab.Qty,
+                                Height = cab.Height,
+                                Width = cab.Width,
+                                Description = cab.GetDescription()
+                            }).ToList(),
+            FivePieceDoors = order.Products
+                            .OfType<FivePieceDoorProduct>()
+                            .Select(cab => new FivePieceDoorItem() {
                                 Line = cab.ProductNumber,
                                 Qty = cab.Qty,
                                 Height = cab.Height,
