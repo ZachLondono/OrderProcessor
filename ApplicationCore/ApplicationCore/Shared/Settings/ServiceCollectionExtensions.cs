@@ -18,6 +18,7 @@ public static class Extensions {
             "email.json",
             "pdfconfig.json",
             "tools.json",
+            "five_piece_doors.json",
             "data.json",
             "data.Development.json"
     };
