@@ -16,7 +16,9 @@ internal record PackingList {
 
     public List<DoweledDrawerBoxItem> DoweledDrawerBoxes { get; set; } = new();
 
-    public List<MDFDoorItem> Doors { get; set; } = new();
+    public List<MDFDoorItem> MDFDoors { get; set; } = new();
+
+    public List<FivePieceDoorItem> FivePieceDoors { get; set; } = new();
 
     public List<CabinetItem> Cabinets { get; set; } = new();
 
