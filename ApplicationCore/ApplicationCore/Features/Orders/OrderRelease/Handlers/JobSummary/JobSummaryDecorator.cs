@@ -18,6 +18,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.ZargenDrawerGroup;
 using ApplicationCore.Shared;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.CabinetPartGroup;
+using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.FivePieceDoorGroup;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 
@@ -89,7 +90,8 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                     int cabPartQty = jobSummary.CabinetParts.Sum(p => p.Items.Sum(i => i.Qty));
                                     int cpQty = jobSummary.ClosetParts.Sum(p => p.Items.Sum(i => i.Qty));
                                     int zargenQty = jobSummary.ZargenDrawers.Sum(p => p.Items.Sum(i => i.Qty));
-                                    int doorQty = jobSummary.Doors.Sum(p => p.Items.Sum(i => i.Qty));
+                                    int mdfDoorQty = jobSummary.MDFDoors.Sum(p => p.Items.Sum(i => i.Qty));
+                                    int fivePieceDoorQty = jobSummary.FivePieceDoors.Sum(p => p.Items.Sum(i => i.Qty));
                                     int dovetailQty = jobSummary.DovetailDrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty));
                                     int doweledQty = jobSummary.DoweledDrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty));
 
@@ -113,9 +115,14 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                         table.Cell().AlignCenter().Text(zargenQty == 0 ? "-" : zargenQty.ToString());
                                     }
 
-                                    if (doorQty > 0) {
+                                    if (mdfDoorQty > 0) {
                                         table.Cell().AlignRight().PaddingRight(5).Text("MDF Doors:");
-                                        table.Cell().AlignCenter().Text(doorQty == 0 ? "-" : doorQty.ToString());
+                                        table.Cell().AlignCenter().Text(mdfDoorQty == 0 ? "-" : mdfDoorQty.ToString());
+                                    }
+
+                                    if (fivePieceDoorQty > 0) {
+                                        table.Cell().AlignRight().PaddingRight(5).Text("Five-Piece Doors:");
+                                        table.Cell().AlignCenter().Text(fivePieceDoorQty == 0 ? "-" : fivePieceDoorQty.ToString());
                                     }
 
                                     if (dovetailQty > 0) {
@@ -134,7 +141,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                     }
 
                                     table.Cell().BorderTop(0.5f).AlignRight().PaddingRight(5).Text("Total:").Bold().FontSize(14);
-                                    table.Cell().BorderTop(0.5f).AlignCenter().Text((cabQty + cpQty + doorQty + dovetailQty + doweledQty + jobSummary.AdditionalItems).ToString()).Bold().FontSize(14);
+                                    table.Cell().BorderTop(0.5f).AlignCenter().Text((cabQty + cpQty + mdfDoorQty + dovetailQty + doweledQty + jobSummary.AdditionalItems).ToString()).Bold().FontSize(14);
 
                                 });
 
@@ -231,8 +238,12 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                             ComposeDoweledDrawerBoxTable(column.Item(), group);
                         }
 
-                        foreach (var group in jobSummary.Doors) {
-                            ComposeDoorTable(column.Item(), group);
+                        foreach (var group in jobSummary.MDFDoors) {
+                            ComposeMDFDoorTable(column.Item(), group);
+                        }
+
+                        foreach (var group in jobSummary.FivePieceDoors) {
+                            ComposeFivePieceDoorTable(column.Item(), group);
                         }
                     }
 
@@ -437,17 +448,40 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         })
                         .ToList();
 
-        var doors = order.Products
+        var mdfDoors = order.Products
                         .OfType<MDFDoorProduct>()
                         .GroupBy(d => new MDFDoorGroup {
                             Room = d.Room,
                             Finish = d.PaintColor ?? "",
                             Material = d.Material,
                             Style = d.FramingBead
-                        }, new DoorGroupComparer())
+                        }, new MDFDoorGroupComparer())
                         .Select(g => {
 
                             g.Key.Items = g.Select(i => new MDFDoorItem {
+                                Line = i.ProductNumber,
+                                Description = i.GetDescription(),
+                                Qty = i.Qty,
+                                Height = i.Height,
+                                Width = i.Width
+                            })
+                            .OrderBy(i => i.Line)
+                            .ToList();
+
+                            return g.Key;
+
+                        })
+                        .ToList();
+
+        var fivePieceDoors = order.Products
+                        .OfType<FivePieceDoorProduct>()
+                        .GroupBy(d => new FivePieceDoorGroup {
+                            Room = d.Room,
+                            Material = d.Material
+                        }, new FivePieceDoorGroupComparer())
+                        .Select(g => {
+
+                            g.Key.Items = g.Select(i => new FivePieceDoorItem {
                                 Line = i.ProductNumber,
                                 Description = i.GetDescription(),
                                 Qty = i.Qty,
@@ -486,7 +520,8 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             CabinetParts = cabParts,
             ClosetParts = cp,
             ZargenDrawers = zargens,
-            Doors = doors,
+            MDFDoors = mdfDoors,
+            FivePieceDoors = fivePieceDoors,
             DovetailDrawerBoxes = dovetailDb,
             DoweledDrawerBoxes = doweledDb,
             AdditionalItems = order.AdditionalItems.Where(i => !i.IsService).Count(),
@@ -846,7 +881,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
     }
 
-    private static void ComposeDoorTable(IContainer container, MDFDoorGroup group) {
+    private static void ComposeMDFDoorTable(IContainer container, MDFDoorGroup group) {
 
         var defaultCellStyle = (IContainer cell)
             => cell.Border(1)
@@ -869,7 +904,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             col.Item()
                 .PaddingTop(10)
                 .PaddingLeft(10)
-                .Text($"{(group.Room == "" ? "" : $"{group.Room} - ")}Doors ({group.Items.Sum(i => i.Qty)})")
+                .Text($"{(group.Room == "" ? "" : $"{group.Room} - ")}MDF Doors ({group.Items.Sum(i => i.Qty)})")
                 .FontSize(16)
                 .Bold()
                 .Italic();
@@ -897,6 +932,77 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
                         header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Finish");
                         header.Cell().ColumnSpan(3).Element(defaultCellStyle).PaddingLeft(5).Text(group.Finish);
+
+                        header.Cell().Element(headerCellStyle).Text("#");
+                        header.Cell().Element(headerCellStyle).Text("Qty");
+                        header.Cell().Element(headerCellStyle).Text("Description");
+                        header.Cell().Element(headerCellStyle).Text("Width");
+                        header.Cell().Element(headerCellStyle).Text("Height");
+
+                    });
+
+                    foreach (var item in group.Items) {
+
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description);
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Width, 10));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(text => FormatFraction(text, item.Height, 10));
+
+                    }
+
+
+                });
+
+        });
+
+    }
+
+    private static void ComposeFivePieceDoorTable(IContainer container, FivePieceDoorGroup group) {
+
+        var defaultCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .AlignMiddle()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3);
+
+        var headerCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .Background(Colors.Grey.Lighten3)
+                    .AlignCenter()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3)
+                    .DefaultTextStyle(x => x.Bold());
+
+        container.Column(col => {
+
+            col.Item()
+                .PaddingTop(10)
+                .PaddingLeft(10)
+                .Text($"{(group.Room == "" ? "" : $"{group.Room} - ")}Five-Piece Doors ({group.Items.Sum(i => i.Qty)})")
+                .FontSize(16)
+                .Bold()
+                .Italic();
+
+            col.Item()
+                .DefaultTextStyle(x => x.FontSize(10))
+                .Table(table => {
+
+                    table.ColumnsDefinition(column => {
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(200);
+                        column.ConstantColumn(45);
+                        column.ConstantColumn(45);
+                    });
+
+
+                    table.Header(header => {
+
+                        header.Cell().ColumnSpan(2).Element(headerCellStyle).Text("Material");
+                        header.Cell().ColumnSpan(3).Element(defaultCellStyle).PaddingLeft(5).Text(group.Material);
 
                         header.Cell().Element(headerCellStyle).Text("#");
                         header.Cell().Element(headerCellStyle).Text("Qty");
