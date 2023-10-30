@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData;
+﻿using ApplicationCore.Features.CNC.ReleasePDF;
+using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
@@ -55,14 +56,13 @@ public class FivePieceDoorModel : ProductOrItemModel {
 
         Dimension width = Dimension.FromMillimeters(Width);
         Dimension height = Dimension.FromMillimeters(Height);
-        string material = $"{MaterialFinish} - {MaterialCore}";
         var frameSize = new DoorFrame(Dimension.FromMillimeters(Rails));
         var frameThickness = Dimension.FromMillimeters(19.05);
         var panelThickness = Dimension.FromMillimeters(6.35);
 
         decimal unitPrice = AllmoxyXMLOrderProviderHelpers.StringToMoney(UnitPrice);
 
-        return new FivePieceDoorProduct(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, width, height, frameSize, frameThickness, panelThickness, material) {
+        return new FivePieceDoorProduct(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, width, height, frameSize, frameThickness, panelThickness, MaterialFinish) {
             ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList()
         };
 
