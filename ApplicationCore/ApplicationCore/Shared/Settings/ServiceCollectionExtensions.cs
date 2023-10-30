@@ -61,6 +61,7 @@ public static class Extensions {
         services.ConfigureWritable<DataFilePaths>(configuration.GetRequiredSection("data"), Path.Combine(_configDirectory, "data.json"));
 #endif
 
+        services.ConfigureWritable<FivePieceDoorCutListSettings>(configuration.GetRequiredSection("five_piece_doors"), Path.Combine(_configDirectory, "five_piece_doors.json"));
         services.ConfigureWritable<ToolConfiguration>(configuration.GetRequiredSection("tools"), Path.Combine(_configDirectory, "tools.json"));
         services.ConfigureWritable<EmailSettings>(configuration.GetRequiredSection("Email"), Path.Combine(_configDirectory, "email.json"));
         services.ConfigureWritable<ScheduleSettings>(configuration.GetRequiredSection("schedule"), Path.Combine(_configDirectory, "schedule.json"));

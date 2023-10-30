@@ -1,8 +1,10 @@
-﻿namespace ApplicationCore.Shared.Settings;
+﻿using Microsoft.Extensions.Configuration;
 
-public class FivePieceDoorCutListSettings
-{
+namespace ApplicationCore.Shared.Settings;
 
+public class FivePieceDoorCutListSettings {
+
+    [ConfigurationKeyName("template_file_path")]
     public string TemplateFilePath { get; set; } = string.Empty;
 
 }
