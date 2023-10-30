@@ -3,7 +3,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Components;
 
-internal class FivePieceDoor : FivePieceDoorConfig {
+public class FivePieceDoor : FivePieceDoorConfig {
 
     public Dimension Width { get; init; }
     public Dimension Height { get; init; }

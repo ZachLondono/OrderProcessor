@@ -119,6 +119,18 @@
                         Context="product" />
                     </div>
                 }
+
+                @if (Model.FivePieceDoors.Any())
+                {
+                    <div>
+                        <h3 class="font-semibold text-lg pl-3">Five Piece Doors (@Model.FivePieceDoors.Count)</h3>
+                        <FivePieceDoorProductTable 
+                        Doors="@Model.FivePieceDoors"
+                        ActionColumn="ProductActionsColumn"
+                        UseInches="@UseInches"
+                        Context="product" />
+                    </div>
+                }
             </div>
         </div>
     }

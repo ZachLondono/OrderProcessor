@@ -1,11 +1,10 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Components;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
-using CADCodeProxy.Machining;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 
-internal class FivePieceDoorProduct : FivePieceDoor, IProduct {
+public class FivePieceDoorProduct : FivePieceDoor, IProduct {
 
     public Guid Id { get; init; }
     public int Qty { get; init; }
