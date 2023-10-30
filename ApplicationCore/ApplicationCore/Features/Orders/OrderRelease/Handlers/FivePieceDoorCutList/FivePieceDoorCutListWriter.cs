@@ -49,12 +49,14 @@ public class FivePieceDoorCutListWriter {
         
         }
 
-        var fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{cutList.OrderNumber} 5-Piece DOOR CUTLIST", "xlsx");
+        var fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{cutList.OrderNumber} 5-Piece DOOR CUTLIST - {cutList.Material}", "xlsx");
         var fullFilePath = Path.Combine(outputDirectory, fileName);
         try {
 
             WriteHeader(sheet, cutList);
-            WriteLineItems(sheet, cutList.Items);
+            var lastRow = WriteLineItems(sheet, cutList.Items);
+
+            sheet.PageSetup.PrintArea = $"B1:G{lastRow}";
 
             workbook.SaveAs(fullFilePath);
 
@@ -116,7 +118,7 @@ public class FivePieceDoorCutListWriter {
 
     }
 
-    public void WriteLineItems(Worksheet sheet, IEnumerable<LineItem> lineItems) {
+    public int WriteLineItems(Worksheet sheet, IEnumerable<LineItem> lineItems) {
 
         int currentOffset = 1;
         foreach (var item in lineItems) {
@@ -131,6 +133,8 @@ public class FivePieceDoorCutListWriter {
             currentOffset++;
 
         }
+
+        return sheet.Range["CabNumCol"].Offset[currentOffset].Row;
 
     }
 
