@@ -164,34 +164,42 @@ public class ReleaseService {
             }
 
             var outputDirectory = Path.Combine(order.WorkingDirectory, "orders");
-            order.Products
-                .OfType<FivePieceDoorProduct>()
-                .GroupBy(d => d.Material)
-                .Select(group => new FivePieceCutList() {
-                        CustomerName = customerName,
-                        VendorName = vendorName,
-                        Note = order.Note,
-                        Material = group.First().Material,
-                        OrderDate = order.OrderDate,
-                        OrderName = order.Name,
-                        OrderNumber = order.Number,
-                        TotalDoorCount = group.Count(),
-                        Items = group.Select(door => (door, door.GetParts()))
-                                    .SelectMany(doorParts => 
-                                        doorParts.Item2.Select(part => new LineItem() {
-                                            CabNumber = doorParts.door.ProductNumber,
-                                            Note = "",
-                                            Qty = part.Qty,
-                                            PartName = part.Name,
-                                            Length = part.Length.AsMillimeters(),
-                                            Width = part.Length.AsMillimeters()
-                                        })
-                                    )
-                                    .ToList()
-                })
-                .Select(cutList => _fivePieceDoorCutListWriter.WriteCutList(cutList, outputDirectory, true)?.PDFFilePath)
-                .OfType<string>()
-                .ForEach(additionalPDFs.Add);
+            var cutListResults = await Task.Run(() => 
+                order.Products
+                    .OfType<FivePieceDoorProduct>()
+                    .GroupBy(d => d.Material)
+                    .Select(group => new FivePieceCutList() {
+                            CustomerName = customerName,
+                            VendorName = vendorName,
+                            Note = order.Note,
+                            Material = group.First().Material,
+                            OrderDate = order.OrderDate,
+                            OrderName = order.Name,
+                            OrderNumber = order.Number,
+                            TotalDoorCount = group.Count(),
+                            Items = group.Select(door => (door, door.GetParts()))
+                                        .SelectMany(doorParts => 
+                                            doorParts.Item2.Select(part => new LineItem() {
+                                                CabNumber = doorParts.door.ProductNumber,
+                                                Note = "",
+                                                Qty = part.Qty,
+                                                PartName = part.Name,
+                                                Length = part.Length.AsMillimeters(),
+                                                Width = part.Length.AsMillimeters()
+                                            })
+                                        )
+                                        .ToList()
+                    })
+                    .Select(cutList => _fivePieceDoorCutListWriter.WriteCutList(cutList, outputDirectory, true))
+                    .OfType<CutListResult>()
+                    .ToList()
+            );
+
+            cutListResults.ForEach(result => {
+                OnFileGenerated?.Invoke(result.ExcelFilePath);
+                if (result.PDFFilePath is string filePath)
+                    additionalPDFs.Add(filePath);
+            });
 
         }
 
