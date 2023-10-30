@@ -14,6 +14,7 @@ using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Features.Orders.CustomerOrderNumber;
 using ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
+using ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -48,6 +49,7 @@ public static class DependencyInjection {
         services.AddTransient<PackingListDecoratorFactory>();
         services.AddTransient<DovetailDBPackingListDecoratorFactory>();
         services.AddTransient<ReleaseService>();
+        services.AddTransient<FivePieceDoorCutListWriter>();
     }
 
     private static void AddExportServices(IServiceCollection services) {
