@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
-using CADCodeProxy.Machining;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Components;
 
@@ -17,11 +16,11 @@ internal class FivePieceDoor : FivePieceDoorConfig {
         FrameSize = frameSize;
     }
 
-    public IEnumerable<Part> GetCNCParts(int qty, int productNumber, string customerName, string room) {
-        (var top, var bottom) = GetRailParts(qty, productNumber, customerName, room);
-        (var left, var right) = GetStileParts(qty, productNumber, customerName, room);
-        var center = GetCenterPanelPart(qty, productNumber, customerName, room);
-        List<Part> parts = new() {
+    public IEnumerable<FivePieceDoorPart> GetParts(int qty) {
+        (var top, var bottom) = GetRailParts(qty);
+        (var left, var right) = GetStileParts(qty);
+        var center = GetCenterPanelPart(qty);
+        List<FivePieceDoorPart> parts = new() {
             top,
             bottom,
             left,
@@ -31,151 +30,38 @@ internal class FivePieceDoor : FivePieceDoorConfig {
         return parts;
     }
 
-    public (Part top, Part bottom) GetRailParts(int qty, int productNumber, string customerName, string room) {
+    public (FivePieceDoorPart top, FivePieceDoorPart bottom) GetRailParts(int qty) {
 
         Dimension topWidth = FrameSize.TopRail;
         Dimension bottomWidth = FrameSize.BottomRail;
         Dimension length = Width - FrameSize.LeftStile - FrameSize.RightStile;
 
-        var top = new Part() {
-            Width = topWidth.AsMillimeters(),
-            Length = length.AsMillimeters(),
-            Thickness = FrameThickness.AsMillimeters(),
-            Qty = qty,
-            IsGrained = false,
-            Material = Material,
-            InfoFields = new() {
-                { "ProductName", "TopRail" },
-                { "Description", "Five Piece Door Top Rail" },
-                { "Level1", room },
-                { "Comment1", "" },
-                { "Comment2", "" },
-                { "Side1Color", "" },
-                { "Side1Material", Material },
-                { "CabinetNumber", productNumber.ToString() },
-                { "CustomerInfo1", customerName },
-            },
-            PrimaryFace = new() {
-                ProgramName = $"TopRail{productNumber}",
-                Tokens = Array.Empty<IToken>()
-            }
-        };
-
-        var bottom = new Part() {
-            Width = bottomWidth.AsMillimeters(),
-            Length = length.AsMillimeters(),
-            Thickness = 19.05,
-            Qty = qty,
-            IsGrained = false,
-            Material = Material,
-            InfoFields = new() {
-                { "ProductName", "BottomRail" },
-                { "Description", "Five Piece Door Bottom Rail" },
-                { "Level1", room },
-                { "Comment1", "" },
-                { "Comment2", "" },
-                { "Side1Color", "" },
-                { "Side1Material", Material },
-                { "CabinetNumber", productNumber.ToString() },
-                { "CustomerInfo1", customerName },
-            },
-            PrimaryFace = new() {
-                ProgramName = $"BottomRail{productNumber}",
-                Tokens = Array.Empty<IToken>()
-            }
-        };
+        var top = new FivePieceDoorPart("Top Rail", qty, topWidth, length, Material);
+        var bottom = new FivePieceDoorPart("Bottom Rail", qty, bottomWidth, length, Material);
 
         return (top, bottom);
 
     }
 
-    public (Part left, Part right) GetStileParts(int qty, int productNumber, string customerName, string room) {
+    public (FivePieceDoorPart left, FivePieceDoorPart right) GetStileParts(int qty) {
 
         Dimension leftWidth = FrameSize.LeftStile;
         Dimension rightWidth = FrameSize.RightStile;
         Dimension length = Height - FrameSize.TopRail - FrameSize.BottomRail;
 
-        var left = new Part() {
-            Width = leftWidth.AsMillimeters(),
-            Length = length.AsMillimeters(),
-            Thickness = FrameThickness.AsMillimeters(),
-            Qty = qty,
-            IsGrained = false,
-            Material = Material,
-            InfoFields = new() {
-                { "ProductName", "LeftStile" },
-                { "Description", "Five Piece Door Left Stile" },
-                { "Level1", room },
-                { "Comment1", "" },
-                { "Comment2", "" },
-                { "Side1Color", "" },
-                { "Side1Material", Material },
-                { "CabinetNumber", productNumber.ToString() },
-                { "CustomerInfo1", customerName },
-            },
-            PrimaryFace = new() {
-                ProgramName = $"LeftStile{productNumber}",
-                Tokens = Array.Empty<IToken>()
-            }
-        };
-
-        var right = new Part() {
-            Width = rightWidth.AsMillimeters(),
-            Length = length.AsMillimeters(),
-            Thickness = FrameThickness.AsMillimeters(),
-            Qty = qty,
-            IsGrained = false,
-            Material = Material,
-            InfoFields = new() {
-                { "ProductName", "RightStile" },
-                { "Description", "Five Piece Door Right Stile" },
-                { "Level1", room },
-                { "Comment1", "" },
-                { "Comment2", "" },
-                { "Side1Color", "" },
-                { "Side1Material", Material },
-                { "CabinetNumber", productNumber.ToString() },
-                { "CustomerInfo1", customerName },
-            },
-            PrimaryFace = new() {
-                ProgramName = $"RightStile{productNumber}",
-                Tokens = Array.Empty<IToken>()
-            }
-        };
+        var left = new FivePieceDoorPart("Left Stile", qty, leftWidth, length, Material);
+        var right = new FivePieceDoorPart("Right Stile", qty, rightWidth, length, Material);
 
         return (left, right);
 
     }
 
-    public Part GetCenterPanelPart(int qty, int productNumber, string customerName, string room) {
+    public FivePieceDoorPart GetCenterPanelPart(int qty) {
 
         Dimension width = Width - FrameSize.LeftStile - FrameSize.RightStile;
         Dimension length = Height - FrameSize.TopRail - FrameSize.BottomRail;
 
-        return new() {
-            Width = width.AsMillimeters(),
-            Length = length.AsMillimeters(),
-            Thickness = PanelThickness.AsMillimeters(),
-            Qty = qty,
-            IsGrained = false,
-            Material = Material,
-            InfoFields = new() {
-                { "ProductName", "CenterPanel" },
-                { "Description", "Five Piece Door Center Panel" },
-                { "Level1", room },
-                { "Comment1", "" },
-                { "Comment2", "" },
-                { "Side1Color", "" },
-                { "Side1Material", Material },
-                { "CabinetNumber", productNumber.ToString() },
-                { "CustomerInfo1", customerName },
-            },
-            PrimaryFace = new() {
-                ProgramName = $"CenterPanel{productNumber}",
-                Tokens = Array.Empty<IToken>()
-            }
-
-        };
+        return new("Center Panel", qty, width, length, Material);
 
     }
 
