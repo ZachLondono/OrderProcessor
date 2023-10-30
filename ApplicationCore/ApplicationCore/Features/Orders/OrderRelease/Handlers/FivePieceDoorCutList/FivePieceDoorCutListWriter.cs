@@ -1,27 +1,28 @@
 ﻿using ApplicationCore.Shared.Services;
 using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
 using ExcelApp = Microsoft.Office.Interop.Excel.Application;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList;
 
-public class CutListWriter {
+public class FivePieceDoorCutListWriter {
 
     private readonly IFileReader _fileReader;
     private readonly FivePieceDoorCutListSettings _settings;
-    private readonly ILogger<CutListWriter> _logger;
+    private readonly ILogger<FivePieceDoorCutListWriter> _logger;
 
     public Action<string>? OnError { get; set; }
 
-    public CutListWriter(IFileReader fileReader, FivePieceDoorCutListSettings settings, ILogger<CutListWriter> logger) {
+    public FivePieceDoorCutListWriter(IFileReader fileReader, IOptions<FivePieceDoorCutListSettings> settings, ILogger<FivePieceDoorCutListWriter> logger) {
         _fileReader = fileReader;
-        _settings = settings;
+        _settings = settings.Value;
         _logger = logger;
     }
 
-    public CutListResult? WriteCutList(CutList cutList, string outputDirectory, bool generatePDF) {
+    public CutListResult? WriteCutList(FivePieceCutList cutList, string outputDirectory, bool generatePDF) {
 
         if (!File.Exists(_settings.TemplateFilePath)) {
             OnError?.Invoke($"5-Pieced door cut list template does not exist or cannot be accessed - '{_settings.TemplateFilePath}'");
@@ -102,7 +103,7 @@ public class CutListWriter {
 
     }
 
-    public void WriteHeader(Worksheet sheet, CutList cutList) {
+    public void WriteHeader(Worksheet sheet, FivePieceCutList cutList) {
 
         sheet.Range["CustomerName"].Value2 = cutList.CustomerName;
         sheet.Range["VendorName"].Value2 = cutList.VendorName;

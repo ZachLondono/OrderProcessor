@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList;
 
-public class CutList {
+public class FivePieceCutList {
 
     public string CustomerName { get; set; } = string.Empty;
     public string VendorName { get; set; } = string.Empty;

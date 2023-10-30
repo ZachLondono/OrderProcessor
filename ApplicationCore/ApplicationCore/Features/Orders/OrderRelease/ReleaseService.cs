@@ -21,6 +21,9 @@ using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
 using ApplicationCore.Shared.CNC.WSXML.Report;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
+using ApplicationCore.Features.Orders.Shared.Domain.Components;
+using ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -42,8 +45,9 @@ public class ReleaseService {
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly IEmailService _emailService;
     private readonly WSXMLParser _wsxmlParser;
+    private readonly FivePieceDoorCutListWriter _fivePieceDoorCutListWriter;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, WSXMLParser wsxmlParser, DovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, WSXMLParser wsxmlParser, DovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory, FivePieceDoorCutListWriter fivePieceDoorCutListWriter) {
         _fileReader = fileReader;
         _invoiceDecoratorFactory = invoiceDecoratorFactory;
         _packingListDecoratorFactory = packingListDecoratorFactory;
@@ -55,6 +59,9 @@ public class ReleaseService {
         _emailService = emailService;
         _wsxmlParser = wsxmlParser;
         _dovetailDBPackingListDecoratorFactory = dovetailDBPackingListDecoratorFactory;
+        _fivePieceDoorCutListWriter = fivePieceDoorCutListWriter;
+
+        _fivePieceDoorCutListWriter.OnError += OnError;
     }
 
     public async Task Release(List<Order> orders, ReleaseConfiguration configuration) {
@@ -126,7 +133,10 @@ public class ReleaseService {
             }
         }
 
+        List<string> additionalPDFs = new(configuration.AdditionalFilePaths);
+
         foreach (var order in orders) {
+
             if (configuration.GenerateJobSummary) {
                 string[] materials = releases.SelectMany(r => r.Releases)
                                             .SelectMany(r => r.Programs)
@@ -152,6 +162,37 @@ public class ReleaseService {
                 var decorator = await _invoiceDecoratorFactory.CreateDecorator(order);
                 decorators.Add(decorator);
             }
+
+            var outputDirectory = Path.Combine(order.WorkingDirectory, "orders");
+            order.Products
+                .OfType<FivePieceDoorProduct>()
+                .GroupBy(d => d.Material)
+                .Select(group => new FivePieceCutList() {
+                        CustomerName = customerName,
+                        VendorName = vendorName,
+                        Note = order.Note,
+                        Material = group.First().Material,
+                        OrderDate = order.OrderDate,
+                        OrderName = order.Name,
+                        OrderNumber = order.Number,
+                        TotalDoorCount = group.Count(),
+                        Items = group.Select(door => (door, door.GetParts()))
+                                    .SelectMany(doorParts => 
+                                        doorParts.Item2.Select(part => new LineItem() {
+                                            CabNumber = doorParts.door.ProductNumber,
+                                            Note = "",
+                                            Qty = part.Qty,
+                                            PartName = part.Name,
+                                            Length = part.Length.AsMillimeters(),
+                                            Width = part.Length.AsMillimeters()
+                                        })
+                                    )
+                                    .ToList()
+                })
+                .Select(cutList => _fivePieceDoorCutListWriter.WriteCutList(cutList, outputDirectory, true)?.PDFFilePath)
+                .OfType<string>()
+                .ForEach(additionalPDFs.Add);
+
         }
 
         decorators.AddRange(cncReleaseDecorators);
@@ -170,7 +211,7 @@ public class ReleaseService {
         OnProgressReport?.Invoke("Generating release PDF");
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
-            filePaths = await GeneratePDFAsync(directories, decorators, filename, customerName, configuration.AttachAdditionalFiles ? configuration.AdditionalFilePaths : Enumerable.Empty<string>());
+            filePaths = await GeneratePDFAsync(directories, decorators, filename, customerName, additionalPDFs);
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate release PDF - '{ex.Message}'");
             _logger.LogError(ex, "Exception thrown while trying to generate release pdf");
