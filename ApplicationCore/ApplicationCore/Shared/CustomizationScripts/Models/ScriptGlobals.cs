@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Orders.OrderExport.Scripts;
+﻿namespace ApplicationCore.Shared.CustomizationScripts.Models;
 
 public class ScriptGlobals<TInput> {
 

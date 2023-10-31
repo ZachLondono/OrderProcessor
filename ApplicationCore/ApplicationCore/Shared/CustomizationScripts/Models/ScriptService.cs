@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 
-namespace ApplicationCore.Features.Orders.OrderExport.Scripts;
+namespace ApplicationCore.Shared.CustomizationScripts.Models;
 
 public class ScriptService<TInput, TResult> {
 
@@ -23,13 +23,13 @@ public class ScriptService<TInput, TResult> {
 
 
     public async Task<TResult> RunScript(TInput input) {
-    
+
         if (_runner is null) throw new InvalidOperationException();
-    
+
         return await _runner(new ScriptGlobals<TInput>() {
             Input = input
         });
-    
+
     }
 
     public static Script<TResult> BuildScriptFromFile(string filePath) {

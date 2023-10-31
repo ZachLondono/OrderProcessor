@@ -14,7 +14,6 @@ using ApplicationCore.Shared.Settings;
 using CADCodeProxy.CSV;
 using ApplicationCore.Shared.CustomizationScripts.Models;
 using ApplicationCore.Shared.CustomizationScripts;
-using ApplicationCore.Features.Orders.OrderExport.Scripts;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 
 namespace ApplicationCore.Features.Orders.OrderExport;
@@ -281,7 +280,7 @@ internal class ExportService {
         try {
         
             ScriptService<DoweledDrawerBoxProduct, DoweledDrawerBoxProduct> scriptService = new(doweledDBCustomizationScript.FilePath);
-            scriptService.LoadScript();
+            scriptService.LoadScript(new Type[] { typeof(Part) });
             return scriptService;
         
         } catch (Exception ex) {
