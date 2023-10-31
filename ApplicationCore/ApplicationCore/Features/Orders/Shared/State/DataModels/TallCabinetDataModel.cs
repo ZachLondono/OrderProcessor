@@ -20,6 +20,8 @@ internal class TallCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
     public HingeSide HingeSide { get; set; }
     public bool IsGarage { get; set; }
     public List<string> ProductionNotes { get; set; } = new();
+    public Dimension BaseNotchHeight { get; set; }
+    public Dimension BaseNotchDepth { get; set; }
 
     public IProduct MapToProduct() {
 
@@ -40,8 +42,13 @@ internal class TallCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
         var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
+        CabinetBaseNotch? baseNotch = null;
+        if (BaseNotchDepth != Dimension.Zero && BaseNotchHeight != Dimension.Zero) {
+            baseNotch = new(BaseNotchHeight, BaseNotchDepth);
+        }
+
         return new TallCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
-            doors, ToeType, inside, dbOptions) {
+            doors, ToeType, inside, dbOptions, baseNotch) {
             IsGarage = IsGarage,
             ProductionNotes = ProductionNotes
         };
@@ -90,6 +97,8 @@ internal class TallCabinetDataModel : CabinetRollOutContainerDataModelBase, IPro
                 tall_cabinets.lower_door_height AS LowerDoorHeight,
                 tall_cabinets.hinge_side AS HingeSide,
                 tall_cabinets.is_garage AS IsGarage,
+                tall_cabinets.base_notch_height AS BaseNotchHeight,
+                tall_cabinets.base_notch_depth AS BaseNotchDepth,
 
            	    db_config.material AS DBMaterial,
            	    db_config.slide_type AS DBSlideType,

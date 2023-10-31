@@ -11,6 +11,7 @@ internal class TallCabinetBuilder : CabinetBuilder<TallCabinet> {
     public TallCabinetInside Inside { get; private set; }
     public CabinetDrawerBoxOptions BoxOptions { get; private set; }
     public bool IsGarage { get; private set; }
+    public CabinetBaseNotch? BaseNotch { get; private set; }
 
     public TallCabinetBuilder() {
         Doors = new();
@@ -44,8 +45,13 @@ internal class TallCabinetBuilder : CabinetBuilder<TallCabinet> {
         return this;
     }
 
+    public TallCabinetBuilder WithBaseNotch(CabinetBaseNotch baseNotch) {
+        BaseNotch = baseNotch;
+        return this;
+    }
+
     public override TallCabinet Build() {
-        var cabinet = TallCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, Doors, ToeType, Inside, BoxOptions);
+        var cabinet = TallCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, Doors, ToeType, Inside, BoxOptions, BaseNotch);
         cabinet.IsGarage = IsGarage;
         cabinet.ProductionNotes = ProductionNotes;
         return cabinet;

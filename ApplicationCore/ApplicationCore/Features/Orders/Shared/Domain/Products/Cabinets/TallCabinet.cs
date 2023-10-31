@@ -13,6 +13,7 @@ internal class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBo
     public ToeType ToeType { get; }
     public TallCabinetInside Inside { get; }
     public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
+    public CabinetBaseNotch? BaseNotch { get; }
 
     public Dimension LowerDoorHeight => Doors.UpperQuantity > 0 ? Doors.LowerDoorHeight : Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap;
     public Dimension UpperDoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - Doors.LowerDoorHeight - DoorGaps.VerticalGap;
@@ -31,15 +32,15 @@ internal class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBo
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        TallCabinetDoors doors, ToeType toeType, TallCabinetInside inside, CabinetDrawerBoxOptions drawerBoxOptions) {
-        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, toeType, inside, drawerBoxOptions);
+                        TallCabinetDoors doors, ToeType toeType, TallCabinetInside inside, CabinetDrawerBoxOptions drawerBoxOptions, CabinetBaseNotch? baseNotch) {
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, toeType, inside, drawerBoxOptions, baseNotch);
     }
 
     internal TallCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        TallCabinetDoors doors, ToeType toeType, TallCabinetInside inside, CabinetDrawerBoxOptions drawerBoxOptions)
+                        TallCabinetDoors doors, ToeType toeType, TallCabinetInside inside, CabinetDrawerBoxOptions drawerBoxOptions, CabinetBaseNotch? baseNotch)
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (doors.UpperQuantity > 2 || doors.UpperQuantity < 0 || doors.LowerQuantity > 2 || doors.LowerQuantity < 0)
@@ -55,6 +56,7 @@ internal class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBo
         ToeType = toeType;
         Inside = inside;
         DrawerBoxOptions = drawerBoxOptions;
+        BaseNotch = baseNotch;
 
     }
 
