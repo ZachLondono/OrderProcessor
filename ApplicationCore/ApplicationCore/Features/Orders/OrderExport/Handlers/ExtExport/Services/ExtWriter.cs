@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Domain;
 using CsvHelper;
+using CsvHelper.Configuration;
 using System.Globalization;
 
 namespace ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Services;
@@ -19,11 +20,16 @@ public class ExtWriter : IExtWriter {
     }
 
     public void WriteFile(string filePath) {
+
+        var configuration = new CsvConfiguration(CultureInfo.InvariantCulture) {
+            ShouldQuote = args => false
+        };
+
         using var writer = new StreamWriter(filePath);
-        using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+        using var csv = new CsvWriter(writer, configuration);
 
         foreach (var record in _records) {
-            foreach (var field in record) csv.WriteField($"{field.Key}={field.Value}");
+            foreach (var field in record) csv.WriteField($"{field.Key.Trim()}={field.Value.Trim()}");
             csv.NextRecord();
         }
     }
