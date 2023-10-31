@@ -1,6 +1,5 @@
 ﻿namespace ApplicationCore.Shared.CustomizationScripts.Models;
 
-public enum CustomizationType
-{
+public enum CustomizationType {
     DoweledDrawerBox
 }
