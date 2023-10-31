@@ -280,7 +280,7 @@ internal class ExportService {
         try {
         
             ScriptService<DoweledDrawerBoxProduct, DoweledDrawerBoxProduct> scriptService = new(doweledDBCustomizationScript.FilePath);
-            scriptService.LoadScript(new Type[] { typeof(Part) });
+            scriptService.LoadScript();
             return scriptService;
         
         } catch (Exception ex) {
