@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.CustomizationScripts.Commands;
+﻿using ApplicationCore.Features.CustomizationScriptManager;
+using ApplicationCore.Features.CustomizationScripts.Commands;
 using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Shared.CustomizationScripts;
 using ApplicationCore.Shared.CustomizationScripts.Models;
@@ -10,6 +11,7 @@ namespace ApplicationCore.Features.CustomizationScripts.ViewModels;
 public class CustomizationScriptManagerViewModel {
 
     private readonly IBus _bus;
+    private readonly IScriptEditorOpener _editorOpener;
 
     public Action? OnPropertyChanged { get; set; }
 
@@ -31,8 +33,9 @@ public class CustomizationScriptManagerViewModel {
         }
     }
 
-    public CustomizationScriptManagerViewModel(IBus bus) {
+    public CustomizationScriptManagerViewModel(IBus bus, IScriptEditorOpener editorOpener) {
         _bus = bus;
+        _editorOpener = editorOpener;
     }
 
     public async Task Loaded(Guid orderId) {
@@ -101,6 +104,9 @@ public class CustomizationScriptManagerViewModel {
 
     }
 
-    public Task ShowEditScriptModal(IModalService modalService, Guid scriptId) => throw new NotImplementedException();
+    public Task ShowEditScriptModal(IModalService modalService, Guid scriptId) {
+        _editorOpener.OpenScriptEditor();
+        return Task.CompletedTask;
+    }
 
 }

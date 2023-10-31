@@ -16,6 +16,8 @@ using System.Windows.Interop;
 using System.Linq;
 using Serilog.Events;
 using ApplicationCore;
+using ApplicationCore.Features.CustomizationScriptManager;
+using DesktopHost.ScriptEditor;
 
 namespace DesktopHost;
 
@@ -80,6 +82,7 @@ public partial class App : Application {
                             .AddApplicationCoreServices(configuration)
                             .AddSingleton<IFilePicker, FilePicker>()
                             .AddSingleton<IMessageBoxService, WPFMessageBox>()
+                            .AddTransient<IScriptEditorOpener, ScriptEditorOpener>()
                             .AddSingleton(configuration)
                             .AddLogging(builder => builder.ClearProviders().AddSerilog())
                             .AddViewModels()
