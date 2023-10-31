@@ -288,6 +288,11 @@ internal class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoo
 
         }
 
+        if (BaseNotch is not null) {
+            parameters.Add("_BottomNotchD", BaseNotch.Depth.AsMillimeters().ToString());
+            parameters.Add("_BottomNotchH", BaseNotch.Height.AsMillimeters().ToString());
+        }
+
         return parameters;
 
     }

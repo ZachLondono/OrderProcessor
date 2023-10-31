@@ -172,6 +172,11 @@ internal class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDr
             parameters.Add("_DrawerRunType", "4");
         }
 
+        if (BaseNotch is not null) {
+            parameters.Add("_BottomNotchD", BaseNotch.Depth.AsMillimeters().ToString());
+            parameters.Add("_BottomNotchH", BaseNotch.Height.AsMillimeters().ToString());
+        }
+
         return parameters;
 
     }
