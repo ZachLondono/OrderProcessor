@@ -13,27 +13,9 @@ public class ScriptService<TInput, TResult> {
         _scriptFilePath = scriptFilePath;
     }
 
-    public void LoadScript(Type[] referenceTypes) {
+    public void LoadScript() {
 
-        var inputMetadata = MetadataReference.CreateFromFile(typeof(TInput).Assembly.Location);
-        var resultMetadata = MetadataReference.CreateFromFile(typeof(TResult).Assembly.Location);
-
-        var references = new List<MetadataReference>() {
-            inputMetadata,
-            resultMetadata
-        };
-
-        foreach (var type in referenceTypes) {
-            references.Add(MetadataReference.CreateFromFile(type.Assembly.Location));
-        }
-
-        using var code = File.OpenRead(_scriptFilePath);
-
-        var script = CSharpScript.Create<TResult>(
-                                code: code,
-                                options: ScriptOptions.Default.WithReferences(references),
-                                globalsType: typeof(ScriptGlobals<TInput>));
-
+        var script = BuildScriptFromFile(_scriptFilePath);
         script.Compile();
         _runner = script.CreateDelegate();
 
@@ -49,5 +31,22 @@ public class ScriptService<TInput, TResult> {
         });
     
     }
+
+    public static Script<TResult> BuildScriptFromFile(string filePath) {
+
+        var references = new List<MetadataReference>() {
+            MetadataReference.CreateFromFile(typeof(TInput).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(TResult).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(CADCodeProxy.Machining.Part).Assembly.Location),
+        };
+
+        using var code = File.OpenRead(filePath);
+
+        return CSharpScript.Create<TResult>(
+                                code: code,
+                                options: ScriptOptions.Default.WithReferences(references),
+                                globalsType: typeof(ScriptGlobals<TInput>));
+    }
+
 
 }
