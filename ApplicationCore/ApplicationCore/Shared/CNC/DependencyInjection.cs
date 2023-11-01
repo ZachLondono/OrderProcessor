@@ -10,7 +10,7 @@ public static class DependencyInjection {
     public static IServiceCollection AddCNCServices(this IServiceCollection services) {
         services.AddTransient<ReleasePDFDecoratorFactory>();
         services.AddTransient<ICNCReleaseDecorator, CNCReleaseDecorator>();
-        services.AddTransient<WSXMLParser>();
+        services.AddTransient<IWSXMLParser, WSXMLParser>();
         return services;
 
     }

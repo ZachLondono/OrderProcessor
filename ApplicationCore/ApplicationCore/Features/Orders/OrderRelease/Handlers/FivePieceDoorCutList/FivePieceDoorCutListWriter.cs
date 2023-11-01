@@ -8,7 +8,7 @@ using ExcelApp = Microsoft.Office.Interop.Excel.Application;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList;
 
-public class FivePieceDoorCutListWriter {
+public class FivePieceDoorCutListWriter : IFivePieceDoorCutListWriter {
 
     private readonly IFileReader _fileReader;
     private readonly FivePieceDoorCutListSettings _settings;
@@ -46,7 +46,7 @@ public class FivePieceDoorCutListWriter {
             _logger.LogError(ex, "Exception thrown while opening 5-piece door cut list template");
             OnError?.Invoke("Failed to access 5-piece door cut list workbook template");
             return null;
-        
+
         }
 
         var fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{cutList.OrderNumber} 5-Piece DOOR CUTLIST - {cutList.Material}", "xlsx");
@@ -105,7 +105,7 @@ public class FivePieceDoorCutListWriter {
 
     }
 
-    public void WriteHeader(Worksheet sheet, FivePieceCutList cutList) {
+    private static void WriteHeader(Worksheet sheet, FivePieceCutList cutList) {
 
         sheet.Range["CustomerName"].Value2 = cutList.CustomerName;
         sheet.Range["VendorName"].Value2 = cutList.VendorName;
@@ -118,7 +118,7 @@ public class FivePieceDoorCutListWriter {
 
     }
 
-    public int WriteLineItems(Worksheet sheet, IEnumerable<LineItem> lineItems) {
+    private static int WriteLineItems(Worksheet sheet, IEnumerable<LineItem> lineItems) {
 
         int currentOffset = 1;
         foreach (var item in lineItems) {
@@ -138,7 +138,7 @@ public class FivePieceDoorCutListWriter {
 
     }
 
-    public string ExportToPDF(Workbook workbook, string outputDirectory, string orderNumber) {
+    private string ExportToPDF(Workbook workbook, string outputDirectory, string orderNumber) {
 
         var fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{orderNumber} 5-Piece DOOR CUTLIST", "pdf");
         var fullFilePath = Path.Combine(outputDirectory, fileName);

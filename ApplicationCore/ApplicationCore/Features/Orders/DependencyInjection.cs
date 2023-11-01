@@ -47,9 +47,9 @@ public static class DependencyInjection {
         services.AddTransient<InvoiceDecoratorFactory>();
         services.AddTransient<IPackingListDecorator, PackingListDecorator>();
         services.AddTransient<PackingListDecoratorFactory>();
-        services.AddTransient<DovetailDBPackingListDecoratorFactory>();
+        services.AddTransient<IDovetailDBPackingListDecoratorFactory, DovetailDBPackingListDecoratorFactory>();
         services.AddTransient<ReleaseService>();
-        services.AddTransient<FivePieceDoorCutListWriter>();
+        services.AddTransient<IFivePieceDoorCutListWriter, FivePieceDoorCutListWriter>();
     }
 
     private static void AddExportServices(IServiceCollection services) {

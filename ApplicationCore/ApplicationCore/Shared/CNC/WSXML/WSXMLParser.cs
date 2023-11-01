@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Features.CNC.ReleasePDF;
-using ApplicationCore.Shared;
 using ApplicationCore.Shared.CNC.Domain;
 using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
 using ApplicationCore.Shared.CNC.WSXML.Report;
@@ -10,7 +9,7 @@ using System.Xml.Linq;
 
 namespace ApplicationCore.Shared.CNC.WSXML;
 
-public partial class WSXMLParser {
+public partial class WSXMLParser : IWSXMLParser {
 
     private readonly ToolConfiguration _toolConfiguration;
 

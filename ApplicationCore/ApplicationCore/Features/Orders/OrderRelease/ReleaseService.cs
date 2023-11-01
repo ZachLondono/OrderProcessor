@@ -21,7 +21,6 @@ using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
 using ApplicationCore.Shared.CNC.WSXML.Report;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
-using ApplicationCore.Features.Orders.Shared.Domain.Components;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 
@@ -38,16 +37,16 @@ public class ReleaseService {
     private readonly IFileReader _fileReader;
     private readonly InvoiceDecoratorFactory _invoiceDecoratorFactory;
     private readonly PackingListDecoratorFactory _packingListDecoratorFactory;
-    private readonly DovetailDBPackingListDecoratorFactory _dovetailDBPackingListDecoratorFactory;
+    private readonly IDovetailDBPackingListDecoratorFactory _dovetailDBPackingListDecoratorFactory;
     private readonly CNCReleaseDecoratorFactory _cncReleaseDecoratorFactory;
     private readonly JobSummaryDecoratorFactory _jobSummaryDecoratorFactory;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly IEmailService _emailService;
-    private readonly WSXMLParser _wsxmlParser;
-    private readonly FivePieceDoorCutListWriter _fivePieceDoorCutListWriter;
+    private readonly IWSXMLParser _wsxmlParser;
+    private readonly IFivePieceDoorCutListWriter _fivePieceDoorCutListWriter;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, WSXMLParser wsxmlParser, DovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory, FivePieceDoorCutListWriter fivePieceDoorCutListWriter) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IDovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter) {
         _fileReader = fileReader;
         _invoiceDecoratorFactory = invoiceDecoratorFactory;
         _packingListDecoratorFactory = packingListDecoratorFactory;
