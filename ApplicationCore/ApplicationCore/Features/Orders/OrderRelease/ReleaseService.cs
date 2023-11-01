@@ -151,7 +151,7 @@ public class ReleaseService {
                 var decorator = await _packingListDecoratorFactory.CreateDecorator(order);
                 decorators.Add(decorator);
 
-                if (order.Products.Any(p => p is DovetailDrawerBoxProduct)) {
+                if (configuration.IncludeDovetailDBPackingList && order.Products.Any(p => p is DovetailDrawerBoxProduct)) {
                     var dovetailDecorator = await _dovetailDBPackingListDecoratorFactory.CreateDecorator(order);
                     decorators.Add(dovetailDecorator);
                 }
@@ -162,43 +162,47 @@ public class ReleaseService {
                 decorators.Add(decorator);
             }
 
-            var outputDirectory = Path.Combine(order.WorkingDirectory, "orders");
-            var cutListResults = await Task.Run(() => 
-                order.Products
-                    .OfType<FivePieceDoorProduct>()
-                    .GroupBy(d => d.Material)
-                    .Select(group => new FivePieceCutList() {
-                            CustomerName = customerName,
-                            VendorName = vendorName,
-                            Note = order.Note,
-                            Material = group.First().Material,
-                            OrderDate = order.OrderDate,
-                            OrderName = order.Name,
-                            OrderNumber = order.Number,
-                            TotalDoorCount = group.Count(),
-                            Items = group.Select(door => (door, door.GetParts()))
-                                        .SelectMany(doorParts => 
-                                            doorParts.Item2.Select(part => new LineItem() {
-                                                CabNumber = doorParts.door.ProductNumber,
-                                                Note = "",
-                                                Qty = part.Qty,
-                                                PartName = part.Name,
-                                                Length = part.Length.AsMillimeters(),
-                                                Width = part.Length.AsMillimeters()
-                                            })
-                                        )
-                                        .ToList()
-                    })
-                    .Select(cutList => _fivePieceDoorCutListWriter.WriteCutList(cutList, outputDirectory, true))
-                    .OfType<CutListResult>()
-                    .ToList()
-            );
+            if (configuration.Generate5PieceCutList) {
 
-            cutListResults.ForEach(result => {
-                OnFileGenerated?.Invoke(result.ExcelFilePath);
-                if (result.PDFFilePath is string filePath)
-                    additionalPDFs.Add(filePath);
-            });
+                var outputDirectory = Path.Combine(order.WorkingDirectory, "CUTLIST");
+                var cutListResults = await Task.Run(() => 
+                    order.Products
+                        .OfType<FivePieceDoorProduct>()
+                        .GroupBy(d => d.Material)
+                        .Select(group => new FivePieceCutList() {
+                                CustomerName = customerName,
+                                VendorName = vendorName,
+                                Note = order.Note,
+                                Material = group.First().Material,
+                                OrderDate = order.OrderDate,
+                                OrderName = order.Name,
+                                OrderNumber = order.Number,
+                                TotalDoorCount = group.Count(),
+                                Items = group.Select(door => (door, door.GetParts()))
+                                            .SelectMany(doorParts => 
+                                                doorParts.Item2.Select(part => new LineItem() {
+                                                    CabNumber = doorParts.door.ProductNumber,
+                                                    Note = "",
+                                                    Qty = part.Qty,
+                                                    PartName = part.Name,
+                                                    Length = part.Length.AsMillimeters(),
+                                                    Width = part.Length.AsMillimeters()
+                                                })
+                                            )
+                                            .ToList()
+                        })
+                        .Select(cutList => _fivePieceDoorCutListWriter.WriteCutList(cutList, outputDirectory, true))
+                        .OfType<CutListResult>()
+                        .ToList()
+                );
+
+                cutListResults.ForEach(result => {
+                    OnFileGenerated?.Invoke(result.ExcelFilePath);
+                    if (result.PDFFilePath is string filePath)
+                        additionalPDFs.Add(filePath);
+                });
+
+            }
 
         }
 

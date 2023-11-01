@@ -100,8 +100,22 @@
             <CheckBox @bind-IsChecked="DataContext.Configuration.GeneratePackingList">
                 <span class="text-gray-700">Packing List</span>
             </CheckBox>
-            
-            <br />
+            @if (DataContext.Configuration.GeneratePackingList && DataContext.DoAnyOrdersContainDovetailDBs) {
+                <div class="ml-5">
+                    <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeDovetailDBPackingList">
+                        <span class="text-gray-700 text-sm">Dovetail DB Packing List</span>
+                    </CheckBox>
+                </div>
+            } else {
+                <br />
+            }
+
+            @if(DataContext.DoAnyOrdersContainFivePieceDoors) {
+                <CheckBox @bind-IsChecked="DataContext.Configuration.Generate5PieceCutList">
+                    <span class="text-gray-700">Five-Piece Door Cut List</span>
+                </CheckBox>
+                <br />
+            }
             
             <CheckBox @bind-IsChecked="DataContext.Configuration.GenerateCNCRelease">
                 <span class="text-gray-700">CNC Patterns</span>

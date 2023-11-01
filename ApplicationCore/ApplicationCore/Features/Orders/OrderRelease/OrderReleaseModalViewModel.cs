@@ -1,5 +1,7 @@
 ﻿using ApplicationCore.Features.Companies.Contracts;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using Blazored.Modal;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
@@ -48,6 +50,10 @@ public class OrderReleaseModalViewModel {
 
         }
     }
+
+    public bool DoAnyOrdersContainDovetailDBs { get; private set; }
+
+    public bool DoAnyOrdersContainFivePieceDoors { get; private set; }
 
     private bool _includeSuppliesInSummary = false;
     private bool _isLoadingConfiguration = false;
@@ -101,6 +107,9 @@ public class OrderReleaseModalViewModel {
 
         string orderNumbers = string.Join(", ", orders.Select(o => o.Number));
 
+        DoAnyOrdersContainDovetailDBs = orders.Any(order => order.Products.Any(p => p is DovetailDrawerBoxProduct));
+        DoAnyOrdersContainFivePieceDoors = orders.Any(order => order.Products.Any(p => p is FivePieceDoorProduct));
+
         Configuration = new ReleaseConfiguration() {
 
             SendReleaseEmail = vendor.ReleaseProfile.SendReleaseEmail,
@@ -112,6 +121,8 @@ public class OrderReleaseModalViewModel {
             SupplyOptions = new(),                      // TODO: add this to the vendor release profile
             GeneratePackingList = vendor.ReleaseProfile.GeneratePackingList,
             IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
+            Generate5PieceCutList = DoAnyOrdersContainFivePieceDoors,
+            IncludeDovetailDBPackingList = DoAnyOrdersContainDovetailDBs,
             ReleaseFileName = $"{orderNumbers} CUTLIST",
             ReleaseOutputDirectory = releaseDirectory,
             GenerateCNCRelease = false,
