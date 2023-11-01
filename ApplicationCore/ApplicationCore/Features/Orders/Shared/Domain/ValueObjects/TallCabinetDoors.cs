@@ -32,7 +32,7 @@ public record TallCabinetDoors {
             throw new ArgumentException("Hinge side must be provided for 1 door cabinet", nameof(hingeSide));
         }
 
-        return new(lowerDoorHeight, HingeSide.NotApplicable);
+        return new(lowerDoorHeight, hingeSide);
     }
 
     public static TallCabinetDoors FourDoorsTwoSections(Dimension lowerDoorHeight) => new(lowerDoorHeight, HingeSide.NotApplicable);
