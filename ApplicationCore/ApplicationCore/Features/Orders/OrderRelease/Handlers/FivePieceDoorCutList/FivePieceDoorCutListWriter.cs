@@ -22,7 +22,7 @@ public class FivePieceDoorCutListWriter : IFivePieceDoorCutListWriter {
         _logger = logger;
     }
 
-    public CutListResult? WriteCutList(FivePieceCutList cutList, string outputDirectory, bool generatePDF) {
+    public FivePieceDoorCutListResult? WriteCutList(FivePieceCutList cutList, string outputDirectory, bool generatePDF) {
 
         if (!File.Exists(_settings.TemplateFilePath)) {
             OnError?.Invoke($"5-Pieced door cut list template does not exist or cannot be accessed - '{_settings.TemplateFilePath}'");
@@ -118,7 +118,7 @@ public class FivePieceDoorCutListWriter : IFivePieceDoorCutListWriter {
 
     }
 
-    private static int WriteLineItems(Worksheet sheet, IEnumerable<LineItem> lineItems) {
+    private static int WriteLineItems(Worksheet sheet, IEnumerable<FivePieceDoorLineItem> lineItems) {
 
         int currentOffset = 1;
         foreach (var item in lineItems) {
