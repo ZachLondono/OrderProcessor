@@ -371,6 +371,15 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
         };
     }
 
+    public DoweledDrawerBoxBottom GetBottom(DoweledDrawerBoxConstruction construction, int productNumber) {
+
+        var width = (Width - 2 * SideMaterial.Thickness - construction.BottomUndersize + 2 * construction.BottomDadoDepth);
+        var length = (Depth - FrontMaterial.Thickness - BackMaterial.Thickness - construction.BottomUndersize + 2 * construction.BottomDadoDepth);
+
+        return new(productNumber, Qty, width, length, BottomMaterial);
+
+    }
+
     public static DoweledDrawerBoxConstruction Construction = new() {
         DowelPositionsByHeight = new Dictionary<Dimension, Dimension[]> {
 
