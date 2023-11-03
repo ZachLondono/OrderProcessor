@@ -116,6 +116,13 @@
                 </CheckBox>
                 <br />
             }
+
+            @if(DataContext.DoAnyOrdersContainDoweledDrawerBoxes) {
+                <CheckBox @bind-IsChecked="DataContext.Configuration.GenerateDoweledDrawerBoxCutList">
+                    <span class="text-gray-700">Doweled Drawer Box Cut List</span>
+                </CheckBox>
+                <br />
+            }
             
             <CheckBox @bind-IsChecked="DataContext.Configuration.GenerateCNCRelease">
                 <span class="text-gray-700">CNC Patterns</span>

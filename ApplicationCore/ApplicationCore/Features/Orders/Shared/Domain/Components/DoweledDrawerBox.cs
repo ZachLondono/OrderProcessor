@@ -26,18 +26,18 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
     public bool ContainsCNCParts() => true;
 
-    public IEnumerable<Part> GetCNCParts(int qty, int productNumber, string customerName, string room) {
+    public IEnumerable<Part> GetCNCParts(int productNumber, string customerName, string room) {
         // TODO: maybe pass in the construction object to this method
         // TODO: make the bellow methods static, maybe
-        yield return GetFrontPart(Construction, qty, productNumber, customerName, room);
-        yield return GetBackPart(Construction, qty, productNumber, customerName, room);
-        var (left, right) = GetSideParts(Construction, qty, productNumber, customerName, room);
+        yield return GetFrontPart(Construction, productNumber, customerName, room);
+        yield return GetBackPart(Construction, productNumber, customerName, room);
+        var (left, right) = GetSideParts(Construction, productNumber, customerName, room);
         yield return left;
         yield return right;
-        yield return GetBottomPart(Construction, qty, productNumber, customerName, room);
+        yield return GetBottomPart(Construction, productNumber, customerName, room);
     }
 
-    public Part GetFrontPart(DoweledDrawerBoxConstruction construction, int qty, int productNumber, string customerName, string room) {
+    public Part GetFrontPart(DoweledDrawerBoxConstruction construction, int productNumber, string customerName, string room) {
 
         Dimension frontLength = Width - 2 * SideMaterial.Thickness;
 
@@ -83,7 +83,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
         }
 
         return new Part() {
-            Qty = qty,
+            Qty = Qty,
             Width = (Height - FrontBackHeightAdjustment).AsMillimeters(),
             Length = frontLength.AsMillimeters(),
             Thickness = FrontMaterial.Thickness.AsMillimeters(),
@@ -110,7 +110,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
     }
 
-    public Part GetBackPart(DoweledDrawerBoxConstruction construction, int qty, int productNumber, string customerName, string room) {
+    public Part GetBackPart(DoweledDrawerBoxConstruction construction, int productNumber, string customerName, string room) {
 
         Dimension backLength = Width - 2 * SideMaterial.Thickness;
 
@@ -118,7 +118,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
         tokens.AddRange(CreateBottomDadoTokens(construction, backLength, construction.FrontBackBottomDadoLengthOversize.AsMillimeters()));
 
         return new Part() {
-            Qty = qty,
+            Qty = Qty,
             Width = (Height - FrontBackHeightAdjustment).AsMillimeters(),
             Length = backLength.AsMillimeters(),
             Thickness = BackMaterial.Thickness.AsMillimeters(),
@@ -158,7 +158,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
     }
 
-    public (Part Left, Part Right) GetSideParts(DoweledDrawerBoxConstruction construction, int qty, int productNumber, string customerName, string room) {
+    public (Part Left, Part Right) GetSideParts(DoweledDrawerBoxConstruction construction, int productNumber, string customerName, string room) {
 
         Dimension dadoLengthAdj = (FrontMaterial.Thickness < BackMaterial.Thickness ? FrontMaterial : BackMaterial).Thickness - construction.BottomDadoDepth;
 
@@ -187,7 +187,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
         }
 
         var left = new Part() {
-            Qty = qty,
+            Qty = Qty,
             Width = Height.AsMillimeters(),
             Length = Depth.AsMillimeters(),
             Thickness = SideMaterial.Thickness.AsMillimeters(),
@@ -215,7 +215,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
         };
 
         var right = new Part() {
-            Qty = qty,
+            Qty = Qty,
             Width = Height.AsMillimeters(),
             Length = Depth.AsMillimeters(),
             Thickness = SideMaterial.Thickness.AsMillimeters(),
@@ -345,14 +345,15 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
     }
 
-    public Part GetBottomPart(DoweledDrawerBoxConstruction construction, int qty, int productNumber, string customerName, string room) {
+    public Part GetBottomPart(DoweledDrawerBoxConstruction construction, int productNumber, string customerName, string room) {
+        var bottom = GetBottom(construction, productNumber);
         return new Part() {
-            Qty = qty,
-            Width = (Width - 2 * SideMaterial.Thickness - construction.BottomUndersize + 2 * construction.BottomDadoDepth).AsMillimeters(),
-            Length = (Depth - FrontMaterial.Thickness - BackMaterial.Thickness - construction.BottomUndersize + 2 * construction.BottomDadoDepth).AsMillimeters(),
-            Thickness = BottomMaterial.Thickness.AsMillimeters(),
-            Material = BottomMaterial.ToPSIMaterial().GetLongName(),
-            IsGrained = BottomMaterial.IsGrained,
+            Qty = bottom.Qty,
+            Width = bottom.Width.AsMillimeters(),
+            Length = bottom.Length.AsMillimeters(),
+            Thickness = bottom.Material.Thickness.AsMillimeters(),
+            Material = bottom.Material.ToPSIMaterial().GetLongName(),
+            IsGrained = bottom.Material.IsGrained,
             InfoFields = new() {
                 { "ProductName", "Bottom" },
                 { "Description", "Drawer Box Bottom" },
@@ -360,15 +361,24 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
                 { "Level1", room },
                 { "Comment1", "" },
                 { "Comment2", "" },
-                { "Side1Color", BottomMaterial.Name },
+                { "Side1Color", bottom.Material.Name },
                 { "Side1Material", "" },
-                { "CabinetNumber", productNumber.ToString() },
+                { "CabinetNumber", bottom.ProductNumber.ToString() },
             },
             PrimaryFace = new() {
-                ProgramName = $"Bottom{productNumber}",
+                ProgramName = $"Bottom{bottom.ProductNumber}",
                 Tokens = Array.Empty<IToken>()
             }
         };
+    }
+
+    public DoweledDrawerBoxBottom GetBottom(DoweledDrawerBoxConstruction construction, int productNumber) {
+
+        var width = (Width - 2 * SideMaterial.Thickness - construction.BottomUndersize + 2 * construction.BottomDadoDepth);
+        var length = (Depth - FrontMaterial.Thickness - BackMaterial.Thickness - construction.BottomUndersize + 2 * construction.BottomDadoDepth);
+
+        return new(productNumber, Qty, width, length, BottomMaterial);
+
     }
 
     public static DoweledDrawerBoxConstruction Construction = new() {

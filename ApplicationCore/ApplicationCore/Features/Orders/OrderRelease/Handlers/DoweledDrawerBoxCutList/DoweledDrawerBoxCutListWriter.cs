@@ -6,28 +6,30 @@ using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
 using ExcelApp = Microsoft.Office.Interop.Excel.Application;
 
-namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList;
+namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.DoweledDrawerBoxCutList;
 
-public class FivePieceDoorCutListWriter : IFivePieceDoorCutListWriter {
+public class DoweledDrawerBoxCutListWriter : IDoweledDrawerBoxCutListWriter {
 
     private readonly IFileReader _fileReader;
-    private readonly FivePieceDoorCutListSettings _settings;
-    private readonly ILogger<FivePieceDoorCutListWriter> _logger;
+    private readonly DoweledDrawerBoxCutListSettings _settings;
+    private readonly ILogger<DoweledDrawerBoxCutListWriter> _logger;
 
     public Action<string>? OnError { get; set; }
 
-    public FivePieceDoorCutListWriter(IFileReader fileReader, IOptions<FivePieceDoorCutListSettings> settings, ILogger<FivePieceDoorCutListWriter> logger) {
+    public DoweledDrawerBoxCutListWriter(IFileReader fileReader, IOptions<DoweledDrawerBoxCutListSettings> settings, ILogger<DoweledDrawerBoxCutListWriter> logger) {
         _fileReader = fileReader;
         _settings = settings.Value;
         _logger = logger;
     }
 
-    public FivePieceDoorCutListResult? WriteCutList(FivePieceCutList cutList, string outputDirectory, bool generatePDF) {
+    public DoweledDBCutListResult? WriteCutList(DoweledDrawerBoxCutList cutList, string outputDirectory, bool generatePDF) {
 
         if (!File.Exists(_settings.TemplateFilePath)) {
-            OnError?.Invoke($"5-Pieced door cut list template does not exist or cannot be accessed - '{_settings.TemplateFilePath}'");
+            OnError?.Invoke($"Doweled drawer box cut list template does not exist or cannot be accessed - '{_settings.TemplateFilePath}'");
             return null;
+
         }
+
         ExcelApp app;
         Workbook workbook;
         Worksheet sheet;
@@ -43,27 +45,27 @@ public class FivePieceDoorCutListWriter : IFivePieceDoorCutListWriter {
 
         } catch (Exception ex) {
 
-            _logger.LogError(ex, "Exception thrown while opening 5-piece door cut list template");
-            OnError?.Invoke("Failed to access 5-piece door cut list workbook template");
+            _logger.LogError(ex, "Exception thrown while opening doweled drawer Box cut list template");
+            OnError?.Invoke("Failed to access doweled drawer Box cut list workbook template");
             return null;
 
         }
 
-        var fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{cutList.OrderNumber} 5-Piece DOOR CUTLIST - {cutList.Material}", "xlsx");
+        var fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{cutList.OrderNumber} Doweled Drawer Box CUTLIST - {cutList.Material}", "xlsx");
         var fullFilePath = Path.Combine(outputDirectory, fileName);
         try {
 
             WriteHeader(sheet, cutList);
             var lastRow = WriteLineItems(sheet, cutList.Items);
 
-            sheet.PageSetup.PrintArea = $"B1:G{lastRow}";
+            sheet.PageSetup.PrintArea = $"A1:F{lastRow}";
 
             workbook.SaveAs(fullFilePath);
 
         } catch (Exception ex) {
 
-            _logger.LogError(ex, "Exception thrown while writing 5-piece door cut list");
-            OnError?.Invoke("Failed write 5-piece door cut list");
+            _logger.LogError(ex, "Exception thrown while writing doweled drawer Box cut list");
+            OnError?.Invoke("Failed write doweled drawer Box cut list");
             return null;
 
         }
@@ -74,8 +76,8 @@ public class FivePieceDoorCutListWriter : IFivePieceDoorCutListWriter {
             try {
                 pdfFilePath = ExportToPDF(workbook, outputDirectory, cutList.OrderNumber);
             } catch (Exception ex) {
-                _logger.LogError(ex, "Exception thrown while exporting 5-piece door cut list PDF");
-                OnError?.Invoke("Failed to export 5-piece door cut list to pdf");
+                _logger.LogError(ex, "Exception thrown while exporting doweled drawer Box cut list PDF");
+                OnError?.Invoke("Failed to export doweled drawer Box cut list to pdf");
             }
 
         }
@@ -96,8 +98,8 @@ public class FivePieceDoorCutListWriter : IFivePieceDoorCutListWriter {
 
         } catch (Exception ex) {
 
-            _logger.LogError(ex, "Exception thrown wile releasing Excel com objects, after generating 5-piece door cut list");
-            OnError?.Invoke("Error occurred while closing 5-piece door cut list");
+            _logger.LogError(ex, "Exception thrown wile releasing Excel com objects, after generating doweled drawer Box cut list");
+            OnError?.Invoke("Error occurred while closing doweled drawer Box cut list");
 
         }
 
@@ -105,25 +107,25 @@ public class FivePieceDoorCutListWriter : IFivePieceDoorCutListWriter {
 
     }
 
-    private static void WriteHeader(Worksheet sheet, FivePieceCutList cutList) {
+    private static void WriteHeader(Worksheet sheet, DoweledDrawerBoxCutList cutList) {
 
         sheet.Range["CustomerName"].Value2 = cutList.CustomerName;
         sheet.Range["VendorName"].Value2 = cutList.VendorName;
         sheet.Range["OrderNumber"].Value2 = cutList.OrderNumber;
         sheet.Range["OrderName"].Value2 = cutList.OrderName;
         sheet.Range["OrderDate"].Value2 = cutList.OrderDate.ToShortDateString();
-        sheet.Range["TotalDoorCount"].Value2 = cutList.TotalDoorCount;
+        sheet.Range["TotalBoxCount"].Value2 = cutList.Items.Count();
         sheet.Range["Material"].Value2 = cutList.Material;
         sheet.Range["OrderNote"].Value2 = cutList.Note;
 
     }
 
-    private static int WriteLineItems(Worksheet sheet, IEnumerable<FivePieceDoorLineItem> lineItems) {
+    private static int WriteLineItems(Worksheet sheet, IEnumerable<DoweledDBCutListLineItem> lineItems) {
 
         int currentOffset = 1;
         foreach (var item in lineItems) {
 
-            sheet.Range["CabNumCol"].Offset[currentOffset].Value2 = item.CabNumber;
+            sheet.Range["CabNumCol"].Offset[currentOffset].Value2 = item.CabNumbers;
             sheet.Range["PartNameCol"].Offset[currentOffset].Value2 = item.PartName;
             sheet.Range["QtyCol"].Offset[currentOffset].Value2 = item.Qty;
             sheet.Range["WidthCol"].Offset[currentOffset].Value2 = item.Width;
@@ -140,7 +142,7 @@ public class FivePieceDoorCutListWriter : IFivePieceDoorCutListWriter {
 
     private string ExportToPDF(Workbook workbook, string outputDirectory, string orderNumber) {
 
-        var fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{orderNumber} 5-Piece DOOR CUTLIST", "pdf");
+        var fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{orderNumber} Doweled Drawer Box CUTLIST", "pdf");
         var fullFilePath = Path.Combine(outputDirectory, fileName);
         workbook.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, fullFilePath);
 

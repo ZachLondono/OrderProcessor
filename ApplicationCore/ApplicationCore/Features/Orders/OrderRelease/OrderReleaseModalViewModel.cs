@@ -55,6 +55,8 @@ public class OrderReleaseModalViewModel {
 
     public bool DoAnyOrdersContainFivePieceDoors { get; private set; }
 
+    public bool DoAnyOrdersContainDoweledDrawerBoxes { get; private set; }
+
     private bool _includeSuppliesInSummary = false;
     private bool _isLoadingConfiguration = false;
     private bool _isReportLoadingFiles = false;
@@ -109,6 +111,7 @@ public class OrderReleaseModalViewModel {
 
         DoAnyOrdersContainDovetailDBs = orders.Any(order => order.Products.Any(p => p is DovetailDrawerBoxProduct));
         DoAnyOrdersContainFivePieceDoors = orders.Any(order => order.Products.Any(p => p is FivePieceDoorProduct));
+        DoAnyOrdersContainDoweledDrawerBoxes = orders.Any(order => order.Products.Any(p => p is DoweledDrawerBoxProduct));
 
         Configuration = new ReleaseConfiguration() {
 
@@ -122,6 +125,7 @@ public class OrderReleaseModalViewModel {
             GeneratePackingList = vendor.ReleaseProfile.GeneratePackingList,
             IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
             Generate5PieceCutList = DoAnyOrdersContainFivePieceDoors,
+            GenerateDoweledDrawerBoxCutList = DoAnyOrdersContainDoweledDrawerBoxes,
             IncludeDovetailDBPackingList = DoAnyOrdersContainDovetailDBs,
             ReleaseFileName = $"{orderNumbers} CUTLIST",
             ReleaseOutputDirectory = releaseDirectory,

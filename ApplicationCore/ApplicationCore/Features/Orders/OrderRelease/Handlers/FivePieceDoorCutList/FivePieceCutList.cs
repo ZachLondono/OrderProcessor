@@ -10,6 +10,6 @@ public class FivePieceCutList {
     public int TotalDoorCount { get; set; }
     public string Material { get; set; } = string.Empty;
     public string Note { get; set; } = string.Empty;
-    public IEnumerable<LineItem> Items { get; set; } = Enumerable.Empty<LineItem>();
+    public IEnumerable<FivePieceDoorLineItem> Items { get; set; } = Enumerable.Empty<FivePieceDoorLineItem>();
 
 }

@@ -16,6 +16,7 @@ public class ReleaseConfiguration {
     public bool IncludeInvoiceInRelease { get; set; }
     public bool IncludeInvoiceSummary { get; set; }
     public bool Generate5PieceCutList { get; set; }
+    public bool GenerateDoweledDrawerBoxCutList { get; set; }
     public bool IncludeDovetailDBPackingList { get; set; }
     public string? ReleaseEmailRecipients { get; set; }
     public bool SendReleaseEmail { get; set; }

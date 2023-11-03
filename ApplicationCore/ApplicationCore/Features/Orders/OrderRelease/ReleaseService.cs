@@ -23,6 +23,8 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
+using ApplicationCore.Features.Orders.OrderRelease.Handlers.DoweledDrawerBoxCutList;
+using ApplicationCore.Features.Orders.Shared.Domain.Components;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -45,8 +47,9 @@ public class ReleaseService {
     private readonly IEmailService _emailService;
     private readonly IWSXMLParser _wsxmlParser;
     private readonly IFivePieceDoorCutListWriter _fivePieceDoorCutListWriter;
+    private readonly IDoweledDrawerBoxCutListWriter _doweledDrawerBoxCutListWriter;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IDovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IDovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter) {
         _fileReader = fileReader;
         _invoiceDecoratorFactory = invoiceDecoratorFactory;
         _packingListDecoratorFactory = packingListDecoratorFactory;
@@ -59,8 +62,10 @@ public class ReleaseService {
         _wsxmlParser = wsxmlParser;
         _dovetailDBPackingListDecoratorFactory = dovetailDBPackingListDecoratorFactory;
         _fivePieceDoorCutListWriter = fivePieceDoorCutListWriter;
+        _doweledDrawerBoxCutListWriter = doweledDrawerBoxCutListWriter;
 
         _fivePieceDoorCutListWriter.OnError += OnError;
+        _doweledDrawerBoxCutListWriter.OnError += OnError;
     }
 
     public async Task Release(List<Order> orders, ReleaseConfiguration configuration) {
@@ -180,7 +185,7 @@ public class ReleaseService {
                                 TotalDoorCount = group.Count(),
                                 Items = group.Select(door => (door, door.GetParts()))
                                             .SelectMany(doorParts => 
-                                                doorParts.Item2.Select(part => new LineItem() {
+                                                doorParts.Item2.Select(part => new FivePieceDoorLineItem() {
                                                     CabNumber = doorParts.door.ProductNumber,
                                                     Note = "",
                                                     Qty = part.Qty,
@@ -192,7 +197,7 @@ public class ReleaseService {
                                             .ToList()
                         })
                         .Select(cutList => _fivePieceDoorCutListWriter.WriteCutList(cutList, outputDirectory, true))
-                        .OfType<CutListResult>()
+                        .OfType<FivePieceDoorCutListResult>()
                         .ToList()
                 );
 
@@ -201,6 +206,49 @@ public class ReleaseService {
                     if (result.PDFFilePath is string filePath)
                         additionalPDFs.Add(filePath);
                 });
+
+            }
+
+            if (configuration.GenerateDoweledDrawerBoxCutList) {
+
+                var outputDirectory = Path.Combine(order.WorkingDirectory, "CUTLIST");
+                var cutListResults = await Task.Run(() => 
+                    order.Products
+                        .OfType<DoweledDrawerBoxProduct>()
+                        .GroupBy(d => d.BottomMaterial)
+                        .Select(group => new DoweledDrawerBoxCutList() {
+                                CustomerName = customerName,
+                                VendorName = vendorName,
+                                Note = order.Note,
+                                Material = $"{group.First().BottomMaterial.Thickness.RoundToInchMultiple(0.0625).AsInchFraction()} {group.First().BottomMaterial.Name}",
+                                OrderDate = order.OrderDate,
+                                OrderName = order.Name,
+                                OrderNumber = order.Number,
+                                Items = group.Select(box => box.GetBottom(DoweledDrawerBox.Construction, box.ProductNumber))
+                                            .GroupBy(b => (b.Width, b.Length))
+                                            .OrderByDescending(g => g.Key.Length)
+                                            .OrderByDescending(g => g.Key.Width)
+                                            .Select(bottomGroup => new DoweledDBCutListLineItem() {
+                                                CabNumbers = string.Join(", ", bottomGroup.Select(p => p.ProductNumber)),
+                                                Note = "",
+                                                Qty = bottomGroup.Sum(p => p.Qty),
+                                                PartName = "Bottom",
+                                                Length = bottomGroup.Key.Length.AsMillimeters(),
+                                                Width = bottomGroup.Key.Width.AsMillimeters()
+                                            })
+                                            .ToList()
+                        })
+                        .Select(cutList => _doweledDrawerBoxCutListWriter.WriteCutList(cutList, outputDirectory, true))
+                        .OfType<DoweledDBCutListResult>()
+                        .ToList()
+                );
+
+                cutListResults.ForEach(result => {
+                    OnFileGenerated?.Invoke(result.ExcelFilePath);
+                    if (result.PDFFilePath is string filePath)
+                        additionalPDFs.Add(filePath);
+                });
+
 
             }
 

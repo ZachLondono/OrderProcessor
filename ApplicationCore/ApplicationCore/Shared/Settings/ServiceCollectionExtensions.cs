@@ -19,6 +19,7 @@ public static class Extensions {
             "pdfconfig.json",
             "tools.json",
             "five_piece_doors.json",
+            "doweled_drawer_boxes.json",
             "data.json",
             "data.Development.json"
     };
@@ -63,6 +64,7 @@ public static class Extensions {
 #endif
 
         services.ConfigureWritable<FivePieceDoorCutListSettings>(configuration.GetRequiredSection("five_piece_doors"), Path.Combine(_configDirectory, "five_piece_doors.json"));
+        services.ConfigureWritable<DoweledDrawerBoxCutListSettings>(configuration.GetRequiredSection("doweled_drawer_boxes"), Path.Combine(_configDirectory, "doweled_drawer_boxes.json"));
         services.ConfigureWritable<ToolConfiguration>(configuration.GetRequiredSection("tools"), Path.Combine(_configDirectory, "tools.json"));
         services.ConfigureWritable<EmailSettings>(configuration.GetRequiredSection("Email"), Path.Combine(_configDirectory, "email.json"));
         services.ConfigureWritable<ScheduleSettings>(configuration.GetRequiredSection("schedule"), Path.Combine(_configDirectory, "schedule.json"));

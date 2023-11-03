@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList;
 
-public class LineItem {
+public class FivePieceDoorLineItem {
 
     public int CabNumber { get; set; }
     public string PartName { get; set; } = string.Empty;
