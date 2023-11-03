@@ -172,11 +172,8 @@ internal class ReleasePDFDecoratorFactory {
     private static string GetApplicationVersion() {
 
         try {
-            if (Package.Current.Id.Version is PackageVersion version) {
-                return $"{version.Major}.{version.Minor}.{version.Revision}";
-            } else {
-                return "0.0.0";
-            }
+            var version = Package.Current.Id.Version;
+            return $"{version.Major}.{version.Minor}.{version.Build}";
         } catch { }
 
         return  "0.0.0";
