@@ -1,5 +1,7 @@
 ﻿using ApplicationCore.Shared.Services;
+using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
 using ExcelApp = Microsoft.Office.Interop.Excel.Application;
@@ -9,22 +11,21 @@ namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.DoweledDrawerBox
 public class DoweledDrawerBoxCutListWriter : IDoweledDrawerBoxCutListWriter {
 
     private readonly IFileReader _fileReader;
-    //private readonly DoweledDrawerBoxCutListSettings _settings;
+    private readonly DoweledDrawerBoxCutListSettings _settings;
     private readonly ILogger<DoweledDrawerBoxCutListWriter> _logger;
 
     public Action<string>? OnError { get; set; }
 
-    public DoweledDrawerBoxCutListWriter(IFileReader fileReader, ILogger<DoweledDrawerBoxCutListWriter> logger) {
+    public DoweledDrawerBoxCutListWriter(IFileReader fileReader, IOptions<DoweledDrawerBoxCutListSettings> settings, ILogger<DoweledDrawerBoxCutListWriter> logger) {
         _fileReader = fileReader;
+        _settings = settings.Value;
         _logger = logger;
     }
 
     public DoweledDBCutListResult? WriteCutList(DoweledDrawerBoxCutList cutList, string outputDirectory, bool generatePDF) {
 
-        string templateFilePath = @"C:\Users\Zachary Londono\Documents\Doweled DB Cut List Template.xlsx";
-
-        if (!File.Exists(templateFilePath)) {
-            OnError?.Invoke($"Doweled drawer box cut list template does not exist or cannot be accessed - '{templateFilePath}'");
+        if (!File.Exists(_settings.TemplateFilePath)) {
+            OnError?.Invoke($"Doweled drawer box cut list template does not exist or cannot be accessed - '{_settings.TemplateFilePath}'");
             return null;
 
         }
@@ -39,7 +40,7 @@ public class DoweledDrawerBoxCutListWriter : IDoweledDrawerBoxCutListWriter {
                 Visible = false
             };
 
-            workbook = app.Workbooks.Open(templateFilePath);
+            workbook = app.Workbooks.Open(_settings.TemplateFilePath);
             sheet = workbook.Worksheets["Cut List"];
 
         } catch (Exception ex) {
