@@ -2,6 +2,7 @@
 using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
+using ApplicationCore.Features.Orders.OrderRelease.Handlers.DoweledDrawerBoxCutList;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
@@ -42,8 +43,9 @@ public class ReleaseServiceTests {
         var wsxmlParser = Substitute.For<IWSXMLParser>();
         var dbPackingList = Substitute.For<IDovetailDBPackingListDecoratorFactory>();
         var fivePieceDoorCutListWriter = Substitute.For<IFivePieceDoorCutListWriter>();
+        var doweledDrawerBoxCutListWriter = Substitute.For<IDoweledDrawerBoxCutListWriter>();
 
-        _sut = new ReleaseService(_logger, _fileReader, _invoiceDecorator, _packingListDecorator, _cncReleaseDecoratorFactory, _jobSummaryDecorator, _getCustomerByIdAsync, _getVendorByIdAsync, _emailService, wsxmlParser, dbPackingList, fivePieceDoorCutListWriter);
+        _sut = new ReleaseService(_logger, _fileReader, _invoiceDecorator, _packingListDecorator, _cncReleaseDecoratorFactory, _jobSummaryDecorator, _getCustomerByIdAsync, _getVendorByIdAsync, _emailService, wsxmlParser, dbPackingList, fivePieceDoorCutListWriter, doweledDrawerBoxCutListWriter);
     }
 
     [Fact]
