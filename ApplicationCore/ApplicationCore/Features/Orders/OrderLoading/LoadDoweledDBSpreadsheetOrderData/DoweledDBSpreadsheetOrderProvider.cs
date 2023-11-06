@@ -57,8 +57,8 @@ internal class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 
             workbook = app.Workbooks.Open(source, ReadOnly: true);
 
-            Worksheet? orderSheet = (Worksheet?)workbook.Worksheets["Order"];
-            Worksheet? specSheet = (Worksheet?)workbook.Worksheets["Specs"];
+            Worksheet? orderSheet = (Worksheet?)workbook.Worksheets["Dowel Order"];
+            Worksheet? specSheet = (Worksheet?)workbook.Worksheets["Dowel Specs"];
 
             if (orderSheet is null) {
                 OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find Order sheet in workbook");
