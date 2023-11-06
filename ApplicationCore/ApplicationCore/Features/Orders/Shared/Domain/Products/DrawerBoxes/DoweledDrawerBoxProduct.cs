@@ -28,6 +28,6 @@ public class DoweledDrawerBoxProduct : DoweledDrawerBox, IProduct, ICNCPartConta
     // TODO: maybe add option to include slides, clips etc.
     public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
 
-    public IEnumerable<Part> GetCNCParts(string customerName) => GetCNCParts(Qty, ProductNumber, customerName, Room);
+    public IEnumerable<Part> GetCNCParts(string customerName) => GetCNCParts(ProductNumber, customerName, Room);
 
 }

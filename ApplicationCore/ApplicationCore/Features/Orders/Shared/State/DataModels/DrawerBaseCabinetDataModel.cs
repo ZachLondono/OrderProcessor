@@ -12,6 +12,8 @@ internal class DrawerBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBa
     public Dimension[] FaceHeights { get; set; } = Array.Empty<Dimension>();
     public bool IsGarage { get; set; }
     public List<string> ProductionNotes { get; set; } = new();
+    public Dimension BaseNotchHeight { get; set; }
+    public Dimension BaseNotchDepth { get; set; }
 
     public IProduct MapToProduct() {
 
@@ -25,8 +27,13 @@ internal class DrawerBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBa
         var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
+        CabinetBaseNotch? baseNotch = null;
+        if (BaseNotchDepth != Dimension.Zero && BaseNotchHeight != Dimension.Zero) {
+            baseNotch = new(BaseNotchHeight, BaseNotchDepth);
+        }
+
         return new DrawerBaseCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
-            ToeType, drawers, dbOptions) {
+            ToeType, drawers, dbOptions, baseNotch) {
             IsGarage = IsGarage,
             ProductionNotes = ProductionNotes
         };
@@ -68,6 +75,8 @@ internal class DrawerBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBa
             drawer_base_cabinets.toe_type AS ToeType,
             drawer_base_cabinets.face_heights AS FaceHeights,
             drawer_base_cabinets.is_garage AS IsGarage,
+            drawer_base_cabinets.base_notch_height AS BaseNotchHeight,
+            drawer_base_cabinets.base_notch_depth AS BaseNotchDepth,
 
         	db_config.material AS DBMaterial,
         	db_config.slide_type AS DBSlideType,

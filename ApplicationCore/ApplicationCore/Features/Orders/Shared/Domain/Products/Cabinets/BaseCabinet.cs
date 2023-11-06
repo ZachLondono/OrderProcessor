@@ -14,6 +14,7 @@ internal class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoo
     public HorizontalDrawerBank Drawers { get; }
     public BaseCabinetInside Inside { get; }
     public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
+    public CabinetBaseNotch? BaseNotch { get; }
 
     public Dimension DoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
 
@@ -31,15 +32,15 @@ internal class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoo
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        BaseCabinetDoors doors, ToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside, CabinetDrawerBoxOptions drawerBoxOptions) {
-        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, toeType, drawers, inside, drawerBoxOptions);
+                        BaseCabinetDoors doors, ToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside, CabinetDrawerBoxOptions drawerBoxOptions, CabinetBaseNotch? baseNotch) {
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, toeType, drawers, inside, drawerBoxOptions, baseNotch);
     }
 
     internal BaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        BaseCabinetDoors doors, ToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside, CabinetDrawerBoxOptions drawerBoxOptions)
+                        BaseCabinetDoors doors, ToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside, CabinetDrawerBoxOptions drawerBoxOptions, CabinetBaseNotch? baseNotch)
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (doors.Quantity > 2 || doors.Quantity < 0)
@@ -74,6 +75,7 @@ internal class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoo
         Drawers = drawers;
         Inside = inside;
         DrawerBoxOptions = drawerBoxOptions;
+        BaseNotch = baseNotch;
     }
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
@@ -284,6 +286,11 @@ internal class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoo
 
             parameters.Add("_HalfDepthShelfW", (Depth - backThickness - backInset - shelfFrontClearance).AsMillimeters().ToString());
 
+        }
+
+        if (BaseNotch is not null) {
+            parameters.Add("_BottomNotchD", BaseNotch.Depth.AsMillimeters().ToString());
+            parameters.Add("_BottomNotchH", BaseNotch.Height.AsMillimeters().ToString());
         }
 
         return parameters;

@@ -4,7 +4,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
 
-public class DovetailDBPackingListDecoratorFactory {
+public class DovetailDBPackingListDecoratorFactory : IDovetailDBPackingListDecoratorFactory {
 
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
@@ -53,6 +53,6 @@ public class DovetailDBPackingListDecoratorFactory {
             }
         };
 
-    } 
+    }
 
 }

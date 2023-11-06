@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
+using ApplicationCore.Shared.Domain;
 using Dapper;
 using System.Data;
 
@@ -37,7 +38,9 @@ public partial class InsertOrder {
                 LowerDoorHeight = cabinet.Doors.LowerDoorHeight,
                 HingeSide = cabinet.Doors.HingeSide,
                 DBConfigId = dbConfigId,
-                IsGarage = cabinet.IsGarage
+                IsGarage = cabinet.IsGarage,
+                BaseNotchHeight = cabinet.BaseNotch?.Height ?? Dimension.Zero,
+                BaseNotchDepth = cabinet.BaseNotch?.Depth ?? Dimension.Zero
             };
 
             await connection.ExecuteAsync("""
@@ -56,7 +59,9 @@ public partial class InsertOrder {
                         lower_door_height,
                         hinge_side,
                         db_config_id,
-                        is_garage)
+                        is_garage,
+                        base_notch_height,
+                        base_notch_depth)
                     VALUES
                         (@ProductId,
                         @ToeType,
@@ -72,7 +77,9 @@ public partial class InsertOrder {
                         @LowerDoorHeight,
                         @HingeSide,
                         @DBConfigId,
-                        @IsGarage);
+                        @IsGarage,
+                        @BaseNotchHeight,
+                        @BaseNotchDepth);
                     """, parameters, trx);
 
         }

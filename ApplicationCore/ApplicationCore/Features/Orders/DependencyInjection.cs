@@ -15,6 +15,7 @@ using ApplicationCore.Features.Orders.CustomerOrderNumber;
 using ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList;
+using ApplicationCore.Features.Orders.OrderRelease.Handlers.DoweledDrawerBoxCutList;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -47,9 +48,10 @@ public static class DependencyInjection {
         services.AddTransient<InvoiceDecoratorFactory>();
         services.AddTransient<IPackingListDecorator, PackingListDecorator>();
         services.AddTransient<PackingListDecoratorFactory>();
-        services.AddTransient<DovetailDBPackingListDecoratorFactory>();
+        services.AddTransient<IDovetailDBPackingListDecoratorFactory, DovetailDBPackingListDecoratorFactory>();
         services.AddTransient<ReleaseService>();
-        services.AddTransient<FivePieceDoorCutListWriter>();
+        services.AddTransient<IFivePieceDoorCutListWriter, FivePieceDoorCutListWriter>();
+        services.AddTransient<IDoweledDrawerBoxCutListWriter, DoweledDrawerBoxCutListWriter>();
     }
 
     private static void AddExportServices(IServiceCollection services) {

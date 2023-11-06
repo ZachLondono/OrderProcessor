@@ -1,3 +1,3 @@
 ﻿namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList;
 
-public record CutListResult(string ExcelFilePath, string? PDFFilePath);
+public record FivePieceDoorCutListResult(string ExcelFilePath, string? PDFFilePath);
