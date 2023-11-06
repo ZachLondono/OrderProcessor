@@ -27,7 +27,7 @@
                         <td>@script.Name</td>
                         <td>@script.FilePath</td>
                         <td>
-                            <Button OnClickAsync="() => DataContext.ShowEditScriptModal(ModalService, script.Id)">Edit</Button>
+                            <Button OnClick="() => DataContext.ShowEditScriptModal(script)" Disabled="DataContext.IsEditorOpening">Edit</Button>
                             <Button Color="ButtonColor.Danger" OnClickAsync="() => DataContext.DeleteScript(script.Id)">Delete</Button>
                         </td>
                     </tr>

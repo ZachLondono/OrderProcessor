@@ -2,6 +2,6 @@
 
 public interface IScriptEditorOpener {
 
-    public void OpenScriptEditor();
+    public void OpenScriptEditor(string filePath, Type inputType, Type outputType);
 
 }

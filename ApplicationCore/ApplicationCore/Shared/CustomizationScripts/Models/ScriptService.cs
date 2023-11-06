@@ -1,26 +1,55 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
+using System.Collections.Immutable;
+using System.Reflection;
 
 namespace ApplicationCore.Shared.CustomizationScripts.Models;
 
-public class ScriptService<TInput, TResult> {
+public class ScriptService<TInput, TResult> : ScriptService {
 
     private ScriptRunner<TResult>? _runner;
-    private readonly string _scriptFilePath;
+    public ImmutableArray<Diagnostic> Diagnostics { get; private set; }
 
-    public ScriptService(string scriptFilePath) {
-        _scriptFilePath = scriptFilePath;
+    public static Type GlobalObjectType => typeof(ScriptGlobals<TInput>);
+
+    private ScriptService() { }
+
+    public static async Task<ScriptService<TInput, TResult>> FromFile(string scriptFilePath) {
+
+        var service = new ScriptService<TInput, TResult>();
+
+        var code = await File.ReadAllTextAsync(scriptFilePath);
+        service.InitializeScript(code);
+
+        return service;
+
     }
 
-    public void LoadScript() {
+    public static ScriptService<TInput, TResult> FromCode(string code) {
 
-        var script = BuildScriptFromFile(_scriptFilePath);
-        script.Compile();
+        var service = new ScriptService<TInput, TResult>();
+
+        service.InitializeScript(code);
+
+        return service;
+
+    }
+
+    private void InitializeScript(string code) {
+
+        var script = CSharpScript.Create<TResult>(
+                                code: code,
+                                options: ScriptOptions.Default.WithReferences(References).WithImports(Imports),
+                                globalsType: typeof(ScriptGlobals<TInput>));
+
+        Diagnostics = script.Compile();
+
+        if (Diagnostics.Any()) return;
+
         _runner = script.CreateDelegate();
 
     }
-
 
     public async Task<TResult> RunScript(TInput input) {
 
@@ -32,21 +61,28 @@ public class ScriptService<TInput, TResult> {
 
     }
 
-    public static Script<TResult> BuildScriptFromFile(string filePath) {
+}
 
-        var references = new List<MetadataReference>() {
-            MetadataReference.CreateFromFile(typeof(TInput).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(TResult).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(CADCodeProxy.Machining.Part).Assembly.Location),
-        };
+public class ScriptService {
 
-        using var code = File.OpenRead(filePath);
+    public static Assembly[] References => new[] {
+        typeof(object).Assembly,
+        typeof(System.Text.RegularExpressions.Regex).Assembly,
+        typeof(Enumerable).Assembly,
+        typeof(ScriptService).Assembly
+    };
 
-        return CSharpScript.Create<TResult>(
-                                code: code,
-                                options: ScriptOptions.Default.WithReferences(references),
-                                globalsType: typeof(ScriptGlobals<TInput>));
-    }
-
+    public static string[] Imports => new[] {
+        "System",
+        "System.Threading",
+        "System.Threading.Tasks",
+        "System.Collections",
+        "System.Collections.Generic",
+        "System.Text",
+        "System.Text.RegularExpressions",
+        "System.Linq",
+        "System.IO",
+        "System.Reflection"
+    };
 
 }

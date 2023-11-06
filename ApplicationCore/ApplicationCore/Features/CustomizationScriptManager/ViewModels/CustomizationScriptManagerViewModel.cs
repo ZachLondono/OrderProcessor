@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.CustomizationScriptManager;
 using ApplicationCore.Features.CustomizationScripts.Commands;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Shared.CustomizationScripts;
 using ApplicationCore.Shared.CustomizationScripts.Models;
@@ -29,6 +30,15 @@ public class CustomizationScriptManagerViewModel {
         get => _error;
         set {
             _error = value;
+            OnPropertyChanged?.Invoke();
+        }
+    }
+
+    private bool _isEditorOpening = false;
+    public bool IsEditorOpening {
+        get => _isEditorOpening;
+        set {
+            _isEditorOpening = value;
             OnPropertyChanged?.Invoke();
         }
     }
@@ -104,9 +114,14 @@ public class CustomizationScriptManagerViewModel {
 
     }
 
-    public Task ShowEditScriptModal(IModalService modalService, Guid scriptId) {
-        _editorOpener.OpenScriptEditor();
-        return Task.CompletedTask;
+    public void ShowEditScriptModal(CustomizationScript script) {
+
+        IsEditorOpening = true;
+
+        _editorOpener.OpenScriptEditor(script.FilePath, typeof(DoweledDrawerBoxProduct), typeof(DoweledDrawerBoxProduct));
+
+        IsEditorOpening = false;
+
     }
 
 }

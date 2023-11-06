@@ -236,7 +236,7 @@ internal class ExportService {
 
     private async Task UpdateDoweledDrawerBoxes(Guid orderId, List<ICNCPartContainer> cncPartContainers) {
         IEnumerable<CustomizationScript> customizationScripts = await GetCustomizationScripts(orderId);
-        var doweledDbScript = GetDoweledDrawerBoxScriptService(customizationScripts);
+        var doweledDbScript = await GetDoweledDrawerBoxScriptService(customizationScripts);
         if (doweledDbScript is not null) {
 
             var indexes = cncPartContainers.Where(p => p is DoweledDrawerBoxProduct).Select(p => cncPartContainers.IndexOf(p)).ToList();
@@ -271,7 +271,7 @@ internal class ExportService {
 
     }
 
-    public ScriptService<DoweledDrawerBoxProduct, DoweledDrawerBoxProduct>? GetDoweledDrawerBoxScriptService(IEnumerable<CustomizationScript> scripts) {
+    public async Task<ScriptService<DoweledDrawerBoxProduct, DoweledDrawerBoxProduct>?> GetDoweledDrawerBoxScriptService(IEnumerable<CustomizationScript> scripts) {
 
         var doweledDBCustomizationScript = scripts.FirstOrDefault(script => script.Type is CustomizationType.DoweledDrawerBox);
 
@@ -279,8 +279,7 @@ internal class ExportService {
 
         try {
         
-            ScriptService<DoweledDrawerBoxProduct, DoweledDrawerBoxProduct> scriptService = new(doweledDBCustomizationScript.FilePath);
-            scriptService.LoadScript();
+            var scriptService = await ScriptService<DoweledDrawerBoxProduct, DoweledDrawerBoxProduct>.FromFile(doweledDBCustomizationScript.FilePath);
             return scriptService;
         
         } catch (Exception ex) {
