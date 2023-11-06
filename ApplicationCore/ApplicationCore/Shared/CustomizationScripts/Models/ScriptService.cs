@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using CADCodeProxy.Machining;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using System.Collections.Immutable;
@@ -69,7 +70,8 @@ public class ScriptService {
         typeof(object).Assembly,
         typeof(System.Text.RegularExpressions.Regex).Assembly,
         typeof(Enumerable).Assembly,
-        typeof(ScriptService).Assembly
+        typeof(ScriptService).Assembly,
+        typeof(Part).Assembly
     };
 
     public static string[] Imports => new[] {

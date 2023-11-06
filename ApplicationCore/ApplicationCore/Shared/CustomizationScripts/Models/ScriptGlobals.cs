@@ -2,6 +2,6 @@
 
 public class ScriptGlobals<TInput> {
 
-    public TInput? Input { get; init; } = default;
+    public required TInput Input { get; init; } = default;
 
 }
