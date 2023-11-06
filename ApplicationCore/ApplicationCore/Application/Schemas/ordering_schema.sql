@@ -66,7 +66,19 @@ CREATE TABLE order_numbers (
 CREATE TABLE order_relationships (
 	order_1_id BLOB NOT NULL,
 	order_2_id BLOB NOT NULL,
-	PRIMARY KEY (order_1_id, order_2_id)
+	PRIMARY KEY (order_1_id, order_2_id),
+	FOREIGN KEY (order_1_id) REFERENCES orders(id) ON DELETE CASCADE,
+	FOREIGN KEY (order_2_id) REFERENCES orders(id) ON DELETE CASCADE
+);
+
+CREATE TABLE order_customization_scripts (
+	id BLOB NOT NULL,
+	order_id BLOB NOT NULL,
+	name TEXT NOT NULL,
+	script_file_path TEXT NOT NULL,
+	type INTEGER NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
 -- Product Tables --

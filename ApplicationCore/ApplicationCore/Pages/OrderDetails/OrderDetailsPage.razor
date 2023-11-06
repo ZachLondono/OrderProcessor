@@ -1,4 +1,5 @@
 ﻿@page "/orders/details/{OrderIdStr}"
+@using ApplicationCore.Features.CustomizationScriptManager.Views
 @using ApplicationCore.Features.DeleteOrder
 @using ApplicationCore.Features.OrderRelationshipList
 @using ApplicationCore.Features.Orders.Details
@@ -33,6 +34,7 @@
                         <OrderDeleteButton OrderId="OrderId" OnOrderDeleted="OnOrderDeleted" />
                         <BricsCADFileSaveWidget OutputDirectory="@order.WorkingDirectory"/>
                         <AddToScheduleButton Order="order" />
+                        <CustomizationScriptsManagerButton OrderId="OrderId" />
                     </div>
                 </ActionPanel>
                 <ProductActionsColumn Context="product">
