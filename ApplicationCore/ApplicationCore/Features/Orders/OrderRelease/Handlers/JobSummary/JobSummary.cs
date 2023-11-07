@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 
@@ -24,7 +25,7 @@ internal class JobSummary {
     public List<DoweledDrawerBoxGroup> DoweledDrawerBoxes { get; set; } = new();
     public List<MDFDoorGroup> MDFDoors { get; set; } = new();
     public List<FivePieceDoorGroup> FivePieceDoors { get; set; } = new();
-    public int AdditionalItems { get; set; } = new();
+    public List<AdditionalItem> AdditionalItems { get; set; } = new();
 
     public bool ContainsDovetailDBSubComponents { get; set; } = false;
     public bool ContainsMDFDoorSubComponents { get; set; } = false;

@@ -93,6 +93,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                     int fivePieceDoorQty = jobSummary.FivePieceDoors.Sum(p => p.Items.Sum(i => i.Qty));
                                     int dovetailQty = jobSummary.DovetailDrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty));
                                     int doweledQty = jobSummary.DoweledDrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty));
+                                    int addItemQty = jobSummary.AdditionalItems.Count();
 
                                     if (cabQty > 0) {
                                         table.Cell().AlignRight().PaddingRight(5).Text("Cabinets:");
@@ -134,13 +135,13 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                         table.Cell().AlignCenter().Text(doweledQty == 0 ? "-" : doweledQty.ToString());
                                     }
 
-                                    if (jobSummary.AdditionalItems > 0) {
+                                    if (addItemQty > 0) {
                                         table.Cell().AlignRight().PaddingRight(5).Text("Other:");
-                                        table.Cell().AlignCenter().Text(jobSummary.AdditionalItems == 0 ? "-" : jobSummary.AdditionalItems.ToString());
+                                        table.Cell().AlignCenter().Text(addItemQty == 0 ? "-" : addItemQty.ToString());
                                     }
 
                                     table.Cell().BorderTop(0.5f).AlignRight().PaddingRight(5).Text("Total:").Bold().FontSize(14);
-                                    table.Cell().BorderTop(0.5f).AlignCenter().Text((cabQty + cpQty + mdfDoorQty + dovetailQty + doweledQty + jobSummary.AdditionalItems).ToString()).Bold().FontSize(14);
+                                    table.Cell().BorderTop(0.5f).AlignCenter().Text((cabQty + cpQty + mdfDoorQty + dovetailQty + doweledQty + addItemQty).ToString()).Bold().FontSize(14);
 
                                 });
 
@@ -217,9 +218,17 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
                     column.Item().PaddingTop(20).PaddingBottom(20).Row(row => row.RelativeItem().LineHorizontal(1).LineColor(Colors.Grey.Medium));
 
-                    if (jobSummary.Supplies.Any()) {
-                        ComposeSuppliesTable(column.Item(), jobSummary.Supplies);
-                    }
+                    column.Item().Row(row => {
+
+                        if (jobSummary.Supplies.Any()) {
+                            ComposeSuppliesTable(row.RelativeItem(), jobSummary.Supplies);
+                        }
+
+                        if (jobSummary.AdditionalItems.Any()) {
+                            ComposeAdditionalItemsTable(row.RelativeItem(), jobSummary.AdditionalItems);
+                        }
+
+                    });
 
                     column.Item().PageBreak();
 
@@ -532,7 +541,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             FivePieceDoors = fivePieceDoors,
             DovetailDrawerBoxes = dovetailDb,
             DoweledDrawerBoxes = doweledDb,
-            AdditionalItems = order.AdditionalItems.Where(i => !i.IsService).Count(),
+            AdditionalItems = order.AdditionalItems.ToList(),
 
             ContainsDovetailDBSubComponents = containsDovetailDBSubComponents,
             ContainsMDFDoorSubComponents = containsMDFDoorSubComponents,
@@ -1270,6 +1279,55 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                 });
 
     }
+
+    private static void ComposeAdditionalItemsTable(IContainer container, IEnumerable<AdditionalItem> items) {
+
+        var defaultCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .AlignMiddle()
+                    .PaddingVertical(5)
+                    .PaddingHorizontal(10);
+
+        var headerCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .Background(Colors.Grey.Lighten3)
+                    .PaddingVertical(5)
+                    .PaddingHorizontal(10)
+                    .DefaultTextStyle(x => x.Bold());
+
+        container.DefaultTextStyle(x => x.FontSize(10))
+                .Column(col => {
+
+                    col.Item()
+                        .PaddingTop(10)
+                        .PaddingLeft(8)
+                        .Text("Other")
+                        .FontSize(14);
+
+                    col.Item()
+                        .Table(table => {
+
+                            table.ColumnsDefinition(column => {
+                                column.RelativeColumn();
+                            });
+
+
+                            table.Header(header => {
+                                header.Cell().Element(headerCellStyle).Text("Description");
+                            });
+
+                            foreach (var item in items) {
+                                table.Cell().Element(defaultCellStyle).Text(item.Description);
+                            }
+
+                        });
+
+                });
+
+    }
+
 
     private static void ComposeHeader(IContainer container, JobSummary jobSummary) {
 
