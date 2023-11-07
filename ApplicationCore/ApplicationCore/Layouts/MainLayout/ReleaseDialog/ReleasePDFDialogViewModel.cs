@@ -46,9 +46,9 @@ internal class ReleasePDFDialogViewModel {
     private readonly ICNCReleaseDecorator _cncReleaseDecorator;
     private readonly IFileReader _fileReader;
     private readonly IEmailService _emailService;
-    private readonly WSXMLParser _wsxmlParser;
+    private readonly IWSXMLParser _wsxmlParser;
 
-    public ReleasePDFDialogViewModel(ICNCReleaseDecorator cncReleaseDecorator, IFileReader fileReader, IEmailService emailService, WSXMLParser wsxmlParser) {
+    public ReleasePDFDialogViewModel(ICNCReleaseDecorator cncReleaseDecorator, IFileReader fileReader, IEmailService emailService, IWSXMLParser wsxmlParser) {
         _cncReleaseDecorator = cncReleaseDecorator;
         _fileReader = fileReader;
         _emailService = emailService;
