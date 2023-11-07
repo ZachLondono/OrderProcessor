@@ -130,6 +130,7 @@ public class OrderReleaseModalViewModel {
             ReleaseOutputDirectory = releaseDirectory,
             GenerateCNCRelease = false,
             CopyCNCReportToWorkingDirectory = true,
+            GenerateCNCGCode = true,
 
             GenerateInvoice = vendor.ReleaseProfile.GenerateInvoice,
             SendInvoiceEmail = vendor.ReleaseProfile.SendInvoiceEmail,

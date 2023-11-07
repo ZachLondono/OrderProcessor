@@ -192,15 +192,16 @@ internal class ReleasePDFDecorator : IDocumentDecorator {
                                 );
 
                         });
-
-                x.Item().Column(c => {
-                    c.Item().AlignLeft()
-                        .Text(data.Parts.Title)
-                        .WithStyle(titleStyle);
-                    c.Item().Table(t => {
-                        BuildTable(t, data.Parts, config);
+                if (data.Parts.Content.Any()) {
+                    x.Item().Column(c => {
+                        c.Item().AlignLeft()
+                            .Text(data.Parts.Title)
+                            .WithStyle(titleStyle);
+                        c.Item().Table(t => {
+                            BuildTable(t, data.Parts, config);
+                        });
                     });
-                });
+                }
 
             });
 
