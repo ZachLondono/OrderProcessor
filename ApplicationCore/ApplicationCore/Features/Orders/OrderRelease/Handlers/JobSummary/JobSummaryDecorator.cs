@@ -19,6 +19,7 @@ using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.Za
 using ApplicationCore.Shared;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.CabinetPartGroup;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.FivePieceDoorGroup;
+using ApplicationCore.Features.Orders.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 
@@ -121,7 +122,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                     }
 
                                     if (fivePieceDoorQty > 0) {
-                                        table.Cell().AlignRight().PaddingRight(5).Text("Five-Piece Doors:");
+                                        table.Cell().AlignRight().PaddingRight(5).Text("5-Piece Doors:");
                                         table.Cell().AlignCenter().Text(fivePieceDoorQty == 0 ? "-" : fivePieceDoorQty.ToString());
                                     }
 
@@ -145,51 +146,56 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
                                 });
 
-                            row.RelativeItem(1)
-                                .AlignCenter()
-                                .DefaultTextStyle(style => style.FontSize(12))
-                                .Table(table => {
 
-                                    table.ColumnsDefinition(column => {
-                                        column.ConstantColumn(65);
-                                        column.ConstantColumn(75);
+                            if (jobSummary.ShowMaterialTypesInSummary && jobSummary.MaterialTypes.Any()) {
+
+                                row.RelativeItem(1)
+                                    .AlignLeft()
+                                    .AlignTop()
+                                    .DefaultTextStyle(style => style.FontSize(12))
+                                    .Column(col => {
+
+                                        col.Item()
+                                            .AlignLeft()
+                                            .Text("Materials:")
+                                            .FontSize(14)
+                                            .Bold();
+
+                                        jobSummary.MaterialTypes
+                                                    .Select((mat, idx) => (mat, idx))
+                                                    .ForEach(item =>
+                                                        col.Item()
+                                                             .AlignLeft()
+                                                             .Text($"    {item.idx + 1})  {item.mat}")
+                                                             .FontSize(12)
+                                                             .Bold());
                                     });
-
-                                    if (jobSummary.ShowInvoiceSummary) {
-
-                                        table.Cell().AlignRight().PaddingRight(5).Text("Sub Total:");
-                                        table.Cell().AlignCenter().Text($"${jobSummary.SubTotal:0.00}");
-
-                                        table.Cell().AlignRight().PaddingRight(5).Text("Shipping:");
-                                        table.Cell().AlignCenter().Text($"${jobSummary.Shipping:0.00}");
-
-                                        table.Cell().BorderBottom(0.5f).AlignRight().PaddingRight(5).Text("Sales Tax:");
-                                        table.Cell().BorderBottom(0.5f).AlignCenter().Text($"${jobSummary.SalesTax:0.00}");
-
-                                        table.Cell().AlignRight().PaddingRight(5).Text("Total:").Bold().FontSize(14);
-                                        table.Cell().AlignCenter().Text($"${jobSummary.Total:0.00}").Bold().FontSize(14);
-
-                                    }
-
-                                });
+                            }
 
                         });
 
-                    if (jobSummary.ShowMaterialTypesInSummary && jobSummary.MaterialTypes.Any()) {
-                        column.Item()
-                            .PaddingTop(30)
-                            .AlignLeft()
-                            .Text("Materials:")
-                            .FontSize(12)
-                            .Bold();
+                    if (jobSummary.ContainsMDFDoorSubComponents || jobSummary.ContainsDovetailDBSubComponents) {
+                        column.Item().PaddingTop(30);
+                    }
 
-                        jobSummary.MaterialTypes
-                                    .Select((mat, idx) => (mat, idx))
-                                    .ForEach(item =>
-                                        column.Item()
-                                             .AlignLeft()
-                                             .Text($"    {item.idx + 1})  {item.mat}")
-                                             .FontSize(10));
+                    if (jobSummary.ContainsDovetailDBSubComponents) {
+                        column.Item()
+                                .AlignCenter()
+                                .Text(t => {
+                                    t.DefaultTextStyle(ts => ts.Bold().FontSize(16));
+                                    t.Span("CONTAINS ");
+                                    t.Span("DOVETAIL DRAWER BOXES").Underline();
+                                });
+                    }
+
+                    if (jobSummary.ContainsMDFDoorSubComponents) {
+                        column.Item()
+                                .AlignCenter()
+                                .Text(t => {
+                                    t.DefaultTextStyle(ts => ts.Bold().FontSize(16));
+                                    t.Span("CONTAINS ");
+                                    t.Span("MDF DOORS").Underline();
+                                });
                     }
 
                     column.Item()
@@ -212,6 +218,12 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                             .FontSize(10);
 
                     column.Item().PaddingTop(20).PaddingBottom(20).Row(row => row.RelativeItem().LineHorizontal(1).LineColor(Colors.Grey.Medium));
+
+                    if (jobSummary.Supplies.Any()) {
+                        ComposeSuppliesTable(column.Item(), jobSummary.Supplies);
+                    }
+
+                    column.Item().PageBreak();
 
                     if (jobSummary.ShowItemsInSummary) {
                         foreach (var group in jobSummary.Cabinets) {
@@ -245,10 +257,6 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         foreach (var group in jobSummary.FivePieceDoors) {
                             ComposeFivePieceDoorTable(column.Item(), group);
                         }
-                    }
-
-                    if (jobSummary.Supplies.Any()) {
-                        ComposeSuppliesTable(column.Item(), jobSummary.Supplies);
                     }
 
                 });
@@ -496,6 +504,9 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         })
                         .ToList();
 
+        bool containsDovetailDBSubComponents = order.Products.OfType<IDovetailDrawerBoxContainer>().Where(p => p is not DovetailDrawerBoxProduct).Any();
+        bool containsMDFDoorSubComponents = order.Products.OfType<IMDFDoorContainer>().Where(p => p is not MDFDoorProduct).Any();
+
         return new JobSummary() {
 
             Number = order.Number,
@@ -509,12 +520,6 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
             SpecialRequirements = order.Note,
 
-            ShowInvoiceSummary = _showInvoiceSummary,
-            SubTotal = order.SubTotal,
-            SalesTax = order.Tax,
-            Shipping = order.Shipping.Price,
-            Total = order.Total,
-
             ShowItemsInSummary = _showItems,
             Cabinets = cabs,
             CabinetParts = cabParts,
@@ -525,6 +530,9 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
             DovetailDrawerBoxes = dovetailDb,
             DoweledDrawerBoxes = doweledDb,
             AdditionalItems = order.AdditionalItems.Where(i => !i.IsService).Count(),
+
+            ContainsDovetailDBSubComponents = containsDovetailDBSubComponents,
+            ContainsMDFDoorSubComponents = containsMDFDoorSubComponents,
 
             ShowMaterialTypesInSummary = _showMaterialTypes,
             MaterialTypes = new(_materialTypes),

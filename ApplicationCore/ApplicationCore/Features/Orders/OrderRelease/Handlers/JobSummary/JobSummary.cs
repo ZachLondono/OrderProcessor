@@ -15,12 +15,6 @@ internal class JobSummary {
 
     public string SpecialRequirements { get; set; } = string.Empty;
 
-    public bool ShowInvoiceSummary { get; set; } = false;
-    public decimal SubTotal { get; set; }
-    public decimal Shipping { get; set; }
-    public decimal SalesTax { get; set; }
-    public decimal Total { get; set; }
-
     public bool ShowItemsInSummary { get; set; } = false;
     public List<CabinetGroup> Cabinets { get; set; } = new();
     public List<CabinetPartGroup> CabinetParts { get; set; } = new();
@@ -31,6 +25,9 @@ internal class JobSummary {
     public List<MDFDoorGroup> MDFDoors { get; set; } = new();
     public List<FivePieceDoorGroup> FivePieceDoors { get; set; } = new();
     public int AdditionalItems { get; set; } = new();
+
+    public bool ContainsDovetailDBSubComponents { get; set; } = false;
+    public bool ContainsMDFDoorSubComponents { get; set; } = false;
 
     public bool ShowMaterialTypesInSummary { get; set; } = false;
     public List<string> MaterialTypes { get; set; } = new();
