@@ -504,8 +504,13 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         })
                         .ToList();
 
-        bool containsDovetailDBSubComponents = order.Products.OfType<IDovetailDrawerBoxContainer>().Where(p => p is not DovetailDrawerBoxProduct).Any();
-        bool containsMDFDoorSubComponents = order.Products.OfType<IMDFDoorContainer>().Where(p => p is not MDFDoorProduct).Any();
+        bool containsDovetailDBSubComponents = order.Products
+                                                    .OfType<IDovetailDrawerBoxContainer>()
+                                                    .Any(p => p is not DovetailDrawerBoxProduct && p.ContainsDovetailDrawerBoxes());
+
+        bool containsMDFDoorSubComponents = order.Products
+                                                .OfType<IMDFDoorContainer>()
+                                                .Any(p => p is not MDFDoorProduct && p.ContainsDoors());
 
         return new JobSummary() {
 
