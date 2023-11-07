@@ -120,7 +120,6 @@ public class OrderReleaseModalViewModel {
             ReleaseEmailRecipients = vendor.ReleaseProfile.ReleaseEmailRecipients,
             GenerateJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
             IncludeProductTablesInSummary = false,
-            IncludeInvoiceSummary = true,
             SupplyOptions = new(),                      // TODO: add this to the vendor release profile
             GeneratePackingList = vendor.ReleaseProfile.GeneratePackingList,
             IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,

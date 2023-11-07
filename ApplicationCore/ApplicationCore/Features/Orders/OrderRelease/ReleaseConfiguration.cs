@@ -14,7 +14,6 @@ public class ReleaseConfiguration {
     public bool IncludeProductTablesInSummary { get; set; }
     public SupplyOptions SupplyOptions { get; set; } = new();
     public bool IncludeInvoiceInRelease { get; set; }
-    public bool IncludeInvoiceSummary { get; set; }
     public bool Generate5PieceCutList { get; set; }
     public bool GenerateDoweledDrawerBoxCutList { get; set; }
     public bool IncludeDovetailDBPackingList { get; set; }

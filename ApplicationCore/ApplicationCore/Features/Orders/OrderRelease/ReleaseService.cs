@@ -148,7 +148,7 @@ public class ReleaseService {
                                             .Distinct()
                                             .ToArray();
 
-                var decorator = await _jobSummaryDecoratorFactory.CreateDecorator(order, configuration.IncludeProductTablesInSummary, configuration.SupplyOptions, configuration.IncludeInvoiceSummary, materials, true);
+                var decorator = await _jobSummaryDecoratorFactory.CreateDecorator(order, configuration.IncludeProductTablesInSummary, configuration.SupplyOptions, materials, true);
                 decorators.Add(decorator);
             }
 

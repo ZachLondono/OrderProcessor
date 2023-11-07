@@ -28,7 +28,6 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
     private JobSummary? _jobSummary = null;
     private bool _showItems = false;
     private SupplyOptions _supplyOptions = new();
-    private bool _showInvoiceSummary = false;
     private string[] _materialTypes = Array.Empty<string>();
     private bool _showMaterialTypes = false;
 
@@ -40,10 +39,9 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
         _getCustomerByIdAsync = getCustomerByIdAsync;
     }
 
-    public async Task AddData(Order order, bool showItems, SupplyOptions supplyOptions, bool showInvoiceSummary, string[] materialTypes, bool showMaterialTypes) {
+    public async Task AddData(Order order, bool showItems, SupplyOptions supplyOptions, string[] materialTypes, bool showMaterialTypes) {
         _showItems = showItems;
         _supplyOptions = supplyOptions;
-        _showInvoiceSummary = showInvoiceSummary;
         _materialTypes = materialTypes;
         _showMaterialTypes = showMaterialTypes;
         _jobSummary = await GetJobSummaryModel(order);
@@ -1351,7 +1349,6 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
         });
 
     }
-
 
     private static (string prefix, string orderNumber) SplitOrderNumber(string orderNumber) {
 
