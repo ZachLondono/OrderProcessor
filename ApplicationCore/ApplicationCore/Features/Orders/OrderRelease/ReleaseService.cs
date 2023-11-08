@@ -30,6 +30,7 @@ using ApplicationCore.Shared.Domain;
 using CADCodeProxy.CNC;
 using CADCodeProxy.Machining;
 using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.CNC.ReleasePDF;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -431,12 +432,17 @@ public class ReleaseService {
                                         var usedArea = parts.Sum(part => part.Width * part.Length);
                                         var yield = usedArea / area;
 
+                                        string materialName = genResult.MaterialName;
+                                        if (PSIMaterial.TryParse(materialName, out var psiMat)) {
+                                            materialName = psiMat.GetSimpleName();
+                                        }
+
                                         return new ReleasedProgram() {
                                             Name = program,
                                             ImagePath = @$"C:\Users\Zachary Londono\Desktop\CC Output\{GetImageFileName(program)}.wmf",
                                             HasFace6 = false,
                                             Material = new() {
-                                                Name = genResult.MaterialName,
+                                                Name = materialName,
                                                 Width = inventory.Width,
                                                 Length = inventory.Length,
                                                 Thickness = inventory.Thickness,
