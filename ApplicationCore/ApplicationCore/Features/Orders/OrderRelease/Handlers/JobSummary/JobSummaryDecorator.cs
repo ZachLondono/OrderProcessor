@@ -230,9 +230,10 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
                     });
 
-                    column.Item().PageBreak();
-
                     if (jobSummary.ShowItemsInSummary) {
+
+                        column.Item().PageBreak();
+
                         foreach (var group in jobSummary.Cabinets) {
                             ComposeCabinetTable(column.Item(), group);
                         }
