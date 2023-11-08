@@ -391,7 +391,7 @@ public class ReleaseService {
         ShowProgressBar?.Invoke();
 
         if (SetProgressBarValue is not null) generator.CADCodeProgressEvent += SetProgressBarValue.Invoke;
-        //if (OnError is not null) generator.CADCodeErrorEvent += (msg) => OnError.Invoke(msg);
+        if (OnError is not null) generator.CADCodeErrorEvent += (msg) => OnError.Invoke(msg);
         if (OnProgressReport is not null) generator.GenerationEvent += OnProgressReport.Invoke;
 
         var result = await Task.Run(() => generator.GeneratePrograms(machines, batch, ""));
