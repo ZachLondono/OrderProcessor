@@ -77,7 +77,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
                 { "Side1Color", FrontMaterial.Name },
                 { "Side1Material", "" },
                 { "CabinetNumber", productNumber.ToString() },
-
+                { "Cabinet Number", productNumber.ToString() }
             },
             PrimaryFace = new() {
                 ProgramName = $"Front{productNumber}",
@@ -112,6 +112,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
                 { "Side1Color", BackMaterial.Name },
                 { "Side1Material", "" },
                 { "CabinetNumber", productNumber.ToString() },
+                { "Cabinet Number", productNumber.ToString() }
             },
             PrimaryFace = new() {
                 ProgramName = $"Back{productNumber}",
@@ -167,6 +168,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
                 { "Side1Color", SideMaterial.Name },
                 { "Side1Material", "" },
                 { "CabinetNumber", productNumber.ToString() },
+                { "Cabinet Number", productNumber.ToString() }
             },
             PrimaryFace = new() {
                 ProgramName = $"Left{productNumber}",
@@ -195,6 +197,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
                 { "Side1Color", SideMaterial.Name },
                 { "Side1Material", "" },
                 { "CabinetNumber", productNumber.ToString() },
+                { "Cabinet Number", productNumber.ToString() }
             },
             PrimaryFace = new() {
                 ProgramName = $"Right{productNumber}",
@@ -328,6 +331,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
                 { "Side1Color", bottom.Material.Name },
                 { "Side1Material", "" },
                 { "CabinetNumber", bottom.ProductNumber.ToString() },
+                { "Cabinet Number", bottom.ProductNumber.ToString() }
             },
             PrimaryFace = new() {
                 ProgramName = $"Bottom{bottom.ProductNumber}",
