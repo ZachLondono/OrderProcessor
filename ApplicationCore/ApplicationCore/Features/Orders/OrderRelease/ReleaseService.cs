@@ -416,6 +416,9 @@ public class ReleaseService {
 
             var programs = machineResult.MaterialGCodeGenerationResults
                         .SelectMany(genResult => {
+
+                            var labelsByPartId = genResult.PartLabels.ToDictionary(pl => pl.PartId, pl => pl.Fields);
+
                             return genResult.ProgramNames
                                     .Select((program, idx) => {
 
@@ -442,8 +445,7 @@ public class ReleaseService {
                                             },
                                             Parts = parts.Select(placedPart => {
 
-                                                // TODO: get label data from result
-                                                Dictionary<string, string> label = new();
+                                                var label = labelsByPartId[placedPart.PartId];
 
                                                 return new NestedPart() {
                                                     Name = placedPart.Name,
@@ -454,13 +456,16 @@ public class ReleaseService {
                                                     Width = Dimension.FromMillimeters(placedPart.Width),
                                                     Length = Dimension.FromMillimeters(placedPart.Length),
                                                     Description = label.GetValueOrEmpty("Description"),
-                                                    Center = new(placedPart.InsertionPoint.X, placedPart.InsertionPoint.Y), // TODO: may need to change insertion point based on part rotation
+                                                    Center = new() {
+                                                        X = placedPart.InsertionPoint.X + (placedPart.IsRotated ? placedPart.Width : placedPart.Length) / 2,
+                                                        Y = placedPart.InsertionPoint.Y + (placedPart.IsRotated ? placedPart.Length : placedPart.Width) / 2
+                                                    },
                                                     ProductNumber = label.GetValueOrEmpty("Cabinet Number"),
                                                     ProductId = Guid.Empty, // TODO: find a way to get thr product id
-                                                    PartId = "", //placedPart.Id, TODO: get id from result
+                                                    PartId = placedPart.PartId.ToString(), //placedPart.Id, TODO: get id from result
                                                     IsRotated = placedPart.IsRotated,
                                                     HasBackSideProgram = false,
-                                                    Note = "",
+                                                    Note = label.GetValueOrEmpty("PEFinishedSide")
                                                 };
                                             })
                                             .ToList()
@@ -474,6 +479,9 @@ public class ReleaseService {
                 TableOrientation.Rotated => ApplicationCore.Shared.CNC.Domain.TableOrientation.Rotated,
                 TableOrientation.Standard or _ => ApplicationCore.Shared.CNC.Domain.TableOrientation.Standard
             };
+
+
+            // TODO: add single programs and tool table
 
             return new MachineRelease() {
                 MachineName = machineResult.MachineName,
