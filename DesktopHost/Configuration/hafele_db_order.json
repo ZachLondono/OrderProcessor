@@ -1,0 +1,11 @@
+{
+  "hafele_db_order": {
+
+    "vendor_id": "38dc201f-669d-41be-b0f4-adfa4c003a99",
+    "front_back_thickness_mm": 15.875,
+    "side_thickness_mm": 15.875,
+    "bottom_thickness_mm": 15.875,
+    "front_back_height_adj_mm": 1
+
+  }
+}
