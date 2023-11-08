@@ -1,0 +1,7 @@
+﻿.progress {
+  border: none;
+}
+
+progress::-webkit-progress-value {
+    background: blue;
+}

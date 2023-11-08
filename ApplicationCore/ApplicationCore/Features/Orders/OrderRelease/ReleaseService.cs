@@ -35,6 +35,9 @@ namespace ApplicationCore.Features.Orders.OrderRelease;
 
 public class ReleaseService {
 
+    public System.Action ShowProgressBar;
+    public System.Action HideProgressBar;
+    public Action<int>? SetProgressBarValue;
     public Action<string>? OnProgressReport;
     public Action<string>? OnFileGenerated;
     public Action<string>? OnError;
@@ -329,7 +332,7 @@ public class ReleaseService {
 
     }
 
-    private static async Task<ReleasedJob?> GenerateGCode(Order order, string customerName, string vendorName) {
+    private async Task<ReleasedJob?> GenerateGCode(Order order, string customerName, string vendorName) {
 
         // TODO: Move ReleasedJob out of WSXML namespace
 
@@ -385,10 +388,18 @@ public class ReleaseService {
                 Priority = 1,
             }));
 
+        ShowProgressBar?.Invoke();
+
+        if (SetProgressBarValue is not null) generator.CADCodeProgressEvent += SetProgressBarValue.Invoke;
+        //if (OnError is not null) generator.CADCodeErrorEvent += (msg) => OnError.Invoke(msg);
+        if (OnProgressReport is not null) generator.GenerationEvent += OnProgressReport.Invoke;
+
         var result = await Task.Run(() => generator.GeneratePrograms(machines, batch, ""));
         DateTime timestamp = DateTime.Now;
 
-        string GetImageFileName(string patternName) {
+        HideProgressBar?.Invoke();
+
+        static string GetImageFileName(string patternName) {
 
             int idx = patternName.IndexOf('.');
             if (idx < 0) {
@@ -423,8 +434,8 @@ public class ReleaseService {
                                             HasFace6 = false,
                                             Material = new() {
                                                 Name = genResult.MaterialName,
-                                                Width = currentOrientation == TableOrientation.Rotated ? inventory.Length : inventory.Width,
-                                                Length = currentOrientation == TableOrientation.Rotated ? inventory.Width : inventory.Length,
+                                                Width = inventory.Width,
+                                                Length = inventory.Length,
                                                 Thickness = inventory.Thickness,
                                                 IsGrained = inventory.IsGrained,
                                                 Yield = yield

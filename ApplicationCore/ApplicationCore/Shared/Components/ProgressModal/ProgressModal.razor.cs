@@ -19,6 +19,12 @@ public partial class ProgressModal {
     [CascadingParameter]
     private BlazoredModalInstance? BlazoredModal { get; set; }
 
+    [Parameter]
+    public bool ShowProgressBar { get; set; } = false;
+
+    [Parameter]
+    public int ProgressValue { get; set; } = 0;
+
     private readonly List<ProgressLogMessage> _messages = new();
     private ElementReference? _messageBox;
 
@@ -29,7 +35,27 @@ public partial class ProgressModal {
     protected override async Task OnInitializedAsync() {
 
         if (ActionRunner is not null) {
+
             ActionRunner.PublishProgressMessage += AddMessageToLog;
+            ActionRunner.SetProgressBarValue += val => {
+                InvokeAsync(() => {
+                    ProgressValue = val;
+                    StateHasChanged();
+                });
+            };
+            ActionRunner.ShowProgressBar += () => {
+                InvokeAsync(() => {
+                    ShowProgressBar = true;
+                    StateHasChanged();
+                });
+            };
+            ActionRunner.HideProgressBar += () => {
+                InvokeAsync(() => {
+                    ShowProgressBar = false;
+                    StateHasChanged();
+                });
+            };
+
             await DataContext.RunAction(ActionRunner);
         }
 

@@ -17,6 +17,11 @@
     }
 </div>
 
+@if (ShowProgressBar) {
+    <div class="mb-3">
+        <progress value="@ProgressValue" max="100" class="w-full " />
+    </div>
+}
 
 @if (_messages.Any()) {
     <div class="shadow-md max-h-48 w-full overflow-x-hidden overflow-y-scroll p-1.5 border border-gray-200" @ref="_messageBox">
