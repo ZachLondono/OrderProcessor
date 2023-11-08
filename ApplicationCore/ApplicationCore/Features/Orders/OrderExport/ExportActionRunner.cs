@@ -19,6 +19,9 @@ internal class ExportActionRunner : IActionRunner {
         _exportService.OnActionComplete += (msg) => PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Success, msg));
     }
 
+    public Action? ShowProgressBar { get; set; }
+    public Action? HideProgressBar { get; set; }
+    public Action<int>? SetProgressBarValue { get; set; }
     public Action<ProgressLogMessage>? PublishProgressMessage { get; set; }
 
     public async Task Run() => await _exportService.Export(_order, _configuration);
