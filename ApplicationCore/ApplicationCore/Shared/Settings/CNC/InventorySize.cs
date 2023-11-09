@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace ApplicationCore.Shared.Settings.CNCInventorySettings;
+namespace ApplicationCore.Shared.Settings.CNC;
 
 public class InventorySize {
 

@@ -1,0 +1,43 @@
+{
+  "cnc_settings": {
+
+    "machine_settings": {
+      "Omnitech Selexx": {
+        "tool_file": "Y:\\CADCode\\cfg\\Tool Files\\Royal Omnitech Fanuc-Smart names SMALL PARTS.mdb",
+        "is_table_rotated": true,
+        "nest_output_directory": "C:\\Users\\Zachary Londono\\Desktop\\CC Output",
+        "single_program_output_directory": "C:\\Users\\Zachary Londono\\Desktop\\CC Output",
+        "picture_output_directory": "C:\\Users\\Zachary Londono\\Desktop\\CC Output",
+        "label_database_output_directory": "C:\\Users\\Zachary Londono\\Desktop\\CC Output"
+      },
+      "Anderson Stratos": {
+        "tool_file": "Y:\\CADCode\\cfg\\Tool Files\\Andi Stratos Royal - Tools from Omni.mdb",
+        "is_table_rotated": false,
+        "nest_output_directory": "C:\\Users\\Zachary Londono\\Desktop\\CC Output",
+        "single_program_output_directory": "C:\\Users\\Zachary Londono\\Desktop\\CC Output",
+        "picture_output_directory": "C:\\Users\\Zachary Londono\\Desktop\\CC Output",
+        "label_database_output_directory": "C:\\Users\\Zachary Londono\\Desktop\\CC Output"
+      }
+    },
+
+    "default_inventory_size": {
+      "width": 1245,
+      "length": 2464
+    },
+
+    "inventory": {
+
+      "White Mela MDF-3/4": {
+        "thickenss": 19.00,
+        "sizes": [
+          {
+            "width": 1245,
+            "length": 2464,
+            "priority": 1
+          }
+        ]
+      }
+
+    }
+  }
+}

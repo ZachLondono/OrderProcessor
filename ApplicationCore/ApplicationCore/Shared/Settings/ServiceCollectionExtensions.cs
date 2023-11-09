@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Shared.Settings.CNCInventorySettings;
+﻿using ApplicationCore.Shared.Settings.CNC;
 using ApplicationCore.Shared.Settings.Tools;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +22,7 @@ public static class Extensions {
             "five_piece_doors.json",
             "doweled_drawer_boxes.json",
             "hafele_db_order.json",
-            "cnc_inventory.json",
+            "cnc_settings.json",
             "data.json",
             "data.Development.json"
     };
@@ -66,7 +66,7 @@ public static class Extensions {
         services.ConfigureWritable<DataFilePaths>(configuration.GetRequiredSection("data"), Path.Combine(_configDirectory, "data.json"));
 #endif
 
-        services.ConfigureWritable<CNCInventory>(configuration.GetRequiredSection("cnc_inventory"), Path.Combine(_configDirectory, "cnc_inventory.json"));
+        services.ConfigureWritable<CNCSettings>(configuration.GetRequiredSection("cnc_settings"), Path.Combine(_configDirectory, "cnc_settings.json"));
         services.ConfigureWritable<HafeleDBOrderProviderSettings>(configuration.GetRequiredSection("hafele_db_order"), Path.Combine(_configDirectory, "hafele_db_order.json"));
         services.ConfigureWritable<FivePieceDoorCutListSettings>(configuration.GetRequiredSection("five_piece_doors"), Path.Combine(_configDirectory, "five_piece_doors.json"));
         services.ConfigureWritable<DoweledDrawerBoxCutListSettings>(configuration.GetRequiredSection("doweled_drawer_boxes"), Path.Combine(_configDirectory, "doweled_drawer_boxes.json"));

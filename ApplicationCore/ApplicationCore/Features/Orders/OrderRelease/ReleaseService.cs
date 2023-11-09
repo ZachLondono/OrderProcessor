@@ -31,7 +31,7 @@ using CADCodeProxy.CNC;
 using CADCodeProxy.Machining;
 using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.CNC.ReleasePDF;
-using ApplicationCore.Shared.Settings.CNCInventorySettings;
+using ApplicationCore.Shared.Settings.CNC;
 using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
@@ -59,9 +59,9 @@ public class ReleaseService {
     private readonly IWSXMLParser _wsxmlParser;
     private readonly IFivePieceDoorCutListWriter _fivePieceDoorCutListWriter;
     private readonly IDoweledDrawerBoxCutListWriter _doweledDrawerBoxCutListWriter;
-    private readonly CNCInventory _cncInventory;
+    private readonly CNCSettings _cncSettings;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IDovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, IOptions<CNCInventory> inventoryOptions) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IDovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, IOptions<CNCSettings> cncSettingsOptions) {
         _fileReader = fileReader;
         _invoiceDecoratorFactory = invoiceDecoratorFactory;
         _packingListDecoratorFactory = packingListDecoratorFactory;
@@ -73,7 +73,7 @@ public class ReleaseService {
         _emailService = emailService;
         _wsxmlParser = wsxmlParser;
         _dovetailDBPackingListDecoratorFactory = dovetailDBPackingListDecoratorFactory;
-        _cncInventory = inventoryOptions.Value;
+        _cncSettings = cncSettingsOptions.Value;
         _fivePieceDoorCutListWriter = fivePieceDoorCutListWriter;
         _doweledDrawerBoxCutListWriter = doweledDrawerBoxCutListWriter;
 
@@ -351,27 +351,16 @@ public class ReleaseService {
             return null;
         }
 
-        // TODO: get machine info from a config file
-        var machines = new List<Machine>() {
-            new() {
-                Name = "Anderson Stratos",
-                TableOrientation = TableOrientation.Standard,
-                NestOutputDirectory = @"C:\Users\Zachary Londono\Desktop\CC Output",
-                SingleProgramOutputDirectory = @"C:\Users\Zachary Londono\Desktop\CC Output",
-                ToolFilePath = @"Y:\CADCode\cfg\Tool Files\Andi Stratos Royal - Tools from Omni.mdb",
-                PictureOutputDirectory = @"C:\Users\Zachary Londono\Desktop\CC Output",
-                LabelDatabaseOutputDirectory = @"C:\Users\Zachary Londono\Desktop\CC Output",
-            },
-            new() {
-                Name = "Omnitech Selexx",
-                TableOrientation = TableOrientation.Rotated,
-                NestOutputDirectory = @"C:\Users\Zachary Londono\Desktop\CC Output",
-                SingleProgramOutputDirectory = @"C:\Users\Zachary Londono\Desktop\CC Output",
-                ToolFilePath = @"Y:\CADCode\cfg\Tool Files\Royal Omnitech Fanuc-Smart names SMALL PARTS.mdb",
-                PictureOutputDirectory = @"C:\Users\Zachary Londono\Desktop\CC Output",
-                LabelDatabaseOutputDirectory = @"C:\Users\Zachary Londono\Desktop\CC Output",
-            }
-        };
+        var machines = _cncSettings.MachineSettings
+                                    .Select(kv => new Machine() {
+                                        Name = kv.Key,
+                                        TableOrientation = TableOrientation.Standard,
+                                        ToolFilePath = kv.Value.ToolFile,
+                                        NestOutputDirectory = kv.Value.NestOutputDirectory,
+                                        SingleProgramOutputDirectory = kv.Value.SingleProgramOutputDirectory,
+                                        PictureOutputDirectory = kv.Value.PictureOutputDirectory,
+                                        LabelDatabaseOutputDirectory = kv.Value.LabelDatabaseOutputDirectory,
+                                    });
 
         Batch batch = new() {
             Name = $"{order.Number} - {order.Name}",
@@ -381,13 +370,13 @@ public class ReleaseService {
 
         var generator = new GCodeGenerator(CADCodeProxy.Enums.LinearUnits.Millimeters);
 
-        var defaultInventorySize = _cncInventory.DefaultSize;
+        var defaultInventorySize = _cncSettings.DefaultInventorySize;
 
         parts.Select(p => (p.Material, p.Thickness))
             .Distinct()
             .ForEach(material => {
 
-                if (_cncInventory.Inventory.TryGetValue(material.Material, out var item)
+                if (_cncSettings.Inventory.TryGetValue(material.Material, out var item)
                     && item.Thickness == material.Thickness) {
 
                     item.Sizes
@@ -447,8 +436,6 @@ public class ReleaseService {
         }
 
         var releases = result.MachineResults.Select(machineResult => {
-
-            var currentOrientation = (machines.FirstOrDefault(m => m.Name == machineResult.MachineName)?.TableOrientation ?? TableOrientation.Standard);
 
             var programs = machineResult.MaterialGCodeGenerationResults
                         .SelectMany(genResult => {
@@ -516,13 +503,11 @@ public class ReleaseService {
 
                         });
 
-            ApplicationCore.Shared.CNC.Domain.TableOrientation orientation = (machines.FirstOrDefault(m => m.Name == machineResult.MachineName)?.TableOrientation ?? TableOrientation.Standard) switch {
-                TableOrientation.Rotated => ApplicationCore.Shared.CNC.Domain.TableOrientation.Rotated,
-                TableOrientation.Standard or _ => ApplicationCore.Shared.CNC.Domain.TableOrientation.Standard
-            };
-
-
             // TODO: add single programs and tool table
+            var orientation = ApplicationCore.Shared.CNC.Domain.TableOrientation.Standard;
+            if (_cncSettings.MachineSettings.TryGetValue(machineResult.MachineName, out var settings) && settings.IsTableRotated) {
+                orientation = ApplicationCore.Shared.CNC.Domain.TableOrientation.Rotated;
+            }
 
             return new MachineRelease() {
                 MachineName = machineResult.MachineName,
