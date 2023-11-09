@@ -77,8 +77,8 @@ public class ReleaseService {
         _fivePieceDoorCutListWriter = fivePieceDoorCutListWriter;
         _doweledDrawerBoxCutListWriter = doweledDrawerBoxCutListWriter;
 
-        _fivePieceDoorCutListWriter.OnError += OnError;
-        _doweledDrawerBoxCutListWriter.OnError += OnError;
+        _fivePieceDoorCutListWriter.OnError += (msg) => OnError?.Invoke(msg);
+        _doweledDrawerBoxCutListWriter.OnError += (msg) => OnError?.Invoke(msg);
     }
 
     public async Task Release(List<Order> orders, ReleaseConfiguration configuration) {
