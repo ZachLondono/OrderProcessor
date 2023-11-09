@@ -10,6 +10,7 @@ using ApplicationCore.Shared.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Office.Interop.Excel;
+using System.Runtime.InteropServices;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData;
 
@@ -47,6 +48,7 @@ internal class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
         }
         Microsoft.Office.Interop.Excel.Application? app = null;
         Workbook? workbook = null;
+        Workbooks? workbooks = null;
 
         try {
 
@@ -55,7 +57,8 @@ internal class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
                 Visible = false
             };
 
-            workbook = app.Workbooks.Open(source, ReadOnly: true);
+            workbooks = app.Workbooks;
+            workbook = workbooks.Open(source, ReadOnly: true);
 
             Worksheet? orderSheet = (Worksheet?)workbook.Worksheets["Dowel Order"];
             Worksheet? specSheet = (Worksheet?)workbook.Worksheets["Dowel Specs"];
@@ -139,7 +142,12 @@ internal class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
         } finally {
 
             workbook?.Close(SaveChanges: false);
+            workbooks?.Close();
             app?.Quit();
+
+            if (workbook is not null) _ = Marshal.ReleaseComObject(workbook);
+            if (workbooks is not null) _ = Marshal.ReleaseComObject(workbooks);
+            if (app is not null) _ = Marshal.ReleaseComObject(app);
 
             // Clean up COM objects, calling these twice ensures it is fully cleaned up.
             GC.Collect();
