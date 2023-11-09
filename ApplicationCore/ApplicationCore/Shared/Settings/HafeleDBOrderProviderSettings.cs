@@ -7,14 +7,8 @@ public class HafeleDBOrderProviderSettings {
     [ConfigurationKeyName("vendor_id")]
     public Guid VendorId { get; set; }
 
-    [ConfigurationKeyName("front_back_thickness_mm")]
-    public double FrontBackThicknessMM { get; set; }
-
-    [ConfigurationKeyName("side_thickness_mm")]
-    public double SideThicknessMM { get; set; }
-
-    [ConfigurationKeyName("bottom_thickness_mm")]
-    public double BottomThicknessMM { get; set; }
+    [ConfigurationKeyName("material_thicknesses_mm")]
+    public Dictionary<string, double> MaterialThicknessesMM { get; set; } = new();
 
     [ConfigurationKeyName("front_back_height_adj_mm")]
     public double FrontBackHeightAdjMM { get; set; }

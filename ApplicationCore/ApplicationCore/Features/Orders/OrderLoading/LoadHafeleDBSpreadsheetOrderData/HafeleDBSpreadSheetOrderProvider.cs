@@ -169,13 +169,22 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 
     public IEnumerable<IProduct> MapLineItemsToProduct(IEnumerable<LineItem> lineItems, string boxMaterialName, bool metric) {
 
-        var frontBackThickness = Dimension.FromMillimeters(_settings.FrontBackThicknessMM);
-        var sideThickness = Dimension.FromMillimeters(_settings.SideThicknessMM);
-        var bottomThickness = Dimension.FromMillimeters(_settings.BottomThicknessMM);
+        if (!_settings.MaterialThicknessesMM.TryGetValue(boxMaterialName, out var materialThicknessMM)) {
+            throw new InvalidOperationException($"Material thickness not configured for '{boxMaterialName}'");
+        }
+
+        var frontBackThickness = Dimension.FromMillimeters(materialThicknessMM);
+        var sideThickness = Dimension.FromMillimeters(materialThicknessMM);
         var frontBackHeightAdj = Dimension.FromMillimeters(_settings.FrontBackHeightAdjMM);
 
         return lineItems.Select(
             item => {
+
+                if (!_settings.MaterialThicknessesMM.TryGetValue(item.BottomMaterial, out var bottomThicknessMM)) {
+                    throw new InvalidOperationException($"Material thickness not configured for '{item.BottomMaterial}'");
+                }
+
+                var bottomThickness = Dimension.FromMillimeters(bottomThicknessMM);
 
                 Func<double, Dimension> dimConvert = metric ? Dimension.FromMillimeters : Dimension.FromInches;
 
