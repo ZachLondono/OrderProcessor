@@ -31,6 +31,8 @@ using CADCodeProxy.CNC;
 using CADCodeProxy.Machining;
 using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.CNC.ReleasePDF;
+using ApplicationCore.Shared.Settings.CNCInventorySettings;
+using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -57,8 +59,9 @@ public class ReleaseService {
     private readonly IWSXMLParser _wsxmlParser;
     private readonly IFivePieceDoorCutListWriter _fivePieceDoorCutListWriter;
     private readonly IDoweledDrawerBoxCutListWriter _doweledDrawerBoxCutListWriter;
+    private readonly CNCInventory _cncInventory;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IDovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IDovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, IOptions<CNCInventory> inventoryOptions) {
         _fileReader = fileReader;
         _invoiceDecoratorFactory = invoiceDecoratorFactory;
         _packingListDecoratorFactory = packingListDecoratorFactory;
@@ -70,6 +73,7 @@ public class ReleaseService {
         _emailService = emailService;
         _wsxmlParser = wsxmlParser;
         _dovetailDBPackingListDecoratorFactory = dovetailDBPackingListDecoratorFactory;
+        _cncInventory = inventoryOptions.Value;
         _fivePieceDoorCutListWriter = fivePieceDoorCutListWriter;
         _doweledDrawerBoxCutListWriter = doweledDrawerBoxCutListWriter;
 
@@ -377,17 +381,48 @@ public class ReleaseService {
 
         var generator = new GCodeGenerator(CADCodeProxy.Enums.LinearUnits.Millimeters);
 
+        var defaultInventorySize = _cncInventory.DefaultSize;
+
         parts.Select(p => (p.Material, p.Thickness))
             .Distinct()
-            .ForEach(material => generator.Inventory.Add(new() {
-                MaterialName = material.Material,
-                AvailableQty = 10,
-                IsGrained = true,
-                PanelLength = 2000,
-                PanelWidth = 1000,
-                PanelThickness = material.Thickness,
-                Priority = 1,
-            }));
+            .ForEach(material => {
+
+                if (_cncInventory.Inventory.TryGetValue(material.Material, out var item)
+                    && item.Thickness == material.Thickness) {
+
+                    item.Sizes
+                        .ForEach(size => {
+
+                            var invItem = new CADCodeProxy.CNC.InventoryItem() {
+                                MaterialName = material.Material,
+                                AvailableQty = 9999,
+                                IsGrained = true,
+                                PanelLength = size.Length,
+                                PanelWidth = size.Width,
+                                PanelThickness = material.Thickness,
+                                Priority = size.Priority,
+                            };
+
+                            generator.Inventory.Add(invItem);
+
+                        });
+
+                } else {
+
+                    var invItem = new CADCodeProxy.CNC.InventoryItem() {
+                        MaterialName = material.Material,
+                        AvailableQty = 9999,
+                        IsGrained = true,
+                        PanelLength = defaultInventorySize.Length,
+                        PanelWidth = defaultInventorySize.Width,
+                        PanelThickness = material.Thickness,
+                        Priority = 1,
+                    };
+                    generator.Inventory.Add(invItem);
+
+                }
+
+            });
 
         ShowProgressBar?.Invoke();
 
