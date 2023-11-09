@@ -9,7 +9,7 @@ public class WorkbookOrderData {
     public required OrderDetails OrderDetails{ get; set; }
     public required GlobalDrawerSpecs GlobalDrawerSpecs{ get; set; }
     public required LineItem[] Items { get; set; }
-    public required string OrderCommnets { get; set; }
+    public required string OrderComments { get; set; }
 
     public static WorkbookOrderData? ReadWorkbook(Workbook workbook) {
 
@@ -21,18 +21,19 @@ public class WorkbookOrderData {
         var contact = ContactInformation.ReadFromSheet(orderSheet);
         var details = OrderDetails.ReadFromSheet(orderSheet);
         var specs = GlobalDrawerSpecs.ReadFromSheet(orderSheet);
-        string orderCommnets = orderSheet.GetRangeValueOrDefault("N12", "");
+        string orderComments = orderSheet.GetRangeValueOrDefault("N12", "");
 
         List<LineItem> items = new();
 
         int rowOffset = 1;
         while (true) {
 
-            if (string.IsNullOrEmpty(orderSheet.GetRangeOffsetValueOrDefault("DovetailQtyCol", string.Empty, rowOffset))) {
+            if (orderSheet.GetRangeOffsetValueOrDefault("DovetailQtyCol", 0.0, rowOffset) == 0) {
                 break;
             }
 
-            items.Add(LineItem.ReadFromSheet(orderSheet, rowOffset));
+            var item = LineItem.ReadFromSheet(orderSheet, rowOffset);
+            items.Add(item);
 
             rowOffset ++;
 
@@ -43,7 +44,7 @@ public class WorkbookOrderData {
             OrderDetails = details,
             GlobalDrawerSpecs = specs,
             Items = items.ToArray(),
-            OrderCommnets = orderCommnets
+            OrderComments = orderComments
         };
 
     }

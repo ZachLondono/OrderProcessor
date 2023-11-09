@@ -138,7 +138,7 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
             WorkingDirectory = workingDirectory,
             OrderDate = workbookData.OrderDetails.OrderDate,
             VendorId = _settings.VendorId,
-            Comment = workbookData.OrderCommnets,
+            Comment = workbookData.OrderComments,
             Info = new() {
                 { "Hafele PO", workbookData.OrderDetails.HafelePO },
                 { "Hafele Order Number", workbookData.OrderDetails.HafeleOrderNumber },

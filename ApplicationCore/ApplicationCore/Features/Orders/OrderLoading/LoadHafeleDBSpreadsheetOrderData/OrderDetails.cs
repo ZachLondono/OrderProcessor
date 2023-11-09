@@ -19,10 +19,10 @@ public class OrderDetails {
 
     public static OrderDetails ReadFromSheet(Worksheet sheet) {
 
-        var orderDateStr = sheet.GetRangeValueOrDefault<string>("OrderDate", "UNKNOWN");
+        double orderDate = sheet.GetRangeValueOrDefault("OrderDate", 0.0);
 
         return new() {
-            OrderDate = DateTime.FromOADate(double.Parse(orderDateStr)),
+            OrderDate = DateTime.FromOADate(orderDate),
             Company = sheet.GetRangeValueOrDefault("Company", "UNKNOWN"),
             LabelName = sheet.GetRangeValueOrDefault("LabelName", "UNKNOWN"),
             OrderContact = sheet.GetRangeValueOrDefault("OrderContact", "UNKNOWN"),

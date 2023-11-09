@@ -29,10 +29,10 @@ public class LineItem {
 
         return new() {
             Line = sheet.GetRangeOffsetValueOrDefault("A16", 1, rowOffset),
-            Qty = sheet.GetRangeOffsetValueOrDefault("DovetailQtyCol", 0, rowOffset),
-            Height = sheet.GetRangeOffsetValueOrDefault("DovetailHeightCol", 0, rowOffset),
-            Width = sheet.GetRangeOffsetValueOrDefault("DovetailWidthCol", 0, rowOffset),
-            Depth = sheet.GetRangeOffsetValueOrDefault("DovetailDepthCol", 0, rowOffset),
+            Qty = (int) sheet.GetRangeOffsetValueOrDefault("DovetailQtyCol", 0.0, rowOffset),
+            Height = sheet.GetRangeOffsetValueOrDefault("DovetailHeightCol", 0.0, rowOffset),
+            Width = sheet.GetRangeOffsetValueOrDefault("DovetailWidthCol", 0.0, rowOffset),
+            Depth = sheet.GetRangeOffsetValueOrDefault("DovetailDepthCol", 0.0, rowOffset),
             PullOut = sheet.GetRangeOffsetValueOrDefault("I16", "UNKNOWN", rowOffset),
             BottomMaterial = sheet.GetRangeOffsetValueOrDefault("J16", "UNKNOWN", rowOffset),
             Notch = sheet.GetRangeOffsetValueOrDefault("K16", "UNKNOWN", rowOffset),
@@ -40,13 +40,13 @@ public class LineItem {
             Clips = sheet.GetRangeOffsetValueOrDefault("M16", "UNKNOWN", rowOffset),
             Accessory = sheet.GetRangeOffsetValueOrDefault("DovetailAccessoryCol", "UNKNOWN", rowOffset),
             JobName = sheet.GetRangeOffsetValueOrDefault("O16", "UNKNOWN", rowOffset),
-            UnitPrice = sheet.GetRangeOffsetValueOrDefault("DovetailUnitPriceCol", 0M, rowOffset),
+            UnitPrice = (decimal) sheet.GetRangeOffsetValueOrDefault("DovetailUnitPriceCol", 0.0, rowOffset),
             LabelNote = sheet.GetRangeOffsetValueOrDefault("S16", "", rowOffset),
-            UBoxA = sheet.GetRangeOffsetValueOrDefault("U16", 0, rowOffset),
-            UBoxB = sheet.GetRangeOffsetValueOrDefault("V16", 0, rowOffset),
-            UBoxC = sheet.GetRangeOffsetValueOrDefault("W16", 0, rowOffset),
-            DividerOpeningsLeftToRight = sheet.GetRangeOffsetValueOrDefault("DovetailLeftRightOpeningCol", 0, rowOffset),
-            DividerOpeningsFrontToBack = sheet.GetRangeOffsetValueOrDefault("DovetailFrontBackOpeningCol", 0, rowOffset)
+            UBoxA = sheet.GetRangeOffsetValueOrDefault("U16", 0.0, rowOffset),
+            UBoxB = sheet.GetRangeOffsetValueOrDefault("V16", 0.0, rowOffset),
+            UBoxC = sheet.GetRangeOffsetValueOrDefault("W16", 0.0, rowOffset),
+            DividerOpeningsLeftToRight = (int) sheet.GetRangeOffsetValueOrDefault("DovetailLeftRightOpeningCol", 0.0, rowOffset),
+            DividerOpeningsFrontToBack = (int) sheet.GetRangeOffsetValueOrDefault("DovetailFrontBackOpeningCol", 0.0, rowOffset)
         };
 
     }
