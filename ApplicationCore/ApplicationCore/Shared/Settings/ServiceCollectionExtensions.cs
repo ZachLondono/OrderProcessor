@@ -20,6 +20,7 @@ public static class Extensions {
             "tools.json",
             "five_piece_doors.json",
             "doweled_drawer_boxes.json",
+            "hafele_db_order.json",
             "data.json",
             "data.Development.json"
     };
@@ -63,6 +64,7 @@ public static class Extensions {
         services.ConfigureWritable<DataFilePaths>(configuration.GetRequiredSection("data"), Path.Combine(_configDirectory, "data.json"));
 #endif
 
+        services.ConfigureWritable<HafeleDBOrderProviderSettings>(configuration.GetRequiredSection("hafele_db_order"), Path.Combine(_configDirectory, "hafele_db_order.json"));
         services.ConfigureWritable<FivePieceDoorCutListSettings>(configuration.GetRequiredSection("five_piece_doors"), Path.Combine(_configDirectory, "five_piece_doors.json"));
         services.ConfigureWritable<DoweledDrawerBoxCutListSettings>(configuration.GetRequiredSection("doweled_drawer_boxes"), Path.Combine(_configDirectory, "doweled_drawer_boxes.json"));
         services.ConfigureWritable<ToolConfiguration>(configuration.GetRequiredSection("tools"), Path.Combine(_configDirectory, "tools.json"));

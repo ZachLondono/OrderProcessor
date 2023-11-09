@@ -6,6 +6,11 @@ public partial record PSIMaterial(string Side1Color, string Side1FinishType, str
 
     public static bool TryParse(string materialName, out PSIMaterial material) {
 
+        /*
+         *  PSI Material Format
+         *  Grained[2 Spaces][Side 1 Color][1 Space][Mela / Veneer][5 Spaces][Thickness w/ 2 decimal places][1 Space][PB / Ply / Flake / MDF Dr Core][2 Spaces][Side 2 Color][1 Space][Mela / Veneer]
+         */
+
         var regex = PSIMaterialNamePatternRegex();
 
         material = new("", "", "", "", "", 0);

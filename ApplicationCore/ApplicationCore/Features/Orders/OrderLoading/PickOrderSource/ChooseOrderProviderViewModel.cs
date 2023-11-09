@@ -4,6 +4,7 @@ using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadCl
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProWebOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadDoorSpreadsheetOrderData.DoorOrderModels;
 using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData.Models;
+using ApplicationCore.Features.Orders.OrderLoading.LoadHafeleDBSpreadsheetOrderData;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 
@@ -49,6 +50,12 @@ internal class ChooseOrderProviderViewModel {
                 SourceType = OrderSourceType.ClosetOrderForm,
                 DialogTitle = "Select Closet Order Spreadsheet",
                 SourcePickerDialogType = typeof(GetClosetOrderSpreadsheetPathDialog)
+            },
+            new() {
+                Name = "Hafele Dowel DB",
+                SourceType = OrderSourceType.HafeleDBOrderForm,
+                DialogTitle = "Select Hafele Order Spreadsheet",
+                SourcePickerDialogType = typeof(GetHafeleDBOrderSpreadsheetPathDialog)
             }
             //new() {
             //    Name = "Door Spreadsheet",

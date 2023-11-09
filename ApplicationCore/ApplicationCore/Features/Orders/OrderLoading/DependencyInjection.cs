@@ -13,6 +13,7 @@ using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadCl
 using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData.Models;
 using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadsheetOrderData;
+using ApplicationCore.Features.Orders.OrderLoading.LoadHafeleDBSpreadsheetOrderData;
 
 namespace ApplicationCore.Features.Orders.OrderLoading;
 
@@ -27,6 +28,7 @@ internal static class DependencyInjection {
         services.Configure<DoweledDBOrderProviderOptions>(configuration.GetRequiredSection("DoweledDBOrderProviderOptions"));
 
         services.AddTransient<IOrderProviderFactory, OrderProviderFactory>();
+        services.AddTransient<HafeleDBSpreadSheetOrderProvider>();
         services.AddTransient<AllmoxyWebXMLOrderProvider>();
         services.AddTransient<AllmoxyFileXMLOrderProvider>();
         services.AddTransient<ClosetProFileCSVOrderProvider>();
