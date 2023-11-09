@@ -25,11 +25,20 @@ using ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DoweledDrawerBoxCutList;
 using ApplicationCore.Features.Orders.Shared.Domain.Components;
+using CADCodeProxy;
+using ApplicationCore.Shared.Domain;
+using CADCodeProxy.CNC;
+using CADCodeProxy.Machining;
+using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.CNC.ReleasePDF;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
 public class ReleaseService {
 
+    public System.Action ShowProgressBar;
+    public System.Action HideProgressBar;
+    public Action<int>? SetProgressBarValue;
     public Action<string>? OnProgressReport;
     public Action<string>? OnFileGenerated;
     public Action<string>? OnError;
@@ -135,6 +144,19 @@ public class ReleaseService {
                 }
 
             }
+        }
+
+        if (configuration.GenerateCNCGCode) {
+
+            foreach (var order in orders) {
+                var gCodeRelease = await GenerateGCode(order, customerName, vendorName);
+                if (gCodeRelease is not null) {
+                    releases.Add(gCodeRelease);
+                    var decorator = _cncReleaseDecoratorFactory.Create(gCodeRelease);
+                    cncReleaseDecorators.Add(decorator);
+                }
+            }
+            
         }
 
         List<string> additionalPDFs = new(configuration.AdditionalFilePaths);
@@ -308,6 +330,185 @@ public class ReleaseService {
         } else {
             OnProgressReport?.Invoke("Not sending release email");
         }
+
+    }
+
+    private async Task<ReleasedJob?> GenerateGCode(Order order, string customerName, string vendorName) {
+
+        // TODO: Move ReleasedJob out of WSXML namespace
+
+        var parts = order.Products
+                        .OfType<ICNCPartContainer>()
+                        .Where(p => p.ContainsCNCParts())
+                        .SelectMany(p => p.GetCNCParts(customerName))
+                        .ToArray();
+        
+        if (!parts.Any()) {
+            return null;
+        }
+
+        // TODO: get machine info from a config file
+        var machines = new List<Machine>() {
+            new() {
+                Name = "Anderson Stratos",
+                TableOrientation = TableOrientation.Standard,
+                NestOutputDirectory = @"C:\Users\Zachary Londono\Desktop\CC Output",
+                SingleProgramOutputDirectory = @"C:\Users\Zachary Londono\Desktop\CC Output",
+                ToolFilePath = @"Y:\CADCode\cfg\Tool Files\Andi Stratos Royal - Tools from Omni.mdb",
+                PictureOutputDirectory = @"C:\Users\Zachary Londono\Desktop\CC Output",
+                LabelDatabaseOutputDirectory = @"C:\Users\Zachary Londono\Desktop\CC Output",
+            },
+            new() {
+                Name = "Omnitech Selexx",
+                TableOrientation = TableOrientation.Rotated,
+                NestOutputDirectory = @"C:\Users\Zachary Londono\Desktop\CC Output",
+                SingleProgramOutputDirectory = @"C:\Users\Zachary Londono\Desktop\CC Output",
+                ToolFilePath = @"Y:\CADCode\cfg\Tool Files\Royal Omnitech Fanuc-Smart names SMALL PARTS.mdb",
+                PictureOutputDirectory = @"C:\Users\Zachary Londono\Desktop\CC Output",
+                LabelDatabaseOutputDirectory = @"C:\Users\Zachary Londono\Desktop\CC Output",
+            }
+        };
+
+        Batch batch = new() {
+            Name = $"{order.Number} - {order.Name}",
+            Parts = parts,
+            InfoFields = new()
+        };
+
+        var generator = new GCodeGenerator(CADCodeProxy.Enums.LinearUnits.Millimeters);
+
+        parts.Select(p => (p.Material, p.Thickness))
+            .Distinct()
+            .ForEach(material => generator.Inventory.Add(new() {
+                MaterialName = material.Material,
+                AvailableQty = 10,
+                IsGrained = true,
+                PanelLength = 2000,
+                PanelWidth = 1000,
+                PanelThickness = material.Thickness,
+                Priority = 1,
+            }));
+
+        ShowProgressBar?.Invoke();
+
+        if (SetProgressBarValue is not null) generator.CADCodeProgressEvent += SetProgressBarValue.Invoke;
+        if (OnError is not null) generator.CADCodeErrorEvent += (msg) => OnError.Invoke(msg);
+        if (OnProgressReport is not null) generator.GenerationEvent += OnProgressReport.Invoke;
+
+        var result = await Task.Run(() => generator.GeneratePrograms(machines, batch, ""));
+        DateTime timestamp = DateTime.Now;
+
+        HideProgressBar?.Invoke();
+
+        static string GetImageFileName(string patternName) {
+
+            int idx = patternName.IndexOf('.');
+            if (idx < 0) {
+                return patternName;
+            }
+
+            return patternName[..idx];
+
+        }
+
+        var releases = result.MachineResults.Select(machineResult => {
+
+            var currentOrientation = (machines.FirstOrDefault(m => m.Name == machineResult.MachineName)?.TableOrientation ?? TableOrientation.Standard);
+
+            var programs = machineResult.MaterialGCodeGenerationResults
+                        .SelectMany(genResult => {
+
+                            var labelsByPartId = genResult.PartLabels.ToDictionary(pl => pl.PartId, pl => pl.Fields);
+
+                            return genResult.ProgramNames
+                                    .Select((program, idx) => {
+
+                                        var parts = genResult.PlacedParts.Where(p => p.ProgramIndex == idx).ToList();
+
+                                        int inventoryIndex = parts.First().UsedInventoryIndex; // TODO: get inventory index for program name
+                                        var inventory = genResult.UsedInventory[inventoryIndex];
+
+                                        var area = inventory.Width * inventory.Length;
+                                        var usedArea = parts.Sum(part => part.Width * part.Length);
+                                        var yield = usedArea / area;
+
+                                        string materialName = genResult.MaterialName;
+                                        if (PSIMaterial.TryParse(materialName, out var psiMat)) {
+                                            materialName = psiMat.GetSimpleName();
+                                        }
+
+                                        return new ReleasedProgram() {
+                                            Name = program,
+                                            ImagePath = @$"C:\Users\Zachary Londono\Desktop\CC Output\{GetImageFileName(program)}.wmf",
+                                            HasFace6 = false,
+                                            Material = new() {
+                                                Name = materialName,
+                                                Width = inventory.Width,
+                                                Length = inventory.Length,
+                                                Thickness = inventory.Thickness,
+                                                IsGrained = inventory.IsGrained,
+                                                Yield = yield
+                                            },
+                                            Parts = parts.Select(placedPart => {
+
+                                                var label = labelsByPartId[placedPart.PartId];
+
+                                                return new NestedPart() {
+                                                    Name = placedPart.Name,
+                                                    FileName = label.GetValueOrEmpty("Face5Filename"),
+                                                    HasFace6 = false,
+                                                    Face6FileName = null,
+                                                    ImageData = "",
+                                                    Width = Dimension.FromMillimeters(placedPart.Width),
+                                                    Length = Dimension.FromMillimeters(placedPart.Length),
+                                                    Description = label.GetValueOrEmpty("Description"),
+                                                    Center = new() {
+                                                        X = placedPart.InsertionPoint.X + (placedPart.IsRotated ? placedPart.Width : placedPart.Length) / 2,
+                                                        Y = placedPart.InsertionPoint.Y + (placedPart.IsRotated ? placedPart.Length : placedPart.Width) / 2
+                                                    },
+                                                    ProductNumber = label.GetValueOrEmpty("Cabinet Number"),
+                                                    ProductId = Guid.Empty, // TODO: find a way to get thr product id
+                                                    PartId = placedPart.PartId.ToString(), //placedPart.Id, TODO: get id from result
+                                                    IsRotated = placedPart.IsRotated,
+                                                    HasBackSideProgram = false,
+                                                    Note = label.GetValueOrEmpty("PEFinishedSide")
+                                                };
+                                            })
+                                            .ToList()
+                                        };
+
+                                    });
+
+                        });
+
+            ApplicationCore.Shared.CNC.Domain.TableOrientation orientation = (machines.FirstOrDefault(m => m.Name == machineResult.MachineName)?.TableOrientation ?? TableOrientation.Standard) switch {
+                TableOrientation.Rotated => ApplicationCore.Shared.CNC.Domain.TableOrientation.Rotated,
+                TableOrientation.Standard or _ => ApplicationCore.Shared.CNC.Domain.TableOrientation.Standard
+            };
+
+
+            // TODO: add single programs and tool table
+
+            return new MachineRelease() {
+                MachineName = machineResult.MachineName,
+                MachineTableOrientation = orientation,
+                ToolTable = new Dictionary<int, string>(),
+                Programs = programs,
+                SinglePrograms = Enumerable.Empty<SinglePartProgram>()
+            };
+
+        });
+
+        return new ReleasedJob() {
+            JobName = batch.Name,
+            CustomerName = customerName,
+            VendorName = vendorName,
+            TimeStamp = timestamp,
+            OrderDate = order.OrderDate,
+            ReleaseDate = DateTime.Today,
+            DueDate = order.DueDate,
+            Releases = releases
+        };
 
     }
 

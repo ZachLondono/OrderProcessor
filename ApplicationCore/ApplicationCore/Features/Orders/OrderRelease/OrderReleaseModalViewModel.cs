@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.Companies.Contracts;
+using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
@@ -57,6 +58,8 @@ public class OrderReleaseModalViewModel {
 
     public bool DoAnyOrdersContainDoweledDrawerBoxes { get; private set; }
 
+    public bool DoAnyOrdersContainCNCParts { get; private set; }
+
     private bool _includeSuppliesInSummary = false;
     private bool _isLoadingConfiguration = false;
     private bool _isReportLoadingFiles = false;
@@ -112,6 +115,7 @@ public class OrderReleaseModalViewModel {
         DoAnyOrdersContainDovetailDBs = orders.Any(order => order.Products.Any(p => p is DovetailDrawerBoxProduct));
         DoAnyOrdersContainFivePieceDoors = orders.Any(order => order.Products.Any(p => p is FivePieceDoorProduct));
         DoAnyOrdersContainDoweledDrawerBoxes = orders.Any(order => order.Products.Any(p => p is DoweledDrawerBoxProduct));
+        DoAnyOrdersContainCNCParts = orders.Any(order => order.Products.OfType<ICNCPartContainer>().Any(p => p.ContainsCNCParts()));
 
         Configuration = new ReleaseConfiguration() {
 
@@ -130,6 +134,7 @@ public class OrderReleaseModalViewModel {
             ReleaseOutputDirectory = releaseDirectory,
             GenerateCNCRelease = false,
             CopyCNCReportToWorkingDirectory = true,
+            GenerateCNCGCode = false,
 
             GenerateInvoice = vendor.ReleaseProfile.GenerateInvoice,
             SendInvoiceEmail = vendor.ReleaseProfile.SendInvoiceEmail,

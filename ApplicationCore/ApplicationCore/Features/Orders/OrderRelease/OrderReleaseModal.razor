@@ -95,6 +95,7 @@
             <CheckBox @bind-IsChecked="DataContext.Configuration.GeneratePackingList">
                 <span class="text-gray-700">Packing List</span>
             </CheckBox>
+
             @if (DataContext.Configuration.GeneratePackingList && DataContext.DoAnyOrdersContainDovetailDBs) {
                 <div class="ml-5">
                     <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeDovetailDBPackingList">
@@ -119,6 +120,13 @@
                 <br />
             }
             
+            @if (DataContext.DoAnyOrdersContainCNCParts) {
+                <CheckBox @bind-IsChecked="DataContext.Configuration.GenerateCNCGCode">
+                    <span class="text-gray-700">Generate GCode</span>
+                </CheckBox>
+                <br />
+            }
+
             <CheckBox @bind-IsChecked="DataContext.Configuration.GenerateCNCRelease">
                 <span class="text-gray-700">CNC Patterns</span>
             </CheckBox>

@@ -5,6 +5,9 @@ namespace ApplicationCore.Features.Orders.OrderRelease;
 
 public class ReleaseActionRunner : IActionRunner {
 
+    public Action? ShowProgressBar { get; set; }
+    public Action? HideProgressBar { get; set; }
+    public Action<int>? SetProgressBarValue { get; set; }
     public Action<ProgressLogMessage>? PublishProgressMessage { get; set; }
 
     private readonly ReleaseService _service;
@@ -16,6 +19,9 @@ public class ReleaseActionRunner : IActionRunner {
         _orders = orders;
         _configuration = configuration;
 
+        _service.ShowProgressBar += () => ShowProgressBar?.Invoke();
+        _service.HideProgressBar += () => HideProgressBar?.Invoke();
+        _service.SetProgressBarValue += (val) => SetProgressBarValue?.Invoke(val);
         _service.OnProgressReport += (msg) => PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, msg));
         _service.OnError += (msg) => PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, msg));
         _service.OnActionComplete += (msg) => PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Success, msg));
