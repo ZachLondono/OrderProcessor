@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Excel;
 using Microsoft.Office.Interop.Excel;
+using System.Runtime.InteropServices;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadHafeleDBSpreadsheetOrderData;
 
@@ -38,6 +39,8 @@ public class WorkbookOrderData {
             rowOffset ++;
 
         }
+
+        if (orderSheet is not null) _ = Marshal.ReleaseComObject(orderSheet);
 
         return new() {
             ContactInformation = contact,

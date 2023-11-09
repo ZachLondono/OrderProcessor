@@ -13,6 +13,7 @@ using ApplicationCore.Shared.Services;
 using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.Office.Interop.Excel;
+using System.Runtime.InteropServices;
 using ExcelApp = Microsoft.Office.Interop.Excel.Application;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadHafeleDBSpreadsheetOrderData;
@@ -54,9 +55,20 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
                 Visible = false
             };
 
-            workbook = app.Workbooks.Open(source, ReadOnly: true);
+            var workbooks = app.Workbooks;
+            workbook = workbooks.Open(source, ReadOnly: true);
 
             var data = WorkbookOrderData.ReadWorkbook(workbook);
+
+            workbook.Close(SaveChanges: false);
+            workbooks.Close();
+            app.Quit();
+            _ = Marshal.ReleaseComObject(workbook);
+            _ = Marshal.ReleaseComObject(workbooks);
+            _ = Marshal.ReleaseComObject(app);
+            workbook = null;
+            app = null;
+
             if (data is null) {
                 OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not load order data from workbook");
                 return null;
@@ -72,6 +84,9 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 
             workbook?.Close(SaveChanges: false);
             app?.Quit();
+
+            if (workbook is not null) _ = Marshal.ReleaseComObject(workbook);
+            if (app is not null) _ = Marshal.ReleaseComObject(app);
 
             // Clean up COM objects, calling these twice ensures it is fully cleaned up.
             GC.Collect();
