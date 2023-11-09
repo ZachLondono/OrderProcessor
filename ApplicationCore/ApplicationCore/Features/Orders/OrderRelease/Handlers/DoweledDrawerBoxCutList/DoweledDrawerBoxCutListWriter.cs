@@ -31,6 +31,7 @@ public class DoweledDrawerBoxCutListWriter : IDoweledDrawerBoxCutListWriter {
         }
 
         ExcelApp app;
+        Workbooks workbooks;
         Workbook workbook;
         Worksheet sheet;
         try {
@@ -40,7 +41,8 @@ public class DoweledDrawerBoxCutListWriter : IDoweledDrawerBoxCutListWriter {
                 Visible = false
             };
 
-            workbook = app.Workbooks.Open(_settings.TemplateFilePath);
+            workbooks = app.Workbooks;
+            workbook = workbooks.Open(_settings.TemplateFilePath);
             sheet = workbook.Worksheets["Cut List"];
 
         } catch (Exception ex) {
@@ -85,9 +87,11 @@ public class DoweledDrawerBoxCutListWriter : IDoweledDrawerBoxCutListWriter {
         try {
 
             workbook.Close();
+            workbooks.Close();
             app.Quit();
 
             if (workbook is not null) _ = Marshal.ReleaseComObject(workbook);
+            if (workbooks is not null) _ = Marshal.ReleaseComObject(workbooks);
             if (app is not null) _ = Marshal.ReleaseComObject(app);
 
             // Clean up COM objects, calling these twice ensures it is fully cleaned up.
