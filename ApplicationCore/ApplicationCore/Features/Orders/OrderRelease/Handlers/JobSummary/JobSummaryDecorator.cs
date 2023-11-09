@@ -1412,6 +1412,9 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
     private static (string prefix, string orderNumber) SplitOrderNumber(string orderNumber) {
 
         int prefixFirstIndex = orderNumber.IndexOfAny(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
+        if (prefixFirstIndex == -1) {
+            return ("", orderNumber);
+        }
         var numberPrefix = orderNumber[..prefixFirstIndex];
         var number = orderNumber[prefixFirstIndex..];
 
