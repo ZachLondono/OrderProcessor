@@ -1,6 +1,7 @@
 {
   "hafele_db_order": {
     "vendor_id": "38dc201f-669d-41be-b0f4-adfa4c003a99",
+    "working_directory_root":  "R:/DB ORDERS/Hafele/Confirmations/",
     "front_back_height_adj_mm": 1,
     "material_thicknesses_mm": {
       "5/8\" White Melamine": "15.875",
