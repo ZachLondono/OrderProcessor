@@ -38,8 +38,8 @@ namespace ApplicationCore.Features.Orders.OrderRelease;
 
 public class ReleaseService {
 
-    public System.Action ShowProgressBar;
-    public System.Action HideProgressBar;
+    public System.Action? ShowProgressBar;
+    public System.Action? HideProgressBar;
     public Action<int>? SetProgressBarValue;
     public Action<string>? OnProgressReport;
     public Action<string>? OnFileGenerated;
