@@ -28,7 +28,7 @@ public class LineItem {
     public static LineItem ReadFromSheet(Worksheet sheet, int rowOffset) {
 
         return new() {
-            Line = sheet.GetRangeOffsetValueOrDefault("A16", 1, rowOffset),
+            Line = (int) sheet.GetRangeOffsetValueOrDefault("A16", 1.0, rowOffset),
             Qty = (int) sheet.GetRangeOffsetValueOrDefault("DovetailQtyCol", 0.0, rowOffset),
             Height = sheet.GetRangeOffsetValueOrDefault("DovetailHeightCol", 0.0, rowOffset),
             Width = sheet.GetRangeOffsetValueOrDefault("DovetailWidthCol", 0.0, rowOffset),
