@@ -77,8 +77,10 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
             var (orderData, incomingDirectory) = await MapWorkbookDataToOrderData(data);
 
             if (incomingDirectory is not null) {
-                var fileName = Path.GetFileName(source);
-                File.Copy(source, Path.Combine(incomingDirectory, fileName));
+                var fileName = Path.GetFileNameWithoutExtension(source);
+                var ext = Path.GetExtension(source);
+                var newFileName = _fileReader.GetAvailableFileName(incomingDirectory, fileName, ext);
+                File.Copy(source, newFileName);
             }
 
             return orderData;
