@@ -144,7 +144,7 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
             }
         };
 
-        string workingDirectory = Path.Combine(_settings.WorkingDirectoryRoot, $"{workbookData.OrderDetails.HafelePO} - {workbookData.OrderDetails.JobName} - {workbookData.ContactInformation.Company}");
+        string workingDirectory = Path.Combine(_settings.WorkingDirectoryRoot.Replace('/', '\\'), $"{workbookData.OrderDetails.HafelePO} - {workbookData.OrderDetails.JobName} - {workbookData.ContactInformation.Company}");
         if (!TryToCreateWorkingDirectory(workingDirectory, out string? incomingDirectory)) {
             incomingDirectory = null;
         }
