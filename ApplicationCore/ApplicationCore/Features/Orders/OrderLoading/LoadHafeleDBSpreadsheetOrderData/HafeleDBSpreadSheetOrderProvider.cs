@@ -74,7 +74,14 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
                 return null;
             }
 
-            return await MapWorkbookDataToOrderData(data);
+            var (orderData, incomingDirectory) = await MapWorkbookDataToOrderData(data);
+
+            if (incomingDirectory is not null) {
+                var fileName = Path.GetFileName(source);
+                File.Copy(source, Path.Combine(incomingDirectory, fileName));
+            }
+
+            return orderData;
 
         } catch (Exception ex) { 
 
@@ -100,7 +107,7 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 
     }
 
-    public async Task<OrderData> MapWorkbookDataToOrderData(WorkbookOrderData workbookData) {
+    public async Task<(OrderData, string?)> MapWorkbookDataToOrderData(WorkbookOrderData workbookData) {
 
         bool metric = workbookData.OrderDetails.UnitFormat.Equals("metric", StringComparison.InvariantCultureIgnoreCase);
 
@@ -135,13 +142,16 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
             }
         };
 
-        string workingDirectory = Path.Combine(@"R:\DB ORDERS\Hafele\Confirmations\", $"{workbookData.OrderDetails.HafelePO} - {workbookData.OrderDetails.JobName} - {workbookData.ContactInformation.Company}");
+        string workingDirectory = Path.Combine(_settings.WorkingDirectoryRoot, $"{workbookData.OrderDetails.HafelePO} - {workbookData.OrderDetails.JobName} - {workbookData.ContactInformation.Company}");
+        if (!TryToCreateWorkingDirectory(workingDirectory, out string? incomingDirectory)) {
+            incomingDirectory = null;
+        }
 
         bool rush = workbookData.OrderDetails.ProductionTime.Contains("rush", StringComparison.InvariantCultureIgnoreCase);
 
         var customerId = await GetCustomerId(workbookData.ContactInformation);
 
-        return new() {
+        var orderData = new OrderData() {
             Number = workbookData.OrderDetails.HafelePO,
             Name = workbookData.OrderDetails.JobName,
             Products = products,
@@ -164,6 +174,8 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
             Tax = 0M,
             PriceAdjustment = 0M,
         };
+
+        return (orderData, incomingDirectory);
 
     }
 
@@ -246,6 +258,43 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 
         return customer.Id;
 
+    }
+
+    private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
+
+        workingDirectory = workingDirectory.Trim();
+
+        try {
+
+            if (Directory.Exists(workingDirectory)) {
+                incomingDirectory = CreateSubDirectories(workingDirectory);
+                return true;
+            } else if (Directory.CreateDirectory(workingDirectory).Exists) {
+                incomingDirectory = CreateSubDirectories(workingDirectory);
+                return true;
+            } else {
+                incomingDirectory = null;
+                return false;
+            }
+
+        } catch (Exception ex) {
+            incomingDirectory = null;
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
+        }
+
+        return false;
+
+    }
+
+    private static string? CreateSubDirectories(string workingDirectory) {
+        var cutListDir = Path.Combine(workingDirectory, "CUTLIST");
+        _ = Directory.CreateDirectory(cutListDir);
+
+        var ordersDir = Path.Combine(workingDirectory, "orders");
+        _ = Directory.CreateDirectory(ordersDir);
+
+        var incomingDir = Path.Combine(workingDirectory, "incoming");
+        return Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
     }
 
 }
