@@ -1,8 +1,10 @@
 ﻿using ApplicationCore.Features.Companies.Contracts;
+using ApplicationCore.Features.Orders.Details.Queries;
 using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
+using ApplicationCore.Infrastructure.Bus;
 using Blazored.Modal;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
@@ -10,6 +12,14 @@ namespace ApplicationCore.Features.Orders.OrderRelease;
 public class OrderReleaseModalViewModel {
 
     public Action? OnPropertyChanged { get; set; }
+
+    public bool IsLoadingOrders {
+        get => _isLoadingOrders;
+        set {
+            _isLoadingOrders = value;
+            OnPropertyChanged?.Invoke();
+        }
+    }
 
     public bool IsLoadingConfiguration {
         get => _isLoadingConfiguration;
@@ -60,16 +70,38 @@ public class OrderReleaseModalViewModel {
 
     public bool DoAnyOrdersContainCNCParts { get; private set; }
 
-    private bool _includeSuppliesInSummary = false;
+    private bool _isLoadingOrders = true;
     private bool _isLoadingConfiguration = false;
     private bool _isReportLoadingFiles = false;
+    private bool _includeSuppliesInSummary = false;
     private ReleaseConfiguration _configuration = new();
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly ReleaseService _service;
+    private readonly IBus _bus;
 
-    public OrderReleaseModalViewModel(CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, ReleaseService service) {
+    public OrderReleaseModalViewModel(CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, ReleaseService service, IBus bus) {
         _getVendorByIdAsync = getVendorByIdAsync;
         _service = service;
+        _bus = bus;
+    }
+
+    public async Task<List<Order>> LoadOrdersAsync(IEnumerable<Guid> orderIds) {
+
+        IsLoadingOrders = true;
+
+        List<Order> orders = new();
+
+        foreach (var orderId in orderIds) {
+
+            var response = await _bus.Send(new GetOrderById.Query(orderId));
+            response.OnSuccess(orders.Add);
+
+        }
+
+        IsLoadingOrders = false;
+
+        return orders;
+
     }
 
     public async Task LoadConfiguration(List<Order> orders) {

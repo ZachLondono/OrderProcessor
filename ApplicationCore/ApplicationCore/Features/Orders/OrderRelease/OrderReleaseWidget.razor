@@ -35,16 +35,14 @@
 
         _isReleasing = true;
 
-        var orders = await GetOrdersAsync();
-
-        if (!orders.Any()) {
+        if (!OrderIds.Any()) {
             _isReleasing = false;
             return;
         }
 
         var dialog = Modal.Show<OrderReleaseModal>("Release Setup",
             new ModalParameters() {
-                { "Orders", orders }
+                { "OrderIds", OrderIds }
             }, new ModalOptions() {
                 HideHeader = true,
                 HideCloseButton = true,
@@ -57,20 +55,5 @@
         _isReleasing = false;
 
     } 
-
-    private async Task<List<Order>> GetOrdersAsync() {
-
-        List<Order> orders = new();
-
-        foreach (var orderId in OrderIds) {
-
-            var response = await Bus.Send(new GetOrderById.Query(orderId));
-            response.OnSuccess(orders.Add);
-
-        }
-
-        return orders;
-
-    }
 
 }

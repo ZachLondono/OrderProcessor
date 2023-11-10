@@ -9,7 +9,7 @@ namespace ApplicationCore.Features.Orders.OrderRelease;
 public partial class OrderReleaseModal {
 
     [Parameter]
-    public List<Order> Orders { get; set; } = new();
+    public IEnumerable<Guid> OrderIds { get; set; } = Enumerable.Empty<Guid>();
 
     [CascadingParameter]
     private BlazoredModalInstance ModalInstance { get; set; } = default!;
@@ -17,17 +17,23 @@ public partial class OrderReleaseModal {
     [CascadingParameter]
     public IModalService ModalService { get; set; } = default!;
 
+    private List<Order> _orders = new();
+    
     private string? _errorMessage = null;
     public bool _isReleasing = false;
 
-    protected override async Task OnInitializedAsync() {
-
+    protected override void OnInitialized() {
         DataContext.OnPropertyChanged += StateHasChanged;
+    }
 
-        if (!Orders.Any()) return;
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
 
-        await DataContext.LoadConfiguration(Orders);
+        if (!firstRender) return;
 
+        _orders = await DataContext.LoadOrdersAsync(OrderIds);
+        if (!_orders.Any()) return;
+        await DataContext.LoadConfiguration(_orders);
+        
     }
 
     private void RemoveAdditionalFile(string filePath) {
@@ -38,13 +44,12 @@ public partial class OrderReleaseModal {
     private void ChooseAdditionalFile()
         => FilePicker.PickFiles(new() {
             Title = "Select Additional File to Attach",
-            InitialDirectory = Orders.FirstOrDefault()?.WorkingDirectory ?? "C:/",
+            InitialDirectory = _orders.FirstOrDefault()?.WorkingDirectory ?? "C:/",
             Filter = new("PDF File", "pdf")
         }, (fileNames) => {
             DataContext.Configuration.AdditionalFilePaths.AddRange(fileNames);
             InvokeAsync(StateHasChanged);
         });
-
 
     private void RemoveCNCDataFile(string filePath) {
         DataContext.Configuration.CNCDataFilePaths.Remove(filePath);
@@ -80,13 +85,13 @@ public partial class OrderReleaseModal {
 
         StateHasChanged();
 
-        if (!Orders.Any()) {
+        if (!_orders.Any()) {
             _isReleasing = false;
             StateHasChanged();
             return;
         }
 
-        var parameters = DataContext.CreateReleaseProgressModalParameters(Orders);
+        var parameters = DataContext.CreateReleaseProgressModalParameters(_orders);
 
         var options = new ModalOptions() {
             HideHeader = true,
@@ -103,6 +108,7 @@ public partial class OrderReleaseModal {
 
         _isReleasing = false;
         StateHasChanged();
+
     }
 
 }
