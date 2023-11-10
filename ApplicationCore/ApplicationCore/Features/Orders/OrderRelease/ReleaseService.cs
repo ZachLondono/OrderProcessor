@@ -327,7 +327,7 @@ public class ReleaseService {
     }
 
     private async Task<ReleasedJob?> GenerateGCode(List<Order> orders, string customerName, string vendorName) {
-        
+
         try {
 
             var gCodeRelease = await _gcodeGenerator.GenerateGCode(orders, customerName, vendorName);
@@ -339,10 +339,17 @@ public class ReleaseService {
         } catch (CADCodeAuthorizationException ex) {
 
             OnError?.Invoke($"Failed to authorize CADCode. Make sure there is an accessible and available license key. - {ex.Message}");
+            _logger.LogError(ex, "CADCode could not authorize");
+
+        } catch (CADCodeInitializationException ex) {
+
+            OnError?.Invoke($"CADCode failed to initialize - {ex.ErrorNumber} : {ex.Message}");
+            _logger.LogError(ex, "Exception thrown while initializing CADCode");
 
         } catch (Exception ex) {
 
             OnError?.Invoke($"Error while generating G-code - {ex.Message}");
+            _logger.LogError(ex, "Exception thrown while generating g-code");
 
         }
 
