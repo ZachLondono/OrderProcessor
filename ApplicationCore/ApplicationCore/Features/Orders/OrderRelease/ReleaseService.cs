@@ -396,9 +396,10 @@ public class ReleaseService {
                     .ToList()
             );
 
-            var files = cutListResults.Select(result => result.PDFFilePath).OfType<string>();
-            files.ForEach(file => OnFileGenerated?.Invoke(file));
-            generatedFiles.AddRange(files);
+            cutListResults.Select(result => result.ExcelFilePath)
+                            .ForEach(file => OnFileGenerated?.Invoke(file));
+
+            generatedFiles.AddRange(cutListResults.Select(result => result.PDFFilePath).OfType<string>());
 
         }
 
@@ -444,9 +445,10 @@ public class ReleaseService {
                     .ToList()
             );
 
-            var files = cutListResults.Select(result => result.PDFFilePath).OfType<string>();
-            files.ForEach(file => OnFileGenerated?.Invoke(file));
-            generatedFiles.AddRange(files);
+            cutListResults.Select(result => result.ExcelFilePath)
+                            .ForEach(file => OnFileGenerated?.Invoke(file));
+
+            generatedFiles.AddRange(cutListResults.Select(result => result.PDFFilePath).OfType<string>());
 
         }
 
