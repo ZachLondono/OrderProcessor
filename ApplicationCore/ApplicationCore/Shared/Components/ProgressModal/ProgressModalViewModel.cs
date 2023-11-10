@@ -41,6 +41,8 @@ public class ProgressModalViewModel {
 
     public void OpenFile(string filePath) {
 
+        if (!File.Exists(filePath)) return;
+
         try {
 
             var psi = new ProcessStartInfo {
