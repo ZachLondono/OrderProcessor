@@ -85,6 +85,11 @@ internal class ExportService {
             return;
         }
 
+        if (!Directory.Exists(outputDir)) {
+            OnError?.Invoke("Dovetail order output directory does not exist");
+            return;
+        }
+
         OnProgressReport?.Invoke("Generating MDF Door Orders");
 
         var response = await Task.Run(() => _bus.Send(new ExportDoorOrder.Command(order, _options.MDFDoorTemplateFilePath, outputDir)));
@@ -114,6 +119,11 @@ internal class ExportService {
 
         if (!File.Exists(_options.DovetailTemplateFilePath)) {
             OnError?.Invoke($"Could not find dovetail order template file '{_options.DovetailTemplateFilePath}'");
+            return;
+        }
+
+        if (!Directory.Exists(outputDir)) {
+            OnError?.Invoke("Dovetail order output directory does not exist");
             return;
         }
 

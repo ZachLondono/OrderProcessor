@@ -137,6 +137,10 @@ public class ReleaseService {
 
                 if (configuration.CopyCNCReportToWorkingDirectory) {
                     foreach (var order in orders) {
+                        if (!Directory.Exists(order.WorkingDirectory)) {
+                            OnError?.Invoke($"Can not copy WSXML file to order working directory because it can ot be accessed or does not exist - '{order.WorkingDirectory}'");
+                            continue;
+                        }
                         await Task.Run(() => CopyReportToWorkingDirectory(order.WorkingDirectory, filePath));
                     }
                 }
@@ -546,7 +550,7 @@ public class ReleaseService {
                 documentBytes
             };
 
-            foreach (var file in attachedFiles) {
+            foreach (var file in attachedFiles.Where(File.Exists)) {
                 documents.Add(await File.ReadAllBytesAsync(file));
             }
 
