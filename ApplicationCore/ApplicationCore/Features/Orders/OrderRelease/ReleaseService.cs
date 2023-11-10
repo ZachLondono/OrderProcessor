@@ -426,6 +426,7 @@ public class ReleaseService {
                         OrderDate = order.OrderDate,
                         OrderName = order.Name,
                         OrderNumber = order.Number,
+                        TotalBoxCount = group.Sum(box => box.Qty),
                         Items = group.Select(box => box.GetBottom(DoweledDrawerBox.Construction, box.ProductNumber))
                                         .GroupBy(b => (b.Width, b.Length))
                                         .OrderByDescending(g => g.Key.Length)

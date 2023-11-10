@@ -118,7 +118,7 @@ public class DoweledDrawerBoxCutListWriter : IDoweledDrawerBoxCutListWriter {
         sheet.Range["OrderNumber"].Value2 = cutList.OrderNumber;
         sheet.Range["OrderName"].Value2 = cutList.OrderName;
         sheet.Range["OrderDate"].Value2 = cutList.OrderDate.ToShortDateString();
-        sheet.Range["TotalBoxCount"].Value2 = cutList.Items.Count();
+        sheet.Range["TotalBoxCount"].Value2 = cutList.TotalBoxCount;
         sheet.Range["Material"].Value2 = cutList.Material;
         sheet.Range["OrderNote"].Value2 = cutList.Note;
 
