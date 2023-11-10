@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
+﻿namespace ApplicationCore.Shared.CNC.ReleasedJob;
 
 public class ProgramMaterial {
 

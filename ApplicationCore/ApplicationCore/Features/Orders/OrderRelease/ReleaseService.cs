@@ -17,7 +17,6 @@ using Exception = System.Exception;
 using ApplicationCore.Shared.CNC.ReleasePDF;
 using ApplicationCore.Shared.CNC.WorkOrderReleaseEmail;
 using ApplicationCore.Shared.CNC.WSXML;
-using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
 using ApplicationCore.Shared.CNC.WSXML.Report;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
@@ -33,6 +32,7 @@ using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.CNC.ReleasePDF;
 using ApplicationCore.Shared.Settings.CNC;
 using Microsoft.Extensions.Options;
+using ApplicationCore.Shared.CNC.ReleasedJob;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -160,7 +160,7 @@ public class ReleaseService {
                     cncReleaseDecorators.Add(decorator);
                 }
             }
-            
+
         }
 
         List<string> additionalPDFs = new(configuration.AdditionalFilePaths);
@@ -196,21 +196,21 @@ public class ReleaseService {
             if (configuration.Generate5PieceCutList) {
 
                 var outputDirectory = Path.Combine(order.WorkingDirectory, "CUTLIST");
-                var cutListResults = await Task.Run(() => 
+                var cutListResults = await Task.Run(() =>
                     order.Products
                         .OfType<FivePieceDoorProduct>()
                         .GroupBy(d => d.Material)
                         .Select(group => new FivePieceCutList() {
-                                CustomerName = customerName,
-                                VendorName = vendorName,
-                                Note = order.Note,
-                                Material = group.First().Material,
-                                OrderDate = order.OrderDate,
-                                OrderName = order.Name,
-                                OrderNumber = order.Number,
-                                TotalDoorCount = group.Count(),
-                                Items = group.Select(door => (door, door.GetParts()))
-                                            .SelectMany(doorParts => 
+                            CustomerName = customerName,
+                            VendorName = vendorName,
+                            Note = order.Note,
+                            Material = group.First().Material,
+                            OrderDate = order.OrderDate,
+                            OrderName = order.Name,
+                            OrderNumber = order.Number,
+                            TotalDoorCount = group.Count(),
+                            Items = group.Select(door => (door, door.GetParts()))
+                                            .SelectMany(doorParts =>
                                                 doorParts.Item2.Select(part => new FivePieceDoorLineItem() {
                                                     CabNumber = doorParts.door.ProductNumber,
                                                     Note = "",
@@ -238,19 +238,19 @@ public class ReleaseService {
             if (configuration.GenerateDoweledDrawerBoxCutList) {
 
                 var outputDirectory = Path.Combine(order.WorkingDirectory, "CUTLIST");
-                var cutListResults = await Task.Run(() => 
+                var cutListResults = await Task.Run(() =>
                     order.Products
                         .OfType<DoweledDrawerBoxProduct>()
                         .GroupBy(d => d.BottomMaterial)
                         .Select(group => new DoweledDrawerBoxCutList() {
-                                CustomerName = customerName,
-                                VendorName = vendorName,
-                                Note = order.Note,
-                                Material = $"{group.First().BottomMaterial.Thickness.RoundToInchMultiple(0.0625).AsInchFraction()} {group.First().BottomMaterial.Name}",
-                                OrderDate = order.OrderDate,
-                                OrderName = order.Name,
-                                OrderNumber = order.Number,
-                                Items = group.Select(box => box.GetBottom(DoweledDrawerBox.Construction, box.ProductNumber))
+                            CustomerName = customerName,
+                            VendorName = vendorName,
+                            Note = order.Note,
+                            Material = $"{group.First().BottomMaterial.Thickness.RoundToInchMultiple(0.0625).AsInchFraction()} {group.First().BottomMaterial.Name}",
+                            OrderDate = order.OrderDate,
+                            OrderName = order.Name,
+                            OrderNumber = order.Number,
+                            Items = group.Select(box => box.GetBottom(DoweledDrawerBox.Construction, box.ProductNumber))
                                             .GroupBy(b => (b.Width, b.Length))
                                             .OrderByDescending(g => g.Key.Length)
                                             .OrderByDescending(g => g.Key.Width)
@@ -314,7 +314,7 @@ public class ReleaseService {
                                                     .Select(o => $"{(multipleOrders ? $"{o.Number}:" : "")}{o.Note}")
                                         );
                     return GenerateEmailBodies(configuration.IncludeMaterialSummaryInEmailBody, releases, orderNotes);
-                }); 
+                });
 
                 List<string> attachments = new() { filePaths.First() };
                 if (configuration.AttachAdditionalFiles) {
@@ -339,14 +339,12 @@ public class ReleaseService {
 
     private async Task<ReleasedJob?> GenerateGCode(Order order, string customerName, string vendorName) {
 
-        // TODO: Move ReleasedJob out of WSXML namespace
-
         var parts = order.Products
                         .OfType<ICNCPartContainer>()
                         .Where(p => p.ContainsCNCParts())
                         .SelectMany(p => p.GetCNCParts(customerName))
                         .ToArray();
-        
+
         if (!parts.Any()) {
             return null;
         }
@@ -725,7 +723,7 @@ public class ReleaseService {
                 }
 
             });
-            
+
             return document.GeneratePdf();
 
         });

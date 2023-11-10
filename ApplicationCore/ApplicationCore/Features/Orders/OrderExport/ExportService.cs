@@ -254,11 +254,11 @@ internal class ExportService {
         try {
 
             var scriptsResult = await _bus.Send(new GetCustomizationScriptsByOrderId.Query(orderId));
-    
+
             scriptsResult.Match(
                 scripts => customizationScripts = scripts,
                 error => OnError?.Invoke(error.Title));
-    
+
 
         } catch (Exception ex) {
 
@@ -278,15 +278,15 @@ internal class ExportService {
         if (doweledDBCustomizationScript is null) return null;
 
         try {
-        
+
             var scriptService = await ScriptService<DoweledDrawerBoxProduct, DoweledDrawerBoxProduct>.FromFile(doweledDBCustomizationScript.FilePath);
             return scriptService;
-        
+
         } catch (Exception ex) {
-        
+
             _logger.LogError(ex, $"Exception thrown trying to create script service - {doweledDBCustomizationScript.Name}");
             OnError?.Invoke($"Failed to initialize script - {doweledDBCustomizationScript.Name}");
-        
+
         }
 
         return null;

@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
+﻿using ApplicationCore.Shared.CNC.ReleasedJob;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ApplicationCore.Shared.CNC.ReleasePDF.Services;

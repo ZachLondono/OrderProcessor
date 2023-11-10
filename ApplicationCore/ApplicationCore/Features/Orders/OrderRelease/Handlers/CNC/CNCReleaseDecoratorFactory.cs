@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Shared.CNC.ReleasePDF;
-using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
+﻿using ApplicationCore.Shared.CNC.ReleasedJob;
+using ApplicationCore.Shared.CNC.ReleasePDF;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;

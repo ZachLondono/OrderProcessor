@@ -7,8 +7,8 @@ namespace ApplicationCore.Features.Orders.OrderLoading.LoadHafeleDBSpreadsheetOr
 public class WorkbookOrderData {
 
     public required ContactInformation ContactInformation { get; set; }
-    public required OrderDetails OrderDetails{ get; set; }
-    public required GlobalDrawerSpecs GlobalDrawerSpecs{ get; set; }
+    public required OrderDetails OrderDetails { get; set; }
+    public required GlobalDrawerSpecs GlobalDrawerSpecs { get; set; }
     public required LineItem[] Items { get; set; }
     public required string OrderComments { get; set; }
 
@@ -36,7 +36,7 @@ public class WorkbookOrderData {
             var item = LineItem.ReadFromSheet(orderSheet, rowOffset);
             items.Add(item);
 
-            rowOffset ++;
+            rowOffset++;
 
         }
 

@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Shared.CNC.Domain;
+using ApplicationCore.Shared.CNC.ReleasedJob;
 using ApplicationCore.Shared.CNC.ReleasePDF.Services;
-using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
 using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.CNC;

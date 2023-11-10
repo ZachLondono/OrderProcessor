@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Shared.CNC.ReleasePDF.PDFModels;
+﻿using ApplicationCore.Shared.CNC.ReleasedJob;
+using ApplicationCore.Shared.CNC.ReleasePDF.PDFModels;
 using ApplicationCore.Shared.CNC.ReleasePDF.Styling;
-using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
 using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Options;
 using Windows.ApplicationModel;
@@ -69,7 +69,7 @@ internal class ReleasePDFDecoratorFactory {
                                .OrderBy(g => {
                                    if (int.TryParse(g.First().ProductNumber, out int productNumber)) return productNumber;
                                    return 0;
-                                });
+                               });
 
             bool containsFace6 = face6FileNames.Any();
             bool containsBackSideProgram = parts.Any(group => group.Any(part => part.HasBackSideProgram));
@@ -176,7 +176,7 @@ internal class ReleasePDFDecoratorFactory {
             return $"{version.Major}.{version.Minor}.{version.Build}";
         } catch { }
 
-        return  "0.0.0";
+        return "0.0.0";
 
     }
 

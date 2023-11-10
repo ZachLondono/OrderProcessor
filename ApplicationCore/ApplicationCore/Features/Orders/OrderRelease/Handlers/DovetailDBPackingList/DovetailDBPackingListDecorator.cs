@@ -20,17 +20,17 @@ public class DovetailDBPackingListDecorator : IDocumentDecorator {
             page.Content()
                 .Column(column => {
 
-                column.Item()
-                    .AlignCenter()
-                    .PaddingBottom(10)
-                    .Text("Dovetail Drawer Boxes")
-                    .FontSize(36)
-                    .Bold();
+                    column.Item()
+                        .AlignCenter()
+                        .PaddingBottom(10)
+                        .Text("Dovetail Drawer Boxes")
+                        .FontSize(36)
+                        .Bold();
 
-                ComposeHeader(column.Item(), Data);
-                ComposeTable(column.Item(), Data.Items);
+                    ComposeHeader(column.Item(), Data);
+                    ComposeTable(column.Item(), Data.Items);
 
-            });
+                });
 
         });
 
@@ -215,7 +215,8 @@ public class DovetailDBPackingListDecorator : IDocumentDecorator {
 
                 });
 
-        });    }
+        });
+    }
 
     private static void FormatFraction(TextDescriptor text, Dimension dim, float fontSize) {
 

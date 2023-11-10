@@ -1,8 +1,8 @@
 ﻿using ApplicationCore.Shared;
+using ApplicationCore.Shared.CNC.ReleasedJob;
 using ApplicationCore.Shared.CNC.ReleasePDF;
 using ApplicationCore.Shared.CNC.WorkOrderReleaseEmail;
 using ApplicationCore.Shared.CNC.WSXML;
-using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
 using ApplicationCore.Shared.CNC.WSXML.Report;
 using ApplicationCore.Shared.Services;
 using MimeKit;

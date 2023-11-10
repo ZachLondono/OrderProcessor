@@ -85,7 +85,7 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 
             return orderData;
 
-        } catch (Exception ex) { 
+        } catch (Exception ex) {
 
             OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Error occurred while reading order from workbook {ex}");
 

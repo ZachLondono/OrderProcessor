@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.CNC.ReleasePDF;
 using ApplicationCore.Shared.CNC.Domain;
-using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
+using ApplicationCore.Shared.CNC.ReleasedJob;
 using ApplicationCore.Shared.CNC.WSXML.Report;
 using ApplicationCore.Shared.Domain;
 using ApplicationCore.Shared.Settings.Tools;
@@ -95,7 +95,7 @@ public partial class WSXMLParser : IWSXMLParser {
 
     }
 
-    public ReleasedJob.ReleasedJob MapDataToReleasedJob(WSXMLReport report, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
+    public CNC.ReleasedJob.ReleasedJob MapDataToReleasedJob(WSXMLReport report, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
 
         var allToolNames = report.OperationGroups.Where(g => g.PartId is not null)
                                         .SelectMany(g => g.ToolName)

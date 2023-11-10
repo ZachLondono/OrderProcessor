@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Shared.CNC.Domain;
 
-namespace ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
+namespace ApplicationCore.Shared.CNC.ReleasedJob;
 
 public class MachineRelease {
 

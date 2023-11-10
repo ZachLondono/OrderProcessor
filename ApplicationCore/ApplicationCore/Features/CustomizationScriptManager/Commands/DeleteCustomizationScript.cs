@@ -9,7 +9,7 @@ internal class DeleteCustomizationScript {
     public record Command(Guid Id) : ICommand;
 
     public class Handler : CommandHandler<Command> {
-        
+
         private readonly IOrderingDbConnectionFactory _factory;
 
         public Handler(IOrderingDbConnectionFactory factory) {

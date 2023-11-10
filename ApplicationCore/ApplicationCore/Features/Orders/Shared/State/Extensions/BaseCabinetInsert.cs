@@ -39,7 +39,7 @@ public partial class InsertOrder {
                 DBConfigId = dbConfigId,
                 IsGarage = cabinet.IsGarage,
                 BaseNotchHeight = cabinet.BaseNotch?.Height ?? Dimension.Zero,
-                BaseNotchDepth = cabinet.BaseNotch?.Depth ?? Dimension.Zero 
+                BaseNotchDepth = cabinet.BaseNotch?.Depth ?? Dimension.Zero
             };
 
             await connection.ExecuteAsync("""
