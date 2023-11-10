@@ -198,7 +198,17 @@ internal class ExportService {
                                     .Cast<ICNCPartContainer>()
                                     .ToList();
 
-        await Task.Run(() => UpdateDoweledDrawerBoxes(order.Id, cncPartContainers));
+        try {
+
+            await Task.Run(() => UpdateDoweledDrawerBoxes(order.Id, cncPartContainers));
+
+        } catch (Exception ex) {
+
+            OnError?.Invoke($"Error occurred while applying dowel db customizations - {ex.Message}");
+            _logger.LogError(ex, "Exception thrown while trying to apply customization scripts to doweled drawer boxes");
+            throw;
+
+        }
 
         Part[] parts;
 
@@ -245,15 +255,27 @@ internal class ExportService {
     }
 
     private async Task UpdateDoweledDrawerBoxes(Guid orderId, List<ICNCPartContainer> cncPartContainers) {
+
         IEnumerable<CustomizationScript> customizationScripts = await GetCustomizationScripts(orderId);
         var doweledDbScript = await GetDoweledDrawerBoxScriptService(customizationScripts);
-        if (doweledDbScript is not null) {
 
-            var indexes = cncPartContainers.Where(p => p is DoweledDrawerBoxProduct).Select(p => cncPartContainers.IndexOf(p)).ToList();
-            foreach (var idx in indexes) {
-                cncPartContainers[idx] = await doweledDbScript.RunScript((DoweledDrawerBoxProduct)cncPartContainers[idx]);
+        if (doweledDbScript is null) {
+            return;
+        }
+
+        if (doweledDbScript.Diagnostics.Any()) {
+
+            foreach (var diag in doweledDbScript.Diagnostics) {
+                OnError?.Invoke($"{diag.Severity}: {diag.GetMessage()}");
             }
 
+            throw new InvalidOperationException("Doweled DB customization script could not be compiled without errors");
+
+        }
+
+        var indexes = cncPartContainers.Where(p => p is DoweledDrawerBoxProduct).Select(p => cncPartContainers.IndexOf(p)).ToList();
+        foreach (var idx in indexes) {
+            cncPartContainers[idx] = await doweledDbScript.RunScript((DoweledDrawerBoxProduct)cncPartContainers[idx]);
         }
     }
 
