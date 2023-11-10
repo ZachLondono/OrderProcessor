@@ -24,14 +24,6 @@ using ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DoweledDrawerBoxCutList;
 using ApplicationCore.Features.Orders.Shared.Domain.Components;
-using CADCodeProxy;
-using ApplicationCore.Shared.Domain;
-using CADCodeProxy.CNC;
-using CADCodeProxy.Machining;
-using ApplicationCore.Features.Orders.Shared.Domain;
-using ApplicationCore.Features.CNC.ReleasePDF;
-using ApplicationCore.Shared.Settings.CNC;
-using Microsoft.Extensions.Options;
 using ApplicationCore.Shared.CNC.Job;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.GCode;
 using CADCodeProxy.Exceptions;
@@ -170,7 +162,7 @@ public class ReleaseService {
 
             } catch (Exception ex) {
 
-                OnError?.Invoke($"Error while generating G-code -> {ex.Message}");
+                OnError?.Invoke($"Error while generating G-code - {ex.Message}");
 
             }
 
