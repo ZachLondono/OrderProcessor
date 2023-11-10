@@ -377,7 +377,7 @@ public class ReleaseService {
                         OrderDate = order.OrderDate,
                         OrderName = order.Name,
                         OrderNumber = order.Number,
-                        TotalDoorCount = group.Count(),
+                        TotalDoorCount = group.Sum(door => door.Qty),
                         Items = group.Select(door => (door, door.GetParts()))
                                         .SelectMany(doorParts =>
                                             doorParts.Item2.Select(part => new FivePieceDoorLineItem() {
