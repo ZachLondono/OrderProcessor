@@ -14,33 +14,35 @@ public class WorkbookOrderData {
 
     public static WorkbookOrderData? ReadWorkbook(Workbook workbook) {
 
-        Worksheet? orderSheet = (Worksheet?)workbook.Sheets["Dovetail"];
-        if (orderSheet is null) {
+        Worksheet? dovetailOrderSheet = (Worksheet?)workbook.Sheets["Dovetail"];
+        Worksheet? dowelOrderSheet = (Worksheet?)workbook.Sheets["Dowel"];
+        if (dovetailOrderSheet is null || dowelOrderSheet is null) {
             return null;
         }
 
-        var contact = ContactInformation.ReadFromSheet(orderSheet);
-        var details = OrderDetails.ReadFromSheet(orderSheet);
-        var specs = GlobalDrawerSpecs.ReadFromSheet(orderSheet);
-        string orderComments = orderSheet.GetRangeValueOrDefault("N12", "");
+        var contact = ContactInformation.ReadFromSheet(dovetailOrderSheet);
+        var details = OrderDetails.ReadFromSheet(dovetailOrderSheet);
+        var specs = GlobalDrawerSpecs.ReadFromSheet(dowelOrderSheet);
+        string orderComments = dovetailOrderSheet.GetRangeValueOrDefault("N12", "");
 
         List<LineItem> items = new();
 
         int rowOffset = 1;
         while (true) {
 
-            if (orderSheet.GetRangeOffsetValueOrDefault("DovetailQtyCol", 0.0, rowOffset) == 0) {
+            if (dowelOrderSheet.GetRangeOffsetValueOrDefault("DowelQtyCol", 0.0, rowOffset) == 0) {
                 break;
             }
 
-            var item = LineItem.ReadFromSheet(orderSheet, rowOffset);
+            var item = LineItem.ReadFromSheet(dowelOrderSheet, rowOffset);
             items.Add(item);
 
             rowOffset++;
 
         }
 
-        if (orderSheet is not null) _ = Marshal.ReleaseComObject(orderSheet);
+        if (dovetailOrderSheet is not null) _ = Marshal.ReleaseComObject(dovetailOrderSheet);
+        if (dowelOrderSheet is not null) _ = Marshal.ReleaseComObject(dowelOrderSheet);
 
         return new() {
             ContactInformation = contact,

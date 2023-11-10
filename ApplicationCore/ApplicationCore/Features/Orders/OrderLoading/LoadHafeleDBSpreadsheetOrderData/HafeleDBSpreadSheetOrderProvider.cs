@@ -115,9 +115,9 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 
     public async Task<(OrderData, string?)> MapWorkbookDataToOrderData(WorkbookOrderData workbookData) {
 
-        bool metric = workbookData.OrderDetails.UnitFormat.Equals("metric", StringComparison.InvariantCultureIgnoreCase);
+        bool metric = workbookData.GlobalDrawerSpecs.Units.Equals("millimeters", StringComparison.InvariantCultureIgnoreCase);
 
-        var products = MapLineItemsToProduct(workbookData.Items, workbookData.GlobalDrawerSpecs.Material, metric).ToList();
+        var products = MapLineItemsToProduct(workbookData.Items, workbookData.GlobalDrawerSpecs.BoxMaterial, metric).ToList();
         var shipping = new ShippingInfo() {
             Contact = workbookData.ContactInformation.Contact,
             Method = "Delivery",
