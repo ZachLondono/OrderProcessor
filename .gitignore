@@ -44,3 +44,4 @@ msbuild.wrn
 # Signing Certificate
 *.pfx
 /nuget.config
+/Package/Package.assets.cache
