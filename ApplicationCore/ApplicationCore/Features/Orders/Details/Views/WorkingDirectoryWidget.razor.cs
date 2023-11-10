@@ -15,6 +15,7 @@ public partial class WorkingDirectoryWidget {
     [CascadingParameter]
     public IModalService Modal { get; set; } = default!;
 
+    private bool _doesDirectoryExist = false;
     private bool _isLoading = true;
     private string _workingDirectory = string.Empty;
 
@@ -24,6 +25,7 @@ public partial class WorkingDirectoryWidget {
 
         result.OnSuccess(directory => {
             _workingDirectory = directory;
+            _doesDirectoryExist = Directory.Exists(_workingDirectory);
             _isLoading = false;
         });
 
@@ -43,6 +45,7 @@ public partial class WorkingDirectoryWidget {
         var result = await modal.Result;
         if (result.Confirmed && result.Data is string newDirectory) {
             _workingDirectory = newDirectory;
+            _doesDirectoryExist = Directory.Exists(_workingDirectory);
             StateHasChanged();
         }
 
