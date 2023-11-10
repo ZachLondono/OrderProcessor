@@ -47,6 +47,7 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 
         ExcelApp? app = null;
         Workbook? workbook = null;
+        Workbooks? workbooks = null;
 
         try {
 
@@ -55,7 +56,7 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
                 Visible = false
             };
 
-            var workbooks = app.Workbooks;
+            workbooks = app.Workbooks;
             workbook = workbooks.Open(source, ReadOnly: true);
 
             var data = WorkbookOrderData.ReadWorkbook(workbook);
@@ -92,9 +93,11 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
         } finally {
 
             workbook?.Close(SaveChanges: false);
+            workbooks?.Close();
             app?.Quit();
 
             if (workbook is not null) _ = Marshal.ReleaseComObject(workbook);
+            if (workbooks is not null) _ = Marshal.ReleaseComObject(workbooks);
             if (app is not null) _ = Marshal.ReleaseComObject(app);
 
             // Clean up COM objects, calling these twice ensures it is fully cleaned up.

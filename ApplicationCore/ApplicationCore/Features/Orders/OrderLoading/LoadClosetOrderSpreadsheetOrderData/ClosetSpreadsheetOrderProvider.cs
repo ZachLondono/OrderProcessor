@@ -12,6 +12,7 @@ using ApplicationCore.Shared.Domain;
 using ApplicationCore.Shared.Services;
 using Dapper;
 using Microsoft.Office.Interop.Excel;
+using System.Runtime.InteropServices;
 using static ApplicationCore.Features.Companies.Contracts.CompanyDirectory;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadsheetOrderData;
@@ -58,6 +59,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
         }
 
         Microsoft.Office.Interop.Excel.Application? app = null;
+        Workbooks? workbooks = null;
         Workbook? workbook = null;
 
         try {
@@ -67,7 +69,8 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
                 Visible = false
             };
 
-            workbook = app.Workbooks.Open(source, ReadOnly: true);
+            workbooks = app.Workbooks;
+            workbook = workbooks.Open(source, ReadOnly: true);
             if (!TryGetWorksheet(workbook, "Cover", out Worksheet? coverSheet) || coverSheet is null) return null;
             if (!TryGetWorksheet(workbook, "Closet Parts", out Worksheet? closetPartSheet) || closetPartSheet is null) return null;
             if (!TryGetWorksheet(workbook, "Corner Shelves", out Worksheet? cornerShelfSheet) || cornerShelfSheet is null) return null;
@@ -190,7 +193,12 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
         } finally {
 
             workbook?.Close(SaveChanges: false);
+            workbooks?.Close();
             app?.Quit();
+
+            if (workbook is not null) _ = Marshal.ReleaseComObject(workbook);
+            if (workbooks is not null) _ = Marshal.ReleaseComObject(workbooks);
+            if (app is not null) _ = Marshal.ReleaseComObject(app);
 
             // Clean up COM objects, calling these twice ensures it is fully cleaned up.
             GC.Collect();
