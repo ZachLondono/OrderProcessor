@@ -15,7 +15,6 @@ public class OrderDetails {
     public required string ProductionTime { get; set; }
     public required string HafelePO { get; set; }
     public required string HafeleOrderNumber { get; set; }
-    public required string UnitFormat { get; set; }
 
     public static OrderDetails ReadFromSheet(Worksheet sheet) {
 
@@ -31,8 +30,7 @@ public class OrderDetails {
             JobName = sheet.GetRangeValueOrDefault("Jobname", "UNKNOWN"),
             ProductionTime = sheet.GetRangeValueOrDefault("ProductionSelection", "UNKNOWN"),
             HafelePO = sheet.GetRangeValueOrDefault("HafelePO", "UNKNOWN"),
-            HafeleOrderNumber = sheet.GetRangeValueOrDefault("HafeleOrderNumber", "UNKNOWN"),
-            UnitFormat = sheet.GetRangeValueOrDefault("Notation", "UNKNOWN")
+            HafeleOrderNumber = sheet.GetRangeValueOrDefault("HafeleOrderNumber", "UNKNOWN")
         };
 
     }

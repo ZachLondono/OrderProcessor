@@ -5,26 +5,24 @@ namespace ApplicationCore.Features.Orders.OrderLoading.LoadHafeleDBSpreadsheetOr
 
 public class GlobalDrawerSpecs {
 
-    public required string Material { get; set; }
-    public required string Bottoms { get; set; }
+    public required string BoxMaterial { get; set; }
+    public required string BottomMaterial { get; set; }
     public required string Assembly { get; set; }
-    public required string NotchForSlides { get; set; }
-    public required string LogosOnAll { get; set; }
-    public required string Clips { get; set; }
-    public required string PostFinish { get; set; }
+    public required string Notch { get; set; }
     public required string MountingHoles { get; set; }
+    public required string Clips { get; set; }
+    public required string Units { get; set; }
 
     public static GlobalDrawerSpecs ReadFromSheet(Worksheet sheet) {
 
         return new() {
-            Material = sheet.GetRangeValueOrDefault("Material", "UNKNOWN"),
-            Bottoms = sheet.GetRangeValueOrDefault("BotThickness", "UNKNOWN"),
-            Assembly = sheet.GetRangeValueOrDefault("Assembled", "UNKNOWN"),
-            NotchForSlides = sheet.GetRangeValueOrDefault("Notch", "UNKNOWN"),
-            LogosOnAll = sheet.GetRangeValueOrDefault("LogoOption", "UNKNOWN"),
-            Clips = sheet.GetRangeOffsetValueOrDefault("Clips", "UNKNOWN"),
-            PostFinish = sheet.GetRangeOffsetValueOrDefault("PostFinish", "UNKNOWN"),
-            MountingHoles = sheet.GetRangeOffsetValueOrDefault("MountingHoles", "UNKNOWN"),
+            BoxMaterial = sheet.GetRangeValueOrDefault("PeanutBoxMaterial", "UNKNOWN"),
+            BottomMaterial = sheet.GetRangeValueOrDefault("PeanutBottomMaterial", "UNKNOWN"),
+            Assembly = sheet.GetRangeValueOrDefault("PeanutAssembled", "UNKNOWN"),
+            Notch = sheet.GetRangeValueOrDefault("PeanutConfiguration", "UNKNOWN"),
+            MountingHoles = sheet.GetRangeValueOrDefault("PeanutMountingHoles", "UNKNOWN"),
+            Clips = sheet.GetRangeOffsetValueOrDefault("PeanutClips", "UNKNOWN"),
+            Units = sheet.GetRangeOffsetValueOrDefault("PeanutUnits", "UNKNOWN")
         };
 
     }
