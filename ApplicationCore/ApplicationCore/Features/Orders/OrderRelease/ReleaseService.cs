@@ -12,9 +12,6 @@ using MimeKit;
 using QuestPDF.Fluent;
 using System.Runtime.InteropServices;
 using UglyToad.PdfPig.Writer;
-using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
-using Exception = System.Exception;
-using ApplicationCore.Shared.CNC.ReleasePDF;
 using ApplicationCore.Shared.CNC.WorkOrderReleaseEmail;
 using ApplicationCore.Shared.CNC.WSXML;
 using ApplicationCore.Shared.CNC.WSXML.Report;
@@ -27,6 +24,8 @@ using ApplicationCore.Features.Orders.Shared.Domain.Components;
 using ApplicationCore.Shared.CNC.Job;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.GCode;
 using CADCodeProxy.Exceptions;
+using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
+using Exception = System.Exception;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -93,7 +92,7 @@ public class ReleaseService {
         var orderDate = orders.First().OrderDate;
         var dueDate = orders.First().DueDate;
 
-        await CreateReleasePDF(orders, configuration, orderDate, dueDate, customerName, vendorName);
+        await OrchestrateRelease(orders, configuration, orderDate, dueDate, customerName, vendorName);
 
         foreach (var order in orders) {
             await Invoicing(order, configuration, customerName);
@@ -103,7 +102,7 @@ public class ReleaseService {
 
     }
 
-    private async Task CreateReleasePDF(List<Order> orders, ReleaseConfiguration configuration, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
+    private async Task OrchestrateRelease(List<Order> orders, ReleaseConfiguration configuration, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
 
         if (configuration.ReleaseOutputDirectory is null) {
             OnError?.Invoke("No output directory set");
@@ -114,188 +113,6 @@ public class ReleaseService {
             OnProgressReport?.Invoke("Not generating release pdf, because options where not enabled");
             return;
         }
-
-        List<IDocumentDecorator> decorators = new();
-
-        List<ReleasedJob> releases = new();
-        List<ICNCReleaseDecorator> cncReleaseDecorators = new();
-        if (configuration.GenerateCNCRelease) {
-            foreach (var filePath in configuration.CNCDataFilePaths) {
-
-                if (Path.GetExtension(filePath) != ".xml") {
-                    OnError?.Invoke("CADCode report file is an invalid file type");
-                    continue;
-                }
-
-                ReleasedJob? jobData = null;
-                WSXMLReport? report = await Task.Run(() => WSXMLParser.ParseWSXMLReport(filePath));
-                if (report is not null) {
-                    jobData = _wsxmlParser.MapDataToReleasedJob(report, orderDate, dueDate, customerName, vendorName);
-                }
-
-                if (jobData is null) {
-                    continue;
-                }
-
-                releases.Add(jobData);
-                var decorator = _cncReleaseDecoratorFactory.Create(jobData);
-                cncReleaseDecorators.Add(decorator);
-
-                if (configuration.CopyCNCReportToWorkingDirectory) {
-                    foreach (var order in orders) {
-                        if (!Directory.Exists(order.WorkingDirectory)) {
-                            OnError?.Invoke($"Can not copy WSXML file to order working directory because it can ot be accessed or does not exist - '{order.WorkingDirectory}'");
-                            continue;
-                        }
-                        await Task.Run(() => CopyReportToWorkingDirectory(order.WorkingDirectory, filePath));
-                    }
-                }
-
-            }
-        }
-
-        if (configuration.GenerateCNCGCode) {
-
-            try {
-
-                var gCodeRelease = await _gcodeGenerator.GenerateGCode(orders, customerName, vendorName);
-
-                if (gCodeRelease is not null) {
-                    releases.Add(gCodeRelease);
-                    var decorator = _cncReleaseDecoratorFactory.Create(gCodeRelease);
-                    cncReleaseDecorators.Add(decorator);
-                }
-
-            }  catch (CADCodeAuthorizationException ex) {
-
-                OnError?.Invoke($"Failed to authorize CADCode. Make sure there is an accessible and available license key. - {ex.Message}");
-
-            } catch (Exception ex) {
-
-                OnError?.Invoke($"Error while generating G-code - {ex.Message}");
-
-            }
-
-        }
-
-        List<string> additionalPDFs = new(configuration.AdditionalFilePaths);
-
-        foreach (var order in orders) {
-
-            if (configuration.GenerateJobSummary) {
-                string[] materials = releases.SelectMany(r => r.Releases)
-                                            .SelectMany(r => r.Programs)
-                                            .Select(p => p.Material.Name)
-                                            .Distinct()
-                                            .ToArray();
-
-                var decorator = await _jobSummaryDecoratorFactory.CreateDecorator(order, configuration.IncludeProductTablesInSummary, configuration.SupplyOptions, materials, true);
-                decorators.Add(decorator);
-            }
-
-            if (configuration.GeneratePackingList) {
-                var decorator = await _packingListDecoratorFactory.CreateDecorator(order);
-                decorators.Add(decorator);
-
-                if (configuration.IncludeDovetailDBPackingList && order.Products.Any(p => p is DovetailDrawerBoxProduct)) {
-                    var dovetailDecorator = await _dovetailDBPackingListDecoratorFactory.CreateDecorator(order);
-                    decorators.Add(dovetailDecorator);
-                }
-            }
-
-            if (configuration.IncludeInvoiceInRelease) {
-                var decorator = await _invoiceDecoratorFactory.CreateDecorator(order);
-                decorators.Add(decorator);
-            }
-
-            if (configuration.Generate5PieceCutList) {
-
-                var outputDirectory = Path.Combine(order.WorkingDirectory, "CUTLIST");
-                var cutListResults = await Task.Run(() =>
-                    order.Products
-                        .OfType<FivePieceDoorProduct>()
-                        .GroupBy(d => d.Material)
-                        .Select(group => new FivePieceCutList() {
-                            CustomerName = customerName,
-                            VendorName = vendorName,
-                            Note = order.Note,
-                            Material = group.First().Material,
-                            OrderDate = order.OrderDate,
-                            OrderName = order.Name,
-                            OrderNumber = order.Number,
-                            TotalDoorCount = group.Count(),
-                            Items = group.Select(door => (door, door.GetParts()))
-                                            .SelectMany(doorParts =>
-                                                doorParts.Item2.Select(part => new FivePieceDoorLineItem() {
-                                                    CabNumber = doorParts.door.ProductNumber,
-                                                    Note = "",
-                                                    Qty = part.Qty,
-                                                    PartName = part.Name,
-                                                    Length = part.Length.AsMillimeters(),
-                                                    Width = part.Length.AsMillimeters()
-                                                })
-                                            )
-                                            .ToList()
-                        })
-                        .Select(cutList => _fivePieceDoorCutListWriter.WriteCutList(cutList, outputDirectory, true))
-                        .OfType<FivePieceDoorCutListResult>()
-                        .ToList()
-                );
-
-                cutListResults.ForEach(result => {
-                    OnFileGenerated?.Invoke(result.ExcelFilePath);
-                    if (result.PDFFilePath is string filePath)
-                        additionalPDFs.Add(filePath);
-                });
-
-            }
-
-            if (configuration.GenerateDoweledDrawerBoxCutList) {
-
-                var outputDirectory = Path.Combine(order.WorkingDirectory, "CUTLIST");
-                var cutListResults = await Task.Run(() =>
-                    order.Products
-                        .OfType<DoweledDrawerBoxProduct>()
-                        .GroupBy(d => d.BottomMaterial)
-                        .Select(group => new DoweledDrawerBoxCutList() {
-                            CustomerName = customerName,
-                            VendorName = vendorName,
-                            Note = order.Note,
-                            Material = $"{group.First().BottomMaterial.Thickness.RoundToInchMultiple(0.0625).AsInchFraction()} {group.First().BottomMaterial.Name}",
-                            OrderDate = order.OrderDate,
-                            OrderName = order.Name,
-                            OrderNumber = order.Number,
-                            Items = group.Select(box => box.GetBottom(DoweledDrawerBox.Construction, box.ProductNumber))
-                                            .GroupBy(b => (b.Width, b.Length))
-                                            .OrderByDescending(g => g.Key.Length)
-                                            .OrderByDescending(g => g.Key.Width)
-                                            .Select(bottomGroup => new DoweledDBCutListLineItem() {
-                                                CabNumbers = string.Join(", ", bottomGroup.Select(p => p.ProductNumber)),
-                                                Note = "",
-                                                Qty = bottomGroup.Sum(p => p.Qty),
-                                                PartName = "Bottom",
-                                                Length = bottomGroup.Key.Length.AsMillimeters(),
-                                                Width = bottomGroup.Key.Width.AsMillimeters()
-                                            })
-                                            .ToList()
-                        })
-                        .Select(cutList => _doweledDrawerBoxCutListWriter.WriteCutList(cutList, outputDirectory, true))
-                        .OfType<DoweledDBCutListResult>()
-                        .ToList()
-                );
-
-                cutListResults.ForEach(result => {
-                    OnFileGenerated?.Invoke(result.ExcelFilePath);
-                    if (result.PDFFilePath is string filePath)
-                        additionalPDFs.Add(filePath);
-                });
-
-
-            }
-
-        }
-
-        decorators.AddRange(cncReleaseDecorators);
 
         var directories = (configuration.ReleaseOutputDirectory ?? "").Split(';').Where(s => !string.IsNullOrWhiteSpace(s));
 
@@ -308,79 +125,324 @@ public class ReleaseService {
 
         var filename = configuration.ReleaseFileName ?? $"{orderNumbers} RELEASE";
 
+        var releases = await GetCNCReleases(orders, configuration, orderDate, dueDate, customerName, vendorName);
+
+        var decorators = await CreateDocumentDecorators(orders, configuration, releases);
+
+        var additionalPDFs = new List<string>(configuration.AdditionalFilePaths);
+        var cutLists = await CreateCutLists(orders, configuration, customerName, vendorName);
+        additionalPDFs.AddRange(cutLists);
+        
         OnProgressReport?.Invoke("Generating release PDF");
-        IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
-            filePaths = await GeneratePDFAsync(directories, decorators, filename, customerName, additionalPDFs);
+
+            var documentData = await BuildPDFAsync(decorators, additionalPDFs);
+            var filePaths = await SaveFileDataToDirectoriesAsync(documentData, directories, customerName, filename, isTemp:false);
+
+            if (filePaths.Any() && (configuration.SendReleaseEmail || configuration.PreviewReleaseEmail) && configuration.ReleaseEmailRecipients is string recipients) {
+                await SendReleaseEmail(orders, configuration, customerName, releases, orderNumbers, filePaths, recipients);
+            } else {
+                OnProgressReport?.Invoke("Not sending release email");
+            }
+
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate release PDF - '{ex.Message}'");
             _logger.LogError(ex, "Exception thrown while trying to generate release pdf");
         }
 
-        if (filePaths.Any() && (configuration.SendReleaseEmail || configuration.PreviewReleaseEmail) && configuration.ReleaseEmailRecipients is string recipients) {
-            OnProgressReport?.Invoke("Sending release email");
-            try {
+    }
 
-                var body = await Task.Run(() => {
-                    bool multipleOrders = orders.Count > 1;
-                    string orderNotes = string.Join(
-                                            ';',
-                                            orders.Where(o => !string.IsNullOrEmpty(o.Note))
-                                                    .Select(o => $"{(multipleOrders ? $"{o.Number}:" : "")}{o.Note}")
-                                        );
-                    return GenerateEmailBodies(configuration.IncludeMaterialSummaryInEmailBody, releases, orderNotes);
-                });
-
-                List<string> attachments = new() { filePaths.First() };
-                if (configuration.AttachAdditionalFiles) {
-                    attachments.AddRange(configuration.AdditionalFilePaths);
-                }
-
-                if (configuration.PreviewReleaseEmail) {
-                    await Task.Run(() => CreateAndDisplayOutlookEmail(recipients, $"RELEASED: {orderNumbers} {customerName}", body.HTMLBody, body.TextBody, attachments));
-                } else {
-                    await SendEmailAsync(recipients, $"RELEASED: {orderNumbers} {customerName}", body.HTMLBody, body.TextBody, attachments);
-                }
-
-            } catch (Exception ex) {
-                OnError?.Invoke($"Could not send email - '{ex.Message}'");
-                _logger.LogError(ex, "Exception thrown while trying to send release email");
-            }
-        } else {
-            OnProgressReport?.Invoke("Not sending release email");
+    private async Task<List<string>> CreateCutLists(List<Order> orders, ReleaseConfiguration configuration, string customerName, string vendorName) {
+        List<string> cutLists = new();
+        if (configuration.Generate5PieceCutList) {
+            var fivePieceCutLists = await Generate5PieceCutLists(customerName, vendorName, orders);
+            cutLists.AddRange(fivePieceCutLists);
         }
 
+        if (configuration.GenerateDoweledDrawerBoxCutList) {
+            var doweledDBCutLists = await GenerateDoweledDrawerBoxCutLists(customerName, vendorName, orders);
+            cutLists.AddRange(doweledDBCutLists);
+        }
+
+        return cutLists;
     }
 
-    private (string HTMLBody, string TextBody) GenerateEmailBodies(bool includeReleaseSummary, List<ReleasedJob> jobs, string note) {
+    private async Task<List<IDocumentDecorator>> CreateDocumentDecorators(List<Order> orders, ReleaseConfiguration configuration, List<ReleasedJob> releases) {
+        List<IDocumentDecorator> decorators = new();
+        if (configuration.GenerateJobSummary) {
+            var jobSummaryDecorators = await CreateJobSummaryDecorators(orders, configuration, releases);
+            decorators.AddRange(jobSummaryDecorators);
+        }
 
-        var releasedJobs = jobs.Where(j => j.Releases.Any())
-                                .Select(job => {
+        if (configuration.GeneratePackingList) {
+            var packingListDecorators = await CreatePackingListDecorators(orders);
+            decorators.AddRange(packingListDecorators);
+        }
 
-                                    var usedMaterials = job.Releases
-                                                            .First()
-                                                            .Programs
-                                                            .Select(p => p.Material)
-                                                            .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained))
-                                                            .Select(g => new UsedMaterial(g.Count(), g.Key.Name, g.Key.Width, g.Key.Length, g.Key.Thickness));
+        if (configuration.IncludeDovetailDBPackingList) {
+            var dovetailDBPackingListDecorators = await CreateDovetailDBPackingListDecorators(orders);
+            decorators.AddRange(dovetailDBPackingListDecorators);
+        }
 
-                                    return new Job(job.JobName, usedMaterials);
+        if (configuration.IncludeInvoiceInRelease) {
+            var invoiceDecorators = await CreateInvoiceDecorators(orders);
+            decorators.AddRange(invoiceDecorators);
+        }
 
-                                });
+        decorators.AddRange(releases.Select(_cncReleaseDecoratorFactory.Create).ToList());
+        return decorators;
+    }
 
-        var model = new ReleasedWorkOrderSummary(releasedJobs, note);
+    private async Task<List<IDocumentDecorator>> CreateDovetailDBPackingListDecorators(List<Order> orders) {
+        List<IDocumentDecorator> dovetailDBPackingListDecorators = new();
+        foreach (var order in orders) {
+            if (!order.Products.Any(p => p is DovetailDrawerBoxProduct)) continue;
+            var dovetailDecorator = await _dovetailDBPackingListDecoratorFactory.CreateDecorator(order);
+            dovetailDBPackingListDecorators.Add(dovetailDecorator);
+        }
 
-        var htmlBody = ReleaseEmailBodyGenerator.GenerateHTMLReleaseEmailBody(model, includeReleaseSummary);
-        var textBody = ReleaseEmailBodyGenerator.GenerateTextReleaseEmailBody(model, includeReleaseSummary);
+        return dovetailDBPackingListDecorators;
+    }
 
-        return (htmlBody, textBody);
+    private async Task<List<IDocumentDecorator>> CreatePackingListDecorators(List<Order> orders) {
+        List<IDocumentDecorator> packingListDecorators = new();
+        foreach (var order in orders) {
+            var decorator = await _packingListDecoratorFactory.CreateDecorator(order);
+            packingListDecorators.Add(decorator);
+        }
+
+        return packingListDecorators;
+    }
+
+    private async Task<List<IDocumentDecorator>> CreateJobSummaryDecorators(List<Order> orders, ReleaseConfiguration configuration, List<ReleasedJob> releases) {
+        List<IDocumentDecorator> jobSummaryDecorators = new();
+        foreach (var order in orders) {
+            string[] materials = releases.SelectMany(r => r.Releases)
+                                        .SelectMany(r => r.Programs)
+                                        .Select(p => p.Material.Name)
+                                        .Distinct()
+                                        .ToArray();
+
+            var decorator = await _jobSummaryDecoratorFactory.CreateDecorator(order, configuration.IncludeProductTablesInSummary, configuration.SupplyOptions, materials, true);
+            jobSummaryDecorators.Add(decorator);
+        }
+
+        return jobSummaryDecorators;
+    }
+
+    private async Task SendReleaseEmail(List<Order> orders, ReleaseConfiguration configuration, string customerName, List<ReleasedJob> releases, string orderNumbers, IEnumerable<string> filePaths, string recipients) {
+        OnProgressReport?.Invoke("Sending release email");
+        try {
+
+            var (HTMLBody, TextBody) = await Task.Run(() => {
+                bool multipleOrders = orders.Count > 1;
+                var orderNotes = orders.Where(o => !string.IsNullOrEmpty(o.Note))
+                                        .Select(o => $"{(multipleOrders ? $"{o.Number}:" : "")}{o.Note}");
+                string note = string.Join(';', orderNotes);
+                return GenerateEmailBodies(configuration.IncludeMaterialSummaryInEmailBody, releases, note);
+            });
+
+            List<string> attachments = new() { filePaths.First() };
+            if (configuration.AttachAdditionalFiles) {
+                attachments.AddRange(configuration.AdditionalFilePaths);
+            }
+
+            if (configuration.PreviewReleaseEmail) {
+                await Task.Run(() => CreateAndDisplayOutlookEmail(recipients, $"RELEASED: {orderNumbers} {customerName}", HTMLBody, TextBody, attachments));
+            } else {
+                await SendEmailAsync(recipients, $"RELEASED: {orderNumbers} {customerName}", HTMLBody, TextBody, attachments);
+            }
+
+        } catch (Exception ex) {
+            OnError?.Invoke($"Could not send email - '{ex.Message}'");
+            _logger.LogError(ex, "Exception thrown while trying to send release email");
+        }
+    }
+
+    private async Task<List<IDocumentDecorator>> CreateInvoiceDecorators(List<Order> orders) {
+        List<IDocumentDecorator> invoiceDecorators = new();
+        foreach (var order in orders) {
+            var decorator = await _invoiceDecoratorFactory.CreateDecorator(order);
+            invoiceDecorators.Add(decorator);
+        }
+
+        return invoiceDecorators;
+    }
+
+    private async Task<List<ReleasedJob>> GetCNCReleases(List<Order> orders, ReleaseConfiguration configuration, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
+        List<ReleasedJob> releases = new();
+
+        if (configuration.GenerateCNCRelease) {
+            var wsxmlReleasedJobs = await GetWSXMLReleasedJobs(orders, configuration.CNCDataFilePaths, configuration.CopyCNCReportToWorkingDirectory, orderDate, dueDate, customerName, vendorName);
+            releases.AddRange(wsxmlReleasedJobs);
+        }
+
+        if (configuration.GenerateCNCGCode) {
+            var gcodeJob = await GenerateGCode(orders, customerName, vendorName);
+            if (gcodeJob is not null) {
+                releases.Add(gcodeJob);
+            }
+        }
+
+        return releases;
+    }
+
+    private async Task<List<ReleasedJob>> GetWSXMLReleasedJobs(List<Order> orders, List<string> wsxmlFiles, bool copyToWorkingDirectory, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
+
+        List<ReleasedJob> wsxmlReleasedJobs = new();
+        foreach (var filePath in wsxmlFiles) {
+
+            if (Path.GetExtension(filePath) != ".xml") {
+                OnError?.Invoke("CADCode report file is an invalid file type");
+                continue;
+            }
+
+            ReleasedJob? jobData = null;
+            WSXMLReport? report = await Task.Run(() => WSXMLParser.ParseWSXMLReport(filePath));
+            if (report is not null) {
+                jobData = _wsxmlParser.MapDataToReleasedJob(report, orderDate, dueDate, customerName, vendorName);
+            }
+
+            if (jobData is null) {
+                continue;
+            }
+
+            wsxmlReleasedJobs.Add(jobData);
+
+            if (!copyToWorkingDirectory) {
+                continue;
+            }
+
+            foreach (var order in orders) {
+                if (!Directory.Exists(order.WorkingDirectory)) {
+                    OnError?.Invoke($"Can not copy WSXML file to order working directory because it can ot be accessed or does not exist - '{order.WorkingDirectory}'");
+                    continue;
+                }
+                await Task.Run(() => CopyReportToWorkingDirectory(order.WorkingDirectory, filePath));
+            }
+
+        }
+
+        return wsxmlReleasedJobs;
+    }
+
+    private async Task<ReleasedJob?> GenerateGCode(List<Order> orders, string customerName, string vendorName) {
+        
+        try {
+
+            var gCodeRelease = await _gcodeGenerator.GenerateGCode(orders, customerName, vendorName);
+
+            if (gCodeRelease is not null) {
+                return gCodeRelease;
+            }
+
+        } catch (CADCodeAuthorizationException ex) {
+
+            OnError?.Invoke($"Failed to authorize CADCode. Make sure there is an accessible and available license key. - {ex.Message}");
+
+        } catch (Exception ex) {
+
+            OnError?.Invoke($"Error while generating G-code - {ex.Message}");
+
+        }
+
+        return null;
 
     }
 
-    private void CopyReportToWorkingDirectory(string workingDirectory, string filePath) {
-        string fileName = Path.GetFileNameWithoutExtension(filePath);
-        string destFileName = _fileReader.GetAvailableFileName(workingDirectory, fileName + " (WSML)", "xml");
-        File.Copy(filePath, destFileName);
+    private async Task<List<string>> Generate5PieceCutLists(string customerName, string vendorName, IEnumerable<Order> orders) {
+
+        List<string> generatedFiles = new();
+
+        foreach (var order in orders) { 
+            var outputDirectory = Path.Combine(order.WorkingDirectory, "CUTLIST");
+            var cutListResults = await Task.Run(() =>
+                order.Products
+                    .OfType<FivePieceDoorProduct>()
+                    .GroupBy(d => d.Material)
+                    .Select(group => new FivePieceCutList() {
+                        CustomerName = customerName,
+                        VendorName = vendorName,
+                        Note = order.Note,
+                        Material = group.First().Material,
+                        OrderDate = order.OrderDate,
+                        OrderName = order.Name,
+                        OrderNumber = order.Number,
+                        TotalDoorCount = group.Count(),
+                        Items = group.Select(door => (door, door.GetParts()))
+                                        .SelectMany(doorParts =>
+                                            doorParts.Item2.Select(part => new FivePieceDoorLineItem() {
+                                                CabNumber = doorParts.door.ProductNumber,
+                                                Note = "",
+                                                Qty = part.Qty,
+                                                PartName = part.Name,
+                                                Length = part.Length.AsMillimeters(),
+                                                Width = part.Length.AsMillimeters()
+                                            })
+                                        )
+                                        .ToList()
+                    })
+                    .Select(cutList => _fivePieceDoorCutListWriter.WriteCutList(cutList, outputDirectory, true))
+                    .OfType<FivePieceDoorCutListResult>()
+                    .ToList()
+            );
+
+            var files = cutListResults.Select(result => result.PDFFilePath).OfType<string>();
+            files.ForEach(file => OnFileGenerated?.Invoke(file));
+            generatedFiles.AddRange(files);
+
+        }
+
+        return generatedFiles;
+
+    }
+
+    private async Task<IEnumerable<string>> GenerateDoweledDrawerBoxCutLists(string customerName, string vendorName, IEnumerable<Order> orders) {
+
+        List<string> generatedFiles = new();
+
+        foreach (var order in orders) {
+
+            var outputDirectory = Path.Combine(order.WorkingDirectory, "CUTLIST");
+            var cutListResults = await Task.Run(() =>
+                order.Products
+                    .OfType<DoweledDrawerBoxProduct>()
+                    .GroupBy(d => d.BottomMaterial)
+                    .Select(group => new DoweledDrawerBoxCutList() {
+                        CustomerName = customerName,
+                        VendorName = vendorName,
+                        Note = order.Note,
+                        Material = $"{group.First().BottomMaterial.Thickness.RoundToInchMultiple(0.0625).AsInchFraction()} {group.First().BottomMaterial.Name}",
+                        OrderDate = order.OrderDate,
+                        OrderName = order.Name,
+                        OrderNumber = order.Number,
+                        Items = group.Select(box => box.GetBottom(DoweledDrawerBox.Construction, box.ProductNumber))
+                                        .GroupBy(b => (b.Width, b.Length))
+                                        .OrderByDescending(g => g.Key.Length)
+                                        .OrderByDescending(g => g.Key.Width)
+                                        .Select(bottomGroup => new DoweledDBCutListLineItem() {
+                                            CabNumbers = string.Join(", ", bottomGroup.Select(p => p.ProductNumber)),
+                                            Note = "",
+                                            Qty = bottomGroup.Sum(p => p.Qty),
+                                            PartName = "Bottom",
+                                            Length = bottomGroup.Key.Length.AsMillimeters(),
+                                            Width = bottomGroup.Key.Width.AsMillimeters()
+                                        })
+                                        .ToList()
+                    })
+                    .Select(cutList => _doweledDrawerBoxCutListWriter.WriteCutList(cutList, outputDirectory, true))
+                    .OfType<DoweledDBCutListResult>()
+                    .ToList()
+            );
+
+            var files = cutListResults.Select(result => result.PDFFilePath).OfType<string>();
+            files.ForEach(file => OnFileGenerated?.Invoke(file));
+            generatedFiles.AddRange(files);
+
+        }
+
+        return generatedFiles;
+
     }
 
     private async Task Invoicing(Order order, ReleaseConfiguration configuration, string customerName) {
@@ -390,15 +452,9 @@ public class ReleaseService {
             return;
         }
 
-        IEnumerable<string> invoiceDirectories;
-        bool isTemp = false;
-        if (configuration.GenerateInvoice) {
-            invoiceDirectories = (configuration.InvoiceOutputDirectory ?? "").Split(';').Where(s => !string.IsNullOrWhiteSpace(s));
-        } else {
-            invoiceDirectories = new string[] { Path.GetTempPath() };
-            isTemp = true;
-        }
+        bool isTemp = !configuration.GenerateInvoice;
 
+        IEnumerable<string> invoiceDirectories = GetInvoiceDirectories(configuration);
         if (!invoiceDirectories.Any()) {
             OnError?.Invoke("No output directory was specified for invoice pdf");
             return;
@@ -409,7 +465,8 @@ public class ReleaseService {
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
             var decorator = await _invoiceDecoratorFactory.CreateDecorator(order);
-            filePaths = await GeneratePDFAsync(invoiceDirectories, new IDocumentDecorator[] { decorator }, filename, customerName, Enumerable.Empty<string>(), isTemp);
+            var documentBytes = await Task.Run(() => Document.Create(doc => decorator.Decorate(doc)).GeneratePdf());
+            filePaths = await SaveFileDataToDirectoriesAsync(documentBytes, invoiceDirectories, customerName, filename, isTemp);
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate invoice PDF - '{ex.Message}'");
             _logger.LogError(ex, "Exception thrown while trying to generate invoice pdf");
@@ -431,13 +488,30 @@ public class ReleaseService {
             OnProgressReport?.Invoke("Not sending invoice email");
         }
 
-        if (!configuration.GenerateInvoice) {
+        if (isTemp) {
             filePaths.ForEach(file => {
                 _logger.LogInformation("Deleting temporary invoice pdf '@File'", file);
                 File.Delete(file);
             });
         }
 
+    }
+
+    private static IEnumerable<string> GetInvoiceDirectories(ReleaseConfiguration configuration) {
+        IEnumerable<string> invoiceDirectories;
+        if (configuration.GenerateInvoice) {
+            invoiceDirectories = (configuration.InvoiceOutputDirectory ?? "").Split(';').Where(s => !string.IsNullOrWhiteSpace(s)).Where(Directory.Exists);
+        } else {
+            invoiceDirectories = new string[] { Path.GetTempPath() };
+        }
+
+        return invoiceDirectories;
+    }
+
+    private void CopyReportToWorkingDirectory(string workingDirectory, string filePath) {
+        string fileName = Path.GetFileNameWithoutExtension(filePath);
+        string destFileName = _fileReader.GetAvailableFileName(workingDirectory, fileName + " (WSML)", "xml");
+        File.Copy(filePath, destFileName);
     }
 
     private async Task SendEmailAsync(string recipients, string subject, string htmlBody, string textBody, IEnumerable<string> attachments) {
@@ -503,7 +577,7 @@ public class ReleaseService {
 
     }
 
-    static Account? GetSenderOutlookAccount(OutlookApp app, string preferredEmail) {
+    private static Account? GetSenderOutlookAccount(OutlookApp app, string preferredEmail) {
 
         var accounts = app.Session.Accounts;
         if (accounts is null || accounts.Count == 0) {
@@ -523,14 +597,11 @@ public class ReleaseService {
 
     }
 
-    private async Task<IEnumerable<string>> GeneratePDFAsync(IEnumerable<string> outputDirs, IEnumerable<IDocumentDecorator> decorators, string name, string customerName, IEnumerable<string> attachedFiles, bool isTemp = false) {
+    private async Task<byte[]> BuildPDFAsync(IEnumerable<IDocumentDecorator> decorators, IEnumerable<string> attachedFiles) {
 
         if (!decorators.Any()) {
-            OnError?.Invoke($"There are no pages to add to the '{name}' document");
-            return Enumerable.Empty<string>();
+            return Array.Empty<byte>();
         }
-
-        List<string> files = new();
 
         var documentBytes = await Task.Run(() => {
 
@@ -540,7 +611,7 @@ public class ReleaseService {
                     try {
                         decorator.Decorate(doc);
                     } catch (Exception ex) {
-                        OnError?.Invoke($"Error adding pages to document '{name}' - '{ex.Message}'");
+                        OnError?.Invoke($"Error adding pages to document - '{ex.Message}'");
                     }
                 }
 
@@ -564,9 +635,17 @@ public class ReleaseService {
 
         }
 
+        return documentBytes;
+
+    }
+
+    private async Task<IEnumerable<string>> SaveFileDataToDirectoriesAsync(byte[] documentBytes, IEnumerable<string> outputDirs, string customerName, string fileName, bool isTemp) {
+
+        List<string> files = new();
+
         foreach (var outputDir in outputDirs) {
 
-            string directory = ReplaceTokensInDirectory(customerName, outputDir);
+            string directory = ReplaceTokensInDirectory(_fileReader, customerName, outputDir);
 
             try {
 
@@ -574,7 +653,7 @@ public class ReleaseService {
                     Directory.CreateDirectory(directory);
                 }
 
-                var filePath = _fileReader.GetAvailableFileName(directory, name, ".pdf");
+                var filePath = _fileReader.GetAvailableFileName(directory, fileName, ".pdf");
                 await File.WriteAllBytesAsync(filePath, documentBytes);
                 files.Add(filePath);
 
@@ -593,8 +672,33 @@ public class ReleaseService {
         return files;
     }
 
-    public string ReplaceTokensInDirectory(string customerName, string outputDir) {
-        var sanitizedName = _fileReader.RemoveInvalidPathCharacters(customerName);
+    private static (string HTMLBody, string TextBody) GenerateEmailBodies(bool includeReleaseSummary, List<ReleasedJob> jobs, string note) {
+
+        var releasedJobs = jobs.Where(j => j.Releases.Any())
+                                .Select(job => {
+
+                                    var usedMaterials = job.Releases
+                                                            .First()
+                                                            .Programs
+                                                            .Select(p => p.Material)
+                                                            .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained))
+                                                            .Select(g => new UsedMaterial(g.Count(), g.Key.Name, g.Key.Width, g.Key.Length, g.Key.Thickness));
+
+                                    return new Job(job.JobName, usedMaterials);
+
+                                });
+
+        var model = new ReleasedWorkOrderSummary(releasedJobs, note);
+
+        var htmlBody = ReleaseEmailBodyGenerator.GenerateHTMLReleaseEmailBody(model, includeReleaseSummary);
+        var textBody = ReleaseEmailBodyGenerator.GenerateTextReleaseEmailBody(model, includeReleaseSummary);
+
+        return (htmlBody, textBody);
+
+    }
+
+    public static string ReplaceTokensInDirectory(IFileReader fileReader, string customerName, string outputDir) {
+        var sanitizedName = fileReader.RemoveInvalidPathCharacters(customerName);
         var result = outputDir.Replace("{customer}", sanitizedName);
         return result;
     }
