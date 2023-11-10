@@ -68,6 +68,7 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
             _ = Marshal.ReleaseComObject(workbooks);
             _ = Marshal.ReleaseComObject(app);
             workbook = null;
+            workbooks = null;
             app = null;
 
             if (data is null) {
