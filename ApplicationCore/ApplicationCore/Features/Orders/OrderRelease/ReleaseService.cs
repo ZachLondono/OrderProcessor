@@ -73,6 +73,12 @@ public class ReleaseService {
 
         _fivePieceDoorCutListWriter.OnError += (msg) => OnError?.Invoke(msg);
         _doweledDrawerBoxCutListWriter.OnError += (msg) => OnError?.Invoke(msg);
+
+        _gcodeGenerator.OnError += (msg) => OnError?.Invoke(msg);
+        _gcodeGenerator.OnProgressReport += (msg) => OnProgressReport?.Invoke(msg);
+        _gcodeGenerator.ShowProgressBar += () => ShowProgressBar?.Invoke();
+        _gcodeGenerator.HideProgressBar += () => HideProgressBar?.Invoke();
+        _gcodeGenerator.SetProgressBarValue += (val) => SetProgressBarValue?.Invoke(val);
     }
 
     public async Task Release(List<Order> orders, ReleaseConfiguration configuration) {
