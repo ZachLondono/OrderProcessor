@@ -2,7 +2,7 @@
 using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Shared;
-using ApplicationCore.Shared.CNC.ReleasedJob;
+using ApplicationCore.Shared.CNC.Job;
 using ApplicationCore.Shared.CNC.WSXML;
 using ApplicationCore.Shared.Domain;
 using ApplicationCore.Shared.Settings.CNC;

@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Shared.CNC.Domain;
-using ApplicationCore.Shared.CNC.ReleasedJob;
+using ApplicationCore.Shared.CNC.Job;
 using ApplicationCore.Shared.CNC.ReleasePDF.Services;
 using FluentAssertions;
 

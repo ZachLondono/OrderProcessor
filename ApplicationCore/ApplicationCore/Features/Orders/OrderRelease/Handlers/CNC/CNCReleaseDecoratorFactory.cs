@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Shared.CNC.ReleasedJob;
+﻿using ApplicationCore.Shared.CNC.Job;
 using ApplicationCore.Shared.CNC.ReleasePDF;
 using Microsoft.Extensions.DependencyInjection;
 

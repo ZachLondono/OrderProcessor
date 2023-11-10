@@ -32,8 +32,9 @@ using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Features.CNC.ReleasePDF;
 using ApplicationCore.Shared.Settings.CNC;
 using Microsoft.Extensions.Options;
-using ApplicationCore.Shared.CNC.ReleasedJob;
+using ApplicationCore.Shared.CNC.Job;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.GCode;
+using CADCodeProxy.Exceptions;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -153,12 +154,24 @@ public class ReleaseService {
 
         if (configuration.GenerateCNCGCode) {
 
-            var gCodeRelease = await _gcodeGenerator.GenerateGCode(orders, customerName, vendorName);
+            try {
 
-            if (gCodeRelease is not null) {
-                releases.Add(gCodeRelease);
-                var decorator = _cncReleaseDecoratorFactory.Create(gCodeRelease);
-                cncReleaseDecorators.Add(decorator);
+                var gCodeRelease = await _gcodeGenerator.GenerateGCode(orders, customerName, vendorName);
+
+                if (gCodeRelease is not null) {
+                    releases.Add(gCodeRelease);
+                    var decorator = _cncReleaseDecoratorFactory.Create(gCodeRelease);
+                    cncReleaseDecorators.Add(decorator);
+                }
+
+            }  catch (CADCodeAuthorizationException ex) {
+
+                OnError?.Invoke($"Failed to authorize CADCode. Make sure there is an accessible and available license key. - {ex.Message}");
+
+            } catch (Exception ex) {
+
+                OnError?.Invoke($"Error while generating G-code -> {ex.Message}");
+
             }
 
         }

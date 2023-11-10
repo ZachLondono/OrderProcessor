@@ -1,6 +1,6 @@
 ﻿using QuestPDF.Infrastructure;
 using ApplicationCore.Shared.CNC.ReleasePDF.Services;
-using ApplicationCore.Shared.CNC.WSXML.ReleasedJob;
+using ApplicationCore.Shared.CNC.Job;
 
 namespace ApplicationCore.Shared.CNC.ReleasePDF;
 

@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Shared.CNC.Domain;
 using ApplicationCore.Shared.Domain;
 
-namespace ApplicationCore.Shared.CNC.ReleasedJob;
+namespace ApplicationCore.Shared.CNC.Job;
 
 public class NestedPart {
 
