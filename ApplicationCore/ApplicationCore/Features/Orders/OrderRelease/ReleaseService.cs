@@ -323,6 +323,8 @@ public class ReleaseService {
 
         }
 
+        OnActionComplete?.Invoke($"'{wsxmlReleasedJobs.Count}' WSXML jobs loaded");
+
         return wsxmlReleasedJobs;
     }
 
