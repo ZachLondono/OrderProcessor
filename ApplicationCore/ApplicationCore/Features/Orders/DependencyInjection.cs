@@ -16,6 +16,7 @@ using ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DoweledDrawerBoxCutList;
+using ApplicationCore.Features.Orders.OrderRelease.Handlers.GCode;
 
 namespace ApplicationCore.Features.Orders;
 
@@ -41,6 +42,7 @@ public static class DependencyInjection {
     }
 
     private static void AddReleaseServices(IServiceCollection services) {
+        services.AddTransient<CNCPartGCodeGenerator>();
         services.AddTransient<CNCReleaseDecoratorFactory>();
         services.AddTransient<IJobSummaryDecorator, JobSummaryDecorator>();
         services.AddTransient<JobSummaryDecoratorFactory>();
