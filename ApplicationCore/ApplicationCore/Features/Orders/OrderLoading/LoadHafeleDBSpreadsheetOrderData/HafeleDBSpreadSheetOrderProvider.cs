@@ -2,6 +2,7 @@
 using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using ApplicationCore.Features.Companies.Customers.Commands;
 using ApplicationCore.Features.Companies.Customers.Queries;
+using ApplicationCore.Features.Companies.Vendors.Queries;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
@@ -134,19 +135,7 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
             }
         };
 
-        // TODO: get billing info from vendor
-        var billing = new BillingInfo() {
-            InvoiceEmail = null,
-            PhoneNumber = "",
-            Address = new() {
-                Line1 = "390 Cheyenne Drive",
-                Line2 = "P.O. Box 4000",
-                Line3 = "",
-                City = "Archdale",
-                State = "NC",
-                Zip = "27263"
-            }
-        };
+        var billing = await GetVendorBillingInfo(_settings.VendorId);
 
         string workingDirectory = Path.Combine(_settings.WorkingDirectoryRoot.Replace('/', '\\'), $"{workbookData.OrderDetails.HafelePO} - {workbookData.OrderDetails.JobName} - {workbookData.ContactInformation.Company}");
         if (!TryToCreateWorkingDirectory(workingDirectory, out string? incomingDirectory)) {
@@ -263,6 +252,48 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
         _ = await _bus.Send(new InsertCustomer.Command(customer, null));
 
         return customer.Id;
+
+    }
+
+    private async Task<BillingInfo> GetVendorBillingInfo(Guid vendorId) {
+
+        var response = await _bus.Send(new GetVendorById.Query(vendorId));
+
+        return response.Match(
+            vendor => {
+
+                return new BillingInfo() {
+                    InvoiceEmail = null,
+                    PhoneNumber = vendor?.Phone ?? "",
+                    Address = new() {
+                        Line1 = vendor?.Address.Line1 ?? "",
+                        Line2 = vendor?.Address.Line2 ?? "",
+                        Line3 = vendor?.Address.Line3 ?? "",
+                        City = vendor?.Address.City ?? "",
+                        State = vendor?.Address.State ?? "",
+                        Zip = vendor?.Address.Zip ?? "",
+                        Country = vendor?.Address.Country ?? ""
+                    }
+                };
+
+            },
+            error => {
+
+                return new BillingInfo() {
+                    InvoiceEmail = null,
+                    PhoneNumber = "",
+                    Address = new() {
+                        Line1 = "",
+                        Line2 = "",
+                        Line3 = "",
+                        City = "",
+                        State = "",
+                        Zip = "",
+                        Country = ""
+                    }
+                };
+
+            });
 
     }
 
