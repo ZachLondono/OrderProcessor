@@ -24,7 +24,9 @@ public static class Extensions {
             "hafele_db_order.json",
             "cnc_settings.json",
             "data.json",
+#if DEBUG
             "data.Development.json"
+#endif
     };
 
     public static IConfigurationBuilder AddSettingsFiles(this IConfigurationBuilder builder, Action<string> logVerbose) {
