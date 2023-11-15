@@ -5,7 +5,6 @@ using Microsoft.CodeAnalysis;
 using RoslynPad.Editor;
 using RoslynPad.Roslyn;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -18,10 +17,9 @@ public partial class ScriptEditor : Window {
 
     private readonly RoslynHost _host;
     private RoslynCodeEditor? _currentEditor;
-    private readonly string _filePath;
+    private string _filePath;
 
     public ScriptEditor(string filePath, Type inputType, Type outputType) {
-
         _filePath = filePath;
         InitializeComponent();
 
@@ -30,21 +28,13 @@ public partial class ScriptEditor : Window {
             Assembly.Load("RoslynPad.Editor.Windows")
         };
 
-        List<MetadataReference> references = new();
-        var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
-        if (assemblyPath == null) {
-            throw new InvalidOperationException("Can not find path to default assemblies");
+        Type hostType = typeof(CustomRoslynHost<>).MakeGenericType(inputType);
+        var hostInstance = Activator.CreateInstance(hostType, additionalAssemblies, RoslynHostReferences.NamespaceDefault.With(assemblyReferences: ScriptService.References, imports: ScriptService.Imports));
+        if (hostInstance is not RoslynHost host) {
+            throw new InvalidOperationException();
         }
-        references.Add(MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")));
-        references.Add(MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")));
-        references.Add(MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")));
-        references.Add(MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll")));
 
-        _host = new CustomRoslynHost(typeof(ScriptGlobals<>),
-                                    additionalAssemblies,
-                                    RoslynHostReferences.NamespaceDefault.With(assemblyReferences: ScriptService.References,
-                                                                                               references:references,
-                                                                                               imports: ScriptService.Imports));
+        _host = host;
 
         Type vmType = typeof(ScriptEditorViewModel<,>).MakeGenericType(inputType, outputType);
         var vmInstance = Activator.CreateInstance(vmType);
@@ -63,6 +53,8 @@ public partial class ScriptEditor : Window {
         editor.Loaded -= OnItemLoaded;
         editor.Focus();
 
+        var workingDirectory = Directory.GetCurrentDirectory();
+
         string contents;
 
         try {
@@ -72,8 +64,6 @@ public partial class ScriptEditor : Window {
             WasFileLoaded = false;
             contents = $"Script could not be read - '{ex.Message}'";
         }
-
-        var workingDirectory = Directory.GetCurrentDirectory();
 
         var documentId = await editor.InitializeAsync(_host,
                                                       new ClassificationHighlightColors(),
