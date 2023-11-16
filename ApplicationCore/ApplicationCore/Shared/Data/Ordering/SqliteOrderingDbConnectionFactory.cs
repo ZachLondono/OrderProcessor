@@ -29,7 +29,7 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
 
         if (_dataSource is null) {
             semaphore.Release();
-            throw new InvalidOperationException("Could not find companies database data source");
+            throw new InvalidOperationException("Could not find ordering database data source");
         }
 
         var builder = new SqliteConnectionStringBuilder {
