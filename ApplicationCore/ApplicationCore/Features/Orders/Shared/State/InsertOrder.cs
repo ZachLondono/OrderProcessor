@@ -17,12 +17,10 @@ public partial class InsertOrder {
 
         private readonly ILogger<Handler> _logger;
         private readonly IOrderingDbConnectionFactory _factory;
-        private readonly IBus _bus;
 
-        public Handler(ILogger<Handler> logger, IOrderingDbConnectionFactory factory, IBus bus) {
+        public Handler(ILogger<Handler> logger, IOrderingDbConnectionFactory factory) {
             _logger = logger;
             _factory = factory;
-            _bus = bus;
         }
 
         public override async Task<Response> Handle(Command request) {
