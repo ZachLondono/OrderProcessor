@@ -66,202 +66,33 @@ public class CNCPartGCodeGenerator {
 
         var generator = new GCodeGenerator(CADCodeProxy.Enums.LinearUnits.Millimeters);
 
-        var defaultInventorySize = _cncSettings.DefaultInventorySize;
+        if (SetProgressBarValue is not null) generator.CADCodeProgressEvent += SetProgressBarValue.Invoke;
+        if (OnError is not null) generator.CADCodeErrorEvent += OnError.Invoke;
+        if (OnProgressReport is not null) generator.GenerationEvent += OnProgressReport.Invoke;
 
-        parts.Select(p => (p.Material, p.Thickness))
-            .Distinct()
-            .ForEach(material => {
-
-                if (_cncSettings.Inventory.TryGetValue(material.Material, out var item)
-                    && item.Thickness == material.Thickness) {
-
-                    item.Sizes
-                        .ForEach(size => {
-
-                            var invItem = new CADCodeProxy.CNC.InventoryItem() {
-                                MaterialName = material.Material,
-                                AvailableQty = 9999,
-                                IsGrained = true,
-                                PanelLength = size.Length,
-                                PanelWidth = size.Width,
-                                PanelThickness = material.Thickness,
-                                Priority = size.Priority,
-                            };
-
-                            generator.Inventory.Add(invItem);
-
-                        });
-
-                } else {
-
-                    var invItem = new CADCodeProxy.CNC.InventoryItem() {
-                        MaterialName = material.Material,
-                        AvailableQty = 9999,
-                        IsGrained = true,
-                        PanelLength = defaultInventorySize.Length,
-                        PanelWidth = defaultInventorySize.Width,
-                        PanelThickness = material.Thickness,
-                        Priority = 1,
-                    };
-                    generator.Inventory.Add(invItem);
-
-                }
-
-            });
+        GetInventoryItems(parts, _cncSettings.DefaultInventorySize).ForEach(generator.Inventory.Add);
 
         ShowProgressBar?.Invoke();
-
-        if (SetProgressBarValue is not null) generator.CADCodeProgressEvent += SetProgressBarValue.Invoke;
-        if (OnError is not null) generator.CADCodeErrorEvent += (msg) => OnError.Invoke(msg);
-        if (OnProgressReport is not null) generator.GenerationEvent += OnProgressReport.Invoke;
 
         var result = await Task.Run(() => generator.GeneratePrograms(machines, batch, ""));
         DateTime timestamp = DateTime.Now;
 
         HideProgressBar?.Invoke();
 
-        static string GetImageFileName(string patternName) {
-
-            int idx = patternName.IndexOf('.');
-            if (idx < 0) {
-                return patternName;
-            }
-
-            return patternName[..idx];
-
-        }
+        // TODO: add figure out how to check if the single part programs where actually generated
+        var singlePrograms = GetSingleProgramsFromBatch(batch);
+        var usedToolNames = GetUsedToolNamesFromBatch(batch);
 
         var releases = result.MachineResults.Select(machineResult => {
 
-            var programs = machineResult.MaterialGCodeGenerationResults
-                        .SelectMany(genResult => {
+            var programs = GetProgramsFromResult(machineResult);
 
-                            var labelsByPartId = genResult.PartLabels.ToDictionary(pl => pl.PartId, pl => pl.Fields);
-
-                            return genResult.ProgramNames
-                                    .Select((program, idx) => {
-
-                                        var parts = genResult.PlacedParts.Where(p => p.ProgramIndex == idx).ToList();
-
-                                        int inventoryIndex = parts.First().UsedInventoryIndex; // TODO: get inventory index for program name
-                                        var inventory = genResult.UsedInventory[inventoryIndex];
-
-                                        var area = inventory.Width * inventory.Length;
-                                        var usedArea = parts.Sum(part => part.Width * part.Length);
-                                        var yield = usedArea / area;
-
-                                        string materialName = genResult.MaterialName;
-                                        if (PSIMaterial.TryParse(materialName, out var psiMat)) {
-                                            materialName = psiMat.GetSimpleName();
-                                        }
-
-                                        return new ReleasedProgram() {
-                                            Name = program,
-                                            ImagePath = @$"C:\Users\Zachary Londono\Desktop\CC Output\{GetImageFileName(program)}.wmf",
-                                            HasFace6 = false,
-                                            Material = new() {
-                                                Name = materialName,
-                                                Width = inventory.Width,
-                                                Length = inventory.Length,
-                                                Thickness = inventory.Thickness,
-                                                IsGrained = inventory.IsGrained,
-                                                Yield = yield
-                                            },
-                                            Parts = parts.Select(placedPart => {
-
-                                                var label = labelsByPartId[placedPart.PartId];
-
-                                                return new NestedPart() {
-                                                    Name = placedPart.Name,
-                                                    FileName = label.GetValueOrEmpty("Face5Filename"),
-                                                    HasFace6 = false,
-                                                    Face6FileName = null,
-                                                    ImageData = "",
-                                                    Width = Dimension.FromMillimeters(placedPart.Width),
-                                                    Length = Dimension.FromMillimeters(placedPart.Length),
-                                                    Description = label.GetValueOrEmpty("Description"),
-                                                    Center = new() {
-                                                        X = placedPart.InsertionPoint.X + (placedPart.IsRotated ? placedPart.Width : placedPart.Length) / 2,
-                                                        Y = placedPart.InsertionPoint.Y + (placedPart.IsRotated ? placedPart.Length : placedPart.Width) / 2
-                                                    },
-                                                    ProductNumber = label.GetValueOrEmpty("Cabinet Number"),
-                                                    ProductId = Guid.Empty, // TODO: find a way to get thr product id
-                                                    PartId = placedPart.PartId.ToString(), //placedPart.Id, TODO: cadcode generated id 
-                                                    IsRotated = placedPart.IsRotated,
-                                                    HasBackSideProgram = false,
-                                                    Note = label.GetValueOrEmpty("PEFinishedSide")
-                                                };
-                                            })
-                                            .ToList()
-                                        };
-
-                                    });
-
-                        });
-
+            var toolTable = CreateMachineToolTable(machineResult.MachineName, _toolConfiguration.MachineToolMaps, usedToolNames);
 
             var orientation = ApplicationCore.Shared.CNC.Domain.TableOrientation.Standard;
             if (_cncSettings.MachineSettings.TryGetValue(machineResult.MachineName, out var settings) && settings.IsTableRotated) {
                 orientation = ApplicationCore.Shared.CNC.Domain.TableOrientation.Rotated;
             }
-
-            // TODO: add figure out how to check if the single part programs where actually generated
-            var singlePrograms = batch.Parts
-                                        .SelectMany(p => {
-
-                                            if (!p.InfoFields.TryGetValue("Description", out string? description)) {
-                                                description = "";
-                                            }
-
-                                            if (!p.InfoFields.TryGetValue("Cabinet Number", out string? productNumber)) {
-                                                productNumber = "";
-                                            }
-
-                                            string partId = p.Id.ToString();
-                                            var width = Dimension.FromMillimeters(p.Width);
-                                            var length = Dimension.FromMillimeters(p.Length);
-                                            bool hasBackSideProgram = false;
-
-                                            List<SinglePartProgram> programs = new() {
-                                                new SinglePartProgram() {
-                                                    FileName = p.PrimaryFace.ProgramName,
-                                                    Name = p.PrimaryFace.ProgramName,
-                                                    Description = description ?? "",
-                                                    HasBackSideProgram = hasBackSideProgram,
-                                                    Width = width,
-                                                    Length = length,
-                                                    ProductNumber = productNumber ?? "",
-                                                    PartId = partId
-                                                }
-                                            };
-
-                                            if (p.SecondaryFace is not null) {
-
-                                                programs.Add(new SinglePartProgram() {
-                                                    FileName = p.SecondaryFace.ProgramName,
-                                                    Name = p.SecondaryFace.ProgramName,
-                                                    Description = description ?? "",
-                                                    HasBackSideProgram = hasBackSideProgram,
-                                                    Width = width,
-                                                    Length = length,
-                                                    ProductNumber = productNumber ?? "",
-                                                    PartId = partId
-                                                });
-
-                                            }
-
-                                            return programs;
-
-                                        });
-
-            var usedToolNames = batch.Parts
-                                        .SelectMany(p => new PartFace?[] { p.PrimaryFace, p.SecondaryFace })
-                                        .OfType<PartFace>()
-                                        .SelectMany(f => f.Tokens)
-                                        .Select(t => t.ToolName)
-                                        .Distinct();
-
-            var toolTable = CreateMachineToolTable(machineResult.MachineName, _toolConfiguration.MachineToolMaps, usedToolNames);
 
             return new MachineRelease() {
                 MachineName = machineResult.MachineName,
@@ -284,6 +115,181 @@ public class CNCPartGCodeGenerator {
             Releases = releases
         };
 
+    }
+
+    private static string GetImageFileName(string patternName) {
+    
+        int idx = patternName.IndexOf('.');
+        if (idx < 0) {
+            return patternName;
+        }
+    
+        return patternName[..idx];
+    
+    }
+
+    private static IEnumerable<ReleasedProgram> GetProgramsFromResult(CADCodeProxy.Results.MachineGCodeGenerationResult machineResult) {
+        return machineResult.MaterialGCodeGenerationResults
+                            .SelectMany(genResult => {
+    
+                                var labelsByPartId = genResult.PartLabels.ToDictionary(pl => pl.PartId, pl => pl.Fields);
+    
+                                return genResult.ProgramNames
+                                        .Select((program, idx) => {
+    
+                                            var parts = genResult.PlacedParts.Where(p => p.ProgramIndex == idx).ToList();
+    
+                                            int inventoryIndex = parts.First().UsedInventoryIndex; // TODO: get inventory index for program name
+                                            var inventory = genResult.UsedInventory[inventoryIndex];
+    
+                                            var area = inventory.Width * inventory.Length;
+                                            var usedArea = parts.Sum(part => part.Width * part.Length);
+                                            var yield = usedArea / area;
+    
+                                            string materialName = genResult.MaterialName;
+                                            if (PSIMaterial.TryParse(materialName, out var psiMat)) {
+                                                materialName = psiMat.GetSimpleName();
+                                            }
+    
+                                            return new ReleasedProgram() {
+                                                Name = program,
+                                                ImagePath = @$"C:\Users\Zachary Londono\Desktop\CC Output\{GetImageFileName(program)}.wmf",
+                                                HasFace6 = false,
+                                                Material = new() {
+                                                    Name = materialName,
+                                                    Width = inventory.Width,
+                                                    Length = inventory.Length,
+                                                    Thickness = inventory.Thickness,
+                                                    IsGrained = inventory.IsGrained,
+                                                    Yield = yield
+                                                },
+                                                Parts = parts.Select(placedPart => {
+    
+                                                    var label = labelsByPartId[placedPart.PartId];
+    
+                                                    return new NestedPart() {
+                                                        Name = placedPart.Name,
+                                                        FileName = label.GetValueOrEmpty("Face5Filename"),
+                                                        HasFace6 = false,
+                                                        Face6FileName = null,
+                                                        ImageData = "",
+                                                        Width = Dimension.FromMillimeters(placedPart.Width),
+                                                        Length = Dimension.FromMillimeters(placedPart.Length),
+                                                        Description = label.GetValueOrEmpty("Description"),
+                                                        Center = new() {
+                                                            X = placedPart.InsertionPoint.X + (placedPart.IsRotated ? placedPart.Width : placedPart.Length) / 2,
+                                                            Y = placedPart.InsertionPoint.Y + (placedPart.IsRotated ? placedPart.Length : placedPart.Width) / 2
+                                                        },
+                                                        ProductNumber = label.GetValueOrEmpty("Cabinet Number"),
+                                                        ProductId = Guid.Empty, // TODO: find a way to get thr product id
+                                                        PartId = placedPart.PartId.ToString(), //placedPart.Id, TODO: cadcode generated id 
+                                                        IsRotated = placedPart.IsRotated,
+                                                        HasBackSideProgram = false,
+                                                        Note = label.GetValueOrEmpty("PEFinishedSide")
+                                                    };
+                                                })
+                                                .ToList()
+                                            };
+    
+                                        });
+    
+                            });
+    }
+        
+    private static IEnumerable<string> GetUsedToolNamesFromBatch(Batch batch) {
+        return batch.Parts
+                    .SelectMany(p => new PartFace?[] { p.PrimaryFace, p.SecondaryFace })
+                    .OfType<PartFace>()
+                    .SelectMany(f => f.Tokens)
+                    .Select(t => t.ToolName)
+                    .Distinct();
+    }
+
+    private static IEnumerable<SinglePartProgram> GetSingleProgramsFromBatch(Batch batch) {
+        return batch.Parts
+                    .SelectMany(p => {
+
+                        if (!p.InfoFields.TryGetValue("Description", out string? description)) {
+                            description = "";
+                        }
+
+                        if (!p.InfoFields.TryGetValue("Cabinet Number", out string? productNumber)) {
+                            productNumber = "";
+                        }
+
+                        string partId = p.Id.ToString();
+                        var width = Dimension.FromMillimeters(p.Width);
+                        var length = Dimension.FromMillimeters(p.Length);
+                        bool hasBackSideProgram = false;
+
+                        List<SinglePartProgram> programs = new() {
+                    new SinglePartProgram() {
+                        FileName = p.PrimaryFace.ProgramName,
+                        Name = p.PrimaryFace.ProgramName,
+                        Description = description ?? "",
+                        HasBackSideProgram = hasBackSideProgram,
+                        Width = width,
+                        Length = length,
+                        ProductNumber = productNumber ?? "",
+                        PartId = partId
+                    }
+                        };
+
+                        if (p.SecondaryFace is not null) {
+
+                            programs.Add(new SinglePartProgram() {
+                                FileName = p.SecondaryFace.ProgramName,
+                                Name = p.SecondaryFace.ProgramName,
+                                Description = description ?? "",
+                                HasBackSideProgram = hasBackSideProgram,
+                                Width = width,
+                                Length = length,
+                                ProductNumber = productNumber ?? "",
+                                PartId = partId
+                            });
+
+                        }
+
+                        return programs;
+
+                    });
+    }
+
+    private IEnumerable<CADCodeProxy.CNC.InventoryItem> GetInventoryItems(Part[] parts, InventorySize defaultInventorySize) {
+        return parts.Select(p => (p.Material, p.Thickness))
+            .Distinct()
+            .SelectMany(material => {
+
+                if (_cncSettings.Inventory.TryGetValue(material.Material, out var item)
+                    && item.Thickness == material.Thickness) {
+
+                    return item.Sizes
+                                .Select(size =>
+                                    new CADCodeProxy.CNC.InventoryItem() {
+                                        MaterialName = material.Material,
+                                        AvailableQty = 9999,
+                                        IsGrained = true,
+                                        PanelLength = size.Length,
+                                        PanelWidth = size.Width,
+                                        PanelThickness = material.Thickness,
+                                        Priority = size.Priority,
+                                    });
+
+                }
+
+                var invItem = new CADCodeProxy.CNC.InventoryItem() {
+                    MaterialName = material.Material,
+                    AvailableQty = 9999,
+                    IsGrained = true,
+                    PanelLength = defaultInventorySize.Length,
+                    PanelWidth = defaultInventorySize.Width,
+                    PanelThickness = material.Thickness,
+                    Priority = 1,
+                };
+
+                return new[] { invItem };
+
+            });
     }
 
     public static IReadOnlyDictionary<int, string> CreateMachineToolTable(string machineName, IEnumerable<MachineToolMap> toolMaps, IEnumerable<string> usedToolNames) {
@@ -315,5 +321,4 @@ public class CNCPartGCodeGenerator {
 
     }
 
-    
 }
