@@ -23,23 +23,25 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
         _dataSource = options.CurrentValue.OrderingDBPath;
     }
 
-    public async Task<IDbConnection> CreateConnection() {
+    public Task<IDbConnection> CreateConnection() => CreateConnection(_dataSource); 
+
+    public async Task<IDbConnection> CreateConnection(string dataSource) {
 
         await semaphore.WaitAsync();
 
-        if (_dataSource is null) {
+        if (dataSource is null) {
             semaphore.Release();
             throw new InvalidOperationException("Could not find ordering database data source");
         }
 
         var builder = new SqliteConnectionStringBuilder {
-            DataSource = _dataSource,
+            DataSource = dataSource,
             Pooling = false
         };
 
         var connection = new SqliteConnection(builder.ConnectionString);
 
-        if (File.Exists(_dataSource)) {
+        if (File.Exists(dataSource)) {
 
             int dbVersion = await GetDatabaseVersion(connection);
             if (dbVersion != DB_VERSION) {
