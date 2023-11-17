@@ -1,18 +1,16 @@
 ﻿using ApplicationCore.Features.CNC.ReleasePDF;
-using ApplicationCore.Features.Orders.Shared.Domain;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Shared;
+using ApplicationCore.Shared.CNC.Domain;
 using ApplicationCore.Shared.CNC.Job;
-using ApplicationCore.Shared.CNC.WSXML;
 using ApplicationCore.Shared.Domain;
 using ApplicationCore.Shared.Settings.CNC;
 using ApplicationCore.Shared.Settings.Tools;
 using CADCodeProxy;
 using CADCodeProxy.CNC;
 using CADCodeProxy.Machining;
+using CADCodeProxy.Results;
 using Microsoft.Extensions.Options;
 
-namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.GCode;
+namespace ApplicationCore.Shared.CNC;
 
 public class CNCPartGCodeGenerator {
 
@@ -30,39 +28,7 @@ public class CNCPartGCodeGenerator {
         _toolConfiguration = toolOptions.Value;
     }
 
-    public async Task<ReleasedJob?> GenerateGCode(IEnumerable<Order> orders, string customerName, string vendorName) {
-
-        if (!orders.Any()) {
-            return null;
-        }
-
-        var firstOrder = orders.First();
-
-        var parts = orders.SelectMany(o => o.Products)
-                        .OfType<ICNCPartContainer>()
-                        .Where(p => p.ContainsCNCParts())
-                        .SelectMany(p => p.GetCNCParts(customerName))
-                        .ToArray();
-
-        if (!parts.Any()) {
-            return null;
-        }
-
-        var machines = _cncSettings.MachineSettings
-                                    .Select(kv => new Machine() {
-                                        Name = kv.Key,
-                                        ToolFilePath = kv.Value.ToolFile,
-                                        NestOutputDirectory = kv.Value.NestOutputDirectory,
-                                        SingleProgramOutputDirectory = kv.Value.SingleProgramOutputDirectory,
-                                        PictureOutputDirectory = kv.Value.PictureOutputDirectory,
-                                        LabelDatabaseOutputDirectory = kv.Value.LabelDatabaseOutputDirectory,
-                                    });
-
-        Batch batch = new() {
-            Name = $"{firstOrder.Number} - {firstOrder.Name}",
-            Parts = parts,
-            InfoFields = new()
-        };
+    public async Task<ReleasedJob?> GenerateGCode(Batch batch, string customerName, string vendorName, DateTime orderDate, DateTime? dueDate) {
 
         var generator = new GCodeGenerator(CADCodeProxy.Enums.LinearUnits.Millimeters);
 
@@ -70,7 +36,8 @@ public class CNCPartGCodeGenerator {
         if (OnError is not null) generator.CADCodeErrorEvent += OnError.Invoke;
         if (OnProgressReport is not null) generator.GenerationEvent += OnProgressReport.Invoke;
 
-        GetInventoryItems(parts, _cncSettings.DefaultInventorySize).ForEach(generator.Inventory.Add);
+        GetInventoryItems(batch.Parts, _cncSettings.DefaultInventorySize).ForEach(generator.Inventory.Add);
+        var machines = GetMachinesToReleaseTo();
 
         ShowProgressBar?.Invoke();
 
@@ -79,78 +46,135 @@ public class CNCPartGCodeGenerator {
 
         HideProgressBar?.Invoke();
 
-        // TODO: add figure out how to check if the single part programs where actually generated
-        var singlePrograms = GetSingleProgramsFromBatch(batch);
+        var machineToolMaps = _toolConfiguration.MachineToolMaps.ToDictionary(m => m.MachineName, m => m);
+        var machineSettings = _cncSettings.MachineSettings;
+
         var usedToolNames = GetUsedToolNamesFromBatch(batch);
 
-        var releases = result.MachineResults.Select(machineResult => {
-
-            var programs = GetProgramsFromResult(machineResult);
-
-            var toolTable = CreateMachineToolTable(machineResult.MachineName, _toolConfiguration.MachineToolMaps, usedToolNames);
-
-            var orientation = ApplicationCore.Shared.CNC.Domain.TableOrientation.Standard;
-            if (_cncSettings.MachineSettings.TryGetValue(machineResult.MachineName, out var settings) && settings.IsTableRotated) {
-                orientation = ApplicationCore.Shared.CNC.Domain.TableOrientation.Rotated;
-            }
-
-            return new MachineRelease() {
-                MachineName = machineResult.MachineName,
-                MachineTableOrientation = orientation,
-                ToolTable = toolTable,
-                Programs = programs,
-                SinglePrograms = singlePrograms
-            };
-
-        });
+        var releases = result.MachineResults
+                             .Select(machineResult => GetMachineRelease(machineResult, machineToolMaps, machineSettings, usedToolNames));
 
         return new ReleasedJob() {
             JobName = batch.Name,
             CustomerName = customerName,
             VendorName = vendorName,
             TimeStamp = timestamp,
-            OrderDate = firstOrder.OrderDate,
+            OrderDate = orderDate,
             ReleaseDate = DateTime.Today,
-            DueDate = firstOrder.DueDate,
+            DueDate = dueDate,
             Releases = releases
         };
 
     }
 
+    private IEnumerable<Machine> GetMachinesToReleaseTo() {
+        return _cncSettings.MachineSettings
+                           .Select(kv => new Machine() {
+                               Name = kv.Key,
+                               ToolFilePath = kv.Value.ToolFile,
+                               NestOutputDirectory = kv.Value.NestOutputDirectory,
+                               SingleProgramOutputDirectory = kv.Value.SingleProgramOutputDirectory,
+                               PictureOutputDirectory = kv.Value.PictureOutputDirectory,
+                               LabelDatabaseOutputDirectory = kv.Value.LabelDatabaseOutputDirectory,
+                           });
+    }
+
+    private static MachineRelease GetMachineRelease(MachineGCodeGenerationResult machineResult, Dictionary<string, MachineToolMap> machineToolMaps, Dictionary<string, MachineSettings> machineSettings, IEnumerable<string> usedToolNames) {
+
+        // TODO: get used tool names from result
+
+        var programs = GetProgramsFromResult(machineResult);
+        var singlePrograms = GetSinglePartPrograms(machineResult);
+
+        var machineCarousel = machineToolMaps.GetValueOrDefault(machineResult.MachineName);
+        var toolTable = machineCarousel is null ? new() : CreateMachineToolTable(machineCarousel, usedToolNames);
+
+        var orientation = TableOrientation.Standard;
+        if (machineSettings.GetValueOrDefault(machineResult.MachineName)?.IsTableRotated ?? false) {
+            orientation = TableOrientation.Rotated;
+        }
+
+        return new MachineRelease() {
+            MachineName = machineResult.MachineName,
+            MachineTableOrientation = orientation,
+            ToolTable = toolTable,
+            Programs = programs,
+            SinglePrograms = singlePrograms
+        };
+    }
+
+    private static SinglePartProgram[] GetSinglePartPrograms(MachineGCodeGenerationResult machineResult) {
+
+        // TODO: The machine generation result should have a property that lists all single programs that where successfully generated - not just placed parts which may not have a single program associated with it
+        // TODO: PlacedParts only includes Face 5 Parts, but face 6 programs should contain face 6 programs as well (maybe PlacedParts should also show if there was a face 6 program generated for this part)
+
+        var labels = machineResult.MaterialGCodeGenerationResults
+                                   .SelectMany(re => re.PartLabels)
+                                   .DistinctBy(l => l.PartId)
+                                   .ToDictionary(l => l.PartId, l => l);
+
+        return machineResult.MaterialGCodeGenerationResults
+                       .SelectMany(matResult => matResult.PlacedParts)
+                       .DistinctBy(part => part.Name)
+                       .Select(part => {
+
+                           string description = "", productNumber = "";
+                           bool hasBackSideProgram = false;
+                           if (labels.TryGetValue(part.PartId, out PartLabel? label)) {
+                               description = label.Fields.GetValueOrEmpty("Description");
+                               productNumber = label.Fields.GetValueOrEmpty("Cabinet Number");
+                               hasBackSideProgram = label.Fields.GetValueOrEmpty("HasBackSideProgram") == "Y";
+                           }
+
+                           return new SinglePartProgram() {
+                               Name = part.Name,     // TODO: this should be the part name, not the specific program name. Although there is no concept of a "Part Name" in the CADCode proxy class library
+                               FileName = part.Name,
+                               Width = Dimension.FromMillimeters(part.Width),
+                               Length = Dimension.FromMillimeters(part.Length),
+                               Description = description,
+                               PartId = part.PartId.ToString(),
+                               ProductNumber = productNumber,
+                               HasBackSideProgram = hasBackSideProgram
+                           };
+                       })
+                       .ToArray();
+
+    }
+
     private static string GetImageFileName(string patternName) {
-    
+
         int idx = patternName.IndexOf('.');
         if (idx < 0) {
             return patternName;
         }
-    
+
         return patternName[..idx];
-    
+
     }
 
-    private static IEnumerable<ReleasedProgram> GetProgramsFromResult(CADCodeProxy.Results.MachineGCodeGenerationResult machineResult) {
+    private static IEnumerable<ReleasedProgram> GetProgramsFromResult(MachineGCodeGenerationResult machineResult) {
         return machineResult.MaterialGCodeGenerationResults
                             .SelectMany(genResult => {
-    
+
                                 var labelsByPartId = genResult.PartLabels.ToDictionary(pl => pl.PartId, pl => pl.Fields);
-    
+
                                 return genResult.ProgramNames
                                         .Select((program, idx) => {
-    
+
                                             var parts = genResult.PlacedParts.Where(p => p.ProgramIndex == idx).ToList();
-    
+
                                             int inventoryIndex = parts.First().UsedInventoryIndex; // TODO: get inventory index for program name
                                             var inventory = genResult.UsedInventory[inventoryIndex];
-    
+
                                             var area = inventory.Width * inventory.Length;
                                             var usedArea = parts.Sum(part => part.Width * part.Length);
                                             var yield = usedArea / area;
-    
+
                                             string materialName = genResult.MaterialName;
                                             if (PSIMaterial.TryParse(materialName, out var psiMat)) {
                                                 materialName = psiMat.GetSimpleName();
                                             }
-    
+
                                             return new ReleasedProgram() {
                                                 Name = program,
                                                 ImagePath = @$"C:\Users\Zachary Londono\Desktop\CC Output\{GetImageFileName(program)}.wmf",
@@ -164,9 +188,9 @@ public class CNCPartGCodeGenerator {
                                                     Yield = yield
                                                 },
                                                 Parts = parts.Select(placedPart => {
-    
+
                                                     var label = labelsByPartId[placedPart.PartId];
-    
+
                                                     return new NestedPart() {
                                                         Name = placedPart.Name,
                                                         FileName = label.GetValueOrEmpty("Face5Filename"),
@@ -190,12 +214,12 @@ public class CNCPartGCodeGenerator {
                                                 })
                                                 .ToList()
                                             };
-    
+
                                         });
-    
+
                             });
     }
-        
+
     private static IEnumerable<string> GetUsedToolNamesFromBatch(Batch batch) {
         return batch.Parts
                     .SelectMany(p => new PartFace?[] { p.PrimaryFace, p.SecondaryFace })
@@ -203,56 +227,6 @@ public class CNCPartGCodeGenerator {
                     .SelectMany(f => f.Tokens)
                     .Select(t => t.ToolName)
                     .Distinct();
-    }
-
-    private static IEnumerable<SinglePartProgram> GetSingleProgramsFromBatch(Batch batch) {
-        return batch.Parts
-                    .SelectMany(p => {
-
-                        if (!p.InfoFields.TryGetValue("Description", out string? description)) {
-                            description = "";
-                        }
-
-                        if (!p.InfoFields.TryGetValue("Cabinet Number", out string? productNumber)) {
-                            productNumber = "";
-                        }
-
-                        string partId = p.Id.ToString();
-                        var width = Dimension.FromMillimeters(p.Width);
-                        var length = Dimension.FromMillimeters(p.Length);
-                        bool hasBackSideProgram = false;
-
-                        List<SinglePartProgram> programs = new() {
-                    new SinglePartProgram() {
-                        FileName = p.PrimaryFace.ProgramName,
-                        Name = p.PrimaryFace.ProgramName,
-                        Description = description ?? "",
-                        HasBackSideProgram = hasBackSideProgram,
-                        Width = width,
-                        Length = length,
-                        ProductNumber = productNumber ?? "",
-                        PartId = partId
-                    }
-                        };
-
-                        if (p.SecondaryFace is not null) {
-
-                            programs.Add(new SinglePartProgram() {
-                                FileName = p.SecondaryFace.ProgramName,
-                                Name = p.SecondaryFace.ProgramName,
-                                Description = description ?? "",
-                                HasBackSideProgram = hasBackSideProgram,
-                                Width = width,
-                                Length = length,
-                                ProductNumber = productNumber ?? "",
-                                PartId = partId
-                            });
-
-                        }
-
-                        return programs;
-
-                    });
     }
 
     private IEnumerable<CADCodeProxy.CNC.InventoryItem> GetInventoryItems(Part[] parts, InventorySize defaultInventorySize) {
@@ -292,13 +266,9 @@ public class CNCPartGCodeGenerator {
             });
     }
 
-    public static IReadOnlyDictionary<int, string> CreateMachineToolTable(string machineName, IEnumerable<MachineToolMap> toolMaps, IEnumerable<string> usedToolNames) {
+    public static Dictionary<int, string> CreateMachineToolTable(MachineToolMap machineCarousel, IEnumerable<string> usedToolNames) {
 
         var toolTable = new Dictionary<int, string>();
-
-        var machineCarousel = toolMaps.FirstOrDefault(c => c.MachineName == machineName);
-
-        if (machineCarousel is null) return toolTable;
 
         for (int i = 0; i < machineCarousel.ToolPositionCount; i++) {
             toolTable[i + 1] = "";

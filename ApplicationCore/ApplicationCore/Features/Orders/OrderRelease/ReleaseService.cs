@@ -22,10 +22,12 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DoweledDrawerBoxCutList;
 using ApplicationCore.Features.Orders.Shared.Domain.Components;
 using ApplicationCore.Shared.CNC.Job;
-using ApplicationCore.Features.Orders.OrderRelease.Handlers.GCode;
 using CADCodeProxy.Exceptions;
 using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
 using Exception = System.Exception;
+using CADCodeProxy.Machining;
+using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Shared.CNC;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -287,6 +289,33 @@ public class ReleaseService {
         return releases;
     }
 
+    private static Batch? CreateBatchFromOrders(List<Order> orders, string customerName) {
+        
+        if (!orders.Any()) {
+            return null;
+        }
+
+        var parts = orders.SelectMany(o => o.Products)
+                        .OfType<ICNCPartContainer>()
+                        .Where(p => p.ContainsCNCParts())
+                        .SelectMany(p => p.GetCNCParts(customerName))
+                        .ToArray();
+
+        if (!parts.Any()) {
+            return null;
+        }
+
+        var firstOrder = orders.First();
+        var batchName = $"{firstOrder.Number} - {firstOrder.Name}";
+
+        return new() {
+            Name = batchName,
+            Parts = parts,
+            InfoFields = new()
+        };
+
+    }
+
     private async Task<List<ReleasedJob>> GetWSXMLReleasedJobs(List<Order> orders, List<string> wsxmlFiles, bool copyToWorkingDirectory, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
 
         List<ReleasedJob> wsxmlReleasedJobs = new();
@@ -332,10 +361,15 @@ public class ReleaseService {
 
         try {
 
-            var gCodeRelease = await _gcodeGenerator.GenerateGCode(orders, customerName, vendorName);
+            var batch = CreateBatchFromOrders(orders, customerName);
+            if (batch is not null && orders.FirstOrDefault() is Order order) {
 
-            if (gCodeRelease is not null) {
-                return gCodeRelease;
+                var gCodeRelease = await _gcodeGenerator.GenerateGCode(batch, customerName, vendorName, order.OrderDate, order.DueDate);
+
+                if (gCodeRelease is not null) {
+                    return gCodeRelease;
+                }
+
             }
 
         } catch (CADCodeAuthorizationException ex) {

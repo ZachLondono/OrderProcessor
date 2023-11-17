@@ -11,6 +11,10 @@ public class SinglePartProgram {
     public string Description { get; init; } = string.Empty;
     public string PartId { get; init; } = string.Empty;
     public string ProductNumber { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Indicates that this part has a separate single program for the other face (NOT a face 6 program)
+    /// </summary>
     public bool HasBackSideProgram { get; init; } = false;
 
 }

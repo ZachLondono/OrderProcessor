@@ -95,7 +95,7 @@ public partial class WSXMLParser : IWSXMLParser {
 
     }
 
-    public CNC.Job.ReleasedJob MapDataToReleasedJob(WSXMLReport report, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
+    public ReleasedJob MapDataToReleasedJob(WSXMLReport report, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
 
         var allToolNames = report.OperationGroups.Where(g => g.PartId is not null)
                                         .SelectMany(g => g.ToolName)

@@ -12,9 +12,4 @@ public static class Extensions {
 
     public static double ElementDouble(this XElement element, string name) => double.Parse(element.ElementValue(name));
 
-    public static string GetValueOrEmpty(this Dictionary<string, string> dict, string key) {
-        if (dict.TryGetValue(key, out string? value)) return value;
-        return string.Empty;
-    }
-
 }

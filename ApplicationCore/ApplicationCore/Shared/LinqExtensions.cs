@@ -13,4 +13,9 @@ internal static class LinqExtensions {
             action(value, index++);
     }
 
+    public static string GetValueOrEmpty(this IDictionary<string, string> dict, string key) {
+        if (dict.TryGetValue(key, out string? value)) return value;
+        return string.Empty;
+    }
+
 }

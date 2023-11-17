@@ -16,7 +16,7 @@ using ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DoweledDrawerBoxCutList;
-using ApplicationCore.Features.Orders.OrderRelease.Handlers.GCode;
+using ApplicationCore.Shared.CNC;
 
 namespace ApplicationCore.Features.Orders;
 
