@@ -52,7 +52,13 @@ internal class GetDoorOrderCutListDirectory {
 
             }
 
-            return Task.FromResult(Response<string>.Success(Path.Combine(query.OrderFileDirectory, "CUTLIST")));
+            var defaultCutListDir = Path.Combine(query.OrderFileDirectory, "CUTLIST");
+
+            if (Directory.Exists(defaultCutListDir)) {
+                return Task.FromResult(Response<string>.Success(defaultCutListDir));
+            }
+
+            return Task.FromResult(Response<string>.Success(query.OrderFileDirectory));
 
         }
 
