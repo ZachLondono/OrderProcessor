@@ -10,6 +10,7 @@ using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
 using ApplicationCore.Features.Products.UpdateClosetPart;
 using ApplicationCore.Features.Settings;
+using ApplicationCore.Layouts.MainLayout.DoorOrderRelease;
 using ApplicationCore.Layouts.MainLayout.ReleaseDialog;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -31,7 +32,9 @@ public static class DependencyInjection {
                 .AddTransient<DeleteOrderConfirmationModalViewModel>()
                 .AddTransient<OrderListWidgetViewModel>()
                 .AddTransient<OrderReleaseModalViewModel>()
-                .AddTransient<ReleasePDFDialogViewModel>();
+                .AddTransient<ReleasePDFDialogViewModel>()
+                .AddTransient<DoorOrderReleaseActionRunnerFactory>()
+                .AddTransient<DoorOrderReleaseActionRunner>();
 
     }
 
