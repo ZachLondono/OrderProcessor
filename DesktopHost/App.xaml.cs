@@ -68,6 +68,9 @@ public partial class App : Application {
         LogVerbose("Building configuration");
         return new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+#if DEBUG
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
+#endif
                 .AddJsonFile("Configuration/credentials.json", optional: false, reloadOnChange: true)
                 .AddSettingsFiles(LogVerbose)
                 .Build();

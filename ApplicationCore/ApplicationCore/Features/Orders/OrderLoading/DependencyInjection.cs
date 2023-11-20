@@ -14,6 +14,7 @@ using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrder
 using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadsheetOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadHafeleDBSpreadsheetOrderData;
+using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 
 namespace ApplicationCore.Features.Orders.OrderLoading;
 
@@ -21,6 +22,7 @@ internal static class DependencyInjection {
 
     public static IServiceCollection AddOrderLoading(this IServiceCollection services, IConfiguration configuration) {
 
+        services.Configure<OrderProvidersConfiguration>(configuration.GetRequiredSection("OrderProviders"));
         services.Configure<ClosetProSoftwareCredentials>(configuration.GetRequiredSection("ClosetProSoftwareCredentials"));
         services.Configure<AllmoxyCredentials>(configuration.GetRequiredSection("AllmoxyCredentials"));
         services.Configure<AllmoxyConfiguration>(configuration.GetRequiredSection("AllmoxyConfiguration"));
