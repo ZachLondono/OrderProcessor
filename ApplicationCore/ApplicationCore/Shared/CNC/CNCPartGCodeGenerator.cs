@@ -225,6 +225,7 @@ public class CNCPartGCodeGenerator {
                     .SelectMany(p => new PartFace?[] { p.PrimaryFace, p.SecondaryFace })
                     .OfType<PartFace>()
                     .SelectMany(f => f.Tokens)
+                    .OfType<IMachiningOperation>()
                     .Select(t => t.ToolName)
                     .Distinct();
     }
