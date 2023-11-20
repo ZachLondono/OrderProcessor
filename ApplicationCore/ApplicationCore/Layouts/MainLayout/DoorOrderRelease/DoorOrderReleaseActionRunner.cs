@@ -9,6 +9,7 @@ using CADCodeProxy.CSV;
 using Microsoft.Office.Interop.Excel;
 using QuestPDF.Fluent;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using UglyToad.PdfPig.Writer;
 using Action = System.Action;
 using ExcelApp = Microsoft.Office.Interop.Excel.Application;
@@ -65,7 +66,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         try {
 
-            var batches = await Task.Run(() => {
+			var batches = await Task.Run(() => {
 
 				app = new ExcelApp() {
 					Visible = false,
@@ -99,47 +100,53 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 				return batches;
 
 			});
+			
+			List<ICNCReleaseDecorator> decorators = new();
+			foreach (var batch in batches) {
 
+				var job = await generator.GenerateGCode(batch, doorOrder.Customer, doorOrder.Vendor, DateTime.Today, DateTime.Today);
 
-            List<ICNCReleaseDecorator> decorators = new();
-            foreach (var batch in batches) {
-                var job = await generator.GenerateGCode(batch, doorOrder.Customer, doorOrder.Vendor, DateTime.Today, DateTime.Today);
-                if (job is not null) {
-                    var decorator = _releaseDecoratorFactory.Create(job);
-                    decorators.Add(decorator);
-                }
-            }
+				if (job is null) {
+					continue;
+				}
 
-            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Creating CNC Release Document"));
-            var pdfData = await Task.Run(() => {
+				var decorator = _releaseDecoratorFactory.Create(job);
+				decorators.Add(decorator);
 
-                var document = Document.Create(doc => {
+				await WriteGCodeResultFile(job);
 
-                    foreach (var decorator in decorators) {
-                        decorator.Decorate(doc);
-                    }
+			}
 
-                });
+			PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Creating CNC Release Document"));
+			var pdfData = await Task.Run(() => {
 
-                return document.GeneratePdf();
+				var document = Document.Create(doc => {
 
-            });
+					foreach (var decorator in decorators) {
+						decorator.Decorate(doc);
+					}
 
-            var fileComponents = new List<byte[]>();
+				});
 
-            if (tmpFileName is not null) {
-                var mdfReleasePagesData = await File.ReadAllBytesAsync(tmpFileName);
-                fileComponents.Add(mdfReleasePagesData);
-            }
+				return document.GeneratePdf();
 
-            fileComponents.Add(pdfData);
+			});
 
-            var mergedDocument = await Task.Run(() => PdfMerger.Merge(fileComponents));
+			var fileComponents = new List<byte[]>();
 
-            var mergedFilePath = _fileReader.GetAvailableFileName(@"C:\Users\Zachary Londono\Desktop\TestOutput", $"{doorOrder.OrderNumber} CUTLIST", ".pdf");
-            await File.WriteAllBytesAsync(mergedFilePath, mergedDocument);
+			if (tmpFileName is not null) {
+				var mdfReleasePagesData = await File.ReadAllBytesAsync(tmpFileName);
+				fileComponents.Add(mdfReleasePagesData);
+			}
 
-            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, mergedFilePath));
+			fileComponents.Add(pdfData);
+
+			var mergedDocument = await Task.Run(() => PdfMerger.Merge(fileComponents));
+
+			var mergedFilePath = _fileReader.GetAvailableFileName(@"C:\Users\Zachary Londono\Desktop\TestOutput", $"{doorOrder.OrderNumber} CUTLIST", ".pdf");
+			await File.WriteAllBytesAsync(mergedFilePath, mergedDocument);
+
+			PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, mergedFilePath));
 
 		} finally {
 
@@ -171,6 +178,15 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         }
 
     }
+
+	private async Task WriteGCodeResultFile(ReleasedJob job) {
+		var jobFileName = _fileReader.GetAvailableFileName(@"C:\Users\Zachary Londono\Desktop\TestOutput", $"{job.JobName} CNC RESULT", ".json");
+		using FileStream fileStream = File.Create(jobFileName);
+		await JsonSerializer.SerializeAsync(fileStream, job, new JsonSerializerOptions() {
+			WriteIndented = true
+		});
+		await fileStream.DisposeAsync();
+	}
 
 	private static void RunMacro(ExcelApp app, string workbookName, string macroName) {
 		_ = app.GetType()
