@@ -125,16 +125,16 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
             });
 
-            var fileDatas = new List<byte[]>();
+            var fileComponents = new List<byte[]>();
 
             if (tmpFileName is not null) {
                 var mdfReleasePagesData = await File.ReadAllBytesAsync(tmpFileName);
-                fileDatas.Add(mdfReleasePagesData);
+                fileComponents.Add(mdfReleasePagesData);
             }
 
-            fileDatas.Add(pdfData);
+            fileComponents.Add(pdfData);
 
-            var mergedDocument = await Task.Run(() => PdfMerger.Merge(fileDatas));
+            var mergedDocument = await Task.Run(() => PdfMerger.Merge(fileComponents));
 
             var mergedFilePath = _fileReader.GetAvailableFileName(@"C:\Users\Zachary Londono\Desktop\TestOutput", $"{doorOrder.OrderNumber} CUTLIST", ".pdf");
             await File.WriteAllBytesAsync(mergedFilePath, mergedDocument);
