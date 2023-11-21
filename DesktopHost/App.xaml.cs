@@ -33,13 +33,17 @@ public partial class App : Application {
 
         bool verboseLogging = e.Args.Contains("-v");
 
+        var initState = new InitializationState() {
+            JolaMode = e.Args.Contains("-jola")
+        };
+
         Current.DispatcherUnhandledException += AppDispatcherUnhandledException;
 
         try {
 
             CreateLogger(verboseLogging);
             var configuration = BuildConfiguration();
-            var serviceProvider = BuildServiceProvider(configuration);
+            var serviceProvider = BuildServiceProvider(configuration, initState);
 
             new MainWindow(serviceProvider).Show();
 
@@ -76,11 +80,12 @@ public partial class App : Application {
                 .Build();
     }
 
-    private static IServiceProvider BuildServiceProvider(IConfiguration configuration) {
+    private static IServiceProvider BuildServiceProvider(IConfiguration configuration, InitializationState initState) {
 
         LogVerbose("Building service provider");
 
         var services = new ServiceCollection()
+                            .AddSingleton(initState)
                             .AddMediatR(typeof(MainWindow))
                             .AddApplicationCoreServices(configuration)
                             .AddSingleton<IFilePicker, FilePicker>()
