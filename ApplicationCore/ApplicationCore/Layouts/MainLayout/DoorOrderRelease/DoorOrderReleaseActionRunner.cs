@@ -11,6 +11,7 @@ using QuestPDF.Fluent;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using UglyToad.PdfPig.Writer;
+using static ApplicationCore.Layouts.MainLayout.DoorOrderRelease.NamedPipeServer;
 using Action = System.Action;
 using ExcelApp = Microsoft.Office.Interop.Excel.Application;
 
@@ -86,9 +87,13 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 				var fileName = Path.GetFileName(doorOrder.OrderFile);
 
 				var server = new NamedPipeServer();
+				server.MessageReceived += ProcessMessage;
 				var serverTask = Task.Run(server.Start);
 
-				RunMacro(app, fileName, "SilentDoorProcessing");
+				ShowProgressBar?.Invoke();
+				var macroTask = Task.Run(() => RunMacro(app, fileName, "SilentDoorProcessing"));
+				macroTask.Wait();
+				HideProgressBar?.Invoke();
 
 				server.Stop();
 
@@ -178,6 +183,31 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         }
 
     }
+
+	private void ProcessMessage(PipeMessage message) {
+
+		switch (message.Type) {
+			case "info":
+				PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, $"{message.MessageA} - {message.MessageB}"));
+				break;
+			case "warning":
+				PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"WARNING {message.MessageA} - {message.MessageB}"));
+				break;
+			case "error":
+				PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"{message.MessageA} - {message.MessageB}"));
+				break;
+			case "progress":
+				PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, $"{message.MessageA}"));
+				if (int.TryParse(message.MessageB, out int percentComplete)) {
+					SetProgressBarValue?.Invoke(percentComplete);
+				}
+				break;
+			default:
+				PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, $"{message.Type}|{message.MessageA}|{message.MessageB}"));
+				break;
+		}
+
+	}
 
 	private async Task WriteGCodeResultFile(ReleasedJob job) {
 		var jobFileName = _fileReader.GetAvailableFileName(@"C:\Users\Zachary Londono\Desktop\TestOutput", $"{job.JobName} CNC RESULT", ".json");

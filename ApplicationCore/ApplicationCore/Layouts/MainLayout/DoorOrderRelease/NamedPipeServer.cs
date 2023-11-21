@@ -6,10 +6,9 @@ namespace ApplicationCore.Layouts.MainLayout.DoorOrderRelease;
 public class NamedPipeServer {
 
     private bool listening = false;
-    private ConcurrentQueue<PipeMessage> Messages = new();
 
-    public NamedPipeServer() {
-    }
+    public event OnMessageReceived? MessageReceived;
+    public delegate void OnMessageReceived(PipeMessage message);
 
     public void Start() {
 
@@ -54,9 +53,10 @@ public class NamedPipeServer {
     public void Stop() => listening = false;
 
     public void ServerThread(object data) {
-        NamedPipeServerStream pipeServer = new NamedPipeServerStream("MDFDoorPipe", PipeDirection.InOut, 10, PipeTransmissionMode.Message);
 
-        int threadId = Thread.CurrentThread.ManagedThreadId;
+        using var pipeServer = new NamedPipeServerStream("MDFDoorPipe", PipeDirection.InOut, 10, PipeTransmissionMode.Message);
+
+        int threadId = Environment.CurrentManagedThreadId;
 
         bool isConnected = false;
         var request = pipeServer.BeginWaitForConnection((a) => {
@@ -89,7 +89,7 @@ public class NamedPipeServer {
             string receivedText = System.Text.Encoding.UTF8.GetString(intext.ToArray());
 
             var msgParts = receivedText.Split(';');
-            Messages.Enqueue(new(msgParts[0], msgParts[1], msgParts[2]));
+            MessageReceived?.Invoke(new(msgParts[0], msgParts[1], msgParts[2]));
 
             string sentText = "OK";
             pipeServer.Write(System.Text.Encoding.UTF8.GetBytes(sentText));
