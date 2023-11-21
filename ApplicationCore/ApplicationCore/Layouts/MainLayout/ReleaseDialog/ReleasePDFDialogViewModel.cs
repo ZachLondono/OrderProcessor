@@ -56,6 +56,16 @@ internal class ReleasePDFDialogViewModel {
         _wsxmlParser = wsxmlParser;
     }
 
+    public void FindMostRecentReport() {
+
+        Model.ReportFilePath = new DirectoryInfo(@"Y:\CADCode\Reports")
+            .GetFiles()
+            .OrderByDescending(f => f.LastWriteTime)
+            .First()
+            .FullName;
+
+	}
+
     public async Task GeneratePDF() {
 
         Error = null;

@@ -115,6 +115,8 @@
         DataContext.Model.EmailRecipients = EmailRecipients ?? DataContext.Model.EmailRecipients;
         DataContext.Model.SendEmail = SendEmail ?? DataContext.Model.SendEmail;
 
+        DataContext.FindMostRecentReport();
+
     }
 
     private void ChooseReportFile()
