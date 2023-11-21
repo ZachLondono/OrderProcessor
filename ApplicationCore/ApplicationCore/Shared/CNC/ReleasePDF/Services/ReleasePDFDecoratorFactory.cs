@@ -147,12 +147,11 @@ internal class ReleasePDFDecoratorFactory {
             tables.Add(backSideMachiningTable);
         }
 
-        var coverInfo = new Dictionary<string, string>() {
-            {"Vendor", job.VendorName },
-            {"Customer", job.CustomerName },
-            {"Order Date", job.OrderDate.ToShortDateString() },
-            {"Release Date", job.ReleaseDate.ToShortDateString() }
-        };
+        var coverInfo = new Dictionary<string, string>();
+        if (!string.IsNullOrWhiteSpace(job.VendorName)) coverInfo.Add("Vendor", job.VendorName);
+        if (!string.IsNullOrWhiteSpace(job.CustomerName)) coverInfo.Add("Customer", job.CustomerName);
+        coverInfo.Add("Order Date", job.OrderDate.ToShortDateString());
+        coverInfo.Add("Release Date", job.ReleaseDate.ToShortDateString());
 
         if (job.DueDate is DateTime dueDate) {
             coverInfo.Add("Due Date", dueDate.ToShortDateString());
