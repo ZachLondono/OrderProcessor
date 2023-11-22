@@ -56,6 +56,11 @@ internal class ReleasePDFDialogViewModel {
         _wsxmlParser = wsxmlParser;
     }
 
+    public void Reset() {
+        Model = new();
+        GeneratedFiles = new();
+    }
+
     public void FindMostRecentReport() {
 
         Model.ReportFilePath = new DirectoryInfo(@"Y:\CADCode\Reports")
@@ -104,10 +109,13 @@ internal class ReleasePDFDialogViewModel {
         try {
 
             ReleasedJob? job = null;
-            WSXMLReport? report = WSXMLParser.ParseWSXMLReport(Model.ReportFilePath);
-            if (report is not null) {
-                job = _wsxmlParser.MapDataToReleasedJob(report, Model.OrderDate, Model.DueDate, Model.CustomerName, Model.VendorName);
-            }
+
+            await Task.Run(() => {
+                WSXMLReport? report = WSXMLParser.ParseWSXMLReport(Model.ReportFilePath);
+                if (report is not null) {
+                    job = _wsxmlParser.MapDataToReleasedJob(report, Model.OrderDate, Model.DueDate, Model.CustomerName, Model.VendorName);
+                }
+            });
 
             if (job is null) {
 
@@ -116,21 +124,23 @@ internal class ReleasePDFDialogViewModel {
 
             } else {
 
-                _cncReleaseDecorator.AddData(job);
+                await Task.Run(() => {
 
-                var doc = Document.Create(_cncReleaseDecorator.Decorate);
+                    _cncReleaseDecorator.AddData(job);
 
-                string filePath = "";
-                foreach (var directory in outputDirectories) {
-                    var outputFilePath = _fileReader.GetAvailableFileName(directory, Model.FileName, "pdf");
-                    doc.GeneratePdf(outputFilePath);
-                    GeneratedFiles.Add(outputFilePath);
-                    filePath = outputFilePath;
-                }
+                    var doc = Document.Create(_cncReleaseDecorator.Decorate);
 
-                if (Model.SendEmail && !string.IsNullOrWhiteSpace(Model.EmailRecipients)) {
+                    foreach (var directory in outputDirectories) {
+                        var outputFilePath = _fileReader.GetAvailableFileName(directory, Model.FileName, "pdf");
+                        doc.GeneratePdf(outputFilePath);
+                        GeneratedFiles.Add(outputFilePath);
+                    }
+
+                });
+
+                if (Model.SendEmail && !string.IsNullOrWhiteSpace(Model.EmailRecipients) && GeneratedFiles.Any()) {
                     try {
-                        await SendReleaseEmail(job, filePath, Model.EmailRecipients);
+                        await SendReleaseEmail(job, GeneratedFiles.First(), Model.EmailRecipients);
                     } catch {
                         Error = "Failed to send release email";
                     }
