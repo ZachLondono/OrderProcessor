@@ -1,14 +1,26 @@
 ﻿@using ApplicationCore.Layouts.MainLayout;
+@inject InitializationState InitializationState
 <CascadingBlazoredModal>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            <RouteView RouteData="@routeData" DefaultLayout="@LayoutType" />
         </Found>
         <NotFound>
             <PageTitle>Not found</PageTitle>
-            <LayoutView Layout="@typeof(MainLayout)">
+            <LayoutView Layout="@LayoutType">
                 <p role="alert">Sorry, there's nothing at this address.</p>
             </LayoutView>
         </NotFound>
     </Router>
 </CascadingBlazoredModal>
+
+@code {
+
+    public Type LayoutType = typeof(MainLayout);
+
+    protected override void OnInitialized() {
+        LayoutType = InitializationState.JolaMode ? typeof(EmptyLayout) : typeof(MainLayout);
+        base.OnInitialized();
+    }
+
+}

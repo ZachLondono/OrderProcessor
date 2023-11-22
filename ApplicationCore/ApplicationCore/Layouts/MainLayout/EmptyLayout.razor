@@ -1,0 +1,26 @@
+﻿@using ApplicationCore.Layouts.MainLayout.ReleaseDialog
+@inherits LayoutComponentBase
+@inject InitializationState InitializationState
+
+<div class="m-10">
+	<ReleasePDFDialog OutputDirectory="@outputDirectory"/>
+</div>
+
+@code {
+
+    private string outputDirectory = "";
+
+    protected override void OnInitialized() {
+
+		if (InitializationState.JolaMode) {
+
+			outputDirectory = Path.Combine(
+				Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+				"CUT-LIST"
+			);
+
+		}
+
+    }
+
+}

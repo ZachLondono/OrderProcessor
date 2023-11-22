@@ -21,7 +21,6 @@
 @inject NavigationService NavigationService 
 @inject IBus Bus
 @inject IFilePicker FilePicker
-@inject InitializationState InitializationState
 
 <div class="page">
 	<header class="w-48 h-screen fixed top-0 left-0 bg-slate-100">
@@ -163,22 +162,6 @@
 	[CascadingParameter]
 	public IModalService Modal { get; set; } = default!;
 
-	protected override async Task OnInitializedAsync() {
-
-		if (InitializationState.JolaMode) {
-
-			var outputDirectory = Path.Combine(
-				Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-				"CUT-LIST"
-			);
-
-			var dialog = ShowReleasePDFDialogModal(outputDirectory:outputDirectory);
-			_ = await dialog.Result;
-
-		}
-
-	}
-
 	private async Task LoadOrder() {
 
 		try {
@@ -286,6 +269,7 @@
 
 		}
 	}
+
 	private async Task GoBack() {
 		await JSRuntime.InvokeVoidAsync("history.back");
 	}
