@@ -41,7 +41,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.7.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Scripting.Common" Version="4.7.0" />
     <PackageReference Include="Blazored.Modal" Version="7.1.0" />
-    <PackageReference Include="CADCodeProxy" Version="1.0.41" />
+    <PackageReference Include="CADCodeProxy" Version="1.0.44" />
     <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.50" />
