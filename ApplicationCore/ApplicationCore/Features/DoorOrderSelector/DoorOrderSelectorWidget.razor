@@ -21,15 +21,20 @@
                     <th>Name</th>
                     <th>Customer</th>
                     <th>Vendor</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var order in _openDoorOrders) {
-                    <tr class="text-center border-b cursor-pointer hover:bg-slate-200" onclick="@(() => SelectOrder(order))">
+                    <tr class="text-center border-b hover:bg-slate-200">
                         <td class="p-5">@order.OrderNumber</td>
                         <td class="p-5">@order.OrderName</td>
                         <td class="p-5">@order.Customer</td>
                         <td class="p-5">@order.Vendor</td>
+                        <td>
+                            <Button OnClickAsync="() => SelectOrder(order, DoorOrderAction.ExistingRelease)">Existing</Button>
+                            <Button OnClickAsync="() => SelectOrder(order, DoorOrderAction.GenerateRelease)">Generate</Button>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -80,8 +85,11 @@
 
     }
 
-    private async Task SelectOrder(DoorOrder selectedOrder) {
-        await BlazoredModal.CloseAsync(ModalResult.Ok(selectedOrder));
+    private async Task SelectOrder(DoorOrder selectedOrder, DoorOrderAction action) {
+        await BlazoredModal.CloseAsync(ModalResult.Ok(new DoorOrderSelection() {
+            DoorOrder = selectedOrder,
+            Action = action
+        }));
     }
 
     private async Task Close() {

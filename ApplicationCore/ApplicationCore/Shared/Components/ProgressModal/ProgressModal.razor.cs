@@ -45,6 +45,7 @@ public partial class ProgressModal {
             };
             ActionRunner.ShowProgressBar += () => {
                 InvokeAsync(() => {
+                    ProgressValue = 0;
                     ShowProgressBar = true;
                     StateHasChanged();
                 });

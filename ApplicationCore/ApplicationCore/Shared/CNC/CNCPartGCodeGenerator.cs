@@ -122,7 +122,7 @@ public class CNCPartGCodeGenerator {
                            bool hasBackSideProgram = false;
                            if (labels.TryGetValue(part.PartId, out PartLabel? label)) {
                                description = label.Fields.GetValueOrEmpty("Description");
-                               productNumber = label.Fields.GetValueOrEmpty("Cabinet Number");
+                               productNumber = label.Fields.GetValueOrEmpty("CabinetNumber");
                                hasBackSideProgram = label.Fields.GetValueOrEmpty("HasBackSideProgram") == "Y";
                            }
 
@@ -204,7 +204,7 @@ public class CNCPartGCodeGenerator {
                                                             X = placedPart.InsertionPoint.X + (placedPart.IsRotated ? placedPart.Width : placedPart.Length) / 2,
                                                             Y = placedPart.InsertionPoint.Y + (placedPart.IsRotated ? placedPart.Length : placedPart.Width) / 2
                                                         },
-                                                        ProductNumber = label.GetValueOrEmpty("Cabinet Number"),
+                                                        ProductNumber = label.GetValueOrEmpty("CabinetNumber"),
                                                         ProductId = Guid.Empty, // TODO: find a way to get thr product id
                                                         PartId = placedPart.PartId.ToString(), //placedPart.Id, TODO: cadcode generated id 
                                                         IsRotated = placedPart.IsRotated,
@@ -225,6 +225,7 @@ public class CNCPartGCodeGenerator {
                     .SelectMany(p => new PartFace?[] { p.PrimaryFace, p.SecondaryFace })
                     .OfType<PartFace>()
                     .SelectMany(f => f.Tokens)
+                    .OfType<IMachiningOperation>()
                     .Select(t => t.ToolName)
                     .Distinct();
     }

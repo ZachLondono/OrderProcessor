@@ -9,7 +9,9 @@
 @using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 @using ApplicationCore.Features.Orders.Shared.State;
 @using ApplicationCore.Features.Updates;
+@using ApplicationCore.Layouts.MainLayout.DoorOrderRelease
 @using ApplicationCore.Layouts.MainLayout.ReleaseDialog;
+@using ApplicationCore.Shared.Components.ProgressModal
 @using ApplicationCore.Shared.Services;
 @using ApplicationCore.Infrastructure
 @using System.Diagnostics;
@@ -21,6 +23,7 @@
 @inject NavigationService NavigationService 
 @inject IBus Bus
 @inject IFilePicker FilePicker
+@inject DoorOrderReleaseActionRunnerFactory ActionRunnerFactory 
 
 <div class="page">
 	<header class="w-48 h-screen fixed top-0 left-0 bg-slate-100">
@@ -233,17 +236,58 @@
 			DisableBackgroundCancel = true
 		});
 		var result = await dialog.Result;
-		if (result.Confirmed && result.Data is DoorOrder doorOrder) {
-			var outputDirResult = await Bus.Send(new GetDoorOrderCutListDirectory.Query(doorOrder.OrderFileDirectory));
-			string outputDirectory = @"R:\Door Orders\Door Programs";
-			outputDirResult.OnSuccess(dir => outputDirectory = dir);
-			string emailRecipients = "maciej@royalcabinet.com";
-			if (!doorOrder.Vendor.ToLowerInvariant().Contains("royal")) {
-				emailRecipients += ";toya@royalcabinet.com";
+		if (result.Confirmed && result.Data is DoorOrderSelection selection) {
+
+			var doorOrder = selection.DoorOrder;
+
+			switch (selection.Action) {
+
+				case DoorOrderAction.ExistingRelease:
+					await ExistingDoorOrderRelease(doorOrder);
+					break;
+
+				case DoorOrderAction.GenerateRelease:
+					await GenerateDoorOrderRelease(doorOrder);
+					break;
+
 			}
-			dialog = ShowReleasePDFDialogModal(doorOrder.Customer, doorOrder.Vendor, $"{doorOrder.OrderNumber} DOORS CUTLIST", doorOrder.ReportFilePath, outputDirectory, true, emailRecipients);
-			_ = await dialog.Result;
 		}
+	}
+
+	private async Task ExistingDoorOrderRelease(DoorOrder doorOrder) {
+
+		var outputDirResult = await Bus.Send(new GetDoorOrderCutListDirectory.Query(doorOrder.OrderFileDirectory));
+		string outputDirectory = @"R:\Door Orders\Door Programs";
+		outputDirResult.OnSuccess(dir => outputDirectory = dir);
+		string emailRecipients = "maciej@royalcabinet.com";
+		if (!doorOrder.Vendor.ToLowerInvariant().Contains("royal")) {
+			emailRecipients += ";toya@royalcabinet.com";
+		}
+		var dialog = ShowReleasePDFDialogModal(doorOrder.Customer, doorOrder.Vendor, $"{doorOrder.OrderNumber} DOORS CUTLIST", doorOrder.ReportFilePath, outputDirectory, true, emailRecipients);
+		_ = await dialog.Result;
+
+	}
+
+	private async Task GenerateDoorOrderRelease(DoorOrder doorOrder) {
+
+		var actionRunner = ActionRunnerFactory.CreateActionRunner(doorOrder);
+
+		var parameters = new ModalParameters() {
+            { "ActionRunner",  actionRunner },
+            { "InProgressTitle", "Releasing Order..." },
+            { "CompleteTitle", "Release Complete" }
+        };
+
+		var options = new ModalOptions() {
+            HideHeader = true,
+            HideCloseButton = true,
+            DisableBackgroundCancel = true,
+            Size = ModalSize.Large
+        };
+
+		var dialog = Modal.Show<ProgressModal>("Order Release Progress", parameters, options);
+		_ = await dialog.Result;
+
 	}
 
 	private async Task OpenClosetOrdersDialog() {
@@ -269,7 +313,7 @@
 
 		}
 	}
-
+	
 	private async Task GoBack() {
 		await JSRuntime.InvokeVoidAsync("history.back");
 	}
