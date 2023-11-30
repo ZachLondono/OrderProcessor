@@ -36,7 +36,8 @@ public class CNCPartGCodeGenerator {
         if (OnError is not null) generator.CADCodeErrorEvent += OnError.Invoke;
         if (OnProgressReport is not null) generator.GenerationEvent += OnProgressReport.Invoke;
 
-        GetInventoryItems(batch.Parts, _cncSettings.DefaultInventorySize).ForEach(generator.Inventory.Add);
+        GetInventoryForBatch(batch).ForEach(generator.Inventory.Add);
+
         var machines = GetMachinesToReleaseTo();
 
         ShowProgressBar?.Invoke();
@@ -67,6 +68,37 @@ public class CNCPartGCodeGenerator {
 
     }
 
+    private List<CADCodeProxy.CNC.InventoryItem> GetInventoryForBatch(Batch batch) {
+
+        List<CADCodeProxy.CNC.InventoryItem> inventory = [];
+
+        var partMaterials = batch.Parts.Select(p => (p.Material, p.Thickness)).Distinct().ToList();
+        foreach (var (name, item) in _cncSettings.Inventory) {
+
+            if (partMaterials.Contains((name, item.Thickness)) && item.Sizes.Any()) {
+                partMaterials.Remove((name, item.Thickness));
+            }
+
+            foreach (var size in item.Sizes) {
+                inventory.Add(new CADCodeProxy.CNC.InventoryItem() {
+                    MaterialName = name,
+                    AvailableQty = 9999,
+                    IsGrained = true,
+                    PanelLength = size.Length,
+                    PanelWidth = size.Width,
+                    PanelThickness = item.Thickness,
+                    Priority = size.Priority,
+                });
+            }
+
+        }
+
+        inventory.AddRange(GetDefaultInventoryItems(partMaterials, _cncSettings.DefaultInventorySize));
+
+        return inventory;
+
+    }
+
     private IEnumerable<Machine> GetMachinesToReleaseTo() {
         return _cncSettings.MachineSettings
                            .Select(kv => new Machine() {
@@ -76,7 +108,8 @@ public class CNCPartGCodeGenerator {
                                SingleProgramOutputDirectory = kv.Value.SingleProgramOutputDirectory,
                                PictureOutputDirectory = kv.Value.PictureOutputDirectory,
                                LabelDatabaseOutputDirectory = kv.Value.LabelDatabaseOutputDirectory,
-                           });
+                           })
+                           .ToList();
     }
 
     private static MachineRelease GetMachineRelease(MachineGCodeGenerationResult machineResult, Dictionary<string, MachineToolMap> machineToolMaps, Dictionary<string, MachineSettings> machineSettings, IEnumerable<string> usedToolNames) {
@@ -230,9 +263,8 @@ public class CNCPartGCodeGenerator {
                     .Distinct();
     }
 
-    private IEnumerable<CADCodeProxy.CNC.InventoryItem> GetInventoryItems(Part[] parts, InventorySize defaultInventorySize) {
-        return parts.Select(p => (p.Material, p.Thickness))
-            .Distinct()
+    private IEnumerable<CADCodeProxy.CNC.InventoryItem> GetDefaultInventoryItems(IEnumerable<(string Material, double Thickness)> partMaterials, InventorySize defaultInventorySize) {
+        return partMaterials
             .SelectMany(material => {
 
                 if (_cncSettings.Inventory.TryGetValue(material.Material, out var item)
