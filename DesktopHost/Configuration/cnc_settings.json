@@ -27,8 +27,8 @@
 
     "inventory": {
 
-      "White Mela MDF-3/4": {
-        "thickenss": 19.00,
+      "White Mela MDF-3/4\"": {
+        "thickness": 19.10,
         "sizes": [
           {
             "width": 1549,
