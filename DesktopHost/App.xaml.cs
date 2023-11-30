@@ -86,7 +86,7 @@ public partial class App : Application {
 
         var services = new ServiceCollection()
                             .AddSingleton(initState)
-                            .AddMediatR(typeof(MainWindow))
+                            .AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(MainWindow).Assembly))
                             .AddApplicationCoreServices(configuration)
                             .AddSingleton<IFilePicker, FilePicker>()
                             .AddSingleton<IMessageBoxService, WPFMessageBox>()

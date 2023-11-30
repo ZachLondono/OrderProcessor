@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyWebOrderData.Rest;
-using RestSharp;
+﻿using RestSharp;
+using IRestClient = ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyWebOrderData.Rest.IRestClient;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyWebOrderData;
 
@@ -46,7 +46,7 @@ internal class AllmoxyClient : IAllmoxyClient {
                     }
                 }
 
-                LogIn();
+                await LogIn();
                 return await GetExportAsync(orderNumber, index, ++tries);
 
             case EXPORT_CONTENT_TYPE:

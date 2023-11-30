@@ -22,7 +22,7 @@ public static class DependencyInjection {
 
     public static IServiceCollection AddApplicationCoreServices(this IServiceCollection services, IConfiguration configuration) {
 
-        services.AddMediatR(typeof(DependencyInjection));
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 
         services.AddSingleton(sp => sp);
 
