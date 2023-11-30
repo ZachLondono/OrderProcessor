@@ -57,7 +57,9 @@ internal class ReleasePDFDialogViewModel {
     }
 
     public void Reset() {
-        Model = new();
+        Model = new() {
+            OutputDirectory = @"R:\Door Orders\Door Programs"
+        };
         GeneratedFiles = new();
     }
 
