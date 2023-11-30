@@ -66,7 +66,7 @@ internal class ReleasePDFDialogViewModel {
         Model.ReportFilePath = new DirectoryInfo(@"Y:\CADCode\Reports")
             .GetFiles()
             .OrderByDescending(f => f.LastWriteTime)
-            .First()
+            .First(f => f.Extension == ".xml")
             .FullName;
 
 	}
