@@ -101,8 +101,6 @@ public class WallCabinetDoorTests {
 
     }
 
-
-
     [Theory]
     [InlineData(406, 1, 402)]
     [InlineData(610, 2, 301.5)]
@@ -125,6 +123,31 @@ public class WallCabinetDoorTests {
         // Assert
         doors.Should().HaveCount(1);
         doors.First().Width.Should().Be(Dimension.FromMillimeters(expectedDoorWidth));
+
+    }
+
+    [Theory]
+    [InlineData(914, 19, 930)]
+    [InlineData(756, 19, 772)]
+    public void DoorHeightTests_WithExtension(double cabHeight, double extendDown, double expectedDoorHeight) {
+
+        // Arrange
+        var cabinet = new WallCabinetBuilder()
+                            .WithDoors(new() { Quantity = 1, ExtendDown = Dimension.FromMillimeters(extendDown) })
+                            .WithWidth(Dimension.FromMillimeters(456))
+                            .WithHeight(Dimension.FromMillimeters(cabHeight))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .WithMDFDoorOptions(_mdfOptions)
+                            .Build();
+
+
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Should().HaveCount(1);
+        doors.First().Height.Should().Be(Dimension.FromMillimeters(expectedDoorHeight));
 
     }
 

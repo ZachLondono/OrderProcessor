@@ -81,7 +81,7 @@ public class BlindWallCabinetDoorTests {
     [Theory]
     [InlineData(685, 1, 339, 342.5)]
     [InlineData(993, 2, 339, 323.75)]
-    public void DoorWidth_ShouldBeCorrect(double cabWidth, int doorQty, double blindWidth, double expectedDoorWidth) {
+    public void DoorWidthTests(double cabWidth, int doorQty, double blindWidth, double expectedDoorWidth) {
 
         // Arrange
         var cabinet = new BlindWallCabinetBuilder()
@@ -106,7 +106,7 @@ public class BlindWallCabinetDoorTests {
     [Theory]
     [InlineData(914, 911)]
     [InlineData(876, 873)]
-    public void DoorHeight_ShouldBeCorrect(double cabHeight, double expectedDoorHeight) {
+    public void DoorHeightTests(double cabHeight, double expectedDoorHeight) {
 
         // Arrange
         var cabinet = new BlindWallCabinetBuilder()
@@ -126,5 +126,31 @@ public class BlindWallCabinetDoorTests {
         doors.First().Height.Should().Be(Dimension.FromMillimeters(expectedDoorHeight));
 
     }
+
+    [Theory]
+    [InlineData(914, 19, 930)]
+    [InlineData(876, 19, 892)]
+    public void DoorHeightTests_WithExtension(double cabHeight, double extendDown, double expectedDoorHeight) {
+
+        // Arrange
+        var cabinet = new BlindWallCabinetBuilder()
+                            .WithDoors(new() { Quantity = 1 })
+                            .WithExtendedDoor(Dimension.FromMillimeters(extendDown))
+                            .WithWidth(Dimension.FromMillimeters(456))
+                            .WithHeight(Dimension.FromMillimeters(cabHeight))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .WithMDFDoorOptions(_mdfOptions)
+                            .Build();
+
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Should().HaveCount(1);
+        doors.First().Height.Should().Be(Dimension.FromMillimeters(expectedDoorHeight));
+
+    }
+
 
 }

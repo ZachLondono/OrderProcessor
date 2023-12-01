@@ -131,4 +131,31 @@ public class WallDiagonalCornerCabinetDoorTests {
 
     }
 
+
+    [Theory]
+    [InlineData(914, 19, 930)]
+    public void DoorHeightTest_WithExtension(double cabHeight, double extendDown, double expectedDoorHeight) {
+
+        // Arrange
+        var cabinet = new WallDiagonalCornerCabinetBuilder()
+                            .WithDoorQty(1)
+                            .WithExtendedDoor(Dimension.FromMillimeters(extendDown))
+                            .WithRightWidth(Dimension.FromMillimeters(610))
+                            .WithRightDepth(Dimension.FromMillimeters(305))
+                            .WithWidth(Dimension.FromMillimeters(610))
+                            .WithDepth(Dimension.FromMillimeters(305))
+                            .WithHeight(Dimension.FromMillimeters(cabHeight))
+                            .WithMDFDoorOptions(_mdfOptions)
+                            .Build();
+
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.First().Height.Should().Be(Dimension.FromMillimeters(expectedDoorHeight));
+
+    }
+
+
 }

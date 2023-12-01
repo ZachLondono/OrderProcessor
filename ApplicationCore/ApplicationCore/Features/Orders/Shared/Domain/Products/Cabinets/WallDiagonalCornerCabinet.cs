@@ -18,7 +18,7 @@ internal class WallDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer {
 
     public override string GetDescription() => $"Diagonal Corner Wall {(IsGarage ? "Garage" : "")}Cabinet - {DoorQty} Doors";
 
-    public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap;
+    public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap + ExtendedDoor;
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),

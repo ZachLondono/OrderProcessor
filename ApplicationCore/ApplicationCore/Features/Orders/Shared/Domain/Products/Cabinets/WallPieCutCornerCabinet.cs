@@ -17,7 +17,7 @@ internal class WallPieCutCornerCabinet : Cabinet, IMDFDoorContainer {
 
     public override string GetDescription() => "Pie Cut Corner Wall Cabinet";
 
-    public Dimension DoorHeight => Height - DoorGaps.TopGap;
+    public Dimension DoorHeight => Height - DoorGaps.TopGap + ExtendedDoor;
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),
