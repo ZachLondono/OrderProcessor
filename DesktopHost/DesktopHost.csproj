@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="MediatR" Version="12.2.0" />
-    <PackageReference Include="RoslynPad.Editor.Windows" Version="4.7.0" />
+    <PackageReference Include="RoslynPad.Editor.Windows" Version="4.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="8.0.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
