@@ -1,7 +1,6 @@
 ﻿using ApplicationCore.Features.DeleteOrder;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.State;
-using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Shared.Data;
 using ApplicationCore.Shared.Data.Ordering;
 using Dapper;
@@ -15,14 +14,13 @@ public class OrderAdditionalItemsPersistenceTests {
 
     protected readonly IOrderingDbConnectionFactory Factory = new TestOrderingConnectionFactory("./Application/Schemas/ordering_schema.sql");
     private readonly ILogger<InsertOrder.Handler> _logger = Substitute.For<ILogger<InsertOrder.Handler>>();
-    private readonly IBus _bus = Substitute.For<IBus>();
 
     private readonly InsertOrder.Handler _insertOrder;
     private readonly DeleteOrder.Handler _deleteOrder;
     private readonly RemoveAdditionalItem.Handler _removeAdditionalItem;
 
     public OrderAdditionalItemsPersistenceTests() {
-        _insertOrder = new(_logger, Factory, _bus);
+        _insertOrder = new(_logger, Factory);
         _deleteOrder = new(Factory);
         _removeAdditionalItem = new(Factory);
         SqlMapping.AddSqlMaps();

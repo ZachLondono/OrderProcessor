@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -18,11 +17,10 @@ public abstract class PersistenceTests {
     protected readonly InsertOrder.Handler Sut;
     protected readonly IOrderingDbConnectionFactory Factory = new TestOrderingConnectionFactory("./Application/Schemas/ordering_schema.sql");
     private readonly ILogger<InsertOrder.Handler> _logger = Substitute.For<ILogger<InsertOrder.Handler>>();
-    private readonly IBus _bus = Substitute.For<IBus>();
 
     public PersistenceTests() {
 
-        Sut = new(_logger, Factory, _bus);
+        Sut = new(_logger, Factory);
         SqlMapping.AddSqlMaps();
 
     }
