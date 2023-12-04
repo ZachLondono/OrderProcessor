@@ -185,49 +185,9 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
                                 depth.AsMillimeters()));
         }
 
-        if (HoleDimensionFromBottom == Dimension.Zero && HoleDimensionFromTop == Dimension.Zero) {
-            Dimension stoppedStartHeight = Length - s_holesOffTop - TransitionHoleDimensionFromTop;
-            Dimension stoppedEndHeight = TransitionHoleDimensionFromBottom;
-            if (stoppedStartHeight > stoppedEndHeight) {
-                tokens.AddRange(CreateTwoRowsOfHoles(GetValidHolePositionFromTop(Length, stoppedStartHeight),
-                                                    stoppedEndHeight,
-                                                    s_stoppedDepth));
-            }
-        } else {
-            if (HoleDimensionFromTop > TransitionHoleDimensionFromTop) { // Stopped holes from the top start just after the last transition (full depth) hole. If HoleDimensionFromTop is 0 (or equal to the TransitionHoleDimensionFromTop) then there are no additional holes
-                Dimension transEnd = GetValidHolePositionFromTop(Length, TransitionHoleDimensionFromTop);
-                Dimension start = Length - s_holesOffTop;
-                if (transEnd > Dimension.Zero) {
-                    start = transEnd - s_holeSpacing;
-                }
-                tokens.AddRange(CreateTwoRowsOfHoles(start,
-                                                    Length - HoleDimensionFromTop,
-                                                    s_stoppedDepth));
-            }
-
-            if (HoleDimensionFromBottom > TransitionHoleDimensionFromBottom) {
-                Dimension transStart = GetValidHolePositionFromBottom(Length, TransitionHoleDimensionFromBottom);
-                Dimension end = transStart;
-                if (transStart > Dimension.Zero) {
-                    end += s_holeSpacing;
-                }
-                tokens.AddRange(CreateTwoRowsOfHoles(GetValidHolePositionFromBottom(Length, HoleDimensionFromBottom),
-                                                    end,
-                                                    s_stoppedDepth));
-            }
-        }
-
-        if (TransitionHoleDimensionFromTop > Dimension.Zero) {
-            tokens.AddRange(CreateTwoRowsOfHoles(Length - s_holesOffTop,
-                                               Length - TransitionHoleDimensionFromTop,
-                                               s_drillThroughDepth));
-        }
-
-        if (TransitionHoleDimensionFromBottom > Dimension.Zero) {
-            tokens.AddRange(CreateTwoRowsOfHoles(GetValidHolePositionFromBottom(Length, TransitionHoleDimensionFromBottom),
-                                                Dimension.Zero,
-                                                s_drillThroughDepth));
-        }
+        GetDrillingOperations().ForEach(operation =>
+            tokens.AddRange(CreateTwoRowsOfHoles(operation.Start, operation.End, operation.Depth == VPDrillingDepth.Stopped ? s_stoppedDepth : s_drillThroughDepth))
+        );
 
         if (BottomNotchHeight > Dimension.Zero && BottomNotchHeight > Dimension.Zero) {
             tokens.Add(new Route() {
@@ -290,6 +250,56 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
         };
 
         return new Part[] { part };
+
+    }
+
+    public List<VPDrillingOperation> GetDrillingOperations() {
+
+        List<VPDrillingOperation> operations = [];
+
+        if (HoleDimensionFromBottom == Dimension.Zero && HoleDimensionFromTop == Dimension.Zero) { // If hole dimension from top & from bottom are both zero, the whole panel should be drilled
+            Dimension stoppedStartHeight = Length - s_holesOffTop - TransitionHoleDimensionFromTop;
+            Dimension stoppedEndHeight = TransitionHoleDimensionFromBottom;
+            if (stoppedStartHeight > stoppedEndHeight) {
+                operations.Add(new(GetValidHolePositionFromTop(Length, stoppedStartHeight),
+                                                    stoppedEndHeight,
+                                                    VPDrillingDepth.Stopped));
+            }
+        } else {
+            if (HoleDimensionFromTop > TransitionHoleDimensionFromTop) { // Stopped holes from the top start just after the last transition (full depth) hole. If HoleDimensionFromTop is 0 (or equal to the TransitionHoleDimensionFromTop) then there are no additional holes
+                Dimension transEnd = GetValidHolePositionFromTop(Length, TransitionHoleDimensionFromTop);
+                Dimension start = Length - s_holesOffTop;
+                if (transEnd > Dimension.Zero) {
+                    start = transEnd - s_holeSpacing;
+                }
+                operations.Add(new(start, Length - HoleDimensionFromTop, VPDrillingDepth.Stopped));
+            }
+
+            if (HoleDimensionFromBottom > TransitionHoleDimensionFromBottom) {
+                Dimension transStart = GetValidHolePositionFromBottom(Length, TransitionHoleDimensionFromBottom);
+                Dimension end = transStart;
+                if (transStart > Dimension.Zero) {
+                    end += s_holeSpacing;
+                }
+                operations.Add(new(GetValidHolePositionFromBottom(Length, HoleDimensionFromBottom),
+                                                    end,
+                                                    VPDrillingDepth.Stopped));
+            }
+        }
+
+        if (TransitionHoleDimensionFromTop > Dimension.Zero) {
+            operations.Add(new(Length - s_holesOffTop,
+                                               Length - TransitionHoleDimensionFromTop,
+                                               VPDrillingDepth.Through));
+        }
+
+        if (TransitionHoleDimensionFromBottom > Dimension.Zero) {
+            operations.Add(new(GetValidHolePositionFromBottom(Length, TransitionHoleDimensionFromBottom),
+                                                Dimension.Zero,
+                                                VPDrillingDepth.Through));
+    }
+
+        return operations;
 
     }
 
@@ -445,5 +455,12 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     }
 
     public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
+
+    public record VPDrillingOperation(Dimension Start, Dimension End, VPDrillingDepth Depth);
+
+    public enum VPDrillingDepth {
+        Stopped,
+        Through
+    }
 
 }
