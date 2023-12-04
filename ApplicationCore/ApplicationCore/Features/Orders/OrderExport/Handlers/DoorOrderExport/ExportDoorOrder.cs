@@ -194,7 +194,7 @@ public class ExportDoorOrder {
             WriteRectangularArray(ws, CreateRectangularArray(frameData), "P", 16, "S");
 
             var ids = CreateIdData(doors);
-            WriteRectangularArray(ws, CreateRectangularArray(ids), "BJ", 16, "BJ");
+            WriteRectangularArray(ws, CreateRectangularArray(ids), "BM", 16, "BJ");
 
         }
 
