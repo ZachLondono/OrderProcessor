@@ -25,6 +25,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
     public Action<ProgressLogMessage>? PublishProgressMessage { get; set; }
 
     public DoorOrder? DoorOrder { get; set; }
+
     private readonly CNCPartGCodeGenerator _generator;
 	private readonly CNCReleaseDecoratorFactory _releaseDecoratorFactory;
     private readonly IFileReader _fileReader;
@@ -46,21 +47,29 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         if (DoorOrder is null) return;
 
-        await GenerateCSVTokens(_generator, DoorOrder);
+        await ReleaseDoorOrder(_generator, DoorOrder);
 
     }
 
-    public async Task GenerateCSVTokens(CNCPartGCodeGenerator generator, DoorOrder doorOrder) {
+    public async Task ReleaseDoorOrder(CNCPartGCodeGenerator generator, DoorOrder doorOrder) {
 
         if (!File.Exists(doorOrder.OrderFile) || Path.GetExtension(doorOrder.OrderFile) != ".xlsm") {
             PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "Invalid door order file"));
             return;
         }
 
-        var (batches, tmpReleasePDFFilePath) = await GenerateBatchesFromDoorOrder(doorOrder);
+        using var app = new ExcelApplicationWrapper() {
+            Visible = false,
+            DisplayAlerts = false
+        };
+        using var workbooks = app.Workbooks;
+        using var workbook = workbooks.Open(doorOrder.OrderFile, readOnly: true);
+        using var worksheets = workbook.Worksheets;
 
+        var batches = await Task.Run(() => GenerateBatchesFromDoorOrder(app, worksheets, doorOrder));
         Document document = await CreateCutListDocumentForBatches(generator, doorOrder, batches);
 
+        var tmpReleasePDFFilePath = GeneratePDFFromWorkbook(workbook, worksheets);
         string mergedFilePath = await MergeReleasePDF(doorOrder, tmpReleasePDFFilePath, document);
 
         PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, mergedFilePath));
@@ -92,59 +101,32 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
     }
 
-    private async Task<(Batch[] Batches, string? TmpReleasePDF)> GenerateBatchesFromDoorOrder(DoorOrder doorOrder) {
+    private Batch[] GenerateBatchesFromDoorOrder(ExcelApplicationWrapper app, WorksheetsWrapper worksheets, DoorOrder doorOrder) {
 
-        string? tmpFileName = null;
-        Batch[] batches = [];
+        using var dataSheet = worksheets["MDF Door Data"];
 
-        try {
+        var exportDirectory = dataSheet.Range["ExportFile"].Value2;
 
-            batches = await Task.Run(() => {
+        var tokenFile = Path.Combine(exportDirectory, $"{doorOrder.OrderNumber} - DoorTokens.csv");
 
-                using var app = new ExcelApplicationWrapper() {
-                    Visible = false,
-                    DisplayAlerts = false
-                };
+        PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Generating CSV Token File"));
+        var fileName = Path.GetFileName(doorOrder.OrderFile);
 
-                using var workbooks = app.Workbooks;
-                using var workbook = workbooks.Open(doorOrder.OrderFile, readOnly: true);
-                using var worksheets = workbook.Worksheets;
-                using var dataSheet = worksheets["MDF Door Data"];
+        var server = new NamedPipeServer();
+        server.MessageReceived += ProcessMessage;
+        var serverTask = Task.Run(server.Start);
 
-                var exportDirectory = dataSheet.Range["ExportFile"].Value2;
+        ShowProgressBar?.Invoke();
+        var macroTask = Task.Run(() => app.RunMacro(fileName, "SilentDoorProcessing"));
+        macroTask.Wait();
+        HideProgressBar?.Invoke();
 
-                var tokenFile = Path.Combine(exportDirectory, $"{doorOrder.OrderNumber} - DoorTokens.csv");
+        server.Stop();
 
-                PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Generating CSV Token File"));
-                var fileName = Path.GetFileName(doorOrder.OrderFile);
+        PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Reading CSV Token File"));
+        var batches = new CSVTokenReader().ReadBatchCSV(tokenFile);
 
-                var server = new NamedPipeServer();
-                server.MessageReceived += ProcessMessage;
-                var serverTask = Task.Run(server.Start);
-
-                ShowProgressBar?.Invoke();
-                var macroTask = Task.Run(() => app.RunMacro(fileName, "SilentDoorProcessing"));
-                macroTask.Wait();
-                HideProgressBar?.Invoke();
-
-                server.Stop();
-
-                tmpFileName = GeneratePDFFromWorkbook(workbook, worksheets);
-
-                PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Reading CSV Token File"));
-                var batches = new CSVTokenReader().ReadBatchCSV(tokenFile);
-
-                return batches;
-
-            });
-
-        } finally {
-
-            if (tmpFileName is not null && File.Exists(tmpFileName)) File.Delete(tmpFileName);
-
-        }
-
-        return (batches, tmpFileName);
+        return batches;
 
     }
 
@@ -221,7 +203,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
 	private static string GeneratePDFFromWorkbook(WorkbookWrapper workbook, WorksheetsWrapper worksheets) {
 
-		var PDFSheetNames = new string[] { "MDF Cover Sheet", "MDF Packing List", "MDF Invoice" };
+        var PDFSheetNames = new string[] { "MDF Cover Sheet", "MDF Packing List", "MDF Invoice" };
 		worksheets[PDFSheetNames].Select();
     
         var tmpFileName = Path.GetTempPath() + Guid.NewGuid().ToString() + ".pdf";
@@ -234,4 +216,3 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 	}
 
 }
-
