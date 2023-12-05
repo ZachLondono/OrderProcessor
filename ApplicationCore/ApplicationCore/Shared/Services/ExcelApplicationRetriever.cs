@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using ExcelApplication = Microsoft.Office.Interop.Excel.Application;
-using Excel = Microsoft.Office.Interop.Excel;
+using ExcelInter = Microsoft.Office.Interop.Excel;
 using System.Text;
 
 namespace ApplicationCore.Shared.Services;
@@ -10,7 +10,7 @@ class ExcelApplicationRetriever {
     [DllImport("Oleacc.dll")]
     public static extern int AccessibleObjectFromWindow(
           int hwnd, uint dwObjectID, byte[] riid,
-          ref Excel.Window ptr);
+          ref ExcelInter.Window ptr);
 
     [DllImport("User32.dll")]
     public static extern int GetClassName(
@@ -44,7 +44,7 @@ class ExcelApplicationRetriever {
                 const uint OBJID_NATIVEOM = 0xFFFFFFF0;
                 Guid IID_IDispatch = new Guid(
                      "{00020400-0000-0000-C000-000000000046}");
-                Excel.Window ptr = null;
+                ExcelInter.Window ptr = null;
 
                 int hr = AccessibleObjectFromWindow(
                       hwndChild, OBJID_NATIVEOM,
