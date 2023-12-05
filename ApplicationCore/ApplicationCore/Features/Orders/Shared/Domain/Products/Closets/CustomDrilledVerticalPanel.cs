@@ -44,6 +44,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     private static readonly Dimension s_holeSpacing = Dimension.FromMillimeters(32);
     private static readonly Dimension s_holesOffEdge = Dimension.FromMillimeters(37);
     private static readonly Dimension s_holesOffTop = Dimension.FromMillimeters(9.5);
+    private static readonly Dimension s_holesOffBottom = Dimension.FromMillimeters(9.5);
     private static readonly Dimension s_holeDiameter = Dimension.FromMillimeters(5);
     private static readonly Dimension s_stoppedDepth = Dimension.FromMillimeters(16.5);
     private static readonly Dimension s_drillThroughDepth = Dimension.FromMillimeters(26);
@@ -188,7 +189,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
         GetDrillingOperations().ForEach(operation =>
             tokens.AddRange(CreateTwoRowsOfHoles(operation.Start, operation.End, operation.Depth == VPDrillingDepth.Stopped ? s_stoppedDepth : s_drillThroughDepth))
         );
-
+        
         if (BottomNotchHeight > Dimension.Zero && BottomNotchHeight > Dimension.Zero) {
             tokens.Add(new Route() {
                 ToolName = s_cutOutTool,
@@ -257,47 +258,55 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
         List<VPDrillingOperation> operations = [];
 
-        if (HoleDimensionFromBottom == Dimension.Zero && HoleDimensionFromTop == Dimension.Zero) { // If hole dimension from top & from bottom are both zero, the whole panel should be drilled
-            Dimension stoppedStartHeight = Length - s_holesOffTop - TransitionHoleDimensionFromTop;
+        if (HoleDimensionFromBottom == Dimension.Zero && HoleDimensionFromTop == Dimension.Zero) { 
+
+            /*
+             * If hole dimension from top & from bottom are both zero, the whole panel should be drilled
+             */
+            Dimension stoppedStartHeight = s_holesOffTop + TransitionHoleDimensionFromTop;
             Dimension stoppedEndHeight = TransitionHoleDimensionFromBottom;
             if (stoppedStartHeight > stoppedEndHeight) {
                 operations.Add(new(GetValidHolePositionFromTop(Length, stoppedStartHeight),
-                                                    stoppedEndHeight,
-                                                    VPDrillingDepth.Stopped));
+                                    GetValidHolePositionFromBottom(Length, stoppedEndHeight),
+                                    VPDrillingDepth.Stopped));
             }
+
         } else {
             if (HoleDimensionFromTop > TransitionHoleDimensionFromTop) { // Stopped holes from the top start just after the last transition (full depth) hole. If HoleDimensionFromTop is 0 (or equal to the TransitionHoleDimensionFromTop) then there are no additional holes
-                Dimension transEnd = GetValidHolePositionFromTop(Length, TransitionHoleDimensionFromTop);
-                Dimension start = Length - s_holesOffTop;
-                if (transEnd > Dimension.Zero) {
-                    start = transEnd - s_holeSpacing;
+                Dimension start;
+                if (TransitionHoleDimensionFromTop > Dimension.Zero) {
+                    // The position (relative to bottom of panel) of the last through drilled hole
+                    start = GetValidHolePositionFromTop(Length, TransitionHoleDimensionFromTop) - s_holeSpacing;
+                } else {
+                    start = Length - s_holesOffTop;
                 }
-                operations.Add(new(start, Length - HoleDimensionFromTop, VPDrillingDepth.Stopped));
+                Dimension end = GetValidHolePositionFromTop(Length, HoleDimensionFromTop);
+                operations.Add(new(start, end, VPDrillingDepth.Stopped));
             }
 
             if (HoleDimensionFromBottom > TransitionHoleDimensionFromBottom) {
-                Dimension transStart = GetValidHolePositionFromBottom(Length, TransitionHoleDimensionFromBottom);
-                Dimension end = transStart;
-                if (transStart > Dimension.Zero) {
-                    end += s_holeSpacing;
+                Dimension end;
+                if (TransitionHoleDimensionFromTop > Dimension.Zero) {
+                    end = GetValidHolePositionFromBottom(Length, TransitionHoleDimensionFromBottom) + s_holeSpacing;
+                } else {
+                    end = GetValidHolePositionFromBottom(Length, s_holesOffBottom);
                 }
-                operations.Add(new(GetValidHolePositionFromBottom(Length, HoleDimensionFromBottom),
-                                                    end,
-                                                    VPDrillingDepth.Stopped));
+                Dimension start = GetValidHolePositionFromBottom(Length, HoleDimensionFromBottom);
+                operations.Add(new(start, end, VPDrillingDepth.Stopped));
             }
         }
 
         if (TransitionHoleDimensionFromTop > Dimension.Zero) {
-            operations.Add(new(Length - s_holesOffTop,
-                                               Length - TransitionHoleDimensionFromTop,
-                                               VPDrillingDepth.Through));
+            Dimension start = Length - s_holesOffTop;
+            Dimension end = GetValidHolePositionFromTop(Length, TransitionHoleDimensionFromTop);
+            operations.Add(new(start, end, VPDrillingDepth.Through));
         }
 
         if (TransitionHoleDimensionFromBottom > Dimension.Zero) {
             operations.Add(new(GetValidHolePositionFromBottom(Length, TransitionHoleDimensionFromBottom),
-                                                Dimension.Zero,
+                                                GetValidHolePositionFromBottom(Length, s_holesOffBottom),
                                                 VPDrillingDepth.Through));
-    }
+        }
 
         return operations;
 
@@ -414,38 +423,49 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
     }
 
-    // Returns hole position relative to the bottom of the panel 
-    public static Dimension GetValidHolePositionFromTop(Dimension length, Dimension maxSpaceFromTop) {
+    /// <summary>
+    /// Returns a valid hole position, relative to the bottom of the panel, for a hole that is at most 'maxDistanceFromTop' distance from the top of the panel
+    /// </summary>
+    /// <param name="length">The length (height) of the vertical panel</param>
+    /// <param name="maxDistanceFromTop">A distance measured from the top of the panel</param>
+    /// <returns>A dimension which represents the distance from the bottom of the panel to the center of a valid hole position</returns>
+    public static Dimension GetValidHolePositionFromTop(Dimension length, Dimension maxDistanceFromTop) {
 
         if (s_holeSpacing == Dimension.Zero) {
-            return Dimension.Zero;
+            throw new InvalidOperationException();
         }
 
-        double holeIndex = Math.Floor(((maxSpaceFromTop + Dimension.FromMillimeters(9.5) - s_holesOffTop) / s_holeSpacing).AsMillimeters());
+        double holeIndex = Math.Floor(((maxDistanceFromTop + Dimension.FromMillimeters(9.5) - s_holesOffTop) / s_holeSpacing).AsMillimeters());
 
         var distanceFromTop = Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop;
 
         if (distanceFromTop >= length) {
-            return Dimension.Zero;
+            throw new InvalidOperationException();
         }
 
         return length - distanceFromTop;
 
     }
 
-    // Returns hole position relative to the bottom of the panel
-    public static Dimension GetValidHolePositionFromBottom(Dimension length, Dimension maxSpaceFromBottom) {
+    /// <summary>
+    /// Calculates the distance from the bottom of the panel to a hole which is _at most_ a distance of 'maxDistanceFromBottom' from the bottom edge of the panel and is a valid hole position (ie it is an integer multiple of s_holeSpacing relative to the top of the panel).
+    /// </summary>
+    public static Dimension GetValidHolePositionFromBottom(Dimension length, Dimension maxDistanceFromBottom) {
 
-        if (length < s_holesOffTop || maxSpaceFromBottom > length - s_holesOffTop || s_holeSpacing == Dimension.Zero) {
-            return Dimension.Zero;
+        if (length < s_holesOffTop  || s_holeSpacing == Dimension.Zero) {
+            throw new InvalidOperationException();
+        }
+        
+        if (maxDistanceFromBottom > length - s_holesOffTop) {
+            return length - s_holesOffTop;
         }
 
-        double holeIndex = Math.Ceiling(((length - (maxSpaceFromBottom + Dimension.FromMillimeters(9.5)) - s_holesOffTop) / s_holeSpacing).AsMillimeters());
+        double holeIndex = Math.Ceiling(((length - (maxDistanceFromBottom + s_holesOffBottom) - s_holesOffTop) / s_holeSpacing).AsMillimeters());
 
         var distanceFromTop = Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop;
 
         if (distanceFromTop >= length) {
-            return Dimension.Zero;
+            throw new InvalidOperationException();
         }
 
         var position = length - distanceFromTop;
