@@ -6,6 +6,7 @@ using ApplicationCore.Shared.CNC.ReleasePDF;
 using ApplicationCore.Shared.Components.ProgressModal;
 using ApplicationCore.Shared.Services;
 using CADCodeProxy.CSV;
+using CADCodeProxy.Machining;
 using Microsoft.Office.Interop.Excel;
 using QuestPDF.Fluent;
 using System.Runtime.InteropServices;
@@ -57,103 +58,95 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             return;
         }
 
+        var (batches, tmpReleasePDFFilePath) = await GenerateBatchesFromDoorOrder(doorOrder);
+
+        Document document = await CreateCutListDocumentForBatches(generator, doorOrder, batches);
+
+        string mergedFilePath = await MergeReleasePDF(doorOrder, tmpReleasePDFFilePath, document);
+
+        PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, mergedFilePath));
+
+    }
+
+    private async Task<string> MergeReleasePDF(DoorOrder doorOrder, string? tmpReleasePDFFilePath, Document document) {
+
+        var fileComponents = new List<byte[]>();
+
+        if (tmpReleasePDFFilePath is not null) {
+            var mdfReleasePagesData = await File.ReadAllBytesAsync(tmpReleasePDFFilePath);
+            fileComponents.Add(mdfReleasePagesData);
+        }
+
+        var mergedDocument = await Task.Run(() => {
+
+            var pdfData = document.GeneratePdf();
+            fileComponents.Add(pdfData);
+
+            return PdfMerger.Merge(fileComponents);
+
+        });
+
+        var mergedFilePath = _fileReader.GetAvailableFileName(@"C:\Users\Zachary Londono\Desktop\TestOutput", $"{doorOrder.OrderNumber} CUTLIST", ".pdf");
+        await File.WriteAllBytesAsync(mergedFilePath, mergedDocument);
+
+        return mergedFilePath;
+
+    }
+
+    private async Task<(Batch[] Batches, string? TmpReleasePDF)> GenerateBatchesFromDoorOrder(DoorOrder doorOrder) {
+
+        string? tmpFileName = null;
+        Batch[] batches = [];
+
         ExcelApp? app = null;
         Workbooks? workbooks = null;
         Workbook? workbook = null;
         Sheets? worksheets = null;
         Worksheet? dataSheet = null;
         Worksheet? orderSheet = null;
-        string? tmpFileName = null;
 
         try {
 
-			var batches = await Task.Run(() => {
+            batches = await Task.Run(() => {
 
-				app = new ExcelApp() {
-					Visible = false,
-					DisplayAlerts = false
-				};
+                app = new ExcelApp() {
+                    Visible = false,
+                    DisplayAlerts = false
+                };
 
-				workbooks = app.Workbooks;
-				workbook = workbooks.Open(doorOrder.OrderFile, ReadOnly: true);
-				worksheets = workbook.Worksheets;
+                workbooks = app.Workbooks;
+                workbook = workbooks.Open(doorOrder.OrderFile, ReadOnly: true);
+                worksheets = workbook.Worksheets;
 
-				dataSheet = worksheets["MDF Door Data"];
-				var exportDirectory = dataSheet.Range["ExportFile"].Value2;
+                dataSheet = worksheets["MDF Door Data"];
+                var exportDirectory = dataSheet.Range["ExportFile"].Value2;
 
-				var tokenFile = Path.Combine(exportDirectory, $"{doorOrder.OrderNumber} - DoorTokens.csv");
+                var tokenFile = Path.Combine(exportDirectory, $"{doorOrder.OrderNumber} - DoorTokens.csv");
 
-				PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Generating CSV Token File"));
-				var fileName = Path.GetFileName(doorOrder.OrderFile);
+                PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Generating CSV Token File"));
+                var fileName = Path.GetFileName(doorOrder.OrderFile);
 
-				var server = new NamedPipeServer();
-				server.MessageReceived += ProcessMessage;
-				var serverTask = Task.Run(server.Start);
+                var server = new NamedPipeServer();
+                server.MessageReceived += ProcessMessage;
+                var serverTask = Task.Run(server.Start);
 
-				ShowProgressBar?.Invoke();
-				var macroTask = Task.Run(() => RunMacro(app, fileName, "SilentDoorProcessing"));
-				macroTask.Wait();
-				HideProgressBar?.Invoke();
+                ShowProgressBar?.Invoke();
+                var macroTask = Task.Run(() => RunMacro(app, fileName, "SilentDoorProcessing"));
+                macroTask.Wait();
+                HideProgressBar?.Invoke();
 
-				server.Stop();
+                server.Stop();
 
-				tmpFileName = GeneratePDFFromWorkbook(workbook, worksheets);
+                tmpFileName = GeneratePDFFromWorkbook(workbook, worksheets);
 
-				PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Reading CSV Token File"));
-				var batches = new CSVTokenReader().ReadBatchCSV(tokenFile);
+                PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Reading CSV Token File"));
+                var batches = new CSVTokenReader().ReadBatchCSV(tokenFile);
 
-				return batches;
+                return batches;
 
-			});
-			
-			List<ICNCReleaseDecorator> decorators = new();
-			foreach (var batch in batches) {
+            });
 
-				var job = await generator.GenerateGCode(batch, doorOrder.Customer, doorOrder.Vendor, DateTime.Today, DateTime.Today);
-
-				if (job is null) {
-					continue;
-				}
-
-				var decorator = _releaseDecoratorFactory.Create(job);
-				decorators.Add(decorator);
-
-				await WriteGCodeResultFile(job);
-
-			}
-
-			PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Creating CNC Release Document"));
-			var pdfData = await Task.Run(() => {
-
-				var document = Document.Create(doc => {
-
-					foreach (var decorator in decorators) {
-						decorator.Decorate(doc);
-					}
-
-				});
-
-				return document.GeneratePdf();
-
-			});
-
-			var fileComponents = new List<byte[]>();
-
-			if (tmpFileName is not null) {
-				var mdfReleasePagesData = await File.ReadAllBytesAsync(tmpFileName);
-				fileComponents.Add(mdfReleasePagesData);
-			}
-
-			fileComponents.Add(pdfData);
-
-			var mergedDocument = await Task.Run(() => PdfMerger.Merge(fileComponents));
-
-			var mergedFilePath = _fileReader.GetAvailableFileName(@"C:\Users\Zachary Londono\Desktop\TestOutput", $"{doorOrder.OrderNumber} CUTLIST", ".pdf");
-			await File.WriteAllBytesAsync(mergedFilePath, mergedDocument);
-
-			PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, mergedFilePath));
-
-		} finally {
+        } finally {
 
                 
             if (tmpFileName is not null && File.Exists(tmpFileName)) File.Delete(tmpFileName);
@@ -182,9 +175,48 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         }
 
+        return (batches, tmpFileName);
+
     }
 
-	private void ProcessMessage(PipeMessage message) {
+    private async Task<Document> CreateCutListDocumentForBatches(CNCPartGCodeGenerator generator, DoorOrder doorOrder, Batch[] batches) {
+
+        List<ICNCReleaseDecorator> decorators = [];
+
+        PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Generating GCode For Doors"));
+
+        foreach (var batch in batches) {
+
+            var job = await generator.GenerateGCode(batch, doorOrder.Customer, doorOrder.Vendor, DateTime.Today, DateTime.Today);
+
+            if (job is null) {
+                continue;
+            }
+
+            var decorator = _releaseDecoratorFactory.Create(job);
+            decorators.Add(decorator);
+
+            await WriteGCodeResultFile(job);
+
+        }
+
+        PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Creating CNC Release Document"));
+
+        var document = await Task.Run(() => {
+            return Document.Create(doc => {
+
+                foreach (var decorator in decorators) {
+                    decorator.Decorate(doc);
+                }
+
+            });
+        });
+
+        return document;
+
+    }
+
+    private void ProcessMessage(PipeMessage message) {
 
 		switch (message.Type) {
 			case "info":
