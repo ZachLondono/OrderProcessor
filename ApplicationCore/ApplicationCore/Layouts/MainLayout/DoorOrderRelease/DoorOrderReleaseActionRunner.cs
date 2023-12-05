@@ -4,17 +4,16 @@ using ApplicationCore.Shared.CNC;
 using ApplicationCore.Shared.CNC.Job;
 using ApplicationCore.Shared.CNC.ReleasePDF;
 using ApplicationCore.Shared.Components.ProgressModal;
+using ApplicationCore.Shared.Excel;
 using ApplicationCore.Shared.Services;
 using CADCodeProxy.CSV;
 using CADCodeProxy.Machining;
 using Microsoft.Office.Interop.Excel;
 using QuestPDF.Fluent;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 using UglyToad.PdfPig.Writer;
 using static ApplicationCore.Layouts.MainLayout.DoorOrderRelease.NamedPipeServer;
 using Action = System.Action;
-using ExcelApp = Microsoft.Office.Interop.Excel.Application;
 
 namespace ApplicationCore.Layouts.MainLayout.DoorOrderRelease;
 
@@ -98,27 +97,20 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         string? tmpFileName = null;
         Batch[] batches = [];
 
-        ExcelApp? app = null;
-        Workbooks? workbooks = null;
-        Workbook? workbook = null;
-        Sheets? worksheets = null;
-        Worksheet? dataSheet = null;
-        Worksheet? orderSheet = null;
-
         try {
 
             batches = await Task.Run(() => {
 
-                app = new ExcelApp() {
+                using var app = new ExcelApplicationWrapper() {
                     Visible = false,
                     DisplayAlerts = false
                 };
 
-                workbooks = app.Workbooks;
-                workbook = workbooks.Open(doorOrder.OrderFile, ReadOnly: true);
-                worksheets = workbook.Worksheets;
+                using var workbooks = app.Workbooks;
+                using var workbook = workbooks.Open(doorOrder.OrderFile, readOnly: true);
+                using var worksheets = workbook.Worksheets;
+                using var dataSheet = worksheets["MDF Door Data"];
 
-                dataSheet = worksheets["MDF Door Data"];
                 var exportDirectory = dataSheet.Range["ExportFile"].Value2;
 
                 var tokenFile = Path.Combine(exportDirectory, $"{doorOrder.OrderNumber} - DoorTokens.csv");
@@ -131,7 +123,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
                 var serverTask = Task.Run(server.Start);
 
                 ShowProgressBar?.Invoke();
-                var macroTask = Task.Run(() => RunMacro(app, fileName, "SilentDoorProcessing"));
+                var macroTask = Task.Run(() => app.RunMacro(fileName, "SilentDoorProcessing"));
                 macroTask.Wait();
                 HideProgressBar?.Invoke();
 
@@ -148,30 +140,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         } finally {
 
-                
             if (tmpFileName is not null && File.Exists(tmpFileName)) File.Delete(tmpFileName);
-
-            if (dataSheet is not null) _ = Marshal.ReleaseComObject(dataSheet);
-            if (orderSheet is not null) _ = Marshal.ReleaseComObject(orderSheet);
-            if (worksheets is not null) _ = Marshal.ReleaseComObject(worksheets);
-
-            workbook?.Close(SaveChanges: false);
-            workbooks?.Close();
-            app?.Quit();
-
-            if (workbook is not null) _ = Marshal.ReleaseComObject(workbook);
-            if (workbooks is not null) _ = Marshal.ReleaseComObject(workbooks);
-            if (app is not null) _ = Marshal.ReleaseComObject(app);
-
-            workbook = null;
-            workbooks = null;
-            app = null;
-
-            // Clean up COM objects, calling these twice ensures it is fully cleaned up.
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
 
         }
 
@@ -250,26 +219,19 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 		await fileStream.DisposeAsync();
 	}
 
-	private static void RunMacro(ExcelApp app, string workbookName, string macroName) {
-		_ = app.GetType()
-                .InvokeMember("Run",
-							  System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.InvokeMethod,
-							  null,
-							  app,
-							  new object[] { $"'{workbookName}'!{macroName}" });
-	}
-
-	private static string GeneratePDFFromWorkbook(Workbook workbook, Sheets worksheets) {
+	private static string GeneratePDFFromWorkbook(WorkbookWrapper workbook, WorksheetsWrapper worksheets) {
 
 		var PDFSheetNames = new string[] { "MDF Cover Sheet", "MDF Packing List", "MDF Invoice" };
 		worksheets[PDFSheetNames].Select();
     
         var tmpFileName = Path.GetTempPath() + Guid.NewGuid().ToString() + ".pdf";
-		Worksheet activeSheet = workbook.ActiveSheet;
-		activeSheet.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, tmpFileName, OpenAfterPublish: false);
+
+		using var activeSheet = workbook.ActiveSheet;
+		activeSheet.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, tmpFileName, openAfterPublish: false);
 
         return tmpFileName;
 
 	}
+
 }
 
