@@ -11,9 +11,10 @@ public class DoorOrderReleaseActionRunnerFactory {
 		_serviceProvider = serviceProvider;
 	}
 
-	public DoorOrderReleaseActionRunner CreateActionRunner(DoorOrder doorOrder) {
+	public DoorOrderReleaseActionRunner CreateActionRunner(DoorOrder order, DoorOrderReleaseOptions options) {
 		var actionRunner = _serviceProvider.GetRequiredService<DoorOrderReleaseActionRunner>();
-		actionRunner.DoorOrder = doorOrder;
+		actionRunner.DoorOrder = order;
+		actionRunner.Options = options;
 		return actionRunner;
 	}
 
