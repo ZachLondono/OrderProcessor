@@ -237,8 +237,12 @@
 		var result = await dialog.Result;
 		if (result.Confirmed && result.Data is DoorOrder order) {
 
-			_ = await Modal.Show<DoorOrderReleaseDialog>("Door Order Release", new ModalParameters() {
+			_ = await Modal.Show<DoorOrderReleaseDialog>("Door Order Release",
+			new ModalParameters() {
 				{ "Order", order }
+			}, new ModalOptions() {
+				DisableBackgroundCancel = true,
+				Size = ModalSize.ExtraLarge
 			}).Result;
 
 		}
