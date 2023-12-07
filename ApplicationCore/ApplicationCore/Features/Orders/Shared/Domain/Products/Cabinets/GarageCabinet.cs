@@ -18,22 +18,4 @@ public abstract class GarageCabinet : Cabinet {
         return base.GetMaterialType();
     }
 
-    protected override Dictionary<string, PPMaterial> GetFinishMaterials() {
-        var materials = base.GetFinishMaterials();
-        if (IsGarage) {
-            materials["F_Exp_Unseen"] = new PPMaterial("Mela", "WHITE");
-            materials["F_SemiExp_Unseen"] = new PPMaterial("Mela", "WHITE");
-            materials["F_SemiExposed"] = new PPMaterial("Mela", "WHITE");
-        }
-        return materials;
-    }
-
-    protected override Dictionary<string, PPMaterial> GetEBMaterials() {
-        var materials = base.GetEBMaterials();
-        if (IsGarage) {
-            materials["EB_Inside"] = new PPMaterial("PVC", "WHITE");
-        }
-        return materials;
-    }
-
 }
