@@ -2,6 +2,7 @@
 @using ApplicationCore.Infrastructure.Bus
 @using ApplicationCore.Shared.Components
 @using ApplicationCore.Shared.Components.ProgressModal
+@using ApplicationCore.Shared.Services
 
 <EditForm Model="Model">
 
@@ -106,9 +107,10 @@
     [Inject]
     public DoorOrderReleaseActionRunnerFactory? ActionRunnerFactory { get; set; }
 
-    public DoorOrderReleaseOptions Model { get; set; } = new();
+    [Inject]
+    public IFilePicker FilePicker { get; set; }
 
-    public void ChooseReportFile() => throw new NotImplementedException();
+    public DoorOrderReleaseOptions Model { get; set; } = new();
 
     protected override async Task OnInitializedAsync() {
 
@@ -162,6 +164,16 @@
             }
         });
     }
+
+    private void ChooseReportFile()
+        => FilePicker.PickFile(new() {
+                Title = "Select CADCode WS Report File",
+                InitialDirectory = @"Y:\CADCode\Reports",
+                Filter = new("CADCode WS Report", "xml"),
+            }, (fileName) => {
+            Model.WSXMLReportFilePath = fileName;
+            InvokeAsync(StateHasChanged);
+        });
 
     private async Task GenerateDoorOrderRelease() {
 
