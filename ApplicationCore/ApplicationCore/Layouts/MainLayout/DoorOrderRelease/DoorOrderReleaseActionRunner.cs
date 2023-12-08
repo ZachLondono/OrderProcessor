@@ -360,10 +360,13 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         if (PDFSheetNames.Count == 0) return null;
 
+        var tmpFileName = Path.GetTempPath() + Guid.NewGuid().ToString() + ".pdf";
+
         string[] sheetsToSelect = [.. PDFSheetNames];
         worksheets[sheetsToSelect].Select();
     
-        var tmpFileName = Path.GetTempPath() + Guid.NewGuid().ToString() + ".pdf";
+		Worksheet activeSheet = workbook.ActiveSheet;
+		activeSheet.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, tmpFileName, OpenAfterPublish: false);
 
 		var activeSheet = workbook.ActiveSheet;
 		activeSheet.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, tmpFileName, openAfterPublish: false);
