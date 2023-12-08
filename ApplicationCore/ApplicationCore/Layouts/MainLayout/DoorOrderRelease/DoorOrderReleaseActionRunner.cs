@@ -78,6 +78,11 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             return;
         }
 
+        if (!Directory.Exists(options.OutputDirectory)) {
+            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "Output directory does not exist"));
+            return;
+        }
+
         string? workbookPdfTmpFilePath = null;
         List<Document> documents = [];
         List<ReleasedJob> releasedJobs = [];
