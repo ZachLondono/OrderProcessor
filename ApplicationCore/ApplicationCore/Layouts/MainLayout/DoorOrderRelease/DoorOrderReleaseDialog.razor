@@ -80,7 +80,18 @@
             Send Email
         </label>
         @if (Model.SendEmail) {
-            <InputText @bind-Value="Model.EmailRecipients" class="input-text w-full" placeholder="example@email.com" />
+            <div class="ml-3">
+                <div>
+                    <label>
+                        <InputCheckbox @bind-Value="Model.PreviewEmail" />
+                        Preview email before sending
+                    </label>
+                </div>
+                <label>
+                    Email Recipients
+                    <InputText @bind-Value="Model.EmailRecipients" class="input-text w-full" placeholder="example@email.com" />
+                </label>
+            </div>
         }
     </div>
 
