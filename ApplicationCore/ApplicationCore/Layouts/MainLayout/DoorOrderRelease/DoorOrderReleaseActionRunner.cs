@@ -22,6 +22,7 @@ using Action = System.Action;
 using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
 using ExcelApp = Microsoft.Office.Interop.Excel.Application; 
 using System.Diagnostics;
+using Range = Microsoft.Office.Interop.Excel.Range;
 
 namespace ApplicationCore.Layouts.MainLayout.DoorOrderRelease;
 
@@ -354,9 +355,21 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
     private static string? GeneratePDFFromWorkbook(Workbook workbook, Sheets worksheets, bool cover, bool packingList, bool invoice) {
 
         var PDFSheetNames = new List<string>();
-        if (cover) PDFSheetNames.Add("MDF Cover Sheet");
-        if (packingList) PDFSheetNames.Add("MDF Packing List");
-        if (invoice) PDFSheetNames.Add("MDF Invoice");
+        if (cover) {
+            const string sheetName = "MDF Cover Sheet";
+            SetPrintArea(worksheets, sheetName, "J");
+            PDFSheetNames.Add(sheetName);
+        }
+        if (packingList) {
+            const string sheetName = "MDF Packing List";
+            SetPrintArea(worksheets, sheetName, "E");
+            PDFSheetNames.Add(sheetName);
+        }
+        if (invoice) {
+            const string sheetName = "MDF Invoice";
+            SetPrintArea(worksheets, sheetName, "E");
+            PDFSheetNames.Add(sheetName);
+        }
 
         if (PDFSheetNames.Count == 0) return null;
 
@@ -364,16 +377,33 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         string[] sheetsToSelect = [.. PDFSheetNames];
         worksheets[sheetsToSelect].Select();
-    
+
 		Worksheet activeSheet = workbook.ActiveSheet;
 		activeSheet.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, tmpFileName, OpenAfterPublish: false);
-
-		var activeSheet = workbook.ActiveSheet;
-		activeSheet.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, tmpFileName, openAfterPublish: false);
 
         return tmpFileName;
 
 	}
+
+    private static void SetPrintArea(Sheets worksheets, string sheetName, string lastCol) {
+
+        const int maxRow = 210;
+        Worksheet worksheet = worksheets[sheetName];
+        int lastRow = 1;
+
+        for (int currentRow = 1; currentRow <= maxRow; currentRow++ ) {
+
+            Range rng = worksheet.Range[$"A{currentRow}"];
+            var val = rng.Value2?.ToString() ?? "";
+            if (!string.IsNullOrWhiteSpace(val) && val != "-") {
+                lastRow = currentRow;
+            }
+
+        }
+
+        worksheet.PageSetup.PrintArea = $"A1:{lastCol}{lastRow}";
+
+    }
 
     private static void UpdateReleaseDateOnWorkbook(Sheets worksheets) {
 
