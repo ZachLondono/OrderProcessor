@@ -1,7 +1,5 @@
 ﻿using ApplicationCore.Features.OpenDoorOrders;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Pages.CustomerDetails;
 using ApplicationCore.Shared;
 using ApplicationCore.Shared.CNC;
 using ApplicationCore.Shared.CNC.Job;
@@ -10,22 +8,19 @@ using ApplicationCore.Shared.CNC.WorkOrderReleaseEmail;
 using ApplicationCore.Shared.CNC.WSXML.Report;
 using ApplicationCore.Shared.CNC.WSXML;
 using ApplicationCore.Shared.Components.ProgressModal;
-using ApplicationCore.Shared.Excel;
 using ApplicationCore.Shared.Services;
 using CADCodeProxy.CSV;
 using CADCodeProxy.Machining;
-using HtmlAgilityPack;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.Outlook;
 using MimeKit;
 using QuestPDF.Fluent;
-using System.Configuration;
 using System.Runtime.InteropServices;
-using System.Text.Json;
 using UglyToad.PdfPig.Writer;
 using static ApplicationCore.Layouts.MainLayout.DoorOrderRelease.NamedPipeServer;
 using Action = System.Action;
 using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
+using ExcelApp = Microsoft.Office.Interop.Excel.Application; 
 using System.Diagnostics;
 
 namespace ApplicationCore.Layouts.MainLayout.DoorOrderRelease;
@@ -87,20 +82,18 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         List<Document> documents = [];
         List<ReleasedJob> releasedJobs = [];
 
-        if (options.GenerateGCodeFromWorkbook || options.IncludeCover || options.IncludePackingList || options.IncludeInvoice) {
+        var (generatedGCodeDocument, tmpPdf, jobs) = await GetReleasePDFAndGenerateGCode(generator, doorOrder, options);
 
-            var (generatedGCodeDocument, tmpPdf, jobs) = await GetReleasePDFAndGenerateGCode(generator, doorOrder, options);
+        if (generatedGCodeDocument is not null) {
+            documents.Add(generatedGCodeDocument);
+        }
 
-            if (generatedGCodeDocument is not null) {
-                documents.Add(generatedGCodeDocument);
-            }
+        if (tmpPdf is not null) {
+            workbookPdfTmpFilePath = tmpPdf;
+        }
 
-            if (tmpPdf is not null) {
-                workbookPdfTmpFilePath = tmpPdf;
-            }
-
+        if (jobs is not null) {
             releasedJobs.AddRange(jobs);
-
         }
 
         if (options.AddExistingWSXMLReport) {
@@ -170,25 +163,51 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         List<ReleasedJob> releasedJobs = [];
 
         Batch[] batches = [];
+        bool wasOrderOpen = true;
         await Task.Run(() => {
 
-            using var app = new ExcelApplicationWrapper() {
-                Visible = false,
-                DisplayAlerts = false
-            };
-            using var workbooks = app.Workbooks;
-            using var workbook = workbooks.Open(doorOrder.OrderFile);
-            using var worksheets = workbook.Worksheets;
+            var app = GetExcelInstance();
 
-            if (options.GenerateGCodeFromWorkbook) {
-                batches = GenerateBatchesFromDoorOrder(app, worksheets, doorOrder);
-            }
+            try {
 
-            if (options.IncludeCover || options.IncludePackingList || options.IncludeInvoice) {
-                workbookPdfTmpFilePath = GeneratePDFFromWorkbook(workbook, worksheets, options.IncludeCover, options.IncludePackingList, options.IncludeInvoice);
+                if (app is null) {
+                    wasOrderOpen = false;
+                    return;
+                }
+
+                app.ScreenUpdating = false;
+                app.DisplayAlerts = false;
+                app.Calculation = XlCalculation.xlCalculationManual;
+
+                var workbooks = app.Workbooks;
+                var workbook = workbooks.Open(doorOrder.OrderFile);
+                var worksheets = workbook.Worksheets;
+
+                if (options.GenerateGCodeFromWorkbook) {
+                    batches = GenerateBatchesFromDoorOrder(app, worksheets, doorOrder);
+                }
+
+                if (options.IncludeCover || options.IncludePackingList || options.IncludeInvoice) {
+                    workbookPdfTmpFilePath = GeneratePDFFromWorkbook(workbook, worksheets, options.IncludeCover, options.IncludePackingList, options.IncludeInvoice);
+                }
+
+                UpdateReleaseDateOnWorkbook(worksheets);
+
+            } finally {
+
+                if (app is not null) {
+                    app.ScreenUpdating = true;
+                    app.DisplayAlerts = true;
+                    app.Calculation = XlCalculation.xlCalculationAutomatic;
+                }
+
             }
 
         });
+
+        if (!wasOrderOpen) {
+            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "Door order is not open"));
+        }
 
         if (batches.Length != 0) {
             var (document, jobs) = await CreateCutListDocumentForBatches(generator, doorOrder, batches);
@@ -235,9 +254,9 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
     }
 
-    private Batch[] GenerateBatchesFromDoorOrder(ExcelApplicationWrapper app, WorksheetsWrapper worksheets, DoorOrder doorOrder) {
+    private Batch[] GenerateBatchesFromDoorOrder(ExcelApp app, Sheets worksheets, DoorOrder doorOrder) {
 
-        using var dataSheet = worksheets["MDF Door Data"];
+        var dataSheet = worksheets["MDF Door Data"];
 
         var exportDirectory = dataSheet.Range["ExportFile"].Value2;
 
@@ -251,7 +270,14 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         var serverTask = Task.Run(server.Start);
 
         ShowProgressBar?.Invoke();
-        var macroTask = Task.Run(() => app.RunMacro(fileName, "SilentDoorProcessing"));
+        var macroTask = Task.Run(() =>
+            app.GetType()
+                .InvokeMember("Run",
+                              System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.InvokeMethod,
+                              null,
+                              app,
+                              new object[] { $"'{fileName}'!SilentDoorProcessing" })
+        );
         macroTask.Wait();
         HideProgressBar?.Invoke();
 
@@ -321,7 +347,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         return jobData;
     }
 
-    private static string? GeneratePDFFromWorkbook(WorkbookWrapper workbook, WorksheetsWrapper worksheets, bool cover, bool packingList, bool invoice) {
+    private static string? GeneratePDFFromWorkbook(Workbook workbook, Sheets worksheets, bool cover, bool packingList, bool invoice) {
 
         var PDFSheetNames = new List<string>();
         if (cover) PDFSheetNames.Add("MDF Cover Sheet");
@@ -330,16 +356,27 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         if (PDFSheetNames.Count == 0) return null;
 
-		worksheets.SelectSheets([.. PDFSheetNames]);
+        string[] sheetsToSelect = [.. PDFSheetNames];
+        worksheets[sheetsToSelect].Select();
     
         var tmpFileName = Path.GetTempPath() + Guid.NewGuid().ToString() + ".pdf";
 
-		using var activeSheet = workbook.ActiveSheet;
+		var activeSheet = workbook.ActiveSheet;
 		activeSheet.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, tmpFileName, openAfterPublish: false);
 
         return tmpFileName;
 
 	}
+
+    private static void UpdateReleaseDateOnWorkbook(Sheets worksheets) {
+
+        var orderSheet = worksheets["MDF"];
+
+        var rng = orderSheet.Range["ReleasedDate"];
+
+        rng.Value2 = DateTime.Today.ToShortDateString();
+
+    }
 
     private void CreateAndDisplayOutlookEmail(string recipients, string subject, string htmlBody, string textBody, IEnumerable<string> attachments) {
 
@@ -470,5 +507,25 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 		}
 
 	}
+
+    private ExcelApp? GetExcelInstance() {
+
+        var allProcesses = Process.GetProcesses();
+
+        foreach (var process in allProcesses) {
+
+            nint winHandle = process.MainWindowHandle;
+
+            var retriever = new ExcelApplicationRetriever((int)winHandle);
+
+            if (retriever.xl is not null) {
+                return retriever.xl;
+            }
+
+        }
+
+        return null;
+
+    }
 
 }
