@@ -138,11 +138,11 @@
         string outputDirectory = @"R:\Door Orders\Door Programs";
         outputDirResult.OnSuccess(dir => outputDirectory = dir);
 
-        bool includeInvoice = true;
+        bool includeInvoice = false;
         string emailRecipients = "maciej@royalcabinet.com";
         if (!Order.Vendor.ToLowerInvariant().Contains("royal")) {
             emailRecipients += ";toya@royalcabinet.com";
-            includeInvoice = false;
+            includeInvoice = true;
         }
 
         Model = new DoorOrderReleaseOptions() {
