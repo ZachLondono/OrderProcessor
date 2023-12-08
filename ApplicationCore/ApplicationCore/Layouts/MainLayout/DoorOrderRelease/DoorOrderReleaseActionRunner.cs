@@ -40,8 +40,9 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
     private readonly IFileReader _fileReader;
     private readonly IEmailService _emailService;
     private readonly IWSXMLParser _wsxmlParser;
+    private readonly IWindowFocuser _windowFocuser;
 
-    public DoorOrderReleaseActionRunner(CNCPartGCodeGenerator generator, CNCReleaseDecoratorFactory releaseDecoratorFactory, IFileReader fileReader, IEmailService emailService, IWSXMLParser wsxmlParser) {
+    public DoorOrderReleaseActionRunner(CNCPartGCodeGenerator generator, CNCReleaseDecoratorFactory releaseDecoratorFactory, IFileReader fileReader, IEmailService emailService, IWSXMLParser wsxmlParser, IWindowFocuser windowFocuser) {
         _generator = generator;
         _releaseDecoratorFactory = releaseDecoratorFactory;
         _fileReader = fileReader;
@@ -53,6 +54,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         _generator.SetProgressBarValue += (prog) => SetProgressBarValue?.Invoke(prog);
         _emailService = emailService;
         _wsxmlParser = wsxmlParser;
+        _windowFocuser = windowFocuser;
     }
 
     public async Task Run() {
@@ -200,6 +202,8 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
                     app.DisplayAlerts = true;
                     app.Calculation = XlCalculation.xlCalculationAutomatic;
                 }
+
+                _windowFocuser.TryToSetMainWindowFocus();
 
             }
 
