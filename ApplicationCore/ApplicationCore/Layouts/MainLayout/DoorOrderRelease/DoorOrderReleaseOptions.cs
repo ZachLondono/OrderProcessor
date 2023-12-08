@@ -18,6 +18,7 @@ public class DoorOrderReleaseOptions {
     //public bool SendInvoiceEmail { get; set; }
 
     public string FileName { get; set; } = string.Empty;
+    public bool PrintFile { get; set; }
     public string OutputDirectory { get; set; } = string.Empty;
 
     public bool SendEmail { get; set; } = false;

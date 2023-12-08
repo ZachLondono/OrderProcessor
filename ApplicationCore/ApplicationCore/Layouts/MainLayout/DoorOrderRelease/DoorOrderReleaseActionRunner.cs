@@ -26,6 +26,7 @@ using UglyToad.PdfPig.Writer;
 using static ApplicationCore.Layouts.MainLayout.DoorOrderRelease.NamedPipeServer;
 using Action = System.Action;
 using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
+using System.Diagnostics;
 
 namespace ApplicationCore.Layouts.MainLayout.DoorOrderRelease;
 
@@ -114,10 +115,25 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
     
         string? mergedFilePath = await MergeReleasePDF(options, workbookPdfTmpFilePath, [.. documents]);
 
-        if (mergedFilePath is null) {
+        if (mergedFilePath is null || !File.Exists(mergedFilePath)) {
             PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "No file was generated"));
         } else {
+
             PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, mergedFilePath));
+
+            if (options.PrintFile) {
+
+                new Process () {
+                    StartInfo = new ProcessStartInfo() {
+                        CreateNoWindow = true,
+                        Verb = "print",
+                        UseShellExecute = true,
+                        FileName = mergedFilePath 
+                    }
+                }.Start();
+
+            }
+
         }
 
         if (workbookPdfTmpFilePath is not null && _fileReader.DoesFileExist(workbookPdfTmpFilePath)) {
