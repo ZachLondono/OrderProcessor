@@ -373,6 +373,8 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         if (PDFSheetNames.Count == 0) return null;
 
+        Worksheet previouslyActiveSheet = workbook.ActiveSheet;
+
         var tmpFileName = Path.GetTempPath() + Guid.NewGuid().ToString() + ".pdf";
 
         string[] sheetsToSelect = [.. PDFSheetNames];
@@ -380,6 +382,8 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
 		Worksheet activeSheet = workbook.ActiveSheet;
 		activeSheet.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, tmpFileName, OpenAfterPublish: false);
+
+        previouslyActiveSheet?.Select();
 
         return tmpFileName;
 
