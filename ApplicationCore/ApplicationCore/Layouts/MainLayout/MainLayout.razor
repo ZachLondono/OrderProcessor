@@ -23,7 +23,6 @@
 @inject NavigationService NavigationService 
 @inject IBus Bus
 @inject IFilePicker FilePicker
-@inject DoorOrderReleaseActionRunnerFactory ActionRunnerFactory 
 
 <div class="page">
 	<header class="w-48 h-screen fixed top-0 left-0 bg-slate-100">
@@ -236,58 +235,17 @@
 			DisableBackgroundCancel = true
 		});
 		var result = await dialog.Result;
-		if (result.Confirmed && result.Data is DoorOrderSelection selection) {
+		if (result.Confirmed && result.Data is DoorOrder order) {
 
-			var doorOrder = selection.DoorOrder;
+			_ = await Modal.Show<DoorOrderReleaseDialog>("Door Order Release",
+			new ModalParameters() {
+				{ "Order", order }
+			}, new ModalOptions() {
+				DisableBackgroundCancel = true,
+				Size = ModalSize.ExtraLarge
+			}).Result;
 
-			switch (selection.Action) {
-
-				case DoorOrderAction.ExistingRelease:
-					await ExistingDoorOrderRelease(doorOrder);
-					break;
-
-				case DoorOrderAction.GenerateRelease:
-					await GenerateDoorOrderRelease(doorOrder);
-					break;
-
-			}
 		}
-	}
-
-	private async Task ExistingDoorOrderRelease(DoorOrder doorOrder) {
-
-		var outputDirResult = await Bus.Send(new GetDoorOrderCutListDirectory.Query(doorOrder.OrderFileDirectory));
-		string outputDirectory = @"R:\Door Orders\Door Programs";
-		outputDirResult.OnSuccess(dir => outputDirectory = dir);
-		string emailRecipients = "maciej@royalcabinet.com";
-		if (!doorOrder.Vendor.ToLowerInvariant().Contains("royal")) {
-			emailRecipients += ";toya@royalcabinet.com";
-		}
-		var dialog = ShowReleasePDFDialogModal(doorOrder.Customer, doorOrder.Vendor, $"{doorOrder.OrderNumber} DOORS CUTLIST", doorOrder.ReportFilePath, outputDirectory, true, emailRecipients);
-		_ = await dialog.Result;
-
-	}
-
-	private async Task GenerateDoorOrderRelease(DoorOrder doorOrder) {
-
-		var actionRunner = ActionRunnerFactory.CreateActionRunner(doorOrder);
-
-		var parameters = new ModalParameters() {
-            { "ActionRunner",  actionRunner },
-            { "InProgressTitle", "Releasing Order..." },
-            { "CompleteTitle", "Release Complete" }
-        };
-
-		var options = new ModalOptions() {
-            HideHeader = true,
-            HideCloseButton = true,
-            DisableBackgroundCancel = true,
-            Size = ModalSize.Large
-        };
-
-		var dialog = Modal.Show<ProgressModal>("Order Release Progress", parameters, options);
-		_ = await dialog.Result;
-
 	}
 
 	private async Task OpenClosetOrdersDialog() {

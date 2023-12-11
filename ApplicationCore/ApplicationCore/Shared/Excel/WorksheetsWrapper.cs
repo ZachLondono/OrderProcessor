@@ -11,6 +11,10 @@ public class WorksheetsWrapper(Sheets worksheets) : IDisposable {
         get => new(worksheets[index]);
     }
 
+    public void SelectSheets(string[] sheets) {
+        worksheets[sheets].Select();
+    }
+
     protected virtual void Dispose(bool disposing) {
         if (_disposedValue) {
             return;
