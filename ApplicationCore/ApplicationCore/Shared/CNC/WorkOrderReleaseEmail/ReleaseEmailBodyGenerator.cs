@@ -66,18 +66,16 @@ public class ReleaseEmailBodyGenerator {
                 <br />
 
                 <table style="border: 1px solid black;">
-                    <caption><b>{job.JobName} Materials</b></caption>
-                    <thead>
-                        <tr style="border: 1px solid black; border-collapse: collapse;">
-                            <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Qty</th>
-                            <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Name</th>
-                            <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Width</th>
-                            <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Length</th>
-                            <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Thickness</th>
-                        </tr>
-                    </thead>
 
-                    <tbody>
+                    <caption><b>{job.JobName} Materials</b></caption>
+
+                    <tr style="border: 1px solid black; border-collapse: collapse;">
+                        <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Qty</th>
+                        <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Name</th>
+                        <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Width</th>
+                        <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Length</th>
+                        <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Thickness</th>
+                    </tr>
 
                 """;
 
@@ -85,20 +83,22 @@ public class ReleaseEmailBodyGenerator {
             foreach (var material in job.UsedMaterials) {
                 tableBody +=
                     $"""
-                            <tr style="border: 1px solid black; border-collapse: collapse;">
-                                <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{material.Qty}</td>
-                                <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{material.Name}</td>
-                                <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{material.Width}</td>
-                                <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{material.Length}</td>
-                                <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{material.Thickness}</td>
-                            </tr>
+
+                        <tr style="border: 1px solid black; border-collapse: collapse;">
+                            <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{material.Qty}</td>
+                            <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{material.Name}</td>
+                            <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{material.Width}</td>
+                            <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{material.Length}</td>
+                            <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{material.Thickness}</td>
+                        </tr>
+
                     """;
 
             }
 
             string tableFooter =
                 """
-                    </tbody>
+
                 <table>
                 """;
 
