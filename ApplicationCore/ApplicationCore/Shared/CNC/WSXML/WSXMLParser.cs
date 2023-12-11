@@ -40,7 +40,7 @@ public partial class WSXMLParser : IWSXMLParser {
         }
 
         var nestedParts = job.Elements("Item")
-                           .Where(item => item.ElementValue("Note") == "Nested blocknest")
+                           .Where(item => item.ElementValue("Note") == "Nested blocknest" || item.ElementValue("Description") == "blocknest")
                            .Where(nest => nest.Elements("Part").Any())
                            .SelectMany(item =>
                                 item.Elements("Part")
@@ -50,7 +50,7 @@ public partial class WSXMLParser : IWSXMLParser {
                            .ToDictionary(part => part.Id, part => part);
 
         var singleParts = job.Elements("Item")
-                           .Where(item => item.ElementValue("Note") == "Single Program Code")
+                           .Where(item => item.ElementValue("Note") == "Single Program Code" || item.ElementValue("Description") == "Single Part Programs")
                            .Where(nest => nest.Elements("Part").Any())
                            .SelectMany(item =>
                                 item.Elements("Part")
@@ -63,11 +63,13 @@ public partial class WSXMLParser : IWSXMLParser {
         nestedParts.ForEach(kv => allParts[kv.Key] = kv.Value);
         singleParts.ForEach(kv => allParts[kv.Key] = kv.Value);
 
-        var patternScheduleItems = manufacturing.Elements("PatternSchedule");
+        var patternSchedules = manufacturing.Elements("PatternSchedule")
+                                            .Select(PatternSchedule.FromXElement)
+                                            .ToArray();
 
-        var patternSchedules = patternScheduleItems.Select(PatternSchedule.FromXElement);
-
-        var items = job.Elements("Item").Select(Item.FromXElement);
+        var items = job.Elements("Item")
+                        .Select(Item.FromXElement)
+                        .ToArray();
 
         var materials = job.Elements("Material")
                             .Select(MaterialRecord.FromXElement)
@@ -78,7 +80,8 @@ public partial class WSXMLParser : IWSXMLParser {
                                     .ToDictionary(l => l.Id);
 
         var operationGroups = manufacturing.Elements("OperationGroups")
-                                            .Select(OperationGroups.FromXElement);
+                                            .Select(OperationGroups.FromXElement)
+                                            .ToArray();
 
         var report = new WSXMLReport() {
             JobName = job.ElementValue("Name"),
@@ -148,7 +151,7 @@ public partial class WSXMLParser : IWSXMLParser {
                                                                                                 }
                                                                                                 return new NestedPart() {
                                                                                                     Name = part.Name,
-                                                                                                    FileName = part.Variables.GetValueOrEmpty("Face5Filename"),
+                                                                                                    FileName = part.Variables.ContainsKey("Face5Filename") ? part.Variables.GetValueOrEmpty("Face5Filename") : part.Name,
                                                                                                     Width = Dimension.FromMillimeters(part.Width),
                                                                                                     Length = Dimension.FromMillimeters(part.Length),
                                                                                                     Center = new() {
@@ -173,7 +176,7 @@ public partial class WSXMLParser : IWSXMLParser {
                                                 }).ToList();
 
         var singleParts = report.Items
-                                .Where(item => item.Note == "Single Program Code")
+                                .Where(item => item.Note == "Single Program Code" || item.Description == "Single Part Programs")
                                 .GroupBy(item => GetMachineName(item.Name))
                                 .ToDictionary(
                                     group => group.Key,
@@ -182,7 +185,7 @@ public partial class WSXMLParser : IWSXMLParser {
                                                         var label = report.PartLabels[part.LabelId];
                                                         return new SinglePartProgram() {
                                                             Name = part.Name,
-                                                            FileName = part.Variables.GetValueOrEmpty("Face5Filename"),
+                                                            FileName = part.Variables.ContainsKey("Face5Filename") ? part.Variables.GetValueOrEmpty("Face5Filename") : part.Name,
                                                             Width = Dimension.FromMillimeters(part.Width),
                                                             Length = Dimension.FromMillimeters(part.Length),
                                                             Description = label.Fields.GetValueOrEmpty("Description"),
