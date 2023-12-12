@@ -25,40 +25,51 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
 
     public async Task<IDbConnection> CreateConnection() {
 
-        await semaphore.WaitAsync();
+        try {
 
-        if (_dataSource is null) {
+            await semaphore.WaitAsync();
+
+            if (_dataSource is null) {
+                throw new InvalidOperationException("Could not find companies database data source");
+            }
+
+            var builder = new SqliteConnectionStringBuilder {
+                DataSource = _dataSource,
+                Pooling = false
+            };
+
+            var connection = new SqliteConnection(builder.ConnectionString);
+
+            if (File.Exists(_dataSource)) {
+
+                int dbVersion = await GetDatabaseVersion(connection);
+                if (dbVersion != DB_VERSION) {
+                    throw new IncompatibleDatabaseVersion(dbVersion);
+                }
+
+            } else {
+
+                try {
+                    await InitializeDatabase(connection);
+                } catch (Exception ex) {
+                    throw new DataBaseInitializationException(ex);
+                }
+
+            }
+
+            return connection;
+
+        } catch (Exception ex) {
+
+            _logger.LogError(ex, "Exception thrown while creating database connection");
+
+            throw;
+
+        } finally {
+
             semaphore.Release();
-            throw new InvalidOperationException("Could not find companies database data source");
-        }
-
-        var builder = new SqliteConnectionStringBuilder {
-            DataSource = _dataSource,
-            Pooling = false
-        };
-
-        var connection = new SqliteConnection(builder.ConnectionString);
-
-        if (File.Exists(_dataSource)) {
-
-            int dbVersion = await GetDatabaseVersion(connection);
-            if (dbVersion != DB_VERSION) {
-                throw new IncompatibleDatabaseVersion(dbVersion);
-            }
-
-        } else {
-
-            try {
-                await InitializeDatabase(connection);
-            } catch (Exception ex) {
-                throw new DataBaseInitializationException(ex);
-            }
 
         }
-
-        semaphore.Release();
-
-        return connection;
 
     }
 
