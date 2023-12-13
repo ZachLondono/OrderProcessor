@@ -85,63 +85,30 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                         column.ConstantColumn(50);
                                     });
 
-                                    int cabQty = jobSummary.Cabinets.Sum(p => p.Items.Sum(i => i.Qty));
-                                    int cabPartQty = jobSummary.CabinetParts.Sum(p => p.Items.Sum(i => i.Qty));
-                                    int cpQty = jobSummary.ClosetParts.Sum(p => p.Items.Sum(i => i.Qty));
-                                    int zargenQty = jobSummary.ZargenDrawers.Sum(p => p.Items.Sum(i => i.Qty));
-                                    int mdfDoorQty = jobSummary.MDFDoors.Sum(p => p.Items.Sum(i => i.Qty));
-                                    int fivePieceDoorQty = jobSummary.FivePieceDoors.Sum(p => p.Items.Sum(i => i.Qty));
-                                    int dovetailQty = jobSummary.DovetailDrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty));
-                                    int doweledQty = jobSummary.DoweledDrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty));
-                                    int addItemQty = jobSummary.AdditionalItems.Count();
+                                    List<(string name, int qty)> prodQtys = new() {
+                                        ("Cabinets", jobSummary.Cabinets.Sum(p => p.Items.Sum(i => i.Qty)) ),
+                                        ("Cabinet Extras", jobSummary.CabinetParts.Sum(p => p.Items.Sum(i => i.Qty)) ),
+                                        ("Closet Parts", jobSummary.ClosetParts.Sum(p => p.Items.Sum(i => i.Qty)) ),
+                                        ("Zargen Drawers", jobSummary.ZargenDrawers.Sum(p => p.Items.Sum(i => i.Qty)) ),
+                                        ("MDF Doors", jobSummary.MDFDoors.Sum(p => p.Items.Sum(i => i.Qty)) ),
+                                        ("5-Piece Doors", jobSummary.FivePieceDoors.Sum(p => p.Items.Sum(i => i.Qty)) ),
+                                        ("Dovetail DBs", jobSummary.DovetailDrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty)) ),
+                                        ("Doweled DBs", jobSummary.DoweledDrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty)) ),
+                                        ("Other", jobSummary.AdditionalItems.Count() )
+                                    };
 
-                                    if (cabQty > 0) {
-                                        table.Cell().AlignRight().PaddingRight(5).Text("Cabinets:");
-                                        table.Cell().AlignCenter().Text(cabQty == 0 ? "-" : cabQty.ToString());
+                                    foreach (var (name, qty) in prodQtys) {
+                                        if (qty <= 0) {
+                                            return;
+                                        }
+                                        table.Cell().AlignRight().PaddingRight(5).Text($"{name}:");
+                                        table.Cell().AlignCenter().Text(qty == 0 ? "-" : qty.ToString());
                                     }
 
-                                    if (cabPartQty > 0) {
-                                        table.Cell().AlignRight().PaddingRight(5).Text("Cabinet Extras:");
-                                        table.Cell().AlignCenter().Text(cabPartQty == 0 ? "-" : cabPartQty.ToString());
-                                    }
-
-                                    if (cpQty > 0) {
-                                        table.Cell().AlignRight().PaddingRight(5).Text("Closet Parts:");
-                                        table.Cell().AlignCenter().Text(cpQty == 0 ? "-" : cpQty.ToString());
-                                    }
-
-                                    if (zargenQty > 0) {
-                                        table.Cell().AlignRight().PaddingRight(5).Text("Zargen Drawers:");
-                                        table.Cell().AlignCenter().Text(zargenQty == 0 ? "-" : zargenQty.ToString());
-                                    }
-
-                                    if (mdfDoorQty > 0) {
-                                        table.Cell().AlignRight().PaddingRight(5).Text("MDF Doors:");
-                                        table.Cell().AlignCenter().Text(mdfDoorQty == 0 ? "-" : mdfDoorQty.ToString());
-                                    }
-
-                                    if (fivePieceDoorQty > 0) {
-                                        table.Cell().AlignRight().PaddingRight(5).Text("5-Piece Doors:");
-                                        table.Cell().AlignCenter().Text(fivePieceDoorQty == 0 ? "-" : fivePieceDoorQty.ToString());
-                                    }
-
-                                    if (dovetailQty > 0) {
-                                        table.Cell().AlignRight().PaddingRight(5).Text("Dovetail DBs:");
-                                        table.Cell().AlignCenter().Text(dovetailQty == 0 ? "-" : dovetailQty.ToString());
-                                    }
-
-                                    if (doweledQty > 0) {
-                                        table.Cell().AlignRight().PaddingRight(5).Text("Doweled DBs:");
-                                        table.Cell().AlignCenter().Text(doweledQty == 0 ? "-" : doweledQty.ToString());
-                                    }
-
-                                    if (addItemQty > 0) {
-                                        table.Cell().AlignRight().PaddingRight(5).Text("Other:");
-                                        table.Cell().AlignCenter().Text(addItemQty == 0 ? "-" : addItemQty.ToString());
-                                    }
+                                    var totalQty = prodQtys.Sum(prod => prod.qty);
 
                                     table.Cell().BorderTop(0.5f).AlignRight().PaddingRight(5).Text("Total:").Bold().FontSize(14);
-                                    table.Cell().BorderTop(0.5f).AlignCenter().Text((cabQty + cpQty + mdfDoorQty + dovetailQty + doweledQty + addItemQty).ToString()).Bold().FontSize(14);
+                                    table.Cell().BorderTop(0.5f).AlignCenter().Text(totalQty.ToString()).Bold().FontSize(14);
 
                                 });
 
