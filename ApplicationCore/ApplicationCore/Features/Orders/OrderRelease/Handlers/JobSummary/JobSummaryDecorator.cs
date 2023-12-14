@@ -99,7 +99,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
                                     foreach (var (name, qty) in prodQtys) {
                                         if (qty <= 0) {
-                                            return;
+                                            continue;
                                         }
                                         table.Cell().AlignRight().PaddingRight(5).Text($"{name}:");
                                         table.Cell().AlignCenter().Text(qty == 0 ? "-" : qty.ToString());
