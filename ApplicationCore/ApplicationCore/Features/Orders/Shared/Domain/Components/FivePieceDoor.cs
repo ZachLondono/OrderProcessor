@@ -5,6 +5,9 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Components;
 
 public class FivePieceDoor : FivePieceDoorConfig {
 
+    public static Dimension DadoDepth { get; set; } = Dimension.FromMillimeters(8);
+    public static Dimension TotalCenterPanelUndersize { get; set; }  = Dimension.FromMillimeters(0.5);
+
     public Dimension Width { get; init; }
     public Dimension Height { get; init; }
     public DoorFrame FrameSize { get; init; }
@@ -47,7 +50,7 @@ public class FivePieceDoor : FivePieceDoorConfig {
 
         Dimension leftWidth = FrameSize.LeftStile;
         Dimension rightWidth = FrameSize.RightStile;
-        Dimension length = Height - FrameSize.TopRail - FrameSize.BottomRail;
+        Dimension length = Height;
 
         var left = new FivePieceDoorPart("Left Stile", qty, leftWidth, length, Material);
         var right = new FivePieceDoorPart("Right Stile", qty, rightWidth, length, Material);
@@ -58,8 +61,8 @@ public class FivePieceDoor : FivePieceDoorConfig {
 
     public FivePieceDoorPart GetCenterPanelPart(int qty) {
 
-        Dimension width = Width - FrameSize.LeftStile - FrameSize.RightStile;
-        Dimension length = Height - FrameSize.TopRail - FrameSize.BottomRail;
+        Dimension width = Width - FrameSize.LeftStile - FrameSize.RightStile + 2 * DadoDepth - TotalCenterPanelUndersize;
+        Dimension length = Height - FrameSize.TopRail - FrameSize.BottomRail + 2 * DadoDepth - TotalCenterPanelUndersize;
 
         return new("Center Panel", qty, width, length, Material);
 
