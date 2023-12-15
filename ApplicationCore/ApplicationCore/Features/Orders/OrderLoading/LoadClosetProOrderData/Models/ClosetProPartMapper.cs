@@ -506,8 +506,8 @@ public class ClosetProPartMapper {
             { "FINLEFT", finLeft ? "1" : "0" },
             { "FINRIGHT", finRight ? "1" : "0" },
             { "ExtendBack", wallHasBacking ? "19.05" : "0" },
-            { "BottomNotchD", "0" },
-            { "BottomNotchH", "0" },
+            { "BottomNotchD", part.BBDepth.ToString() },
+            { "BottomNotchH", part.BBHeight.ToString() },
             { "WallMount", isWallMount ? "1" : "0" },
             { "BottomRadius", hasRadiusBottom ? Settings.VerticalPanelBottomRadius.AsMillimeters().ToString() : "0" },
         };
