@@ -254,7 +254,6 @@ public class ProductMappingTests {
 
     }
 
-
     [Fact]
     public void FloorMountedHutchPart() {
 
@@ -314,7 +313,6 @@ public class ProductMappingTests {
         closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("DwrPanelH", expectedHutchDwrPanelHeight.AsMillimeters().ToString()));
 
     }
-
 
     [Fact]
     public void WallMountedPart() {
