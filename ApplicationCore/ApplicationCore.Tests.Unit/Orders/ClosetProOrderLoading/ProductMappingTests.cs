@@ -259,7 +259,7 @@ public class ProductMappingTests {
     public void FloorMountedHutchPart() {
 
         // Arrange
-        string expectedSKU = "PCDT";
+        string expectedSKU = "PEH";
         Dimension panelHeight = Dimension.FromInches(89);
         Dimension panelDepth = Dimension.FromInches(14);
         Dimension leftDrilling = Dimension.FromInches(14);
@@ -277,12 +277,15 @@ public class ProductMappingTests {
             Quantity = 123,
             VertDrillL = leftDrilling.AsInches(),
             VertDrillR = rightDrilling.AsInches(),
-            ExportName = "CPS FM Vert",
-            VertHand = "T",
+            PartName = "Vertical Panel - Hutch",
+            ExportName = "VP-Hutch",
+            VertHand = "Right",
             BBDepth = expectedBaseNotchDepth.AsInches(),
             BBHeight = expectedBaseNotchHeight.AsInches(),
             DrillLeft1 = $"0|{expectedHutchTopDepth.AsInches()}",
             DrillLeft2 = $"0|{panelHeight.AsInches()}",
+            UnitL = "",
+            UnitR = $"{panelDepth.AsInches()}|{expectedHutchDwrPanelHeight.AsInches()}|{expectedHutchTopDepth.AsInches()}|{(panelHeight - expectedHutchDwrPanelHeight).AsInches()}",
             InfoRecords = new() {
                 new() {
                     PartName = "Edge Banding",
@@ -295,7 +298,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = _sut.CreateVerticalPanelFromPart(part, false);
+        var product = ClosetProPartMapper.CreateVerticalHutchPanelFromPart(part, false);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -305,7 +308,6 @@ public class ProductMappingTests {
         closetPart.EdgeBandingColor.Should().Be("RED");
         closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("FINLEFT", "0"));
         closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("FINRIGHT", "1"));
-        closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("WallMount", "0"));
         closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("BottomNotchH", expectedBaseNotchHeight.AsMillimeters().ToString()));
         closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("BottomNotchD", expectedBaseNotchDepth.AsMillimeters().ToString()));
         closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("TopDepth", expectedHutchTopDepth.AsMillimeters().ToString()));
