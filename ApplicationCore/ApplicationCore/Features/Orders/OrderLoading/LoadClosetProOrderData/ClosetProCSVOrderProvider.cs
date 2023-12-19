@@ -75,6 +75,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         var customer = await GetOrCreateCustomer(info.Header.DesignerCompany, designerName);
 
         _partMapper.Settings = customer.ClosetProSettings;
+        _partMapper.GroupLikeParts = true; // TODO: Move this into the closet pro settings object
 
         List<AdditionalItem> additionalItems = new();
         additionalItems.AddRange(_partMapper.MapPickListToItems(info.PickList, out var hardwareSpread));

@@ -9,6 +9,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared;
 using ApplicationCore.Shared.Domain;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
 
@@ -18,6 +19,7 @@ public class ClosetProPartMapper {
     public Dictionary<string, Dimension> FrontHardwareSpreads { get; }
     public Dimension HardwareSpread { get; set; } = Dimension.Zero;
     public ClosetProSettings Settings { get; set; } = new();
+    public bool GroupLikeParts { get; set; } = false;
 
     private readonly ComponentBuilderFactory _factory;
 
@@ -178,6 +180,31 @@ public class ClosetProPartMapper {
             } else {
                 break;
             }
+
+        }
+
+        if (GroupLikeParts) {
+
+            var closetParts = products.Where(p => p is ClosetPart)
+                                      .Cast<ClosetPart>()
+                                      .ToList();
+
+            products.RemoveAll(p => p is ClosetPart);
+
+            var groupedParts = closetParts.GroupBy(p => p, new ClosetPartComparer())
+                                            .Select(g => {
+
+                var totalQty = g.Sum(g => g.Qty);
+
+                var first = g.OrderBy(p => p.ProductNumber).First();
+                first.Qty = totalQty;
+
+                return first;
+
+            });
+
+            products.AddRange(groupedParts);
+            products.OrderBy(p => p.ProductNumber);
 
         }
 
@@ -1012,6 +1039,42 @@ public class ClosetProPartMapper {
 
         return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
 
+    }
+
+    public class ClosetPartComparer : IEqualityComparer<ClosetPart> {
+
+        public bool Equals(ClosetPart? x, ClosetPart? y) {
+
+            if (x is null && y is null) return true;
+            if (x is not null && y is null) return false;
+            if (x is null && y is not null) return false;
+
+            if (x!.UnitPrice != y!.UnitPrice) return false;
+            if (x!.Room != y!.Room) return false;
+            if (x!.SKU != y!.SKU) return false;
+            if (x.Width != y.Width) return false;
+            if (x.Length != y.Length) return false;
+            if (x.Material != y.Material) return false;
+            if (x.Paint != y.Paint) return false;
+            if (x.EdgeBandingColor != y.EdgeBandingColor) return false;
+            if (x.Comment != y.Comment) return false;
+
+            if (x.ProductionNotes.Count != y.ProductionNotes.Count
+                || !x.ProductionNotes.All(y.ProductionNotes.Contains)) return false;
+
+            if (x.Parameters.Keys.Count != y.Parameters.Keys.Count
+                || !x.Parameters.Keys.All(k => y.Parameters.ContainsKey(k) && object.Equals(y.Parameters[k], x.Parameters[k]))) {
+                return false;
+            }
+
+            return true;
+
+        }
+
+        public int GetHashCode([DisallowNull] ClosetPart obj) {
+            // TODO: do something about this
+            return 0;
+        }
     }
 
 }
