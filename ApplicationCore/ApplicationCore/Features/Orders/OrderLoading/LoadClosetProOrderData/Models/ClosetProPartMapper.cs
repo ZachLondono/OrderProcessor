@@ -446,12 +446,15 @@ public class ClosetProPartMapper {
                                         .FirstOrDefault() ?? part.Color;
         string comment = "";
 
+        var notchDepth = Dimension.FromInches(part.BBDepth);
+        var notchHeight = Dimension.FromInches(part.BBHeight);
+
         Dictionary<string, string> parameters = new() {
             { "FINLEFT", finLeft ? "1" : "0" },
             { "FINRIGHT", finRight ? "1" : "0" },
             { "ExtendBack", wallHasBacking ? "19.05" : "0" },
-            { "BottomNotchD", "0" },
-            { "BottomNotchH", "0" },
+            { "BottomNotchD", notchDepth.AsMillimeters().ToString() },
+            { "BottomNotchH", notchHeight.AsMillimeters().ToString() },
             { "TopDepth", Dimension.FromInches(topDepth).AsMillimeters().ToString() },
             { "DwrPanelH", Dimension.FromInches(baseHeight).AsMillimeters().ToString() },
             //{ "WallMount", isWallMount ? "1" : "0" },  // Closet pro does not allow wall hung hutch panels
@@ -502,12 +505,15 @@ public class ClosetProPartMapper {
         bool finLeft = (isTransition && leftDrilling < rightDrilling) || (!isTransition && part.VertHand == "L");
         bool finRight = (isTransition && rightDrilling < leftDrilling) || (!isTransition && part.VertHand == "R");
 
+        var notchDepth = Dimension.FromInches(part.BBDepth);
+        var notchHeight = Dimension.FromInches(part.BBHeight);
+
         Dictionary<string, string> parameters = new() {
             { "FINLEFT", finLeft ? "1" : "0" },
             { "FINRIGHT", finRight ? "1" : "0" },
             { "ExtendBack", wallHasBacking ? "19.05" : "0" },
-            { "BottomNotchD", part.BBDepth.ToString() },
-            { "BottomNotchH", part.BBHeight.ToString() },
+            { "BottomNotchD", notchDepth.AsMillimeters().ToString() },
+            { "BottomNotchH", notchHeight.AsMillimeters().ToString() },
             { "WallMount", isWallMount ? "1" : "0" },
             { "BottomRadius", hasRadiusBottom ? Settings.VerticalPanelBottomRadius.AsMillimeters().ToString() : "0" },
         };
