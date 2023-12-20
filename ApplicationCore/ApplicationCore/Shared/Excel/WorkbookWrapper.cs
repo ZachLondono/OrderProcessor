@@ -31,7 +31,7 @@ public class WorkbookWrapper(Workbook workbook) : IDisposable {
         _disposedValue = true;
     }
 
-    ~WorkbookWrapper(){
+    ~WorkbookWrapper() {
         Dispose(disposing: false);
     }
 

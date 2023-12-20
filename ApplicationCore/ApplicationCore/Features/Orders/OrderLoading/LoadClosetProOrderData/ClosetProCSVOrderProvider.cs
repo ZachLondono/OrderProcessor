@@ -1,7 +1,7 @@
-﻿using ApplicationCore.Features.Companies.Contracts.Entities;
+﻿using ApplicationCore.Features.ClosetProCSVCutList;
+using ApplicationCore.Features.Companies.Contracts.Entities;
 using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
-using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;

@@ -11,7 +11,7 @@ public class CabinetPartPersistenceTest : PersistenceTests {
         var cabPart = new CabinetPart(Guid.NewGuid(), 1, 123.0M, 123, "ABC123", "DEF456", new("White", CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard), "Beige", "Comment", new Dictionary<string, string>() {
             { "Param A", "Value A" }
         }, new());
-            
+
         InsertAndQueryOrderWithProduct(cabPart);
 
     }
@@ -22,7 +22,7 @@ public class CabinetPartPersistenceTest : PersistenceTests {
         var cabPart = new CabinetPart(Guid.NewGuid(), 1, 123.0M, 123, "ABC123", "DEF456", new("White", CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard), "Beige", "Comment", new Dictionary<string, string>() {
             { "Param A", "Value A" }
         }, new());
- 
+
         InsertAndDeleteOrderWithProduct(cabPart);
 
     }
@@ -38,7 +38,7 @@ public class CabinetPartPersistenceTest : PersistenceTests {
         });
 
         InsertAndQueryOrderWithProduct(cabPart);
-        
+
     }
 
 }

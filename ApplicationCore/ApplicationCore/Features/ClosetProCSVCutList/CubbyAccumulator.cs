@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Shared.Domain;
 
-namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
+namespace ApplicationCore.Features.ClosetProCSVCutList;
 
 public class CubbyAccumulator {
 

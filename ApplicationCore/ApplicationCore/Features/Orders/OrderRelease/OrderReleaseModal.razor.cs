@@ -18,7 +18,7 @@ public partial class OrderReleaseModal {
     public IModalService ModalService { get; set; } = default!;
 
     private List<Order> _orders = new();
-    
+
     private string? _errorMessage = null;
     public bool _isReleasing = false;
 
@@ -33,7 +33,7 @@ public partial class OrderReleaseModal {
         _orders = await DataContext.LoadOrdersAsync(OrderIds);
         if (!_orders.Any()) return;
         await DataContext.LoadConfiguration(_orders);
-        
+
     }
 
     private void RemoveAdditionalFile(string filePath) {

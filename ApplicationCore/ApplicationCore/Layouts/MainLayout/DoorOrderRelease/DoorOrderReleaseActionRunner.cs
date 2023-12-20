@@ -20,7 +20,7 @@ using UglyToad.PdfPig.Writer;
 using static ApplicationCore.Layouts.MainLayout.DoorOrderRelease.NamedPipeServer;
 using Action = System.Action;
 using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
-using ExcelApp = Microsoft.Office.Interop.Excel.Application; 
+using ExcelApp = Microsoft.Office.Interop.Excel.Application;
 using System.Diagnostics;
 using Range = Microsoft.Office.Interop.Excel.Range;
 
@@ -37,7 +37,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
     public DoorOrderReleaseOptions? Options { get; set; }
 
     private readonly CNCPartGCodeGenerator _generator;
-	private readonly CNCReleaseDecoratorFactory _releaseDecoratorFactory;
+    private readonly CNCReleaseDecoratorFactory _releaseDecoratorFactory;
     private readonly IFileReader _fileReader;
     private readonly IEmailService _emailService;
     private readonly IWSXMLParser _wsxmlParser;
@@ -113,7 +113,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             }
 
         }
-    
+
         string? mergedFilePath = await MergeReleasePDF(options, workbookPdfTmpFilePath, [.. documents]);
 
         if (mergedFilePath is null || !File.Exists(mergedFilePath)) {
@@ -124,12 +124,12 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
             if (options.PrintFile) {
 
-                new Process () {
+                new Process() {
                     StartInfo = new ProcessStartInfo() {
                         CreateNoWindow = true,
                         Verb = "print",
                         UseShellExecute = true,
-                        FileName = mergedFilePath 
+                        FileName = mergedFilePath
                     }
                 }.Start();
 
@@ -380,14 +380,14 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         string[] sheetsToSelect = [.. PDFSheetNames];
         worksheets[sheetsToSelect].Select();
 
-		Worksheet activeSheet = workbook.ActiveSheet;
-		activeSheet.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, tmpFileName, OpenAfterPublish: false);
+        Worksheet activeSheet = workbook.ActiveSheet;
+        activeSheet.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, tmpFileName, OpenAfterPublish: false);
 
         previouslyActiveSheet?.Select();
 
         return tmpFileName;
 
-	}
+    }
 
     private static void SetPrintArea(Sheets worksheets, string sheetName, string lastCol) {
 
@@ -395,7 +395,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         Worksheet worksheet = worksheets[sheetName];
         int lastRow = 1;
 
-        for (int currentRow = 1; currentRow <= maxRow; currentRow++ ) {
+        for (int currentRow = 1; currentRow <= maxRow; currentRow++) {
 
             Range rng = worksheet.Range[$"A{currentRow}"];
             var val = rng.Value2?.ToString() ?? "";
@@ -526,28 +526,28 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
     private void ProcessMessage(PipeMessage message) {
 
-		switch (message.Type) {
-			case "info":
-				PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, $"{message.MessageA} - {message.MessageB}"));
-				break;
-			case "warning":
-				PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"WARNING {message.MessageA} - {message.MessageB}"));
-				break;
-			case "error":
-				PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"{message.MessageA} - {message.MessageB}"));
-				break;
-			case "progress":
-				PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, $"{message.MessageA}"));
-				if (int.TryParse(message.MessageB, out int percentComplete)) {
-					SetProgressBarValue?.Invoke(percentComplete);
-				}
-				break;
-			default:
-				PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, $"{message.Type}|{message.MessageA}|{message.MessageB}"));
-				break;
-		}
+        switch (message.Type) {
+            case "info":
+                PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, $"{message.MessageA} - {message.MessageB}"));
+                break;
+            case "warning":
+                PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"WARNING {message.MessageA} - {message.MessageB}"));
+                break;
+            case "error":
+                PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"{message.MessageA} - {message.MessageB}"));
+                break;
+            case "progress":
+                PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, $"{message.MessageA}"));
+                if (int.TryParse(message.MessageB, out int percentComplete)) {
+                    SetProgressBarValue?.Invoke(percentComplete);
+                }
+                break;
+            default:
+                PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, $"{message.Type}|{message.MessageA}|{message.MessageB}"));
+                break;
+        }
 
-	}
+    }
 
     private ExcelApp? GetExcelInstance() {
 

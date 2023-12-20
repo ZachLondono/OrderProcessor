@@ -1,6 +1,6 @@
-﻿namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
+﻿namespace ApplicationCore.Features.ClosetProCSVCutList;
 
-public class BuyOutPart {
+public class PartInfo {
     public int WallNum { get; set; }
     public int SectionNum { get; set; }
     public string PartType { get; set; } = string.Empty;
@@ -28,8 +28,4 @@ public class BuyOutPart {
     public string PartCost { get; set; } = string.Empty;
     public string UnitL { get; set; } = string.Empty;
     public string UnitR { get; set; } = string.Empty;
-    public int PartNum { get; set; }
-
-    public List<PartInfo> InfoRecords = new();
-
 }

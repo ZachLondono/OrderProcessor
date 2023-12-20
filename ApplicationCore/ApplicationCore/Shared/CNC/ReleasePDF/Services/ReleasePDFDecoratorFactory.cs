@@ -181,20 +181,20 @@ internal class ReleasePDFDecoratorFactory {
 
     private static Table? CreateBackSideMachiningTable(IEnumerable<MachineRelease> releases) {
 
-		// TODO: this will not work if there is another part/product with the same product number (e.g. combining two orders or a cabinet with multiple parts)
-		var content = releases.First()
-							  .SinglePrograms
-							  .GroupBy(part => part.ProductNumber)
-							  //.Where(group => group.Count() == 2)
-							  .Where(group => group.Any(p => p.HasBackSideProgram))
-							  .Select(group => (group.First(), group.Skip(1).First()))
-							  .Select(group => new Dictionary<string, string>() {
-							  { "#", group.Item1.ProductNumber },
-							  { "SideA", group.Item1.FileName },
-							  { "SideB", group.Item2.FileName }
-							  }).ToList();
+        // TODO: this will not work if there is another part/product with the same product number (e.g. combining two orders or a cabinet with multiple parts)
+        var content = releases.First()
+                              .SinglePrograms
+                              .GroupBy(part => part.ProductNumber)
+                              //.Where(group => group.Count() == 2)
+                              .Where(group => group.Any(p => p.HasBackSideProgram))
+                              .Select(group => (group.First(), group.Skip(1).First()))
+                              .Select(group => new Dictionary<string, string>() {
+                              { "#", group.Item1.ProductNumber },
+                              { "SideA", group.Item1.FileName },
+                              { "SideB", group.Item2.FileName }
+                              }).ToList();
 
-		if (!content.Any()) return null;
+        if (!content.Any()) return null;
 
         return new Table() {
             Title = "Back Side Machining",

@@ -71,7 +71,7 @@ internal class ReleasePDFDialogViewModel {
             .FirstOrDefault(f => f.Extension == ".xml")
             ?.FullName ?? string.Empty;
 
-	}
+    }
 
     public async Task GeneratePDF() {
 
