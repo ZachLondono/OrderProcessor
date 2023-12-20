@@ -5,7 +5,6 @@ using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllm
 using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyFileOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.XMLValidation;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
-using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProFileOrderData;
@@ -15,6 +14,7 @@ using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrder
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadsheetOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.LoadHafeleDBSpreadsheetOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
+using ApplicationCore.Features.ClosetProCSVCutList;
 
 namespace ApplicationCore.Features.Orders.OrderLoading;
 

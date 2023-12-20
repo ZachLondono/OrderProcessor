@@ -36,14 +36,14 @@ public class ExcelApplicationWrapper : IDisposable {
 
         if (_app is null) throw new InvalidOperationException("Excel Application not Initialized");
 
-		return _app.GetType()
+        return _app.GetType()
                 .InvokeMember("Run",
-							  System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.InvokeMethod,
-							  null,
-							  _app,
-							  new object[] { $"'{workbookName}'!{macroName}" });
+                              System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.InvokeMethod,
+                              null,
+                              _app,
+                              new object[] { $"'{workbookName}'!{macroName}" });
 
-	}
+    }
 
     protected virtual void Dispose(bool disposing) {
 

@@ -11,7 +11,7 @@ using ApplicationCore.Shared;
 using ApplicationCore.Shared.Domain;
 using System.Diagnostics.CodeAnalysis;
 
-namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
+namespace ApplicationCore.Features.ClosetProCSVCutList;
 
 public class ClosetProPartMapper {
 
@@ -104,7 +104,7 @@ public class ClosetProPartMapper {
                 }
                 products.Add(CreateTopFromPart(part, doesWallHaveBacking));
 
-            } else if (part.PartName == "Cab Door Rail" || (part.PartName.Contains("Drawer") && part.PartName.Contains("Rail"))) {
+            } else if (part.PartName == "Cab Door Rail" || part.PartName.Contains("Drawer") && part.PartName.Contains("Rail")) {
 
                 // TODO: Cabinet door parts have a hinge direction, if that information is to be added to the product it will need to be read
 
@@ -194,14 +194,14 @@ public class ClosetProPartMapper {
             var groupedParts = closetParts.GroupBy(p => p, new ClosetPartComparer())
                                             .Select(g => {
 
-                var totalQty = g.Sum(g => g.Qty);
+                                                var totalQty = g.Sum(g => g.Qty);
 
-                var first = g.OrderBy(p => p.ProductNumber).First();
-                first.Qty = totalQty;
+                                                var first = g.OrderBy(p => p.ProductNumber).First();
+                                                first.Qty = totalQty;
 
-                return first;
+                                                return first;
 
-            });
+                                            });
 
             products.AddRange(groupedParts);
             products.OrderBy(p => p.ProductNumber);
@@ -461,7 +461,7 @@ public class ClosetProPartMapper {
             unitPrice = 0M;
         }
         string room = GetRoomName(part);
-        string sku = (finLeft || finRight) ? "PEH" : "PCH";
+        string sku = finLeft || finRight ? "PEH" : "PCH";
 
         Dimension width = Dimension.FromInches(part.Depth);
         Dimension length = Dimension.FromInches(part.Height);
@@ -529,8 +529,8 @@ public class ClosetProPartMapper {
                                         .FirstOrDefault() ?? part.Color;
         string comment = "";
 
-        bool finLeft = (isTransition && leftDrilling < rightDrilling) || (!isTransition && part.VertHand == "L");
-        bool finRight = (isTransition && rightDrilling < leftDrilling) || (!isTransition && part.VertHand == "R");
+        bool finLeft = isTransition && leftDrilling < rightDrilling || !isTransition && part.VertHand == "L";
+        bool finRight = isTransition && rightDrilling < leftDrilling || !isTransition && part.VertHand == "R";
 
         var notchDepth = Dimension.FromInches(part.BBDepth);
         var notchHeight = Dimension.FromInches(part.BBHeight);
@@ -674,7 +674,7 @@ public class ClosetProPartMapper {
 
         }
 
-        if (extendBack || (wallHasBacking && (part.PartName == "Top Fixed Shelf" || part.PartName == "Bottom Fixed Shelf"))) {
+        if (extendBack || wallHasBacking && (part.PartName == "Top Fixed Shelf" || part.PartName == "Bottom Fixed Shelf")) {
             parameters.Add("ExtendBack", "19.05");
         }
 
@@ -1063,7 +1063,7 @@ public class ClosetProPartMapper {
                 || !x.ProductionNotes.All(y.ProductionNotes.Contains)) return false;
 
             if (x.Parameters.Keys.Count != y.Parameters.Keys.Count
-                || !x.Parameters.Keys.All(k => y.Parameters.ContainsKey(k) && object.Equals(y.Parameters[k], x.Parameters[k]))) {
+                || !x.Parameters.Keys.All(k => y.Parameters.ContainsKey(k) && Equals(y.Parameters[k], x.Parameters[k]))) {
                 return false;
             }
 

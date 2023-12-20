@@ -43,7 +43,7 @@ public partial class ScriptEditor : Window {
         _host = new CustomRoslynHost(typeof(ScriptGlobals<>),
                                     additionalAssemblies,
                                     RoslynHostReferences.NamespaceDefault.With(assemblyReferences: ScriptService.References,
-                                                                                               references:references,
+                                                                                               references: references,
                                                                                                imports: ScriptService.Imports));
 
         Type vmType = typeof(ScriptEditorViewModel<,>).MakeGenericType(inputType, outputType);

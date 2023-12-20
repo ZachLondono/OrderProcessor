@@ -6,7 +6,7 @@ namespace ApplicationCore.Features.Orders.Shared.Domain.Components;
 public class FivePieceDoor : FivePieceDoorConfig {
 
     public static Dimension DadoDepth { get; set; } = Dimension.FromMillimeters(8);
-    public static Dimension TotalCenterPanelUndersize { get; set; }  = Dimension.FromMillimeters(0.5);
+    public static Dimension TotalCenterPanelUndersize { get; set; } = Dimension.FromMillimeters(0.5);
 
     public Dimension Width { get; init; }
     public Dimension Height { get; init; }

@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
+﻿namespace ApplicationCore.Features.ClosetProCSVCutList;
 
 public class ClosetProSoftwareCredentials {
 

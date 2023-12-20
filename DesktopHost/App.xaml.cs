@@ -29,7 +29,7 @@ public partial class App : Application {
 
     [DllImport("user32")]
     public static extern int FlashWindow(IntPtr hwnd, bool bInvert);
-    
+
     private void Application_Startup(object sender, StartupEventArgs e) {
 
         bool verboseLogging = e.Args.Contains("-v");
@@ -58,7 +58,7 @@ public partial class App : Application {
             };
 
             errorWindow.Show();
-            var wih = new WindowInteropHelper(errorWindow); 
+            var wih = new WindowInteropHelper(errorWindow);
             _ = FlashWindow(wih.Handle, true);
 
             try {

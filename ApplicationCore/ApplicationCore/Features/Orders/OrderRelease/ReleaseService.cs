@@ -134,12 +134,12 @@ public class ReleaseService {
         var additionalPDFs = new List<string>(configuration.AdditionalFilePaths);
         var cutLists = await CreateCutLists(orders, configuration, customerName, vendorName);
         additionalPDFs.AddRange(cutLists);
-        
+
         OnProgressReport?.Invoke("Generating release PDF");
         try {
 
             var documentData = await BuildPDFAsync(decorators, additionalPDFs);
-            var filePaths = await SaveFileDataToDirectoriesAsync(documentData, directories, customerName, filename, isTemp:false);
+            var filePaths = await SaveFileDataToDirectoriesAsync(documentData, directories, customerName, filename, isTemp: false);
 
             if (filePaths.Any() && (configuration.SendReleaseEmail || configuration.PreviewReleaseEmail) && configuration.ReleaseEmailRecipients is string recipients) {
                 await SendReleaseEmail(orders, configuration, customerName, releases, orderNumbers, filePaths, recipients);
@@ -290,7 +290,7 @@ public class ReleaseService {
     }
 
     private static Batch? CreateBatchFromOrders(List<Order> orders, string customerName) {
-        
+
         if (!orders.Any()) {
             return null;
         }
@@ -397,7 +397,7 @@ public class ReleaseService {
 
         List<string> generatedFiles = new();
 
-        foreach (var order in orders) { 
+        foreach (var order in orders) {
 
             var outputDirectory = Path.Combine(order.WorkingDirectory, "CUTLIST");
             var cutListResults = await Task.Run(() =>
