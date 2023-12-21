@@ -6,7 +6,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList.Products;
 
-public class HutchVerticalPanel {
+public class HutchVerticalPanel : IClosetProProduct {
 
     public required int Qty { get; init; }
     public required string Color { get; init; }
