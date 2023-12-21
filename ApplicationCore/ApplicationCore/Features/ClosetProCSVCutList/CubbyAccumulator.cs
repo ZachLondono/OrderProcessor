@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList;
@@ -26,7 +27,7 @@ public class CubbyAccumulator {
         _bottomShelf = part;
     }
 
-    public IEnumerable<IProduct> GetProducts(ClosetProPartMapper mapper) {
+    public Cubby CreateCubby() {
 
         if (!_verticalPanels.Any()) {
             throw new InvalidOperationException("Missing vertical cubby dividers");
@@ -40,35 +41,108 @@ public class CubbyAccumulator {
             throw new InvalidOperationException("Missing cubby bottom shelf");
         }
 
-        if (_topShelf.Width != _bottomShelf.Width || _topShelf.Depth != _bottomShelf.Depth) {
-            throw new InvalidOperationException("Top and bottom cubby shelves do not match");
+        if (_topShelf.Depth != _bottomShelf.Depth
+            || _horizontalPanels.Any(p => p.Depth != _topShelf.Depth)
+            || _verticalPanels.Any(p => p.Depth != _topShelf.Depth)) {
+            throw new InvalidOperationException("Panels in cubby do not have matching depths");
         }
 
-        // Top shelf and bottom shelf are divider shelves
-        // Vertical panels are vertical divider panels
-        // All other shelves are standard fixed shelves
+        if (_topShelf.Width != _bottomShelf.Width
+            || _horizontalPanels.Any(p => p.Width != _topShelf.Width)) { 
+            throw new InvalidOperationException("Horizontal panels in cubby do not have matching widths");
+        }
+
+        if (_topShelf.Color != _bottomShelf.Color
+            || _verticalPanels.Any(p => p.Color != _topShelf.Color)
+            || _horizontalPanels.Any(p => p.Color != _topShelf.Color)) {
+            throw new InvalidOperationException("Cubby materials do not match");
+        }
+
+        if (_topShelf.WallNum != _bottomShelf.WallNum
+            || _verticalPanels.Any(p => p.WallNum != _topShelf.WallNum)
+            || _horizontalPanels.Any(p => p.WallNum != _topShelf.WallNum)) {
+            throw new InvalidOperationException("Cubby parts are not part of the same wall");
+        }
+
+        if (_topShelf.SectionNum != _bottomShelf.SectionNum
+            || _verticalPanels.Any(p => p.SectionNum != _topShelf.SectionNum)
+            || _horizontalPanels.Any(p => p.SectionNum != _topShelf.SectionNum)) {
+            throw new InvalidOperationException("Cubby parts are not part of the same section");
+        }
 
         int dividerCount = _verticalPanels.Count;
 
-        var products = new List<IProduct>() {
-            mapper.CreateDividerShelfFromPart(_topShelf, dividerCount, false, false),
-            mapper.CreateDividerShelfFromPart(_bottomShelf, dividerCount, true, true)
-        };
+        if (!ClosetProPartMapper.TryParseMoneyString(_topShelf.PartCost, out decimal topShelfPrice)) {
+            topShelfPrice = 0M;
+        }
 
-        if (_verticalPanels.Any()) {
-            Dimension shelfWidth = Dimension.FromInches((_topShelf.Width - (Dimension.FromInches(0.75) * _verticalPanels.Count).AsInches()) / (_verticalPanels.Count + 1));
-            foreach (var shelf in _horizontalPanels) {
-                shelf.Quantity = _verticalPanels.Count + 1;
-                shelf.Width = shelfWidth.AsInches();
-                products.Add(mapper.CreateFixedShelfFromPart(shelf, false));
+        Cubby.DividerShelf topShelf = new(_topShelf.Quantity,
+                                          Dimension.FromInches(_topShelf.Width),
+                                          Dimension.FromInches(_topShelf.Depth),
+                                          dividerCount,
+                                          topShelfPrice,
+                                          _topShelf.PartNum);
+
+        if (!ClosetProPartMapper.TryParseMoneyString(_bottomShelf.PartCost, out decimal bottomShelfPrice)) {
+            bottomShelfPrice = 0M;
+        }
+
+        Cubby.DividerShelf bottomShelf = new(_topShelf.Quantity,
+                                          Dimension.FromInches(_bottomShelf.Width),
+                                          Dimension.FromInches(_bottomShelf.Depth),
+                                          dividerCount,
+                                          bottomShelfPrice,
+                                          _topShelf.PartNum);
+
+        var dividerPanels = _verticalPanels.Select(p => {
+
+            if (!ClosetProPartMapper.TryParseMoneyString(p.PartCost, out decimal unitPrice)) {
+                unitPrice = 0M;
             }
+
+            return new Cubby.DividerPanel(p.Quantity, Dimension.FromInches(p.Height), Dimension.FromInches(p.Depth), unitPrice, p.PartNum);
+
+        }).ToArray();
+
+
+        Dimension shelfWidth;
+        if (_verticalPanels.Any()) {
+            shelfWidth = (Dimension.FromInches(_topShelf.Width) - (Dimension.FromInches(0.75) * _verticalPanels.Count)) / (_verticalPanels.Count + 1);
+        } else {
+            shelfWidth = Dimension.FromInches(_topShelf.Width);
         }
 
-        foreach (var divider in _verticalPanels) {
-            products.Add(mapper.CreateDividerPanelFromPart(divider, false));
-        }
+        var fixedShelves = _horizontalPanels.Select(p => {
 
-        return products;
+            if (!ClosetProPartMapper.TryParseMoneyString(p.PartCost, out decimal unitPrice)) {
+                unitPrice = 0M;
+            }
+
+            int qty = _verticalPanels.Count + 1;
+            decimal adjUnitPrice = unitPrice / qty;
+
+            return new Cubby.FixedShelf(qty, shelfWidth, Dimension.FromInches(p.Depth), adjUnitPrice, p.PartNum);
+
+        }).ToArray();
+
+        var material = new ClosetMaterial(_topShelf.Color, ClosetMaterialCore.ParticleBoard);
+
+        string edgeBandingColor = _topShelf.InfoRecords
+                                            .Where(i => i.PartName == "Edge Banding")
+                                            .Select(i => i.Color)
+                                            .FirstOrDefault() ?? _topShelf.Color;
+
+        string roomName = ClosetProPartMapper.GetRoomName(_topShelf);
+
+        return new Cubby() {
+            TopDividerShelf = topShelf,
+            BottomDividerShelf = bottomShelf,
+            DividerPanels = dividerPanels,
+            FixedShelves = fixedShelves,
+            Material = material,
+            EdgeBandingColor = edgeBandingColor,
+            Room = roomName,
+        };
 
     }
 
