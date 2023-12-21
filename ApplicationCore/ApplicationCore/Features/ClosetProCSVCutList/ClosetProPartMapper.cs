@@ -18,7 +18,6 @@ namespace ApplicationCore.Features.ClosetProCSVCutList;
 public partial class ClosetProPartMapper {
 
     public Dictionary<string, Func<Part, bool, IProduct>> ProductNameMappings { get; }
-    public Dictionary<string, Dimension> FrontHardwareSpreads { get; }
     public Dimension HardwareSpread { get; set; } = Dimension.Zero;
     public ClosetProSettings Settings { get; set; } = new();
     public bool GroupLikeParts { get; set; } = false;
@@ -54,8 +53,6 @@ public partial class ClosetProPartMapper {
             { "Backing", CreateBackingPart },
             { "Back-Panel", CreateBackingPart }
         };
-
-        FrontHardwareSpreads = new();
 
     }
 
@@ -261,24 +258,28 @@ public partial class ClosetProPartMapper {
 
     }
 
-    public List<AdditionalItem> MapPickListToItems(IEnumerable<PickPart> parts, out Dimension hardwareSpread) {
+    public static List<OtherPart> MapPickListToItems(IEnumerable<PickPart> parts, Dictionary<string, Dimension> frontHardwareSpreads, out Dimension hardwareSpread) {
 
         hardwareSpread = Dimension.Zero;
 
-        List<Dimension> spreads = new();
+        List<Dimension> spreads = [];
 
-        List<AdditionalItem> items = new();
+        List<OtherPart> items = [];
         foreach (var item in parts) {
 
             if (!TryParseMoneyString(item.Cost, out var cost)) {
                 cost = 0;
             }
 
-            items.Add(new(Guid.NewGuid(), $"({item.Quantity}) {item.Name}", cost));
+            items.Add(new() {
+                Qty = item.Quantity,
+                Name = item.Name,
+                UnitPrice = cost
+            });
 
             if (item.Type == "Pull/Knob") {
                 // TODO: check pick list for "Pull/Knob" part types, if there is only one then the drilling spacing for drawer fronts can be inferred from that, if there are multiple then spacing cannot be inferred 
-                if (FrontHardwareSpreads.TryGetValue(item.Name, out Dimension spread)) {
+                if (frontHardwareSpreads.TryGetValue(item.Name, out Dimension spread)) {
                     spreads.Add(spread);
                 }
             }
@@ -296,9 +297,9 @@ public partial class ClosetProPartMapper {
 
     }
 
-    public static List<AdditionalItem> MapAccessoriesToItems(IEnumerable<Accessory> accessories) {
+    public static List<OtherPart> MapAccessoriesToItems(IEnumerable<Accessory> accessories) {
 
-        List<AdditionalItem> items = new();
+        List<OtherPart> items = [];
 
         foreach (var accessory in accessories) {
 
@@ -306,7 +307,11 @@ public partial class ClosetProPartMapper {
                 cost = 0;
             }
 
-            items.Add(new(Guid.NewGuid(), $"({accessory.Quantity}) {accessory.Name}", cost));
+            items.Add(new() {
+                Qty = accessory.Quantity,
+                Name = accessory.Name,
+                UnitPrice = (cost / (decimal) accessory.Quantity)
+            });
 
         }
 
@@ -314,9 +319,9 @@ public partial class ClosetProPartMapper {
 
     }
 
-    public static List<AdditionalItem> MapBuyOutPartsToItems(IEnumerable<BuyOutPart> parts) {
+    public static List<OtherPart> MapBuyOutPartsToItems(IEnumerable<BuyOutPart> parts) {
 
-        List<AdditionalItem> items = new();
+        List<OtherPart> items = [];
 
         foreach (var part in parts) {
 
@@ -324,11 +329,18 @@ public partial class ClosetProPartMapper {
                 unitPrice = 0M;
             }
 
+            string name;
             if (part.PartName == "Hang Rod") {
-                items.Add(new AdditionalItem(Guid.NewGuid(), $"({part.Quantity}) {part.PartName} - {part.Color} - {part.Width}\"L", unitPrice));
+                name = $"{part.PartName} - {part.Color} - {part.Width}\"L";
             } else {
-                items.Add(new AdditionalItem(Guid.NewGuid(), $"({part.Quantity}) {part.PartName}", unitPrice));
+                name = part.PartName;
             }
+
+            items.Add(new() {
+                Qty = part.Quantity,
+                Name = name,
+                UnitPrice = (unitPrice / (decimal)part.Quantity)
+            });
 
         }
 
