@@ -7,7 +7,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList.Products;
 
-public class MiscellaneousClosetPart {
+public class MiscellaneousClosetPart : IClosetProProduct {
 
     public required int Qty { get; init; }
     public required string Color { get; init; }

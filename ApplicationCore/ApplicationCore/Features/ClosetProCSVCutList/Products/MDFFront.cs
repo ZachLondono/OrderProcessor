@@ -6,7 +6,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList.Products;
 
-public class MDFFront {
+public class MDFFront: IClosetProProduct {
 
     public required int Qty { get; init; }
     public required string Room { get; init; }
@@ -41,7 +41,7 @@ public class MDFFront {
                                     Dimension.FromInches(0.25),
                                     DoorOrientation.Vertical,
                                     [],
-                                    PaintColor);
+                                    PaintCo);
 
     }
 

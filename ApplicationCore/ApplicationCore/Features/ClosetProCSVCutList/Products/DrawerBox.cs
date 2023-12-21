@@ -9,7 +9,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList.Products;
 
-public class DrawerBox {
+public class DrawerBox : IClosetProProduct {
 
     public required int Qty { get; init; }
     public required string Room { get; init; }
