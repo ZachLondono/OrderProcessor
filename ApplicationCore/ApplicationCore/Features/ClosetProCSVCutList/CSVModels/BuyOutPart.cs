@@ -1,6 +1,6 @@
-﻿namespace ApplicationCore.Features.ClosetProCSVCutList;
+﻿namespace ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
 
-public class PartInfo {
+public class BuyOutPart {
     public int WallNum { get; set; }
     public int SectionNum { get; set; }
     public string PartType { get; set; } = string.Empty;
@@ -28,4 +28,8 @@ public class PartInfo {
     public string PartCost { get; set; } = string.Empty;
     public string UnitL { get; set; } = string.Empty;
     public string UnitR { get; set; } = string.Empty;
+    public int PartNum { get; set; }
+
+    public List<PartInfo> InfoRecords = new();
+
 }

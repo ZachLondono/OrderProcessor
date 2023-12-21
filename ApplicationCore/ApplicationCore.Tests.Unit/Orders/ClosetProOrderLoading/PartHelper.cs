@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList;
+using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;

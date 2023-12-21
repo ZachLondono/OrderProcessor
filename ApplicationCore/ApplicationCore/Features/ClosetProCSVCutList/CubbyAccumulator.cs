@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+﻿using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
@@ -48,7 +49,7 @@ public class CubbyAccumulator {
         }
 
         if (_topShelf.Width != _bottomShelf.Width
-            || _horizontalPanels.Any(p => p.Width != _topShelf.Width)) { 
+            || _horizontalPanels.Any(p => p.Width != _topShelf.Width)) {
             throw new InvalidOperationException("Horizontal panels in cubby do not have matching widths");
         }
 
