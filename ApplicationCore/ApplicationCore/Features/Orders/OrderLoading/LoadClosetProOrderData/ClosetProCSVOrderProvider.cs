@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList;
+using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
 using ApplicationCore.Features.Companies.Contracts.Entities;
 using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;

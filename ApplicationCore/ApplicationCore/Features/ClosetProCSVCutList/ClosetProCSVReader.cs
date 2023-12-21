@@ -1,4 +1,5 @@
-﻿using CsvHelper;
+﻿using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
+using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Globalization;

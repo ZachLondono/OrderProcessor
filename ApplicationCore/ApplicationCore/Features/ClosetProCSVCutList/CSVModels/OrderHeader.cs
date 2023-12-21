@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.ClosetProCSVCutList;
+﻿namespace ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
 
 public record OrderHeader {
 
