@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList;
+using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
 using ApplicationCore.Shared.Domain;
 using FluentAssertions;
 
