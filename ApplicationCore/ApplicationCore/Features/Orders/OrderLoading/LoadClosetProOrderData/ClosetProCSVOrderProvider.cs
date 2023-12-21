@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList;
 using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
+using ApplicationCore.Features.ClosetProCSVCutList.Products;
 using ApplicationCore.Features.Companies.Contracts.Entities;
 using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
@@ -75,14 +76,15 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         string designerName = info.Header.GetDesignerName();
         var customer = await GetOrCreateCustomer(info.Header.DesignerCompany, designerName);
 
+        List<OtherPart> otherParts = [];
+        otherParts.AddRange(ClosetProPartMapper.MapPickListToItems(info.PickList, [], out var hardwareSpread));
+        otherParts.AddRange(ClosetProPartMapper.MapAccessoriesToItems(info.Accessories));
+        otherParts.AddRange(ClosetProPartMapper.MapBuyOutPartsToItems(info.BuyOutParts));
+        var additionalItems = otherParts.Select(p => new AdditionalItem(Guid.NewGuid(), $"({p.Qty}) {p.Name}", p.UnitPrice * p.Qty)).ToList();
+
         _partMapper.Settings = customer.ClosetProSettings;
         _partMapper.GroupLikeParts = true; // TODO: Move this into the closet pro settings object
-
-        List<AdditionalItem> additionalItems = new();
-        additionalItems.AddRange(_partMapper.MapPickListToItems(info.PickList, out var hardwareSpread));
         _partMapper.HardwareSpread = hardwareSpread;
-        additionalItems.AddRange(ClosetProPartMapper.MapAccessoriesToItems(info.Accessories));
-        additionalItems.AddRange(ClosetProPartMapper.MapBuyOutPartsToItems(info.BuyOutParts));
         List<IProduct> products = _partMapper.MapPartsToProducts(info.Parts);
 
         string orderNumber;
