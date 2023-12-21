@@ -744,65 +744,6 @@ public class ClosetProPartMapper {
 
     }
 
-    public IProduct CreateDividerShelfFromPart(Part part, int dividerCount, bool isBottom, bool wallHasBacking) {
-
-        // TODO: get the drilling type from ClosetProSettings
-        var drillingType = HorizontalDividerPanelEndDrillingType.DoubleCams;
-
-        string sku = $"SF-D{dividerCount}{(isBottom ? "B" : "T")}{GetDividerShelfSuffix(drillingType)}";
-
-        if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
-            unitPrice = 0M;
-        }
-        string room = GetRoomName(part);
-        Dimension width = Dimension.FromInches(part.Depth);
-        Dimension length = Dimension.FromInches(part.Width);
-        ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
-        ClosetPaint? paint = null;
-        string edgeBandingColor = part.InfoRecords
-                                .Where(i => i.PartName == "Edge Banding")
-                                .Select(i => i.Color)
-                                .FirstOrDefault() ?? part.Color;
-        string comment = "";
-        Dictionary<string, string> parameters = new() {
-            { "Div1", "0" },
-            { "Div2", "0" },
-            { "Div3", "0" },
-            { "Div4", "0" },
-            { "Div5", "0" }
-        };
-
-        return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
-
-    }
-
-    public IProduct CreateDividerPanelFromPart(Part part, bool wallHasBacking) {
-
-        // TODO: get the drilling type from ClosetProSettings
-        var drillingType = VerticalDividerPanelEndDrillingType.DoubleCams;
-
-        string sku = $"PCDV{GetDividerPanelSuffix(drillingType)}";
-
-        if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
-            unitPrice = 0M;
-        }
-        string room = GetRoomName(part);
-        Dimension width = Dimension.FromInches(part.Depth);
-        Dimension length = Dimension.FromInches(part.Height);
-        ClosetMaterial material = new(part.Color, ClosetMaterialCore.ParticleBoard);
-        ClosetPaint? paint = null;
-        string edgeBandingColor = part.InfoRecords
-                                .Where(i => i.PartName == "Edge Banding")
-                                .Select(i => i.Color)
-                                .FirstOrDefault() ?? part.Color;
-        string comment = "";
-        Dictionary<string, string> parameters = new();
-
-        return new ClosetPart(Guid.NewGuid(), part.Quantity, unitPrice, part.PartNum, room, sku, width, length, material, paint, edgeBandingColor, comment, parameters);
-
-
-    }
-
     public static IProduct CreateShoeShelfFromPart(Part part, bool wallHasBacking) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
