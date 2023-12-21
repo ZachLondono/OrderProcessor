@@ -253,7 +253,9 @@ public class ClosetProPartMapper {
 
         }
 
-        return accum.GetProducts(this);
+        var cubby = accum.CreateCubby();
+
+        return cubby.GetProducts(Settings);
 
     }
 
