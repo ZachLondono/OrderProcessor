@@ -12,38 +12,6 @@ public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDovetailDr
     public string Room { get; set; }
     public List<string> ProductionNotes { get; set; } = new();
 
-    public string GetDescription() {
-
-        string description = "Dovetail Drawer Box";
-
-        if (DrawerBoxOptions.UBoxDimensions is not null) {
-            description = "U-Shaped " + description;
-        }
-
-        if (DrawerBoxOptions.Logo != Enums.LogoPosition.None) {
-            description += ", Logo";
-        }
-
-        if (DrawerBoxOptions.ScoopFront) {
-            description += ", Scoop Front";
-        }
-
-        if (!string.IsNullOrWhiteSpace(DrawerBoxOptions.Accessory) && DrawerBoxOptions.Accessory.ToLowerInvariant() != "none") {
-            description += $", {DrawerBoxOptions.Accessory}";
-        }
-
-        if (DrawerBoxOptions.FixedDividersCounts is not null) {
-            description += ", Fixed Dividers";
-        }
-
-        if (DrawerBoxOptions.PostFinish) {
-            description += ", Finished";
-        }
-
-        return description;
-
-    }
-
     public DovetailDrawerBoxProduct(Guid id, decimal unitPrice, int qty, string room, int productNumber, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DovetailDrawerBoxConfig options)
                             : base(qty, productNumber, height, width, depth, note, options, labelFields) {
         Id = id;

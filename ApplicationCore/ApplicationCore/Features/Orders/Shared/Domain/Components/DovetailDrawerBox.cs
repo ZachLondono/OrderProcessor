@@ -71,4 +71,36 @@ public class DovetailDrawerBox : IComponent {
 
     }
 
+    public string GetDescription() {
+
+        string description = "Dovetail Drawer Box";
+
+        if (DrawerBoxOptions.UBoxDimensions is not null) {
+            description = "U-Shaped " + description;
+        }
+
+        if (DrawerBoxOptions.Logo != Enums.LogoPosition.None) {
+            description += ", Logo";
+        }
+
+        if (DrawerBoxOptions.ScoopFront) {
+            description += ", Scoop Front";
+        }
+
+        if (!string.IsNullOrWhiteSpace(DrawerBoxOptions.Accessory) && DrawerBoxOptions.Accessory.ToLowerInvariant() != "none") {
+            description += $", {DrawerBoxOptions.Accessory}";
+        }
+
+        if (DrawerBoxOptions.FixedDividersCounts is not null) {
+            description += ", Fixed Dividers";
+        }
+
+        if (DrawerBoxOptions.PostFinish) {
+            description += ", Finished";
+        }
+
+        return description;
+
+    }
+
 }
