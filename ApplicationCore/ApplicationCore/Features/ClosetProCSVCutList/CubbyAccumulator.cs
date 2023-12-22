@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
+using ApplicationCore.Features.ClosetProCSVCutList.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
@@ -73,27 +74,48 @@ public class CubbyAccumulator {
 
         int dividerCount = _verticalPanels.Count;
 
+        var material = new ClosetMaterial(_topShelf.Color, ClosetMaterialCore.ParticleBoard);
+        string roomName = ClosetProPartMapper.GetRoomName(_topShelf);
+        string edgeBandingColor = _topShelf.InfoRecords
+                                            .Where(i => i.PartName == "Edge Banding")
+                                            .Select(i => i.Color)
+                                            .FirstOrDefault() ?? _topShelf.Color;
+
+
         if (!ClosetProPartMapper.TryParseMoneyString(_topShelf.PartCost, out decimal topShelfPrice)) {
             topShelfPrice = 0M;
         }
 
-        Cubby.DividerShelf topShelf = new(_topShelf.Quantity,
-                                          Dimension.FromInches(_topShelf.Width),
-                                          Dimension.FromInches(_topShelf.Depth),
-                                          dividerCount,
-                                          topShelfPrice,
-                                          _topShelf.PartNum);
+        DividerShelf topShelf = new() {
+            Qty = _topShelf.Quantity,
+            UnitPrice = topShelfPrice,
+            Color = _topShelf.Color,
+            Room = roomName,
+            PartNumber = _topShelf.PartNum,
+            EdgeBandingColor = edgeBandingColor,
+            DividerCount = dividerCount,
+            Width = Dimension.FromInches(_topShelf.Width),
+            Depth = Dimension.FromInches(_topShelf.Depth),
+            Type = DividerShelfType.Top,
+        };
 
         if (!ClosetProPartMapper.TryParseMoneyString(_bottomShelf.PartCost, out decimal bottomShelfPrice)) {
             bottomShelfPrice = 0M;
         }
 
-        Cubby.DividerShelf bottomShelf = new(_topShelf.Quantity,
-                                          Dimension.FromInches(_bottomShelf.Width),
-                                          Dimension.FromInches(_bottomShelf.Depth),
-                                          dividerCount,
-                                          bottomShelfPrice,
-                                          _topShelf.PartNum);
+        DividerShelf bottomShelf = new() {
+            Qty = _bottomShelf.Quantity,
+            UnitPrice = bottomShelfPrice,
+            Color = _bottomShelf.Color,
+            Room = roomName,
+            PartNumber = _bottomShelf.PartNum,
+            EdgeBandingColor = edgeBandingColor,
+            DividerCount = dividerCount,
+            Width = Dimension.FromInches(_bottomShelf.Width),
+            Depth = Dimension.FromInches(_bottomShelf.Depth),
+            Type = DividerShelfType.Bottom,
+        };
+
 
         var dividerPanels = _verticalPanels.Select(p => {
 
@@ -101,7 +123,17 @@ public class CubbyAccumulator {
                 unitPrice = 0M;
             }
 
-            return new Cubby.DividerPanel(p.Quantity, Dimension.FromInches(p.Height), Dimension.FromInches(p.Depth), unitPrice, p.PartNum);
+            return new DividerVerticalPanel() {
+                Qty = p.Quantity,
+                UnitPrice = unitPrice,
+                Color = p.Color,
+                Room = roomName,
+                PartNumber = p.PartNum,
+                EdgeBandingColor = edgeBandingColor,
+                Height = Dimension.FromInches(p.Height),
+                Depth = Dimension.FromInches(p.Depth),
+                Drilling = VerticalPanelDrilling.DrilledThrough
+            };
 
         }).ToArray();
 
@@ -122,18 +154,20 @@ public class CubbyAccumulator {
             int qty = _verticalPanels.Count + 1;
             decimal adjUnitPrice = unitPrice / qty;
 
-            return new Cubby.FixedShelf(qty, shelfWidth, Dimension.FromInches(p.Depth), adjUnitPrice, p.PartNum);
+            return new Shelf() {
+                Qty = p.Quantity,
+                UnitPrice = adjUnitPrice,
+                Color = p.Color,
+                Room = roomName,
+                PartNumber = p.PartNum,
+                EdgeBandingColor = edgeBandingColor,
+                Width = shelfWidth,
+                Depth = Dimension.FromInches(p.Depth),
+                Type = ShelfType.Fixed,
+                ExtendBack = false 
+            };
 
         }).ToArray();
-
-        var material = new ClosetMaterial(_topShelf.Color, ClosetMaterialCore.ParticleBoard);
-
-        string edgeBandingColor = _topShelf.InfoRecords
-                                            .Where(i => i.PartName == "Edge Banding")
-                                            .Select(i => i.Color)
-                                            .FirstOrDefault() ?? _topShelf.Color;
-
-        string roomName = ClosetProPartMapper.GetRoomName(_topShelf);
 
         return new Cubby() {
             TopDividerShelf = topShelf,

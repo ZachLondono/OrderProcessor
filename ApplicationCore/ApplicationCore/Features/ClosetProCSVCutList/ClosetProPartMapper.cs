@@ -2,13 +2,8 @@
 using ApplicationCore.Features.ClosetProCSVCutList.Products;
 using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared;
 using ApplicationCore.Shared.Domain;
 using System.Diagnostics.CodeAnalysis;
@@ -127,6 +122,14 @@ public partial class ClosetProPartMapper {
             } else if (product is ZargenDrawerBox zargen) {
 
                 products.Add(zargen.ToProduct());
+
+            } else if (product is DividerShelf dividerShelf) {
+
+                products.Add(dividerShelf.ToProduct());
+
+            } else if (product is DividerVerticalPanel dividerPanel) {
+
+                products.Add(dividerPanel.ToProduct());
 
             }
 
