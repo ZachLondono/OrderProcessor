@@ -74,6 +74,68 @@ public partial class ClosetProPartMapper {
 
     }
 
+    private List<IProduct> CreateProductFromClosetProProducts(IEnumerable<IClosetProProduct> cpProducts) {
+
+        List<IProduct> products = new();
+
+        foreach (var product in cpProducts) {
+
+            if (product is CornerShelf cornerShelf) {
+
+                products.Add(cornerShelf.ToProduct(Settings));
+
+            } else if (product is DrawerBox db) {
+
+                products.Add(db.ToProduct(_factory, Settings));
+
+            } else if (product is FivePieceFront fivePieceFront) {
+
+                products.Add(fivePieceFront.ToProduct());
+
+            } else if (product is HutchVerticalPanel hutch) {
+
+                products.Add(hutch.ToProduct(Settings.VerticalPanelBottomRadius));
+
+            } else if (product is IslandVerticalPanel island) {
+
+                products.Add(island.ToProduct());
+
+            } else if (product is MDFFront mdfFront) {
+
+                products.Add(mdfFront.ToProduct());
+
+            } else if (product is MelamineSlabFront melaSlab) {
+
+                products.Add(melaSlab.ToProduct());
+
+            } else if (product is MiscellaneousClosetPart misc) {
+
+                products.Add(misc.ToProduct(Settings));
+
+            } else if (product is Shelf shelf) {
+
+                products.Add(shelf.ToProduct(Settings));
+
+            } else if (product is TransitionVerticalPanel transition) {
+
+                products.Add(transition.ToProduct(Settings.VerticalPanelBottomRadius));
+
+            } else if (product is VerticalPanel vertical) {
+
+                products.Add(vertical.ToProduct(Settings.VerticalPanelBottomRadius));
+
+            } else if (product is ZargenDrawerBox zargen) {
+
+                products.Add(zargen.ToProduct());
+
+            }
+
+        }
+
+        return products;
+
+    }
+
     private IEnumerable<IProduct> GetPartsForWall(IEnumerable<Part> parts) {
 
         List<IProduct> products = new();
