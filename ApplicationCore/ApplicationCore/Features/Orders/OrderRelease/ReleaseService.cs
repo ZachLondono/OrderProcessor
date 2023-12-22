@@ -198,7 +198,7 @@ public class ReleaseService {
     private async Task<List<IDocumentDecorator>> CreateDovetailDBPackingListDecorators(List<Order> orders) {
         List<IDocumentDecorator> dovetailDBPackingListDecorators = new();
         foreach (var order in orders) {
-            if (!order.Products.Any(p => p is DovetailDrawerBoxProduct)) continue;
+            if (!order.Products.OfType<IDovetailDrawerBoxContainer>().Any(p => p.ContainsDovetailDrawerBoxes())) continue;
             var dovetailDecorator = await _dovetailDBPackingListDecoratorFactory.CreateDecorator(order);
             dovetailDBPackingListDecorators.Add(dovetailDecorator);
         }

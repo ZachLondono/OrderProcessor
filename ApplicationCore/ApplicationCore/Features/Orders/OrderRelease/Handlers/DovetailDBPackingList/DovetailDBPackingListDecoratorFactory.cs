@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.Companies.Contracts;
+using ApplicationCore.Features.Orders.Shared.Domain;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
 
@@ -8,10 +9,12 @@ public class DovetailDBPackingListDecoratorFactory : IDovetailDBPackingListDecor
 
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
+    private readonly ComponentBuilderFactory _factory;
 
-    public DovetailDBPackingListDecoratorFactory(CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync) {
+    public DovetailDBPackingListDecoratorFactory(CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, ComponentBuilderFactory factory) {
         _getVendorByIdAsync = getVendorByIdAsync;
         _getCustomerByIdAsync = getCustomerByIdAsync;
+        _factory = factory;
     }
 
     public async Task<DovetailDBPackingListDecorator> CreateDecorator(Order order) {
@@ -39,8 +42,9 @@ public class DovetailDBPackingListDecoratorFactory : IDovetailDBPackingListDecor
                     Line4 = vendor?.Phone ?? "",
                 },
                 Items = order.Products
-                            .Where(p => p is DovetailDrawerBoxProduct)
-                            .Cast<DovetailDrawerBoxProduct>()
+                            .OfType<IDovetailDrawerBoxContainer>()
+                            .Where(p => p.ContainsDovetailDrawerBoxes())
+                            .SelectMany(p => p.GetDovetailDrawerBoxes(_factory.CreateDovetailDrawerBoxBuilder))
                             .Select(db => new DovetailDrawerBox() {
                                 Line = db.ProductNumber,
                                 Qty = db.Qty,

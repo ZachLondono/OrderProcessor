@@ -150,7 +150,7 @@ public class OrderReleaseModalViewModel {
 
         string orderNumbers = string.Join(", ", orders.Select(o => o.Number));
 
-        DoAnyOrdersContainDovetailDBs = orders.Any(order => order.Products.Any(p => p is DovetailDrawerBoxProduct));
+        DoAnyOrdersContainDovetailDBs = orders.Any(order => order.Products.OfType<IDovetailDrawerBoxContainer>().Any(p => p.ContainsDovetailDrawerBoxes()));
         DoAnyOrdersContainFivePieceDoors = orders.Any(order => order.Products.Any(p => p is FivePieceDoorProduct));
         DoAnyOrdersContainDoweledDrawerBoxes = orders.Any(order => order.Products.Any(p => p is DoweledDrawerBoxProduct));
         DoAnyOrdersContainCNCParts = orders.Any(order => order.Products.OfType<ICNCPartContainer>().Any(p => p.ContainsCNCParts()));
