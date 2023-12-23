@@ -1,16 +1,15 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList;
 using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
+using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Components;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
-using ApplicationCore.Shared;
 using ApplicationCore.Shared.Domain;
 using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.Orders.ClosetProOrderLoading;
 
 public class ContinuousWallOfProductTests {
-
 
     private readonly ClosetProPartMapper _sut;
     private readonly ComponentBuilderFactory _factory;
@@ -34,9 +33,11 @@ public class ContinuousWallOfProductTests {
             CreateAdjustableShelfPart(80, 14, "Blue", 2, 1),
         };
 
+        var settings = new ClosetProSettings();
+        Dimension hardwareSpread = Dimension.Zero;
 
         // Act 
-        var products = _sut.MapPartsToProducts(parts);
+        var products = _sut.MapPartsToProducts(parts, hardwareSpread);
 
         // Assert
         var closetParts = products.Where(p => p is ClosetPart)
@@ -44,8 +45,8 @@ public class ContinuousWallOfProductTests {
         closetParts.Should().Contain(p => p.SKU == "PC" && p.Material.Finish == "White");
         closetParts.Should().Contain(p => p.SKU == "PC" && p.Material.Finish == "Black");
         closetParts.Should().Contain(p => p.SKU == "PC" && p.Material.Finish == "Gold");
-        closetParts.Should().Contain(p => p.SKU == _sut.Settings.FixedShelfSKU && p.Material.Finish == "Red");
-        closetParts.Should().Contain(p => p.SKU == _sut.Settings.AdjustableShelfSKU && p.Material.Finish == "Blue");
+        closetParts.Should().Contain(p => p.SKU == settings.FixedShelfSKU && p.Material.Finish == "Red");
+        closetParts.Should().Contain(p => p.SKU == settings.AdjustableShelfSKU && p.Material.Finish == "Blue");
 
     }
 
@@ -65,9 +66,10 @@ public class ContinuousWallOfProductTests {
             CreateFixedShelfPart(12, 12, "White", 1, 1, "Top ")
         };
 
+        Dimension hardwareSpread = Dimension.Zero;
 
         // Act 
-        var products = _sut.MapPartsToProducts(parts);
+        var products = _sut.MapPartsToProducts(parts, hardwareSpread);
 
         // Assert
         var closetParts = products.Where(p => p is ClosetPart)
@@ -94,8 +96,10 @@ public class ContinuousWallOfProductTests {
             CreateDoorInsert(5, 5, "White", 1, 1),
         };
 
+        Dimension hardwareSpread = Dimension.Zero;
+
         // Act
-        var products = _sut.MapPartsToProducts(parts);
+        var products = _sut.MapPartsToProducts(parts, hardwareSpread);
 
         // Assert
         var doors = products.Where(p => p is FivePieceDoor);
@@ -121,8 +125,10 @@ public class ContinuousWallOfProductTests {
             CreateDrawerFrontInsert(5, 5, "White", 1, 1),
         };
 
+        Dimension hardwareSpread = Dimension.Zero;
+
         // Act
-        var products = _sut.MapPartsToProducts(parts);
+        var products = _sut.MapPartsToProducts(parts, hardwareSpread);
 
         // Assert
         var doors = products.Where(p => p is FivePieceDoor);
@@ -161,8 +167,11 @@ public class ContinuousWallOfProductTests {
 
         };
 
+        var settings = new ClosetProSettings();
+        Dimension hardwareSpread = Dimension.Zero;
+
         // Act
-        var products = _sut.MapPartsToProducts(parts);
+        var products = _sut.MapPartsToProducts(parts, hardwareSpread);
 
         // Assert
         var closetParts = products.Where(p => p is ClosetPart).Cast<ClosetPart>();
@@ -173,23 +182,23 @@ public class ContinuousWallOfProductTests {
                     .Should()
                     .HaveCount(3);
 
-        closetParts.Where(p => p.SKU == _sut.Settings.FixedShelfSKU)
+        closetParts.Where(p => p.SKU == settings.FixedShelfSKU)
                     .Where(p => !p.Parameters.ContainsKey("ExtendBack"))
                     .Should()
                     .HaveCount(1);
 
-        closetParts.Where(p => p.SKU == _sut.Settings.FixedShelfSKU)
+        closetParts.Where(p => p.SKU == settings.FixedShelfSKU)
                     .Where(p => p.Parameters.ContainsKey("ExtendBack"))
                     .Where(p => p.Parameters["ExtendBack"] == "19.05")
                     .Should()
                     .HaveCount(5);
 
-        closetParts.Where(p => p.SKU == _sut.Settings.AdjustableShelfSKU)
+        closetParts.Where(p => p.SKU == settings.AdjustableShelfSKU)
                     .Where(p => !p.Parameters.ContainsKey("ExtendBack"))
                     .Should()
                     .HaveCount(1);
 
-        closetParts.Where(p => p.SKU == _sut.Settings.AdjustableShelfSKU)
+        closetParts.Where(p => p.SKU == settings.AdjustableShelfSKU)
                     .Where(p => p.Parameters.ContainsKey("ExtendBack"))
                     .Where(p => p.Parameters["ExtendBack"] == "19.05")
                     .Should()

@@ -1,33 +1,25 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
 using ApplicationCore.Features.ClosetProCSVCutList.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Shared;
 using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList;
 
-public partial class ClosetProPartMapper {
+public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
-    public Dimension HardwareSpread { get; set; } = Dimension.Zero;
     public bool GroupLikeParts { get; set; } = false;
 
-    private readonly ComponentBuilderFactory _factory;
+    private readonly ComponentBuilderFactory _factory = factory;
 
-    public ClosetProPartMapper(ComponentBuilderFactory factory) {
-
-        _factory = factory;
-
-    }
-
-    public List<IClosetProProduct> MapPartsToProducts(IEnumerable<Part> parts) {
+    public List<IClosetProProduct> MapPartsToProducts(IEnumerable<Part> parts, Dimension hardwareSpread) {
 
         return parts.GroupBy(p => p.WallNum)
-                    .SelectMany(GetPartsForWall)
+                    .SelectMany(p => GetPartsForWall(p, hardwareSpread))
                     .ToList();
 
     }
 
-    private IEnumerable<IClosetProProduct> GetPartsForWall(IEnumerable<Part> parts) {
+    private List<IClosetProProduct> GetPartsForWall(IEnumerable<Part> parts, Dimension hardwareSpread) {
 
         List<IClosetProProduct> products = [];
 
@@ -70,7 +62,7 @@ public partial class ClosetProPartMapper {
                     throw new InvalidOperationException("Door/Drawer rail part found without door/drawer insert");
                 }
 
-                products.Add(CreateFrontFromParts(part, insertPart, HardwareSpread));
+                products.Add(CreateFrontFromParts(part, insertPart, hardwareSpread));
                 if (enumerator.MoveNext()) {
                     part = enumerator.Current;
                     continue;
@@ -118,7 +110,7 @@ public partial class ClosetProPartMapper {
 
             } else {
 
-                products.Add(MapSinglePartToProduct(part, doesWallHaveBacking, HardwareSpread));
+                products.Add(MapSinglePartToProduct(part, doesWallHaveBacking, hardwareSpread));
 
             }
 
@@ -212,7 +204,6 @@ public partial class ClosetProPartMapper {
         } else {
             accum.AddHorizontalPanel(firstCubbyPart);
         }
-
 
         Part cubbyPart;
         bool areAllCubbyPartsRead = false;
