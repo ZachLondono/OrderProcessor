@@ -36,7 +36,7 @@ public partial class ClosetProPartMapper {
 
         } else {
 
-            return CreateFixedShelf(part, extendBack, wallHasBacking);
+            return CreateAdjustableShelf(part, extendBack, wallHasBacking);
 
         }
 
