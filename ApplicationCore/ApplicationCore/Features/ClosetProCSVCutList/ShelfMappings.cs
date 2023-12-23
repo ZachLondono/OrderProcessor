@@ -6,6 +6,42 @@ namespace ApplicationCore.Features.ClosetProCSVCutList;
 
 public partial class ClosetProPartMapper {
 
+    public static IClosetProProduct CreateFixedShelfFromPart(Part part, bool wallHasBacking, bool extendBack) {
+
+        if (part.ExportName == "L Fixed Shelf") {
+
+            return CreateLFixedShelf(part);
+
+        } else if (part.ExportName == "Pie Fixed Shelf") {
+
+            return CreateDiagonalFixedShelf(part);
+
+        } else {
+
+            return CreateFixedShelf(part, extendBack, wallHasBacking);
+
+        }
+
+    }
+
+    public static IClosetProProduct CreateAdjustableShelfFromPart(Part part, bool wallHasBacking, bool extendBack) {
+
+        if (part.ExportName == "L Adj Shelf") {
+
+            return CreateLAdjustableShelf(part);
+
+        } else if (part.ExportName == "Pie Adj Shelf") {
+
+            return CreateDiagonalAdjustableShelf(part);
+
+        } else {
+
+            return CreateFixedShelf(part, extendBack, wallHasBacking);
+
+        }
+
+    }
+
     public static Shelf CreateAdjustableShelf(Part part, bool extendBack, bool wallHasBacking) => CreateShelf(part, ShelfType.Adjustable, extendBack, wallHasBacking);
 
     public static Shelf CreateFixedShelf(Part part, bool extendBack, bool wallHasBacking) => CreateShelf(part, ShelfType.Fixed, extendBack, wallHasBacking);

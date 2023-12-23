@@ -8,6 +8,20 @@ namespace ApplicationCore.Features.ClosetProCSVCutList;
 
 public partial class ClosetProPartMapper {
 
+    public static IClosetProProduct CreateFrontFromParts(Part rail, Part insert, Dimension hardwareSpread) {
+
+        if (rail.ExportName.Contains("MDF")) {
+
+            return CreateMDFFront(rail, insert, hardwareSpread);
+
+        } else {
+
+            return CreateFivePieceFront(rail, insert, hardwareSpread);
+
+        }
+
+    }
+
     public static FivePieceFront CreateFivePieceFront(Part rail, Part insert, Dimension hardwareSpread) {
 
         if (rail.Quantity != insert.Quantity) {

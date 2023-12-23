@@ -6,6 +6,28 @@ namespace ApplicationCore.Features.ClosetProCSVCutList;
 
 public partial class ClosetProPartMapper {
 
+    public static IClosetProProduct CreateVerticalPanelFromPart(Part part, bool wallHasBacking) {
+
+        if (part.PartName == "Vertical Panel - Island") {
+            return CreateIslandVerticalPanel(part);
+        }
+
+        double leftDrilling = part.VertDrillL;
+        double rightDrilling = part.VertDrillR;
+        bool isTransition = leftDrilling != 0 && rightDrilling != 0 && leftDrilling != rightDrilling;
+
+        if (isTransition) {
+
+            return CreateTransitionVerticalPanel(part, wallHasBacking);
+
+        } else {
+
+            return CreateTransitionVerticalPanel(part, wallHasBacking);
+
+        }
+
+    }
+
     public static VerticalPanel CreateVerticalPanel(Part part, bool wallHasBacking) {
 
         double leftDrilling = part.VertDrillL;

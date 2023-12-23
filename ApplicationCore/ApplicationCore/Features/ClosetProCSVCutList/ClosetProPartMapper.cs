@@ -1,18 +1,13 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
 using ApplicationCore.Features.ClosetProCSVCutList.Products;
-using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 using ApplicationCore.Shared;
 using ApplicationCore.Shared.Domain;
-using System.Diagnostics.CodeAnalysis;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList;
 
 public partial class ClosetProPartMapper {
 
-    public Dictionary<string, Func<Part, bool, IClosetProProduct>> ProductNameMappings { get; }
     public Dimension HardwareSpread { get; set; } = Dimension.Zero;
     public bool GroupLikeParts { get; set; } = false;
 
@@ -21,32 +16,6 @@ public partial class ClosetProPartMapper {
     public ClosetProPartMapper(ComponentBuilderFactory factory) {
 
         _factory = factory;
-
-        ProductNameMappings = new() {
-            { "CPS FM Vert", CreateVerticalPanelFromPart },
-            { "CPS WM Vert", CreateVerticalPanelFromPart },
-            { "CPS WM Vert Radius", CreateVerticalPanelFromPart },
-            { "CPS WM Vert Straight", CreateVerticalPanelFromPart },
-            { "VP-Hutch", CreateVerticalHutchPanelFromPart },
-            { "VP-Corner Floor Mount", CreateVerticalPanelFromPart },
-            { "VP-Corner Wall Hung", CreateVerticalPanelFromPart },
-            { "FixedShelf", CreateFixedShelfFromPart },
-            { "AdjustableShelf", CreateAdjustableShelfFromPart },
-            { "ShoeShelf", CreateShoeShelfFromPart },
-            { "Toe Kick_3.75", CreateToeKickFromPart },
-            { "Toe Kick_2.5", CreateToeKickFromPart },
-            { "Cleat", CreateCleatPart },
-            { "Melamine Sidemount", CreateDoweledDrawerBox },
-            { "Melamine Undermount", CreateDoweledDrawerBox },
-            { "Dovetail Sidemount", CreateDovetailDrawerBox },
-            { "Dovetail Undermount", CreateDovetailDrawerBox },
-            { "Scoop Front Box", CreateDovetailDrawerBox },
-            { "Zargen", CreateZargenDrawerBox },
-            { "Slab", CreateSlabFront },
-            { "Filler Panel", CreateFillerPanel },
-            { "Backing", CreateBackingPart },
-            { "Back-Panel", CreateBackingPart }
-        };
 
     }
 
@@ -78,14 +47,15 @@ public partial class ClosetProPartMapper {
             Part? nextPart = null;
             if (part.PartName == "Melamine") {
 
-                products.Add(CreatePanelFromPart(part));
+                products.Add(CreateFiller(part));
 
             } else if (part.PartType == "Countertop") {
 
                 if (part.Height != 0.75) {
                     throw new InvalidOperationException($"Unsupported counter top thickness '{part.Height}', only 3/4\" is supported");
                 }
-                products.Add(CreateTopFromPart(part, doesWallHaveBacking));
+                
+                products.Add(CreateTop(part));
 
             } else if (part.PartName == "Cab Door Rail" || part.PartName.Contains("Drawer") && part.PartName.Contains("Rail")) {
 
@@ -146,14 +116,10 @@ public partial class ClosetProPartMapper {
 
                 products.Add(CreateAdjustableShelfFromPart(part, doesWallHaveBacking, extendBack));
 
-            } else if (ProductNameMappings.TryGetValue(part.ExportName, out var mapper)) {
-                try {
-                    products.Add(mapper(part, doesWallHaveBacking));
-                } catch (Exception ex) {
-                    throw new InvalidOperationException($"Part could not be mapped to a valid product - #{part.PartNum} {part.PartName}/{part.ExportName} W{part.WallNum} S{part.SectionNum} - {ex.Message}", ex);
-                }
             } else {
-                throw new InvalidOperationException($"Unexpected part {part.PartName} / {part.ExportName}");
+
+                products.Add(MapSinglePartToProduct(part, doesWallHaveBacking, HardwareSpread));
+
             }
 
             if (nextPart is not null) {
@@ -197,7 +163,47 @@ public partial class ClosetProPartMapper {
 
     }
 
-    private IEnumerable<IClosetProProduct> CreateCubbyProducts(IEnumerator<Part> enumerator, Part part, Part firstCubbyPart, bool doesWallHaveBacking) {
+    private static IClosetProProduct MapSinglePartToProduct(Part part, bool wallHasBacking, Dimension hardwareSpread) {
+
+        return part.ExportName switch {
+            "CPS FM Vert" or "CPS WM Vert" or
+            "CPS WM Vert Radius" or "CPS WM Vert Straight" or
+            "VP-Corner Floor Mount" or "VP-Corner Wall Hung"
+                => CreateVerticalPanelFromPart(part, wallHasBacking),
+
+            "VP-Hutch" => CreateHutchVerticalPanel(part, wallHasBacking),
+
+            "FixedShelf" => CreateFixedShelfFromPart(part, wallHasBacking, false),
+
+            "AdjustableShelf" => CreateAdjustableShelfFromPart(part, wallHasBacking, false),
+
+            "ShoeShelf" => CreateShoeShelf(part, false, wallHasBacking),
+
+            "Toe Kick_3.75" or "Toe Kick_2.5"
+                => CreateToeKick(part),
+
+            "Cleat" => CreateCleat(part),
+
+            "Melamine Sidemount" or "Melamine Undermount"
+                => CreateDowelDrawerBox(part),
+
+            "Dovetail Sidemount" or "Dovetail Undermount" or "Scoop Front Box"
+                => CreateDovetailDrawerBox(part),
+
+            "Zargen" => CreateZargenDrawerBox(),
+
+            "Slab" => CreateSlabFront(part, hardwareSpread),
+
+            "Filler Panel" => CreateFiller(part),
+
+            "Backing" or "Back-Panel" => CreateBacking(part),
+
+            _ => throw new InvalidOperationException($"Unexpected part {part.PartName} / {part.ExportName}")
+        };
+
+    }
+
+    private static IEnumerable<IClosetProProduct> CreateCubbyProducts(IEnumerator<Part> enumerator, Part part, Part firstCubbyPart, bool doesWallHaveBacking) {
 
         var accum = new CubbyAccumulator();
         accum.AddBottomShelf(part);
@@ -342,106 +348,6 @@ public partial class ClosetProPartMapper {
         return items;
 
     }
-
-    public static IClosetProProduct CreatePanelFromPart(Part part) => CreateFiller(part);
-
-    public static IClosetProProduct CreateFrontFromParts(Part rail, Part insert, Dimension hardwareSpread) {
-
-        if (rail.ExportName.Contains("MDF")) {
-
-            return CreateMDFFront(rail, insert, hardwareSpread);
-
-        } else {
-
-            return CreateFivePieceFront(rail, insert, hardwareSpread);
-
-        }
-
-    }
-
-    public static IClosetProProduct CreateVerticalHutchPanelFromPart(Part part, bool wallHasBacking) => CreateHutchVerticalPanel(part, wallHasBacking);
-
-    public static IClosetProProduct CreateVerticalPanelFromPart(Part part, bool wallHasBacking) {
-
-        if (part.PartName == "Vertical Panel - Island") {
-            return CreateIslandVerticalPanel(part);
-        }
-
-        double leftDrilling = part.VertDrillL;
-        double rightDrilling = part.VertDrillR;
-        bool isTransition = leftDrilling != 0 && rightDrilling != 0 && leftDrilling != rightDrilling;
-
-        if (isTransition) {
-
-            return CreateTransitionVerticalPanel(part, wallHasBacking);
-
-        } else {
-
-            return CreateTransitionVerticalPanel(part, wallHasBacking);
-
-        }
-
-    }
-
-    public static IClosetProProduct CreateToeKickFromPart(Part part, bool wallHasBacking) => CreateToeKick(part);
-
-    public static IClosetProProduct CreateFixedShelfFromPart(Part part, bool wallHasBacking) => CreateFixedShelfFromPart(part, wallHasBacking, false);
-
-    public static IClosetProProduct CreateFixedShelfFromPart(Part part, bool wallHasBacking, bool extendBack) {
-
-        if (part.ExportName == "L Fixed Shelf") {
-
-            return CreateLFixedShelf(part);
-
-        } else if (part.ExportName == "Pie Fixed Shelf") {
-
-            return CreateDiagonalFixedShelf(part);
-
-        } else {
-
-            return CreateFixedShelf(part, extendBack, wallHasBacking);
-
-        }
-
-    }
-
-    public static IClosetProProduct CreateAdjustableShelfFromPart(Part part, bool wallHasBacking) => CreateAdjustableShelfFromPart(part, wallHasBacking, false);
-
-    public static IClosetProProduct CreateAdjustableShelfFromPart(Part part, bool wallHasBacking, bool extendBack) {
-
-        if (part.ExportName == "L Adj Shelf") {
-
-            return CreateLAdjustableShelf(part);
-
-        } else if (part.ExportName == "Pie Adj Shelf") {
-
-            return CreateDiagonalAdjustableShelf(part);
-
-        } else {
-
-            return CreateFixedShelf(part, extendBack, wallHasBacking);
-
-        }
-
-    }
-
-    public static IClosetProProduct CreateShoeShelfFromPart(Part part, bool wallHasBacking) => CreateShoeShelf(part, false, wallHasBacking);
-
-    public static IClosetProProduct CreateCleatPart(Part part, bool wallHasBacking) => CreateCleat(part);
-
-    public IClosetProProduct CreateSlabFront(Part part, bool wallHasBacking) => CreateSlabFront(part, HardwareSpread);
-
-    public static IClosetProProduct CreateDoweledDrawerBox(Part part, bool wallHasBacking) => CreateDowelDrawerBox(part);
-
-    public static IClosetProProduct CreateDovetailDrawerBox(Part part, bool wallHasBacking) => CreateDovetailDrawerBox(part);
-
-    public static IClosetProProduct CreateZargenDrawerBox(Part part, bool wallHasBacking) => CreateZargenDrawerBox();
-
-    public static IClosetProProduct CreateTopFromPart(Part part, bool wallHasBacking) => CreateTop(part);
-
-    public static IClosetProProduct CreateFillerPanel(Part part, bool wallHasBacking) => CreateFiller(part);
-
-    public static IClosetProProduct CreateBackingPart(Part part, bool wallHasBacking) => CreateFiller(part);
 
     public static string GetRoomName(Part part) => $"Wall {part.WallNum} Sec {part.SectionNum}";
 
