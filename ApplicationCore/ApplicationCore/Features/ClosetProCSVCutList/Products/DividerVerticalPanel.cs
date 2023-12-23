@@ -6,7 +6,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList.Products;
 
-public class DividerVerticalPanel {
+public class DividerVerticalPanel : IClosetProProduct {
 
     public required int Qty { get; init; }
     public required string Color { get; init; }

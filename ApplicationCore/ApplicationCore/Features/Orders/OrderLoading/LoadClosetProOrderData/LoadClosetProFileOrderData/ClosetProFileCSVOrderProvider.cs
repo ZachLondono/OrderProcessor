@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList;
 using ApplicationCore.Features.Companies.Contracts;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Shared.Services;
 using Microsoft.Extensions.Logging;
@@ -13,8 +14,8 @@ internal class ClosetProFileCSVOrderProvider : ClosetProCSVOrderProvider {
 
     public ClosetProFileCSVOrderProvider(ILogger<ClosetProCSVOrderProvider> logger, ClosetProCSVReader reader, ClosetProPartMapper partMapper,
                                         IFileReader fileReader, IOrderingDbConnectionFactory dbConnectionFactory,
-                                        CompanyDirectory.GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, CompanyDirectory.InsertCustomerAsync insertCustomerAsync, CompanyDirectory.GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync)
-                                     : base(logger, reader, partMapper, fileReader, dbConnectionFactory, getCustomerIdByNameIdAsync, insertCustomerAsync, getCustomerOrderPrefixByIdAsync, getCustomerByIdAsync, getCustomerWorkingDirectoryRootByIdAsync) {
+                                        CompanyDirectory.GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, CompanyDirectory.InsertCustomerAsync insertCustomerAsync, CompanyDirectory.GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync, ComponentBuilderFactory componentBuilderFactory)
+                                     : base(logger, reader, partMapper, fileReader, dbConnectionFactory, getCustomerIdByNameIdAsync, insertCustomerAsync, getCustomerOrderPrefixByIdAsync, getCustomerByIdAsync, getCustomerWorkingDirectoryRootByIdAsync, componentBuilderFactory) {
         _fileReader = fileReader;
     }
 

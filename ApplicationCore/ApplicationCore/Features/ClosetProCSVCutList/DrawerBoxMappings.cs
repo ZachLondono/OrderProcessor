@@ -6,7 +6,7 @@ namespace ApplicationCore.Features.ClosetProCSVCutList;
 
 public partial class ClosetProPartMapper {
 
-    public DrawerBox CreateDovetailDrawerBox(Part part) => CreateDrawerBox(part, DrawerBoxType.Dovetail);
+    public static DrawerBox CreateDovetailDrawerBox(Part part) => CreateDrawerBox(part, DrawerBoxType.Dovetail);
 
     public static DrawerBox CreateDowelDrawerBox(Part part) => CreateDrawerBox(part, DrawerBoxType.Dowel);
 
@@ -40,6 +40,6 @@ public partial class ClosetProPartMapper {
 
     } 
 
-    public ZargenDrawerBox CreateZargenDrawerBox() => throw new NotImplementedException();
+    public static ZargenDrawerBox CreateZargenDrawerBox() => throw new NotImplementedException();
 
 }
