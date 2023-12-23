@@ -22,7 +22,7 @@ public partial class ClosetProPartMapper {
 
         } else {
 
-            return CreateTransitionVerticalPanel(part, wallHasBacking);
+            return CreateVerticalPanel(part, wallHasBacking);
 
         }
 
