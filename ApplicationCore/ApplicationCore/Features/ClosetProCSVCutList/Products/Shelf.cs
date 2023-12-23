@@ -1,5 +1,8 @@
 ﻿using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList.Products;
@@ -27,7 +30,24 @@ public class Shelf : IClosetProProduct {
             _ => throw new InvalidOperationException("Unexpected shelf type")
         };
 
-        throw new NotImplementedException();
+        ClosetMaterial material = new(Color, ClosetMaterialCore.ParticleBoard);
+        ClosetPaint? paint = null;
+        string comment = "";
+        Dictionary<string, string> parameters = [];
+
+        return new ClosetPart(Guid.NewGuid(),
+                              Qty,
+                              UnitPrice,
+                              PartNumber,
+                              Room,
+                              sku,
+                              Depth,
+                              Width,
+                              material,
+                              paint,
+                              EdgeBandingColor,
+                              comment,
+                              parameters);
 
     }
 
