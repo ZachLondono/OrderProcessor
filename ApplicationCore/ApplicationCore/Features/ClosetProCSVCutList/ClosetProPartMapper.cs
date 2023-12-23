@@ -2,6 +2,7 @@
 using ApplicationCore.Features.ClosetProCSVCutList.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Shared.Domain;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList;
 
@@ -12,6 +13,10 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
     private readonly ComponentBuilderFactory _factory = factory;
 
     public List<IClosetProProduct> MapPartsToProducts(IEnumerable<Part> parts, Dimension hardwareSpread) {
+
+        if (GroupLikeParts) {
+            parts = GroupParts(parts);
+        }
 
         return parts.GroupBy(p => p.WallNum)
                     .SelectMany(p => GetPartsForWall(p, hardwareSpread))
@@ -121,33 +126,6 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
             } else {
                 break;
             }
-
-        }
-
-        if (GroupLikeParts) {
-
-            /*
-            var closetParts = products.Where(p => p is ClosetPart)
-                                      .Cast<ClosetPart>()
-                                      .ToList();
-
-            products.RemoveAll(p => p is ClosetPart);
-
-            var groupedParts = closetParts.GroupBy(p => p, new ClosetPartComparer())
-                                            .Select(g => {
-
-                                                var totalQty = g.Sum(g => g.Qty);
-
-                                                var first = g.OrderBy(p => p.ProductNumber).First();
-                                                first.Qty = totalQty;
-
-                                                return first;
-
-                                            });
-
-            products.AddRange(groupedParts);
-            products.OrderBy(p => p.ProductNumber);
-            */
 
         }
 
@@ -374,6 +352,95 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
         }
 
         return dimensions;
+
+    }
+
+    private static IEnumerable<Part> GroupParts(IEnumerable<Part> parts) {
+
+        return parts.GroupBy(p => p, new PartComparer())
+                    .Select(g => {
+                        g.Key.Quantity = g.Sum(g => g.Quantity);
+                        return g.Key;
+                    })
+                    .OrderBy(p => p.PartNum);
+
+    }
+
+    public class PartComparer : IEqualityComparer<Part> {
+
+        public bool Equals(Part? x, Part? y) {
+
+            if (x is null && y is null) return true;
+            if (x is not null && y is null) return false;
+            if (x is null && y is not null) return false;
+
+            if (x!.WallNum != y!.WallNum
+                || x.SectionNum != y.SectionNum
+                || x.PartType != y.PartType
+                || x.PartName != y.PartName
+                || x.ExportName != y.ExportName
+                || x.Color != y.Color
+                || x.Height != y.Height
+                || x.Width != y.Width
+                || x.Depth != y.Depth
+                || x.VertHand != y.VertHand
+                || x.VertDrillL != y.VertDrillL
+                || x.VertDrillR != y.VertDrillR
+                || x.BBHeight != y.BBHeight
+                || x.BBDepth != y.BBDepth
+                || x.ShoeHeight != y.ShoeHeight
+                || x.ShoeDepth != y.ShoeDepth
+                || x.DrillLeft1 != y.DrillLeft1
+                || x.DrillLeft2 != y.DrillLeft2
+                || x.DrillRight1 != y.DrillRight1
+                || x.DrillRight2 != y.DrillRight2
+                || x.RailNotch != y.RailNotch
+                || x.RailNotchElevation != y.RailNotchElevation
+                || x.CornerShelfSizes != y.CornerShelfSizes
+                || x.PartCost != y.PartCost
+                || x.UnitL != y.UnitL
+                || x.UnitR != y.UnitR) {
+                return false;
+            }
+
+            return true;
+
+        }
+
+        public int GetHashCode([DisallowNull] Part obj) {
+
+            var a = HashCode.Combine(obj.WallNum,
+                                    obj.SectionNum,
+                                    obj.PartType,
+                                    obj.PartName,
+                                    obj.ExportName,
+                                    obj.Color,
+                                    obj.Height,
+                                    obj.Width);
+
+            var b = HashCode.Combine(obj.Depth,
+                                    obj.VertHand,
+                                    obj.VertDrillL,
+                                    obj.VertDrillR,
+                                    obj.BBHeight,
+                                    obj.BBDepth,
+                                    obj.ShoeHeight,
+                                    obj.ShoeDepth);
+
+            var c = HashCode.Combine(obj.DrillLeft1,
+                                    obj.DrillLeft2,
+                                    obj.DrillRight1,
+                                    obj.DrillRight2,
+                                    obj.RailNotch,
+                                    obj.RailNotchElevation,
+                                    obj.CornerShelfSizes,
+                                    obj.PartCost);
+
+            var d = HashCode.Combine(obj.UnitL,
+                                    obj.UnitR);
+
+            return HashCode.Combine(a, b, c, d);            
+        }
 
     }
 
