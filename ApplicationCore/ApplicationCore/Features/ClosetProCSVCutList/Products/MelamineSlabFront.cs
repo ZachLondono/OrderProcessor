@@ -27,7 +27,7 @@ public class MelamineSlabFront: IClosetProProduct {
             DoorType.DrawerFront => "DF-XX",
             _ => throw new InvalidOperationException("Unexpected melamine slab front type")
         };
-        ClosetMaterial material = new(Color, ClosetMaterialCore.Plywood);
+        ClosetMaterial material = new(Color, ClosetMaterialCore.ParticleBoard);
         ClosetPaint? paint = null;
         string comment = "";
         var parameters = new Dictionary<string, string>();
@@ -36,7 +36,17 @@ public class MelamineSlabFront: IClosetProProduct {
             parameters.Add("PullCenters", hardwareSpread.AsMillimeters().ToString());
         }
 
-        return new ClosetPart(Guid.NewGuid(), Qty, UnitPrice, PartNumber, Room, sku, Width, Height, material, paint, EdgeBandingColor, comment, parameters);
+        Dimension width;
+        Dimension length;
+        if (Type == DoorType.DrawerFront) {
+            width = Height;
+            length = Width;
+        } else {
+            width = Width;
+            length = Height;
+        }
+
+        return new ClosetPart(Guid.NewGuid(), Qty, UnitPrice, PartNumber, Room, sku, width, length, material, paint, EdgeBandingColor, comment, parameters);
 
     }
 
