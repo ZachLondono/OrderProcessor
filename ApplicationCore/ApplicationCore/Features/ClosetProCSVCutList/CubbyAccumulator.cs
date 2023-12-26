@@ -31,7 +31,7 @@ public class CubbyAccumulator {
 
     public Cubby CreateCubby() {
 
-        if (!_verticalPanels.Any()) {
+        if (_verticalPanels.Count == 0) {
             throw new InvalidOperationException("Missing vertical cubby dividers");
         }
 
@@ -139,7 +139,7 @@ public class CubbyAccumulator {
 
 
         Dimension shelfWidth;
-        if (_verticalPanels.Any()) {
+        if (_verticalPanels.Count != 0) {
             shelfWidth = (Dimension.FromInches(_topShelf.Width) - (Dimension.FromInches(0.75) * _verticalPanels.Count)) / (_verticalPanels.Count + 1);
         } else {
             shelfWidth = Dimension.FromInches(_topShelf.Width);
@@ -155,7 +155,7 @@ public class CubbyAccumulator {
             decimal adjUnitPrice = unitPrice / qty;
 
             return new Shelf() {
-                Qty = p.Quantity,
+                Qty = qty,
                 UnitPrice = adjUnitPrice,
                 Color = p.Color,
                 Room = roomName,
