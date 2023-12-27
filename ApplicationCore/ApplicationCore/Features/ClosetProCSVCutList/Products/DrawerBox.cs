@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Components;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
@@ -37,7 +36,7 @@ public class DrawerBox : IClosetProProduct {
         var botMaterial = new DoweledDrawerBoxMaterial(settings.DoweledDrawerBoxMaterialFinish, botMatThickness, true);
 
         var heightAdj = Dimension.FromMillimeters(1); // TODO: get this from settings
-        
+
         return new DoweledDrawerBoxProduct(Guid.NewGuid(),
                                            UnitPrice,
                                            Qty,

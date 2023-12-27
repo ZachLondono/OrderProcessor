@@ -6,7 +6,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList.Products;
 
-public class MelamineSlabFront: IClosetProProduct {
+public class MelamineSlabFront : IClosetProProduct {
 
     public required int Qty { get; init; }
     public required string Color { get; init; }

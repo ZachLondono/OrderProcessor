@@ -51,7 +51,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
                 if (part.Height != 0.75) {
                     throw new InvalidOperationException($"Unsupported counter top thickness '{part.Height}', only 3/4\" is supported");
                 }
-                
+
                 products.Add(CreateTop(part));
 
             } else if (part.PartName == "Cab Door Rail" || part.PartName.Contains("Drawer") && part.PartName.Contains("Rail")) {
@@ -222,7 +222,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
         prods.AddRange(cubby.DividerPanels);
         prods.AddRange(cubby.FixedShelves);
-            
+
         return prods;
 
 
@@ -280,7 +280,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
             items.Add(new() {
                 Qty = accessory.Quantity,
                 Name = accessory.Name,
-                UnitPrice = (cost / (decimal) accessory.Quantity)
+                UnitPrice = (cost / (decimal)accessory.Quantity)
             });
 
         }
@@ -439,7 +439,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
             var d = HashCode.Combine(obj.UnitL,
                                     obj.UnitR);
 
-            return HashCode.Combine(a, b, c, d);            
+            return HashCode.Combine(a, b, c, d);
         }
 
     }

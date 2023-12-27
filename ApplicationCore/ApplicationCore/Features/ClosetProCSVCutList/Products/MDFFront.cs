@@ -6,7 +6,7 @@ using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList.Products;
 
-public class MDFFront: IClosetProProduct {
+public class MDFFront : IClosetProProduct {
 
     public required int Qty { get; init; }
     public required string Room { get; init; }

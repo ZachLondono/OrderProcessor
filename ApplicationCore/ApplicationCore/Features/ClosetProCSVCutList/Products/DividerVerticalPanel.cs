@@ -16,7 +16,7 @@ public class DividerVerticalPanel : IClosetProProduct {
     public required int PartNumber { get; init; }
 
     public required Dimension Height { get; init; }
-    public required Dimension Depth {  get; init; }
+    public required Dimension Depth { get; init; }
     public required VerticalPanelDrilling Drilling { get; init; }
 
     public IProduct ToProduct() {

@@ -16,8 +16,8 @@ public class IslandVerticalPanel : IClosetProProduct {
     public required int PartNumber { get; init; }
 
     public required Dimension Height { get; init; }
-    public required Dimension PanelDepth {  get; init; }
-    public required Dimension Side1Depth {  get; init; }
+    public required Dimension PanelDepth { get; init; }
+    public required Dimension Side1Depth { get; init; }
     public required VerticalPanelDrilling Drilling { get; init; }
 
     public IProduct ToProduct() {

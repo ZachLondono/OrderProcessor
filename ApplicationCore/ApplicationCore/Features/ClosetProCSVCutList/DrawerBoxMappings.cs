@@ -38,7 +38,7 @@ public partial class ClosetProPartMapper {
             Type = type
         };
 
-    } 
+    }
 
     public static ZargenDrawerBox CreateZargenDrawerBox() => throw new NotImplementedException();
 

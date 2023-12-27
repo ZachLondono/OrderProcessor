@@ -52,7 +52,7 @@ public partial class ClosetProPartMapper {
     }
 
     public static MiscellaneousClosetPart CreateTop(Part part) {
-    
+
         // TODO: need to choose width / depth correctly so graining is going in the right direction
         Dimension width = Dimension.FromInches(part.Width);
         Dimension length = Dimension.FromInches(part.Depth);

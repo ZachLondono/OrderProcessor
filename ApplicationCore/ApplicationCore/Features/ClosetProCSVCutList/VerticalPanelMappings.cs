@@ -163,7 +163,7 @@ public partial class ClosetProPartMapper {
             UnitPrice = unitPrice,
             Color = part.Color,
             EdgeBandingColor = edgeBandingColor,
-            
+
             Height = height,
             PanelDepth = panelDepth,
             Side1Depth = side1Depth,
@@ -230,7 +230,7 @@ public partial class ClosetProPartMapper {
             UnitPrice = unitPrice,
             Color = part.Color,
             EdgeBandingColor = edgeBandingColor,
-            
+
             PanelHeight = panelHeight,
             BottomHeight = Dimension.FromInches(baseHeight),
             TopDepth = Dimension.FromInches(topDepth),

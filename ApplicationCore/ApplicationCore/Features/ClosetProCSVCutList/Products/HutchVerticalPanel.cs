@@ -17,7 +17,7 @@ public class HutchVerticalPanel : IClosetProProduct {
 
     public required Dimension PanelHeight { get; init; }
     public required Dimension BottomHeight { get; init; }
-    public required Dimension TopDepth {  get; init; }
+    public required Dimension TopDepth { get; init; }
     public required Dimension BottomDepth { get; init; }
     public required VerticalPanelDrilling Drilling { get; init; }
     public required bool WallHung { get; init; }

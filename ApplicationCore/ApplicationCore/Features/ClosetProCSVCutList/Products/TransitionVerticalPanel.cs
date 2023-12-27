@@ -16,7 +16,7 @@ public class TransitionVerticalPanel : IClosetProProduct {
     public required int PartNumber { get; init; }
 
     public required Dimension Height { get; init; }
-    public required Dimension Depth {  get; init; }
+    public required Dimension Depth { get; init; }
     public required Dimension TransitionDepth { get; init; }
     public required VerticalPanelDrilling Drilling { get; init; }
     public required bool WallHung { get; init; }
