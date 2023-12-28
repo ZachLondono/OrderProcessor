@@ -81,7 +81,11 @@ public class CSVOrderWriter() {
                 csv.WriteRecord(hutchPanel);
             }
 
+            csv.NextRecord();
+
         }
+
+        csv.Flush();
 
     }
 
