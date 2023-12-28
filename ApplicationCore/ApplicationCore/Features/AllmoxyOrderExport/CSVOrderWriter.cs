@@ -1,5 +1,7 @@
 ﻿using ApplicationCore.Features.AllmoxyOrderExport.Products;
+using ApplicationCore.Features.AllmoxyOrderExport.Products.DrawerBoxes;
 using ApplicationCore.Features.AllmoxyOrderExport.Products.FloorMountedVerticals;
+using ApplicationCore.Features.AllmoxyOrderExport.Products.Fronts;
 using ApplicationCore.Features.AllmoxyOrderExport.Products.Miscellaneous;
 using ApplicationCore.Features.AllmoxyOrderExport.Products.Shelves;
 using CsvHelper;
@@ -53,6 +55,22 @@ public class CSVOrderWriter() {
                 csv.WriteRecord(shoeShelf);
             }
 
+            else if (product is SlabDoorFront slabDoor) {
+                csv.WriteRecord(slabDoor);
+            } else if (product is SlabDrawerFront slabDrw) {
+                csv.WriteRecord(slabDrw);
+            }else if (product is FivePieceDoor fivePiece) {
+                csv.WriteRecord(fivePiece);
+            } else if (product is MDFDoorFront mdf) {
+                csv.WriteRecord(mdf);
+            }
+
+            else if (product is DovetailDrawerBox dovetail) {
+                csv.WriteRecord(dovetail);
+            } else if (product is DoweledDrawerBox doweled) {
+                csv.WriteRecord(doweled);
+            }
+
             else if (product is Back back) {
                 csv.WriteRecord(back);
             } else if (product is Nailer nailer) {
@@ -79,6 +97,12 @@ public class CSVOrderWriter() {
                 csv.WriteRecord(customHeightPanel);
             } else if (product is FloorMountedHutchPanels hutchPanel) {
                 csv.WriteRecord(hutchPanel);
+            }
+            
+            else {
+
+                throw new InvalidOperationException($"Unexpected allmoxy product {product.GetType()}");
+
             }
 
             csv.NextRecord();
