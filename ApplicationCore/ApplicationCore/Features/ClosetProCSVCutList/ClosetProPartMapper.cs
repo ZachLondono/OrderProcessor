@@ -14,9 +14,9 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
     public List<IClosetProProduct> MapPartsToProducts(IEnumerable<Part> parts, Dimension hardwareSpread) {
 
-        if (GroupLikeParts) {
-            parts = GroupParts(parts);
-        }
+        //if (GroupLikeParts) {
+        //    parts = GroupParts(parts);
+        //}
 
         return parts.GroupBy(p => p.WallNum)
                     .SelectMany(p => GetPartsForWall(p, hardwareSpread))
