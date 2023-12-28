@@ -12,7 +12,7 @@ public class SlabDoorFront : IAllmoxyProduct {
     [Index(5)] public required int Qty { get; set; }
     [Index(6)] public required double Width { get; set; }
     [Index(7)] public required double Height { get; set; }
-    [Index(8)] public required string HingeDrilling { get; set; }
+    [Index(8)] public required bool HingeDrilling { get; set; }
     [Index(9)] public required string PartComment { get; set; }
 
 }

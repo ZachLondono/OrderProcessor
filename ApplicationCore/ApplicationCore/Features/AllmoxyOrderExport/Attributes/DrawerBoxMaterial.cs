@@ -11,7 +11,7 @@ public static class DrawerBoxMaterial {
         throw new NotImplementedException();
     }
 
-    public static Dimension[] Heights = [
+    public static Dimension[] Heights => [
         Dimension.FromInches(4.125)
     ];
 

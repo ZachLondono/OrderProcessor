@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.AllmoxyOrderExport.Attributes;
 
-public class PanelFinish {
+public static class PanelFinish {
 
     public const string NONE = "None";
 

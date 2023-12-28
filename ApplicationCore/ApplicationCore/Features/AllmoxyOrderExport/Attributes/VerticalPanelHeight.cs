@@ -12,4 +12,12 @@ public static class VerticalPanelHeight {
 
     }
 
+    public static Dimension GetNearestDividerCompliantHeight(Dimension height) {
+
+        var mult = Math.Round((height - Dimension.FromMillimeters(45)).AsMillimeters() / 32);
+
+        return Dimension.FromMillimeters(45 + 32 * mult);
+
+    }
+
 }
