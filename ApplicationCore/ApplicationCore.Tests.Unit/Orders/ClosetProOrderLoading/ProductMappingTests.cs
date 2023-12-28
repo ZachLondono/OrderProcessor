@@ -1,21 +1,13 @@
-﻿using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
+﻿using ApplicationCore.Features.ClosetProCSVCutList;
+using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Components;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 using ApplicationCore.Shared.Domain;
 using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.Orders.ClosetProOrderLoading;
 
 public class ProductMappingTests {
-
-    private readonly ClosetProPartMapper _sut;
-
-    public ProductMappingTests() {
-        _sut = new(new ComponentBuilderFactory());
-    }
 
     [Fact]
     public void FloorMountedDrillThroughPart() {
@@ -37,19 +29,20 @@ public class ProductMappingTests {
             VertDrillR = rightDrilling.AsInches(),
             ExportName = "CPS FM Vert",
             VertHand = "T",
-            InfoRecords = new() {
+            InfoRecords = [
                 new() {
                     PartName = "Edge Banding",
                     Color = "RED"
                 }
-            }
+            ]
         };
         var helper = new PartHelper() {
             Part = part
         };
 
         // Act
-        var product = _sut.CreateVerticalPanelFromPart(part, false);
+        var vp = ClosetProPartMapper.CreateVerticalPanel(part, false);
+        var product = vp.ToProduct(Dimension.Zero);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -95,7 +88,8 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = _sut.CreateVerticalPanelFromPart(part, false);
+        var vp = ClosetProPartMapper.CreateVerticalPanel(part, false);
+        var product = vp.ToProduct(Dimension.Zero);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -141,7 +135,8 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = _sut.CreateVerticalPanelFromPart(part, false);
+        var vp = ClosetProPartMapper.CreateVerticalPanel(part, false);
+        var product = vp.ToProduct(Dimension.Zero);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -191,7 +186,8 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = _sut.CreateVerticalPanelFromPart(part, false);
+        var vp = ClosetProPartMapper.CreateVerticalPanel(part, false);
+        var product = vp.ToProduct(Dimension.Zero);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -216,7 +212,7 @@ public class ProductMappingTests {
         Dimension panelDepth = Dimension.FromInches(14);
         Dimension leftDrilling = Dimension.FromInches(14);
         Dimension rightDrilling = Dimension.FromInches(12);
-        
+
         var part = new Part() {
             Depth = panelDepth.AsInches(),
             Height = panelHeight.AsInches(),
@@ -239,7 +235,8 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = _sut.CreateVerticalPanelFromPart(part, false);
+        var vp = ClosetProPartMapper.CreateTransitionVerticalPanel(part, false);
+        var product = vp.ToProduct(Dimension.Zero);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -297,7 +294,8 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = ClosetProPartMapper.CreateVerticalHutchPanelFromPart(part, false);
+        var vp = ClosetProPartMapper.CreateHutchVerticalPanel(part, false);
+        var product = vp.ToProduct(Dimension.Zero);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -346,7 +344,8 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = _sut.CreateVerticalPanelFromPart(part, false);
+        var vp = ClosetProPartMapper.CreateVerticalPanel(part, false);
+        var product = vp.ToProduct(Dimension.Zero);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -379,7 +378,8 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = _sut.CreateSlabFront(part, false);
+        var vp = ClosetProPartMapper.CreateSlabFront(part, Dimension.Zero);
+        var product = vp.ToProduct();
 
         // Assert
         var slabDoor = helper.CompareToProduct(product);
@@ -408,7 +408,8 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = _sut.CreateSlabFront(part, false);
+        var vp = ClosetProPartMapper.CreateSlabFront(part, Dimension.Zero);
+        var product = vp.ToProduct();
 
         // Assert
         var slabDoor = helper.CompareToProduct(product);
@@ -451,7 +452,8 @@ public class ProductMappingTests {
         };
 
         // Act
-        var product = ClosetProPartMapper.CreateVerticalIslandPanelFromPart(part, false);
+        var vp = ClosetProPartMapper.CreateIslandVerticalPanel(part);
+        var product = vp.ToProduct();
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -463,32 +465,6 @@ public class ProductMappingTests {
         closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("FINRIGHT", "0"));
         closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("Row3Holes", "0"));
         double.Parse(closetPart.Parameters["Row1Holes"]).Should().BeApproximately(267.8, 0.15);
-
-    }
-
-    public class PartHelper {
-
-        public Part Part { get; set; } = new();
-
-        public ClosetPart CompareToProduct(IProduct product) {
-
-            product.Should().BeOfType<ClosetPart>();
-
-            var closetPart = product as ClosetPart;
-            closetPart.Should().NotBeNull();
-            closetPart!.Material.Core.Should().Be(ClosetMaterialCore.ParticleBoard);
-            closetPart.Material.Finish.Should().Be(Part.Color);
-            closetPart.Qty.Should().Be(Part.Quantity);
-            closetPart.ProductNumber.Should().Be(Part.PartNum);
-            closetPart.Room.Should().Be(ClosetProPartMapper.GetRoomName(Part));
-            if (ClosetProPartMapper.TryParseMoneyString(Part.PartCost, out decimal price)) {
-                closetPart.UnitPrice.Should().Be(price);
-            }
-
-            return closetPart;
-
-        }
-
 
     }
 

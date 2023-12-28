@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Features.ClosetOrderSelector;
+using ApplicationCore.Features.ClosetProToAllmoxyOrder;
 using ApplicationCore.Features.Companies.AllmoxyId;
 using ApplicationCore.Features.CreateOrderRelationship;
 using ApplicationCore.Features.CustomizationScripts.ViewModels;
@@ -34,7 +35,8 @@ public static class DependencyInjection {
                 .AddTransient<OrderReleaseModalViewModel>()
                 .AddTransient<ReleasePDFDialogViewModel>()
                 .AddTransient<DoorOrderReleaseActionRunnerFactory>()
-                .AddTransient<DoorOrderReleaseActionRunner>();
+                .AddTransient<DoorOrderReleaseActionRunner>()
+                .AddTransient<ClosetProToAllmoxyMapper>();
 
     }
 

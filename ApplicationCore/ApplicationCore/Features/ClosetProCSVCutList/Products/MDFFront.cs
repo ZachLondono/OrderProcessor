@@ -1,0 +1,48 @@
+﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
+using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using ApplicationCore.Shared.Domain;
+
+namespace ApplicationCore.Features.ClosetProCSVCutList.Products;
+
+public class MDFFront : IClosetProProduct {
+
+    public required int Qty { get; init; }
+    public required string Room { get; init; }
+    public required decimal UnitPrice { get; init; }
+    public required int PartNumber { get; init; }
+
+    public required Dimension Height { get; init; }
+    public required Dimension Width { get; init; }
+    public required DoorFrame Frame { get; init; }
+    public required string Style { get; init; }
+    public required DoorType Type { get; init; }
+    public required Dimension? HardwareSpread { get; init; }
+    public required string PaintColor { get; set; }
+
+    public IProduct ToProduct() {
+
+        return new MDFDoorProduct(Guid.NewGuid(),
+                                    UnitPrice,
+                                    Room,
+                                    Qty,
+                                    PartNumber,
+                                    Type,
+                                    Height,
+                                    Width,
+                                    string.Empty,
+                                    Frame,
+                                    $"MDF-3/4\"",
+                                    Dimension.FromInches(0.75),
+                                    Style,
+                                    "Square",
+                                    "Flat",
+                                    Dimension.FromInches(0.25),
+                                    DoorOrientation.Vertical,
+                                    [],
+                                    PaintColor);
+
+    }
+
+}

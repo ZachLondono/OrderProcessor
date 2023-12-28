@@ -189,7 +189,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
         GetDrillingOperations().ForEach(operation =>
             tokens.AddRange(CreateTwoRowsOfHoles(operation.Start, operation.End, operation.Depth == VPDrillingDepth.Stopped ? s_stoppedDepth : s_drillThroughDepth))
         );
-        
+
         if (BottomNotchHeight > Dimension.Zero && BottomNotchHeight > Dimension.Zero) {
             tokens.Add(new Route() {
                 ToolName = s_cutOutTool,
@@ -258,7 +258,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
         List<VPDrillingOperation> operations = [];
 
-        if (HoleDimensionFromBottom == Dimension.Zero && HoleDimensionFromTop == Dimension.Zero) { 
+        if (HoleDimensionFromBottom == Dimension.Zero && HoleDimensionFromTop == Dimension.Zero) {
 
             /*
              * If hole dimension from top & from bottom are both zero, the whole panel should be drilled
@@ -452,10 +452,10 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     /// </summary>
     public static Dimension GetValidHolePositionFromBottom(Dimension length, Dimension maxDistanceFromBottom) {
 
-        if (length < s_holesOffTop  || s_holeSpacing == Dimension.Zero) {
+        if (length < s_holesOffTop || s_holeSpacing == Dimension.Zero) {
             throw new InvalidOperationException();
         }
-        
+
         if (maxDistanceFromBottom > length - s_holesOffTop) {
             return length - s_holesOffTop;
         }

@@ -1,8 +1,11 @@
-﻿using ApplicationCore.Features.Companies.Contracts.Entities;
+﻿using ApplicationCore.Features.ClosetProCSVCutList;
+using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
+using ApplicationCore.Features.ClosetProCSVCutList.Products;
+using ApplicationCore.Features.Companies.Contracts.Entities;
 using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
-using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
+using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Shared.Data.Ordering;
@@ -29,8 +32,9 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
     private readonly GetCustomerWorkingDirectoryRootByIdAsync _getCustomerWorkingDirectoryRootByIdAsync;
     private readonly InsertCustomerAsync _insertCustomerAsync;
     private readonly GetCustomerByIdAsync _getCustomerByIdAsync;
+    private readonly ComponentBuilderFactory _componentBuilderFactory;
 
-    public ClosetProCSVOrderProvider(ILogger<ClosetProCSVOrderProvider> logger, ClosetProCSVReader reader, ClosetProPartMapper partMapper, IFileReader fileReader, IOrderingDbConnectionFactory dbConnectionFactory, GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, InsertCustomerAsync insertCustomerAsync, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerByIdAsync getCustomerByIdAsync, GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync) {
+    public ClosetProCSVOrderProvider(ILogger<ClosetProCSVOrderProvider> logger, ClosetProCSVReader reader, ClosetProPartMapper partMapper, IFileReader fileReader, IOrderingDbConnectionFactory dbConnectionFactory, GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, InsertCustomerAsync insertCustomerAsync, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerByIdAsync getCustomerByIdAsync, GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync, ComponentBuilderFactory componentBuilderFactory) {
         _logger = logger;
         _reader = reader;
         _partMapper = partMapper;
@@ -41,6 +45,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         _getCustomerOrderPrefixByIdAsync = getCustomerOrderPrefixByIdAsync;
         _getCustomerByIdAsync = getCustomerByIdAsync;
         _getCustomerWorkingDirectoryRootByIdAsync = getCustomerWorkingDirectoryRootByIdAsync;
+        _componentBuilderFactory = componentBuilderFactory;
     }
 
     protected abstract Task<string?> GetCSVDataFromSourceAsync(string source);
@@ -74,15 +79,16 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         string designerName = info.Header.GetDesignerName();
         var customer = await GetOrCreateCustomer(info.Header.DesignerCompany, designerName);
 
-        _partMapper.Settings = customer.ClosetProSettings;
-        _partMapper.GroupLikeParts = true; // TODO: Move this into the closet pro settings object
+        List<OtherPart> otherParts = [];
+        otherParts.AddRange(ClosetProPartMapper.MapPickListToItems(info.PickList, [], out var hardwareSpread));
+        otherParts.AddRange(ClosetProPartMapper.MapAccessoriesToItems(info.Accessories));
+        otherParts.AddRange(ClosetProPartMapper.MapBuyOutPartsToItems(info.BuyOutParts));
+        var additionalItems = otherParts.Select(p => new AdditionalItem(Guid.NewGuid(), $"({p.Qty}) {p.Name}", p.UnitPrice * p.Qty)).ToList();
 
-        List<AdditionalItem> additionalItems = new();
-        additionalItems.AddRange(_partMapper.MapPickListToItems(info.PickList, out var hardwareSpread));
-        _partMapper.HardwareSpread = hardwareSpread;
-        additionalItems.AddRange(ClosetProPartMapper.MapAccessoriesToItems(info.Accessories));
-        additionalItems.AddRange(ClosetProPartMapper.MapBuyOutPartsToItems(info.BuyOutParts));
-        List<IProduct> products = _partMapper.MapPartsToProducts(info.Parts);
+        _partMapper.GroupLikeParts = true; // TODO: Move this into the closet pro settings object
+        var products = _partMapper.MapPartsToProducts(info.Parts, hardwareSpread)
+                                    .Select(p => CreateProductFromClosetProProduct(p, customer.ClosetProSettings, _componentBuilderFactory))
+                                    .ToList();
 
         string orderNumber;
         if (customOrderNumber is null && string.IsNullOrWhiteSpace(customOrderNumber)) {
@@ -130,6 +136,72 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
                 Price = 0M
             }
         };
+
+    }
+
+    private static IProduct CreateProductFromClosetProProduct(IClosetProProduct product, ClosetProSettings settings, ComponentBuilderFactory factory) {
+
+        if (product is CornerShelf cornerShelf) {
+
+            return cornerShelf.ToProduct(settings);
+
+        } else if (product is DrawerBox db) {
+
+            return db.ToProduct(factory, settings);
+
+        } else if (product is FivePieceFront fivePieceFront) {
+
+            return fivePieceFront.ToProduct();
+
+        } else if (product is HutchVerticalPanel hutch) {
+
+            return hutch.ToProduct(settings.VerticalPanelBottomRadius);
+
+        } else if (product is IslandVerticalPanel island) {
+
+            return island.ToProduct();
+
+        } else if (product is MDFFront mdfFront) {
+
+            return mdfFront.ToProduct();
+
+        } else if (product is MelamineSlabFront melaSlab) {
+
+            return melaSlab.ToProduct();
+
+        } else if (product is MiscellaneousClosetPart misc) {
+
+            return misc.ToProduct(settings);
+
+        } else if (product is Shelf shelf) {
+
+            return shelf.ToProduct(settings);
+
+        } else if (product is TransitionVerticalPanel transition) {
+
+            return transition.ToProduct(settings.VerticalPanelBottomRadius);
+
+        } else if (product is VerticalPanel vertical) {
+
+            return vertical.ToProduct(settings.VerticalPanelBottomRadius);
+
+        } else if (product is ZargenDrawerBox zargen) {
+
+            return zargen.ToProduct();
+
+        } else if (product is DividerShelf dividerShelf) {
+
+            return dividerShelf.ToProduct();
+
+        } else if (product is DividerVerticalPanel dividerPanel) {
+
+            return dividerPanel.ToProduct();
+
+        } else {
+
+            throw new InvalidOperationException("Unexpected product");
+
+        }
 
     }
 

@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.Models;
+﻿using ApplicationCore.Features.ClosetProCSVCutList;
+using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
+using ApplicationCore.Features.ClosetProCSVCutList.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Components;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
-using ApplicationCore.Shared;
+using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Shared.Domain;
 using FluentAssertions;
 
@@ -10,41 +10,32 @@ namespace ApplicationCore.Tests.Unit.Orders.ClosetProOrderLoading;
 
 public class ContinuousWallOfProductTests {
 
-
     private readonly ClosetProPartMapper _sut;
     private readonly ComponentBuilderFactory _factory;
 
     public ContinuousWallOfProductTests() {
-
         _factory = new();
         _sut = new(_factory);
-
     }
 
     [Fact]
     public void StandardSection() {
 
         // Arrange
-        List<Part> parts = new() {
+        List<Part> parts = [
             CreateVerticalPanelPart(80, 12, "White", 1, 1),
             CreateVerticalPanelPart(80, 12, "Black", 1, 2),
             CreateVerticalPanelPart(80, 14, "Gold", 2, 1),
             CreateFixedShelfPart(80, 14, "Red", 2, 1),
             CreateAdjustableShelfPart(80, 14, "Blue", 2, 1),
-        };
-
+        ];
 
         // Act 
-        var products = _sut.MapPartsToProducts(parts);
+        var products = _sut.MapPartsToProducts(parts, Dimension.Zero);
 
         // Assert
-        var closetParts = products.Where(p => p is ClosetPart)
-                                    .Cast<ClosetPart>();
-        closetParts.Should().Contain(p => p.SKU == "PC" && p.Material.Finish == "White");
-        closetParts.Should().Contain(p => p.SKU == "PC" && p.Material.Finish == "Black");
-        closetParts.Should().Contain(p => p.SKU == "PC" && p.Material.Finish == "Gold");
-        closetParts.Should().Contain(p => p.SKU == _sut.Settings.FixedShelfSKU && p.Material.Finish == "Red");
-        closetParts.Should().Contain(p => p.SKU == _sut.Settings.AdjustableShelfSKU && p.Material.Finish == "Blue");
+        products.OfType<VerticalPanel>().Should().HaveCount(3);
+        products.OfType<Shelf>().Should().HaveCount(2);
 
     }
 
@@ -52,9 +43,7 @@ public class ContinuousWallOfProductTests {
     public void CubbySection() {
 
         // Arrange
-        //_sut.Settings.DividerShelfDrillingType = HorizontalDividerPanelEndDrillingType.DoubleCams;
-
-        List<Part> parts = new() {
+        List<Part> parts = [
             CreateVerticalPanelPart(80, 12, "White", 1, 1),
             CreateFixedShelfPart(12, 12, "White", 1, 1, "Bottom "),
             CreateVerticalCubbyPart(12, 12, "White", 1, 1),
@@ -62,25 +51,16 @@ public class ContinuousWallOfProductTests {
             CreateHorizontalCubbyPart(12, 12, "White", 1, 1),
             CreateHorizontalCubbyPart(12, 12, "White", 1, 1),
             CreateFixedShelfPart(12, 12, "White", 1, 1, "Top ")
-        };
-
+        ];
 
         // Act 
-        var products = _sut.MapPartsToProducts(parts);
+        var products = _sut.MapPartsToProducts(parts, Dimension.Zero);
 
         // Assert
-        var closetParts = products.Where(p => p is ClosetPart)
-                                    .Cast<ClosetPart>();
-
-        closetParts.Should().Contain(p => p.SKU == "PC" && p.Qty == 1);
-        closetParts.Should().Contain(p => p.SKU == "SF-D2T-D" && p.Qty == 1);
-        closetParts.Should().Contain(p => p.SKU == "SF-D2B-D" && p.Qty == 1);
-
-        var fixedShelves = closetParts.Where(p => p.SKU == "SF");
-        fixedShelves.Sum(p => p.Qty).Should().Be(6);
-        fixedShelves.Where(p => p.Length == Dimension.FromInches(3.5)).Sum(p => p.Qty).Should().Be(6);
-
-        closetParts.Should().Contain(p => p.SKU == "PCDV-CAM-D" && p.Qty == 1);
+        products.OfType<VerticalPanel>().Should().HaveCount(1);
+        products.OfType<DividerVerticalPanel>().Should().HaveCount(2);
+        products.OfType<DividerShelf>().Should().HaveCount(2);
+        products.OfType<Shelf>().Sum(p => p.Qty).Should().Be(6);
 
     }
 
@@ -88,26 +68,25 @@ public class ContinuousWallOfProductTests {
     public void TwoPartDoor() {
 
         // Arrange
-        List<Part> parts = new() {
+        List<Part> parts = [
             CreateDoorRail(10, 10, "White", 1, 1),
             CreateDoorInsert(5, 5, "White", 1, 1),
-        };
+        ];
 
         // Act
-        var products = _sut.MapPartsToProducts(parts);
+        var products = _sut.MapPartsToProducts(parts, Dimension.Zero);
 
         // Assert
-        var doors = products.Where(p => p is FivePieceDoor);
-        doors.Should().HaveCount(1);
+        products.OfType<FivePieceFront>().Should().HaveCount(1);
 
-        var door = doors.First() as FivePieceDoor;
+        var door = products.OfType<FivePieceFront>().First();
+        door.Type.Should().Be(DoorType.Door);
         door.Width.Should().Be(Dimension.FromInches(10));
         door.Height.Should().Be(Dimension.FromInches(10));
-
-        door.FrameSize.LeftStile.Should().Be(Dimension.FromInches(2.5));
-        door.FrameSize.RightStile.Should().Be(Dimension.FromInches(2.5));
-        door.FrameSize.TopRail.Should().Be(Dimension.FromInches(2.5));
-        door.FrameSize.BottomRail.Should().Be(Dimension.FromInches(2.5));
+        door.Frame.LeftStile.Should().Be(Dimension.FromInches(2.5));
+        door.Frame.RightStile.Should().Be(Dimension.FromInches(2.5));
+        door.Frame.TopRail.Should().Be(Dimension.FromInches(2.5));
+        door.Frame.BottomRail.Should().Be(Dimension.FromInches(2.5));
 
     }
 
@@ -115,26 +94,24 @@ public class ContinuousWallOfProductTests {
     public void TwoPartDrawer() {
 
         // Arrange
-        List<Part> parts = new() {
+        List<Part> parts = [
             CreateDrawerFrontRail(7.5, 10, "White", 1, 1),
             CreateDrawerFrontInsert(5, 5, "White", 1, 1),
-        };
+        ];
 
         // Act
-        var products = _sut.MapPartsToProducts(parts);
+        var products = _sut.MapPartsToProducts(parts, Dimension.Zero);
 
         // Assert
-        var doors = products.Where(p => p is FivePieceDoor);
-        doors.Should().HaveCount(1);
+        products.OfType<FivePieceFront>().Should().HaveCount(1);
 
-        var door = doors.First() as FivePieceDoor;
+        var door = products.OfType<FivePieceFront>().First();
         door.Width.Should().Be(Dimension.FromInches(10));
         door.Height.Should().Be(Dimension.FromInches(7.5));
-
-        door.FrameSize.LeftStile.Should().Be(Dimension.FromInches(2.5));
-        door.FrameSize.RightStile.Should().Be(Dimension.FromInches(2.5));
-        door.FrameSize.TopRail.Should().Be(Dimension.FromInches(1.25));
-        door.FrameSize.BottomRail.Should().Be(Dimension.FromInches(1.25));
+        door.Frame.LeftStile.Should().Be(Dimension.FromInches(2.5));
+        door.Frame.RightStile.Should().Be(Dimension.FromInches(2.5));
+        door.Frame.TopRail.Should().Be(Dimension.FromInches(1.25));
+        door.Frame.BottomRail.Should().Be(Dimension.FromInches(1.25));
 
     }
 
@@ -142,7 +119,7 @@ public class ContinuousWallOfProductTests {
     public void WallWithBackPanel() {
 
         // Arrange
-        List<Part> parts = new() {
+        List<Part> parts = [
 
             CreateVerticalPanelPart(80, 14, "White", 2, 1),
             CreateFixedShelfPart(20, 14, "White", 2, 1, "Bottom "),
@@ -158,45 +135,40 @@ public class ContinuousWallOfProductTests {
             CreateFixedShelfPart(20, 14, "White", 2, 2, "Top "),
             CreateVerticalPanelPart(80, 14, "White", 2, 2),
 
-        };
+        ];
 
         // Act
-        var products = _sut.MapPartsToProducts(parts);
+        var products = _sut.MapPartsToProducts(parts, Dimension.Zero);
 
         // Assert
-        var closetParts = products.Where(p => p is ClosetPart).Cast<ClosetPart>();
+        var verticalPanels = products.OfType<VerticalPanel>();
+        verticalPanels.Should().HaveCount(3);
+        verticalPanels.Where(v => v.ExtendBack).Should().HaveCount(3);
 
-        closetParts.Where(p => p.SKU == "PC")
-                    .Where(p => p.Parameters.ContainsKey("ExtendBack"))
-                    .Where(p => p.Parameters["ExtendBack"] == "19.05")
-                    .Should()
-                    .HaveCount(3);
+        products.OfType<MiscellaneousClosetPart>()
+                .Where(m => m.Type == MiscellaneousType.Backing)
+                .Should()
+                .HaveCount(1);
 
-        closetParts.Where(p => p.SKU == _sut.Settings.FixedShelfSKU)
-                    .Where(p => !p.Parameters.ContainsKey("ExtendBack"))
-                    .Should()
-                    .HaveCount(1);
+        products.OfType<Shelf>()
+                .Where(s => s.Type == ShelfType.Fixed && s.ExtendBack)
+                .Should()
+                .HaveCount(5);
 
-        closetParts.Where(p => p.SKU == _sut.Settings.FixedShelfSKU)
-                    .Where(p => p.Parameters.ContainsKey("ExtendBack"))
-                    .Where(p => p.Parameters["ExtendBack"] == "19.05")
-                    .Should()
-                    .HaveCount(5);
+        products.OfType<Shelf>()
+                .Where(s => s.Type == ShelfType.Fixed && !s.ExtendBack)
+                .Should()
+                .HaveCount(1);
 
-        closetParts.Where(p => p.SKU == _sut.Settings.AdjustableShelfSKU)
-                    .Where(p => !p.Parameters.ContainsKey("ExtendBack"))
-                    .Should()
-                    .HaveCount(1);
+        products.OfType<Shelf>()
+                .Where(s => s.Type == ShelfType.Adjustable && s.ExtendBack)
+                .Should()
+                .HaveCount(1);
 
-        closetParts.Where(p => p.SKU == _sut.Settings.AdjustableShelfSKU)
-                    .Where(p => p.Parameters.ContainsKey("ExtendBack"))
-                    .Where(p => p.Parameters["ExtendBack"] == "19.05")
-                    .Should()
-                    .HaveCount(1);
-
-        closetParts.Where(p => p.SKU == "BK34")
-                    .Should()
-                    .HaveCount(1);
+        products.OfType<Shelf>()
+                .Where(s => s.Type == ShelfType.Adjustable && !s.ExtendBack)
+                .Should()
+                .HaveCount(1);
 
     }
 
@@ -262,10 +234,10 @@ public class ContinuousWallOfProductTests {
         };
     }
 
-    private Part CreateVerticalCubbyPart(double width, double height, string materialColor, int wall, int section) {
+    private Part CreateVerticalCubbyPart(double height, double depth, string materialColor, int wall, int section) {
         return new Part() {
             Height = height,
-            Width = width,
+            Depth = depth,
             Color = materialColor,
             PartCost = "123.45",
             Quantity = 1,

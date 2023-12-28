@@ -1,0 +1,70 @@
+﻿@page "/closetpro"
+@using ApplicationCore.Features.AllmoxyOrderExport
+@using ApplicationCore.Features.ClosetProCSVCutList
+@using ApplicationCore.Features.ClosetProToAllmoxyOrder
+@using ApplicationCore.Shared.Services
+@inject IFilePicker FilePicker
+@inject ClosetProCSVReader Reader
+@inject ClosetProToAllmoxyMapper Mapper
+<h3>Closet Pro Order Setup</h3>
+
+<br/>
+
+<button @onclick="PickFile">Pick File</button>
+
+<br/>
+
+@if (_isLoading) {
+    <span>Loading...</span>
+}
+
+<br/>
+
+<span>@_error</span>
+
+@code {
+
+    private bool _isLoading = false;
+    private string _error = "";
+
+    public void PickFile() {
+
+        FilePicker.PickFile(new() {
+            InitialDirectory = @"C:\Users\Zachary Londono\Downloads",
+            Filter = new FilePickerFilter("Closet Pro Cut List", ".csv"),
+            Title = "Choose Closet Pro Cut List"
+        }, async file => {
+
+            _isLoading = true;
+            StateHasChanged();
+
+            try {
+                await MapToAllmoxyOrder(file);
+            } catch (Exception ex) {
+                _error = ex.Message;
+                throw;
+            } finally {
+                _isLoading = false;
+                StateHasChanged();
+            }
+
+
+        });
+
+    }
+
+    public async Task MapToAllmoxyOrder(string fileName) {
+
+        using var fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using var textReader = new StreamReader(fileStream);
+        var csvData = textReader.ReadToEnd();
+
+        var order = await Reader.ReadCSVData(csvData);
+
+        var products = Mapper.Map(order);
+
+        await CSVOrderWriter.WriteCSVOrder(products, @"C:\Users\Zachary Londono\Desktop\TestOutput\Allmoxy Output\order.csv");
+
+    }
+
+}

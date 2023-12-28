@@ -23,7 +23,7 @@ internal class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory 
         _dataSource = options.CurrentValue.OrderingDBPath;
     }
 
-    public Task<IDbConnection> CreateConnection() => CreateConnection(_dataSource); 
+    public Task<IDbConnection> CreateConnection() => CreateConnection(_dataSource);
 
     public async Task<IDbConnection> CreateConnection(string dataSource) {
 
