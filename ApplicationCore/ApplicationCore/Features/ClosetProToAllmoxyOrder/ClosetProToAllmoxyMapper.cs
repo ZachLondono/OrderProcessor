@@ -2,7 +2,7 @@
 using ApplicationCore.Features.ClosetProCSVCutList;
 using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
 using ApplicationCore.Features.ClosetProCSVCutList.Products;
-using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+using ApplicationCore.Features.ClosetProToAllmoxyOrder.Models;
 
 namespace ApplicationCore.Features.ClosetProToAllmoxyOrder;
 
@@ -10,27 +10,25 @@ public partial class ClosetProToAllmoxyMapper(ClosetProPartMapper partMapper) {
 
     private readonly ClosetProPartMapper _partMapper = partMapper;
 
-    public IEnumerable<IAllmoxyProduct> Map(ClosetProOrderInfo closetProOrder) {
-
-        var settings = new ClosetProSettings();
+    public IEnumerable<IAllmoxyProduct> Map(ClosetProOrderInfo closetProOrder, MappingSettings settings) {
 
         List<OtherPart> otherParts = [];
         otherParts.AddRange(ClosetProPartMapper.MapPickListToItems(closetProOrder.PickList, [], out var hardwareSpread));
         otherParts.AddRange(ClosetProPartMapper.MapAccessoriesToItems(closetProOrder.Accessories));
         otherParts.AddRange(ClosetProPartMapper.MapBuyOutPartsToItems(closetProOrder.BuyOutParts));
 
-        _partMapper.GroupLikeParts = true; // TODO: Move this into the closet pro settings object
+        _partMapper.GroupLikeParts = false; // TODO: Don't need to group items because they will be grouped by Allmoxy 
 
-        return _partMapper.MapPartsToProducts(closetProOrder.Parts, hardwareSpread).Select(MapPartToProduct);
+        return _partMapper.MapPartsToProducts(closetProOrder.Parts, hardwareSpread).Select(p => MapPartToProduct(p, settings));
 
     }
 
-    public static IAllmoxyProduct MapPartToProduct(IClosetProProduct cpProduct) {
+    public static IAllmoxyProduct MapPartToProduct(IClosetProProduct cpProduct, MappingSettings settings) {
 
         if (cpProduct is Shelf shelf) {
-            return MapShelfToAllmoxyProduct(shelf);
+            return MapShelfToAllmoxyProduct(shelf, settings.UseDoubleCamShelves);
         } else if (cpProduct is DividerShelf dividerShelf) {
-            return MapDividerShelfPartToAllmoxyProduct(dividerShelf);
+            return MapDividerShelfPartToAllmoxyProduct(dividerShelf, settings.UseDoubleCamShelves);
         } else if (cpProduct is CornerShelf cornerShelf) {
             return MapCornerShelfToAllmoxyProduct(cornerShelf);
         }

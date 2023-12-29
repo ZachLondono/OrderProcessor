@@ -7,12 +7,12 @@ namespace ApplicationCore.Features.ClosetProToAllmoxyOrder;
 
 public partial class ClosetProToAllmoxyMapper {
 
-    public static IAllmoxyProduct MapShelfToAllmoxyProduct(Shelf shelf) {
+    public static IAllmoxyProduct MapShelfToAllmoxyProduct(Shelf shelf, bool useDoubleCams) {
 
         return shelf.Type switch {
             ShelfType.Adjustable => MapPartToAdjustableShelf(shelf),
             ShelfType.Shoe => MapPartToShoeShelf(shelf),
-            ShelfType.Fixed => MapPartToFixedShelf(shelf),
+            ShelfType.Fixed => MapPartToFixedShelf(shelf, useDoubleCams),
             _ => throw new InvalidOperationException("Unexpected shelf product type")
         };
 
@@ -74,7 +74,7 @@ public partial class ClosetProToAllmoxyMapper {
 
     }
 
-    public static IAllmoxyProduct MapPartToFixedShelf(Shelf shelf) {
+    public static IAllmoxyProduct MapPartToFixedShelf(Shelf shelf, bool useDoubleCams) {
 
         string bandingColor;
         if (shelf.Color == shelf.EdgeBandingColor) {
@@ -88,7 +88,7 @@ public partial class ClosetProToAllmoxyMapper {
             ClosetMaterial = ClosetMaterials.GetMatchingMaterialName(shelf.Color),
             BandingColor = bandingColor,
             PanelFinish = PanelFinish.NONE,
-            DoubleCams = false,
+            DoubleCams = useDoubleCams,
             EdgeBandFrontAndBack = false,
             Qty = shelf.Qty,
             Width = shelf.Width.AsInches(),
@@ -133,7 +133,7 @@ public partial class ClosetProToAllmoxyMapper {
 
     }
 
-    public static IAllmoxyProduct MapDividerShelfPartToAllmoxyProduct(ClosetProCSVCutList.Products.DividerShelf shelf) {
+    public static IAllmoxyProduct MapDividerShelfPartToAllmoxyProduct(ClosetProCSVCutList.Products.DividerShelf shelf, bool useDoubleCams) {
 
         string bandingColor;
         if (shelf.Color == shelf.EdgeBandingColor) {
@@ -166,7 +166,7 @@ public partial class ClosetProToAllmoxyMapper {
             Depth = shelf.Depth.AsInches(),
             PartComment = string.Empty,
             Divisions = divisions,
-            EdgeDrilling = EndDrilling.SINGLE_CAM,
+            EdgeDrilling = useDoubleCams ? EndDrilling.DOUBLE_CAM : EndDrilling.SINGLE_CAM,
             TopOrBottom = topOrBottom,
             Opening1 = 0,
             Opening2 = 0,

@@ -1,0 +1,16 @@
+﻿@using ApplicationCore.Features.ClosetProToAllmoxyOrder.Models
+
+<EditForm Model="@Settings">
+
+    <label>
+        <InputCheckbox @bind-Value="Settings.UseDoubleCamShelves" />
+        <span>Use Double Cam Shelves</span>
+    </label>
+
+</EditForm>
+
+@code {
+
+    [Parameter] public MappingSettings Settings { get; set; } = new();
+
+}
