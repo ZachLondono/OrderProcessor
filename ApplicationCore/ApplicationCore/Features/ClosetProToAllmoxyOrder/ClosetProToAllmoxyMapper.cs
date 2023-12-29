@@ -1,25 +1,14 @@
 ﻿using ApplicationCore.Features.AllmoxyOrderExport.Products;
-using ApplicationCore.Features.ClosetProCSVCutList;
-using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
 using ApplicationCore.Features.ClosetProCSVCutList.Products;
 using ApplicationCore.Features.ClosetProToAllmoxyOrder.Models;
 
 namespace ApplicationCore.Features.ClosetProToAllmoxyOrder;
 
-public partial class ClosetProToAllmoxyMapper(ClosetProPartMapper partMapper) {
+public partial class ClosetProToAllmoxyMapper() {
 
-    private readonly ClosetProPartMapper _partMapper = partMapper;
+    public IEnumerable<IAllmoxyProduct> Map(IEnumerable<IClosetProProduct> closetProProducts, MappingSettings settings) {
 
-    public IEnumerable<IAllmoxyProduct> Map(ClosetProOrderInfo closetProOrder, MappingSettings settings) {
-
-        List<OtherPart> otherParts = [];
-        otherParts.AddRange(ClosetProPartMapper.MapPickListToItems(closetProOrder.PickList, [], out var hardwareSpread));
-        otherParts.AddRange(ClosetProPartMapper.MapAccessoriesToItems(closetProOrder.Accessories));
-        otherParts.AddRange(ClosetProPartMapper.MapBuyOutPartsToItems(closetProOrder.BuyOutParts));
-
-        _partMapper.GroupLikeParts = false; // TODO: Don't need to group items because they will be grouped by Allmoxy 
-
-        return _partMapper.MapPartsToProducts(closetProOrder.Parts, hardwareSpread).Select(p => MapPartToProduct(p, settings));
+        return closetProProducts.Select(p => MapPartToProduct(p, settings));
 
     }
 
