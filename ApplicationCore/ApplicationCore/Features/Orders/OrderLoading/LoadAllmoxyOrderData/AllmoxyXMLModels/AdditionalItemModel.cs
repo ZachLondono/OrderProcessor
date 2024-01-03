@@ -15,11 +15,11 @@ public class AdditionalItemModel : ProductOrItemModel {
     public string Description { get; set; } = string.Empty;
 
     [XmlElement("price")]
-    public string Price { get; set; } = string.Empty;
+    public string UnitPrice { get; set; } = string.Empty;
 
     public override OneOf<IProduct, AdditionalItem> CreateProductOrItem(ProductBuilderFactory builderFactory) {
-        var price = AllmoxyXMLOrderProviderHelpers.StringToMoney(Price);
-        return AdditionalItem.Create(Qty, Description, price);
+        var unitPrice = AllmoxyXMLOrderProviderHelpers.StringToMoney(UnitPrice);
+        return AdditionalItem.Create(Qty, Description, unitPrice);
     }
 
 }

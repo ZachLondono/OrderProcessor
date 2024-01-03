@@ -168,7 +168,7 @@ public partial class InsertOrder {
             foreach (var item in items) {
 
                 const string itemCommand = @"INSERT INTO additional_items (id, order_id, qty, description, price)
-                                        VALUES (@Id, @OrderId, @Qty, @Description, @Price);";
+                                        VALUES (@Id, @OrderId, @Qty, @Description, @UnitPrice);";
 
                 await connection.ExecuteAsync(itemCommand, new {
                     item.Id,

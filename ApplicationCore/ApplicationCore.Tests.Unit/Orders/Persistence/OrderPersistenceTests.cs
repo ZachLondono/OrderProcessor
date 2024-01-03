@@ -14,7 +14,7 @@ public class OrderPersistenceTests : PersistenceTests {
             Number = "Test Number",
             Name = "TestName",
             Items = new() {
-                new(Guid.Empty, "Test Item", 123.45M)
+                new(Guid.Empty, 1, "Test Item", 123.45M)
             },
         }.Build();
 

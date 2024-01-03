@@ -28,7 +28,7 @@
     
         <div class="mb-3">
             <label>Price</label>
-            <InputNumber @bind-Value="@_editModel.Price" class="w-24 px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+            <InputNumber @bind-Value="@_editModel.UnitPrice" class="w-24 px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
         </div>
 
         <Button type="submit" Color="ButtonColor.Success">Save</Button>
@@ -57,7 +57,7 @@
             Id = Item.Id,
             Qty = Item.Qty,
             Description = Item.Description,
-            Price = Item.UnitPrice
+            UnitPrice = Item.UnitPrice
         };
     }
 
@@ -65,7 +65,7 @@
 
         if (_editModel is null) return;
 
-        var item = new AdditionalItem(_editModel.Id, _editModel.Qty, _editModel.Description, _editModel.Price);
+        var item = new AdditionalItem(_editModel.Id, _editModel.Qty, _editModel.Description, _editModel.UnitPrice);
 
         var result = await Bus.Send(new UpdateAdditionalItem.Command(item));
 
