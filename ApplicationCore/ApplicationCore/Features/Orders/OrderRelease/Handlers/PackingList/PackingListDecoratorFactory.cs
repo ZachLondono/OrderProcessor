@@ -11,10 +11,12 @@ public class PackingListDecoratorFactory {
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<IPackingListDecorator> CreateDecorator(Order order) {
+    public async Task<IPackingListDecorator> CreateDecorator(Order order, bool checkBoxes, bool signatureField) {
 
         var decorator = _serviceProvider.GetRequiredService<IPackingListDecorator>();
         await decorator.AddData(order);
+        decorator.IncludeCheckBoxesNextToItems = checkBoxes;
+        decorator.IncludeSignatureField = signatureField;
         return decorator;
 
     }

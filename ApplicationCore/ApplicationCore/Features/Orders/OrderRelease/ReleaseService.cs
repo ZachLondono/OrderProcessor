@@ -177,7 +177,7 @@ public class ReleaseService {
         }
 
         if (configuration.GeneratePackingList) {
-            var packingListDecorators = await CreatePackingListDecorators(orders);
+            var packingListDecorators = await CreatePackingListDecorators(orders, configuration);
             decorators.AddRange(packingListDecorators);
         }
 
@@ -206,10 +206,10 @@ public class ReleaseService {
         return dovetailDBPackingListDecorators;
     }
 
-    private async Task<List<IDocumentDecorator>> CreatePackingListDecorators(List<Order> orders) {
+    private async Task<List<IDocumentDecorator>> CreatePackingListDecorators(List<Order> orders, ReleaseConfiguration configuration) {
         List<IDocumentDecorator> packingListDecorators = new();
         foreach (var order in orders) {
-            var decorator = await _packingListDecoratorFactory.CreateDecorator(order);
+            var decorator = await _packingListDecoratorFactory.CreateDecorator(order, configuration.IncludeCheckBoxesInPackingList, configuration.IncludeSignatureFieldInPackingList);
             packingListDecorators.Add(decorator);
         }
 

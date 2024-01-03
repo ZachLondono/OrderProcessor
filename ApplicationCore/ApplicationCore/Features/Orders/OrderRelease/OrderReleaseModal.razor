@@ -110,15 +110,26 @@
             <CheckBox @bind-IsChecked="DataContext.Configuration.GeneratePackingList">
                 <span class="text-gray-700">Packing List</span>
             </CheckBox>
-
-            @if (DataContext.Configuration.GeneratePackingList && DataContext.DoAnyOrdersContainDovetailDBs) {
+            @if(DataContext.Configuration.GeneratePackingList) {
                 <div class="ml-5">
-                    <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeDovetailDBPackingList">
-                        <span class="text-gray-700 text-sm">Dovetail DB Packing List</span>
-                    </CheckBox>
+                    @if (DataContext.DoAnyOrdersContainDovetailDBs) {
+                        <div>
+                            <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeDovetailDBPackingList">
+                                <span class="text-gray-700 text-sm">Dovetail DB Packing List</span>
+                            </CheckBox>
+                        </div>
+                    }
+                    <div>
+                        <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeCheckBoxesInPackingList">
+                            <span class="text-gray-700 text-sm">Include check boxes in packing list</span>
+                        </CheckBox>
+                    </div>
+                    <div>
+                        <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeSignatureFieldInPackingList">
+                            <span class="text-gray-700 text-sm">Include signature field in packing list</span>
+                        </CheckBox>
+                    </div>
                 </div>
-            } else {
-                <br />
             }
 
             @if(DataContext.DoAnyOrdersContainFivePieceDoors) {

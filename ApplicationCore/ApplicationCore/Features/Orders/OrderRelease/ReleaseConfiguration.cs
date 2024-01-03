@@ -11,6 +11,8 @@ public class ReleaseConfiguration {
     public bool CopyCNCReportToWorkingDirectory { get; set; }
     public bool GenerateCNCGCode { get; set; }
     public bool GeneratePackingList { get; set; }
+    public bool IncludeCheckBoxesInPackingList { get; set; }
+    public bool IncludeSignatureFieldInPackingList { get; set; }
     public bool GenerateJobSummary { get; set; }
     public bool IncludeProductTablesInSummary { get; set; }
     public SupplyOptions SupplyOptions { get; set; } = new();
