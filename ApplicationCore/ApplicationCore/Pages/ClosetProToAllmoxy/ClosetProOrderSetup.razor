@@ -11,26 +11,107 @@
 @inject ClosetProCSVReader Reader
 @inject ClosetProPartMapper CPPartMapper
 @inject ClosetProToAllmoxyMapper CPToAllmoxyMapper
-<h3>Closet Pro Order Setup</h3>
 
-<br/>
-
-<MappingSettingsForm Settings="_settings" />
-
-<br/>
-
-<Button Color="ButtonColor.Primary" OnClick="PickFile" Disabled="_isLoading">Pick File</Button>
-
-<br/>
+<style>
+    .min-w-48 {
+        min-width: 12rem;
+    }
+</style>
 
 @if (_isLoading) {
     <span>Loading...</span>
 }
 
-@if (_isComplete) {
-    <span>Order Mapping Complete</span>
+@if (string.IsNullOrWhiteSpace(_error)) {
+    <span class="text-red">@_error</span>
 }
 
-<br/>
 
-<span>@_error</span>
+@if (!_isFileSelected) {
+
+    <h3 class="font-semibold text-lg mb-6">Select Closet Order File</h3>
+
+    <Button Color="ButtonColor.Primary" OnClick="PickFile" Disabled="_isLoading">Pick File</Button>
+
+} else if (_isComplete) {
+
+    <h3 class="font-semibold text-lg">Order Mapping Complete</h3>
+
+    <div class="my-6">
+        <span>File Generated</span>
+        <span class="underline cursor-pointer text-blue-600 hover:text-blue-700" @onclick="() => OpenFile(_allmoxyOutputFile)">@_allmoxyOutputFile</span>
+    </div>
+
+    @if (!AllmoxyProducts.Any()) {
+
+        <span>No Allmoxy products where loaded from Closet Pro order</span>
+
+    } else {
+
+        <div class="flex flex-cols gap-4">
+            @foreach (var group in AllmoxyProducts.GroupBy(p => p.Folder)) {
+                <div>
+                    <table class="table min-w-48">
+                        <caption class="text-md font-semibold">@group.Key</caption>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var product in group) {
+                                <tr>
+                                    <td>@product.Name</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+    }
+
+} else {
+
+    <h3 class="font-semibold text-lg">Map Closet Pro Order to Allmoxy Order</h3>
+
+    <div class="my-6">
+        <MappingSettingsForm Settings="_settings" />
+    </div>
+
+    <label>
+        Output File
+        <input type="text" class="input-text w-full" @bind-value="_allmoxyOutputFile" />
+    </label>
+
+    <div class="my-6">
+        <Button Color="ButtonColor.Primary" OnClickAsync="MapToAllmoxyOrder" Disabled="_isLoading">Map to Allmoxy Order</Button>
+    </div>
+
+    @if (!ClosetProProducts.Any()) {
+
+        <span>No products loaded from file</span>
+
+    } else {
+
+        <div class="flex flex-cols gap-4">
+            @foreach (var group in ClosetProProducts.GroupBy(p => p.Room)) {
+                <div>
+                    <table class="table min-w-48">
+                        <caption class="text-md font-semibold">@group.Key</caption>
+                        <thead>
+                            <tr class="font-semibold"><th>Type</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in group) {
+                                <tr class="border-b px-3"><td>@product.GetType().Name</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    }
+
+}

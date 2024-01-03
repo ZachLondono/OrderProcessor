@@ -2,9 +2,19 @@
 
 <EditForm Model="@Settings">
 
-    <label>
+    <label class="block">
         <InputCheckbox @bind-Value="Settings.UseDoubleCamShelves" />
         <span>Use Double Cam Shelves</span>
+    </label>
+
+    <label class="block">
+        <InputCheckbox @bind-Value="Settings.UseSafetyShelves" />
+        <span>Use Safety Shelves</span>
+    </label>
+
+    <label class="block">
+        <InputCheckbox @bind-Value="Settings.UseAdvancedVerticalPanels" />
+        <span>Use Advanced Vertical Panels</span>
     </label>
 
 </EditForm>

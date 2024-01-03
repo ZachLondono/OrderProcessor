@@ -15,7 +15,7 @@ public partial class ClosetProToAllmoxyMapper() {
     public static IAllmoxyProduct MapPartToProduct(IClosetProProduct cpProduct, MappingSettings settings) {
 
         if (cpProduct is Shelf shelf) {
-            return MapShelfToAllmoxyProduct(shelf, settings.UseDoubleCamShelves);
+            return MapShelfToAllmoxyProduct(shelf, settings.UseDoubleCamShelves, settings.UseSafetyShelves);
         } else if (cpProduct is DividerShelf dividerShelf) {
             return MapDividerShelfPartToAllmoxyProduct(dividerShelf, settings.UseDoubleCamShelves);
         } else if (cpProduct is CornerShelf cornerShelf) {

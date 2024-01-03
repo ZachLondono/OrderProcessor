@@ -7,10 +7,10 @@ namespace ApplicationCore.Features.ClosetProToAllmoxyOrder;
 
 public partial class ClosetProToAllmoxyMapper {
 
-    public static IAllmoxyProduct MapShelfToAllmoxyProduct(Shelf shelf, bool useDoubleCams) {
+    public static IAllmoxyProduct MapShelfToAllmoxyProduct(Shelf shelf, bool useDoubleCams, bool useSafetyShelf) {
 
         return shelf.Type switch {
-            ShelfType.Adjustable => MapPartToAdjustableShelf(shelf),
+            ShelfType.Adjustable => MapPartToAdjustableShelf(shelf, useSafetyShelf),
             ShelfType.Shoe => MapPartToShoeShelf(shelf),
             ShelfType.Fixed => MapPartToFixedShelf(shelf, useDoubleCams),
             _ => throw new InvalidOperationException("Unexpected shelf product type")
@@ -18,7 +18,7 @@ public partial class ClosetProToAllmoxyMapper {
 
     }
 
-    public static IAllmoxyProduct MapPartToAdjustableShelf(Shelf shelf) {
+    public static IAllmoxyProduct MapPartToAdjustableShelf(Shelf shelf, bool useSafetyShelf) {
 
         string bandingColor;
         if (shelf.Color == shelf.EdgeBandingColor) {
@@ -27,21 +27,45 @@ public partial class ClosetProToAllmoxyMapper {
             bandingColor = ClosetEdgeBandingMaterial.GetMatchingMaterialName(shelf.EdgeBandingColor);
         }
 
-        return new AdjustableShelf() {
-            Folder = shelf.Room,
-            ClosetMaterial = ClosetMaterials.GetMatchingMaterialName(shelf.Color),
-            BandingColor = bandingColor,
-            PanelFinish = PanelFinish.NONE,
-            EdgeBandFrontAndBack = false,
-            Qty = shelf.Qty,
-            Width = shelf.Width.AsInches(),
-            Depth = shelf.Depth.AsInches(),
-            PartComment = string.Empty,
-            AddLEDChannel = false,
-            LEDOffFront = 0,
-            LEDWidth = 0,
-            LEDDepth = 0,
-        };
+        if (useSafetyShelf) {
+
+            return new AdjustableSafetyShelf() {
+                Folder = shelf.Room,
+                ClosetMaterial = ClosetMaterials.GetMatchingMaterialName(shelf.Color),
+                BandingColor = bandingColor,
+                PanelFinish = PanelFinish.NONE,
+                EdgeBandFrontAndBack = false,
+                Qty = shelf.Qty,
+                Width = shelf.Width.AsInches(),
+                Depth = shelf.Depth.AsInches(),
+                PartComment = string.Empty,
+                DrawerLock = false,
+                Recess = shelf.ExtendBack ? Recess.EXTENDED : Recess.FLUSH,
+                AddLEDChannel = false,
+                LEDOffFront = 0,
+                LEDWidth = 0,
+                LEDDepth = 0,
+            };
+
+        } else {
+
+            return new AdjustableShelf() {
+                Folder = shelf.Room,
+                ClosetMaterial = ClosetMaterials.GetMatchingMaterialName(shelf.Color),
+                BandingColor = bandingColor,
+                PanelFinish = PanelFinish.NONE,
+                EdgeBandFrontAndBack = false,
+                Qty = shelf.Qty,
+                Width = shelf.Width.AsInches(),
+                Depth = shelf.Depth.AsInches(),
+                PartComment = string.Empty,
+                AddLEDChannel = false,
+                LEDOffFront = 0,
+                LEDWidth = 0,
+                LEDDepth = 0,
+            };
+
+        }
 
     }
 
