@@ -1,0 +1,62 @@
+﻿@using ApplicationCore.Shared.Components
+@using System.Diagnostics
+@using static ApplicationCore.Shared.Components.Button
+@inject IModalService Modal
+
+<div>
+    <input type="text" @bind-value="OrderNumber" class="input-text" placeholder="Order #" />
+    <Button Color="ButtonColor.Primary" Disabled="IsLoading" Size="ButtonSize.Small" OnClickAsync="OpenOrderWorkbook">Open File</Button>
+</div>
+
+@code {
+
+    public string OrderNumber { get; set; } = string.Empty;
+    public bool IsLoading { get; set; } = false;
+
+    public async Task OpenOrderWorkbook() {
+
+        IsLoading = true;
+        StateHasChanged();
+
+        string directory = @"R:\Door Orders\OT Doors";
+
+        var files = await Task.Run(() => {
+            try {
+                return Directory.GetFiles(directory, $"{OrderNumber}*.xlsm");
+            } catch {
+                return Array.Empty<string>();
+            }
+        });
+
+        if (files.Length == 0) {
+
+            await Modal.OpenErrorDialog(new() {
+                Title = "File Not Found",
+                Details = $"No order file was found with order number '{OrderNumber}' in directory '{directory}'"
+            });
+
+            IsLoading = false;
+            StateHasChanged();
+
+            return;
+
+        }
+
+        try {
+
+            var psi = new ProcessStartInfo {
+                FileName = files.First(),
+                UseShellExecute = true
+            };
+            Process.Start(psi);
+
+        } catch (Exception ex) {
+            Debug.WriteLine(ex);
+        }
+
+        IsLoading = false;
+        StateHasChanged();
+
+    } 
+
+}

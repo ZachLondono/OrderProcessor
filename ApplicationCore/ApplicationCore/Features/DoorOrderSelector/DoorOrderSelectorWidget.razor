@@ -1,4 +1,5 @@
 ﻿@using ApplicationCore.Features.OpenDoorOrders;
+@using ApplicationCore.Features.OpenDoorOrderFile;
 @using ApplicationCore.Infrastructure.Bus;
 @using ApplicationCore.Shared.Components
 @using static ApplicationCore.Shared.Components.Button;
@@ -45,6 +46,13 @@
         <Button OnClickAsync="Close" Color="ButtonColor.Danger">Close</Button>
         <Button OnClick="LoadOpenOrders" Color="ButtonColor.Secondary">Refresh</Button>
     </div>
+
+    <hr class="my-6" />
+
+    <div>
+        <DoorOrderNumber />
+    </div>
+
 }
 
 
