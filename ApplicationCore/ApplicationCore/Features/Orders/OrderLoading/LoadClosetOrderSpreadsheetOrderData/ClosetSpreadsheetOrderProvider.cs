@@ -128,24 +128,27 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
             var mdfFrontHeader = MDFFrontHeader.ReadFromWorksheet(mdfFrontSheet);
             var mdfFronts = LoadItemsFromWorksheet<MDFFront>(mdfFrontSheet);
 
-            List<IProduct> products = new();
-            products.AddRange(MapClosetPartToProduct(cover, closetParts));
-            products.AddRange(MapCornerShelfToProduct(cover, cornerShelves));
-            products.AddRange(MapZargenToProduct(cover, zargens));
-            products.AddRange(MapDovetailDBToProduct(dovetailDBHeader, dovetailDBs));
-            products.AddRange(MapMelamineDBToProduct(melamineDBHeader, melamineDBs));
-            products.AddRange(MapMDFFrontToProduct(mdfFrontHeader, mdfFronts));
+            List<IProduct> products = [
+                .. MapClosetPartToProduct(cover, closetParts),
+                .. MapCornerShelfToProduct(cover, cornerShelves),
+                .. MapZargenToProduct(cover, zargens),
+                .. MapDovetailDBToProduct(dovetailDBHeader, dovetailDBs),
+                .. MapMelamineDBToProduct(melamineDBHeader, melamineDBs),
+                .. MapMDFFrontToProduct(mdfFrontHeader, mdfFronts),
+            ];
 
             List<AdditionalItem> additionalItems = new();
+
             if (cover.InstallCamsCharge > 0) {
-                additionalItems.Add(AdditionalItem.Create("Install Cams", cover.InstallCamsCharge, true));
+                additionalItems.Add(AdditionalItem.Create(1, "Install Cams", cover.InstallCamsCharge));
             }
             if (cover.RushCharge > 0) {
-                additionalItems.Add(AdditionalItem.Create("Rush", cover.RushCharge, true));
+                additionalItems.Add(AdditionalItem.Create(1, "Rush", cover.RushCharge));
             }
+
             cover.Moldings
                 .Where(m => m.LinearFt > 0)
-                .Select(m => AdditionalItem.Create($"{m.Name} - {m.Color} - {m.LinearFt}ft", m.Price))
+                .Select(m => AdditionalItem.Create(1, $"{m.Name} - {m.Color} - {m.LinearFt}ft", m.Price))
                 .ForEach(additionalItems.Add);
 
             var address = ParseCustomerAddress(cover.AddressLine1, cover.AddressLine2);

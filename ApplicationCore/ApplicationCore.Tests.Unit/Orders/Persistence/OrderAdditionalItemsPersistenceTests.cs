@@ -30,7 +30,7 @@ public class OrderAdditionalItemsPersistenceTests {
     public void InsertOrder_ShouldInsertRowsIntoAdditionalItemsTable() {
 
         // Arrange
-        var item = new AdditionalItem(Guid.NewGuid(), "Test Item", 123.45M);
+        var item = new AdditionalItem(Guid.NewGuid(), 1, "Test Item", 123.45M);
         var order = new OrderBuilder() {
             Items = new() {
                 item
@@ -53,7 +53,7 @@ public class OrderAdditionalItemsPersistenceTests {
     public void DeleteOrder_ShouldRemoveAdditionalItemsFromTable() {
 
         // Arrange
-        var item = new AdditionalItem(Guid.NewGuid(), "Test Item", 123.45M);
+        var item = new AdditionalItem(Guid.NewGuid(), 1, "Test Item", 123.45M);
         var order = new OrderBuilder() {
             Items = new() {
                 item
@@ -79,7 +79,7 @@ public class OrderAdditionalItemsPersistenceTests {
     public void RemoveAdditionalItem_ShouldRemoveAdditionalItemsFromTable() {
 
         // Arrange
-        var item = new AdditionalItem(Guid.NewGuid(), "Test Item", 123.45M);
+        var item = new AdditionalItem(Guid.NewGuid(), 1, "Test Item", 123.45M);
         var order = new OrderBuilder() {
             Items = new() {
                 item

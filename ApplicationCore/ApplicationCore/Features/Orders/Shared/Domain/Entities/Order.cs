@@ -27,7 +27,7 @@ public class Order {
     public string Note { get; set; } = string.Empty;
 
     public decimal SubTotal {
-        get => Products.Sum(b => b.Qty * b.UnitPrice) + AdditionalItems.Sum(i => i.Price);
+        get => Products.Sum(b => b.Qty * b.UnitPrice) + AdditionalItems.Sum(i => i.UnitPrice);
     }
 
     public decimal AdjustedSubTotal {

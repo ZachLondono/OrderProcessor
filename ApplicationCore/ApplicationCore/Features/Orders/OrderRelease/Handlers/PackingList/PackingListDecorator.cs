@@ -853,7 +853,7 @@ internal class PackingListDecorator : IPackingListDecorator {
             col.Item()
                 .PaddingTop(10)
                 .PaddingLeft(10)
-                .Text($"Additional Items ({items.Count()})")
+                .Text($"Additional Items ({items.Sum(i => i.Qty)})")
                 .FontSize(16)
                 .Bold()
                 .Italic();
@@ -865,6 +865,7 @@ internal class PackingListDecorator : IPackingListDecorator {
                     table.ColumnsDefinition(column => {
                         if (IncludeCheckBoxesNextToItems) column.ConstantColumn(20);
                         column.ConstantColumn(40);
+                        column.ConstantColumn(40);
                         column.RelativeColumn();
                     });
 
@@ -872,6 +873,7 @@ internal class PackingListDecorator : IPackingListDecorator {
 
                         if (IncludeCheckBoxesNextToItems) header.Cell().Element(headerCellStyle).Text("x");
                         header.Cell().Element(headerCellStyle).Text("#");
+                        header.Cell().Element(headerCellStyle).Text("Qty");
                         header.Cell().Element(headerCellStyle).Text("Description");
 
                     });
@@ -879,6 +881,7 @@ internal class PackingListDecorator : IPackingListDecorator {
                     foreach (var item in items) {
                         if (IncludeCheckBoxesNextToItems) table.Cell().Element(defaultCellStyle);
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
                     }
 
@@ -1019,9 +1022,9 @@ internal class PackingListDecorator : IPackingListDecorator {
                                 Description = cab.GetDescription()
                             }).ToList(),
             AdditionalItems = order.AdditionalItems
-                            .Where(i => !i.IsService)
                             .Select((item, idx) => new AdditionalItem() {
                                 Line = idx + 1,
+                                Qty = item.Qty,
                                 Description = item.Description
                             }).ToList()
         };

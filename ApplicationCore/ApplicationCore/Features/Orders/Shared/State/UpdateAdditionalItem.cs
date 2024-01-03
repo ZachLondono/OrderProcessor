@@ -24,14 +24,14 @@ public class UpdateAdditionalItem {
             const string sql =
                 """
                 UPDATE additional_items
-                SET description = @Description, price = @Price, is_service = @IsService
+                SET qty = @Qty, description = @Description, price = @Price
                 WHERE id = @Id;
                 """;
 
             int rowsAffected = await connection.ExecuteAsync(sql, new {
+                command.Item.Qty,
                 command.Item.Description,
-                command.Item.Price,
-                command.Item.IsService,
+                command.Item.UnitPrice,
                 command.Item.Id
             });
 

@@ -8,6 +8,9 @@ namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.Allm
 
 public class AdditionalItemModel : ProductOrItemModel {
 
+    [XmlElement("qty")]
+    public int Qty { get; set; }
+
     [XmlElement("description")]
     public string Description { get; set; } = string.Empty;
 
@@ -16,7 +19,7 @@ public class AdditionalItemModel : ProductOrItemModel {
 
     public override OneOf<IProduct, AdditionalItem> CreateProductOrItem(ProductBuilderFactory builderFactory) {
         var price = AllmoxyXMLOrderProviderHelpers.StringToMoney(Price);
-        return AdditionalItem.Create(Description, price);
+        return AdditionalItem.Create(Qty, Description, price);
     }
 
 }

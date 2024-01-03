@@ -839,7 +839,7 @@ internal class InvoiceDecorator : IInvoiceDecorator {
             col.Item()
                 .PaddingTop(10)
                 .PaddingLeft(10)
-                .Text($"Additional Items ({items.Count()})")
+                .Text($"Additional Items ({items.Sum(i => i.Qty)})")
                 .FontSize(16)
                 .Bold()
                 .Italic();
@@ -850,7 +850,9 @@ internal class InvoiceDecorator : IInvoiceDecorator {
 
                     table.ColumnsDefinition(column => {
                         column.ConstantColumn(40);
+                        column.ConstantColumn(40);
                         column.RelativeColumn();
+                        column.ConstantColumn(55);
                         column.ConstantColumn(55);
                     });
 
@@ -858,19 +860,23 @@ internal class InvoiceDecorator : IInvoiceDecorator {
                     table.Header(header => {
 
                         header.Cell().Element(headerCellStyle).Text("#");
+                        header.Cell().Element(headerCellStyle).Text("Qty");
                         header.Cell().Element(headerCellStyle).Text("Description");
-                        header.Cell().Element(headerCellStyle).Text("Price");
+                        header.Cell().Element(headerCellStyle).Text("Unit $");
+                        header.Cell().Element(headerCellStyle).Text("Ext $");
 
                     });
 
                     foreach (var item in items) {
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Description.ToString());
-                        table.Cell().Element(defaultCellStyle).AlignCenter().Text((item.Price).ToString("$0.00"));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text((item.UnitPrice).ToString("0.00"));
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text((item.UnitPrice * item.Qty).ToString("$0.00"));
                     }
 
-                    table.Cell().ColumnSpan(2).PaddingVertical(3).PaddingRight(5).AlignRight().Text("Sub Total: ").SemiBold();
-                    table.Cell().ColumnSpan(1).Border(1).BorderColor(Colors.Grey.Lighten1).Background(Colors.Grey.Lighten3).PaddingVertical(3).PaddingRight(10).AlignCenter().Text(items.Sum(i => i.Price).ToString("$0.00"));
+                    table.Cell().ColumnSpan(3).PaddingVertical(3).PaddingRight(5).AlignRight().Text("Sub Total: ").SemiBold();
+                    table.Cell().ColumnSpan(2).Border(1).BorderColor(Colors.Grey.Lighten1).Background(Colors.Grey.Lighten3).PaddingVertical(3).PaddingRight(10).AlignCenter().Text(items.Sum(i => i.UnitPrice).ToString("$0.00"));
 
                 });
 
@@ -1025,8 +1031,9 @@ internal class InvoiceDecorator : IInvoiceDecorator {
             AdditionalItems = order.AdditionalItems
                             .Select((item, idx) => new AdditionalItem() {
                                 Line = idx + 1,
+                                Qty = item.Qty,
                                 Description = item.Description,
-                                Price = item.Price
+                                UnitPrice = item.UnitPrice
                             }).ToList()
         };
 

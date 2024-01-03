@@ -6,17 +6,17 @@
 public class AdditionalItem {
 
     public Guid Id { get; }
+    public int Qty { get; }
     public string Description { get; } = string.Empty;
-    public decimal Price { get; }
-    public bool IsService { get; }
+    public decimal UnitPrice { get; }
 
-    public AdditionalItem(Guid id, string description, decimal price, bool isService = false) {
+    public AdditionalItem(Guid id, int qty, string description, decimal price) {
         Id = id;
+        Qty = qty;
         Description = description;
-        Price = price;
-        IsService = isService;
+        UnitPrice = price;
     }
 
-    public static AdditionalItem Create(string description, decimal price, bool isService = false) => new(Guid.NewGuid(), description, price, isService);
+    public static AdditionalItem Create(int qty, string description, decimal price) => new(Guid.NewGuid(), qty, description, price);
 
 }

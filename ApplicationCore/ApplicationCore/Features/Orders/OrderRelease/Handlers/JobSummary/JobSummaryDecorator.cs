@@ -94,7 +94,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                         ("5-Piece Doors", jobSummary.FivePieceDoors.Sum(p => p.Items.Sum(i => i.Qty)) ),
                                         ("Dovetail DBs", jobSummary.DovetailDrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty)) ),
                                         ("Doweled DBs", jobSummary.DoweledDrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty)) ),
-                                        ("Other", jobSummary.AdditionalItems.Count() )
+                                        ("Other", jobSummary.AdditionalItems.Sum(i => i.Qty) )
                                     };
 
                                     foreach (var (name, qty) in prodQtys) {
@@ -1278,15 +1278,18 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                         .Table(table => {
 
                             table.ColumnsDefinition(column => {
+                                column.ConstantColumn(40);
                                 column.RelativeColumn();
                             });
 
 
                             table.Header(header => {
+                                header.Cell().Element(headerCellStyle).Text("Qty");
                                 header.Cell().Element(headerCellStyle).Text("Description");
                             });
 
                             foreach (var item in items) {
+                                table.Cell().Element(defaultCellStyle).Text(item.Qty.ToString());
                                 table.Cell().Element(defaultCellStyle).Text(item.Description);
                             }
 

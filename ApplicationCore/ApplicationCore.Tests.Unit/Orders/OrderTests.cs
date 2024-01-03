@@ -45,8 +45,8 @@ public class OrderTests {
         var adjSubTotal = order.AdjustedSubTotal;
 
         // Assert
-        subtotal.Should().Be(boxes.Sum(b => b.UnitPrice * b.Qty) + items.Sum(i => i.Price));
-        total.Should().Be(boxes.Sum(b => b.UnitPrice * b.Qty) + items.Sum(i => i.Price) + tax + shipping.Price);
+        subtotal.Should().Be(boxes.Sum(b => b.UnitPrice * b.Qty) + items.Sum(i => i.UnitPrice));
+        total.Should().Be(boxes.Sum(b => b.UnitPrice * b.Qty) + items.Sum(i => i.UnitPrice) + tax + shipping.Price);
         adjSubTotal.Should().Be(subtotal + priceAdjustment);
 
     }

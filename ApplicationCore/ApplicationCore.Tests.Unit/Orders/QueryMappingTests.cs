@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Features.Orders.Shared.State.DataModels;
 using FluentAssertions;
 
@@ -24,7 +23,7 @@ public class QueryMappingTests {
         };
 
         var items = new List<AdditionalItem>() {
-            new AdditionalItem(Guid.NewGuid(), "Description", 123)
+            new AdditionalItem(Guid.NewGuid(), 1, "Description", 123)
         };
 
         // Act
@@ -46,6 +45,7 @@ public class QueryMappingTests {
         // Arrange
         var model = new AdditionalItemDataModel() {
             Id = Guid.NewGuid(),
+            Qty = 2,
             Description = "Description",
             Price = 123.45M
         };
@@ -55,8 +55,9 @@ public class QueryMappingTests {
 
         // Assert
         item.Id.Should().Be(model.Id);
+        item.Qty.Should().Be(model.Qty);
         item.Description.Should().Be(model.Description);
-        item.Price.Should().Be(model.Price);
+        item.UnitPrice.Should().Be(model.Price);
 
     }
 
