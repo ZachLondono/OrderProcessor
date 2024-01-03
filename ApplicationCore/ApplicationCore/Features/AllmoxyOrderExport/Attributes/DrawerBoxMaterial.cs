@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Shared.Domain;
+﻿using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.AllmoxyOrderExport.Attributes;
 
@@ -10,34 +9,65 @@ public static class DrawerBoxMaterial {
 
     public static string GetStandardHeight(Dimension faceHeight) {
 
-        var standardHeight = DovetailDrawerBoxBuilder.GetDrawerBoxHeightFromDrawerFaceHeight(faceHeight);
+        var availableHeights = MaxFaceHeightMap.Keys.Order().ToArray();
 
-        return Heights[standardHeight.AsMillimeters()];
+        if (availableHeights.Last() < faceHeight) {
+            throw new ArgumentOutOfRangeException(nameof(faceHeight), "No valid drawer box height for given drawer face height");
+        }
+
+        foreach (var height in availableHeights) {
+
+            if (height < faceHeight) {
+                continue;
+            }
+
+            return MaxFaceHeightMap[height];
+
+        }
+
+        return MaxFaceHeightMap[availableHeights.Last()];
 
     }
 
-    public static Dictionary<double, string> Heights => new() {
-        //57
-        { 64, "2.5" },
-        { 86, "3.375" },
-        { 105, "4.125" },
-        { 137, "5.375" },
-        { 181, "7.125" },
-        { 210, "8.25" },
-        { 260, "10.25" },
+    public static Dimension GetBoxWidthFromOpening(Dimension openingWidth) {
+        return openingWidth - Dimension.FromInches(3.0/8.0);
+    }
 
-        //2.5
-        //3.375
-        //4.125
-        //5.375
-        //6
-        //6.25
-        //7.125
-        //8.25
-        //9.25
-        //10.25
-        //12
-        //16
+    public static Dimension GetBoxDepthFromOpening(Dimension openingDepth) {
+
+        var depths = BoxDepths.OrderDescending()
+                              .ToArray();
+
+        foreach (var depth in depths) {
+
+            if (openingDepth < depth) {
+
+                continue;
+
+            }
+
+            return depth;
+
+        }
+
+        return depths.Last();
+
+    }
+
+    public static Dictionary<Dimension, string> MaxFaceHeightMap => new() {
+        { Dimension.FromInches(6.25), "2.5" },
+        { Dimension.FromInches(7.5), "4.125" },
+        { Dimension.FromInches(10), "6" },
+        { Dimension.FromInches(13.75), "8.25" },
+        { Dimension.FromInches(51), "12" },
     };
+
+    public static Dimension[] BoxDepths => [
+        Dimension.FromInches(12),
+        Dimension.FromInches(14),
+        Dimension.FromInches(16),
+        Dimension.FromInches(18),
+        Dimension.FromInches(21)
+    ];
 
 }
