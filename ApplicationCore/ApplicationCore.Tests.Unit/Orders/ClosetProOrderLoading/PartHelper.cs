@@ -21,7 +21,7 @@ public class PartHelper {
         closetPart.Material.Finish.Should().Be(Part.Color);
         closetPart.Qty.Should().Be(Part.Quantity);
         closetPart.ProductNumber.Should().Be(Part.PartNum);
-        closetPart.Room.Should().Be(ClosetProPartMapper.GetRoomName(Part));
+        closetPart.Room.Should().Be(ClosetProPartMapper.GetRoomName(Part, RoomNamingStrategy.ByWallAndSection));
         if (ClosetProPartMapper.TryParseMoneyString(Part.PartCost, out decimal price)) {
             closetPart.UnitPrice.Should().Be(price);
         }

@@ -85,7 +85,7 @@ internal abstract class ClosetProCSVOrderProvider : IOrderProvider {
         otherParts.AddRange(ClosetProPartMapper.MapBuyOutPartsToItems(info.BuyOutParts));
         var additionalItems = otherParts.Select(p => new AdditionalItem(Guid.NewGuid(), p.Qty, $"{p.Name}", p.UnitPrice)).ToList();
 
-        _partMapper.GroupLikeParts = true; // TODO: Move this into the closet pro settings object
+        _partMapper.GroupLikeProducts = true; // TODO: Move this into the closet pro settings object
         var products = _partMapper.MapPartsToProducts(info.Parts, hardwareSpread)
                                     .Select(p => CreateProductFromClosetProProduct(p, customer.ClosetProSettings, _componentBuilderFactory))
                                     .ToList();

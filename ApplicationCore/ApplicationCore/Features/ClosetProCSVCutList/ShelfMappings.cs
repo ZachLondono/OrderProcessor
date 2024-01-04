@@ -6,54 +6,54 @@ namespace ApplicationCore.Features.ClosetProCSVCutList;
 
 public partial class ClosetProPartMapper {
 
-    public static IClosetProProduct CreateFixedShelfFromPart(Part part, bool wallHasBacking, bool extendBack) {
+    public static IClosetProProduct CreateFixedShelfFromPart(Part part, bool wallHasBacking, bool extendBack, RoomNamingStrategy strategy) {
 
         if (part.ExportName == "L Fixed Shelf") {
 
-            return CreateLFixedShelf(part);
+            return CreateLFixedShelf(part, strategy);
 
         } else if (part.ExportName == "Pie Fixed Shelf") {
 
-            return CreateDiagonalFixedShelf(part);
+            return CreateDiagonalFixedShelf(part, strategy);
 
         } else {
 
-            return CreateFixedShelf(part, extendBack, wallHasBacking);
+            return CreateFixedShelf(part, extendBack, wallHasBacking, strategy);
 
         }
 
     }
 
-    public static IClosetProProduct CreateAdjustableShelfFromPart(Part part, bool wallHasBacking, bool extendBack) {
+    public static IClosetProProduct CreateAdjustableShelfFromPart(Part part, bool wallHasBacking, bool extendBack, RoomNamingStrategy strategy) {
 
         if (part.ExportName == "L Adj Shelf") {
 
-            return CreateLAdjustableShelf(part);
+            return CreateLAdjustableShelf(part, strategy);
 
         } else if (part.ExportName == "Pie Adj Shelf") {
 
-            return CreateDiagonalAdjustableShelf(part);
+            return CreateDiagonalAdjustableShelf(part, strategy);
 
         } else {
 
-            return CreateAdjustableShelf(part, extendBack, wallHasBacking);
+            return CreateAdjustableShelf(part, extendBack, wallHasBacking, strategy);
 
         }
 
     }
 
-    public static Shelf CreateAdjustableShelf(Part part, bool extendBack, bool wallHasBacking) => CreateShelf(part, ShelfType.Adjustable, extendBack, wallHasBacking);
+    public static Shelf CreateAdjustableShelf(Part part, bool extendBack, bool wallHasBacking, RoomNamingStrategy strategy) => CreateShelf(part, ShelfType.Adjustable, extendBack, wallHasBacking, strategy);
 
-    public static Shelf CreateFixedShelf(Part part, bool extendBack, bool wallHasBacking) => CreateShelf(part, ShelfType.Fixed, extendBack, wallHasBacking);
+    public static Shelf CreateFixedShelf(Part part, bool extendBack, bool wallHasBacking, RoomNamingStrategy strategy) => CreateShelf(part, ShelfType.Fixed, extendBack, wallHasBacking, strategy);
 
-    public static Shelf CreateShoeShelf(Part part, bool extendBack, bool wallHasBacking) => CreateShelf(part, ShelfType.Shoe, extendBack, wallHasBacking);
+    public static Shelf CreateShoeShelf(Part part, bool extendBack, bool wallHasBacking, RoomNamingStrategy strategy) => CreateShelf(part, ShelfType.Shoe, extendBack, wallHasBacking, strategy);
 
-    public static Shelf CreateShelf(Part part, ShelfType type, bool extendBack, bool wallHasBacking) {
+    public static Shelf CreateShelf(Part part, ShelfType type, bool extendBack, bool wallHasBacking, RoomNamingStrategy strategy) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
-        string room = GetRoomName(part);
+        string room = GetRoomName(part, strategy);
         Dimension depth = Dimension.FromInches(part.Depth);
         Dimension width = Dimension.FromInches(part.Width);
         string edgeBandingColor = part.InfoRecords
@@ -81,20 +81,20 @@ public partial class ClosetProPartMapper {
 
     }
 
-    public static CornerShelf CreateLFixedShelf(Part part) => CreateCornerShelf(part, CornerShelfType.LFixed);
+    public static CornerShelf CreateLFixedShelf(Part part, RoomNamingStrategy strategy) => CreateCornerShelf(part, CornerShelfType.LFixed, strategy);
 
-    public static CornerShelf CreateLAdjustableShelf(Part part) => CreateCornerShelf(part, CornerShelfType.LAdjustable);
+    public static CornerShelf CreateLAdjustableShelf(Part part, RoomNamingStrategy strategy) => CreateCornerShelf(part, CornerShelfType.LAdjustable, strategy);
 
-    public static CornerShelf CreateDiagonalFixedShelf(Part part) => CreateCornerShelf(part, CornerShelfType.DiagonalFixed);
+    public static CornerShelf CreateDiagonalFixedShelf(Part part, RoomNamingStrategy strategy) => CreateCornerShelf(part, CornerShelfType.DiagonalFixed, strategy);
 
-    public static CornerShelf CreateDiagonalAdjustableShelf(Part part) => CreateCornerShelf(part, CornerShelfType.DiagonalAdjustable);
+    public static CornerShelf CreateDiagonalAdjustableShelf(Part part, RoomNamingStrategy strategy) => CreateCornerShelf(part, CornerShelfType.DiagonalAdjustable, strategy);
 
-    public static CornerShelf CreateCornerShelf(Part part, CornerShelfType type) {
+    public static CornerShelf CreateCornerShelf(Part part, CornerShelfType type, RoomNamingStrategy strategy) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
-        string room = GetRoomName(part);
+        string room = GetRoomName(part, strategy);
         Dimension depth = Dimension.FromInches(part.Depth);
         Dimension width = Dimension.FromInches(part.Width);
         string edgeBandingColor = part.InfoRecords

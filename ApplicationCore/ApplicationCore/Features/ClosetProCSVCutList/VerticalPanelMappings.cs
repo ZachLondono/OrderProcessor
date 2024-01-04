@@ -6,10 +6,10 @@ namespace ApplicationCore.Features.ClosetProCSVCutList;
 
 public partial class ClosetProPartMapper {
 
-    public static IClosetProProduct CreateVerticalPanelFromPart(Part part, bool wallHasBacking) {
+    public static IClosetProProduct CreateVerticalPanelFromPart(Part part, bool wallHasBacking, RoomNamingStrategy strategy) {
 
         if (part.PartName == "Vertical Panel - Island") {
-            return CreateIslandVerticalPanel(part);
+            return CreateIslandVerticalPanel(part, strategy);
         }
 
         double leftDrilling = part.VertDrillL;
@@ -18,17 +18,17 @@ public partial class ClosetProPartMapper {
 
         if (isTransition) {
 
-            return CreateTransitionVerticalPanel(part, wallHasBacking);
+            return CreateTransitionVerticalPanel(part, wallHasBacking, strategy);
 
         } else {
 
-            return CreateVerticalPanel(part, wallHasBacking);
+            return CreateVerticalPanel(part, wallHasBacking, strategy);
 
         }
 
     }
 
-    public static VerticalPanel CreateVerticalPanel(Part part, bool wallHasBacking) {
+    public static VerticalPanel CreateVerticalPanel(Part part, bool wallHasBacking, RoomNamingStrategy strategy) {
 
         double leftDrilling = part.VertDrillL;
         double rightDrilling = part.VertDrillR;
@@ -40,7 +40,7 @@ public partial class ClosetProPartMapper {
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
-        string room = GetRoomName(part);
+        string room = GetRoomName(part, strategy);
 
         Dimension depth = Dimension.FromInches(part.Depth);
         Dimension height = Dimension.FromInches(part.Height);
@@ -78,7 +78,7 @@ public partial class ClosetProPartMapper {
 
     }
 
-    public static TransitionVerticalPanel CreateTransitionVerticalPanel(Part part, bool wallHasBacking) {
+    public static TransitionVerticalPanel CreateTransitionVerticalPanel(Part part, bool wallHasBacking, RoomNamingStrategy strategy) {
 
         double leftDrilling = part.VertDrillL;
         double rightDrilling = part.VertDrillR;
@@ -90,7 +90,7 @@ public partial class ClosetProPartMapper {
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
-        string room = GetRoomName(part);
+        string room = GetRoomName(part, strategy);
 
         Dimension depth = Dimension.FromInches(part.Depth);
         Dimension height = Dimension.FromInches(part.Height);
@@ -129,7 +129,7 @@ public partial class ClosetProPartMapper {
 
     }
 
-    public static IslandVerticalPanel CreateIslandVerticalPanel(Part part) {
+    public static IslandVerticalPanel CreateIslandVerticalPanel(Part part, RoomNamingStrategy strategy) {
 
         if (part.VertHand == "T") {
             throw new InvalidOperationException("Through drilled island panels are not supported");
@@ -139,7 +139,7 @@ public partial class ClosetProPartMapper {
             unitPrice = 0M;
         }
 
-        string room = GetRoomName(part);
+        string room = GetRoomName(part, strategy);
 
         Dimension panelDepth = Dimension.FromInches(part.Depth);
         Dimension height = Dimension.FromInches(part.Height);
@@ -172,7 +172,7 @@ public partial class ClosetProPartMapper {
 
     }
 
-    public static HutchVerticalPanel CreateHutchVerticalPanel(Part part, bool wallHasBacking) {
+    public static HutchVerticalPanel CreateHutchVerticalPanel(Part part, bool wallHasBacking, RoomNamingStrategy strategy) {
 
         bool finLeft = part.VertHand == "Left";
         bool finRight = part.VertHand == "Right";
@@ -208,7 +208,7 @@ public partial class ClosetProPartMapper {
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
-        string room = GetRoomName(part);
+        string room = GetRoomName(part, strategy);
         string sku = finLeft || finRight ? "PEH" : "PCH";
 
         Dimension bottomDepth = Dimension.FromInches(part.Depth);

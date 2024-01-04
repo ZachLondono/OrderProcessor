@@ -8,7 +8,7 @@ namespace ApplicationCore.Features.ClosetProCSVCutList.Products;
 
 public class FivePieceFront : IClosetProProduct {
 
-    public required int Qty { get; init; }
+    public required int Qty { get; set; }
     public required string Room { get; init; }
     public required decimal UnitPrice { get; init; }
     public required string Color { get; init; }

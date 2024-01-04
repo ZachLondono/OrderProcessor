@@ -6,17 +6,17 @@ namespace ApplicationCore.Features.ClosetProCSVCutList;
 
 public partial class ClosetProPartMapper {
 
-    public static DrawerBox CreateDovetailDrawerBox(Part part) => CreateDrawerBox(part, DrawerBoxType.Dovetail);
+    public static DrawerBox CreateDovetailDrawerBox(Part part, RoomNamingStrategy strategy) => CreateDrawerBox(part, DrawerBoxType.Dovetail, strategy);
 
-    public static DrawerBox CreateDowelDrawerBox(Part part) => CreateDrawerBox(part, DrawerBoxType.Dowel);
+    public static DrawerBox CreateDowelDrawerBox(Part part, RoomNamingStrategy strategy) => CreateDrawerBox(part, DrawerBoxType.Dowel, strategy);
 
-    public static DrawerBox CreateDrawerBox(Part part, DrawerBoxType type) {
+    public static DrawerBox CreateDrawerBox(Part part, DrawerBoxType type, RoomNamingStrategy strategy) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
 
-        string room = GetRoomName(part);
+        string room = GetRoomName(part, strategy);
         var height = Dimension.FromInches(part.Height);
         var width = Dimension.FromInches(part.Width);
         var depth = Dimension.FromInches(part.Depth);

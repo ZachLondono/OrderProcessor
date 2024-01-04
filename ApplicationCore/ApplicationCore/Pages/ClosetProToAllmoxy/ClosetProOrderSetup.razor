@@ -33,6 +33,10 @@
 
     <Button Color="ButtonColor.Primary" OnClick="PickFile" Disabled="_isLoading">Pick File</Button>
 
+    <div class="my-6">
+        <LoadingSettingsForm Settings="_loadingSettings" />
+    </div>
+
 } else if (_isComplete) {
 
     <h3 class="font-semibold text-lg">Order Mapping Complete</h3>
@@ -77,7 +81,7 @@
     <h3 class="font-semibold text-lg">Map Closet Pro Order to Allmoxy Order</h3>
 
     <div class="my-6">
-        <MappingSettingsForm Settings="_settings" />
+        <MappingSettingsForm Settings="_mappingSettings" />
     </div>
 
     <label>
