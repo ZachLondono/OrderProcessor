@@ -29,6 +29,7 @@ internal class JobSummary {
 
     public bool ContainsDovetailDBSubComponents { get; set; } = false;
     public bool ContainsMDFDoorSubComponents { get; set; } = false;
+    public bool ContainsFivePieceDoorSubComponents { get; set; } = false;
 
     public bool ShowMaterialTypesInSummary { get; set; } = false;
     public List<string> MaterialTypes { get; set; } = new();

@@ -140,7 +140,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
                         });
 
-                    if (jobSummary.ContainsMDFDoorSubComponents || jobSummary.ContainsDovetailDBSubComponents) {
+                    if (jobSummary.ContainsMDFDoorSubComponents || jobSummary.ContainsDovetailDBSubComponents || jobSummary.ContainsFivePieceDoorSubComponents) {
                         column.Item().PaddingTop(30);
                     }
 
@@ -161,6 +161,16 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
                                     t.DefaultTextStyle(ts => ts.Bold().FontSize(16));
                                     t.Span("CONTAINS ");
                                     t.Span("MDF DOORS").Underline();
+                                });
+                    }
+
+                    if (jobSummary.ContainsFivePieceDoorSubComponents) {
+                        column.Item()
+                                .AlignCenter()
+                                .Text(t => {
+                                    t.DefaultTextStyle(ts => ts.Bold().FontSize(16));
+                                    t.Span("CONTAINS ");
+                                    t.Span("5-PIECE DOORS").Underline();
                                 });
                     }
 
@@ -481,11 +491,31 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
         bool containsDovetailDBSubComponents = order.Products
                                                     .OfType<IDovetailDrawerBoxContainer>()
-                                                    .Any(p => p is not DovetailDrawerBoxProduct && p.ContainsDovetailDrawerBoxes());
+                                                    .Any(p => p is not DovetailDrawerBoxProduct && p.ContainsDovetailDrawerBoxes())
+                                                    || (
+                                                        order.Products
+                                                            .OfType<DovetailDrawerBoxProduct>()
+                                                            .Any()
+                                                        &&
+                                                        !order.Products.All(p => p is DovetailDrawerBoxProduct)
+                                                    );
 
         bool containsMDFDoorSubComponents = order.Products
                                                 .OfType<IMDFDoorContainer>()
-                                                .Any(p => p is not MDFDoorProduct && p.ContainsDoors());
+                                                .Any(p => p is not MDFDoorProduct && p.ContainsDoors())
+                                                || (
+                                                    order.Products
+                                                        .OfType<MDFDoorProduct>()
+                                                        .Any()
+                                                    &&
+                                                    !order.Products.All(p => p is MDFDoorProduct)
+                                                );
+
+        bool containsFivePieceDoorSubComponents = order.Products
+                                                .OfType<FivePieceDoorProduct>()
+                                                .Any()
+                                               &&
+                                               !order.Products.All(p => p is FivePieceDoorProduct);
 
         return new JobSummary() {
 
@@ -513,6 +543,7 @@ internal class JobSummaryDecorator : IJobSummaryDecorator {
 
             ContainsDovetailDBSubComponents = containsDovetailDBSubComponents,
             ContainsMDFDoorSubComponents = containsMDFDoorSubComponents,
+            ContainsFivePieceDoorSubComponents = containsFivePieceDoorSubComponents,
 
             ShowMaterialTypesInSummary = _showMaterialTypes,
             MaterialTypes = new(_materialTypes),
