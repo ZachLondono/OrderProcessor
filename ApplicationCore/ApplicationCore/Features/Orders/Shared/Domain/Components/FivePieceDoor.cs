@@ -20,15 +20,22 @@ public class FivePieceDoor : FivePieceDoorConfig {
     }
 
     public IEnumerable<FivePieceDoorPart> GetParts(int qty) {
+        var frame = GetFrameParts(qty);
+        var center = GetCenterPanelPart(qty);
+        List<FivePieceDoorPart> parts = [];
+        parts.AddRange(frame);
+        parts.Add(center);
+        return parts;
+    }
+
+    public IEnumerable<FivePieceDoorPart> GetFrameParts(int qty) {
         (var top, var bottom) = GetRailParts(qty);
         (var left, var right) = GetStileParts(qty);
-        var center = GetCenterPanelPart(qty);
         List<FivePieceDoorPart> parts = new() {
             top,
             bottom,
             left,
             right,
-            center
         };
         return parts;
     }
