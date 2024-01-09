@@ -399,16 +399,17 @@ public class ReleaseService {
 
         foreach (var order in orders) {
 
+            var matGroups = order.Products
+                                 .OfType<FivePieceDoorProduct>()
+                                 .GroupBy(d => d.Material);
+
             var outputDirectory = Path.Combine(order.WorkingDirectory, "CUTLIST");
             var cutListResults = await Task.Run(() =>
-                order.Products
-                    .OfType<FivePieceDoorProduct>()
-                    .GroupBy(d => d.Material)
-                    .Select(group => new FivePieceCutList() {
+                    matGroups.Select(group => new FivePieceCutList() {
                         CustomerName = customerName,
                         VendorName = vendorName,
                         Note = order.Note,
-                        Material = group.First().Material,
+                        Material = group.Key,
                         OrderDate = order.OrderDate,
                         OrderName = order.Name,
                         OrderNumber = order.Number,
@@ -437,30 +438,34 @@ public class ReleaseService {
             generatedFiles.AddRange(cutListResults.Select(result => result.PDFFilePath).OfType<string>());
 
             var centerPanelCutListResults = await Task.Run(() =>
-                order.Products
-                    .OfType<FivePieceDoorProduct>()
-                    .GroupBy(d => d.Material)
-                    .Select(group => new FivePieceCutList() {
+                    matGroups.Select(group => new FivePieceCutList() {
                         CustomerName = customerName,
                         VendorName = vendorName,
                         Note = order.Note,
-                        Material = group.First().Material,
+                        Material = group.Key,
                         OrderDate = order.OrderDate,
                         OrderName = order.Name,
                         OrderNumber = order.Number,
                         TotalDoorCount = group.Sum(door => door.Qty),
-                        Items = group.Select(door => (door, door.GetCenterPanelPart(door.Qty)))
-                                        .Select(doorPart => new FivePieceDoorLineItem() {
-                                            CabNumber = doorPart.door.ProductNumber,
+                        Items = group.Select(door => door.GetCenterPanelPart(door.Qty))
+                                        .GroupBy(p => (p.Width, p.Length))
+                                        .Select(doorPartGroup => new FivePieceDoorLineItem() {
+                                            CabNumber = 0,
                                             Note = "",
-                                            Qty = doorPart.Item2.Qty,
-                                            PartName = doorPart.Item2.Name,
-                                            Length = double.Round(doorPart.Item2.Length.AsMillimeters(), 1),
-                                            Width = double.Round(doorPart.Item2.Width.AsMillimeters(), 1)
+                                            Qty = doorPartGroup.Sum(p => p.Qty),
+                                            PartName = "Grouped Center Panels",
+                                            Length = double.Round(doorPartGroup.Key.Length.AsMillimeters(), 1),
+                                            Width = double.Round(doorPartGroup.Key.Width.AsMillimeters(), 1)
+                                        })
+                                        .OrderByDescending(p => p.Length)
+                                        .OrderByDescending(p => p.Width)
+                                        .Select((p, i) => {
+                                            p.CabNumber = i + 1;
+                                            return p;
                                         })
                                         .ToList()
                     })
-                    .Select(cutList => _fivePieceDoorCutListWriter.WriteCutList(cutList, outputDirectory, true))
+                    .Select(cutList => _fivePieceDoorCutListWriter.WriteCutList(cutList, outputDirectory, true, "Center Panels"))
                     .OfType<FivePieceDoorCutListResult>()
                     .ToList()
             );
@@ -469,6 +474,44 @@ public class ReleaseService {
                             .ForEach(file => OnFileGenerated?.Invoke(file));
 
             generatedFiles.AddRange(centerPanelCutListResults.Select(result => result.PDFFilePath).OfType<string>());
+
+            var optimizedPartCutListResults = await Task.Run(() =>
+                    matGroups.Select(group => new FivePieceCutList() {
+                        CustomerName = customerName,
+                        VendorName = vendorName,
+                        Note = order.Note,
+                        Material = group.Key,
+                        OrderDate = order.OrderDate,
+                        OrderName = order.Name,
+                        OrderNumber = order.Number,
+                        TotalDoorCount = group.Sum(door => door.Qty),
+                        Items = group.SelectMany(door => door.GetFrameParts(door.Qty))
+                                        .GroupBy(p => (p.Width, p.Length))
+                                        .Select(part => new FivePieceDoorLineItem() {
+                                            CabNumber = 0,
+                                            Note = "",
+                                            Qty = part.Sum(p => p.Qty),
+                                            PartName = "Grouped Frame Parts",
+                                            Length = double.Round(part.Key.Length.AsMillimeters(), 1),
+                                            Width = double.Round(part.Key.Width.AsMillimeters(), 1)
+                                        })
+                                        .OrderByDescending(p => p.Length)
+                                        .OrderByDescending(p => p.Width)
+                                        .Select((p, i) => {
+                                            p.CabNumber = i + 1;
+                                            return p;
+                                        })
+                                        .ToList()
+                    })
+                    .Select(cutList => _fivePieceDoorCutListWriter.WriteCutList(cutList, outputDirectory, true, "Grouped Parts"))
+                    .OfType<FivePieceDoorCutListResult>()
+                    .ToList()
+            );
+
+            optimizedPartCutListResults.Select(result => result.ExcelFilePath)
+                            .ForEach(file => OnFileGenerated?.Invoke(file));
+
+            generatedFiles.AddRange(optimizedPartCutListResults.Select(result => result.PDFFilePath).OfType<string>());
 
         }
 
