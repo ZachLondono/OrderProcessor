@@ -10,7 +10,7 @@ namespace ApplicationCore.Features.ClosetProCSVCutList.Products;
 
 public class DrawerBox : IClosetProProduct {
 
-    public required int Qty { get; init; }
+    public required int Qty { get; set; }
     public required string Room { get; init; }
     public required decimal UnitPrice { get; init; }
     public required int PartNumber { get; init; }

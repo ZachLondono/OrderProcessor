@@ -41,7 +41,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var vp = ClosetProPartMapper.CreateVerticalPanel(part, false);
+        var vp = ClosetProPartMapper.CreateVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
         var product = vp.ToProduct(Dimension.Zero);
 
         // Assert
@@ -88,7 +88,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var vp = ClosetProPartMapper.CreateVerticalPanel(part, false);
+        var vp = ClosetProPartMapper.CreateVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
         var product = vp.ToProduct(Dimension.Zero);
 
         // Assert
@@ -135,7 +135,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var vp = ClosetProPartMapper.CreateVerticalPanel(part, false);
+        var vp = ClosetProPartMapper.CreateVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
         var product = vp.ToProduct(Dimension.Zero);
 
         // Assert
@@ -186,7 +186,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var vp = ClosetProPartMapper.CreateVerticalPanel(part, false);
+        var vp = ClosetProPartMapper.CreateVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
         var product = vp.ToProduct(Dimension.Zero);
 
         // Assert
@@ -235,7 +235,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var vp = ClosetProPartMapper.CreateTransitionVerticalPanel(part, false);
+        var vp = ClosetProPartMapper.CreateTransitionVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
         var product = vp.ToProduct(Dimension.Zero);
 
         // Assert
@@ -294,7 +294,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var vp = ClosetProPartMapper.CreateHutchVerticalPanel(part, false);
+        var vp = ClosetProPartMapper.CreateHutchVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
         var product = vp.ToProduct(Dimension.Zero);
 
         // Assert
@@ -344,7 +344,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var vp = ClosetProPartMapper.CreateVerticalPanel(part, false);
+        var vp = ClosetProPartMapper.CreateVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
         var product = vp.ToProduct(Dimension.Zero);
 
         // Assert
@@ -378,7 +378,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var vp = ClosetProPartMapper.CreateSlabFront(part, Dimension.Zero);
+        var vp = ClosetProPartMapper.CreateSlabFront(part, Dimension.Zero, RoomNamingStrategy.ByWallAndSection);
         var product = vp.ToProduct();
 
         // Assert
@@ -408,7 +408,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var vp = ClosetProPartMapper.CreateSlabFront(part, Dimension.Zero);
+        var vp = ClosetProPartMapper.CreateSlabFront(part, Dimension.Zero, RoomNamingStrategy.ByWallAndSection);
         var product = vp.ToProduct();
 
         // Assert
@@ -452,7 +452,7 @@ public class ProductMappingTests {
         };
 
         // Act
-        var vp = ClosetProPartMapper.CreateIslandVerticalPanel(part);
+        var vp = ClosetProPartMapper.CreateIslandVerticalPanel(part, RoomNamingStrategy.ByWallAndSection);
         var product = vp.ToProduct();
 
         // Assert

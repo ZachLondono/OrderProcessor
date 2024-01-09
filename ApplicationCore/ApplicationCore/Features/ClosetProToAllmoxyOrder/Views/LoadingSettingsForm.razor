@@ -1,0 +1,26 @@
+﻿@using ApplicationCore.Features.ClosetProCSVCutList
+@using ApplicationCore.Features.ClosetProToAllmoxyOrder.Models
+
+<EditForm Model="@Settings">
+
+    <label class="block">
+        <InputCheckbox @bind-Value="Settings.GroupLikeProducts" />
+        <span>Group Like Products</span>
+    </label>
+
+    <label>
+        Room Naming Strategy
+        <InputSelect @bind-Value="@Settings.RoomNamingStrategy" class="border" >
+            @foreach (var strat in Enum.GetValues(typeof(RoomNamingStrategy))) {
+                <option value="@strat">@strat</option>
+            }
+        </InputSelect>
+    </label>
+
+</EditForm>
+
+@code {
+
+    [Parameter] public ClosetProLoadingSettings Settings { get; set; } = new();
+
+}

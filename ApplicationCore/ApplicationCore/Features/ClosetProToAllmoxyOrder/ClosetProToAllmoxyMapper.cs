@@ -6,13 +6,13 @@ namespace ApplicationCore.Features.ClosetProToAllmoxyOrder;
 
 public partial class ClosetProToAllmoxyMapper() {
 
-    public IEnumerable<IAllmoxyProduct> Map(IEnumerable<IClosetProProduct> closetProProducts, MappingSettings settings) {
+    public IEnumerable<IAllmoxyProduct> Map(IEnumerable<IClosetProProduct> closetProProducts, CPToAllmoxyMappingSettings settings) {
 
         return closetProProducts.Select(p => MapPartToProduct(p, settings));
 
     }
 
-    public static IAllmoxyProduct MapPartToProduct(IClosetProProduct cpProduct, MappingSettings settings) {
+    public static IAllmoxyProduct MapPartToProduct(IClosetProProduct cpProduct, CPToAllmoxyMappingSettings settings) {
 
         if (cpProduct is Shelf shelf) {
             return MapShelfToAllmoxyProduct(shelf, settings.UseDoubleCamShelves, settings.UseSafetyShelves);
@@ -35,11 +35,11 @@ public partial class ClosetProToAllmoxyMapper() {
         }
         
         else if (cpProduct is VerticalPanel panel) {
-            return MapVerticalPanelToAllmoxyProduct(panel);
+            return MapVerticalPanelToAllmoxyProduct(panel, settings.DoNotUseWallMount);
         } else if (cpProduct is HutchVerticalPanel hutchPanel) {
-            return MapVerticalHutchPanelToAllmoxyProduct(hutchPanel);
+            return MapVerticalHutchPanelToAllmoxyProduct(hutchPanel, settings.DoNotUseWallMount);
         } else if (cpProduct is TransitionVerticalPanel transitionPanel) {
-            return MapVerticalTransitionPanelToAllmoxyProduct(transitionPanel);
+            return MapVerticalTransitionPanelToAllmoxyProduct(transitionPanel, settings.DoNotUseWallMount);
         } else if (cpProduct is DividerVerticalPanel dividerVertical) {
             return MapDividerPanelToAllmoxyProduct(dividerVertical);
         }

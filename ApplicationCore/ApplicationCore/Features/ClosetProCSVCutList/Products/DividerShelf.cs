@@ -8,7 +8,7 @@ namespace ApplicationCore.Features.ClosetProCSVCutList.Products;
 
 public class DividerShelf : IClosetProProduct {
 
-    public required int Qty { get; init; }
+    public required int Qty { get; set; }
     public required string Color { get; init; }
     public required string EdgeBandingColor { get; init; }
     public required string Room { get; init; }

@@ -8,21 +8,21 @@ namespace ApplicationCore.Features.ClosetProCSVCutList;
 
 public partial class ClosetProPartMapper {
 
-    public static IClosetProProduct CreateFrontFromParts(Part rail, Part insert, Dimension hardwareSpread) {
+    public static IClosetProProduct CreateFrontFromParts(Part rail, Part insert, Dimension hardwareSpread, RoomNamingStrategy strategy) {
 
         if (rail.ExportName.Contains("MDF")) {
 
-            return CreateMDFFront(rail, insert, hardwareSpread);
+            return CreateMDFFront(rail, insert, hardwareSpread, strategy);
 
         } else {
 
-            return CreateFivePieceFront(rail, insert, hardwareSpread);
+            return CreateFivePieceFront(rail, insert, hardwareSpread, strategy);
 
         }
 
     }
 
-    public static FivePieceFront CreateFivePieceFront(Part rail, Part insert, Dimension hardwareSpread) {
+    public static FivePieceFront CreateFivePieceFront(Part rail, Part insert, Dimension hardwareSpread, RoomNamingStrategy strategy) {
 
         if (rail.Quantity != insert.Quantity) {
             throw new InvalidOperationException("Unexpected mismatch in door rail and insert quantity.");
@@ -35,7 +35,7 @@ public partial class ClosetProPartMapper {
             unitPriceInsert = 0M;
         }
 
-        string room = GetRoomName(insert);
+        string room = GetRoomName(insert, strategy);
 
         Dimension height = Dimension.FromInches(rail.Height);
         Dimension width = Dimension.FromInches(rail.Width);
@@ -58,7 +58,7 @@ public partial class ClosetProPartMapper {
 
     }
 
-    public static MDFFront CreateMDFFront(Part rail, Part insert, Dimension hardwareSpread) {
+    public static MDFFront CreateMDFFront(Part rail, Part insert, Dimension hardwareSpread, RoomNamingStrategy strategy) {
 
         if (rail.Quantity != insert.Quantity) {
             throw new InvalidOperationException("Unexpected mismatch in door rail and insert quantity.");
@@ -71,7 +71,7 @@ public partial class ClosetProPartMapper {
             unitPriceInsert = 0M;
         }
 
-        string room = GetRoomName(insert);
+        string room = GetRoomName(insert, strategy);
 
         Dimension height = Dimension.FromInches(rail.Height);
         Dimension width = Dimension.FromInches(rail.Width);
@@ -100,12 +100,12 @@ public partial class ClosetProPartMapper {
 
     }
 
-    public static MelamineSlabFront CreateSlabFront(Part part, Dimension hardwareSpread) {
+    public static MelamineSlabFront CreateSlabFront(Part part, Dimension hardwareSpread, RoomNamingStrategy strategy) {
 
         if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
             unitPrice = 0M;
         }
-        string room = GetRoomName(part);
+        string room = GetRoomName(part, strategy);
 
         Dimension height = Dimension.FromInches(part.Height);
         Dimension width = Dimension.FromInches(part.Width);

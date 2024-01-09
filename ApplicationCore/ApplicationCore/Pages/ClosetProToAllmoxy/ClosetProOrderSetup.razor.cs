@@ -10,7 +10,8 @@ namespace ApplicationCore.Pages.ClosetProToAllmoxy;
 
 public partial class ClosetProOrderSetup {
 
-    private MappingSettings _settings = new();
+    private readonly CPToAllmoxyMappingSettings _mappingSettings = new();
+    private readonly ClosetProLoadingSettings _loadingSettings = new();
     private bool _isLoading = false;
     private bool _isFileSelected = false;
     private bool _isComplete = false;
@@ -24,8 +25,13 @@ public partial class ClosetProOrderSetup {
 
         Reset();
 
+        var initialDir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            "Downloads"
+        );
+
         FilePicker.PickFile(new() {
-            InitialDirectory = @"C:\Users\Zachary Londono\Downloads",
+            InitialDirectory = initialDir,
             Filter = new FilePickerFilter("Closet Pro Cut List", ".csv"),
             Title = "Choose Closet Pro Cut List"
         }, async file => {
@@ -65,6 +71,8 @@ public partial class ClosetProOrderSetup {
         var order = await Reader.ReadCSVData(csvData);
 
         ClosetProPartMapper.MapPickListToItems(order.PickList, [], out var hardwareSpread);
+        CPPartMapper.GroupLikeProducts = _loadingSettings.GroupLikeProducts;
+        CPPartMapper.RoomNamingStrategy = _loadingSettings.RoomNamingStrategy;
         ClosetProProducts = CPPartMapper.MapPartsToProducts(order.Parts, hardwareSpread);
 
     }
@@ -80,7 +88,7 @@ public partial class ClosetProOrderSetup {
 
         try {
 
-            AllmoxyProducts = CPToAllmoxyMapper.Map(ClosetProProducts, _settings);
+            AllmoxyProducts = CPToAllmoxyMapper.Map(ClosetProProducts, _mappingSettings);
             await CSVOrderWriter.WriteCSVOrder(AllmoxyProducts, _allmoxyOutputFile);
             _isComplete = true;
 

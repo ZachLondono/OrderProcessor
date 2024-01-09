@@ -1,26 +1,29 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
 using ApplicationCore.Features.ClosetProCSVCutList.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using ApplicationCore.Shared;
 using ApplicationCore.Shared.Domain;
-using System.Diagnostics.CodeAnalysis;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList;
 
 public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
-    public bool GroupLikeParts { get; set; } = false;
+    public bool GroupLikeProducts { get; set; } = false;
+    public RoomNamingStrategy RoomNamingStrategy { get; set; } = RoomNamingStrategy.ByWallAndSection;
 
     private readonly ComponentBuilderFactory _factory = factory;
 
     public List<IClosetProProduct> MapPartsToProducts(IEnumerable<Part> parts, Dimension hardwareSpread) {
 
-        //if (GroupLikeParts) {
-        //    parts = GroupParts(parts);
-        //}
 
-        return parts.GroupBy(p => p.WallNum)
-                    .SelectMany(p => GetPartsForWall(p, hardwareSpread))
-                    .ToList();
+        var products = parts.GroupBy(p => p.WallNum)
+                            .SelectMany(p => GetPartsForWall(p, hardwareSpread));
+
+        if (GroupLikeProducts) {
+            products = GroupProducts(products);
+        }
+
+        return products.ToList();
 
     }
 
@@ -44,7 +47,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
             Part? nextPart = null;
             if (part.PartName == "Melamine") {
 
-                products.Add(CreateFiller(part));
+                products.Add(CreateFiller(part, RoomNamingStrategy));
 
             } else if (part.PartType == "Countertop") {
 
@@ -52,7 +55,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
                     throw new InvalidOperationException($"Unsupported counter top thickness '{part.Height}', only 3/4\" is supported");
                 }
 
-                products.Add(CreateTop(part));
+                products.Add(CreateTop(part, RoomNamingStrategy));
 
             } else if (part.PartName == "Cab Door Rail" || part.PartName.Contains("Drawer") && part.PartName.Contains("Rail")) {
 
@@ -67,7 +70,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
                     throw new InvalidOperationException("Door/Drawer rail part found without door/drawer insert");
                 }
 
-                products.Add(CreateFrontFromParts(part, insertPart, hardwareSpread));
+                products.Add(CreateFrontFromParts(part, insertPart, hardwareSpread, RoomNamingStrategy));
                 if (enumerator.MoveNext()) {
                     part = enumerator.Current;
                     continue;
@@ -80,7 +83,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
                 var possibleCubbyPart = enumerator.Current;
                 if (possibleCubbyPart.ExportName == "Cubby-V" || possibleCubbyPart.ExportName == "Cubby-H") {
 
-                    var cubbyProducts = CreateCubbyProducts(enumerator, part, possibleCubbyPart, doesWallHaveBacking);
+                    var cubbyProducts = CreateCubbyProducts(enumerator, part, possibleCubbyPart, doesWallHaveBacking, RoomNamingStrategy);
                     products.AddRange(cubbyProducts);
 
                     if (enumerator.MoveNext()) {
@@ -99,7 +102,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
                     }
                 }
 
-                products.Add(CreateFixedShelfFromPart(part, doesWallHaveBacking, extendBack));
+                products.Add(CreateFixedShelfFromPart(part, doesWallHaveBacking, extendBack, RoomNamingStrategy));
                 nextPart = possibleCubbyPart;
 
             } else if (part.ExportName == "AdjustableShelf") {
@@ -111,11 +114,11 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
                     }
                 }
 
-                products.Add(CreateAdjustableShelfFromPart(part, doesWallHaveBacking, extendBack));
+                products.Add(CreateAdjustableShelfFromPart(part, doesWallHaveBacking, extendBack, RoomNamingStrategy));
 
             } else {
 
-                products.Add(MapSinglePartToProduct(part, doesWallHaveBacking, hardwareSpread));
+                products.Add(MapSinglePartToProduct(part, doesWallHaveBacking, hardwareSpread, RoomNamingStrategy));
 
             }
 
@@ -133,47 +136,47 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
     }
 
-    private static IClosetProProduct MapSinglePartToProduct(Part part, bool wallHasBacking, Dimension hardwareSpread) {
+    private static IClosetProProduct MapSinglePartToProduct(Part part, bool wallHasBacking, Dimension hardwareSpread, RoomNamingStrategy strategy) {
 
         return part.ExportName switch {
             "CPS FM Vert" or "CPS WM Vert" or
             "CPS WM Vert Radius" or "CPS WM Vert Straight" or
             "VP-Corner Floor Mount" or "VP-Corner Wall Hung"
-                => CreateVerticalPanelFromPart(part, wallHasBacking),
+                => CreateVerticalPanelFromPart(part, wallHasBacking, strategy),
 
-            "VP-Hutch" => CreateHutchVerticalPanel(part, wallHasBacking),
+            "VP-Hutch" => CreateHutchVerticalPanel(part, wallHasBacking, strategy),
 
-            "FixedShelf" => CreateFixedShelfFromPart(part, wallHasBacking, false),
+            "FixedShelf" => CreateFixedShelfFromPart(part, wallHasBacking, false, strategy),
 
-            "AdjustableShelf" => CreateAdjustableShelfFromPart(part, wallHasBacking, false),
+            "AdjustableShelf" => CreateAdjustableShelfFromPart(part, wallHasBacking, false, strategy),
 
-            "ShoeShelf" => CreateShoeShelf(part, false, wallHasBacking),
+            "ShoeShelf" => CreateShoeShelf(part, false, wallHasBacking, strategy),
 
             "Toe Kick_3.75" or "Toe Kick_2.5"
-                => CreateToeKick(part),
+                => CreateToeKick(part, strategy),
 
-            "Cleat" => CreateCleat(part),
+            "Cleat" => CreateCleat(part, strategy),
 
             "Melamine Sidemount" or "Melamine Undermount"
-                => CreateDowelDrawerBox(part),
+                => CreateDowelDrawerBox(part, strategy),
 
             "Dovetail Sidemount" or "Dovetail Undermount" or "Scoop Front Box"
-                => CreateDovetailDrawerBox(part),
+                => CreateDovetailDrawerBox(part, strategy),
 
             "Zargen" => CreateZargenDrawerBox(),
 
-            "Slab" => CreateSlabFront(part, hardwareSpread),
+            "Slab" => CreateSlabFront(part, hardwareSpread, strategy),
 
-            "Filler Panel" => CreateFiller(part),
+            "Filler Panel" => CreateFiller(part, strategy),
 
-            "Backing" or "Back-Panel" => CreateBacking(part),
+            "Backing" or "Back-Panel" => CreateBacking(part, strategy),
 
             _ => throw new InvalidOperationException($"Unexpected part {part.PartName} / {part.ExportName}")
         };
 
     }
 
-    private static IEnumerable<IClosetProProduct> CreateCubbyProducts(IEnumerator<Part> enumerator, Part part, Part firstCubbyPart, bool doesWallHaveBacking) {
+    private static IEnumerable<IClosetProProduct> CreateCubbyProducts(IEnumerator<Part> enumerator, Part part, Part firstCubbyPart, bool doesWallHaveBacking, RoomNamingStrategy strategy) {
 
         var accum = new CubbyAccumulator();
         accum.AddBottomShelf(part);
@@ -213,7 +216,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
         }
 
-        var cubby = accum.CreateCubby();
+        var cubby = accum.CreateCubby(strategy);
 
         var prods = new List<IClosetProProduct>() {
             cubby.TopDividerShelf,
@@ -318,7 +321,11 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
     }
 
-    public static string GetRoomName(Part part) => $"Wall {part.WallNum} Sec {part.SectionNum}";
+    public static string GetRoomName(Part part, RoomNamingStrategy strategy) => strategy switch {
+        RoomNamingStrategy.ByWallAndSection => $"Wall {part.WallNum} Sec {part.SectionNum}",
+        RoomNamingStrategy.ByWall => $"Wall {part.WallNum}",
+        RoomNamingStrategy.None or _ => "Room 1",
+    };
 
     public static bool TryParseMoneyString(string text, out decimal value) {
         return decimal.TryParse(text.Replace("$", ""), out value);
@@ -355,92 +362,11 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
     }
 
-    private static IEnumerable<Part> GroupParts(IEnumerable<Part> parts) {
+    private static IEnumerable<IClosetProProduct> GroupProducts(IEnumerable<IClosetProProduct> products) {
 
-        return parts.GroupBy(p => p, new PartComparer())
-                    .Select(g => {
-                        g.Key.Quantity = g.Sum(g => g.Quantity);
-                        return g.Key;
-                    })
-                    .OrderBy(p => p.PartNum);
-
-    }
-
-    public class PartComparer : IEqualityComparer<Part> {
-
-        public bool Equals(Part? x, Part? y) {
-
-            if (x is null && y is null) return true;
-            if (x is not null && y is null) return false;
-            if (x is null && y is not null) return false;
-
-            if (x!.WallNum != y!.WallNum
-                || x.SectionNum != y.SectionNum
-                || x.PartType != y.PartType
-                || x.PartName != y.PartName
-                || x.ExportName != y.ExportName
-                || x.Color != y.Color
-                || x.Height != y.Height
-                || x.Width != y.Width
-                || x.Depth != y.Depth
-                || x.VertHand != y.VertHand
-                || x.VertDrillL != y.VertDrillL
-                || x.VertDrillR != y.VertDrillR
-                || x.BBHeight != y.BBHeight
-                || x.BBDepth != y.BBDepth
-                || x.ShoeHeight != y.ShoeHeight
-                || x.ShoeDepth != y.ShoeDepth
-                || x.DrillLeft1 != y.DrillLeft1
-                || x.DrillLeft2 != y.DrillLeft2
-                || x.DrillRight1 != y.DrillRight1
-                || x.DrillRight2 != y.DrillRight2
-                || x.RailNotch != y.RailNotch
-                || x.RailNotchElevation != y.RailNotchElevation
-                || x.CornerShelfSizes != y.CornerShelfSizes
-                || x.PartCost != y.PartCost
-                || x.UnitL != y.UnitL
-                || x.UnitR != y.UnitR) {
-                return false;
-            }
-
-            return true;
-
-        }
-
-        public int GetHashCode([DisallowNull] Part obj) {
-
-            var a = HashCode.Combine(obj.WallNum,
-                                    obj.SectionNum,
-                                    obj.PartType,
-                                    obj.PartName,
-                                    obj.ExportName,
-                                    obj.Color,
-                                    obj.Height,
-                                    obj.Width);
-
-            var b = HashCode.Combine(obj.Depth,
-                                    obj.VertHand,
-                                    obj.VertDrillL,
-                                    obj.VertDrillR,
-                                    obj.BBHeight,
-                                    obj.BBDepth,
-                                    obj.ShoeHeight,
-                                    obj.ShoeDepth);
-
-            var c = HashCode.Combine(obj.DrillLeft1,
-                                    obj.DrillLeft2,
-                                    obj.DrillRight1,
-                                    obj.DrillRight2,
-                                    obj.RailNotch,
-                                    obj.RailNotchElevation,
-                                    obj.CornerShelfSizes,
-                                    obj.PartCost);
-
-            var d = HashCode.Combine(obj.UnitL,
-                                    obj.UnitR);
-
-            return HashCode.Combine(a, b, c, d);
-        }
+        var accum = new ClosetProGroupAccumulator();
+        products.ForEach(p => accum.AddProduct((dynamic) p));
+        return accum.GetGroupedProducts();
 
     }
 

@@ -29,7 +29,7 @@ public class CubbyAccumulator {
         _bottomShelf = part;
     }
 
-    public Cubby CreateCubby() {
+    public Cubby CreateCubby(RoomNamingStrategy strategy) {
 
         if (_verticalPanels.Count == 0) {
             throw new InvalidOperationException("Missing vertical cubby dividers");
@@ -75,7 +75,7 @@ public class CubbyAccumulator {
         int dividerCount = _verticalPanels.Count;
 
         var material = new ClosetMaterial(_topShelf.Color, ClosetMaterialCore.ParticleBoard);
-        string roomName = ClosetProPartMapper.GetRoomName(_topShelf);
+        string roomName = ClosetProPartMapper.GetRoomName(_topShelf, strategy);
         string edgeBandingColor = _topShelf.InfoRecords
                                             .Where(i => i.PartName == "Edge Banding")
                                             .Select(i => i.Color)
