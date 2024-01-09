@@ -55,7 +55,7 @@ public class CubbyAccumulatorTests {
         accum.AddVerticalPanel(verticalDivider);
 
         // Act
-        var cubby = accum.CreateCubby();
+        var cubby = accum.CreateCubby(RoomNamingStrategy.ByWallAndSection);
 
         // Assert
         cubby.FixedShelves.Sum(s => s.Qty).Should().Be(2);

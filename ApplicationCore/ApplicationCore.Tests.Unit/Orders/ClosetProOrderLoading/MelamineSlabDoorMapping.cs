@@ -46,7 +46,7 @@ public class MelamineSlabDoorMapping {
         };
 
         // Act
-        var front = ClosetProPartMapper.CreateSlabFront(part, hardwareSpread);
+        var front = ClosetProPartMapper.CreateSlabFront(part, hardwareSpread, RoomNamingStrategy.ByWallAndSection);
 
         // Assert
         front.Height.Should().Be(Dimension.FromInches(part.Height));
@@ -94,7 +94,7 @@ public class MelamineSlabDoorMapping {
         };
 
         // Act
-        var front = ClosetProPartMapper.CreateSlabFront(part, hardwareSpread);
+        var front = ClosetProPartMapper.CreateSlabFront(part, hardwareSpread, RoomNamingStrategy.ByWallAndSection);
 
         // Assert
         front.Height.Should().Be(Dimension.FromInches(part.Height));
