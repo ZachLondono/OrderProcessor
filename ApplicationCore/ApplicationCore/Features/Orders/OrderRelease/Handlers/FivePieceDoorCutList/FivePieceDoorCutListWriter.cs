@@ -22,7 +22,7 @@ public class FivePieceDoorCutListWriter : IFivePieceDoorCutListWriter {
         _logger = logger;
     }
 
-    public FivePieceDoorCutListResult? WriteCutList(FivePieceCutList cutList, string outputDirectory, bool generatePDF) {
+    public FivePieceDoorCutListResult? WriteCutList(FivePieceCutList cutList, string outputDirectory, bool generatePDF, string? name = "5-Piece Door CUTLIST") {
 
         if (!File.Exists(_settings.TemplateFilePath)) {
             OnError?.Invoke($"5-Pieced door cut list template does not exist or cannot be accessed - '{_settings.TemplateFilePath}'");
@@ -49,7 +49,7 @@ public class FivePieceDoorCutListWriter : IFivePieceDoorCutListWriter {
 
         }
 
-        var fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{cutList.OrderNumber} 5-Piece DOOR CUTLIST - {cutList.Material}", "xlsx");
+        var fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{cutList.OrderNumber} {name} - {cutList.Material}", "xlsx");
         var fullFilePath = Path.Combine(outputDirectory, fileName);
         try {
 
