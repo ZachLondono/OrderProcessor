@@ -28,6 +28,8 @@ using Exception = System.Exception;
 using CADCodeProxy.Machining;
 using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Shared.CNC;
+using ApplicationCore.Features.OptimizeStrips;
+using ApplicationCore.Shared.Domain;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -155,6 +157,7 @@ public class ReleaseService {
     }
 
     private async Task<List<string>> CreateCutLists(List<Order> orders, ReleaseConfiguration configuration, string customerName, string vendorName) {
+
         List<string> cutLists = new();
         if (configuration.Generate5PieceCutList) {
             var fivePieceCutLists = await Generate5PieceCutLists(customerName, vendorName, orders);
@@ -395,7 +398,7 @@ public class ReleaseService {
 
     private async Task<List<string>> Generate5PieceCutLists(string customerName, string vendorName, IEnumerable<Order> orders) {
 
-        List<string> generatedFiles = new();
+        List<string> generatedFiles = [];
 
         foreach (var order in orders) {
 
@@ -512,6 +515,42 @@ public class ReleaseService {
                             .ForEach(file => OnFileGenerated?.Invoke(file));
 
             generatedFiles.AddRange(optimizedPartCutListResults.Select(result => result.PDFFilePath).OfType<string>());
+
+
+            var partsByWidth = matGroups.SelectMany(g => g.SelectMany(d => d.GetFrameParts(d.Qty)))
+                                        .GroupBy(p => p.Width);
+
+            List<IDocumentDecorator> decorators = [];
+
+            foreach (var group in partsByWidth) {
+
+                if (!group.Any()) continue;
+
+                decorators.Add(new OptimizationDocumentDecorator() {
+                    Material = group.First().Material,
+                    MaterialLength = Dimension.FromInches(96),
+                    PartWidth = group.Key,
+                    Lengths = group.Select(p => p.Length).ToArray()
+                });
+
+                decorators.Add(new OptimizationDocumentDecorator() {
+                    Material = group.First().Material,
+                    MaterialLength = Dimension.FromInches(109),
+                    PartWidth = group.Key,
+                    Lengths = group.Select(p => p.Length).ToArray()
+                });
+
+            }
+
+            var filePath = Path.Combine(outputDirectory, "Optimized Frame Parts.pdf");
+            Document.Create(d => {
+                foreach (var decorator in decorators) {
+                    decorator.Decorate(d);
+                }
+            })
+            .GeneratePdf(filePath);
+
+            generatedFiles.Add(filePath);
 
         }
 
