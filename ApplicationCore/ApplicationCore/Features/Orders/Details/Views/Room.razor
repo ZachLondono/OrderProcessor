@@ -18,12 +18,17 @@
     @if (_isHidden) {
 
         <div @onclick="Toggle" class="py-3 bg-slate-100 cursor-pointer hover:bg-slate-200 border-gray-200 @(IsFirst ? "rounded-t-md" : "") @(IsLast ? "rounded-b-md" : "border-b")">
-            <div class="font-bold text-xl pl-3 py-3">
+            <div class="font-bold text-xl px-3 py-3">
                 @if (!string.IsNullOrWhiteSpace(Model.Name)) {
                     <span>@Model.Name@(Model.IsDirty ? "*" : "")</span>
                 } else {
                     <span>Room @(Index + 1)</span>
                 }
+                <span class="float-right">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                </span>
             </div>
         </div>
 
@@ -31,6 +36,11 @@
         <div class="py-3 bg-slate-100 cursor-pointer border-gray-200 @(IsFirst ? "rounded-t-md" : "") @(IsLast ? "rounded-b-md" : "border-b")">
             <header @onclick="Toggle">
                 <input @onclick:stopPropagation="true" @onclick:preventDefault="true" type="text" placeholder="Room @(Index + 1)" @oninput="a => OnRoomNameChanged(a, Model)" value="@Model.Name" class="bg-transparent font-bold text-xl pl-3 pt-3"/>
+                <span class="float-right mr-3 pt-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
+                    </svg>
+                </span>
                 <div class="pl-3">
                     <Button StopPropagation="true" PreventDefault="true" OnClickAsync="SaveRoomNameChange" Size="ButtonSize.XSmall" Style="ButtonStyle.Text" Disabled="!Model.IsDirty">Save</Button>
                 </div>
