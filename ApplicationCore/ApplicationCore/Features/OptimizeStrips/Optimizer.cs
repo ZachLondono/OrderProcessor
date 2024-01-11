@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Shared.Domain;
+using Google.OrTools.Algorithms;
 
 namespace ApplicationCore.Features.OptimizeStrips;
 
@@ -6,22 +7,10 @@ public class Optimizer {
 
     public static OptimizationResult Optimize(Dimension materialLength, Dimension[] partLengths) {
 
-        List<Dimension[]> parts = [];
-
-        var lengths = partLengths.Where(l => l <= materialLength).ToList();
+        var lengths = partLengths.Where(l => l <= materialLength).ToArray();
         var unPlacedLengths = partLengths.Where(l => l > materialLength).ToList();
-        
-        while (lengths.Count > 0) {
-        
-            var used = KnapSack(materialLength, lengths.ToArray(), lengths.Count);
-            
-            foreach (var item in used) {
-                lengths.Remove(item);
-            }
 
-            parts.Add(used.ToArray());
-        
-        }
+        var parts = KnapSack(materialLength, lengths);
 
         return new() {
             PartsPerMaterial = parts,
@@ -30,8 +19,52 @@ public class Optimizer {
 
     }
 
-    public static List<Dimension> KnapSack(Dimension capacity, Dimension[] lengths, int itemCount) {
+    public static List<Dimension[]> KnapSack(Dimension capacity, Dimension[] lengths) {
 
+        KnapsackSolver solver = new KnapsackSolver(
+            KnapsackSolver.SolverType.KNAPSACK_MULTIDIMENSION_BRANCH_AND_BOUND_SOLVER, "MaterialKnapsackSolver");
+
+        var weights = new long[1, lengths.Length];
+        for (int i = 0; i < lengths.Length; i++) {
+            weights[0, i] = (long)(lengths[i].AsMillimeters() * 100); // in 1000s of a millimeter
+        }
+
+        long[] capacities = { (long) (capacity.AsMillimeters() * 100) };
+
+        List<Dimension[]> parts = [];
+
+        while (weights.Length > 0) {
+
+            long[] values = new long[weights.Length];
+            for (int i = 0; i < weights.Length; i++) {
+                values[i] = weights[0, i];
+            }
+
+            solver.Init(values, weights, capacities);
+            long computedValue = solver.Solve();
+
+            List<long> packedItems = [];
+            List<long> notPacked = [];
+            for (int i = 0; i < weights.Length; i++) {
+                if (solver.BestSolutionContains(i)) {
+                    packedItems.Add(weights[0, i]);
+                } else {
+                    notPacked.Add(weights[0, i]);
+                }
+            }
+
+            weights = new long[1, notPacked.Count];
+            for (int i = 0; i < weights.Length; i++) {
+                weights[0, i] = notPacked[i];
+            }
+
+            parts.Add(packedItems.Select(v => Dimension.FromMillimeters(((double) v)/ (double)100)).ToArray());
+
+        }
+
+        return parts;
+
+        /*
         if (itemCount == 0 || capacity == Dimension.Zero) {
             return [];
         }
@@ -57,6 +90,7 @@ public class Optimizer {
         } else {
             return notIncluded;
         }
+        */
 
     }
 

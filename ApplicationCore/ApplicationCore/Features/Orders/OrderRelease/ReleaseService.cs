@@ -517,6 +517,7 @@ public class ReleaseService {
             generatedFiles.AddRange(optimizedPartCutListResults.Select(result => result.PDFFilePath).OfType<string>());
 
 
+            /*
             var partsByWidth = matGroups.SelectMany(g => g.SelectMany(d => d.GetFrameParts(d.Qty)))
                                         .GroupBy(p => p.Width);
 
@@ -530,14 +531,22 @@ public class ReleaseService {
                     Material = group.First().Material,
                     MaterialLength = Dimension.FromInches(96),
                     PartWidth = group.Key,
-                    Lengths = group.Select(p => p.Length).ToArray()
+                    Lengths = group.SelectMany(p => {
+                        var arr = new Dimension[p.Qty];
+                        Array.Fill(arr, p.Length);
+                        return arr;
+                    }).ToArray()
                 });
 
                 decorators.Add(new OptimizationDocumentDecorator() {
                     Material = group.First().Material,
                     MaterialLength = Dimension.FromInches(109),
                     PartWidth = group.Key,
-                    Lengths = group.Select(p => p.Length).ToArray()
+                    Lengths = group.SelectMany(p => {
+                        var arr = new Dimension[p.Qty];
+                        Array.Fill(arr, p.Length);
+                        return arr;
+                    }).ToArray()
                 });
 
             }
@@ -551,6 +560,7 @@ public class ReleaseService {
             .GeneratePdf(filePath);
 
             generatedFiles.Add(filePath);
+            */
 
         }
 

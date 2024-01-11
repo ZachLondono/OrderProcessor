@@ -36,7 +36,7 @@ public class OptimizationDocumentDecorator : IDocumentDecorator {
                     int i = 1;
                     foreach (var part in optimizations.PartsPerMaterial) {
 
-                        string val = string.Join("; ", part.Select(p => Math.Round(p.AsMillimeters()).ToString()));
+                        string val = string.Join(";  ", part.Select(p => Math.Round(p.AsMillimeters(), 1).ToString()));
 
                         col.Item()
                             .PaddingLeft(20)

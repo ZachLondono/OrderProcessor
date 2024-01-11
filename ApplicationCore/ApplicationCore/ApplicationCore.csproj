@@ -37,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.OrTools" Version="9.8.3296" />
     <PackageReference Include="RoslynPad.Editor.Windows" Version="4.8.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.8.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Scripting.Common" Version="4.8.0" />
