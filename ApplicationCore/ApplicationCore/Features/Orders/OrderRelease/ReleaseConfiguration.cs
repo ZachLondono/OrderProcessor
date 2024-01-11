@@ -4,6 +4,8 @@ namespace ApplicationCore.Features.Orders.OrderRelease;
 
 public class ReleaseConfiguration {
 
+    private bool _sendReleaseEmail = false;
+
     public List<string> AdditionalFilePaths { get; set; } = new();
     public bool AttachAdditionalFiles { get; set; } = false;
     public List<string> CNCDataFilePaths { get; set; } = new();
@@ -21,7 +23,17 @@ public class ReleaseConfiguration {
     public bool GenerateDoweledDrawerBoxCutList { get; set; }
     public bool IncludeDovetailDBPackingList { get; set; }
     public string? ReleaseEmailRecipients { get; set; }
-    public bool SendReleaseEmail { get; set; }
+
+    public bool SendReleaseEmail {
+        get => _sendReleaseEmail;
+        set {
+            _sendReleaseEmail = value;
+            if (!_sendReleaseEmail) {
+                PreviewReleaseEmail = false;
+            }
+        }
+    }
+
     public bool PreviewReleaseEmail { get; set; }
     public bool IncludeMaterialSummaryInEmailBody { get; set; }
     public string? ReleaseFileName { get; set; }

@@ -143,7 +143,7 @@ public class ReleaseService {
             var documentData = await BuildPDFAsync(decorators, additionalPDFs);
             var filePaths = await SaveFileDataToDirectoriesAsync(documentData, directories, customerName, filename, isTemp: false);
 
-            if (filePaths.Any() && (configuration.SendReleaseEmail || configuration.PreviewReleaseEmail) && configuration.ReleaseEmailRecipients is string recipients) {
+            if (filePaths.Any() && configuration.SendReleaseEmail && configuration.ReleaseEmailRecipients is string recipients) {
                 await SendReleaseEmail(orders, configuration, customerName, releases, orderNumbers, filePaths, recipients);
             } else {
                 OnProgressReport?.Invoke("Not sending release email");
