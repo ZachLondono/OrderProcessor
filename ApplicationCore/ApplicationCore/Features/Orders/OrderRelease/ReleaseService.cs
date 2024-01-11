@@ -222,13 +222,16 @@ public class ReleaseService {
     private async Task<List<IDocumentDecorator>> CreateJobSummaryDecorators(List<Order> orders, ReleaseConfiguration configuration, List<ReleasedJob> releases) {
         List<IDocumentDecorator> jobSummaryDecorators = new();
         foreach (var order in orders) {
-            string[] materials = releases.SelectMany(r => r.Releases)
+            List<string> materials = releases.SelectMany(r => r.Releases)
                                         .SelectMany(r => r.Programs)
                                         .Select(p => p.Material.Name)
                                         .Distinct()
-                                        .ToArray();
+                                        .ToList();
 
-            var decorator = await _jobSummaryDecoratorFactory.CreateDecorator(order, configuration.IncludeProductTablesInSummary, configuration.SupplyOptions, materials, true);
+            materials.AddRange(orders.SelectMany(o => o.Products.OfType<FivePieceDoorProduct>().Select(d => d.Material)).Distinct());
+            materials.AddRange(orders.SelectMany(o => o.Products.OfType<DoweledDrawerBoxProduct>().SelectMany(d => new string[] { d.BackMaterial.Name, d.FrontMaterial.Name, d.SideMaterial.Name, d.BottomMaterial.Name })).Distinct());
+
+            var decorator = await _jobSummaryDecoratorFactory.CreateDecorator(order, configuration.IncludeProductTablesInSummary, configuration.SupplyOptions, materials.ToArray(), true);
             jobSummaryDecorators.Add(decorator);
         }
 
