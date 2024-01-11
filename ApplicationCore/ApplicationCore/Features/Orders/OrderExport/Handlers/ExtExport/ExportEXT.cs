@@ -20,12 +20,10 @@ public class ExportEXT {
     public class Handler : CommandHandler<Command, EXTGenerationResult> {
 
         private readonly ILogger<Handler> _logger;
-        private readonly IFileReader _fileReader;
         private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
 
-        public Handler(ILogger<Handler> logger, IFileReader fileReader, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync) {
+        public Handler(ILogger<Handler> logger, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync) {
             _logger = logger;
-            _fileReader = fileReader;
             _getCustomerByIdAsync = getCustomerByIdAsync;
         }
 
@@ -58,16 +56,16 @@ public class ExportEXT {
 
             var job = new PPJob(jobName, command.Order.OrderDate, customerName, products);
 
-            string filePath = Path.Combine(command.OutputDirectory, $"{_fileReader.RemoveInvalidPathCharacters(jobName)}.ext");
-
             string defaultLevelName = command.Order.Name;
             if (defaultLevelName.Length > 60) defaultLevelName = defaultLevelName[..60];
+
+            string filePath = "";
 
             try {
 
                 var writer = new ExtWriter();
                 new PPJobConverter(writer).ConvertOrder(job, defaultLevelName);
-                writer.WriteFile(filePath);
+                filePath = writer.WriteFile(command.OutputDirectory, job.Name);
 
             } catch (Exception ex) {
 

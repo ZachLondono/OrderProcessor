@@ -19,11 +19,13 @@ public class ExtWriter : IExtWriter {
         _records.Clear();
     }
 
-    public void WriteFile(string filePath) {
+    public string WriteFile(string outputDirectory, string jobName) {
 
         var configuration = new CsvConfiguration(CultureInfo.InvariantCulture) {
             ShouldQuote = args => false
         };
+
+        string filePath = Path.Combine(outputDirectory, $"{RemoveIllegalJobNameCharacters(TruncateString(jobName, 30))}.ext");
 
         using var writer = new StreamWriter(filePath);
         using var csv = new CsvWriter(writer, configuration);
@@ -32,6 +34,9 @@ public class ExtWriter : IExtWriter {
             foreach (var field in record) csv.WriteField($"{field.Key.Trim()}={field.Value.Trim()}");
             csv.NextRecord();
         }
+
+        return filePath;
+
     }
 
     public static Dictionary<string, string> GetRecord(JobDescriptor job) {
