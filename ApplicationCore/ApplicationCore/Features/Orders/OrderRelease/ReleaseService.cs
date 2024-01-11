@@ -236,7 +236,37 @@ public class ReleaseService {
     }
 
     private async Task SendReleaseEmail(List<Order> orders, ReleaseConfiguration configuration, string customerName, List<ReleasedJob> releases, string orderNumbers, IEnumerable<string> filePaths, string recipients) {
+
         OnProgressReport?.Invoke("Sending release email");
+
+        bool containsDrawerBoxes = orders.Any(order => order.Products
+                                                    .OfType<IDovetailDrawerBoxContainer>()
+                                                    .Any(p => p is not DovetailDrawerBoxProduct && p.ContainsDovetailDrawerBoxes())
+                                                    || (
+                                                        order.Products
+                                                            .OfType<DovetailDrawerBoxProduct>()
+                                                            .Any()
+                                                        &&
+                                                        !order.Products.All(p => p is DovetailDrawerBoxProduct)
+                                                    ));
+
+        bool containsMDFDoors = orders.Any(order => order.Products
+                                                .OfType<IMDFDoorContainer>()
+                                                .Any(p => p is not MDFDoorProduct && p.ContainsDoors())
+                                                || (
+                                                    order.Products
+                                                        .OfType<MDFDoorProduct>()
+                                                        .Any()
+                                                    &&
+                                                    !order.Products.All(p => p is MDFDoorProduct)
+                                                ));
+
+        bool containsFivePieceDoors = orders.Any(order => order.Products
+                                                .OfType<FivePieceDoorProduct>()
+                                                .Any()
+                                               &&
+                                               !order.Products.All(p => p is FivePieceDoorProduct));
+
         try {
 
             var (HTMLBody, TextBody) = await Task.Run(() => {
@@ -244,7 +274,7 @@ public class ReleaseService {
                 var orderNotes = orders.Where(o => !string.IsNullOrEmpty(o.Note))
                                         .Select(o => $"{(multipleOrders ? $"{o.Number}:" : "")}{o.Note}");
                 string note = string.Join(';', orderNotes);
-                return GenerateEmailBodies(configuration.IncludeMaterialSummaryInEmailBody, releases, note);
+                return GenerateEmailBodies(configuration.IncludeMaterialSummaryInEmailBody, releases, containsDrawerBoxes, containsMDFDoors, containsFivePieceDoors, note);
             });
 
             List<string> attachments = new() { filePaths.First() };
@@ -845,7 +875,7 @@ public class ReleaseService {
         return files;
     }
 
-    private static (string HTMLBody, string TextBody) GenerateEmailBodies(bool includeReleaseSummary, List<ReleasedJob> jobs, string note) {
+    private static (string HTMLBody, string TextBody) GenerateEmailBodies(bool includeReleaseSummary, List<ReleasedJob> jobs, bool containsDrawerBoxes, bool containsMDFDoors, bool containsFivePieceDoors, string note) {
 
         var releasedJobs = jobs.Where(j => j.Releases.Any())
                                 .Select(job => {
@@ -861,7 +891,7 @@ public class ReleaseService {
 
                                 });
 
-        var model = new ReleasedWorkOrderSummary(releasedJobs, note);
+        var model = new ReleasedWorkOrderSummary(releasedJobs, containsDrawerBoxes, containsMDFDoors, containsFivePieceDoors, note);
 
         var htmlBody = ReleaseEmailBodyGenerator.GenerateHTMLReleaseEmailBody(model, includeReleaseSummary);
         var textBody = ReleaseEmailBodyGenerator.GenerateTextReleaseEmailBody(model, includeReleaseSummary);

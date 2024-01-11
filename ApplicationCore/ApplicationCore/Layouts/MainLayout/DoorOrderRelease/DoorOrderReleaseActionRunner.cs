@@ -515,7 +515,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
                                 });
 
-        var model = new ReleasedWorkOrderSummary(releasedJobs, note);
+        var model = new ReleasedWorkOrderSummary(releasedJobs, false, false, false, note);
 
         var htmlBody = ReleaseEmailBodyGenerator.GenerateHTMLReleaseEmailBody(model, includeReleaseSummary);
         var textBody = ReleaseEmailBodyGenerator.GenerateTextReleaseEmailBody(model, includeReleaseSummary);

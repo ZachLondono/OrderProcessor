@@ -31,7 +31,7 @@ public class ReleaseEmailBodyGenerator {
 
         string body = "Please see attached release";
 
-        if (!string.IsNullOrWhiteSpace(model.Note)) {
+        if (!string.IsNullOrWhiteSpace(model.Note) || true) {
 
             body +=
                 $"""
@@ -52,6 +52,43 @@ public class ReleaseEmailBodyGenerator {
 
                 """;
 
+        }
+
+        if (model.ContainsDrawerBoxes || model.ContainsMDFDoors || model.ContainsFivePieceDoors) {
+            body +=
+                """
+
+                <br />
+                <br />
+
+                """;
+        }
+
+        if (model.ContainsDrawerBoxes) {
+            body +=
+                """
+                <div>
+                    <b>Order Contains Drawer Boxes</b>
+                </div>
+                """;
+        }
+
+        if (model.ContainsMDFDoors) {
+            body +=
+                """
+                <div>
+                    <b>Order Contains MDF Doors</b>
+                </div>
+                """;
+        }
+
+        if (model.ContainsFivePieceDoors) {
+            body +=
+                """
+                <div>
+                    <b>Order Contains Five-Piece Doors</b>
+                </div>
+                """;
         }
 
         if (!includeSummary) {

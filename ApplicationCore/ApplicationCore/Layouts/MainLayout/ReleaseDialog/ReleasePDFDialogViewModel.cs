@@ -177,7 +177,7 @@ internal class ReleasePDFDialogViewModel {
         IEnumerable<Job> jobs = new Job[] {
             new(job.JobName, usedMaterials)
         };
-        var model = new ReleasedWorkOrderSummary(jobs, null);
+        var model = new ReleasedWorkOrderSummary(jobs, false, false, false, null);
 
         var body = ReleaseEmailBodyGenerator.GenerateHTMLReleaseEmailBody(model, true);
         var builder = new BodyBuilder {
