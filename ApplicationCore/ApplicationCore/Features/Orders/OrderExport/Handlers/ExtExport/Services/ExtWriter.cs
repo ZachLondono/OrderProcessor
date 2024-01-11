@@ -103,7 +103,7 @@ public class ExtWriter : IExtWriter {
             { "DEPTH", "0" },
             { "QTY", product.Qty.ToString() },
             { "POS", product.Pos.ToString() },
-            { "CABCOM", TruncateString(product.Comment.Replace(',', ';'), 60) },
+            { "CABCOM", SanitizeAndTruncateComment(product.Comment) },
             { "CABCOM2", "" },
             { "SEQTEXT", TruncateString(product.SeqText, 20) }
         };
@@ -115,6 +115,17 @@ public class ExtWriter : IExtWriter {
         }
 
         return values;
+    }
+
+    private static string SanitizeAndTruncateComment(string comment) {
+
+        string specialChars = """`~!@#$%^&*()_+-=[]{}\|:'".></?""";
+
+        // Allow , and ;
+        string sanitized = new string(comment.Where(c => !specialChars.Contains(c)).ToArray()).Replace(",", ";");
+
+        return TruncateString(sanitized, 60);
+
     }
 
     private static string TruncateString(string str, int maxLength) => str.Length > maxLength ? str[..maxLength] : str;
