@@ -1,7 +1,6 @@
 ﻿using ApplicationCore.Features.AllmoxyOrderExport.Attributes;
 using ApplicationCore.Features.AllmoxyOrderExport.Products;
 using ApplicationCore.Features.AllmoxyOrderExport.Products.Miscellaneous;
-using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
 using ApplicationCore.Features.ClosetProCSVCutList.Products;
 
 namespace ApplicationCore.Features.ClosetProToAllmoxyOrder;
@@ -102,7 +101,7 @@ public partial class ClosetProToAllmoxyMapper {
             Folder = part.Room,
             ClosetMaterial = ClosetEdgeBandingMaterial.GetMatchingMaterialName(part.Color),
             BandingColor = bandingColor,
-            Banding = EdgeBanding.NONE,
+            Banding = EdgeBanding.ALL_EDGES,
             PanelFinish = PanelFinish.NONE,
             Qty = part.Qty,
             Width = part.Width.AsInches(),
