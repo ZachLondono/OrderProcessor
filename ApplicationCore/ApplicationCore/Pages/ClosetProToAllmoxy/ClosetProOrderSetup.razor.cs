@@ -43,6 +43,7 @@ public partial class ClosetProOrderSetup {
             try {
                 await LoadClosetProProducts(file);
                 _isComplete = true;
+                _error = "";
             } catch (Exception ex) {
                 _error = ex.Message;
                 _isFileSelected = false;
@@ -59,7 +60,6 @@ public partial class ClosetProOrderSetup {
     private void Reset() {
         _isComplete = false;
         _isLoading = false;
-        _error = "";
     }
 
     public async Task LoadClosetProProducts(string fileName) {
