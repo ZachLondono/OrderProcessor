@@ -25,7 +25,7 @@ public class MiscellaneousClosetPart : IClosetProProduct {
         string sku = Type switch {
             MiscellaneousType.ToeKick => settings.ToeKickSKU,
             MiscellaneousType.Filler or MiscellaneousType.Cleat => "NL1",
-            MiscellaneousType.Backing => "BL34",
+            MiscellaneousType.Backing => "BK34",
             MiscellaneousType.ExtraPanel => "PANEL",
             MiscellaneousType.Top => "TOP",
             _ => throw new InvalidOperationException("Unexpected miscellaneous closet part type")
