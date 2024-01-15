@@ -141,7 +141,8 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
         return part.ExportName switch {
             "CPS FM Vert" or "CPS WM Vert" or
             "CPS WM Vert Radius" or "CPS WM Vert Straight" or
-            "VP-Corner Floor Mount" or "VP-Corner Wall Hung"
+            "VP-Corner Floor Mount" or "VP-Corner Wall Hung" or
+            "Vert Bottom"
                 => CreateVerticalPanelFromPart(part, wallHasBacking, strategy),
 
             "VP-Hutch" => CreateHutchVerticalPanel(part, wallHasBacking, strategy),
