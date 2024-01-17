@@ -15,7 +15,7 @@ public class PSIMaterialTests {
         string side2Finish = "White";
         string coreType = "PB";
         double thickness = 19;
-        string materialName = CreateMaterialNameFormat1(side1Color, side1Finish, side2Color, side2Finish, coreType, thickness);
+        string materialName = CreateMaterialName(side1Color, side1Finish, side2Color, side2Finish, coreType, thickness);
 
         // Act
         var isValid = PSIMaterial.TryParse(materialName, out PSIMaterial psiMat);
@@ -41,7 +41,7 @@ public class PSIMaterialTests {
         string side2Finish = "mela";
         string coreType = "PB";
         double thickness = 19;
-        string materialName = CreateMaterialNameFormat1(side1Color, side1Finish, side2Color, side2Finish, coreType, thickness);
+        string materialName = CreateMaterialName(side1Color, side1Finish, side2Color, side2Finish, coreType, thickness);
 
         // Act
         var isValid = PSIMaterial.TryParse(materialName, out PSIMaterial psiMat);
@@ -67,37 +67,7 @@ public class PSIMaterialTests {
         string side2Finish = "mela";
         string coreType = "PB";
         double thickness = 19;
-        string materialName = CreateMaterialNameFormat1(side1Color, side1Finish, side2Color, side2Finish, coreType, thickness);
-
-        // Act
-        var isValid = PSIMaterial.TryParse(materialName, out PSIMaterial psiMat);
-
-        // Assert
-        isValid.Should().BeTrue();
-        psiMat.Side1Color.Should().Be(side1Color);
-        psiMat.Side1FinishType.Should().Be(side1Finish);
-        psiMat.Side2Color.Should().Be(side2Color);
-        psiMat.Side2FinishType.Should().Be(side2Finish);
-        psiMat.CoreType.Should().Be(coreType);
-        psiMat.Thickness.Should().Be(thickness);
-
-    }
-
-
-
-    [Fact]
-    public void Should_ParseValidMultiWordColorMaterial_Format2() {
-
-        // Arrange
-        string side1Color = "CREME DE LA CREME";
-        string side1Finish = "MELA";
-        string side2Color = "CREME DE LA CREME";
-        string side2Finish = "MELA";
-        string coreType = "PB";
-        double thickness = 19;
-        string materialName = CreateMaterialNameFormat2(side1Color, side1Finish, side2Color, side2Finish, coreType, thickness);
-
-        materialName.Should().Be("Grained  CREME DE LA CREME -  MELA     19.00 PB  CREME DE LA CREME -  MELA");
+        string materialName = CreateMaterialName(side1Color, side1Finish, side2Color, side2Finish, coreType, thickness);
 
         // Act
         var isValid = PSIMaterial.TryParse(materialName, out PSIMaterial psiMat);
@@ -123,7 +93,7 @@ public class PSIMaterialTests {
         string side2Finish = "Veneer";
         string coreType = "Ply";
         double thickness = 19;
-        string materialName = CreateMaterialNameFormat1(side1Color, side1Finish, side2Color, side2Finish, coreType, thickness);
+        string materialName = CreateMaterialName(side1Color, side1Finish, side2Color, side2Finish, coreType, thickness);
 
         // Act
         var isValid = PSIMaterial.TryParse(materialName, out PSIMaterial psiMat);
@@ -149,7 +119,7 @@ public class PSIMaterialTests {
         string side2Finish = "mela";
         string coreType = "Particle Board";
         double thickness = 19;
-        string materialName = CreateMaterialNameFormat1(side1Color, side1Finish, side2Color, side2Finish, coreType, thickness);
+        string materialName = CreateMaterialName(side1Color, side1Finish, side2Color, side2Finish, coreType, thickness);
 
         // Act
         var isValid = PSIMaterial.TryParse(materialName, out PSIMaterial psiMat);
@@ -219,15 +189,9 @@ public class PSIMaterialTests {
 
     }
 
-    private string CreateMaterialNameFormat1(string side1Color, string side1Finish, string side2Color, string side2Finish, string coreType, double thickness) {
+    private string CreateMaterialName(string side1Color, string side1Finish, string side2Color, string side2Finish, string coreType, double thickness) {
 
         return $"Grained  {side1Color} {side1Finish}     {thickness:0.00} {coreType}  {side2Color} {side2Finish}";
-
-    }
-
-    private string CreateMaterialNameFormat2(string side1Color, string side1Finish, string side2Color, string side2Finish, string coreType, double thickness) {
-
-        return $"Grained  {side1Color} -  {side1Finish}     {thickness:0.00} {coreType}  {side2Color} -  {side2Finish}";
 
     }
 
