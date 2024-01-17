@@ -10,6 +10,7 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None" 
         Title="SplashScreen"
+        Background="Transparent"
         Height="300"
         Width="400">
     <Border CornerRadius="3" Margin="15">
