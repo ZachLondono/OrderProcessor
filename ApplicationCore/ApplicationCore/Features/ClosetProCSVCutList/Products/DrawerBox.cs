@@ -15,6 +15,9 @@ public class DrawerBox : IClosetProProduct {
     public required decimal UnitPrice { get; init; }
     public required int PartNumber { get; init; }
 
+    /// <summary>
+    /// The face height of the drawer box / The opening height of the space where the drawer box is going
+    /// </summary>
     public required Dimension Height { get; init; }
     public required Dimension Width { get; init; }
     public required Dimension Depth { get; init; }
@@ -36,6 +39,8 @@ public class DrawerBox : IClosetProProduct {
         var botMaterial = new DoweledDrawerBoxMaterial(settings.DoweledDrawerBoxMaterialFinish, botMatThickness, true);
 
         var heightAdj = Dimension.FromMillimeters(1); // TODO: get this from settings
+
+        // TODO: box height should not be the same as Height property when drawer has drawer front
 
         return new DoweledDrawerBoxProduct(Guid.NewGuid(),
                                            UnitPrice,
@@ -65,12 +70,37 @@ public class DrawerBox : IClosetProProduct {
 
         return factory.CreateDovetailDrawerBoxBuilder()
             .WithOptions(new(materialName, materialName, materialName, bottomMaterial, clips, notch, accessory, LogoPosition.None, scoopFront: ScoopFront))
-            .WithDrawerFaceHeight(Height)
+            .WithBoxHeight(GetBoxHeight())
             .WithInnerCabinetWidth(Width, 1, slideType)
             .WithInnerCabinetDepth(Depth, slideType, false)
             .WithQty(Qty)
             .WithProductNumber(PartNumber)
             .BuildProduct(UnitPrice, Room);
+
+    }
+
+    private readonly static Dimension _verticalClearance = Dimension.FromMillimeters(41);
+    private readonly static List<(Dimension, Dimension)> _stdHeights = [
+        ( Dimension.FromInches(6.25), Dimension.FromInches(2.5)),
+        ( Dimension.FromInches(7.5), Dimension.FromInches(4.125)),
+        ( Dimension.FromInches(10), Dimension.FromInches(6.0)),
+        ( Dimension.FromInches(13.75), Dimension.FromInches(8.25)),
+        ( Dimension.FromInches(9999), Dimension.FromInches(12))
+    ];
+
+    public Dimension GetBoxHeight() {
+
+        if (ScoopFront) return Height;
+
+        foreach (var (maxOpeningHeight, boxHeight) in _stdHeights) {
+
+            if (Height <= maxOpeningHeight) {
+                return boxHeight;
+            }
+
+        }
+
+        return Dimension.Zero;
 
     }
 

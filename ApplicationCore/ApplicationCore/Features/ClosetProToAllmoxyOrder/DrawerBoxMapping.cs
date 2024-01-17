@@ -30,7 +30,7 @@ public partial class ClosetProToAllmoxyMapper {
             IncludeSlides = DrawerBoxSlides.NONE,
             Comments = "",
             Qty = box.Qty,
-            Height = DrawerBoxMaterial.GetStandardHeight(box.Height),
+            Height = DrawerBoxMaterial.GetStandardHeight(box.GetBoxHeight()),
             Width = DrawerBoxMaterial.GetBoxWidthFromOpening(box.Width).AsInches(),
             Depth = DrawerBoxMaterial.GetBoxDepthFromOpening(box.Depth).AsInches(),
             Scoop = box.ScoopFront,

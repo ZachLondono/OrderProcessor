@@ -7,17 +7,17 @@ public static class DrawerBoxMaterial {
     public const string SOLID_BIRCH = "Pre-Finished Birch";
     public const string ECONOMY_BIRCH = "Economy Birch";
 
-    public static string GetStandardHeight(Dimension faceHeight) {
+    public static string GetStandardHeight(Dimension boxHeight) {
 
         var availableHeights = MaxFaceHeightMap.Keys.Order().ToArray();
 
-        if (availableHeights.Last() < faceHeight) {
-            throw new ArgumentOutOfRangeException(nameof(faceHeight), "No valid drawer box height for given drawer face height");
+        if (availableHeights.Last() < boxHeight) {
+            throw new ArgumentOutOfRangeException(nameof(boxHeight), "No valid allmoxy drawer box height for given drawer box height");
         }
 
         foreach (var height in availableHeights) {
 
-            if (height < faceHeight) {
+            if (height < boxHeight) {
                 continue;
             }
 

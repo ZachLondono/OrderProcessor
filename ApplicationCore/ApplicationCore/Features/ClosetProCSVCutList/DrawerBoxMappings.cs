@@ -23,7 +23,7 @@ public partial class ClosetProPartMapper {
 
         bool isUndermount = part.PartName.Contains("Undermount");
 
-        bool scoopFront = part.ExportName == "Scoop Front Box";
+        bool scoopFront = part.ExportName.Contains("Scoop Front Box");
 
         return new() {
             Qty = part.Quantity,
