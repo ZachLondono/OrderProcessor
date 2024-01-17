@@ -32,6 +32,9 @@ public partial class App : Application {
 
     private void Application_Startup(object sender, StartupEventArgs e) {
 
+        var splashScreen = new SplashScreen();
+        splashScreen.Show();
+
         bool verboseLogging = e.Args.Contains("-v");
 
         var initState = new InitializationState() {
@@ -48,7 +51,11 @@ public partial class App : Application {
 
             new MainWindow(serviceProvider).Show();
 
+            splashScreen.Close();
+
         } catch (Exception ex) {
+
+            splashScreen.Close();
 
             var errorWindow = new ErrorWindow {
                 DataContext = new ErrorWindowViewModel() {
