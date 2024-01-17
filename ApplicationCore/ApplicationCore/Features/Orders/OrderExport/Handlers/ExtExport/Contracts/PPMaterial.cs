@@ -18,7 +18,7 @@ public class PPMaterial {
 
     public override string ToString() => $"MATL({Material};{ShortenedColor};{Thickness}{UnitStr()})";
 
-    public string ShortenedColor => (Color.Length > 21 ? Color[..21] : Color).Trim();
+    public string ShortenedColor => (Color.Length > 20 ? Color[..20] : Color).Trim();
 
     private string UnitStr() => Units switch {
         PPUnits.Inches => "in",
