@@ -16,7 +16,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="SplashScreen\SplashScreen.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Royal Logo - Crown Only.ico" />
+    <Content Include="SplashScreen\SplashScreen.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

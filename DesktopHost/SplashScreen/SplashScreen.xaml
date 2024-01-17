@@ -10,29 +10,25 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None" 
         Title="SplashScreen"
-        Height="450"
-        Width="800">
-    <Border CornerRadius="8" Margin="15">
+        Height="300"
+        Width="400">
+    <Border CornerRadius="3" Margin="15">
         <Border.Background>
-            <SolidColorBrush Color="#3b82f6" />
+            <SolidColorBrush Color="#1565e8" />
         </Border.Background>
         <Border.Effect>
             <DropShadowEffect Color="#894F3B" 
-                              BlurRadius="10" 
+                              BlurRadius="5" 
                               Opacity="0.75" 
-                              ShadowDepth="15" />
+                              ShadowDepth="10" />
         </Border.Effect>
-
-        <TextBlock FontSize="40"
-                   FontFamily="Bauhaus 93"
-                   Foreground="White"
-                   Margin="10"
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Center"
-                   Text="Order Processor Loading">
-            <TextBlock.Effect>
-                <DropShadowEffect Color="Black" />
-            </TextBlock.Effect>
-        </TextBlock>
+        <StackPanel VerticalAlignment="Center">
+            <Image Source="/SplashScreen/SplashScreen.png" Width="100" Height="100" />
+            <TextBlock Text="Loading"
+                       FontFamily="Consolas"
+                       FontSize="30"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"/>
+        </StackPanel>
     </Border>
 </Window>
