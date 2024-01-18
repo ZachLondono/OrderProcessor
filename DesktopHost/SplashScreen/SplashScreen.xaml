@@ -11,11 +11,12 @@
         WindowStyle="None" 
         Title="SplashScreen"
         Background="Transparent"
+        AllowsTransparency="True"
         Height="300"
         Width="400">
     <Border CornerRadius="3" Margin="15">
         <Border.Background>
-            <SolidColorBrush Color="#1565e8" />
+            <SolidColorBrush Color="#f1f5f9" />
         </Border.Background>
         <Border.Effect>
             <DropShadowEffect Color="#894F3B" 
@@ -24,7 +25,9 @@
                               ShadowDepth="10" />
         </Border.Effect>
         <StackPanel VerticalAlignment="Center">
-            <Image Source="/SplashScreen/SplashScreen.png" Width="100" Height="100" />
+            <Image Source="/SplashScreen/SplashScreen.png"
+                   Margin="20"
+                   RenderOptions.BitmapScalingMode="HighQuality" />
             <TextBlock Text="Loading"
                        FontFamily="Consolas"
                        FontSize="30"
