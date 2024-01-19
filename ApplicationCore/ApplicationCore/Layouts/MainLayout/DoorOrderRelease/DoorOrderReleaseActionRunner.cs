@@ -165,6 +165,9 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         Document? generatedGCodeDocument = null;
         List<ReleasedJob> releasedJobs = [];
 
+        DateTime orderDate = DateTime.Today;
+        DateTime dueDate = DateTime.Today;
+
         Batch[] batches = [];
         bool wasOrderOpen = true;
         await Task.Run(() => {
@@ -196,6 +199,9 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
                 UpdateReleaseDateOnWorkbook(worksheets);
 
+                orderDate = ReadDateTimeFromWorkbook(worksheets, "MDF", "OrderDate");
+                dueDate = ReadDateTimeFromWorkbook(worksheets, "MDF", "DueDate");
+
             } finally {
 
                 if (app is not null) {
@@ -215,7 +221,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         }
 
         if (batches.Length != 0) {
-            var (document, jobs) = await CreateCutListDocumentForBatches(generator, doorOrder, batches);
+            var (document, jobs) = await CreateCutListDocumentForBatches(generator, doorOrder, batches, orderDate, dueDate);
             generatedGCodeDocument = document;
             releasedJobs.AddRange(jobs);
         }
@@ -295,7 +301,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
     }
 
-    private async Task<(Document, List<ReleasedJob>)> CreateCutListDocumentForBatches(CNCPartGCodeGenerator generator, DoorOrder doorOrder, Batch[] batches) {
+    private async Task<(Document, List<ReleasedJob>)> CreateCutListDocumentForBatches(CNCPartGCodeGenerator generator, DoorOrder doorOrder, Batch[] batches, DateTime orderDate, DateTime dueDate) {
 
         List<ReleasedJob> releasedJobs = [];
 
@@ -305,7 +311,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         foreach (var batch in batches) {
 
-            var job = await generator.GenerateGCode(batch, doorOrder.Customer, doorOrder.Vendor, DateTime.Today, DateTime.Today);
+            var job = await generator.GenerateGCode(batch, doorOrder.Customer, doorOrder.Vendor, orderDate, dueDate);
 
             if (job is null) {
                 continue;
@@ -416,6 +422,28 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         var rng = orderSheet.Range["ReleasedDate"];
 
         rng.Value2 = DateTime.Today.ToShortDateString();
+
+    }
+
+    private static DateTime ReadDateTimeFromWorkbook(Sheets worksheets, string sheetName, string rangeName) {
+
+        try {
+
+			var sheet = worksheets[sheetName];
+
+			var rng = sheet.Range[rangeName];
+
+			if (rng.Value2 is double oaDate) {
+				return DateTime.FromOADate(oaDate);
+			}
+
+			return DateTime.Today;
+
+		} catch {
+
+            return DateTime.Today;
+
+        }
 
     }
 
