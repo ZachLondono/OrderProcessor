@@ -42,7 +42,7 @@ public class CNCPartGCodeGenerator {
 
         ShowProgressBar?.Invoke();
 
-        var result = await Task.Run(() => generator.GeneratePrograms(machines, batch, ""));
+        var result = await Task.Run(() => generator.GeneratePrograms(machines, batch));
         DateTime timestamp = DateTime.Now;
 
         HideProgressBar?.Invoke();
@@ -210,7 +210,7 @@ public class CNCPartGCodeGenerator {
 
                                             return new ReleasedProgram() {
                                                 Name = program,
-                                                ImagePath = @$"C:\Users\Zachary Londono\Desktop\CC Output\{GetImageFileName(program)}.wmf",
+                                                ImagePath = Path.Combine(machineResult.PictureOutputDirectory, $"{GetImageFileName(program)}.wmf"),
                                                 HasFace6 = false,
                                                 Material = new() {
                                                     Name = materialName,
