@@ -12,27 +12,28 @@
         Title="SplashScreen"
         Background="Transparent"
         AllowsTransparency="True"
-        Height="300"
+        Height="250"
         Width="400">
-    <Border CornerRadius="3" Margin="15">
-        <Border.Background>
-            <SolidColorBrush Color="#f1f5f9" />
-        </Border.Background>
-        <Border.Effect>
-            <DropShadowEffect Color="#894F3B" 
-                              BlurRadius="5" 
-                              Opacity="0.75" 
-                              ShadowDepth="10" />
-        </Border.Effect>
-        <StackPanel VerticalAlignment="Center">
+    <Border BorderBrush="LightGray" BorderThickness="1" Background="#f1f5f9" >
+        <DockPanel>
+            <Border CornerRadius="2" DockPanel.Dock="Top" Background="#46677a" Width="50" HorizontalAlignment="Left" Margin="8,5,0,5">
+                <TextBlock Text="00.00.00"
+                           Name="VersionTag"
+                           Margin="1"
+                           TextAlignment="Center"
+                           FontFamily="Arial"
+                           Foreground="White"
+                           FontSize="10"/>
+            </Border>
+            <TextBlock Text="Starting Order Processor..."
+                       Margin="8,0,0,5"
+                       FontFamily="Arial"
+                       Foreground="#7d7d7d"
+                       FontSize="10"
+                       DockPanel.Dock="Bottom"/>
             <Image Source="/SplashScreen/SplashScreen.png"
-                   Margin="20"
+                   Margin="40"
                    RenderOptions.BitmapScalingMode="HighQuality" />
-            <TextBlock Text="Loading"
-                       FontFamily="Consolas"
-                       FontSize="30"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"/>
-        </StackPanel>
+        </DockPanel>
     </Border>
 </Window>
