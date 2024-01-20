@@ -52,9 +52,9 @@ public class NamedPipeServer {
 
     public void Stop() => listening = false;
 
-    public void ServerThread(object data) {
+    public void ServerThread() {
 
-        using var pipeServer = new NamedPipeServerStream("MDFDoorPipe", PipeDirection.InOut, 10, PipeTransmissionMode.Message);
+        using var pipeServer = new NamedPipeServerStream("MDFDoorPipe", PipeDirection.InOut, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Message);
 
         int threadId = Environment.CurrentManagedThreadId;
 
