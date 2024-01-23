@@ -31,7 +31,7 @@ public class ReleaseEmailBodyGenerator {
 
         string body = "Please see attached release";
 
-        if (!string.IsNullOrWhiteSpace(model.Note) || true) {
+        if (!string.IsNullOrWhiteSpace(model.Note)) {
 
             body +=
                 $"""
