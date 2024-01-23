@@ -3,7 +3,8 @@
 
     "machine_settings": {
       "OMNITECH": {
-        "tool_file": "Y:\\CADCode\\cfg\\Tool Files\\Royal Omnitech Fanuc-Smart names SMALL PARTS.mdb",
+        "tool_file": "Y:\\CADCode\\cfg\\Tool Files\\Royal Omnitech Fanuc-Smart names.mdb",
+        "single_part_tool_file": "Y:\\CADCode\\cfg\\Tool Files\\Royal Omnitech Fanuc-Smart names X100 SHIFT.mdb",
         "is_table_rotated": true,
         "nest_output_directory": "Y:\\CADCode\\CNC Programs\\Andi Stratos",
         "single_program_output_directory": "Y:\\CADCode\\CNC Programs\\Andi Stratos (Single Parts)",
@@ -12,6 +13,7 @@
       },
       "ANDI STRATOS": {
         "tool_file": "Y:\\CADCode\\cfg\\Tool Files\\Andi Stratos Royal - Tools from Omni.mdb",
+        "single_part_tool_file": "Y:\\CADCode\\cfg\\Tool Files\\Andi Stratos Royal - Tools from Omni.mdb",
         "is_table_rotated": false,
         "nest_output_directory": "Y:\\CADCode\\CNC Programs\\Omnitech nested router",
         "single_program_output_directory": "Y:\\CADCode\\CNC Programs\\Omnitech",

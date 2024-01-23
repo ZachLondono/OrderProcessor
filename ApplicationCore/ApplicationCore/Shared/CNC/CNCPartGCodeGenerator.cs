@@ -104,6 +104,7 @@ public class CNCPartGCodeGenerator {
                            .Select(kv => new Machine() {
                                Name = kv.Key,
                                ToolFilePath = kv.Value.ToolFile,
+                               SinglePartToolFilePath = kv.Value.SinglePartToolFile,
                                NestOutputDirectory = kv.Value.NestOutputDirectory,
                                SingleProgramOutputDirectory = kv.Value.SingleProgramOutputDirectory,
                                PictureOutputDirectory = kv.Value.PictureOutputDirectory,

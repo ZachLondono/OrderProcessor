@@ -7,6 +7,9 @@ public class MachineSettings {
     [ConfigurationKeyName("tool_file")]
     public string ToolFile { get; set; } = string.Empty;
 
+    [ConfigurationKeyName("single_part_tool_file")]
+    public string SinglePartToolFile { get; set; } = string.Empty;
+
     [ConfigurationKeyName("is_table_rotated")]
     public bool IsTableRotated { get; set; } = false;
 
