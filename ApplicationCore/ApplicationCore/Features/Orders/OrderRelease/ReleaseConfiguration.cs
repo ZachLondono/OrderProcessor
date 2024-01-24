@@ -5,6 +5,10 @@ namespace ApplicationCore.Features.Orders.OrderRelease;
 public class ReleaseConfiguration {
 
     private bool _sendReleaseEmail = false;
+    private bool _previewReleaseEmail = false;
+    private bool _includeCheckBoxesInPackingList = false;
+    private bool _includeSignatureFieldInPackingList = false;
+    private bool _includeDovetailDBPackingList = false;
 
     public List<string> AdditionalFilePaths { get; set; } = new();
     public bool AttachAdditionalFiles { get; set; } = false;
@@ -12,29 +16,38 @@ public class ReleaseConfiguration {
     public bool GenerateCNCRelease { get; set; }
     public bool CopyCNCReportToWorkingDirectory { get; set; }
     public bool GenerateCNCGCode { get; set; }
+
     public bool GeneratePackingList { get; set; }
-    public bool IncludeCheckBoxesInPackingList { get; set; }
-    public bool IncludeSignatureFieldInPackingList { get; set; }
+    public bool IncludeCheckBoxesInPackingList {
+        get => GeneratePackingList && _includeCheckBoxesInPackingList;
+        set => _includeCheckBoxesInPackingList = value;
+    }
+    public bool IncludeSignatureFieldInPackingList {
+        get => GeneratePackingList && _includeSignatureFieldInPackingList;
+        set => _includeSignatureFieldInPackingList = value;
+    }
+    public bool IncludeDovetailDBPackingList {
+        get => GeneratePackingList && _includeDovetailDBPackingList;
+        set => _includeDovetailDBPackingList = value;
+    }
+
     public bool GenerateJobSummary { get; set; }
     public bool IncludeProductTablesInSummary { get; set; }
     public SupplyOptions SupplyOptions { get; set; } = new();
     public bool IncludeInvoiceInRelease { get; set; }
     public bool Generate5PieceCutList { get; set; }
     public bool GenerateDoweledDrawerBoxCutList { get; set; }
-    public bool IncludeDovetailDBPackingList { get; set; }
     public string? ReleaseEmailRecipients { get; set; }
 
     public bool SendReleaseEmail {
-        get => _sendReleaseEmail;
-        set {
-            _sendReleaseEmail = value;
-            if (!_sendReleaseEmail) {
-                PreviewReleaseEmail = false;
-            }
-        }
+        get => (GenerateJobSummary || GeneratePackingList || GenerateCNCRelease || GenerateCNCGCode) && _sendReleaseEmail;
+        set => _sendReleaseEmail = value;
+    }
+    public bool PreviewReleaseEmail {
+        get => SendReleaseEmail && _previewReleaseEmail;
+        set => _previewReleaseEmail = value;
     }
 
-    public bool PreviewReleaseEmail { get; set; }
     public bool IncludeMaterialSummaryInEmailBody { get; set; }
     public string? ReleaseFileName { get; set; }
     public string? ReleaseOutputDirectory { get; set; }
