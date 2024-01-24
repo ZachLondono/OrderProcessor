@@ -295,9 +295,18 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         server.Stop();
 
         PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Reading CSV Token File"));
-        var batches = new CSVTokenReader().ReadBatchCSV(tokenFile);
 
-        return batches;
+        try {
+
+            var batches = new CSVTokenReader().ReadBatchCSV(tokenFile);
+            return batches;
+
+        } catch (System.Exception ex) {
+
+            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"Failed to read CSV tokens - {ex.Message}"));
+            return [];
+
+        }
 
     }
 
@@ -309,34 +318,51 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Generating GCode For Doors"));
 
-        foreach (var batch in batches) {
+        try {
 
-            var job = await generator.GenerateGCode(batch, doorOrder.Customer, doorOrder.Vendor, orderDate, dueDate);
-
-            if (job is null) {
-                continue;
+            foreach (var batch in batches) {
+    
+                var job = await generator.GenerateGCode(batch, doorOrder.Customer, doorOrder.Vendor, orderDate, dueDate);
+    
+                if (job is null) {
+                    continue;
+                }
+    
+                var decorator = _releaseDecoratorFactory.Create(job);
+                decorators.Add(decorator);
+    
+                releasedJobs.Add(job);
+    
             }
+    
+        } catch (System.Exception ex) {
 
-            var decorator = _releaseDecoratorFactory.Create(job);
-            decorators.Add(decorator);
-
-            releasedJobs.Add(job);
+            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"Error generating gcode for batch - {ex.Message}"));
 
         }
 
         PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Creating CNC Release Document"));
 
-        var document = await Task.Run(() => {
-            return Document.Create(doc => {
+        try {
 
-                foreach (var decorator in decorators) {
-                    decorator.Decorate(doc);
-                }
-
+            var document = await Task.Run(() => {
+                return Document.Create(doc => {
+    
+                    foreach (var decorator in decorators) {
+                        decorator.Decorate(doc);
+                    }
+    
+                });
             });
-        });
+    
+            return (document, releasedJobs);
 
-        return (document, releasedJobs);
+        } catch {
+
+            var document = Document.Create(doc => doc.Page(p => p.Content().Text("Failed to create document")));
+            return (document, []);
+
+        }
 
     }
 
