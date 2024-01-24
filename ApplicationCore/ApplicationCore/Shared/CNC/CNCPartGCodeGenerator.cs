@@ -110,7 +110,8 @@ public class CNCPartGCodeGenerator {
                                PictureOutputDirectory = kv.Value.PictureOutputDirectory,
                                LabelDatabaseOutputDirectory = kv.Value.LabelDatabaseOutputDirectory,
                            })
-                           .ToList();
+                           .ToList()
+                           .OrderByDescending(m => m.Name);
     }
 
     private static MachineRelease GetMachineRelease(MachineGCodeGenerationResult machineResult, Dictionary<string, MachineToolMap> machineToolMaps, Dictionary<string, MachineSettings> machineSettings, IEnumerable<string> usedToolNames) {
