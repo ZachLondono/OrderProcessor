@@ -230,7 +230,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             Qty = Qty,
             PrimaryFace = new() {
                 ProgramName = $"{SKU}{ProductNumber}",
-                IsRotated = true,
+                Rotation = 0,
                 IsMirrored = DrillingType == ClosetVerticalDrillingType.FinishedRight,
                 Tokens = tokens.ToArray()
             },
