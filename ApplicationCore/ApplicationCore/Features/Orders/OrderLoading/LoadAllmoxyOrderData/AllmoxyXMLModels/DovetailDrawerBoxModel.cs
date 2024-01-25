@@ -69,6 +69,16 @@ public class DovetailDrawerBoxModel : ProductOrItemModel {
 
     public int GetProductNumber() => int.Parse($"{GroupNumber}{LineNumber:00}");
 
+    private readonly Dictionary<string, string> _notchTypes = new() {
+       { "No Notch",  "No_Notch" },
+       { "Notch for Standard U/M Slide",  "Std_Notch" },
+       { "Notch for U/M Slide, Wide",  "Wide_Notch" },
+       { "Notch for 828",  "Notch_828" },
+       //{ "",  "Unknown" },
+       //{ "",  "Wide_Notch_F70" },
+       //{ "",  "Front_Back" },
+    };
+
     public override OneOf<IProduct, AdditionalItem> CreateProductOrItem(ProductBuilderFactory builderFactory) {
 
         decimal unitPrice = AllmoxyXMLOrderProviderHelpers.StringToMoney(UnitPrice);
@@ -84,10 +94,27 @@ public class DovetailDrawerBoxModel : ProductOrItemModel {
         else if (Material == "Economy Birch")
             Material = DovetailDrawerBoxConfig.FINGER_JOINT_BIRCH;
 
-        var options = new DovetailDrawerBoxConfig(Material, Material, Material, Bottom, Clips, Notch, Insert, LogoPosition.None);
+        var productionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList();
+
+        if (!_notchTypes.TryGetValue(Notch, out string? notch)) {
+            notch = Notch;
+            productionNotes.Add("CHECK NOTCH TYPE");
+        }
+
+        LogoPosition logo = Logo switch {
+            "Yes" => LogoPosition.Inside,
+            _ => LogoPosition.None
+        };
+
+        if (Logo != "Yes" && Logo != "No") {
+            productionNotes.Add("CHECK LOGO OPTION");
+        }
+
+        var options = new DovetailDrawerBoxConfig(Material, Material, Material, Bottom, Clips, notch, Insert, logo);
 
         var product = DovetailDrawerBoxProduct.Create(unitPrice, Qty, Room, GetProductNumber(), height, width, depth, Note, labelFields, options);
-        product.ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList();
+        product.ProductionNotes = productionNotes;
+
         return product;
 
     }
