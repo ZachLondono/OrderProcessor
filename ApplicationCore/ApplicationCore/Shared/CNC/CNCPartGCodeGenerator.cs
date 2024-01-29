@@ -32,9 +32,17 @@ public class CNCPartGCodeGenerator {
 
         var generator = new GCodeGenerator(CADCodeProxy.Enums.LinearUnits.Millimeters);
 
-        if (SetProgressBarValue is not null) generator.CADCodeProgressEvent += SetProgressBarValue.Invoke;
-        if (OnError is not null) generator.CADCodeErrorEvent += OnError.Invoke;
-        if (OnProgressReport is not null) generator.GenerationEvent += OnProgressReport.Invoke;
+        if (SetProgressBarValue is not null) {
+            generator.CADCodeProgressEvent += (args) => SetProgressBarValue.Invoke(args.Value);
+        }
+        if (OnError is not null) {
+            generator.CADCodeErrorEvent += (args) => OnError.Invoke($"[{args.Source}] - {args.Message}");
+            generator.ErrorEvent += (args) => OnError.Invoke(args.Message);
+        }
+        if (OnProgressReport is not null) {
+            generator.CADCodeInfoEvent += (args) => OnProgressReport.Invoke($"[{args.Source}] - {args.Message}");
+            generator.InfoEvent += OnProgressReport.Invoke;
+        }
 
         GetInventoryForBatch(batch).ForEach(generator.Inventory.Add);
 
