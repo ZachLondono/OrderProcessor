@@ -61,13 +61,21 @@ public class DrawerBox : IClosetProProduct {
 
     public DovetailDrawerBoxProduct ToDovetailDrawerBox(ComponentBuilderFactory factory) {
 
-        DrawerSlideType slideType = UnderMountNotches ? DrawerSlideType.UnderMount : DrawerSlideType.SideMount;
         string materialName = DovetailDrawerBoxConfig.FINGER_JOINT_BIRCH;
         string bottomMaterial = "1/4\" Ply";
-        string clips = "Hettich";
-        string accessory = "None";
-        string notch = UnderMountNotches ? "Std_Notch" : "No_Notch";
 
+        string clips = "None";
+        string notch = "No_Notch";
+        string accessory = "None";
+        DrawerSlideType slideType = DrawerSlideType.SideMount;
+        if (UnderMountNotches) {
+            notch = "Std_Notch";
+            accessory = "Hettich Slides";
+            clips = "Hettich";
+            slideType = DrawerSlideType.UnderMount;
+        }
+
+        // TODO: Add slides property to drawer box and set the slide type there instead of in the accessory property
         return factory.CreateDovetailDrawerBoxBuilder()
             .WithOptions(new(materialName, materialName, materialName, bottomMaterial, clips, notch, accessory, LogoPosition.None, scoopFront: ScoopFront))
             .WithBoxHeight(GetBoxHeight())
