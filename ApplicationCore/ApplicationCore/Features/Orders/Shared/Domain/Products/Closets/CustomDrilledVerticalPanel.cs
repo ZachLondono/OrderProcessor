@@ -5,6 +5,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared.Domain;
 using CADCodeProxy.Enums;
 using CADCodeProxy.Machining;
+using CADCodeProxy.Machining.Tokens;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 

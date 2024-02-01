@@ -268,9 +268,10 @@ public class CNCPartGCodeGenerator {
                     .SelectMany(p => new PartFace?[] { p.PrimaryFace, p.SecondaryFace })
                     .OfType<PartFace>()
                     .SelectMany(f => f.Tokens)
-                    .OfType<IMachiningOperation>()
+                    .OfType<IRoutingToken>()
                     .Select(t => t.ToolName)
-                    .Distinct();
+                    .Distinct()
+                    .ToList();
     }
 
     private IEnumerable<CADCodeProxy.CNC.InventoryItem> GetDefaultInventoryItems(IEnumerable<(string Material, double Thickness)> partMaterials, InventorySize defaultInventorySize) {

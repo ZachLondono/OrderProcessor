@@ -2,6 +2,7 @@
 using ApplicationCore.Shared.Domain;
 using CADCodeProxy.Enums;
 using CADCodeProxy.Machining;
+using CADCodeProxy.Machining.Tokens;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Components;
 
