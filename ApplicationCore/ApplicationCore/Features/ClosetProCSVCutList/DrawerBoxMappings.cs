@@ -21,7 +21,8 @@ public partial class ClosetProPartMapper {
         var width = Dimension.FromInches(part.Width);
         var depth = Dimension.FromInches(part.Depth);
 
-        bool isUndermount = part.PartName.Contains("Undermount");
+        bool isUndermount = part.PartName.Contains("Undermount", StringComparison.InvariantCultureIgnoreCase)
+                            || part.ExportName.Contains("Undermount", StringComparison.InvariantCultureIgnoreCase);
 
         bool scoopFront = part.ExportName.Contains("Scoop Front Box");
 
