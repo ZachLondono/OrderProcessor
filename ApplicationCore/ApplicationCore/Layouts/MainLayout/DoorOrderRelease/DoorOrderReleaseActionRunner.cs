@@ -304,7 +304,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             return [];
         }
 
-        PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Reading CSV Token File"));
+        PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, $"Reading CSV Token File - {tokenFile}"));
 
         try {
 
