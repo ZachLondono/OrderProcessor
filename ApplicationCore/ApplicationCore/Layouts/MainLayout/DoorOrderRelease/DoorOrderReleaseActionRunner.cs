@@ -287,12 +287,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         ShowProgressBar?.Invoke();
         var macroTask = Task.Run(() => {
             try {
-                app.GetType()
-                    .InvokeMember("Run",
-                                  System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.InvokeMethod,
-                                  null,
-                                  app,
-                                  new object[] { $"'{fileName}'!SilentDoorProcessing" });
+                ExecuteDoorProcessorMacro(app, fileName);
                 wasSuccessful = true;
             } catch (System.Exception ex) {
                 PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"An error ocurred while trying to generate CSV token file. - {ex.Message}"));
@@ -323,6 +318,15 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         }
 
+    }
+
+    private static void ExecuteDoorProcessorMacro(ExcelApp app, string fileName) {
+        app.GetType()
+            .InvokeMember("Run",
+                          System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.InvokeMethod,
+                          null,
+                          app,
+                          new object[] { $"'{fileName}'!SilentDoorProcessing" });
     }
 
     private static string GetTokenFilePath(DoorOrder doorOrder, ExcelApp app, Sheets worksheets, string fileName) {
