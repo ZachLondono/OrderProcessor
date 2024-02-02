@@ -191,6 +191,11 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
                 if (options.GenerateGCodeFromWorkbook) {
                     batches = GenerateBatchesFromDoorOrder(app, worksheets, doorOrder);
+
+                    if (batches.Length == 0) {
+                        PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "No CNC batches where generated from workbook"));
+                    }
+
                 }
 
                 if (options.IncludeCover || options.IncludePackingList || options.IncludeInvoice) {
@@ -271,6 +276,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         var exportDirectory = dataSheet.Range["ExportFile"].Value2;
 
+        // TODO: get token file from workbook by running the GetExportFile macro
         var tokenFile = Path.Combine(exportDirectory, $"{doorOrder.OrderNumber} - DoorTokens.csv");
 
         PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Generating CSV Token File"));
@@ -280,19 +286,33 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         server.MessageReceived += ProcessMessage;
         var serverTask = Task.Run(server.Start);
 
+        bool wasSuccessful = false;
+        DateTime startTimestamp = DateTime.UtcNow;
+
         ShowProgressBar?.Invoke();
-        var macroTask = Task.Run(() =>
-            app.GetType()
-                .InvokeMember("Run",
-                              System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.InvokeMethod,
-                              null,
-                              app,
-                              new object[] { $"'{fileName}'!SilentDoorProcessing" })
-        );
+        var macroTask = Task.Run(() => {
+            try {
+                app.GetType()
+                    .InvokeMember("Run",
+                                  System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.InvokeMethod,
+                                  null,
+                                  app,
+                                  new object[] { $"'{fileName}'!SilentDoorProcessing" });
+                wasSuccessful = true;
+            } catch (System.Exception ex) {
+                PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"An error ocurred while trying to generate CSV token file. - {ex.Message}"));
+            }
+        });
         macroTask.Wait();
         HideProgressBar?.Invoke();
 
         server.Stop();
+
+        var fileInfo = new FileInfo(tokenFile);
+        if (!wasSuccessful || !fileInfo.Exists || fileInfo.LastWriteTimeUtc < startTimestamp) {
+            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "CSV token file was not generated."));
+            return [];
+        }
 
         PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Reading CSV Token File"));
 
