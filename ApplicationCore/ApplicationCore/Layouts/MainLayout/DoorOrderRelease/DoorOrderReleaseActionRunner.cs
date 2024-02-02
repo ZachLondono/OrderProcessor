@@ -272,15 +272,10 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
     private Batch[] GenerateBatchesFromDoorOrder(ExcelApp app, Sheets worksheets, DoorOrder doorOrder) {
 
-        var dataSheet = worksheets["MDF Door Data"];
-
-        var exportDirectory = dataSheet.Range["ExportFile"].Value2;
-
-        // TODO: get token file from workbook by running the GetExportFile macro
-        var tokenFile = Path.Combine(exportDirectory, $"{doorOrder.OrderNumber} - DoorTokens.csv");
-
         PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Generating CSV Token File"));
         var fileName = Path.GetFileName(doorOrder.OrderFile);
+
+        string tokenFile = GetTokenFilePath(doorOrder, app, worksheets, fileName);
 
         var server = new NamedPipeServer();
         server.MessageReceived += ProcessMessage;
@@ -327,6 +322,32 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             return [];
 
         }
+
+    }
+
+    private static string GetTokenFilePath(DoorOrder doorOrder, ExcelApp app, Sheets worksheets, string fileName) {
+
+        try {
+
+            var result = app.GetType()
+                            .InvokeMember("Run",
+                                          System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.InvokeMethod,
+                                          null,
+                                          app,
+                                          new object[] { $"'{fileName}'!GetExportFilePath" });
+
+            if (result is string filePath) {
+                return filePath;
+            }
+
+        } catch {
+            // Could not get export file path from workbook
+        }
+
+        var dataSheet = worksheets["MDF Door Data"];
+        var exportDirectory = dataSheet.Range["ExportFile"].Value2;
+
+        return Path.Combine(exportDirectory, $"{doorOrder.OrderNumber} - DoorTokens.csv");
 
     }
 
