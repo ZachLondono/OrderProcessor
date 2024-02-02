@@ -239,7 +239,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         var fileComponents = new List<byte[]>();
 
-        if (tmpReleasePDFFilePath is not null) {
+        if (tmpReleasePDFFilePath is not null && _fileReader.DoesFileExist(tmpReleasePDFFilePath)) {
             var mdfReleasePagesData = await File.ReadAllBytesAsync(tmpReleasePDFFilePath);
             fileComponents.Add(mdfReleasePagesData);
         }
@@ -330,7 +330,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
     }
 
-    private async Task<(Document, List<ReleasedJob>)> CreateCutListDocumentForBatches(CNCPartGCodeGenerator generator, DoorOrder doorOrder, Batch[] batches, DateTime orderDate, DateTime dueDate) {
+    private async Task<(Document?, List<ReleasedJob>)> CreateCutListDocumentForBatches(CNCPartGCodeGenerator generator, DoorOrder doorOrder, Batch[] batches, DateTime orderDate, DateTime dueDate) {
 
         List<ReleasedJob> releasedJobs = [];
 
@@ -363,6 +363,11 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Creating CNC Release Document"));
 
+        if (decorators.Count == 0) {
+            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "No released jobs where created"));
+            return (null, []);
+        }
+
         try {
 
             var document = await Task.Run(() => {
@@ -379,8 +384,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         } catch {
 
-            var document = Document.Create(doc => doc.Page(p => p.Content().Text("Failed to create document")));
-            return (document, []);
+            return (null, []);
 
         }
 
