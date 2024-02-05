@@ -17,14 +17,14 @@ using MimeKit;
 using QuestPDF.Fluent;
 using System.Runtime.InteropServices;
 using UglyToad.PdfPig.Writer;
-using static ApplicationCore.Layouts.MainLayout.DoorOrderRelease.NamedPipeServer;
+using static ApplicationCore.Features.DoorOrderRelease.NamedPipeServer;
 using Action = System.Action;
 using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
 using ExcelApp = Microsoft.Office.Interop.Excel.Application;
 using System.Diagnostics;
 using Range = Microsoft.Office.Interop.Excel.Range;
 
-namespace ApplicationCore.Layouts.MainLayout.DoorOrderRelease;
+namespace ApplicationCore.Features.DoorOrderRelease;
 
 public class DoorOrderReleaseActionRunner : IActionRunner {
 
@@ -366,20 +366,20 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         try {
 
             foreach (var batch in batches) {
-    
+
                 var job = await generator.GenerateGCode(batch, doorOrder.Customer, doorOrder.Vendor, orderDate, dueDate);
-    
+
                 if (job is null) {
                     continue;
                 }
-    
+
                 var decorator = _releaseDecoratorFactory.Create(job);
                 decorators.Add(decorator);
-    
+
                 releasedJobs.Add(job);
-    
+
             }
-    
+
         } catch (System.Exception ex) {
 
             PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"Error generating gcode for batch - {ex.Message}"));
@@ -397,14 +397,14 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
             var document = await Task.Run(() => {
                 return Document.Create(doc => {
-    
+
                     foreach (var decorator in decorators) {
                         decorator.Decorate(doc);
                     }
-    
+
                 });
             });
-    
+
             return (document, releasedJobs);
 
         } catch {
@@ -504,17 +504,17 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         try {
 
-			var sheet = worksheets[sheetName];
+            var sheet = worksheets[sheetName];
 
-			var rng = sheet.Range[rangeName];
+            var rng = sheet.Range[rangeName];
 
-			if (rng.Value2 is double oaDate) {
-				return DateTime.FromOADate(oaDate);
-			}
+            if (rng.Value2 is double oaDate) {
+                return DateTime.FromOADate(oaDate);
+            }
 
-			return DateTime.Today;
+            return DateTime.Today;
 
-		} catch {
+        } catch {
 
             return DateTime.Today;
 

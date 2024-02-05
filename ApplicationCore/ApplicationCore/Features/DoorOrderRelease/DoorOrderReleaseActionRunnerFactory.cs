@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.OpenDoorOrders;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ApplicationCore.Layouts.MainLayout.DoorOrderRelease;
+namespace ApplicationCore.Features.DoorOrderRelease;
 
 public class DoorOrderReleaseActionRunnerFactory {
 

@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Infrastructure.Bus;
 
-namespace ApplicationCore.Layouts.MainLayout;
+namespace ApplicationCore.Features.DoorOrderRelease;
 
 internal class GetDoorOrderCutListDirectory {
 

@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Layouts.MainLayout.ReleaseDialog;
+﻿namespace ApplicationCore.Features.GeneralReleasePDF;
 
 internal class Model {
 

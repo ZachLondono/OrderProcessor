@@ -4,6 +4,8 @@ using ApplicationCore.Features.Companies.AllmoxyId;
 using ApplicationCore.Features.CreateOrderRelationship;
 using ApplicationCore.Features.CustomizationScripts.ViewModels;
 using ApplicationCore.Features.DeleteOrder;
+using ApplicationCore.Features.DoorOrderRelease;
+using ApplicationCore.Features.GeneralReleasePDF;
 using ApplicationCore.Features.OrderList;
 using ApplicationCore.Features.OrderRelationshipList;
 using ApplicationCore.Features.Orders.Details.ViewModels;
@@ -11,8 +13,6 @@ using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
 using ApplicationCore.Features.Products.UpdateClosetPart;
 using ApplicationCore.Features.Settings;
-using ApplicationCore.Layouts.MainLayout.DoorOrderRelease;
-using ApplicationCore.Layouts.MainLayout.ReleaseDialog;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationCore;

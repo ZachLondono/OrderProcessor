@@ -8,7 +8,7 @@ using ApplicationCore.Shared.Services;
 using MimeKit;
 using QuestPDF.Fluent;
 
-namespace ApplicationCore.Layouts.MainLayout.ReleaseDialog;
+namespace ApplicationCore.Features.GeneralReleasePDF;
 
 internal class ReleasePDFDialogViewModel {
 
