@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using FluentAssertions;
 using static ApplicationCore.Features.Orders.Shared.Domain.Products.Closets.CustomDrilledVerticalPanel;
 

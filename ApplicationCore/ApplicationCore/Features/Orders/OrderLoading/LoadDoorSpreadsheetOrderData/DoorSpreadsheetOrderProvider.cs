@@ -8,7 +8,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using ApplicationCore.Shared.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

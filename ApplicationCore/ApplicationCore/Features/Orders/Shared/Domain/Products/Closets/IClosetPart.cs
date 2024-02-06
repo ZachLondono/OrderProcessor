@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 

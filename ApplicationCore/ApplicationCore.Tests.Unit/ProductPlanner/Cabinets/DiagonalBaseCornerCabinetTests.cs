@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using FluentAssertions;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 

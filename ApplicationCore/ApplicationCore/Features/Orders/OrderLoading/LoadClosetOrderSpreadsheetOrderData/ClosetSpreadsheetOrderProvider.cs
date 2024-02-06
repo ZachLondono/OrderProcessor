@@ -8,7 +8,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Shared;
 using ApplicationCore.Shared.Data.Ordering;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using ApplicationCore.Shared.Services;
 using Dapper;
 using Microsoft.Office.Interop.Excel;

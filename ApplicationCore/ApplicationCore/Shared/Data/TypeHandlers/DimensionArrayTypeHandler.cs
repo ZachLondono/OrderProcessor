@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using System.Text.Json;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using Dapper;
 
 namespace ApplicationCore.Shared.Data.TypeHandlers;

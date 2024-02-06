@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Shared.Domain;
+﻿using Domain.ValueObjects;
 namespace ApplicationCore.Features.Orders.Shared.Domain;
 
 public static class Extensions {

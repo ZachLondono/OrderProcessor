@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Shared;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;

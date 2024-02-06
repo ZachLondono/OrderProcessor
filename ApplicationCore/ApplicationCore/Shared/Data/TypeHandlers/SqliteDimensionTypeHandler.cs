@@ -1,5 +1,5 @@
 ﻿using System.Data;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using Dapper;
 
 namespace ApplicationCore.Shared.Data.TypeHandlers;

@@ -9,7 +9,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Builders;
 using ApplicationCore.Features.Orders.Shared.Domain.Entities;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Shared.Data.Ordering;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using ApplicationCore.Shared.Services;
 using Dapper;
 using Microsoft.Extensions.Logging;

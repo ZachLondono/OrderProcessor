@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.AllmoxyOrderExport.Attributes;
 using ApplicationCore.Features.ClosetProCSVCutList.Products;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.Orders.ClosetProOrderLoading;

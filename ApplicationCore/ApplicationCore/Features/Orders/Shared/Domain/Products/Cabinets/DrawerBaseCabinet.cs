@@ -3,7 +3,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Components;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Exceptions;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 

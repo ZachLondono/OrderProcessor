@@ -5,7 +5,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using ApplicationCore.Features.Companies.Contracts;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.CabinetGroup;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.ClosetPartGroup;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.DovetailDrawerBoxGroup;

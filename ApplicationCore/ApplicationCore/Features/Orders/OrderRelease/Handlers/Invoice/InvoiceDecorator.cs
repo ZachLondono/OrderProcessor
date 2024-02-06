@@ -4,7 +4,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;

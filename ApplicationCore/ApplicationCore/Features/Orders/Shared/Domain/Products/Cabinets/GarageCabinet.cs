@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Contracts;
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 
 namespace ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
 

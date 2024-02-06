@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 

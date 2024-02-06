@@ -29,7 +29,7 @@ using CADCodeProxy.Machining;
 using ApplicationCore.Features.Orders.Shared.Domain;
 using ApplicationCore.Shared.CNC;
 using ApplicationCore.Features.OptimizeStrips;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 

@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Shared.Domain;
+﻿namespace Domain.ValueObjects; 
 
 public readonly struct Dimension : IComparable {
 

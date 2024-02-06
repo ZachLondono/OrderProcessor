@@ -4,7 +4,7 @@ using ApplicationCore.Features.Companies.Customers.Commands;
 using ApplicationCore.Features.Companies.Customers.Queries;
 using ApplicationCore.Shared.Data;
 using ApplicationCore.Shared.Data.Companies;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using Dapper;
 using FluentAssertions;
 using System.Data;

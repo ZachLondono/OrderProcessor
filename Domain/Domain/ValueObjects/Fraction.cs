@@ -1,13 +1,9 @@
-﻿namespace ApplicationCore.Shared.Domain;
+﻿namespace Domain.ValueObjects;
 
-public readonly struct Fraction {
+public readonly struct Fraction(int n, int d) {
 
-    public int N { get; }
-    public int D { get; }
-    public Fraction(int n, int d) {
-        N = n;
-        D = d;
-    }
+    public int N { get; } = n;
+    public int D { get; } = d;
 
     public override string ToString() {
         if (N == 0) return "0";

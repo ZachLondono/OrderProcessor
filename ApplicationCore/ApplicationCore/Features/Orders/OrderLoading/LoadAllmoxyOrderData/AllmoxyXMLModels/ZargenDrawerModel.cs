@@ -4,7 +4,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using OneOf;
 using System.Xml.Serialization;
 using ClosetPaintedSide = ApplicationCore.Features.Orders.Shared.Domain.ValueObjects.PaintedSide;

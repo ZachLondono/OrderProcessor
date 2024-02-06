@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using Dapper;
 using System.Data;
 

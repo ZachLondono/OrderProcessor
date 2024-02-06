@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Components;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using CADCodeProxy.CSV;
 using CADCodeProxy.Machining;
 using FluentAssertions;

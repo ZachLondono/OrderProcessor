@@ -9,7 +9,7 @@ using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
 using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using ApplicationCore.Shared.Services;
 using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Options;

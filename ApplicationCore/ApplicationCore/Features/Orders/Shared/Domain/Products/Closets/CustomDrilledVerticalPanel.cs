@@ -2,7 +2,7 @@
 using ApplicationCore.Features.Orders.Shared.Domain.Enums;
 using ApplicationCore.Features.Orders.Shared.Domain.Exceptions;
 using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using CADCodeProxy.Enums;
 using CADCodeProxy.Machining;
 using CADCodeProxy.Machining.Tokens;

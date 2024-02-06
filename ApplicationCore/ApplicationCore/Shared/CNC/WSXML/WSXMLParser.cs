@@ -2,7 +2,7 @@
 using ApplicationCore.Shared.CNC.Domain;
 using ApplicationCore.Shared.CNC.Job;
 using ApplicationCore.Shared.CNC.WSXML.Report;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using ApplicationCore.Shared.Settings.Tools;
 using Microsoft.Extensions.Options;
 using System.Xml.Linq;

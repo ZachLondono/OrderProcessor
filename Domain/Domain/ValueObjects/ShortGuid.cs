@@ -1,17 +1,9 @@
-﻿namespace ApplicationCore.Shared.Domain;
+﻿namespace Domain.ValueObjects;
 
-public class ShortGuid {
+public class ShortGuid(Guid guid) {
 
-    private readonly Guid _guid;
-    private readonly string _value;
-
-    public ShortGuid(Guid guid) {
-        _guid = guid;
-        _value = Convert.ToBase64String(guid.ToByteArray())
-                        .Substring(0, 22)
-                        .Replace("/", "_")
-                        .Replace("+", "-");
-    }
+    private readonly Guid _guid = guid;
+    private readonly string _value = FromGuid(guid);
 
     public override string ToString() => _value;
 
@@ -24,9 +16,16 @@ public class ShortGuid {
 
         return new ShortGuid(new Guid(Convert.FromBase64String(shortGuid.Replace("_", "/").Replace("-", "+") + "==")));
     }
-
+    
     public static implicit operator string(ShortGuid guid) => guid.ToString();
 
     public static implicit operator Guid(ShortGuid shortGuid) => shortGuid._guid;
+
+    private static string FromGuid(Guid guid) {
+        return Convert.ToBase64String(guid.ToByteArray())
+                      .Substring(0, 22)
+                      .Replace("/", "_")
+                      .Replace("+", "-");
+    }
 
 }

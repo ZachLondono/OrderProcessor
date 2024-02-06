@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.CNC.ReleasePDF;
 using ApplicationCore.Shared.CNC.Domain;
 using ApplicationCore.Shared.CNC.Job;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using ApplicationCore.Shared.Settings.CNC;
 using ApplicationCore.Shared.Settings.Tools;
 using CADCodeProxy;

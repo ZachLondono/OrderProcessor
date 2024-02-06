@@ -3,7 +3,7 @@ using ApplicationCore.Features.Companies.Contracts.ValueObjects;
 using ApplicationCore.Shared.Data.Companies;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 
 namespace ApplicationCore.Features.Companies.Customers.Queries;
 

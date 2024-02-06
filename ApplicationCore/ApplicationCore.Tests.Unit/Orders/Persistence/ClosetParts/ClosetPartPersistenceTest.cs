@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 using ApplicationCore.Features.Products.UpdateClosetPart;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence.ClosetParts;
 

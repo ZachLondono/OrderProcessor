@@ -5,7 +5,7 @@ using ApplicationCore.Features.Orders.OrderLoading.Dialog;
 using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData.Models;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
 using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using ApplicationCore.Shared.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

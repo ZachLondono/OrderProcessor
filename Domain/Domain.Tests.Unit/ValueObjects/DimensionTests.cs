@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Shared.Domain;
+﻿using Domain.ValueObjects;
 using FluentAssertions;
 using Microsoft.AspNetCore.Components.Forms;
 using System.Diagnostics;

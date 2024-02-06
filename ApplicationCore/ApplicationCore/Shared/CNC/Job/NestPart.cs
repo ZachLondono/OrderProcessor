@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Shared.CNC.Domain;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 
 namespace ApplicationCore.Shared.CNC.Job;
 
