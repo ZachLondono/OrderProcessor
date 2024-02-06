@@ -1,4 +1,4 @@
-﻿using Domain.Orders.Excel;
+﻿using Domain.Excel;
 using Microsoft.Office.Interop.Excel;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadsheetOrderData.Models;

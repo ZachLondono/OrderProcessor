@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData;
 using Domain.Orders.Builders;
 using Domain.Orders.Entities;
-using Domain.Orders.Products.Cabinets;
+using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
@@ -49,7 +49,7 @@ public class BlindBaseCabinetModel : CabinetModelBase {
 
         BlindCabinetDoors doors = DoorQty switch {
             1 => new(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide)),
-            2 => new(Shared.Domain.Enums.HingeSide.NotApplicable),
+            2 => new(Domain.Orders.Enums.HingeSide.NotApplicable),
             _ => new(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide))
         };
 

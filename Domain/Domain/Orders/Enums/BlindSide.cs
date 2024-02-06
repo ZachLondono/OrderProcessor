@@ -1,6 +1,6 @@
 ﻿namespace Domain.Orders.Enums;
 
-internal enum BlindSide {
+public enum BlindSide {
     Left,
     Right
 }

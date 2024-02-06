@@ -7,7 +7,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-internal class BlindWallCabinet : Cabinet, IMDFDoorContainer {
+public class BlindWallCabinet : Cabinet, IMDFDoorContainer {
 
     public BlindCabinetDoors Doors { get; }
     public int AdjustableShelves { get; }
@@ -35,7 +35,7 @@ internal class BlindWallCabinet : Cabinet, IMDFDoorContainer {
         return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, blindSide, blindWidth, adjustableShelves, extendedDoor);
     }
 
-    internal BlindWallCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
+    public BlindWallCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,

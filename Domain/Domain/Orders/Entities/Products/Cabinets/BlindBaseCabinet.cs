@@ -3,12 +3,11 @@ using Domain.Orders.Builders;
 using Domain.Orders.Components;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
-using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-internal class BlindBaseCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer {
+public class BlindBaseCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer {
 
     public BlindCabinetDoors Doors { get; }
     public HorizontalDrawerBank Drawers { get; }
@@ -39,7 +38,7 @@ internal class BlindBaseCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBox
         return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, blindSide, blindWidth, adjustableShelves, shelfDepth, drawers, toeType, drawerBoxOptions);
     }
 
-    internal BlindBaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
+    public BlindBaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,

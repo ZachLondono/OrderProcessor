@@ -5,8 +5,7 @@ using Domain.ValueObjects;
 using CADCodeProxy.Enums;
 using CADCodeProxy.Machining;
 using CADCodeProxy.Machining.Tokens;
-using Domain.Orders.Entities.Products;
-using Domain.Orders;
+using Domain.ProductPlanner;
 
 namespace Domain.Orders.Entities.Products.Closets;
 

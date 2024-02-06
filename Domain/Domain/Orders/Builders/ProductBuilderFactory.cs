@@ -2,28 +2,28 @@
 
 public class ProductBuilderFactory {
 
-    internal BaseCabinetBuilder CreateBaseCabinetBuilder() => new();
+    public BaseCabinetBuilder CreateBaseCabinetBuilder() => new();
 
-    internal WallCabinetBuilder CreateWallCabinetBuilder() => new();
+    public WallCabinetBuilder CreateWallCabinetBuilder() => new();
 
-    internal BaseDiagonalCornerCabinetBuilder CreateBaseDiagonalCornerCabinetBuilder() => new();
+    public BaseDiagonalCornerCabinetBuilder CreateBaseDiagonalCornerCabinetBuilder() => new();
 
-    internal BasePieCutCornerCabinetBuilder CreateBasePieCutCornerCabinetBuilder() => new();
+    public BasePieCutCornerCabinetBuilder CreateBasePieCutCornerCabinetBuilder() => new();
 
-    internal BlindBaseCabinetBuilder CreateBlindBaseCabinetBuilder() => new();
+    public BlindBaseCabinetBuilder CreateBlindBaseCabinetBuilder() => new();
 
-    internal BlindWallCabinetBuilder CreateBlindWallCabinetBuilder() => new();
+    public BlindWallCabinetBuilder CreateBlindWallCabinetBuilder() => new();
 
-    internal DrawerBaseCabinetBuilder CreateDrawerBaseCabinetBuilder() => new();
+    public DrawerBaseCabinetBuilder CreateDrawerBaseCabinetBuilder() => new();
 
-    internal SinkCabinetBuilder CreateSinkCabinetBuilder() => new();
+    public SinkCabinetBuilder CreateSinkCabinetBuilder() => new();
 
-    internal TallCabinetBuilder CreateTallCabinetBuilder() => new();
+    public TallCabinetBuilder CreateTallCabinetBuilder() => new();
 
-    internal WallDiagonalCornerCabinetBuilder CreateWallDiagonalCornerCabinetBuilder() => new();
+    public WallDiagonalCornerCabinetBuilder CreateWallDiagonalCornerCabinetBuilder() => new();
 
-    internal WallPieCutCornerCabinetBuilder CreateWallPieCutCornerCabinetBuilder() => new();
+    public WallPieCutCornerCabinetBuilder CreateWallPieCutCornerCabinetBuilder() => new();
 
-    internal TrashCabinetBuilder CreateTrashCabinetBuilder() => new();
+    public TrashCabinetBuilder CreateTrashCabinetBuilder() => new();
 
 }

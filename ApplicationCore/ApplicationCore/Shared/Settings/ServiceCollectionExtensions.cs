@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Shared.Settings.CNC;
 using ApplicationCore.Shared.Settings.Tools;
+using Domain.Infrastructure.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

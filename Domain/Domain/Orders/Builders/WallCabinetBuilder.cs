@@ -3,7 +3,7 @@ using Domain.Orders.Entities.Products.Cabinets;
 
 namespace Domain.Orders.Builders;
 
-internal class WallCabinetBuilder : CabinetBuilder<WallCabinet> {
+public class WallCabinetBuilder : CabinetBuilder<WallCabinet> {
 
     public WallCabinetDoors Doors { get; private set; }
     public WallCabinetInside Inside { get; private set; }

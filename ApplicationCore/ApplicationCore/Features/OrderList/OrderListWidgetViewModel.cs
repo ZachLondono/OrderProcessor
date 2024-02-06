@@ -1,7 +1,7 @@
 ﻿using Domain.Companies;
-using ApplicationCore.Shared.Services;
-using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Logging;
+using Domain.Infrastructure.Bus;
+using Domain.Services;
 
 namespace ApplicationCore.Features.OrderList;
 

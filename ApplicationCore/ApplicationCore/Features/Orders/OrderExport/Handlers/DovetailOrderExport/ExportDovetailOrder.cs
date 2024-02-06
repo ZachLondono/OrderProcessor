@@ -3,12 +3,12 @@ using Domain.Orders;
 using Domain.Orders.Builders;
 using Domain.Orders.Entities;
 using ApplicationCore.Shared.Services;
-using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Logging;
 using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
 using Domain.Orders.Components;
-using Error = ApplicationCore.Infrastructure.Bus.Error;
+using Error = Domain.Infrastructure.Bus.Error;
+using Domain.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Orders.OrderExport.Handlers.DovetailOrderExport;
 

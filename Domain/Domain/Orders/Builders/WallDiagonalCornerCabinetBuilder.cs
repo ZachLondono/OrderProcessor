@@ -4,7 +4,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Orders.Builders;
 
-internal class WallDiagonalCornerCabinetBuilder : CabinetBuilder<WallDiagonalCornerCabinet> {
+public class WallDiagonalCornerCabinetBuilder : CabinetBuilder<WallDiagonalCornerCabinet> {
 
     public Dimension RightWidth { get; private set; }
     public Dimension RightDepth { get; private set; }

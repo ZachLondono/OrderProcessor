@@ -1,12 +1,12 @@
 ﻿using Domain.Orders.Entities;
 using Domain.Orders.ValueObjects;
-using ApplicationCore.Features.Orders.Shared.State.DataModels;
-using ApplicationCore.Shared.Data.Ordering;
-using ApplicationCore.Infrastructure.Bus;
+using Domain.Orders.Persistance.DataModels;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using System.Data;
 using Domain.Orders.Entities.Products;
+using Domain.Infrastructure.Bus;
+using Domain.Orders.Persistance;
 
 namespace ApplicationCore.Features.Orders.Details.Queries;
 

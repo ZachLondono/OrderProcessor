@@ -4,12 +4,11 @@ using Domain.Orders.Components;
 using Domain.Orders.Enums;
 using Domain.Orders.Exceptions;
 using Domain.Orders.ValueObjects;
-using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-internal class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorContainer {
+public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorContainer {
 
     public BaseCabinetDoors Doors { get; }
     public ToeType ToeType { get; }
@@ -38,7 +37,7 @@ internal class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoo
         return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, toeType, drawers, inside, drawerBoxOptions, baseNotch);
     }
 
-    internal BaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
+    public BaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,

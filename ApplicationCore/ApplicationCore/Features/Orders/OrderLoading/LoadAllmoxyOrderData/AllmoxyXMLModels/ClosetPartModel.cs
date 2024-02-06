@@ -1,7 +1,7 @@
 ﻿using Domain.Orders.Builders;
 using Domain.Orders.Entities;
 using Domain.Orders.Enums;
-using Domain.Orders.Products.Closets;
+using Domain.Orders.Entities.Products.Closets;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;

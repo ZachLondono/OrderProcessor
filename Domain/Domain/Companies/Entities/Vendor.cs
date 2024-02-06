@@ -12,7 +12,7 @@ public class Vendor {
     public ExportProfile ExportProfile { get; set; }
     public ReleaseProfile ReleaseProfile { get; set; }
 
-    internal Vendor(Guid id, string name, Address address, string phone, byte[] logo, ExportProfile exportProfile, ReleaseProfile releaseProfile) {
+    public Vendor(Guid id, string name, Address address, string phone, byte[] logo, ExportProfile exportProfile, ReleaseProfile releaseProfile) {
         Id = id;
         Name = name;
         Address = address;

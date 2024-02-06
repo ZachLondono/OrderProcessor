@@ -5,7 +5,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Orders.Builders;
 
-internal class BlindWallCabinetBuilder : CabinetBuilder<BlindWallCabinet> {
+public class BlindWallCabinetBuilder : CabinetBuilder<BlindWallCabinet> {
 
     public BlindCabinetDoors Doors { get; private set; }
     public int AdjustableShelves { get; private set; }

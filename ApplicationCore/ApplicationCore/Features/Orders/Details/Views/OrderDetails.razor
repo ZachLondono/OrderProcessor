@@ -1,30 +1,24 @@
-﻿@    using Domain.Companies;
-@    using ApplicationCore.Features.Orders.Details;
-@    using ApplicationCore.Features.Orders.OrderExport;
-@    using Domain.Orders
-@    using Domain.Orders.Products.Closets;
-@    using Domain.Orders.Products.Doors;
-@    using Domain.Orders.Products.DrawerBoxes;
-@    using Domain.Orders.ValueObjects;
-@    using ApplicationCore.Features.Orders.OrderRelease
-@    using ApplicationCore.Infrastructure.Bus;
-@    using ApplicationCore.Shared.Services;
-@    using ApplicationCore.Infrastructure
-@    using System.Diagnostics
-@    using ApplicationCore.Shared.Components
-@    using Domain.Orders.Products;
-@    using ApplicationCore.Features.Orders.Shared;
-@    using Domain.Orders.Enums;
-@    using ApplicationCore.Pages.OrderDetails;
-@    using static ApplicationCore.Shared.Components.DropDown;
-@    using static ApplicationCore.Shared.Components.Button;
-@    using Domain.Companies.ValueObjects;
-@    using Domain.Orders.Products.Cabinets;
-    using Domain.Orders.Entities.Products;
-    using Domain.Orders.Entities.Products.Cabinets;
-    using Domain.Orders.Entities.Products.Closets;
-    using Domain.Orders.Entities.Products.Doors;
-    using Domain.Orders.Entities.Products.DrawerBoxes;
+﻿@using Domain.Companies;
+@using ApplicationCore.Features.Orders.Details;
+@using ApplicationCore.Features.Orders.OrderExport;
+@using Domain.Orders
+@using Domain.Orders.ValueObjects;
+@using ApplicationCore.Features.Orders.OrderRelease
+@using Domain.Infrastructure.Bus;
+@using ApplicationCore.Shared.Services;
+@using System.Diagnostics
+@using Domain.Components
+@using Domain.Orders.Enums;
+@using ApplicationCore.Pages.OrderDetails;
+@using static Domain.Components.DropDown;
+@using static Domain.Components.Button;
+@using Domain.Companies.ValueObjects;
+@using Domain.Orders.Entities.Products;
+@using Domain.Orders.Entities.Products.Cabinets;
+@using Domain.Orders.Entities.Products.Closets;
+@using Domain.Orders.Entities.Products.Doors;
+@using Domain.Orders.Entities.Products.DrawerBoxes;
+@using Domain.Services
 @inject IFilePicker FilePicker
 @inject IBus Bus
 @inject NavigationService NavigationService

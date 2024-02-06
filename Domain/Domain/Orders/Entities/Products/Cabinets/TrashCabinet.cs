@@ -1,14 +1,12 @@
-﻿using Domain.Orders;
-using Domain.Orders.Builders;
+﻿using Domain.Orders.Builders;
 using Domain.Orders.Components;
 using Domain.Orders.Enums;
-using Domain.Orders.ValueObjects;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-internal class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer {
+public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer {
 
     public Dimension DrawerFaceHeight { get; set; }
     public TrashPulloutConfiguration TrashPulloutConfiguration { get; set; }

@@ -1,12 +1,11 @@
 ﻿using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products.Cabinets;
-using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace Domain.Orders.Builders;
 
-internal class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
+public class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
 
     public BlindCabinetDoors Doors { get; private set; }
     public HorizontalDrawerBank Drawers { get; private set; }

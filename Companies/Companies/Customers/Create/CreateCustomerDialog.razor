@@ -1,0 +1,65 @@
+﻿@using Domain.Components
+@using static Domain.Components.Button
+@using Blazored.Modal
+@using Domain.Services
+@using Microsoft.AspNetCore.Components.Forms
+@inject CreateCustomerViewModel DataContext
+@inject NavigationService NavigationService
+
+@if (DataContext.Error is not null) {
+    
+    <div class="overflow-x-scroll">
+        <h3 class="text-md text-red-600">@DataContext.Error.Title</h3>
+        <span class="text-xs">@((MarkupString)DataContext.Error.Details)</span>
+    </div>
+
+    <Button Style="Button.ButtonStyle.Contained" Color="Button.ButtonColor.Secondary" OnClickAsync="Modal.CancelAsync">Close</Button>
+
+} else if (DataContext.IsLoading) {
+
+    <span>Loading...</span>
+
+} else {
+
+
+    <h3>New Customer</h3>
+
+    <EditForm Model="DataContext.Model" OnValidSubmit="SubmitForm" class="flex flex-col space-y-5 overflow-x-hidden">
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="my-5">
+            <label for="name" class="block text-sm font-medium text-gray-700">Name*</label>
+            <InputText id="name" @bind-Value="DataContext.Model.Name" class="mt-1 w-full px-3 py-2 rounded-md border focus:outline-0 border-gray-300 shadow-md focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+        </div>
+
+        <section>
+            <Button Style="Button.ButtonStyle.Contained" Color="Button.ButtonColor.Primary" Type="submit">Create</Button>
+            <Button Style="Button.ButtonStyle.Contained" Color="Button.ButtonColor.Secondary" OnClickAsync="Modal.CancelAsync">Cancel</Button>
+        </section>
+
+    </EditForm>
+
+}
+
+@code {
+
+    [CascadingParameter]
+    private BlazoredModalInstance Modal { get; set; } = default!;
+
+    protected override Task OnInitializedAsync() {
+        DataContext.OnPropertyChanged += StateHasChanged;
+        return base.OnInitializedAsync();
+    }
+
+    private async Task SubmitForm() {
+
+        var customerId = await DataContext.Submit();
+        if (customerId != Guid.Empty) {
+            NavigationService.NavigateToCustomerPage(customerId);
+        }
+
+    }
+
+}

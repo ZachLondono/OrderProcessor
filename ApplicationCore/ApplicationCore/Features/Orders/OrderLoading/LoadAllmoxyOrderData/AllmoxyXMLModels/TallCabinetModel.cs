@@ -1,7 +1,7 @@
 ﻿using Domain.Orders.Builders;
 using Domain.Orders.Entities;
 using Domain.Orders.Enums;
-using Domain.Orders.Products.Cabinets;
+using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
@@ -62,7 +62,7 @@ public class TallCabinetModel : CabinetModelBase {
         } else inside = new(UpperAdjShelfQty, LowerAdjShelfQty, UpperVerticalDividerQty, LowerVerticalDividerQty);
 
         TallCabinetDoors doors;
-        HingeSide hingeSide = LowerDoorQty == 1 ? AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide) : Shared.Domain.Enums.HingeSide.NotApplicable;
+        HingeSide hingeSide = LowerDoorQty == 1 ? AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide) : Domain.Orders.Enums.HingeSide.NotApplicable;
         if (LowerDoorQty == 0) {
             doors = TallCabinetDoors.NoDoors();
         } else if (UpperDoorQty != 0) {

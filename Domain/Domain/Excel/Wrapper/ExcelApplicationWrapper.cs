@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using ExcelApp = Microsoft.Office.Interop.Excel.Application;
 
-namespace ApplicationCore.Shared.Excel;
+namespace Domain.Excel.Wrapper;
 
 public class ExcelApplicationWrapper : IDisposable {
 

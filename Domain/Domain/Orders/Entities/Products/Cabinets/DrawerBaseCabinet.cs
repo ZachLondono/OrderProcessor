@@ -1,15 +1,13 @@
-﻿using Domain.Orders;
-using Domain.Orders.Builders;
+﻿using Domain.Orders.Builders;
 using Domain.Orders.Components;
 using Domain.Orders.Enums;
 using Domain.Orders.Exceptions;
-using Domain.Orders.ValueObjects;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-internal class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer {
+public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer {
 
     // TODO: add option for no doors
 
@@ -36,7 +34,7 @@ internal class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDr
         return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, toeType, drawers, drawerBoxOptions, baseNotch);
     }
 
-    internal DrawerBaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
+    public DrawerBaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,

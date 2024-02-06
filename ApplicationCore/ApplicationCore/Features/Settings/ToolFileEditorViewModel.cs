@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Shared.Settings;
-using ApplicationCore.Shared.Settings.Tools;
+﻿using ApplicationCore.Shared.Settings.Tools;
+using Domain.Infrastructure.Bus;
+using Domain.Infrastructure.Settings;
 
 namespace ApplicationCore.Features.Settings;
 

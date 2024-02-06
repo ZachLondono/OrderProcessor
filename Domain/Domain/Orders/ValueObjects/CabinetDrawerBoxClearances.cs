@@ -2,7 +2,7 @@
 
 namespace Domain.Orders.ValueObjects;
 
-internal class CabinetDrawerBoxClearances {
+public class CabinetDrawerBoxClearances {
 
     /// <summary>
     /// Clearance on each side of a drawer box

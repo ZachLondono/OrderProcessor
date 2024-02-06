@@ -1,12 +1,11 @@
-﻿using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Contracts;
-using Domain.Orders;
-using Domain.Orders.Enums;
-using Domain.Orders.ValueObjects;
+﻿using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
+using Domain.ProductPlanner;
+using Domain.Orders.Enums;
 
 namespace Domain.Orders.Entities.Products.Closets;
 
-public class ClosetPart : IPPProductContainer, IClosetPartProduct {
+public partial class ClosetPart : IPPProductContainer, IClosetPartProduct {
 
     public Guid Id { get; }
     public int Qty { get; set; }

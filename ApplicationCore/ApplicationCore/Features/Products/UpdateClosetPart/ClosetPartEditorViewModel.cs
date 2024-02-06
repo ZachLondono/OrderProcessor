@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Infrastructure.Bus;
+﻿using Domain.Infrastructure.Bus;
 using Domain.Orders.Entities.Products.Closets;
 
 namespace ApplicationCore.Features.Products.UpdateClosetPart;

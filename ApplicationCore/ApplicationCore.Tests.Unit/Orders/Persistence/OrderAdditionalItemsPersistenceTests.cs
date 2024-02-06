@@ -1,12 +1,11 @@
 ﻿using ApplicationCore.Features.DeleteOrder;
 using Domain.Orders.Entities;
-using ApplicationCore.Features.Orders.Shared.State;
-using ApplicationCore.Shared.Data;
-using ApplicationCore.Shared.Data.Ordering;
+using Domain.Orders.Persistance;
 using Dapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using Domain.Infrastructure.Data;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence;
 

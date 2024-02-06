@@ -1,0 +1,104 @@
+﻿@using System.Diagnostics;
+@using Domain.Components;
+@using static Domain.Components.Button;
+
+<nav>
+    <ul>
+        <li class="inline-block">
+            <Button Size="ButtonSize.XSmall"
+                    Style="ButtonStyle.Outline"
+                    Rounded="ButtonRounded.Left"
+                    Class="px-1.5"
+                    Disabled="@(CurrentPage <= 1)"
+                    Color="ButtonColor.Secondary"
+                    OnClick="SelectPrevPage">
+                    &laquo
+             </Button>
+        </li>
+        @if (FirstVisibleTab > 1) {
+            <li class="inline-block">
+                ...
+            </li>
+        }
+        @foreach (var pageNum in Enumerable.Range(FirstVisibleTab, VisibleTabCount)) {
+            <li class="inline-block">
+                <Button Size="ButtonSize.XSmall"
+                        Style="@(pageNum == CurrentPage ? ButtonStyle.Contained : ButtonStyle.Outline)"
+                        Rounded="ButtonRounded.None"
+                        OnClick="(() => SelectPage(pageNum))"
+                        Color="ButtonColor.Secondary"
+                        Class="px-1.5">
+                        @pageNum
+                </Button>
+            </li>
+        }
+        @if (LastVisibleTab < PageCount) {
+            <li class="inline-block">
+                ...
+            </li>
+        }
+        <li class="inline-block">
+            <Button Size="ButtonSize.XSmall"
+                    Style="ButtonStyle.Outline"
+                    Rounded="ButtonRounded.Right"
+                    Class="px-1.5"
+                    Disabled="@(CurrentPage >= PageCount)"
+                    Color="ButtonColor.Secondary"
+                    OnClick="SelectNextPage">
+                    &raquo
+             </Button>
+        </li>
+    </ul>
+</nav>
+
+@code {
+
+    [Parameter]
+    public int PageCount { get; set; }
+
+    [Parameter]
+    public Action<int>? OnPageSelected { get; set; }
+
+    [Parameter]
+    public int CurrentPage { get; set; } = 1;
+
+    [Parameter]
+    public int MaxTabCount { get; set; } = 5; 
+
+    public int FirstVisibleTab {
+        get {
+
+            if (CurrentPage <= MaxTabCount / 2) {
+                return 1;
+            } else if (CurrentPage >= PageCount - (MaxTabCount / 2)) {
+                return PageCount - MaxTabCount + 1;
+            }
+
+            return CurrentPage - (MaxTabCount / 2);
+
+        }
+    }
+
+    public int VisibleTabCount => Math.Min(MaxTabCount, PageCount);
+
+    public int LastVisibleTab => FirstVisibleTab + VisibleTabCount - 1;
+
+    private void SelectPage(int pageNum) {
+        CurrentPage = pageNum;
+        OnPageSelected?.Invoke(CurrentPage);
+        StateHasChanged();
+    }
+
+    private void SelectNextPage() {
+        ++CurrentPage;
+        OnPageSelected?.Invoke(CurrentPage);
+        StateHasChanged();
+    }
+
+    private void SelectPrevPage() {
+        --CurrentPage;
+        OnPageSelected?.Invoke(CurrentPage);
+        StateHasChanged();
+    }
+
+}

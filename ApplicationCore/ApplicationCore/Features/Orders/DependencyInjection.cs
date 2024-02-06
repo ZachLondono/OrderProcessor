@@ -9,7 +9,6 @@ using ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
-using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Features.Orders.CustomerOrderNumber;
 using ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
@@ -30,6 +29,7 @@ using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrder
 using ApplicationCore.Features.Orders.OrderLoading.LoadHafeleDBSpreadsheetOrderData;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
 using Domain.Orders.ValueObjects;
+using Domain.Orders.Persistance;
 
 namespace ApplicationCore.Features.Orders;
 

@@ -1,7 +1,7 @@
-﻿@using ApplicationCore.Features.Orders.Shared.State;
-@using ApplicationCore.Infrastructure.Bus;
-@using ApplicationCore.Shared.Components
-@using static ApplicationCore.Shared.Components.Button;
+﻿@using Domain.Orders.Persistance;
+@using Domain.Infrastructure.Bus;
+@using Domain.Components
+@using static Domain.Components.Button;
 @inject IBus Bus
 
 <EditForm Model="@_model" OnSubmit="@UpdateWorkingDirectory" >

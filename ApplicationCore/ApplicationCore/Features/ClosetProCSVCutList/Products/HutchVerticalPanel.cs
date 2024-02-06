@@ -1,4 +1,4 @@
-﻿using Domain.Orders.Products.Closets;
+﻿using Domain.Orders.Entities.Products.Closets;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using Domain.Orders.Enums;

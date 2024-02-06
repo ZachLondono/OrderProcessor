@@ -2,7 +2,7 @@
 
 namespace Domain.Excel;
 
-internal static class WorkBookExtensions {
+public static class WorkBookExtensions {
 
     public static T GetRangeValueOrDefault<T>(this Worksheet sheet, string rngName, T defaultValue) {
 

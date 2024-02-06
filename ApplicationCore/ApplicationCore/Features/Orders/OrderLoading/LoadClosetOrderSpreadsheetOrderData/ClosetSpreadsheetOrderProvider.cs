@@ -2,10 +2,8 @@
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadsheetOrderData.Models;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
 using Domain.Orders.Entities;
-using Domain.Orders.Products.DrawerBoxes;
 using Domain.Orders.ValueObjects;
 using ApplicationCore.Shared;
-using ApplicationCore.Shared.Data.Ordering;
 using Domain.ValueObjects;
 using ApplicationCore.Shared.Services;
 using Dapper;
@@ -15,6 +13,7 @@ using static Domain.Companies.CompanyDirectory;
 using Domain.Orders.Entities.Products;
 using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.Entities.Products.DrawerBoxes;
+using Domain.Orders.Persistance;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadsheetOrderData;
 
@@ -226,7 +225,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
                 { "WallMount", closetPart.WallMount == "Yes" ? "1" : "0" }
             };
 
-            yield return new Shared.Domain.Products.Closets.ClosetPart(Guid.NewGuid(), closetPart.Qty, closetPart.UnitPrice, closetPart.Number, closetPart.RoomName, closetPart.Item, Dimension.FromMillimeters(closetPart.Width), Dimension.FromMillimeters(closetPart.Length), new(cover.MaterialColor, Shared.Domain.Enums.ClosetMaterialCore.ParticleBoard), null, cover.MaterialColor, closetPart.Comment, parameters);
+            yield return new Domain.Orders.Entities.Products.Closets.ClosetPart(Guid.NewGuid(), closetPart.Qty, closetPart.UnitPrice, closetPart.Number, closetPart.RoomName, closetPart.Item, Dimension.FromMillimeters(closetPart.Width), Dimension.FromMillimeters(closetPart.Length), new(cover.MaterialColor, Domain.Orders.Enums.ClosetMaterialCore.ParticleBoard), null, cover.MaterialColor, closetPart.Comment, parameters);
 
         }
 
@@ -243,7 +242,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
                 { "ShelfRadius", cornerShelf.ShelfRadius.ToString() }
             };
 
-            yield return new Shared.Domain.Products.Closets.ClosetPart(Guid.NewGuid(), cornerShelf.Qty, cornerShelf.UnitPrice, cornerShelf.Number, cornerShelf.RoomName, cornerShelf.Item, Dimension.FromMillimeters(cornerShelf.ProductWidth), Dimension.FromMillimeters(cornerShelf.ProductLength), new(cover.MaterialColor, Shared.Domain.Enums.ClosetMaterialCore.ParticleBoard), null, cover.MaterialColor, cornerShelf.Comment, parameters);
+            yield return new Domain.Orders.Entities.Products.Closets.ClosetPart(Guid.NewGuid(), cornerShelf.Qty, cornerShelf.UnitPrice, cornerShelf.Number, cornerShelf.RoomName, cornerShelf.Item, Dimension.FromMillimeters(cornerShelf.ProductWidth), Dimension.FromMillimeters(cornerShelf.ProductLength), new(cover.MaterialColor, Domain.Orders.Enums.ClosetMaterialCore.ParticleBoard), null, cover.MaterialColor, cornerShelf.Comment, parameters);
 
         }
 
@@ -265,7 +264,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
                 { "PullCenters", zargen.PullCtrDim.ToString() },
             };
 
-            yield return new Shared.Domain.Products.Closets.ZargenDrawer(Guid.NewGuid(), zargen.Qty, zargen.ExtPrice / zargen.Qty, line++, string.Empty, zargen.Item, Dimension.FromMillimeters(zargen.HoleSize), Dimension.FromMillimeters(height), Dimension.FromMillimeters(zargen.SlideDepth), new(cover.MaterialColor, Shared.Domain.Enums.ClosetMaterialCore.ParticleBoard), null, cover.MaterialColor, string.Empty, parameters);
+            yield return new Domain.Orders.Entities.Products.Closets.ZargenDrawer(Guid.NewGuid(), zargen.Qty, zargen.ExtPrice / zargen.Qty, line++, string.Empty, zargen.Item, Dimension.FromMillimeters(zargen.HoleSize), Dimension.FromMillimeters(height), Dimension.FromMillimeters(zargen.SlideDepth), new(cover.MaterialColor, Domain.Orders.Enums.ClosetMaterialCore.ParticleBoard), null, cover.MaterialColor, string.Empty, parameters);
 
         }
 
@@ -317,7 +316,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
                                                              header.Clips,
                                                              header.Notch,
                                                              accessory,
-                                                             Shared.Domain.Enums.LogoPosition.None,
+                                                             Domain.Orders.Enums.LogoPosition.None,
                                                              header.PostFinish));
 
         }
@@ -332,7 +331,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
                                                "",
                                                front.Qty,
                                                front.LineNumber,
-                                               Shared.Domain.Enums.DoorType.Door,
+                                               Domain.Orders.Enums.DoorType.Door,
                                                Dimension.FromInches(front.Height),
                                                Dimension.FromInches(front.Width),
                                                front.Note,

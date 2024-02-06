@@ -1,9 +1,7 @@
-﻿using Domain.Companies.Customers.List;
-using Domain.Companies.Vendors.List;
-using ApplicationCore.Features.OrderList;
-using ApplicationCore.Features.Orders.Details.Queries;
-using Domain.Orders.Entities;
-using ApplicationCore.Infrastructure.Bus;
+﻿using ApplicationCore.Features.OrderList;
+using Companies.Customers.List;
+using Companies.Vendors.List;
+using Domain.Infrastructure.Bus;
 
 namespace ApplicationCore.Pages.OrderList;
 

@@ -1,23 +1,23 @@
-﻿@using ApplicationCore.Features.BugReport;
-@using ApplicationCore.Features.ClosetOrderSelector;
-@using Domain.Companies.Customers.Create;
+﻿@using ApplicationCore.Features.BugReport
+@using ApplicationCore.Features.ClosetOrderSelector
 @using ApplicationCore.Features.DoorOrderRelease
-@using ApplicationCore.Features.DoorOrderSelector;
+@using ApplicationCore.Features.DoorOrderSelector
 @using ApplicationCore.Features.GeneralReleasePDF
-@using ApplicationCore.Features.OpenDoorOrders;
+@using ApplicationCore.Features.OpenDoorOrders
 @using ApplicationCore.Features.Orders
 @using ApplicationCore.Features.Orders.OrderLoading
-@using ApplicationCore.Features.Orders.OrderLoading.Dialog;
-@using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
-@using ApplicationCore.Features.Orders.Shared.State;
+@using ApplicationCore.Features.Orders.OrderLoading.Dialog
+@using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource
+@using Domain.Orders.Persistance;
 @using ApplicationCore.Features.Updates;
-@using ApplicationCore.Shared.Components.ProgressModal
-@using ApplicationCore.Shared.Services;
-@using ApplicationCore.Infrastructure
+@using Domain.Components.ProgressModal
+@using ApplicationCore.Shared.Services
+@using Domain.Infrastructure
 @using System.Diagnostics;
-@using static ApplicationCore.Shared.Components.InformationDialog;
-@using ApplicationCore.Features.Orders.Shared;
-@using ApplicationCore.Infrastructure.Bus;
+@using static Domain.Components.InformationDialog;
+@using Domain.Infrastructure.Bus
+@using Domain.Services
+@using Companies.Customers.Create
 @inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
 @inject NavigationService NavigationService 

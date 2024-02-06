@@ -1,5 +1,5 @@
-﻿@using ApplicationCore.Shared.Components
-@using static ApplicationCore.Shared.Components.Button;
+﻿@using Domain.Components
+@using static Domain.Components.Button;
 @inject CreateOrderRelationshipsViewModel DataContext
 
 <Button Color="ButtonColor.Secondary" Style="ButtonStyle.Contained" Disabled="DataContext.IsCreating" OnClickAsync="DataContext.CreateRelationships" Class="flex justify-center items-center h-10 w-36">

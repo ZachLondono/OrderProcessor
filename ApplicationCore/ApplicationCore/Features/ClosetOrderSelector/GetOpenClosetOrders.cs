@@ -1,9 +1,9 @@
-﻿using ApplicationCore.Infrastructure.Bus;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Office.Interop.Excel;
 using System.Diagnostics;
 using Domain.Excel;
 using ExcelApplication = Microsoft.Office.Interop.Excel.Application;
+using Domain.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.ClosetOrderSelector;
 

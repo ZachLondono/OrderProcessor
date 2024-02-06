@@ -1,6 +1,6 @@
 ﻿using Domain.Orders.Builders;
 using Domain.Orders.Entities;
-using Domain.Orders.Products.Cabinets;
+using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
@@ -38,7 +38,7 @@ public class WallCabinetModel : CabinetModelBase {
         WallCabinetDoors doors = DoorQty switch {
             0 => WallCabinetDoors.NoDoors(),
             1 => new(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide), doorExtendDown),
-            2 => new(Shared.Domain.Enums.HingeSide.NotApplicable, doorExtendDown),
+            2 => new(Domain.Orders.Enums.HingeSide.NotApplicable, doorExtendDown),
             _ => new(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide), doorExtendDown)
         };
 

@@ -1,19 +1,18 @@
-﻿using MediatR;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.CompilerServices;
 using Blazored.Modal;
 using ApplicationCore.Features.Orders;
-using Domain.Companies;
 using ApplicationCore.Shared.Services;
-using ApplicationCore.Shared.Components.ProgressModal;
-using ApplicationCore.Pages.OrderList;
-using ApplicationCore.Shared.Data;
-using ApplicationCore.Shared.Bus;
 using ApplicationCore.Features.DataFilePaths;
 using ApplicationCore.Features.Updates;
 using ApplicationCore.Shared.CNC;
-using ApplicationCore.Infrastructure.Bus;
+using Domain.Infrastructure.Bus;
+using Domain.Components.ProgressModal;
+using Domain.Infrastructure.Data;
+using Domain.Services;
+using Companies;
+using Domain;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -23,6 +22,7 @@ public static class DependencyInjection {
 
     public static IServiceCollection AddApplicationCoreServices(this IServiceCollection services, IConfiguration configuration) {
 
+        services.AddDomainServices();
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 
         services.AddSingleton(sp => sp);
@@ -38,8 +38,6 @@ public static class DependencyInjection {
         services.AddConfiguration();
 
         services.AddBlazoredModal();
-
-        services.AddOrderListPage();
 
         services.AddUpdates();
 
@@ -59,7 +57,5 @@ public static class DependencyInjection {
         return services;
 
     }
-
-
 
 }

@@ -1,9 +1,9 @@
 ﻿using Domain.Orders.Entities;
-using ApplicationCore.Shared.Components.ProgressModal;
 using Blazored.Modal;
 using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using Domain.Components.ProgressModal;
 
 namespace ApplicationCore.Features.Orders.OrderExport;
 

@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.CNC.ReleasePDF;
-using ApplicationCore.Shared.CNC.Domain;
+﻿using ApplicationCore.Shared.CNC.Domain;
 using ApplicationCore.Shared.CNC.Job;
 using Domain.ValueObjects;
 using ApplicationCore.Shared.Settings.CNC;

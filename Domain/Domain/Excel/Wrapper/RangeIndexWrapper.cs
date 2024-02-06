@@ -1,7 +1,7 @@
 ﻿using Microsoft.Office.Interop.Excel;
 using Range = Microsoft.Office.Interop.Excel.Range;
 
-namespace ApplicationCore.Shared.Excel;
+namespace Domain.Excel.Wrapper;
 
 public class RangeIndexWrapper(Worksheet workbook) {
 

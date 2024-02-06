@@ -1,14 +1,12 @@
-﻿using Domain.Orders;
-using Domain.Orders.Builders;
+﻿using Domain.Orders.Builders;
 using Domain.Orders.Components;
 using Domain.Orders.Enums;
-using Domain.Orders.ValueObjects;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-internal class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer {
+public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer {
 
     public ToeType ToeType { get; }
     public HingeSide HingeSide { get; }

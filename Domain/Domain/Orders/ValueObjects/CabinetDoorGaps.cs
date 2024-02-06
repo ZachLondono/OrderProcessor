@@ -2,7 +2,7 @@
 
 namespace Domain.Orders.ValueObjects;
 
-internal readonly struct CabinetDoorGaps {
+public readonly struct CabinetDoorGaps {
 
     public CabinetDoorGaps() { }
 

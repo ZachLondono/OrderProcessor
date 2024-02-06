@@ -1,11 +1,10 @@
 ﻿using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products.Cabinets;
-using Domain.Orders.ValueObjects;
 
 namespace Domain.Orders.Builders;
 
-internal class TallCabinetBuilder : CabinetBuilder<TallCabinet> {
+public class TallCabinetBuilder : CabinetBuilder<TallCabinet> {
 
     public TallCabinetDoors Doors { get; private set; }
     public ToeType ToeType { get; private set; }

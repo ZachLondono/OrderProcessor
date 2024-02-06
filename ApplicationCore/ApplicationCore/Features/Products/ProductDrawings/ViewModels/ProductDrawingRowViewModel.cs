@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.ProductDrawings.Commands;
 using ApplicationCore.Features.Orders.ProductDrawings.Models;
-using ApplicationCore.Infrastructure.Bus;
+using Domain.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
 

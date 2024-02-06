@@ -1,10 +1,10 @@
-﻿using Domain.Companies.Customers.Queries;
-using Domain.Companies.Vendors.Queries;
-using ApplicationCore.Features.Orders.Details.Models;
-using ApplicationCore.Features.Orders.Shared.State;
-using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Shared.Services;
+﻿using ApplicationCore.Features.Orders.Details.Models;
+using Domain.Orders.Persistance;
+using Domain.Infrastructure.Bus;
 using Microsoft.Extensions.Logging;
+using Domain.Services;
+using Companies.Customers.Queries;
+using Companies.Vendors.Queries;
 
 namespace ApplicationCore.Features.Orders.Details.ViewModels;
 

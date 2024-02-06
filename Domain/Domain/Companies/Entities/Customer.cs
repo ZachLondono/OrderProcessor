@@ -15,7 +15,7 @@ public class Customer {
     public ClosetProSettings ClosetProSettings { get; set; }
     public string? WorkingDirectoryRoot { get; set; }
 
-    internal Customer(Guid id, string name, string shippingMethod, Contact shippingContact, Address shippingAddress, Contact billingContact, Address billingAddress, string? orderNumberPrefix, ClosetProSettings closetProSettings, string? workingDirectoryRoot) {
+    public Customer(Guid id, string name, string shippingMethod, Contact shippingContact, Address shippingAddress, Contact billingContact, Address billingAddress, string? orderNumberPrefix, ClosetProSettings closetProSettings, string? workingDirectoryRoot) {
         Id = id;
         Name = name;
         ShippingMethod = shippingMethod;

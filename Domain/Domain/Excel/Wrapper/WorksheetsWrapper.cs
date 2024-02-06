@@ -1,7 +1,7 @@
 ﻿using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
 
-namespace ApplicationCore.Shared.Excel;
+namespace Domain.Excel.Wrapper;
 
 public class WorksheetsWrapper(Sheets worksheets) : IDisposable {
 

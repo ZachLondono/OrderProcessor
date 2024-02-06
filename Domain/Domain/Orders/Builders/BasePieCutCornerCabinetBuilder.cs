@@ -1,12 +1,11 @@
 ﻿using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products.Cabinets;
-using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace Domain.Orders.Builders;
 
-internal class BasePieCutCornerCabinetBuilder : CabinetBuilder<BasePieCutCornerCabinet> {
+public class BasePieCutCornerCabinetBuilder : CabinetBuilder<BasePieCutCornerCabinet> {
 
     public Dimension RightWidth { get; private set; }
     public Dimension RightDepth { get; private set; }

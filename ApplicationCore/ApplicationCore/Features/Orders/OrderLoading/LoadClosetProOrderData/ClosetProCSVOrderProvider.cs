@@ -7,7 +7,6 @@ using ApplicationCore.Features.Orders.OrderLoading.Dialog;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
 using Domain.Orders.Builders;
 using Domain.Orders.Entities;
-using ApplicationCore.Shared.Data.Ordering;
 using Domain.ValueObjects;
 using ApplicationCore.Shared.Services;
 using Dapper;
@@ -15,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using static Domain.Companies.CompanyDirectory;
 using CompanyCustomer = Domain.Companies.Entities.Customer;
 using Domain.Orders.Entities.Products;
+using Domain.Orders.Persistance;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData;
 

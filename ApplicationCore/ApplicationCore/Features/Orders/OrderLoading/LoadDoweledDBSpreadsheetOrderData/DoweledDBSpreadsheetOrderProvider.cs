@@ -91,7 +91,7 @@ internal class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 
             var vendorId = Guid.Parse(_options.VendorIds[header.VendorName]);
             var customerId = await GetCustomerId(header.CustomerName, customerInfo);
-            var address = new Shared.Domain.ValueObjects.Address() {
+            var address = new Domain.Orders.ValueObjects.Address() {
                 Line1 = customerInfo.Line1,
                 Line2 = customerInfo.Line2,
                 Line3 = customerInfo.Line3,

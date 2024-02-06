@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Shared.Settings;
+﻿using Domain.Infrastructure.Settings;
 
 namespace ApplicationCore.Features.Configuration;
 
@@ -6,8 +6,8 @@ internal class DataFilePathsEditorViewModel {
 
     public Action? OnPropertyChanged { get; set; }
 
-    private Shared.Settings.DataFilePaths? _configuration = null;
-    public Shared.Settings.DataFilePaths? Configuration {
+    private Domain.Infrastructure.Settings.DataFilePaths? _configuration = null;
+    public Domain.Infrastructure.Settings.DataFilePaths? Configuration {
         get => _configuration;
         private set {
             _configuration = value;
@@ -24,9 +24,9 @@ internal class DataFilePathsEditorViewModel {
         }
     }
 
-    private readonly IWritableOptions<Shared.Settings.DataFilePaths> _options;
+    private readonly IWritableOptions<Domain.Infrastructure.Settings.DataFilePaths> _options;
 
-    public DataFilePathsEditorViewModel(IWritableOptions<Shared.Settings.DataFilePaths> options) {
+    public DataFilePathsEditorViewModel(IWritableOptions<Domain.Infrastructure.Settings.DataFilePaths> options) {
         _options = options;
 
         try {

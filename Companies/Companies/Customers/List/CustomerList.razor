@@ -1,0 +1,85 @@
+﻿@using Blazored.Modal
+@using Blazored.Modal.Services
+@using Domain.Services
+@using Domain.Components
+@using static Domain.Components.Button
+@inject CustomerListViewModel DataContext
+@inject NavigationService NavigationService
+
+<table class="table-auto">
+    <thead class="border-b border-slate-300">
+        <tr>
+            <th>Name</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (DataContext.Error is not null) {
+            
+            <tr>
+                <td class="text-center">
+                    <div class="my-5 text-red-600 text-lg">@DataContext.Error.Title</div>
+                    <div class="mb-5 text-sm">@((MarkupString)DataContext.Error.Details)</div>
+                    <Button Type="button" OnClickAsync="DataContext.LoadCustomers" Color="ButtonColor.Primary" Disabled="@DataContext.IsLoading">Refresh</Button>
+                </td>
+            </tr>
+
+        } else if (DataContext.IsLoading) {
+        
+            <tr>
+                <td class="text-center">
+                    <div class="my-5 text-gray-500 text-lg">Loading...</div>
+                </td>
+            </tr>
+
+        } else if (DataContext.Customers.Any()) {
+
+            @foreach (CustomerListItem customer in DataContext.Customers) {
+                <tr>
+                    <td class="whitespace-nowrap p-5 border-b text-center cursor-pointer hover:underline" @onclick="() => OpenCustomer(customer.Id)">@customer.Name</td>
+                </tr>
+            }
+
+        } else {
+            
+            <tr>
+                <td class="text-center">
+                    <div class="my-5 text-gray-500 text-lg">No customers to show.</div>
+                </td>
+            </tr>
+
+        }
+
+    </tbody>
+</table>
+
+
+@code {
+
+    [CascadingParameter]
+    public IModalService Modal { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync() {
+        DataContext.OnPropertyChanged += StateHasChanged;
+        await DataContext.LoadCustomers();
+    }
+
+    private void OpenCustomer(Guid customerId) {
+        NavigationService.NavigateToCustomerPage(customerId);
+
+        /*
+        var parameters = new ModalParameters() {
+            { "CustomerId", customerId }
+        };
+
+        var options = new ModalOptions() {
+            HideHeader = true,
+            Size = ModalSize.Large
+        };
+
+        var result = Modal.Show<EditCustomerDialog>("Edit Customer", parameters, options);
+        _ = await result.Result;
+        */
+    }
+
+}

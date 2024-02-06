@@ -1,9 +1,9 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList;
 using Domain.Companies;
 using Domain.Orders.Builders;
-using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Shared.Services;
 using Microsoft.Extensions.Logging;
+using Domain.Orders.Persistance;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProWebOrderData;
 

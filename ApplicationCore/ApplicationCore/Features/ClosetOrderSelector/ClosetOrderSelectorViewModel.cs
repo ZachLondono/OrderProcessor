@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Infrastructure.Bus;
+﻿using Domain.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.ClosetOrderSelector;
 

@@ -6,7 +6,7 @@ namespace Domain.Orders;
 /// <summary>
 /// An object which contains dovetail drawer boxes
 /// </summary>
-internal interface IDovetailDrawerBoxContainer {
+public interface IDovetailDrawerBoxContainer {
 
     IEnumerable<DovetailDrawerBox> GetDovetailDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder);
 

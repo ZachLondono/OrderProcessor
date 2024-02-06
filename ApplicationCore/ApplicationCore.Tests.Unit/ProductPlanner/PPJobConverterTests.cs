@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Contracts;
-using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Domain;
 using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Services;
+using ApplicationCore.Features.Products.PPProducts;
 using NSubstitute;
 
 namespace ApplicationCore.Tests.Unit.ProductPlanner;

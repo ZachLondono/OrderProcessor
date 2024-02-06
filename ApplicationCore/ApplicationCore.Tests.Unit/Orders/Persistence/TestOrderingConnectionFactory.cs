@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Shared.Data.Ordering;
-using Dapper;
+﻿using Dapper;
+using Domain.Orders.Persistance;
 using Microsoft.Data.Sqlite;
 using System.Data;
 

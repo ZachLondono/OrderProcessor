@@ -2,7 +2,7 @@
 
 namespace Domain.Orders;
 
-internal interface ICNCPartContainer {
+public interface ICNCPartContainer {
 
     IEnumerable<Part> GetCNCParts(string customerName);
 

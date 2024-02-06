@@ -1,6 +1,6 @@
 ﻿namespace Domain.Orders.Enums;
 
-internal enum TrashPulloutConfiguration {
+public enum TrashPulloutConfiguration {
     OneCan,
     TwoCans
 }

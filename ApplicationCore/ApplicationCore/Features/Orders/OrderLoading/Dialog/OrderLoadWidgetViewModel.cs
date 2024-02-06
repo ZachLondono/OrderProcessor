@@ -1,8 +1,8 @@
 ﻿using Domain.Orders.Entities;
-using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Logging;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
-using ApplicationCore.Features.Orders.Shared.State;
+using Domain.Orders.Persistance;
+using Domain.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.Dialog;
 

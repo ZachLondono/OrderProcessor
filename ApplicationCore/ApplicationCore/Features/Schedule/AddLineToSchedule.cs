@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Shared.Settings;
+﻿using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.Office.Interop.Excel;
 using Domain.Excel;
@@ -7,6 +6,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using ExcelApplication = Microsoft.Office.Interop.Excel.Application;
 using Range = Microsoft.Office.Interop.Excel.Range;
+using Domain.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Schedule;
 
@@ -46,7 +46,7 @@ internal class AddLineToSchedule {
 
             } catch (Exception ex) {
 
-                return new Infrastructure.Bus.Error() {
+                return new Domain.Infrastructure.Bus.Error() {
                     Title = "Error Occurred While Writing to Schedule",
                     Details = ex.Message
                 };

@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Features.ClosetOrderSelector;
 using ApplicationCore.Features.ClosetProToAllmoxyOrder;
-using Domain.Companies.AllmoxyId;
 using ApplicationCore.Features.CreateOrderRelationship;
 using ApplicationCore.Features.CustomizationScripts.ViewModels;
 using ApplicationCore.Features.DeleteOrder;
@@ -13,6 +12,8 @@ using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
 using ApplicationCore.Features.Products.UpdateClosetPart;
 using ApplicationCore.Features.Settings;
+using ApplicationCore.Pages.OrderList;
+using Companies.AllmoxyId;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationCore;
@@ -35,6 +36,7 @@ public static class DependencyInjection {
                 .AddTransient<OrderReleaseModalViewModel>()
                 .AddTransient<ReleasePDFDialogViewModel>()
                 .AddTransient<DoorOrderReleaseActionRunnerFactory>()
+                .AddTransient<OrderListPageViewModel>()
                 .AddTransient<DoorOrderReleaseActionRunner>()
                 .AddTransient<ClosetProToAllmoxyMapper>();
 

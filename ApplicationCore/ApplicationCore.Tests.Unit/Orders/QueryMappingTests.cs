@@ -1,5 +1,5 @@
 ﻿using Domain.Orders.Entities;
-using ApplicationCore.Features.Orders.Shared.State.DataModels;
+using Domain.Orders.Persistance.DataModels;
 using Domain.Orders.Entities.Products.DrawerBoxes;
 using FluentAssertions;
 

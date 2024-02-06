@@ -1,9 +1,9 @@
-﻿@using ApplicationCore.Features.Orders.Shared.State;
+﻿@using Domain.Orders.Persistance;
 @using ApplicationCore.Shared.Services;
-@using ApplicationCore.Infrastructure;
-@using ApplicationCore.Shared.Components
-@using ApplicationCore.Infrastructure.Bus;
-@using static ApplicationCore.Shared.Components.Button
+@using Domain.Components
+@using Domain.Infrastructure.Bus
+@using static Domain.Components.Button
+@using Domain.Services
 @inject NavigationService NavigationService
 @inject IJSRuntime JSRuntime
 @inject OrderLoadWidgetViewModel DataContext

@@ -3,7 +3,7 @@ using Domain.Orders.Components;
 
 namespace Domain.Orders;
 
-internal interface IMDFDoorContainer {
+public interface IMDFDoorContainer {
 
     IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder);
 

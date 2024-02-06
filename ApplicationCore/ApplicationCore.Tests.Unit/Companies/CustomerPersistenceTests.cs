@@ -2,12 +2,12 @@
 using Domain.Companies.ValueObjects;
 using Domain.Companies.Customers.Commands;
 using Domain.Companies.Customers.Queries;
-using ApplicationCore.Shared.Data;
 using ApplicationCore.Shared.Data.Companies;
 using Domain.ValueObjects;
 using Dapper;
 using FluentAssertions;
 using System.Data;
+using Domain.Infrastructure.Data;
 
 namespace ApplicationCore.Tests.Unit.Companies;
 
