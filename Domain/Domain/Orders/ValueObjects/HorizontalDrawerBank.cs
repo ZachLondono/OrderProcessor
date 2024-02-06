@@ -1,0 +1,18 @@
+﻿using Domain.Orders.Enums;
+using Domain.ValueObjects;
+
+namespace Domain.Orders.ValueObjects;
+
+public record HorizontalDrawerBank {
+
+    public required Dimension FaceHeight { get; init; }
+    public required int Quantity { get; init; }
+
+    public bool Any() => Quantity > 0;
+
+    public static HorizontalDrawerBank None() => new() {
+        FaceHeight = Dimension.Zero,
+        Quantity = 0,
+    };
+
+}

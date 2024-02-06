@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using Domain.Orders.Entities;
 using ApplicationCore.Shared;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.Invoice;

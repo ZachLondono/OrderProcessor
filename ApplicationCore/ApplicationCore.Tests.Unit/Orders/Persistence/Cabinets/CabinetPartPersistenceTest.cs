@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
+﻿using Domain.Orders.Enums;
+using Domain.Orders.Products.Cabinets;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 

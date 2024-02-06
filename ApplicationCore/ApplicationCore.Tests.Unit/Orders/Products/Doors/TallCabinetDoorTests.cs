@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Shared.Domain;
+﻿using Domain.Orders.Builders;
+using Domain.Orders.Enums;
+using Domain.Orders.ValueObjects;
+using Domain.Orders.ValueObjects;
+using Domain.ValueObjects;
 using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products.Doors;

@@ -1,0 +1,192 @@
+﻿@using Domain.Companies.ValueObjects;
+@using ApplicationCore.Shared.Components
+@using Domain.ValueObjects;
+@inject EditCustomerViewModel DataContext
+
+@if (DataContext.Error is not null) {
+    
+    <div class="overflow-x-scroll">
+        <h3 class="text-md text-red-600">@DataContext.Error.Title</h3>
+        <span class="text-xs">@((MarkupString)DataContext.Error.Details)</span>
+    </div>
+
+} else if (DataContext.IsLoading) {
+
+    <span>Loading...</span>
+
+} else if (DataContext.Model is null) {
+
+    <span>No customer set.</span>
+
+} else {
+
+    <EditForm Model="DataContext.Model" OnValidSubmit="DataContext.Submit" class="flex flex-col space-y-5 overflow-x-hidden px-2">
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="my-5">
+
+            <label for="name" class="block text-sm font-medium text-gray-700">Name*</label>
+            <InputText id="name" @bind-Value="DataContext.Model.Name" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+            <label for="orderPrefix" class="mt-3 block text-xs font-medium text-gray-700">Order Number Prefix</label>
+            <InputText id="orderPrefx" @bind-Value="DataContext.Model.OrderNumberPrefix" class="mt-1 w-24 text-xs px-1.5 py-1 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+            <label for="workingDirectoryRoot" class="mt-3 block text-xs font-medium text-gray-700">Working Directory Root</label>
+            <InputText id="workingDirectoryRoot" @bind-Value="DataContext.Model.WorkingDirectoryRoot" class="mt-1 w-24 text-xs px-1.5 py-1 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+            <Button Style="Button.ButtonStyle.Contained" Color="Button.ButtonColor.Primary" Type="submit" Disabled="DataContext.IsSaving" class="flex justify-center items-center w-48 mt-5">
+                @if (DataContext.IsSaving) {
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Saving</span>
+                } else {
+                    <span>Save</span>
+                }
+            </Button>
+
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <section id="shipping">
+
+                <h3 class="block font-medium text-gray-700">Shipping</h3>
+
+                <label for="shipping_contact_name" class="block text-sm font-medium text-gray-700">Name</label>
+                <InputText id="shipping_contact_name" @bind-Value="DataContext.Model.ShippingContact.Name" placeholder="John Smith" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+                <label for="shipping_contact_email" class="block text-sm font-medium text-gray-700">Email</label>
+                <InputText id="shipping_contact_email" @bind-Value="DataContext.Model.ShippingContact.Email" placeholder="abc@email.com" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+                <label for="shipping_contact_phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                <InputText id="shipping_contact_phone" @bind-Value="DataContext.Model.ShippingContact.Phone" placeholder="(000) 000-0000" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+                <h3>Address</h3>
+                <InputText id="shipping_contact_line1" @bind-Value="DataContext.Model.ShippingAddress.Line1" placeholder="Line1" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="shipping_contact_line2" @bind-Value="DataContext.Model.ShippingAddress.Line2" placeholder="Line2" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="shipping_contact_line3" @bind-Value="DataContext.Model.ShippingAddress.Line3" placeholder="Line3" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="shipping_contact_city" @bind-Value="DataContext.Model.ShippingAddress.City" placeholder="City" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="shipping_contact_state" @bind-Value="DataContext.Model.ShippingAddress.State" placeholder="State" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="shipping_contact_zip" @bind-Value="DataContext.Model.ShippingAddress.Zip" placeholder="Zip" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="shipping_contact_country" @bind-Value="DataContext.Model.ShippingAddress.Country" placeholder="Country" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+            </section>
+
+            <section id="billing">
+
+                <h3 class="block font-medium text-gray-700">Billing</h3>
+            
+                <label for="billing_contact_name" class="block text-sm font-medium text-gray-700">Name</label>
+                <InputText id="billing_contact_name" @bind-Value="DataContext.Model.BillingContact.Name" placeholder="John Smith" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+                <label for="billing_contact_email" class="block text-sm font-medium text-gray-700">Email</label>
+                <InputText id="billing_contact_email" @bind-Value="DataContext.Model.BillingContact.Email" placeholder="abc@email.com" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+                <label for="billing_contact_phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                <InputText id="billing_contact_phone" @bind-Value="DataContext.Model.BillingContact.Phone" placeholder="(000) 000-0000" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+                <h3>Address</h3>
+                <InputText id="billing_contact_line1" @bind-Value="DataContext.Model.BillingAddress.Line1" placeholder="Line1" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="billing_contact_line2" @bind-Value="DataContext.Model.BillingAddress.Line2" placeholder="Line2" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="billing_contact_line3" @bind-Value="DataContext.Model.BillingAddress.Line3" placeholder="Line3" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="billing_contact_city" @bind-Value="DataContext.Model.BillingAddress.City" placeholder="City" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="billing_contact_state" @bind-Value="DataContext.Model.BillingAddress.State" placeholder="State" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="billing_contact_zip" @bind-Value="DataContext.Model.BillingAddress.Zip" placeholder="Zip" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                <InputText id="billing_contact_country" @bind-Value="DataContext.Model.BillingAddress.Country" placeholder="Country" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+            </section>
+        </div>
+
+        <div class="my-5">
+            <section id="closet_pro_settings">
+
+                <h3 class="block font-medium text-gray-700">Closet Pro Settings</h3>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="adjustable_shelf_sku" class="block text-sm font-medium text-gray-700">Adjustable Shelf</label>
+                        <InputText id="adjustable_shelf_sku" @bind-Value="DataContext.Model.ClosetProSettings.AdjustableShelfSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+
+                    <div>
+                        <label for="fixed_shelf_sku" class="block text-sm font-medium text-gray-700">Fixed Shelf</label>
+                        <InputText id="fixed_shelf_sku" @bind-Value="DataContext.Model.ClosetProSettings.FixedShelfSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+
+                    <div>
+                        <label for="toe_kick_sku" class="block text-sm font-medium text-gray-700">Toe Kick</label>
+                        <InputText id="toe_kick_sku" @bind-Value="DataContext.Model.ClosetProSettings.ToeKickSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+
+                    <div>
+                        <label for="l_fixed_shelf_sku" class="block text-sm font-medium text-gray-700">L Fixed Shelf</label>
+                        <InputText id="l_fixed_shelf_sku" @bind-Value="DataContext.Model.ClosetProSettings.LFixedShelfSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+
+                    <div>
+                        <label for="l_adjustable_shelf_sku" class="block text-sm font-medium text-gray-700">L Adjustable Shelf</label>
+                        <InputText id="l_adjustable_shelf_sku" @bind-Value="DataContext.Model.ClosetProSettings.LAdjustableShelfSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+
+                    <div>
+                        <label for="l_shelf_radius" class="block text-sm font-medium text-gray-700">L Shelf Radius</label>
+                        <input type="number" step="any" id="l_shelf_radius" value="@DataContext.Model.ClosetProSettings.LShelfRadius.AsMillimeters()" @onchange="UpdateLShelfRadius" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+
+                    <div>
+                        <label for="diagonal_fixed_shelf_sku" class="block text-sm font-medium text-gray-700">Diag. Fixed Shelf</label>
+                        <InputText id="diagonal_fixed_shelf_sku" @bind-Value="DataContext.Model.ClosetProSettings.DiagonalFixedShelfSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+
+                    <div>
+                        <label for="diagonal_adjustable_shelf_sku" class="block text-sm font-medium text-gray-700">Diag. Adjustable Shelf</label>
+                        <InputText id="diagonal_adjustable_shelf_sku" @bind-Value="DataContext.Model.ClosetProSettings.DiagonalAdjustableShelfSKU" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+
+                    <div>
+                        <label for="doweled_drawer_box_finish" class="block text-sm font-medium text-gray-700">Doweled Drawer Box Finish</label>
+                        <InputText id="doweled_drawer_box_finish" @bind-Value="DataContext.Model.ClosetProSettings.DoweledDrawerBoxMaterialFinish" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+
+                    <div>
+                        <label for="vertical_panel_bottom_radius" class="block text-sm font-medium text-gray-700">Vertical Panel Bottom Radius</label>
+                        <input type="number" step="any" id="vertical_panel_bottom_radius" value="@DataContext.Model.ClosetProSettings.VerticalPanelBottomRadius.AsMillimeters()" @onchange="UpdateVertBottomRadius" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                    </div>
+                </div>
+
+            </section>
+        </div>
+
+    </EditForm>
+
+}
+
+@code {
+
+    [Parameter]
+    public Guid CustomerId { get; set; }
+
+    protected override void OnInitialized() {
+        DataContext.OnPropertyChanged += StateHasChanged;
+    }
+
+    protected override async Task OnParametersSetAsync() {
+        await DataContext.SetCustomerId(CustomerId);
+    }
+
+    private void UpdateLShelfRadius(ChangeEventArgs args) {
+        if (args.Value is string valueStr && double.TryParse(valueStr, out double value) && DataContext.Model is not null) {
+            DataContext.Model.ClosetProSettings.LShelfRadius = Dimension.FromMillimeters(value);
+        }
+    }
+
+    private void UpdateVertBottomRadius(ChangeEventArgs args) {
+        if (args.Value is string valueStr && double.TryParse(valueStr, out double value) && DataContext.Model is not null) {
+            DataContext.Model.ClosetProSettings.VerticalPanelBottomRadius = Dimension.FromMillimeters(value);
+        }
+    }
+
+}

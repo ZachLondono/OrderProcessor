@@ -1,16 +1,16 @@
-﻿using ApplicationCore.Features.Companies.Contracts;
-using ApplicationCore.Features.Companies.Contracts.Entities;
-using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+﻿using Domain.Companies;
+using Domain.Companies.Entities;
+using Domain.Companies.ValueObjects;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
 using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData.Models;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 using ApplicationCore.Shared.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
+using Domain.Orders.Entities.Products;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData;
 
@@ -91,7 +91,7 @@ internal class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 
             var vendorId = Guid.Parse(_options.VendorIds[header.VendorName]);
             var customerId = await GetCustomerId(header.CustomerName, customerInfo);
-            var address = new Shared.Domain.ValueObjects.Address() {
+            var address = new Domain.Orders.ValueObjects.Address() {
                 Line1 = customerInfo.Line1,
                 Line2 = customerInfo.Line2,
                 Line3 = customerInfo.Line3,

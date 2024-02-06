@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Shared.Domain;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+﻿using Domain.Orders.Entities.Products.Closets;
+using Domain.Orders.ValueObjects;
+using Domain.ValueObjects;
+using Domain.Orders.Enums;
+using Domain.Orders.Entities.Products;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList.Products;
 

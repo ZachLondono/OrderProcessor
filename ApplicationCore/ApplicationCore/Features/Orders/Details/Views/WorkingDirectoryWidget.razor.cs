@@ -3,7 +3,7 @@ using ApplicationCore.Shared;
 using Blazored.Modal;
 using Blazored.Modal.Services;
 using System.Diagnostics;
-using ApplicationCore.Features.Orders.Shared.State;
+using Domain.Orders.Persistance;
 
 namespace ApplicationCore.Features.Orders.Details.Views;
 

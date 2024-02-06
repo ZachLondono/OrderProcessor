@@ -1,0 +1,41 @@
+﻿@using Domain.Components
+@using static Domain.Components.Button
+@using Microsoft.AspNetCore.Components.Forms
+@inject CustomerAllmoxyIdViewModel DataContext
+
+@if (CustomerId is null) {
+
+    <span>No customer id set</span>
+
+} else if (DataContext.Model is null) {
+
+    <span>Customer does not have an Allmoxy ID set up</span>
+    <Button Color="ButtonColor.Primary" Style="ButtonStyle.Contained" OnClick="DataContext.AddNewAllmoxyId">Add Allmoxy Id</Button>
+
+} else {
+    
+    <div>
+        <label for="allmoxyId" class="block text-sm font-medium text-gray-700">Allmoxy Id</label>
+        <InputNumber id="allmoxyId" @bind-Value="@DataContext.Model.AllmoxyId" class="mt-1 w-24 px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+        <Button Color="ButtonColor.Primary" Style="ButtonStyle.Contained" Disabled="DataContext.IsLoading" OnClickAsync="DataContext.SaveChanges">Save</Button>
+    </div>
+
+}
+
+
+@code {
+
+    [Parameter]
+    public Guid? CustomerId { get; set; }
+
+    protected override async Task OnInitializedAsync() {
+
+        if (DataContext is null) return;
+
+        DataContext.OnPropertyChanged += StateHasChanged;
+        DataContext.CustomerId = CustomerId;
+        await DataContext.Loaded();
+
+    }
+
+}

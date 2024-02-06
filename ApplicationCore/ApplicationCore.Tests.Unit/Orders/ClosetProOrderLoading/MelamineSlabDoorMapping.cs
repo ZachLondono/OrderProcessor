@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList;
 using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Shared.Domain;
+using Domain.Orders.Enums;
+using Domain.ValueObjects;
 using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.Orders.ClosetProOrderLoading;

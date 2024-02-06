@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain;
-using ApplicationCore.Shared.Domain;
+﻿using Domain.Orders.ValueObjects;
+using Domain.ValueObjects;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products;
 

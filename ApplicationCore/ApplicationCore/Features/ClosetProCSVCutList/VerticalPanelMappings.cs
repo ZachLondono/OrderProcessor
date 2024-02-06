@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
 using ApplicationCore.Features.ClosetProCSVCutList.Products;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList;
 

@@ -1,13 +1,13 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Shared.Domain;
+﻿using Domain.Orders.Builders;
+using Domain.Orders.Entities;
+using Domain.Orders.Enums;
+using Domain.Orders.Entities.Products.Closets;
+using Domain.Orders.ValueObjects;
+using Domain.Orders.Entities.Products;
+using Domain.ValueObjects;
 using OneOf;
 using System.Xml.Serialization;
-using ClosetPaintedSide = ApplicationCore.Features.Orders.Shared.Domain.ValueObjects.PaintedSide;
+using ClosetPaintedSide = Domain.Orders.ValueObjects.PaintedSide;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 

@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using Domain.Orders.ValueObjects;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList;
 

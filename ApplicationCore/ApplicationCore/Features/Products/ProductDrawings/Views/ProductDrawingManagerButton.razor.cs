@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Blazored.Modal;
 using Blazored.Modal.Services;
 using ApplicationCore.Features.Orders.ProductDrawings.Queries;
-using ApplicationCore.Infrastructure.Bus;
+using Domain.Infrastructure.Bus;
 using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
 
 namespace ApplicationCore.Features.Products.ProductDrawings.Views;

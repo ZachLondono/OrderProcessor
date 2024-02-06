@@ -1,0 +1,158 @@
+﻿@using Domain.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using static Domain.Components.Button
+@using Companies.Vendors.Edit
+@inject EditVendorViewModel DataContext
+
+@if (DataContext.Error is not null) {
+    
+    <div class="overflow-x-scroll">
+        <h3 class="text-md text-red-600">@DataContext.Error.Title</h3>
+        <span class="text-xs">@((MarkupString)DataContext.Error.Details)</span>
+    </div>
+
+} else if (DataContext.IsLoading) {
+
+    <span>Loading...</span>
+
+} else if (DataContext.Model is null) {
+
+    <span>No vendor set.</span>
+
+} else {
+
+    <EditForm Model="DataContext.Model" OnValidSubmit="DataContext.Submit" class="flex flex-col space-y-5 overflow-x-hidden px-2">
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="my-5 grid grid-cols-2">
+
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700">Name*</label>
+                <InputText id="name" @bind-Value="DataContext.Model.Name" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+                <label for="name" class="block text-sm font-medium text-gray-700">Phone</label>
+                <InputText id="name" @bind-Value="DataContext.Model.Phone" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+                <label for="logo_file" class="block text-sm font-medium text-gray-700">Logo</label>
+                <InputText id="logo_file" @bind-Value="DataContext.Model.LogoFile" placeholder="path/to/logo" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+
+                <div>
+                    @if (DataContext.Model.Logo.Any()) {
+                        <img src="@DataContext.Model.GetBas64EncodedImage()" style="max-width:100px; max-height:100px"/>
+                        <Button Style="Button.ButtonStyle.Outline" OnClick="@(() => { DataContext.Model.LogoFile = string.Empty; DataContext.Model.Logo = Array.Empty<byte>(); StateHasChanged(); })">X</Button>
+                    } else {
+                        <span class="italic text-gray-400">no logo selected</span>
+                    }
+                </div>
+
+            </div>
+
+            <div class="mx-3 self-center">
+                <Button Style="Button.ButtonStyle.Contained" Color="Button.ButtonColor.Primary" Type="submit" Disabled="DataContext.IsSaving" class="flex justify-center items-center w-48">
+                    @if (DataContext.IsSaving) {
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Saving</span>
+                    } else {
+                        <span>Save</span>
+                    }
+                </Button>
+            </div>
+
+        </div>
+
+        <section id="address" class="grid grid-cols-1">
+            <h3 class="font-medium text-gray-700">Address</h3>
+            <InputText id="address_line1" @bind-Value="DataContext.Model.Address.Line1" placeholder="Line1" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+            <InputText id="address_line2" @bind-Value="DataContext.Model.Address.Line2" placeholder="Line2" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+            <InputText id="address_line3" @bind-Value="DataContext.Model.Address.Line3" placeholder="Line3" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+            <InputText id="address_city" @bind-Value="DataContext.Model.Address.City" placeholder="City" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+            <InputText id="address_state" @bind-Value="DataContext.Model.Address.State" placeholder="State" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+            <InputText id="address_zip" @bind-Value="DataContext.Model.Address.Zip" placeholder="Zip" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+            <InputText id="address_country" @bind-Value="DataContext.Model.Address.Country" placeholder="Country" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+        </section>
+
+        <div class="grid grid-cols-2 gap-4">
+            <section id="release_profile" class="flex flex-1 flex-col my-2">
+                <h3 class="font-medium text-gray-700">Release Profile</h3>
+                <label>
+                    <InputCheckbox id="release_packing_list" @bind-Value="DataContext.Model.ReleaseProfile.GeneratePackingList" />
+                    Packing list
+                </label>
+                <label>
+                    <InputCheckbox id="release_job_summary" @bind-Value="DataContext.Model.ReleaseProfile.GenerateJobSummary" />
+                    Job summary
+                </label>
+                <label>
+                    <InputCheckbox id="release_invoice" @bind-Value="DataContext.Model.ReleaseProfile.IncludeInvoice" />
+                    Invoice
+                </label>
+                <label>
+                    <InputCheckbox id="release_invoice" @bind-Value="DataContext.Model.ReleaseProfile.SendReleaseEmail" />
+                    Send Email
+                </label>
+                <div class="grid items-center gap-2" style="grid-template-columns: min-content auto;">
+                    <label class="whitespace-nowrap" for="release_email_recipients">Email recipients</label>
+                    <InputText id="release_email_recipients" @bind-Value="DataContext.Model.ReleaseProfile.ReleaseEmailRecipients" placeholder="abc1@email.com;abc2@email.com" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                </div>
+                
+                <hr class="my-3">
+                
+                <label>
+                    <InputCheckbox id="release_invoice" @bind-Value="DataContext.Model.ReleaseProfile.GenerateInvoice" />
+                    Save Invoice
+                </label>
+
+
+                <label>
+                    <InputCheckbox id="release_invoice" @bind-Value="DataContext.Model.ReleaseProfile.SendInvoiceEmail" />
+                    Email Invoice
+                </label>
+                
+                <div class="grid items-center gap-2" style="grid-template-columns: min-content auto;">
+                    <label class="whitespace-nowrap" for="release_email_recipients">Invoice Email recipients</label>
+                    <InputText id="release_email_recipients" @bind-Value="DataContext.Model.ReleaseProfile.InvoiceEmailRecipients" placeholder="abc1@email.com;abc2@email.com" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                </div>
+                
+            </section>
+
+            <section id="export_profile" class="flex flex-1 flex-col my-2">
+                <h3 class="font-medium text-gray-700">Export Profile</h3>
+                <label>
+                    <InputCheckbox id="export_db_order" @bind-Value="DataContext.Model.ExportProfile.ExportDBOrder" />
+                    Drawer box order
+                </label>
+                <label>
+                    <InputCheckbox id="export_mdf_door_order" @bind-Value="DataContext.Model.ExportProfile.ExportMDFDoorOrder" />
+                    MDF door order
+                </label>
+                <label>
+                    <InputCheckbox id="export_ext_file" @bind-Value="DataContext.Model.ExportProfile.ExportExtFile" />
+                    Ext file
+                </label>
+            </section>
+        </div>
+
+    </EditForm>
+
+}
+
+
+@code {
+
+    [Parameter]
+    public Guid VendorId { get; set; }
+
+    protected override void OnInitialized() {
+        DataContext.OnPropertyChanged += StateHasChanged;
+    }
+
+    protected override async Task OnParametersSetAsync() {
+        await DataContext.SetVendorId(VendorId);
+    }
+
+}

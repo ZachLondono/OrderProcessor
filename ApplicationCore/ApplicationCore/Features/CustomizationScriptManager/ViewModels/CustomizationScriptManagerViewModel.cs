@@ -1,11 +1,11 @@
 ﻿using ApplicationCore.Features.CustomizationScriptManager;
 using ApplicationCore.Features.CustomizationScripts.Commands;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
-using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Shared.CustomizationScripts;
 using ApplicationCore.Shared.CustomizationScripts.Models;
 using Blazored.Modal;
 using Blazored.Modal.Services;
+using Domain.Infrastructure.Bus;
+using Domain.Orders.Entities.Products.DrawerBoxes;
 
 namespace ApplicationCore.Features.CustomizationScripts.ViewModels;
 

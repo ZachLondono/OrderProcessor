@@ -1,12 +1,11 @@
-﻿@using ApplicationCore.Shared.Components
-@using ApplicationCore.Shared.Data;
-@using ApplicationCore.Shared.Services;
+﻿@using ApplicationCore.Shared.Services;
 @using ApplicationCore.Shared.Settings;
 @using MailKit.Net.Smtp;
 @using MailKit.Security;
 @using Microsoft.Extensions.Options;
 @using MimeKit;
-@using static ApplicationCore.Shared.Components.Button;
+@using Domain.Components
+@using static Domain.Components.Button;
 @inject IEmailService EmailService
 @inject IFileReader FileReader
 

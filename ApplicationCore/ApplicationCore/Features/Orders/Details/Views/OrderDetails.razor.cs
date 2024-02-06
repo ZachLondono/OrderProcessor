@@ -1,11 +1,11 @@
 ﻿using ApplicationCore.Features.Orders.Details.Commands;
 using ApplicationCore.Features.Orders.Details.Models;
 using ApplicationCore.Features.Orders.Details.Queries;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using Domain.Orders.Entities;
 using ApplicationCore.Shared.Services;
 using Blazored.Modal;
 using Blazored.Modal.Services;
+using Domain.Orders.Entities.Products;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
 

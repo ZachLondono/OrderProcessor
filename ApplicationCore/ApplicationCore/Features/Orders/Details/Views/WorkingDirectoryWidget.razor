@@ -1,6 +1,6 @@
 ﻿@using System.Diagnostics;
-@using ApplicationCore.Features.Orders.Shared.State;
-@using ApplicationCore.Infrastructure.Bus;
+@using Domain.Orders.Persistance;
+@using Domain.Infrastructure.Bus;
 @inject IBus Bus
 
 @if (_isLoading) {

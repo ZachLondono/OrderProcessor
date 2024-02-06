@@ -1,16 +1,15 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using Domain.Orders.ValueObjects;
 using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 using System.Xml.Serialization;
 using System.Text;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using Domain.Orders.Builders;
 using System.Xml.Schema;
-using static ApplicationCore.Features.Companies.Contracts.CompanyDirectory;
-using Address = ApplicationCore.Features.Orders.Shared.Domain.ValueObjects.Address;
-using CompanyAddress = ApplicationCore.Features.Companies.Contracts.ValueObjects.Address;
-using CompanyCustomer = ApplicationCore.Features.Companies.Contracts.Entities.Customer;
-using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+using static Domain.Companies.CompanyDirectory;
+using Address = Domain.Orders.ValueObjects.Address;
+using CompanyAddress = Domain.Companies.ValueObjects.Address;
+using CompanyCustomer = Domain.Companies.Entities.Customer;
+using Domain.Companies.ValueObjects;
 using System.Xml;
 using ApplicationCore.Shared;
 using Microsoft.Extensions.Options;
@@ -18,7 +17,8 @@ using ApplicationCore.Shared.Services;
 using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.XMLValidation;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
 using Microsoft.Extensions.Logging;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using Domain.Orders.Entities;
+using Domain.Orders.Entities.Products;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData;
 

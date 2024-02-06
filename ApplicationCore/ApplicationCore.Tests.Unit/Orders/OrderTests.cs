@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using Domain.Orders.Entities;
+using Domain.Orders.ValueObjects;
+using Domain.Orders.Entities.Products;
 using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.Orders;

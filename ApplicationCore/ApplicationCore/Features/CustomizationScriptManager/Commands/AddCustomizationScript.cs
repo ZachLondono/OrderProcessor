@@ -1,7 +1,7 @@
-﻿using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Shared.CustomizationScripts.Models;
-using ApplicationCore.Shared.Data.Ordering;
+﻿using ApplicationCore.Shared.CustomizationScripts.Models;
 using Dapper;
+using Domain.Infrastructure.Bus;
+using Domain.Orders.Persistance;
 
 namespace ApplicationCore.Features.CustomizationScripts.Commands;
 

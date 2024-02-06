@@ -1,10 +1,10 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Shared.Domain;
+﻿using Domain.Orders.Builders;
+using Domain.Orders.Entities;
+using Domain.Orders.Enums;
+using Domain.Orders.Entities.Products.Cabinets;
+using Domain.Orders.ValueObjects;
+using Domain.Orders.Entities.Products;
+using Domain.ValueObjects;
 using OneOf;
 using System.Xml.Serialization;
 
@@ -62,7 +62,7 @@ public class TallCabinetModel : CabinetModelBase {
         } else inside = new(UpperAdjShelfQty, LowerAdjShelfQty, UpperVerticalDividerQty, LowerVerticalDividerQty);
 
         TallCabinetDoors doors;
-        HingeSide hingeSide = LowerDoorQty == 1 ? AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide) : Shared.Domain.Enums.HingeSide.NotApplicable;
+        HingeSide hingeSide = LowerDoorQty == 1 ? AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide) : Domain.Orders.Enums.HingeSide.NotApplicable;
         if (LowerDoorQty == 0) {
             doors = TallCabinetDoors.NoDoors();
         } else if (UpperDoorQty != 0) {

@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
+﻿using Domain.Orders.Entities.Products;
+using Domain.Orders.Entities.Products.Cabinets;
+using Domain.Orders.Entities.Products.Closets;
+using Domain.Orders.Entities.Products.Doors;
+using Domain.Orders.Entities.Products.DrawerBoxes;
 
 namespace ApplicationCore.Features.Orders.Details.Models;
 

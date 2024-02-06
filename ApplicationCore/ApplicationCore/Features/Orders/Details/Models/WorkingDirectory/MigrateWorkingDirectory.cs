@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Shared;
+﻿using ApplicationCore.Shared;
+using Domain.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
 

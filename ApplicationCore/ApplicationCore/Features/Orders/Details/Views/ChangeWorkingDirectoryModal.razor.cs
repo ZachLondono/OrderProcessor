@@ -1,9 +1,9 @@
 using Blazored.Modal;
-using ApplicationCore.Features.Orders.Shared.State;
-using ApplicationCore.Infrastructure.Bus;
+using Domain.Orders.Persistance;
 using Microsoft.AspNetCore.Components;
 using Blazored.Modal.Services;
 using ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
+using Domain.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Orders.Details.Views;
 

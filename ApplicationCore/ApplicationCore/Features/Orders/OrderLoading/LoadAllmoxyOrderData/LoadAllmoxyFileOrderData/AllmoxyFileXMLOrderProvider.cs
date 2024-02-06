@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using static ApplicationCore.Features.Companies.Contracts.CompanyDirectory;
+using Domain.Orders.Builders;
+using static Domain.Companies.CompanyDirectory;
 using Microsoft.Extensions.Options;
 using ApplicationCore.Shared.Services;
 using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.XMLValidation;

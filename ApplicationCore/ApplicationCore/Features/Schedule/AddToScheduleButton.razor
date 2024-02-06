@@ -1,6 +1,6 @@
-﻿@using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-@using ApplicationCore.Shared.Components
-@using static ApplicationCore.Shared.Components.Button;
+﻿@using Domain.Orders.Entities;
+@using Domain.Components
+@using static Domain.Components.Button;
 
 <Button Type="button" OnClickAsync="ScheduleOrder" Disabled="_isScheduling" Class="flex justify-center items-center h-10 w-36" Color="ButtonColor.Secondary">
     @if (_isScheduling) {

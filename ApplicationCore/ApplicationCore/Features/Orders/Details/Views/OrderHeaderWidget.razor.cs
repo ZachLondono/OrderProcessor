@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Infrastructure.Bus;
+﻿using Domain.Infrastructure.Bus;
 using Microsoft.AspNetCore.Components;
 
 namespace ApplicationCore.Features.Orders.Details.Views;

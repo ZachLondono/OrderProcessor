@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Shared.Domain;
+﻿using Domain.ValueObjects;
 using Google.OrTools.Algorithms;
 
 namespace ApplicationCore.Features.OptimizeStrips;

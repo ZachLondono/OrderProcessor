@@ -1,9 +1,9 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Shared.Domain;
+﻿using Domain.Orders.Builders;
+using Domain.Orders.Entities;
+using Domain.Orders.Entities.Products.Cabinets;
+using Domain.Orders.ValueObjects;
+using Domain.Orders.Entities.Products;
+using Domain.ValueObjects;
 using OneOf;
 using System.Xml.Serialization;
 
@@ -38,7 +38,7 @@ public class WallCabinetModel : CabinetModelBase {
         WallCabinetDoors doors = DoorQty switch {
             0 => WallCabinetDoors.NoDoors(),
             1 => new(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide), doorExtendDown),
-            2 => new(Shared.Domain.Enums.HingeSide.NotApplicable, doorExtendDown),
+            2 => new(Domain.Orders.Enums.HingeSide.NotApplicable, doorExtendDown),
             _ => new(AllmoxyXMLOrderProviderHelpers.GetHingeSide(HingeSide), doorExtendDown)
         };
 

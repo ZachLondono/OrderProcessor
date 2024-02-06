@@ -1,9 +1,9 @@
-﻿using ApplicationCore.Features.Companies.Contracts;
+﻿using Domain.Companies;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.PackingList;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using Domain.Orders.Entities;
 using ApplicationCore.Shared;
 using ApplicationCore.Shared.Services;
 using Microsoft.Extensions.Logging;
@@ -15,21 +15,21 @@ using UglyToad.PdfPig.Writer;
 using ApplicationCore.Shared.CNC.WorkOrderReleaseEmail;
 using ApplicationCore.Shared.CNC.WSXML;
 using ApplicationCore.Shared.CNC.WSXML.Report;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.DoweledDrawerBoxCutList;
-using ApplicationCore.Features.Orders.Shared.Domain.Components;
+using Domain.Orders.Components;
 using ApplicationCore.Shared.CNC.Job;
 using CADCodeProxy.Exceptions;
 using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
 using Exception = System.Exception;
 using CADCodeProxy.Machining;
-using ApplicationCore.Features.Orders.Shared.Domain;
+using Domain.Orders;
 using ApplicationCore.Shared.CNC;
 using ApplicationCore.Features.OptimizeStrips;
-using ApplicationCore.Shared.Domain;
+using Domain.ValueObjects;
+using Domain.Orders.Entities.Products.Doors;
+using Domain.Orders.Entities.Products.DrawerBoxes;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 

@@ -1,7 +1,0 @@
-﻿namespace ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Domain;
-
-public record LevelVariableOverride {
-    public required int LevelId { get; set; }
-    public required PPUnits Units { get; set; }
-    public required IDictionary<string, string> Parameters { get; set; }
-}

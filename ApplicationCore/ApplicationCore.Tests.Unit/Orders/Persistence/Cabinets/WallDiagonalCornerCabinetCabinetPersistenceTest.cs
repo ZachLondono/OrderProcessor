@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Shared.Domain;
+﻿using Domain.Orders.Builders;
+using Domain.Orders.Enums;
+using Domain.ValueObjects;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 

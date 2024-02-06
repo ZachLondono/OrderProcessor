@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Shared.Data;
-using ApplicationCore.Shared.Settings;
+﻿using ApplicationCore.Shared.Settings;
+using Domain.Services;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;

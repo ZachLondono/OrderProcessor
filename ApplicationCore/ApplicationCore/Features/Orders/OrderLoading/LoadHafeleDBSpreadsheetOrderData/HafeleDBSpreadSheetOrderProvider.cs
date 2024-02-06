@@ -1,21 +1,21 @@
-﻿using ApplicationCore.Features.Companies.Contracts.Entities;
-using ApplicationCore.Features.Companies.Contracts.ValueObjects;
-using ApplicationCore.Features.Companies.Customers.Commands;
-using ApplicationCore.Features.Companies.Customers.Queries;
-using ApplicationCore.Features.Companies.Vendors.Queries;
+﻿using Domain.Companies.Entities;
+using Domain.Companies.ValueObjects;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Shared.Domain;
+using Domain.Orders.ValueObjects;
+using Domain.ValueObjects;
 using ApplicationCore.Shared.Services;
 using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
 using ExcelApp = Microsoft.Office.Interop.Excel.Application;
+using Domain.Orders.Entities.Products;
+using Domain.Orders.Entities.Products.DrawerBoxes;
+using Domain.Infrastructure.Bus;
+using Companies.Customers.Queries;
+using Companies.Customers.Commands;
+using Companies.Vendors.Queries;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadHafeleDBSpreadsheetOrderData;
 
@@ -243,7 +243,7 @@ internal class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
             Email = contactInfo.Email
         };
 
-        Companies.Contracts.ValueObjects.Address address = new() {
+        Domain.Companies.ValueObjects.Address address = new() {
 
         };
 

@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
-using ApplicationCore.Shared.Domain;
+﻿using Domain.Orders.Products.DrawerBoxes;
+using Domain.ValueObjects;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence.DrawerBoxes;
 

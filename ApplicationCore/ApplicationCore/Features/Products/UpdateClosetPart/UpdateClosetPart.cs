@@ -1,7 +1,7 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
-using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Shared.Data.Ordering;
-using Dapper;
+﻿using Dapper;
+using Domain.Infrastructure.Bus;
+using Domain.Orders.Entities.Products.Closets;
+using Domain.Orders.Persistance;
 
 namespace ApplicationCore.Features.Products.UpdateClosetPart;
 

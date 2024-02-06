@@ -1,15 +1,15 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain;
+﻿using Domain.Orders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Office.Interop.Excel;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using Domain.Orders.Builders;
+using Domain.Orders.Enums;
+using Domain.Orders.Entities;
 using ApplicationCore.Shared.Services;
-using ApplicationCore.Features.Companies.Contracts;
+using Domain.Companies;
 using System.Runtime.InteropServices;
-using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Components;
+using Domain.Orders.Components;
+using Domain.Orders.Entities.Products;
+using Domain.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Orders.OrderExport.Handlers.DoorOrderExport;
 
@@ -39,21 +39,21 @@ public class ExportDoorOrder {
                                 .ToList();
 
             if (!doors.Any()) {
-                return new Infrastructure.Bus.Error() {
+                return new Domain.Infrastructure.Bus.Error() {
                     Title = "Cannot Export Door Order",
                     Details = "The provided order does not contain any doors"
                 };
             }
 
             if (!File.Exists(command.TemplateFilePath)) {
-                return new Infrastructure.Bus.Error() {
+                return new Domain.Infrastructure.Bus.Error() {
                     Title = "Cannot Export Door Order",
                     Details = "The provided door order template file path does not exist"
                 };
             }
 
             if (!Directory.Exists(command.OutputDirectory)) {
-                return new Infrastructure.Bus.Error() {
+                return new Domain.Infrastructure.Bus.Error() {
                     Title = "Cannot Export Door Order",
                     Details = "The provided output directory does not exist"
                 };
@@ -67,7 +67,7 @@ public class ExportDoorOrder {
             } catch (Exception ex) {
 
                 _logger.LogError(ex, "Exception thrown while filling door order");
-                return new Infrastructure.Bus.Error() {
+                return new Domain.Infrastructure.Bus.Error() {
                     Title = "Cannot Export Door Order",
                     Details = $"An error occurred while trying to fill door order form - {ex.Message}"
                 };

@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
-using ApplicationCore.Features.Orders.Shared.State.DataModels;
+﻿using Domain.Orders.Entities;
+using Domain.Orders.Persistance.DataModels;
+using Domain.Orders.Entities.Products.DrawerBoxes;
 using FluentAssertions;
 
 namespace ApplicationCore.Tests.Unit.Orders;

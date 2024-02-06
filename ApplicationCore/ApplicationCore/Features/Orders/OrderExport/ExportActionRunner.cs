@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Shared.Components.ProgressModal;
+﻿using Domain.Orders.Entities;
+using Domain.Components.ProgressModal;
 
 namespace ApplicationCore.Features.Orders.OrderExport;
 

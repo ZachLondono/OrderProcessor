@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using Domain.Orders.Entities;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.PackingList;

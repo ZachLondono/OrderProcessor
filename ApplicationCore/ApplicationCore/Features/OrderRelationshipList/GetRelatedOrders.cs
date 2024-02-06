@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Shared.Data.Ordering;
-using Dapper;
+﻿using Dapper;
+using Domain.Infrastructure.Bus;
+using Domain.Orders.Persistance;
 
 namespace ApplicationCore.Features.OrderRelationshipList;
 

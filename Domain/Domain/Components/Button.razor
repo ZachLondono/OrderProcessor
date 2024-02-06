@@ -1,0 +1,10 @@
+﻿<button @onclick:stopPropagation="StopPropagation"
+        @onclick:preventDefault="PreventDefault"
+        @onclick="async () => { OnClick(); await OnClickAsync(); }"
+        class="@Classes()"
+        disabled="@Disabled"
+        type="@Type">
+        
+        @ChildContent
+
+</button>

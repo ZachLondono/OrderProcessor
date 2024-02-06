@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Excel;
+﻿using Domain.Excel;
 using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
 

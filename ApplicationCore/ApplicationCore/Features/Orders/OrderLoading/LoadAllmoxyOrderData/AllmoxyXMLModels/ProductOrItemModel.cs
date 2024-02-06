@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
+﻿using Domain.Orders.Builders;
+using Domain.Orders.Entities;
+using Domain.Orders.Entities.Products;
 using OneOf;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;

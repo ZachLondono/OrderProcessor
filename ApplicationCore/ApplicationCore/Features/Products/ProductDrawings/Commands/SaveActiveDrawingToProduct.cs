@@ -1,9 +1,9 @@
 ﻿using ApplicationCore.Features.Orders.ProductDrawings.Models;
-using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Shared.Services;
 using BricscadApp;
 using Dapper;
+using Domain.Infrastructure.Bus;
+using Domain.Orders.Persistance;
 
 namespace ApplicationCore.Features.Orders.ProductDrawings.Commands;
 

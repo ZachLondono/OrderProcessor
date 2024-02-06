@@ -1,9 +1,9 @@
-﻿using ApplicationCore.Features.Companies.Contracts.ValueObjects;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Shared.Domain;
+﻿using Domain.Companies.ValueObjects;
+using Domain.Orders.Enums;
+using Domain.Orders.Entities.Products.Closets;
+using Domain.Orders.ValueObjects;
+using Domain.Orders.Entities.Products;
+using Domain.ValueObjects;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList.Products;
 

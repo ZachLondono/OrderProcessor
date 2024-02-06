@@ -1,10 +1,10 @@
-﻿using ApplicationCore.Features.Companies.Contracts;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
-using ApplicationCore.Shared.Domain;
+﻿using Domain.Companies;
+using Domain.Orders.Entities;
+using Domain.Orders.Entities.Products.Cabinets;
+using Domain.Orders.Entities.Products.Closets;
+using Domain.Orders.Entities.Products.Doors;
+using Domain.Orders.Entities.Products.DrawerBoxes;
+using Domain.ValueObjects;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;

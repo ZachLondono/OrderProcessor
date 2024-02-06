@@ -1,11 +1,11 @@
-﻿using ApplicationCore.Features.Companies.Contracts;
+﻿using Domain.Companies;
 using ApplicationCore.Features.Orders.Details.Queries;
-using ApplicationCore.Features.Orders.Shared.Domain;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
-using ApplicationCore.Infrastructure.Bus;
+using Domain.Orders;
+using Domain.Orders.Entities;
 using Blazored.Modal;
+using Domain.Orders.Entities.Products.Doors;
+using Domain.Orders.Entities.Products.DrawerBoxes;
+using Domain.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 

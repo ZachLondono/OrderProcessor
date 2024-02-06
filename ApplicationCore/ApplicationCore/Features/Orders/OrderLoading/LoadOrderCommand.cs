@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.Dialog;
-using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
+using Domain.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Orders.OrderLoading;
 

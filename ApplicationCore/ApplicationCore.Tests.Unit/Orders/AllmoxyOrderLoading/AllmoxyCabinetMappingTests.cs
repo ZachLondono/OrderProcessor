@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
+using Domain.Orders.Builders;
+using Domain.Orders.Enums;
+using Domain.Orders.Entities.Products.Cabinets;
 using FluentAssertions;
 using NSubstitute;
 

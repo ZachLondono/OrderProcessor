@@ -1,8 +1,9 @@
-﻿@using ApplicationCore.Infrastructure.Bus;
-@using ApplicationCore.Shared.Components
-@using ApplicationCore.Shared.Settings;
-@using Microsoft.Extensions.Logging;
-@using static ApplicationCore.Shared.Components.Button;
+﻿@using Domain.Infrastructure.Bus
+@using ApplicationCore.Shared.Settings
+@using Microsoft.Extensions.Logging
+@using Domain.Infrastructure.Settings;
+@using Domain.Components
+@using static Domain.Components.Button;
 
 @if (_error is not null) {
     
