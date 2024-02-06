@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using Domain.Orders.Entities;
 using ApplicationCore.Infrastructure.Bus;
 using ApplicationCore.Shared.Data.Ordering;
 using Dapper;

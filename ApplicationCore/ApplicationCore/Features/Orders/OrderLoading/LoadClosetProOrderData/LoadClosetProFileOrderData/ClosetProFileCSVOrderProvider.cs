@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList;
-using ApplicationCore.Features.Companies.Contracts;
+using Domain.Companies;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using Domain.Orders.Builders;
 using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Shared.Services;
 using Microsoft.Extensions.Logging;

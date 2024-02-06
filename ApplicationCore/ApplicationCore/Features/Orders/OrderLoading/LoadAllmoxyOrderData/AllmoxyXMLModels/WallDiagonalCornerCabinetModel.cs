@@ -1,7 +1,7 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
+﻿using Domain.Orders.Builders;
+using Domain.Orders.Entities;
+using Domain.Orders.Products.Cabinets;
+using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
 using OneOf;
 using System.Xml.Serialization;

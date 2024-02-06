@@ -1,13 +1,12 @@
-﻿using ApplicationCore.Features.Companies.Contracts.Entities;
-using ApplicationCore.Features.Companies.Contracts.ValueObjects;
-using ApplicationCore.Features.Companies.Customers.Commands;
-using ApplicationCore.Features.Companies.Customers.Queries;
-using ApplicationCore.Features.Companies.Vendors.Queries;
+﻿using Domain.Companies.Entities;
+using Domain.Companies.ValueObjects;
+using Domain.Companies.Customers.Commands;
+using Domain.Companies.Customers.Queries;
+using Domain.Companies.Vendors.Queries;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using Domain.Orders.Products.DrawerBoxes;
+using Domain.Orders.ValueObjects;
 using ApplicationCore.Infrastructure.Bus;
 using Domain.ValueObjects;
 using ApplicationCore.Shared.Services;
@@ -16,6 +15,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
 using ExcelApp = Microsoft.Office.Interop.Excel.Application;
+using Domain.Orders.Entities.Products;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadHafeleDBSpreadsheetOrderData;
 

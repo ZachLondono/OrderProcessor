@@ -10,27 +10,27 @@
 
   <ItemGroup>
     <Reference Include="BricscadApp">
-      <HintPath>Application\Dependencies\BricscadApp.dll</HintPath>
+      <HintPath>..\..\Dependencies\BricscadApp.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <Private>True</Private>
     </Reference>
     <Reference Include="BricscadDb">
-      <HintPath>Application\Dependencies\BricscadDb.dll</HintPath>
+      <HintPath>..\..\Dependencies\BricscadDb.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <Private>True</Private>
     </Reference>
     <Reference Include="Interop.Microsoft.Office.Interop.Excel">
-      <HintPath>Application\Dependencies\Interop.Microsoft.Office.Interop.Excel.dll</HintPath>
+      <HintPath>..\..\Dependencies\Interop.Microsoft.Office.Interop.Excel.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <Private>True</Private>
     </Reference>
     <Reference Include="Interop.Microsoft.Office.Interop.Outlook">
-      <HintPath>Application\Dependencies\Interop.Microsoft.Office.Interop.Outlook.dll</HintPath>
+      <HintPath>..\..\Dependencies\Interop.Microsoft.Office.Interop.Outlook.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <Private>True</Private>
     </Reference>
     <Reference Include="Office">
-      <HintPath>Application\Dependencies\Office.dll</HintPath>
+      <HintPath>..\..\Dependencies\Office.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <Private>True</Private>
     </Reference>

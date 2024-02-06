@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using Dapper;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
+using Domain.Orders.Products.Cabinets;
 
 namespace ApplicationCore.Features.Orders.Shared.State;
 

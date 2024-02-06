@@ -1,7 +1,7 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
+﻿using Domain.Orders.Entities.Products.Closets;
 using Domain.ValueObjects;
 using FluentAssertions;
-using static ApplicationCore.Features.Orders.Shared.Domain.Products.Closets.CustomDrilledVerticalPanel;
+using static Domain.Orders.Entities.Products.Closets.CustomDrilledVerticalPanel;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products.CustomVP;
 

@@ -1,7 +1,7 @@
-﻿using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+﻿using Domain.Companies.ValueObjects;
 using System.ComponentModel.DataAnnotations;
 
-namespace ApplicationCore.Features.Companies.Customers.Edit;
+namespace Domain.Companies.Customers.Edit;
 
 internal class ExistingCustomerModel {
 

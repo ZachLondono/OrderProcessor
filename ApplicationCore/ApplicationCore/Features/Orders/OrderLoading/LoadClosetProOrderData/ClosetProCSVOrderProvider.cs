@@ -1,20 +1,20 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList;
 using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
 using ApplicationCore.Features.ClosetProCSVCutList.Products;
-using ApplicationCore.Features.Companies.Contracts.Entities;
-using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+using Domain.Companies.Entities;
+using Domain.Companies.ValueObjects;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
+using Domain.Orders.Builders;
+using Domain.Orders.Entities;
 using ApplicationCore.Shared.Data.Ordering;
 using Domain.ValueObjects;
 using ApplicationCore.Shared.Services;
 using Dapper;
 using Microsoft.Extensions.Logging;
-using static ApplicationCore.Features.Companies.Contracts.CompanyDirectory;
-using CompanyCustomer = ApplicationCore.Features.Companies.Contracts.Entities.Customer;
+using static Domain.Companies.CompanyDirectory;
+using CompanyCustomer = Domain.Companies.Entities.Customer;
+using Domain.Orders.Entities.Products;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData;
 

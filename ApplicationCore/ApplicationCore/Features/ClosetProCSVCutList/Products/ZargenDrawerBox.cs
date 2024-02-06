@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
+﻿using Domain.Orders.Entities.Products;
 
 namespace ApplicationCore.Features.ClosetProCSVCutList.Products;
 

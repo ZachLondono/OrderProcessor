@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using Domain.Orders.Enums;
+using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace ApplicationCore.Features.Orders.Shared.State.DataModels;

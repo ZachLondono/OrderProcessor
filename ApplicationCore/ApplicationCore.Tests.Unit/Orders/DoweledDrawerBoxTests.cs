@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.CNC.ReleasePDF;
-using ApplicationCore.Features.Orders.Shared.Domain.Components;
+﻿using Domain.Orders.Components;
 using Domain.ValueObjects;
 using ApplicationCore.Tests.Unit.Orders.Products.DoweledDrawerBoxTests;
 using FluentAssertions;

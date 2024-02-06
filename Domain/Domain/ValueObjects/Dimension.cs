@@ -1,4 +1,4 @@
-﻿namespace Domain.ValueObjects; 
+﻿namespace Domain.ValueObjects;
 
 public readonly struct Dimension : IComparable {
 

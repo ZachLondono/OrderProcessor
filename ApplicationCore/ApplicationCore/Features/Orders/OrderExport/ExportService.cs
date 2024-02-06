@@ -1,20 +1,20 @@
-﻿using ApplicationCore.Features.Companies.Contracts;
+﻿using Domain.Companies;
 using ApplicationCore.Features.Orders.OrderExport.Handlers.DoorOrderExport;
 using ApplicationCore.Features.Orders.OrderExport.Handlers.DovetailOrderExport;
 using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using Domain.Orders.Entities;
 using ApplicationCore.Shared;
 using ApplicationCore.Shared.Services;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Options;
 using CADCodeProxy.Machining;
-using ApplicationCore.Features.Orders.Shared.Domain;
+using Domain.Orders;
 using Microsoft.Extensions.Logging;
 using ApplicationCore.Shared.Settings;
 using CADCodeProxy.CSV;
 using ApplicationCore.Shared.CustomizationScripts.Models;
 using ApplicationCore.Shared.CustomizationScripts;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
+using Domain.Orders.Entities.Products.DrawerBoxes;
 
 namespace ApplicationCore.Features.Orders.OrderExport;
 

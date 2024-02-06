@@ -2,7 +2,7 @@
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 
-namespace ApplicationCore.Features.Companies.Vendors.Queries;
+namespace Domain.Companies.Vendors.Queries;
 
 internal class GetVendorNameById {
 

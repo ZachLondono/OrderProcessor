@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
+﻿using Domain.Orders.Entities;
 using Dapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -9,6 +8,7 @@ using ApplicationCore.Shared.Data.Ordering;
 using ApplicationCore.Shared.Data;
 using ApplicationCore.Features.Orders.Details.Queries;
 using ApplicationCore.Features.DeleteOrder;
+using Domain.Orders.Entities.Products;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence;
 

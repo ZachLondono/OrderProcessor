@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using Domain.Orders.Enums;
+using Domain.Orders.ValueObjects;
+using Domain.Orders.Entities.Products.Closets;
 using Domain.ValueObjects;
 
 namespace ApplicationCore.Tests.Unit.Orders;

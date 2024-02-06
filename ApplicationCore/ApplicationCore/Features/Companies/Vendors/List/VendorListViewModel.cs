@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Infrastructure.Bus;
 
-namespace ApplicationCore.Features.Companies.Vendors.List;
+namespace Domain.Companies.Vendors.List;
 
 internal class VendorListViewModel {
 

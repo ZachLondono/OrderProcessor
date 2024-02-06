@@ -2,7 +2,7 @@
 using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Services;
 using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.OrderLoading;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+using Domain.Orders.Builders;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.Invoice;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.PackingList;
 using ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;

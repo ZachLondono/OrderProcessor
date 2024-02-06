@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Companies.Vendors.List;
+﻿namespace Domain.Companies.Vendors.List;
 
 public class VendorListItem {
 

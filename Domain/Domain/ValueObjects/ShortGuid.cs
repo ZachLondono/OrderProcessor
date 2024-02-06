@@ -16,7 +16,7 @@ public class ShortGuid(Guid guid) {
 
         return new ShortGuid(new Guid(Convert.FromBase64String(shortGuid.Replace("_", "/").Replace("-", "+") + "==")));
     }
-    
+
     public static implicit operator string(ShortGuid guid) => guid.ToString();
 
     public static implicit operator Guid(ShortGuid shortGuid) => shortGuid._guid;

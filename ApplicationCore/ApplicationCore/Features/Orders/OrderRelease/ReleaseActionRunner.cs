@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using Domain.Orders.Entities;
 using ApplicationCore.Shared.Components.ProgressModal;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;

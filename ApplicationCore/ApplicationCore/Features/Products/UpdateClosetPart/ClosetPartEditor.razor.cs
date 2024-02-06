@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
-using Blazored.Modal;
+﻿using Blazored.Modal;
+using Domain.Orders.Entities.Products.Closets;
 using Microsoft.AspNetCore.Components;
 
 namespace ApplicationCore.Features.Products.UpdateClosetPart;

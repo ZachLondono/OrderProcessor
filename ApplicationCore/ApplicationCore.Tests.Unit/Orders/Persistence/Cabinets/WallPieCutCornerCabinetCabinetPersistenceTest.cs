@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
+﻿using Domain.Orders.Builders;
 using Domain.ValueObjects;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;

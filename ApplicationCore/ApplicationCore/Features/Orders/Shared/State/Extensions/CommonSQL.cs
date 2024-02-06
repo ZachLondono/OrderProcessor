@@ -1,7 +1,7 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using Domain.Orders.ValueObjects;
 using Dapper;
+using Domain.Orders.Entities.Products;
+using Domain.Orders.Entities.Products.Cabinets;
 using System.Data;
 
 namespace ApplicationCore.Features.Orders.Shared.State;

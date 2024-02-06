@@ -1,25 +1,30 @@
-﻿@using ApplicationCore.Features.Companies.Contracts;
-@using ApplicationCore.Features.Orders.Details;
-@using ApplicationCore.Features.Orders.OrderExport;
-@using ApplicationCore.Features.Orders.Shared.Domain
-@using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
-@using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
-@using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
-@using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-@using ApplicationCore.Features.Orders.OrderRelease
-@using ApplicationCore.Infrastructure.Bus;
-@using ApplicationCore.Shared.Services;
-@using ApplicationCore.Infrastructure
-@using System.Diagnostics
-@using ApplicationCore.Shared.Components
-@using ApplicationCore.Features.Orders.Shared.Domain.Products;
-@using ApplicationCore.Features.Orders.Shared;
-@using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-@using ApplicationCore.Pages.OrderDetails;
-@using static ApplicationCore.Shared.Components.DropDown;
-@using static ApplicationCore.Shared.Components.Button;
-@using ApplicationCore.Features.Companies.Contracts.ValueObjects;
-@using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
+﻿@    using Domain.Companies;
+@    using ApplicationCore.Features.Orders.Details;
+@    using ApplicationCore.Features.Orders.OrderExport;
+@    using Domain.Orders
+@    using Domain.Orders.Products.Closets;
+@    using Domain.Orders.Products.Doors;
+@    using Domain.Orders.Products.DrawerBoxes;
+@    using Domain.Orders.ValueObjects;
+@    using ApplicationCore.Features.Orders.OrderRelease
+@    using ApplicationCore.Infrastructure.Bus;
+@    using ApplicationCore.Shared.Services;
+@    using ApplicationCore.Infrastructure
+@    using System.Diagnostics
+@    using ApplicationCore.Shared.Components
+@    using Domain.Orders.Products;
+@    using ApplicationCore.Features.Orders.Shared;
+@    using Domain.Orders.Enums;
+@    using ApplicationCore.Pages.OrderDetails;
+@    using static ApplicationCore.Shared.Components.DropDown;
+@    using static ApplicationCore.Shared.Components.Button;
+@    using Domain.Companies.ValueObjects;
+@    using Domain.Orders.Products.Cabinets;
+    using Domain.Orders.Entities.Products;
+    using Domain.Orders.Entities.Products.Cabinets;
+    using Domain.Orders.Entities.Products.Closets;
+    using Domain.Orders.Entities.Products.Doors;
+    using Domain.Orders.Entities.Products.DrawerBoxes;
 @inject IFilePicker FilePicker
 @inject IBus Bus
 @inject NavigationService NavigationService

@@ -2,7 +2,7 @@
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 
-namespace ApplicationCore.Features.Companies.Customers.List;
+namespace Domain.Companies.Customers.List;
 
 public class GetAllCustomers {
 

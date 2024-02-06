@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
-using Dapper;
+﻿using Dapper;
+using Domain.Orders.Entities.Products.Cabinets;
 using System.Data;
 
 namespace ApplicationCore.Features.Orders.Shared.State;

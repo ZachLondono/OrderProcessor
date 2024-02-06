@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Features.Companies.Contracts.Entities;
-using ApplicationCore.Features.Companies.Customers.Commands;
+﻿using Domain.Companies.Entities;
+using Domain.Companies.Customers.Commands;
 using ApplicationCore.Infrastructure.Bus;
 
-namespace ApplicationCore.Features.Companies.Customers.Create;
+namespace Domain.Companies.Customers.Create;
 
 internal class CreateCustomerViewModel {
 

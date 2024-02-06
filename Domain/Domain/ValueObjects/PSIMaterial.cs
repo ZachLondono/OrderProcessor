@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace ApplicationCore.Features.CNC.ReleasePDF;
+namespace Domain.ValueObjects;
 
 public partial record PSIMaterial(string Side1Color, string Side1FinishType, string Side2Color, string Side2FinishType, string CoreType, double Thickness) {
 

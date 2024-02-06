@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+﻿using Domain.Orders.Enums;
+using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData;

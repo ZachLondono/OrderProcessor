@@ -1,9 +1,9 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using Domain.Orders;
+using Domain.Orders.Entities;
 using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Contracts;
 using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Services;
 using ApplicationCore.Shared.Services;
-using ApplicationCore.Features.Companies.Contracts;
+using Domain.Companies;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Logging;
 

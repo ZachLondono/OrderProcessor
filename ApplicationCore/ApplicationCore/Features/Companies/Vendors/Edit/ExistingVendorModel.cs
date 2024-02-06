@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+﻿using Domain.Companies.ValueObjects;
 using ApplicationCore.Shared.Data;
 using System.ComponentModel.DataAnnotations;
 
-namespace ApplicationCore.Features.Companies.Vendors.Edit;
+namespace Domain.Companies.Vendors.Edit;
 
 internal class ExistingVendorModel {
 

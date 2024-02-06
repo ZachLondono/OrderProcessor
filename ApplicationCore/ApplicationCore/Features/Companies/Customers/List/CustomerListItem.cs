@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Companies.Customers.List;
+﻿namespace Domain.Companies.Customers.List;
 
 public class CustomerListItem {
 

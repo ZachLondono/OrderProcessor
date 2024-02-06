@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Excel;
+﻿using Domain.Orders.Excel;
 using Microsoft.Office.Interop.Excel;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadDoorSpreadsheetOrderData.DoorOrderModels;

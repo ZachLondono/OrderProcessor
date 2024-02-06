@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Features.ClosetOrderSelector;
 using ApplicationCore.Features.ClosetProToAllmoxyOrder;
-using ApplicationCore.Features.Companies.AllmoxyId;
+using Domain.Companies.AllmoxyId;
 using ApplicationCore.Features.CreateOrderRelationship;
 using ApplicationCore.Features.CustomizationScripts.ViewModels;
 using ApplicationCore.Features.DeleteOrder;

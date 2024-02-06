@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using System.Text.Json;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using Domain.Orders.ValueObjects;
 using Dapper;
 
 namespace ApplicationCore.Shared.Data.Ordering;

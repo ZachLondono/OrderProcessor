@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Components;
+﻿using Domain.Orders.Components;
 using Domain.ValueObjects;
 using CADCodeProxy.CSV;
 using CADCodeProxy.Machining;

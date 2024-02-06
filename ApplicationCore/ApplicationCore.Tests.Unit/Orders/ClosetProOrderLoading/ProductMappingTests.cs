@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.ClosetProCSVCutList;
 using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Components;
+using Domain.Orders.Builders;
+using Domain.Orders.Components;
 using Domain.ValueObjects;
 using FluentAssertions;
 

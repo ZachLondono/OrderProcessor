@@ -1,9 +1,9 @@
-﻿using ApplicationCore.Features.Companies.Contracts.Entities;
-using ApplicationCore.Features.Companies.Vendors.Commands;
-using ApplicationCore.Features.Companies.Vendors.Queries;
+﻿using Domain.Companies.Entities;
+using Domain.Companies.Vendors.Commands;
+using Domain.Companies.Vendors.Queries;
 using ApplicationCore.Infrastructure.Bus;
 
-namespace ApplicationCore.Features.Companies.Vendors.Edit;
+namespace Domain.Companies.Vendors.Edit;
 
 internal class EditVendorViewModel {
 

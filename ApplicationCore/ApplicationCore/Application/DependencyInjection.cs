@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.CompilerServices;
 using Blazored.Modal;
 using ApplicationCore.Features.Orders;
-using ApplicationCore.Features.Companies;
+using Domain.Companies;
 using ApplicationCore.Shared.Services;
 using ApplicationCore.Shared.Components.ProgressModal;
 using ApplicationCore.Pages.OrderList;
@@ -13,6 +13,7 @@ using ApplicationCore.Shared.Bus;
 using ApplicationCore.Features.DataFilePaths;
 using ApplicationCore.Features.Updates;
 using ApplicationCore.Shared.CNC;
+using ApplicationCore.Infrastructure.Bus;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -51,7 +52,7 @@ public static class DependencyInjection {
 
         services.AddTransient<ProgressModalViewModel>();
 
-        services.AddBus(configuration);
+        services.AddSingleton<IBus, MediatRBus>();
 
         SqlMapping.AddSqlMaps();
 

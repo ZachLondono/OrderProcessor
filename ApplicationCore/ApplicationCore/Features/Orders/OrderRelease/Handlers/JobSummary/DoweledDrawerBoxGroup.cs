@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;

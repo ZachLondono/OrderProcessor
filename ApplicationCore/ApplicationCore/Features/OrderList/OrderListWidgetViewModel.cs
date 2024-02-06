@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Companies.Contracts;
+﻿using Domain.Companies;
 using ApplicationCore.Shared.Services;
 using ApplicationCore.Infrastructure.Bus;
 using Microsoft.Extensions.Logging;

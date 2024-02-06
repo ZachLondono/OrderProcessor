@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using Domain.Orders.Builders;
+using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;

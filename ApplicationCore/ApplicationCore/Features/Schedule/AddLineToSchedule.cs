@@ -1,8 +1,8 @@
 ﻿using ApplicationCore.Infrastructure.Bus;
-using ApplicationCore.Shared.Services;
 using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.Office.Interop.Excel;
+using Domain.Excel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using ExcelApplication = Microsoft.Office.Interop.Excel.Application;

@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
-using ApplicationCore.Features.Orders.Shared.Domain;
+﻿using Domain.Orders.Builders;
+using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using FluentAssertions;
+using Domain.Orders.ValueObjects;
 
 namespace ApplicationCore.Tests.Unit.ProductPlanner.Cabinets;
 

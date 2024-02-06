@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
-using ApplicationCore.Infrastructure.Bus;
+﻿using ApplicationCore.Infrastructure.Bus;
+using Domain.Orders.Entities.Products.Closets;
 
 namespace ApplicationCore.Features.Products.UpdateClosetPart;
 

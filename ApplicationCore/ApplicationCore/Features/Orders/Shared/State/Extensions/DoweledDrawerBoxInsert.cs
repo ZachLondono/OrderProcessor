@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using Dapper;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
+using Domain.Orders.Entities.Products.DrawerBoxes;
 
 namespace ApplicationCore.Features.Orders.Shared.State;
 

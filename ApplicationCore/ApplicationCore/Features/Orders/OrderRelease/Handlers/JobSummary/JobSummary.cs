@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using Domain.Orders.Entities;
+using Domain.Orders.ValueObjects;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 

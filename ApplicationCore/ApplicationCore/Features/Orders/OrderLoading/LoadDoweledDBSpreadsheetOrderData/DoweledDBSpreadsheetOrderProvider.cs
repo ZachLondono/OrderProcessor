@@ -1,16 +1,16 @@
-﻿using ApplicationCore.Features.Companies.Contracts;
-using ApplicationCore.Features.Companies.Contracts.Entities;
-using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+﻿using Domain.Companies;
+using Domain.Companies.Entities;
+using Domain.Companies.ValueObjects;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
 using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData.Models;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
 using Domain.ValueObjects;
 using ApplicationCore.Shared.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
+using Domain.Orders.Entities.Products;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData;
 

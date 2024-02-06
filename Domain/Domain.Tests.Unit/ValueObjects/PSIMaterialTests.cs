@@ -1,7 +1,4 @@
-﻿using ApplicationCore.Features.CNC.ReleasePDF;
-using FluentAssertions;
-
-namespace ApplicationCore.Tests.Unit.Shared;
+﻿namespace ApplicationCore.Tests.Unit.Shared;
 
 public class PSIMaterialTests {
 

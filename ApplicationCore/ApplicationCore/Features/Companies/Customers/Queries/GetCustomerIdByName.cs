@@ -2,7 +2,7 @@
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 
-namespace ApplicationCore.Features.Companies.Customers.Queries;
+namespace Domain.Companies.Customers.Queries;
 
 internal class GetCustomerIdByName {
 

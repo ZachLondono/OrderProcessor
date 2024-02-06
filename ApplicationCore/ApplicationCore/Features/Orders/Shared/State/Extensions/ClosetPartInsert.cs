@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using Domain.Orders.ValueObjects;
 using Dapper;
+using Domain.Orders.Entities.Products.Closets;
 using System.Data;
 
 namespace ApplicationCore.Features.Orders.Shared.State;

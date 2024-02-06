@@ -1,13 +1,11 @@
-﻿using ApplicationCore.Features.CNC.ReleasePDF;
-using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData;
-using ApplicationCore.Features.Orders.Shared.Domain.Builders;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using Domain.Orders.Builders;
+using Domain.Orders.Entities;
+using Domain.Orders.ValueObjects;
+using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
 using OneOf;
 using System.Xml.Serialization;
+using Domain.Orders.Entities.Products.Doors;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 

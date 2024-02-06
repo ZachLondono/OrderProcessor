@@ -1,9 +1,9 @@
-﻿using ApplicationCore.Features.Companies.Contracts.Entities;
-using ApplicationCore.Features.Companies.Customers.Commands;
-using ApplicationCore.Features.Companies.Customers.Queries;
+﻿using Domain.Companies.Entities;
+using Domain.Companies.Customers.Commands;
+using Domain.Companies.Customers.Queries;
 using ApplicationCore.Infrastructure.Bus;
 
-namespace ApplicationCore.Features.Companies.Customers.Edit;
+namespace Domain.Companies.Customers.Edit;
 
 internal class EditCustomerViewModel {
 

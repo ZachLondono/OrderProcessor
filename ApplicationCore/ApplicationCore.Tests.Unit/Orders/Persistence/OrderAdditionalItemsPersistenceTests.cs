@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Features.DeleteOrder;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+using Domain.Orders.Entities;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Shared.Data;
 using ApplicationCore.Shared.Data.Ordering;

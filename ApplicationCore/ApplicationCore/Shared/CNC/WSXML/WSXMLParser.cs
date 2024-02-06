@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.CNC.ReleasePDF;
-using ApplicationCore.Shared.CNC.Domain;
+﻿using ApplicationCore.Shared.CNC.Domain;
 using ApplicationCore.Shared.CNC.Job;
 using ApplicationCore.Shared.CNC.WSXML.Report;
 using Domain.ValueObjects;

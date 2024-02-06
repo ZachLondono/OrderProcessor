@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
+﻿using Domain.Orders.Entities;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
 public interface IDovetailDBPackingListDecoratorFactory {

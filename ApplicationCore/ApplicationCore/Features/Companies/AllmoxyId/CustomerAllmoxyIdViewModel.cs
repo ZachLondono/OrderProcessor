@@ -1,8 +1,8 @@
-﻿using ApplicationCore.Features.Companies.AllmoxyId.Commands;
-using ApplicationCore.Features.Companies.AllmoxyId.Queries;
+﻿using Domain.Companies.AllmoxyId.Commands;
+using Domain.Companies.AllmoxyId.Queries;
 using ApplicationCore.Infrastructure.Bus;
 
-namespace ApplicationCore.Features.Companies.AllmoxyId;
+namespace Domain.Companies.AllmoxyId;
 
 public class CustomerAllmoxyIdViewModel {
 

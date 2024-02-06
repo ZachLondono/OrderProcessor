@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Infrastructure.Bus;
 
-namespace ApplicationCore.Features.Companies.Customers.List;
+namespace Domain.Companies.Customers.List;
 
 internal class CustomerListViewModel {
 

@@ -1,25 +1,25 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using Domain.Orders.Entities;
+using Domain.Orders.ValueObjects;
 using QuestPDF.Infrastructure;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
-using ApplicationCore.Features.Companies.Contracts;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
+using Domain.Companies;
+using Domain.Orders.Enums;
 using Domain.ValueObjects;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.CabinetGroup;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.ClosetPartGroup;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.DovetailDrawerBoxGroup;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.MDFDoorGroup;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.DoweledDrawerBoxGroup;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Closets;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.ZargenDrawerGroup;
 using ApplicationCore.Shared;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.CabinetPartGroup;
 using static ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary.FivePieceDoorGroup;
-using ApplicationCore.Features.Orders.Shared.Domain;
+using Domain.Orders;
+using Domain.Orders.Entities.Products.Cabinets;
+using Domain.Orders.Entities.Products.Closets;
+using Domain.Orders.Entities.Products.Doors;
+using Domain.Orders.Entities.Products.DrawerBoxes;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 

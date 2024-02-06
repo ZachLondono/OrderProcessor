@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products.Cabinets;
+﻿using Domain.Orders.Products.Cabinets;
 using Dapper;
 using System.Data;
 

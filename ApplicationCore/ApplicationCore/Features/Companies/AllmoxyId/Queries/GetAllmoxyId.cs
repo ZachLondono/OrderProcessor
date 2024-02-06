@@ -2,7 +2,7 @@
 using ApplicationCore.Shared.Data.Companies;
 using Dapper;
 
-namespace ApplicationCore.Features.Companies.AllmoxyId.Queries;
+namespace Domain.Companies.AllmoxyId.Queries;
 
 internal class GetAllmoxyId {
 

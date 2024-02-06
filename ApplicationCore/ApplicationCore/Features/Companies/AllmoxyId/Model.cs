@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Companies.AllmoxyId;
+﻿namespace Domain.Companies.AllmoxyId;
 
 public class Model {
 

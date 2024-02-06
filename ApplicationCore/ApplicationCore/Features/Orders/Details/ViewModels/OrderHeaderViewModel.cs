@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.Companies.Customers.Queries;
-using ApplicationCore.Features.Companies.Vendors.Queries;
+﻿using Domain.Companies.Customers.Queries;
+using Domain.Companies.Vendors.Queries;
 using ApplicationCore.Features.Orders.Details.Models;
 using ApplicationCore.Features.Orders.Shared.State;
 using ApplicationCore.Infrastructure.Bus;

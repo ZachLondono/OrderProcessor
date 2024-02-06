@@ -1,11 +1,11 @@
-﻿using ApplicationCore.Features.Companies.Contracts.Entities;
-using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+﻿using Domain.Companies.Entities;
+using Domain.Companies.ValueObjects;
 using ApplicationCore.Shared.Data.Companies;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 using Domain.ValueObjects;
 
-namespace ApplicationCore.Features.Companies.Customers.Queries;
+namespace Domain.Companies.Customers.Queries;
 
 internal class GetCustomerById {
 

@@ -1,11 +1,11 @@
-﻿using ApplicationCore.Features.Companies.Contracts.Entities;
-using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+﻿using Domain.Companies.Entities;
+using Domain.Companies.ValueObjects;
 using ApplicationCore.Shared.Data.Companies;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 using Microsoft.Extensions.Logging;
 
-namespace ApplicationCore.Features.Companies.Vendors.Queries;
+namespace Domain.Companies.Vendors.Queries;
 
 internal class GetVendorById {
 

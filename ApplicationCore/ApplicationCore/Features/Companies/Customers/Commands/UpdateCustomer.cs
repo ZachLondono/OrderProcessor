@@ -1,11 +1,11 @@
-﻿using ApplicationCore.Features.Companies.Contracts.Entities;
-using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+﻿using Domain.Companies.Entities;
+using Domain.Companies.ValueObjects;
 using ApplicationCore.Shared.Data.Companies;
 using ApplicationCore.Infrastructure.Bus;
 using Dapper;
 using System.Data;
 
-namespace ApplicationCore.Features.Companies.Customers.Commands;
+namespace Domain.Companies.Customers.Commands;
 
 internal class UpdateCustomer {
 

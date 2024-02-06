@@ -1,11 +1,9 @@
 ﻿using ApplicationCore.Features.Orders.OrderLoading.Dialog;
 using ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadsheetOrderData.Models;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
-using ApplicationCore.Features.Orders.Shared.Domain.Entities;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using Domain.Orders.Entities;
+using Domain.Orders.Products.DrawerBoxes;
+using Domain.Orders.ValueObjects;
 using ApplicationCore.Shared;
 using ApplicationCore.Shared.Data.Ordering;
 using Domain.ValueObjects;
@@ -13,7 +11,10 @@ using ApplicationCore.Shared.Services;
 using Dapper;
 using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
-using static ApplicationCore.Features.Companies.Contracts.CompanyDirectory;
+using static Domain.Companies.CompanyDirectory;
+using Domain.Orders.Entities.Products;
+using Domain.Orders.Entities.Products.Doors;
+using Domain.Orders.Entities.Products.DrawerBoxes;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadsheetOrderData;
 

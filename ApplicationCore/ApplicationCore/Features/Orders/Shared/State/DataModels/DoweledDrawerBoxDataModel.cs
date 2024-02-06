@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.DrawerBoxes;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+﻿using Domain.Orders.Products.DrawerBoxes;
+using Domain.Orders.ValueObjects;
+using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
 
 namespace ApplicationCore.Features.Orders.Shared.State.DataModels;

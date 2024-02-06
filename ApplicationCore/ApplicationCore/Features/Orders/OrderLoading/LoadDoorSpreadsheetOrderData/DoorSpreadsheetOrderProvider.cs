@@ -1,21 +1,21 @@
-﻿using ApplicationCore.Features.Companies.Contracts;
-using ApplicationCore.Features.Companies.Contracts.Entities;
-using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+﻿using Domain.Companies;
+using Domain.Companies.Entities;
+using Domain.Companies.ValueObjects;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
 using ApplicationCore.Features.Orders.OrderLoading.LoadDoorSpreadsheetOrderData.DoorOrderModels;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
-using ApplicationCore.Features.Orders.Shared.Domain.Enums;
-using ApplicationCore.Features.Orders.Shared.Domain.Products;
-using ApplicationCore.Features.Orders.Shared.Domain.Products.Doors;
-using ApplicationCore.Features.Orders.Shared.Domain.ValueObjects;
+using Domain.Orders.Enums;
+using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using ApplicationCore.Shared.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
-using CustomerAddress = ApplicationCore.Features.Companies.Contracts.ValueObjects.Address;
-using OrderAddress = ApplicationCore.Features.Orders.Shared.Domain.ValueObjects.Address;
+using CustomerAddress = Domain.Companies.ValueObjects.Address;
+using OrderAddress = Domain.Orders.ValueObjects.Address;
+using Domain.Orders.Entities.Products;
+using Domain.Orders.Entities.Products.Doors;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.LoadDoorSpreadsheetOrderData;
 

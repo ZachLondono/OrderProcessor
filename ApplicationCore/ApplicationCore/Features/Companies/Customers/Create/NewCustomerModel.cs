@@ -1,7 +1,7 @@
-﻿using ApplicationCore.Features.Companies.Contracts.ValueObjects;
+﻿using Domain.Companies.ValueObjects;
 using System.ComponentModel.DataAnnotations;
 
-namespace ApplicationCore.Features.Companies.Customers.Create;
+namespace Domain.Companies.Customers.Create;
 
 internal class NewCustomerModel {
 
