@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Shared.Services;
-using ApplicationCore.Shared.Settings;
+﻿using ApplicationCore.Shared.Settings;
+using Domain.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Office.Interop.Excel;

@@ -1,10 +1,11 @@
-﻿using ApplicationCore.Shared;
+﻿using Domain.Extensions;
 using ApplicationCore.Shared.CNC.Job;
 using ApplicationCore.Shared.CNC.ReleasePDF;
 using ApplicationCore.Shared.CNC.WorkOrderReleaseEmail;
 using ApplicationCore.Shared.CNC.WSXML;
 using ApplicationCore.Shared.CNC.WSXML.Report;
 using ApplicationCore.Shared.Services;
+using Domain.Services;
 using MimeKit;
 using QuestPDF.Fluent;
 

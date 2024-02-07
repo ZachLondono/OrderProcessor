@@ -1,0 +1,48 @@
+﻿@using Domain.Components
+@using static Domain.Components.Button;
+@using Domain.Services;
+@inject IFilePicker FilePicker
+
+<div>
+    <Button OnClick="ChooseFile">Select File</Button>
+    @if (string.IsNullOrEmpty(FilePath)) {
+        <span>No file chosen...</span>
+    } else {
+        <span>@FilePath</span>
+    }
+</div>
+
+<div class="mt-12">
+    <Button Style="ButtonStyle.Text" Color="ButtonColor.Success" OnClickAsync="ReturnValue" Class="mt-3 float-right mr-3" disabled="@string.IsNullOrEmpty(FilePath)">Enter</Button>
+    <Button Style="ButtonStyle.Text" Color="ButtonColor.Secondary" OnClickAsync="Cancel" Class="mt-3 float-right">Cancel</Button>
+</div>
+
+@code {
+
+    [CascadingParameter]
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    public string FilePath { get; set; } = string.Empty;
+
+    protected override void OnInitialized() {
+        ChooseFile();
+    }
+
+    public async Task ReturnValue() {
+        await BlazoredModal.CloseAsync(ModalResult.Ok(FilePath));
+    }
+
+    public async Task Cancel() {
+        await BlazoredModal.CancelAsync();
+    }
+
+    public void ChooseFile()
+        => FilePicker.PickFile(new() {
+                Title = "Select Hafele order file",
+                Filter = new("Hafele order file", ".xlsx")
+            }, (fileName) => {
+            FilePath = fileName;
+            InvokeAsync(StateHasChanged);
+        });
+
+}

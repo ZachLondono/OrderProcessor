@@ -8,6 +8,7 @@ using CADCodeProxy.CNC;
 using CADCodeProxy.Machining;
 using CADCodeProxy.Results;
 using Microsoft.Extensions.Options;
+using Domain.Extensions;
 
 namespace ApplicationCore.Shared.CNC;
 

@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.AllmoxyOrderExport.Attributes;
 using ApplicationCore.Features.AllmoxyOrderExport.Products;
 using ApplicationCore.Features.AllmoxyOrderExport.Products.Shelves;
-using ApplicationCore.Features.ClosetProCSVCutList.Products;
+using OrderLoading.ClosetProCSVCutList.Products;
 
 namespace ApplicationCore.Features.ClosetProToAllmoxyOrder;
 
@@ -157,7 +157,7 @@ public partial class ClosetProToAllmoxyMapper {
 
     }
 
-    public static IAllmoxyProduct MapDividerShelfPartToAllmoxyProduct(ClosetProCSVCutList.Products.DividerShelf shelf, bool useDoubleCams) {
+    public static IAllmoxyProduct MapDividerShelfPartToAllmoxyProduct(OrderLoading.ClosetProCSVCutList.Products.DividerShelf shelf, bool useDoubleCams) {
 
         string bandingColor;
         if (shelf.Color == shelf.EdgeBandingColor) {

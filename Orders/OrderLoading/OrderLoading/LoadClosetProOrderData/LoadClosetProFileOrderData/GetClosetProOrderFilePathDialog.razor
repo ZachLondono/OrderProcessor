@@ -1,0 +1,64 @@
+﻿@using Domain.Components
+@using static Domain.Components.Button;
+@using Domain.Services;
+@inject IFilePicker FilePicker 
+
+<div>
+    <Button OnClick="ChooseFile">Select File*</Button>
+    @if (string.IsNullOrEmpty(FilePath)) {
+       <span>No file chosen...</span> 
+    } else {
+        <span>@FilePath</span>
+    }
+</div>
+<div class="mt-5">
+    <div>
+        <label>Order Number</label>
+        <small class="text-[8px]">optional</small>
+    </div>
+    <input type="text" class="input-text w-full" min="0" @bind-value="OrderNumber" />
+</div>
+<div class="mt-5">
+    <div>
+        <label>Working Directory Root</label>
+        <small class="text-[8px]">optional</small>
+    </div>
+    <input type="text" class="input-text w-full" min="0" @bind-value="WorkingDirectoryRoot" />
+</div>
+
+<div class="mt-12">
+    <Button Style="ButtonStyle.Text" Color="ButtonColor.Success" OnClickAsync="ReturnValue" Class="mt-3 float-right mr-3" disabled="@string.IsNullOrEmpty(FilePath)">Enter</Button>
+    <Button Style="ButtonStyle.Text" Color="ButtonColor.Secondary" OnClickAsync="Cancel" Class="mt-3 float-right">Cancel</Button>
+</div>
+
+@code {
+
+    [CascadingParameter]
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    public string FilePath { get; set; } = string.Empty;
+    public string OrderNumber { get; set; } = string.Empty;
+    public string WorkingDirectoryRoot { get; set; } = string.Empty;
+
+    protected override void OnInitialized() {
+        ChooseFile();
+    }
+
+    public async Task ReturnValue() {
+        await BlazoredModal.CloseAsync(ModalResult.Ok($"{FilePath}*{OrderNumber}*{WorkingDirectoryRoot}"));
+    }
+
+    public async Task Cancel() {
+        await BlazoredModal.CancelAsync();
+    }
+
+    public void ChooseFile()
+        => FilePicker.PickFile(new() {
+            Title = "Open ClosetPro order file",
+            Filter = new("ClosetPro order file", ".csv")
+        }, (fileName) => {
+            FilePath = fileName;
+            InvokeAsync(StateHasChanged);
+        });
+
+}

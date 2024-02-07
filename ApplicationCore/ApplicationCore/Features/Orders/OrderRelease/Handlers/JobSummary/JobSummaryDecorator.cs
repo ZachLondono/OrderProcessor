@@ -20,6 +20,7 @@ using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.Entities.Products.Closets;
 using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.Entities.Products.DrawerBoxes;
+using Domain.Extensions;
 
 namespace ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
 

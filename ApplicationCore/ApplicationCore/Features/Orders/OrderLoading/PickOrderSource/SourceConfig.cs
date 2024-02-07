@@ -1,6 +1,8 @@
-﻿namespace ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
+﻿using ApplicationCore.Features.Orders.OrderLoading;
 
-internal class SourceConfig {
+namespace ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
+
+public class SourceConfig {
 
     public required string Name { get; set; }
 

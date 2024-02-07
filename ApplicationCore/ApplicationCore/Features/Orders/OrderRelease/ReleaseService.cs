@@ -30,6 +30,8 @@ using ApplicationCore.Features.OptimizeStrips;
 using Domain.ValueObjects;
 using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.Entities.Products.DrawerBoxes;
+using Domain.Services;
+using Domain.Extensions;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 

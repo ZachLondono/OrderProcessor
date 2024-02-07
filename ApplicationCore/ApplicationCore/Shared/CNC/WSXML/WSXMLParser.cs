@@ -5,6 +5,7 @@ using Domain.ValueObjects;
 using ApplicationCore.Shared.Settings.Tools;
 using Microsoft.Extensions.Options;
 using System.Xml.Linq;
+using Domain.Extensions;
 
 namespace ApplicationCore.Shared.CNC.WSXML;
 

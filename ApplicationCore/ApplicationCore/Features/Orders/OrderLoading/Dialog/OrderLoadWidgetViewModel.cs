@@ -1,12 +1,13 @@
 ﻿using Domain.Orders.Entities;
 using Microsoft.Extensions.Logging;
-using ApplicationCore.Features.Orders.OrderLoading.Models;
 using Domain.Orders.Persistance;
 using Domain.Infrastructure.Bus;
+using ApplicationCore.Features.Orders.OderLoading.Dialog;
+using OrderLoading;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.Dialog;
 
-internal class OrderLoadWidgetViewModel : IOrderLoadWidgetViewModel {
+public class OrderLoadWidgetViewModel : IOrderLoadWidgetViewModel {
 
     private readonly ILogger<OrderLoadWidget> _logger;
     private readonly IBus _bus;

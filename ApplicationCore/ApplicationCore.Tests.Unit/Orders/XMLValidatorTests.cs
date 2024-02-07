@@ -1,9 +1,9 @@
-﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.XMLValidation;
-using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
-using ApplicationCore.Shared.Services;
+﻿using OrderLoading.LoadAllmoxyOrderData.XMLValidation;
+using OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 using FluentAssertions;
 using NSubstitute;
 using System.Text;
+using Domain.Services;
 
 namespace ApplicationCore.Tests.Unit.Orders;
 

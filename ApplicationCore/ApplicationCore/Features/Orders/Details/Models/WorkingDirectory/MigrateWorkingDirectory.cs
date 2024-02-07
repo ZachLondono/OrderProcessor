@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Shared;
+﻿using Domain.Extensions;
 using Domain.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;

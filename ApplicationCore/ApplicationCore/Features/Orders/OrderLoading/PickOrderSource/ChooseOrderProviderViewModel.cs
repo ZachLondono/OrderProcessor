@@ -1,15 +1,16 @@
-﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
-using ApplicationCore.Features.Orders.OrderLoading.LoadClosetOrderSpreadsheetOrderData.Models;
-using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProFileOrderData;
-using ApplicationCore.Features.Orders.OrderLoading.LoadClosetProOrderData.LoadClosetProWebOrderData;
-using ApplicationCore.Features.Orders.OrderLoading.LoadDoorSpreadsheetOrderData.DoorOrderModels;
-using ApplicationCore.Features.Orders.OrderLoading.LoadDoweledDBSpreadsheetOrderData.Models;
-using ApplicationCore.Features.Orders.OrderLoading.LoadHafeleDBSpreadsheetOrderData;
+﻿using OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
+using OrderLoading.LoadClosetOrderSpreadsheetOrderData.Models;
+using OrderLoading.LoadClosetProOrderData.LoadClosetProFileOrderData;
+using OrderLoading.LoadClosetProOrderData.LoadClosetProWebOrderData;
+using OrderLoading.LoadDoorSpreadsheetOrderData.DoorOrderModels;
+using OrderLoading.LoadDoweledDBSpreadsheetOrderData.Models;
+using OrderLoading.LoadHafeleDBSpreadsheetOrderData;
 using Microsoft.Extensions.Options;
+using ApplicationCore.Features.Orders.OrderLoading;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 
-internal class ChooseOrderProviderViewModel {
+public class ChooseOrderProviderViewModel {
 
     public IEnumerable<SourceConfig> SourceConfigs { get; }
 

@@ -1,6 +1,6 @@
-﻿using ApplicationCore.Features.Orders.OrderLoading.Dialog;
+﻿using Domain.Infrastructure.Bus;
 using ApplicationCore.Features.Orders.OrderLoading.Models;
-using Domain.Infrastructure.Bus;
+using OrderLoading;
 
 namespace ApplicationCore.Features.Orders.OrderLoading;
 
@@ -8,13 +8,9 @@ public class LoadOrderCommand {
 
     public record Command(OrderSourceType SourceType, string Source, IOrderLoadWidgetViewModel? OrderLoadingViewModel = null) : ICommand<OrderData?>;
 
-    public class Handler : CommandHandler<Command, OrderData?> {
+    public class Handler(IOrderProviderFactory factory) : CommandHandler<Command, OrderData?> {
 
-        private readonly IOrderProviderFactory _factory;
-
-        public Handler(IOrderProviderFactory factory) {
-            _factory = factory;
-        }
+        private readonly IOrderProviderFactory _factory = factory;
 
         public override async Task<Response<OrderData?>> Handle(Command request) {
 

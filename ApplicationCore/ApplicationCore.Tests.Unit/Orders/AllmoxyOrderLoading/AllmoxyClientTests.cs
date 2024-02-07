@@ -1,9 +1,9 @@
-﻿using ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyWebOrderData;
+﻿using OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyWebOrderData;
 using FluentAssertions;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
 using RestSharp;
-using IRestClient = ApplicationCore.Features.Orders.OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyWebOrderData.Rest.IRestClient;
+using IRestClient = OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyWebOrderData.Rest.IRestClient;
 
 namespace ApplicationCore.Tests.Unit.Orders.AllmoxyOrderLoading;
 

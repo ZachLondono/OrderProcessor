@@ -4,6 +4,7 @@ using ApplicationCore.Shared.CNC.ReleasePDF.Styling;
 using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Options;
 using Windows.ApplicationModel;
+using Domain.Extensions;
 
 namespace ApplicationCore.Shared.CNC.ReleasePDF.Services;
 

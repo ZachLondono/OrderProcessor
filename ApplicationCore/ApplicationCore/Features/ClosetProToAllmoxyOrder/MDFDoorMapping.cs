@@ -1,8 +1,8 @@
 ﻿using ApplicationCore.Features.AllmoxyOrderExport.Attributes;
 using ApplicationCore.Features.AllmoxyOrderExport.Products;
 using ApplicationCore.Features.AllmoxyOrderExport.Products.Fronts;
-using ApplicationCore.Features.ClosetProCSVCutList.Products;
 using Domain.Orders.Enums;
+using OrderLoading.ClosetProCSVCutList.Products;
 
 namespace ApplicationCore.Features.ClosetProToAllmoxyOrder;
 

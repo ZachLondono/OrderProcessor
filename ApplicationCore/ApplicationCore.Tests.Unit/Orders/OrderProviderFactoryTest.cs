@@ -1,7 +1,8 @@
-﻿using ApplicationCore.Features.Orders.OrderLoading;
-using ApplicationCore.Features.Orders.OrderLoading.Models;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NSubstitute;
+using ApplicationCore.Features.Orders.OrderLoading;
+using ApplicationCore.Features.Orders.OrderLoading.Models;
+using OrderLoading;
 
 namespace ApplicationCore.Tests.Unit.Orders;
 

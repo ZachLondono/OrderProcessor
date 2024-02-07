@@ -1,9 +1,11 @@
-﻿@using Domain.Orders.Persistance;
-@using ApplicationCore.Shared.Services;
+﻿@using ApplicationCore.Features.Orders.OderLoading.Dialog
+@using Domain.Orders.Persistance;
 @using Domain.Components
 @using Domain.Infrastructure.Bus
 @using static Domain.Components.Button
 @using Domain.Services
+@using Microsoft.JSInterop
+@using global::OrderLoading
 @inject NavigationService NavigationService
 @inject IJSRuntime JSRuntime
 @inject OrderLoadWidgetViewModel DataContext

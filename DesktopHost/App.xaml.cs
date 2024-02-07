@@ -19,6 +19,7 @@ using ApplicationCore;
 using ApplicationCore.Features.CustomizationScriptManager;
 using DesktopHost.ScriptEditor;
 using ApplicationCore.Shared;
+using Domain.Services;
 
 namespace DesktopHost;
 

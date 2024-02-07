@@ -4,6 +4,7 @@ using ApplicationCore.Shared.Settings;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using Domain.Extensions;
 
 namespace ApplicationCore.Shared.CNC.ReleasePDF.Services;
 

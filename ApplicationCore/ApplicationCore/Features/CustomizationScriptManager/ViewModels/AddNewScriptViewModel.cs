@@ -1,8 +1,8 @@
 ﻿using ApplicationCore.Features.CustomizationScriptList.Queries;
 using ApplicationCore.Features.CustomizationScripts.Commands;
 using ApplicationCore.Shared.CustomizationScripts.Models;
-using ApplicationCore.Shared.Services;
 using Domain.Infrastructure.Bus;
+using Domain.Services;
 
 namespace ApplicationCore.Features.CustomizationScripts.ViewModels;
 

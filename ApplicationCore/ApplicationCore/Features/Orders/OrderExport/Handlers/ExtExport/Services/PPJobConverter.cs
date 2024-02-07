@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Shared;
+﻿using Domain.Extensions;
 using Domain.ProductPlanner;
 
 namespace ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Services;

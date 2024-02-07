@@ -1,6 +1,6 @@
-﻿namespace ApplicationCore.Features.Orders.OrderLoading.Dialog;
+﻿namespace ApplicationCore.Features.Orders.OderLoading.Dialog;
 
-internal enum State {
+public enum State {
     Unknown,
     Loading,
     Complete,
