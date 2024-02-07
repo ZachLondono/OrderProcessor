@@ -10,7 +10,14 @@
 @inject IEmailService EmailService
 @inject IFileReader FileReader
 
-@if (_isSent) {
+@if (_errorMessage is not null) {
+
+    <div class="text-red-600">
+        <h1 class="font-bold text-lg">Error Occurred</h1>
+        <span>@_errorMessage</span>
+    </div>
+
+} else if (_isSent) {
     
     <div>
         <span>Bug report sent.</span>
@@ -38,6 +45,7 @@
     [CascadingParameter]
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
+    private string? _errorMessage = null;
     private bool _isSent = false;
     private bool _isSending = false;
     private string _response = "";
@@ -47,6 +55,7 @@
 
         // TODO: NotSupportedException is being thrown somewhere in this method. Also UI does not update right away
 
+        _errorMessage = null;
         _isSending = true;
         _ = InvokeAsync(StateHasChanged);
 
@@ -56,32 +65,43 @@
         string defaultBody = "No description provided.";
         string pathToLogs = @"C:\ProgramData\OrderProcessor\Logs\logs.db";
 
-        var stream = FileReader.OpenReadFileStream(pathToLogs);
-        var attachment = new MimePart ("Logs", "db") {
-            Content = new MimeContent(stream),
-            ContentDisposition = new ContentDisposition (ContentDisposition.Attachment),
-            ContentTransferEncoding = ContentEncoding.Base64,
-            FileName = Path.GetFileName (pathToLogs)
-        };
+        try {
 
-        var builder = new BodyBuilder{
-            TextBody = _bugDescription == string.Empty ? defaultBody : _bugDescription
-        };
-        builder.Attachments.Add(attachment);
-        var body = builder.ToMessageBody();
+            var stream = FileReader.OpenReadFileStream(pathToLogs);
+            var attachment = new MimePart ("Logs", "db") {
+                Content = new MimeContent(stream),
+                ContentDisposition = new ContentDisposition (ContentDisposition.Attachment),
+                ContentTransferEncoding = ContentEncoding.Base64,
+                FileName = Path.GetFileName (pathToLogs)
+            };
 
-        var message = new MimeMessage();
-        var sender = EmailService.GetSender();
-        message.From.Add(sender);
-        message.To.Add(new MailboxAddress(recipientName, recipientEmail));
-        message.Subject = subject;
-        message.Body = body;
+            var builder = new BodyBuilder{
+                TextBody = _bugDescription == string.Empty ? defaultBody : _bugDescription
+            };
+            builder.Attachments.Add(attachment);
+            var body = builder.ToMessageBody();
 
-        await EmailService.SendMessageAsync(message);
+            var message = new MimeMessage();
+            var sender = EmailService.GetSender();
+            message.From.Add(sender);
+            message.To.Add(new MailboxAddress(recipientName, recipientEmail));
+            message.Subject = subject;
+            message.Body = body;
 
-        _isSending = false;
-        _isSent = true;
-        _ = InvokeAsync(StateHasChanged);
+            await EmailService.SendMessageAsync(message);
+
+            _isSent = true;
+
+        } catch (Exception ex) {
+
+            _errorMessage = ex.Message;
+
+        } finally {
+
+            _isSending = false;
+            _ = InvokeAsync(StateHasChanged);
+            
+        }
 
     }
 
