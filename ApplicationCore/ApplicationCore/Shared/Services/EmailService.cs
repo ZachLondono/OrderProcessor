@@ -21,9 +21,16 @@ public class EmailService : IEmailService {
 
     public async Task<string> SendMessageAsync(MimeMessage message) {
 
+        string password;
+        try {
+            password = UserDataProtection.Unprotect(_settings.ProtectedPassword);
+        } catch (Exception ex) {
+            throw new InvalidOperationException("Failed to get email sender credentials. Check that email sender is properly configured.", ex);
+        }
+
         using var client = new SmtpClient();
         client.Connect(_settings.Host, _settings.Port, SecureSocketOptions.Auto);
-        client.Authenticate(_settings.SenderEmail, UserDataProtection.Unprotect(_settings.ProtectedPassword));
+        client.Authenticate(_settings.SenderEmail, password);
 
         var response = await client.SendAsync(message);
 
