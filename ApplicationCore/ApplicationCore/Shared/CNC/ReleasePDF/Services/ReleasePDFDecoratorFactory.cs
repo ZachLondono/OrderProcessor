@@ -70,7 +70,8 @@ internal class ReleasePDFDecoratorFactory {
                                .OrderBy(g => {
                                    if (int.TryParse(g.First().ProductNumber, out int productNumber)) return productNumber;
                                    return 0;
-                               });
+                               })
+                               .ToArray();
 
             bool containsFace6 = face6FileNames.Any();
             bool containsBackSideProgram = parts.Any(group => group.Any(part => part.HasBackSideProgram));
@@ -106,7 +107,7 @@ internal class ReleasePDFDecoratorFactory {
                 TimeStamp = job.TimeStamp,
                 ImageData = imageData,
                 Parts = new Table() {
-                    Title = "Parts on Sheet",
+                    Title = $"Parts on Sheet ({parts.Sum(g => g.Count())})",
                     Content = partsTableContent,
                     ColumnWidths = new Dictionary<string, float>() {
                         { "Product", 50 },
@@ -206,17 +207,17 @@ internal class ReleasePDFDecoratorFactory {
 
     private static Table CreatePartsTable(IEnumerable<MachineRelease> releases) {
 
-        var releasedParts = releases.First()
-                                    .SinglePrograms
-                                    .GroupBy(p => p.PartId)
-                                    .Select(g => g.First())
-                                    .OrderBy(p => {
-                                        if (int.TryParse(p.ProductNumber, out int productNumber)) return productNumber;
-                                        return 0;
-                                    });
+        var uniqueParts = releases.First()
+                                  .SinglePrograms
+                                  .GroupBy(p => p.PartId).Select(g => g.First())
+                                  .OrderBy(p => {
+                                      if (int.TryParse(p.ProductNumber, out int productNumber)) return productNumber;
+                                      return 0;
+                                  })
+                                  .ToArray();
 
         var partsTableContent = new List<Dictionary<string, string>>();
-        foreach (var part in releasedParts) {
+        foreach (var part in uniqueParts) {
             partsTableContent.Add(new() {
                     { "#", part.ProductNumber },
                     { "FileName", part.FileName },
@@ -227,7 +228,7 @@ internal class ReleasePDFDecoratorFactory {
         }
 
         var partsTable = new Table() {
-            Title = "Single Parts",
+            Title = $"Single Parts ({uniqueParts.Length} unique)",
             Content = partsTableContent,
             ColumnWidths = new Dictionary<string, float> {
                 { "#", 50 },
@@ -271,7 +272,9 @@ internal class ReleasePDFDecoratorFactory {
     }
 
     private static Table CreateProgramsTable(IEnumerable<MachineRelease> releases) {
+        
         var programTableContent = new List<Dictionary<string, string>>();
+        int totalPartCount = 0;
         releases.First().Programs.ForEach((program, i) => {
             var programData = new Dictionary<string, string>() {
                 { "#", (i + 1).ToString() }
@@ -285,8 +288,12 @@ internal class ReleasePDFDecoratorFactory {
                 programData.Add(release.MachineName, programName);
             }
 
+            int sheetPartCount = program.Parts.Count;
+            totalPartCount += sheetPartCount;
+
             programData.Add("Material", $"{program.Material.Name} - {program.Material.Width}x{program.Material.Length}x{program.Material.Thickness}");
             programData.Add("Yield", program.Material.Yield.ToString("P2"));
+            programData.Add("Qty", sheetPartCount.ToString());
             programTableContent.Add(programData);
 
         });
@@ -294,14 +301,15 @@ internal class ReleasePDFDecoratorFactory {
         var columnWidths = new Dictionary<string, float>() {
             { "#", 15 },
             { "Yield", 30 },
+            { "Qty", 15 },
         };
 
         releases.ForEach(release => columnWidths.Add(release.MachineName, 75));
 
         var programsTable = new Table() {
-            Title = "Nest Programs",
+            Title = $"Nest Programs ({totalPartCount} nested parts)",
             Content = programTableContent,
-            ColumnWidths = columnWidths
+            ColumnWidths = columnWidths,
         };
         return programsTable;
     }
