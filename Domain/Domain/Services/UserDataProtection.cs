@@ -6,7 +6,8 @@ namespace Domain.Services;
 
 public class UserDataProtection {
 
-    private static readonly byte[] _entropy = Encoding.ASCII.GetBytes(Assembly.GetExecutingAssembly().FullName);
+    // TODO: Maybe use a different source of entropy
+    private static readonly byte[] _entropy = Encoding.ASCII.GetBytes("ApplicationCore, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" /*Assembly.GetExecutingAssembly().FullName*/);
 
     public static string Protect(string str) {
 
