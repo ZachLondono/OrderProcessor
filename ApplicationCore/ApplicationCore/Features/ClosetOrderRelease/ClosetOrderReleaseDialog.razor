@@ -1,4 +1,5 @@
 ﻿@using ApplicationCore.Features.ClosetOrderSelector
+@using ApplicationCore.Features.GetJobCutListDirectory
 @using Domain.Components
 @using Domain.Components.ProgressModal
 @using Domain.Infrastructure.Bus
@@ -115,6 +116,12 @@
         if (Order is null || Bus is null) return;
 
         string outputDirectory = @"X:\_CUTLISTS  Incoming";
+
+        var outputDirResult = await Bus.Send(new GetJobOrderCutListDirectory.Query(Order.OrderFileDirectory, ""));
+        outputDirResult.OnSuccess(dir => {
+            if (string.IsNullOrWhiteSpace(dir)) return;
+            outputDirectory += ";" + dir;
+        });
 
         string emailRecipients = "maciej@royalcabinet.com;purchasing@royalcabinet.com";
 
