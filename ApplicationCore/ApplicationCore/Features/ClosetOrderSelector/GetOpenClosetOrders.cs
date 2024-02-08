@@ -48,14 +48,17 @@ public class GetOpenClosetOrders {
 
                             try {
 
-                                string[] orderNumParts = (worksheet.Range["OrderNum"].Value2.ToString() as string).Split(' ', 2, StringSplitOptions.None);
+                                string[] orderNumParts = (worksheet.Range["OrderNum"].Value2.ToString()).Split(' ', 2, StringSplitOptions.None);
                                 string customerName = worksheet.Range["CustomerName"].Value2.ToString();
                                 string jobNumber = orderNumParts[0];
-                                string jobName = orderNumParts[1];
+                                string jobName = worksheet.Range["JobName"].Value2.ToString();
+                                DateTime orderDate = ReadDateTimeFromWorkbook(worksheet, "E4");
+                                DateTime dueDate = ReadDateTimeFromWorkbook(worksheet, "E5");
                                 string reportFilePath = @$"Y:\CADCode\Reports\{jobNumber} {jobName}.xml"; // TODO: Get this directory from a settings file
                                 string directory = workbook.Path;
+                                string filePath = workbook.FullName;
 
-                                closetOrders.Add(new(customerName, jobName, jobNumber, reportFilePath, directory));
+                                closetOrders.Add(new(customerName, jobName, jobNumber, orderDate, dueDate, reportFilePath, filePath, directory));
 
                             } catch (Exception ex) {
                                 _logger.LogWarning(ex, "Exception thrown while trying to read order info from door order Cover tab");
@@ -74,6 +77,26 @@ public class GetOpenClosetOrders {
             }
 
             return Task.FromResult(Response<IEnumerable<ClosetOrder>>.Success(closetOrders));
+
+        }
+
+        private static DateTime ReadDateTimeFromWorkbook(Worksheet sheet, string rangeName) {
+
+            try {
+
+                var rng = sheet.Range[rangeName];
+
+                if (rng.Value2 is double oaDate) {
+                    return DateTime.FromOADate(oaDate);
+                }
+
+                return DateTime.Today;
+
+            } catch {
+
+                return DateTime.Today;
+
+            }
 
         }
 
