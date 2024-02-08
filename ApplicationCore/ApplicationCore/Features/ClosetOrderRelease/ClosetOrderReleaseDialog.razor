@@ -146,18 +146,22 @@
 
         StateHasChanged();
 
-        var files = await GetReportFiles(Order.OrderNumber);
-        Model.WSXMLReportFilePath = files.FirstOrDefault() ?? ""; // TODO: allow for multiple files
-        Model.AddExistingWSXMLReport = files.Any();
+        var file = await GetReportFile(Order.OrderNumber);
+        Model.WSXMLReportFilePath = file ?? ""; // TODO: allow for multiple files
+        Model.AddExistingWSXMLReport = file is not null;
 
     }
 
-    private static async Task<string[]> GetReportFiles(string number) {
+    private static async Task<string?> GetReportFile(string number) {
         return await Task.Run(() => {
             try {
-                return Directory.GetFiles(@"Y:\CADCode\Reports\", $"{number}* - *.xml");
+
+                var files = Directory.GetFiles(@"Y:\CADCode\Reports\", $"{number}*.xml");
+                return files.OrderByDescending(file => new FileInfo(file).LastWriteTime)
+                            .FirstOrDefault();
+
             } catch {
-                return Array.Empty<string>();
+                return null;
             }
         });
     }
