@@ -4,6 +4,7 @@
 @using Domain.Components.ProgressModal
 @using ApplicationCore.Shared.Services
 @using Domain.Services
+@using ApplicationCore.Features.GetJobCutListDirectory
 
 <EditForm Model="Model">
 
@@ -135,8 +136,8 @@
 
         if (Order is null || Bus is null) return;
 
-        var outputDirResult = await Bus.Send(new GetDoorOrderCutListDirectory.Query(Order.OrderFileDirectory));
         string outputDirectory = @"R:\Door Orders\Door Programs";
+        var outputDirResult = await Bus.Send(new GetJobOrderCutListDirectory.Query(Order.OrderFileDirectory, outputDirectory));
         outputDirResult.OnSuccess(dir => outputDirectory = dir);
 
         bool includeInvoice = false;

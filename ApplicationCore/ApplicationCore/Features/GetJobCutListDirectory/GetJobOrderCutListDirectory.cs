@@ -1,17 +1,17 @@
 ﻿using Domain.Infrastructure.Bus;
 
-namespace ApplicationCore.Features.DoorOrderRelease;
+namespace ApplicationCore.Features.GetJobCutListDirectory;
 
-internal class GetDoorOrderCutListDirectory {
+internal class GetJobOrderCutListDirectory {
 
-    public record Query(string OrderFileDirectory) : IQuery<string>;
+    public record Query(string OrderFileDirectory, string DefaultOutputDirectory) : IQuery<string>;
 
     public class Handler : QueryHandler<Query, string> {
 
         public override Task<Response<string>> Handle(Query query) {
 
             if (!query.OrderFileDirectory.StartsWith(@"R:\Job Scans")) {
-                return Task.FromResult(Response<string>.Success(@"R:\Door Orders\Door Programs"));
+                return Task.FromResult(Response<string>.Success(query.DefaultOutputDirectory));
             }
 
             if (!query.OrderFileDirectory.ToLowerInvariant().Contains("orders")) {
@@ -33,7 +33,7 @@ internal class GetDoorOrderCutListDirectory {
 
                         var parentDi = new DirectoryInfo(dirInfo.Parent.FullName);
                         var existingDir = parentDi.GetDirectories()
-                                                .Where(info => info.Name.ToLowerInvariant().Contains("cutlist"))
+                                                .Where(info => info.Name.Contains("cutlist", StringComparison.InvariantCultureIgnoreCase))
                                                 .FirstOrDefault();
 
                         if (existingDir is not null) {
