@@ -176,8 +176,12 @@
         StateHasChanged();
 
         var file = await GetReportFile(Order.OrderNumber);
-        Model.WSXMLReportFilePath = file ?? ""; // TODO: allow for multiple files
-        Model.AddExistingWSXMLReport = file is not null;
+        if (file is not null) {
+            Model.WSXMLReportFilePath = file; // TODO: allow for multiple files
+            Model.AddExistingWSXMLReport = true;
+        } else {
+            Model.GenerateGCodeFromWorkbook = true;
+        }
 
     }
 
