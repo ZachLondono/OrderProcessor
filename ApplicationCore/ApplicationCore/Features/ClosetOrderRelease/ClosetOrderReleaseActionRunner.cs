@@ -51,6 +51,12 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
             return;
         }
 
+        var outputDirectories = Options.OutputDirectory.Split(';');
+        if (outputDirectories.Length == 0) {
+            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "No output directories set"));
+            return;
+        }
+
         Document? cncDocument = null;
         string? excelPdfFilePath = null;
         ReleasedJob? releasedJob = null;
@@ -77,7 +83,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
         }
 
-        var file = await MergePDFs(Options.OutputDirectory, Options.FileName, cncDocument, excelPdfFilePath);
+        var file = await MergePDFs(outputDirectories, Options.FileName, cncDocument, excelPdfFilePath);
 
         if (file is null) {
 
@@ -122,7 +128,11 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
     }
 
-    private async Task<string?> MergePDFs(string outputDirectory, string fileName, Document? document, string? excelPdf) {
+    private async Task<string?> MergePDFs(string[] outputDirectories, string fileName, Document? document, string? excelPdf) {
+
+        if (outputDirectories.Length == 0) {
+            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "Output directory not found"));
+        }
 
         var fileComponents = new List<byte[]>();
         
@@ -177,11 +187,17 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
         try {
 
-            var mergedDocument = await Task.Run(() => PdfMerger.Merge(fileComponents));
+            string mergedFilePath = "";
 
-            var mergedFilePath = _fileReader.GetAvailableFileName(outputDirectory, fileName, "pdf");
-            
-            await File.WriteAllBytesAsync(mergedFilePath, mergedDocument);
+            foreach (var directory in outputDirectories) {
+
+                var mergedDocument = await Task.Run(() => PdfMerger.Merge(fileComponents));
+    
+                mergedFilePath = _fileReader.GetAvailableFileName(directory, fileName, "pdf");
+                
+                await File.WriteAllBytesAsync(mergedFilePath, mergedDocument);
+
+            }
             
             return mergedFilePath;
 
