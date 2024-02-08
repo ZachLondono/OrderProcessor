@@ -13,7 +13,7 @@ public class AllmoxyClient : IAllmoxyClient {
     public const string EXPORT_CONTENT_TYPE = "application/xml";
     public const string LOG_IN_FORM_CONTENT_TYPE = "application/x-www-form-urlencoded";
     public const string EXPORT_NOT_FOUND_CONTENT = "Find: No matching Exporter";
-    public const string ORDER_NOT_FOUND_CONTENT = "Find: No matching Order records found";
+    public const string ORDER_NOT_FOUND_CONTENT = "Find: No matching Order"; //(####) records found";
     private const int MAX_RETRIES = 3;
 
 
