@@ -6,6 +6,10 @@
 @using Domain.Services
 @using ApplicationCore.Features.GetJobCutListDirectory
 
+@if (_errorMessage is not null) {
+    <span class="font-semibold text-red-600">@_errorMessage</span>
+}
+
 <EditForm Model="Model">
 
     <div>
@@ -132,6 +136,8 @@
 
     public DoorOrderReleaseOptions Model { get; set; } = new();
 
+    private string? _errorMessage = null;
+
     protected override async Task OnInitializedAsync() {
 
         if (Order is null || Bus is null) return;
@@ -164,7 +170,7 @@
 
 				SendEmail = true,
 				EmailRecipients = emailRecipients,
-                
+
 			};
 
         StateHasChanged();
@@ -203,26 +209,71 @@
 
         if (ActionRunnerFactory is null || Order is null) return;
 
-		var actionRunner = ActionRunnerFactory.CreateActionRunner(Order, Model);
+        if (!ValidateModel()) {
+            StateHasChanged();
+            return;
+        }
 
-		var parameters = new ModalParameters() {
+        var actionRunner = ActionRunnerFactory.CreateActionRunner(Order, Model);
+
+        var parameters = new ModalParameters() {
             { "ActionRunner",  actionRunner },
             { "InProgressTitle", "Releasing Order..." },
             { "CompleteTitle", "Release Complete" }
         };
 
-		var options = new ModalOptions() {
+        var options = new ModalOptions() {
             HideHeader = true,
             HideCloseButton = true,
             DisableBackgroundCancel = true,
             Size = ModalSize.Large
         };
 
-		var dialog = Modal.Show<ProgressModal>("Order Release Progress", parameters, options);
-		_ = await dialog.Result;
-        
+        var dialog = Modal.Show<ProgressModal>("Order Release Progress", parameters, options);
+        _ = await dialog.Result;
+
         await BlazoredModal.CloseAsync();
 
-	}
+    }
+
+    private bool ValidateModel() {
+
+        _errorMessage = null;
+
+        if (Model.AddExistingWSXMLReport) {
+
+            if (string.IsNullOrWhiteSpace(Model.WSXMLReportFilePath)) {
+
+                _errorMessage = "Select a WSXML report or uncheck the 'Existing GCode' option.";
+                return false;
+
+            }
+
+            if (!File.Exists(Model.WSXMLReportFilePath)) {
+
+                _errorMessage = "Selected WSXML file can not be found.";
+                return false;
+
+            }
+
+        }
+
+        if (!Directory.Exists(Model.OutputDirectory)) {
+
+            _errorMessage = "Output directory does not exist or cannot be accessed.";
+            return false;
+
+        }
+
+        if (Model.SendEmail && string.IsNullOrWhiteSpace(Model.EmailRecipients)) {
+
+            _errorMessage = "Specify email recipients or uncheck 'Send Email' option.";
+            return false;
+
+        }
+
+        return true;
+
+    }
 
 }
