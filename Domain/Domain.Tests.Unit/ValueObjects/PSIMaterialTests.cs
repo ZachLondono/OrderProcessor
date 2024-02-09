@@ -1,4 +1,7 @@
-﻿namespace ApplicationCore.Tests.Unit.Shared;
+﻿using Domain.ValueObjects;
+using FluentAssertions;
+
+namespace Domain.Tests.Unit.ValueObjects;
 
 public class PSIMaterialTests {
 

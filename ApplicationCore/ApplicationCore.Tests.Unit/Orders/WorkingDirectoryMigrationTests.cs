@@ -1,8 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
-using ApplicationCore.Infrastructure.Bus;
 using FluentAssertions;
 using NSubstitute;
-using NSubstitute.Extensions;
 
 namespace ApplicationCore.Tests.Unit.Orders;
 

@@ -3,6 +3,7 @@ using Domain.Orders.ValueObjects;
 using ApplicationCore.Shared;
 using Domain.ValueObjects;
 using FluentAssertions;
+using Domain.Extensions;
 
 namespace ApplicationCore.Tests.Unit.Orders.Products.Doors;
 

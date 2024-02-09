@@ -1,5 +1,7 @@
 ﻿using Domain.ValueObjects;
 using FluentAssertions;
+using OrderLoading.ClosetProCSVCutList;
+using OrderLoading.ClosetProCSVCutList.Products;
 
 namespace OrderLoading.Tests.Unit.ClosetProOrderLoading;
 

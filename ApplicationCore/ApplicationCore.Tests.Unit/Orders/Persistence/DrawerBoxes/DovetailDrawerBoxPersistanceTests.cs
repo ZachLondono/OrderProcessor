@@ -1,5 +1,5 @@
-﻿using Domain.Orders.Enums;
-using Domain.Orders.Products.DrawerBoxes;
+﻿using Domain.Orders.Entities.Products.DrawerBoxes;
+using Domain.Orders.Enums;
 using Domain.ValueObjects;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence.DrawerBoxes;
