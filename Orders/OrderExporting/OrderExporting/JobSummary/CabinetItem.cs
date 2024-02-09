@@ -1,0 +1,18 @@
+﻿using Domain.Orders.Enums;
+using Domain.ValueObjects;
+
+namespace OrderExporting.JobSummary;
+
+public class CabinetItem {
+
+    public int Line { get; set; }
+    public int Qty { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public Dimension Width { get; set; }
+    public Dimension Height { get; set; }
+    public Dimension Depth { get; set; }
+    public CabinetSideType LeftSide { get; set; }
+    public CabinetSideType RightSide { get; set; }
+    public string[] Comments { get; set; } = Array.Empty<string>();
+
+}

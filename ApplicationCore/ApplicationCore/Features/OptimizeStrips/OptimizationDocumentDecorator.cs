@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Shared;
-using Domain.ValueObjects;
+﻿using Domain.ValueObjects;
+using OrderExporting.Shared;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;

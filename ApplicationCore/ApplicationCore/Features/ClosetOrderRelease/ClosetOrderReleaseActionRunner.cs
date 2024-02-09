@@ -1,7 +1,5 @@
 ﻿using ApplicationCore.Features.ClosetOrderSelector;
-using ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
 using ApplicationCore.Shared;
-using ApplicationCore.Shared.CNC.WSXML;
 using ApplicationCore.Shared.Services;
 using Domain.Components.ProgressModal;
 using Domain.Services;
@@ -10,19 +8,22 @@ using Domain.Excel;
 using QuestPDF.Fluent;
 using UglyToad.PdfPig.Writer;
 using Microsoft.Extensions.Logging;
-using ApplicationCore.Shared.CNC.WSXML.Report;
 using Microsoft.Office.Interop.Outlook;
 using Domain.Extensions;
 using System.Runtime.InteropServices;
 using MimeKit;
-using ApplicationCore.Shared.CNC.Job;
-using ApplicationCore.Shared.CNC.WorkOrderReleaseEmail;
 using Exception = System.Exception;
 using Action = System.Action;
 using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
 using ExcelApp = Microsoft.Office.Interop.Excel.Application;
 using Range = Microsoft.Office.Interop.Excel.Range;
 using Microsoft.Office.Interop.Excel;
+using OrderExporting.CNC.ReleasePDF;
+using OrderExporting.CNC.Programs.WSXML;
+using OrderExporting.CNC.Programs.Job;
+using OrderExporting.CNC.Programs.WorkOrderReleaseEmail;
+using OrderExporting.CNC.Programs.WSXML.Report;
+using OrderExporting.Shared;
 
 namespace ApplicationCore.Features.ClosetOrderRelease;
 
@@ -70,6 +71,10 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
             (cncDocument, releasedJob) = CreateCNCReleaseDocument(Options.WSXMLReportFilePath, ClosetOrder.OrderDate, ClosetOrder.DueDate, ClosetOrder.Customer, "Royal Cabinet Company");
 
+            if (cncDocument is null || releasedJob is null) {
+                return;
+            }
+
         }
 
         if (Options.IncludeCover || Options.IncludePackingList) {
@@ -80,6 +85,10 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
             }
 
             excelPdfFilePath = await GeneratePDFFromWorkbook(Options.IncludeCover, Options.IncludePackingList, Options.IncludePartList, Options.IncludeDBList, Options.IncludeMDFList, Options.WorkbookFilePath, Options.SeperateCoverPDF, Options.SeperatePackingListPDF, Options.SeperatePDFDirectory);
+            
+            if (excelPdfFilePath is null) {
+                return;
+            }
 
         }
 

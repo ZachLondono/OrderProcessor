@@ -6,13 +6,13 @@ using ApplicationCore.Features.Orders;
 using ApplicationCore.Shared.Services;
 using ApplicationCore.Features.DataFilePaths;
 using ApplicationCore.Features.Updates;
-using ApplicationCore.Shared.CNC;
 using Domain.Infrastructure.Bus;
 using Domain.Components.ProgressModal;
 using Domain.Infrastructure.Data;
 using Domain.Services;
 using Companies;
 using Domain;
+using OrderExporting.CNC;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 

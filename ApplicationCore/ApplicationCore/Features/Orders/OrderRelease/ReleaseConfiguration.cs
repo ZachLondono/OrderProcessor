@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
+﻿using OrderExporting.JobSummary;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
