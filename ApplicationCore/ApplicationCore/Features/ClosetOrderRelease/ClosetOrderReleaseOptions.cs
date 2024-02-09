@@ -8,6 +8,13 @@ public class ClosetOrderReleaseOptions {
     public string WorkbookFilePath { get; set; } = string.Empty;
     public bool IncludeCover { get; set; }
     public bool IncludePackingList { get; set; }
+    public bool IncludePartList { get; set; }
+    public bool IncludeDBList { get; set; }
+    public bool IncludeMDFList { get; set; }
+
+    public string SeperatePDFDirectory { get; set; }
+    public bool SeperateCoverPDF { get; set; }
+    public bool SeperatePackingListPDF { get; set; }
 
     public string FileName { get; set; } = string.Empty;
     public string OutputDirectory { get; set; } = string.Empty;

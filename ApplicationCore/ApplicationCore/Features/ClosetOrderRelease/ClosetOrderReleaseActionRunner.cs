@@ -79,7 +79,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                 return;
             }
 
-            excelPdfFilePath = await GeneratePDFFromWorkbook(Options.IncludeCover, Options.IncludePackingList, Options.WorkbookFilePath);
+            excelPdfFilePath = await GeneratePDFFromWorkbook(Options.IncludeCover, Options.IncludePackingList, Options.IncludePartList, Options.IncludeDBList, Options.IncludeMDFList, Options.WorkbookFilePath, Options.SeperateCoverPDF, Options.SeperatePackingListPDF, Options.SeperatePDFDirectory);
 
         }
 
@@ -91,8 +91,6 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
             return;
             
         }
-
-        PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, file));
 
         if (Options.SendEmail) {
 
@@ -197,6 +195,8 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                 
                 await File.WriteAllBytesAsync(mergedFilePath, mergedDocument);
 
+                PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, mergedFilePath));
+
             }
             
             return mergedFilePath;
@@ -270,7 +270,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
     }
 
-    private async Task<string?> GeneratePDFFromWorkbook(bool includeCover, bool includePackingList, string filePath) {
+    private async Task<string?> GeneratePDFFromWorkbook(bool includeCover, bool includePackingList, bool includePartList, bool includeDBList, bool includeMDFList, string filePath, bool seperateCover, bool seperatePackingList, string seperatePDFDirectory) {
 
         bool wasOrderOpen = true;
         string? tmpFileName = null;
@@ -297,13 +297,77 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
                 if (includeCover) {
                     const string sheetName = "Cover";
-                    SetCoverPrintArea(worksheets, sheetName);
+
+                    Worksheet cover = worksheets[sheetName];
+                    cover.PageSetup.PrintArea = $"A1:E48";
                     pdfSheetNames.Add(sheetName);
+
+                    if (seperateCover && Directory.Exists(seperatePDFDirectory)) {
+                        try {
+                            cover.Outline.ShowLevels(RowLevels:2);
+                            cover.PageSetup.FitToPagesTall = 1;
+                            string filePath = Path.Combine(seperatePDFDirectory, $"{ClosetOrder?.OrderNumber} Invoice");
+                            cover.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, filePath, OpenAfterPublish: false);
+                            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, filePath + ".pdf"));
+                        } catch (Exception ex) {
+                            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"Error while generating invoice pdf - {ex.Message}"));
+                        }
+                    }
+
+                    cover.Outline.ShowLevels(RowLevels: 1);
+
                 }
 
                 if (includePackingList) {
                     const string sheetName = "Packing List";
-                    SetPackingListPrintArea(worksheets, sheetName);
+                    SetSheetPrintArea(worksheets, sheetName, "E", "L", 5);
+                    pdfSheetNames.Add(sheetName);
+
+                    if (seperatePackingList && Directory.Exists(seperatePDFDirectory)) {
+                        try {
+                            Worksheet sheet = worksheets[sheetName];
+                            string filePath = Path.Combine(seperatePDFDirectory, $"{ClosetOrder?.OrderNumber} Packing List");
+                            sheet.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, filePath, OpenAfterPublish: false);
+                            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, filePath + ".pdf"));
+                        } catch (Exception ex) {
+                            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"Error while generating packing list pdf - {ex.Message}"));
+                        }
+                    }
+                }
+
+                if (includePartList) {
+
+                    const string sheetName = "Closet Parts";
+                    SetSheetPrintArea(worksheets, sheetName, "B", "J", 2);
+                    pdfSheetNames.Add(sheetName);
+
+                    var cornerSheet = worksheets["Corner Shelves"];
+                    var firstRowVal = cornerSheet.Range["B2"]?.Value2?.ToString() ?? "";
+                    if (!string.IsNullOrWhiteSpace(firstRowVal)) {
+                        SetSheetPrintArea(worksheets, "Corner Shelves", "B", "K", 2);
+                        pdfSheetNames.Add(sheetName);
+                    }
+
+                    /*
+                    var zargenSheet = worksheets["Zargen"];
+                    firstRowVal = cornerSheet.Range[""].Value2.ToString();
+                    if (!string.IsNullOrWhiteSpace(firstRowVal)) {
+                        SetSheetPrintArea(worksheets, "Zargen", "B", "K", 2);
+                        pdfSheetNames.Add(sheetName);
+                    }
+                    */
+
+                }
+
+                if (includeDBList) {
+                    const string sheetName = "Dovetail";
+                    SetSheetPrintArea(worksheets, sheetName, "B", "J", 17, XlPageOrientation.xlLandscape);
+                    pdfSheetNames.Add(sheetName);
+                }
+
+                if (includeMDFList) {
+                    const string sheetName = "MDF Fronts";
+                    SetSheetPrintArea(worksheets, sheetName, "B", "H", 6);
                     pdfSheetNames.Add(sheetName);
                 }
 
@@ -341,20 +405,15 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
     }
 
-    private static void SetCoverPrintArea(Sheets worksheets, string sheetName) {
-        Worksheet cover = worksheets[sheetName];
-        cover.PageSetup.PrintArea = $"A1:E48";
-    }
+    private static void SetSheetPrintArea(Sheets worksheets, string sheetName, string checkCol, string lastCol, int startRow, XlPageOrientation orientation = XlPageOrientation.xlPortrait) {
 
-    private static void SetPackingListPrintArea(Sheets worksheets, string sheetName) {
-
-        Worksheet packingList = worksheets[sheetName];
+        Worksheet sheet = worksheets[sheetName];
         const int maxRow = 206;
-        int lastRow = 5;
+        int lastRow = startRow;
 
         for (int currentRow = 5; currentRow <= maxRow; currentRow++) {
 
-            Range rng = packingList.Range[$"E{currentRow}"];
+            Range rng = sheet.Range[$"{checkCol}{currentRow}"];
             var val = rng.Value2?.ToString() ?? "";
 
             if (!string.IsNullOrWhiteSpace(val) && val != "0") {
@@ -363,7 +422,8 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
         }
 
-        packingList.PageSetup.PrintArea = $"A1:L{lastRow}";
+        sheet.PageSetup.PrintArea = $"A1:{lastCol}{lastRow}";
+        sheet.PageSetup.Orientation = orientation;
 
     }
 

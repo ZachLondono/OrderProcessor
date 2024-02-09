@@ -28,6 +28,24 @@
                     Packing List
                 </label>
             </div>
+            <div>
+                <label>
+                    <InputCheckbox @bind-Value="Model.IncludePartList" />
+                    Part List
+                </label>
+            </div>
+            <div>
+                <label>
+                    <InputCheckbox @bind-Value="Model.IncludeDBList" />
+                    Dovetail List
+                </label>
+            </div>
+            <div>
+                <label>
+                    <InputCheckbox @bind-Value="Model.IncludeMDFList" />
+                    MDF List
+                </label>
+            </div>
         </div>
     </div>
 
@@ -58,7 +76,7 @@
     </div>
 
     <div class="mt-3">
-        <label >
+        <label>
             <span class="text-gray-700">
                 Output Directory
             </span>
@@ -85,6 +103,46 @@
                 </label>
             </div>
         }
+    </div>
+
+    <div class="my-5">
+        <hr />
+    </div>
+
+    <div>
+
+        <span class="font-semibold">Seperate PDFs</span>
+
+        <div class="text-gray-700">
+            <div>
+                <label>
+                    <InputCheckbox @bind-Value="Model.SeperateCoverPDF" />
+                    Invoice
+                </label>
+            </div>
+            <div>
+                <label>
+                    <InputCheckbox @bind-Value="Model.SeperatePackingListPDF" />
+                    Packing List
+                </label>
+            </div>
+        </div>
+
+        @if (Model.SeperateCoverPDF || Model.SeperatePackingListPDF) {
+            <div class="mt-3">
+                <label>
+                    <span class="text-gray-700">
+                        Seperate PDF Output Directory
+                    </span>
+                    <InputText @bind-Value="Model.SeperatePDFDirectory" class="input-text w-full" spellcheck="false" />
+                </label>
+            </div>
+        }
+
+    </div>
+
+    <div class="mt-5">
+        <hr />
     </div>
 
     <div class="my-5 text-center">
@@ -131,6 +189,8 @@
 
         string emailRecipients = "maciej@royalcabinet.com;purchasing@royalcabinet.com";
 
+        string seperatePDFDir = GetJobDirectory(Order.OrderFileDirectory);
+
         Model = new ClosetOrderReleaseOptions() {
 
             WorkbookFilePath = Order.OrderFile,
@@ -143,6 +203,13 @@
 
             IncludeCover = true,
             IncludePackingList = true,
+            IncludePartList = false,
+            IncludeDBList = false,
+            IncludeMDFList = false,
+
+            SeperateCoverPDF = false,
+            SeperatePackingListPDF = false,
+            SeperatePDFDirectory = seperatePDFDir,
 
             SendEmail = true,
             PreviewEmail = false,
@@ -155,6 +222,39 @@
         var file = await GetReportFile(Order.OrderNumber);
         Model.WSXMLReportFilePath = file ?? ""; // TODO: allow for multiple files
         Model.AddExistingWSXMLReport = file is not null;
+
+    }
+
+    private static string GetJobDirectory(string orderFileDirectory) {
+
+        if (!orderFileDirectory.StartsWith(@"R:\Job Scans")) {
+            return orderFileDirectory;
+        }
+
+        string directory = orderFileDirectory;
+        while (true) {
+
+            var dirInfo = new DirectoryInfo(directory);
+
+            if (dirInfo.Parent is null || dirInfo.Parent.Parent is null) {
+                break;
+            }
+
+            if (Path.GetFileNameWithoutExtension(dirInfo.Parent.Parent.FullName) is string dirName) {
+
+                if (dirName == "Job Scans") {
+                    return dirInfo.FullName;
+                }
+
+            } else {
+                break;
+            }
+
+            directory = dirInfo.Parent.FullName;
+
+        }
+
+        return orderFileDirectory;
 
     }
 
