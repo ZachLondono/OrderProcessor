@@ -5,6 +5,7 @@ module.exports = {
     "./ApplicationCore/**/*.{cs,razor,html,cshtml}",
     "./Companies/**/*.{cs,razor,html,cshtml}",
     "./Orders/OrderLoading/**/*.{cs,razor,html,cshtml}",
+    "./Orders/OrderExporting/**/*.{cs,razor,html,cshtml}",
     "./Domain/**/*.{cs,razor,html,cshtml}",
     "./DesktopHost/**/*.{cs,razor,html,cshtml}"
   ],

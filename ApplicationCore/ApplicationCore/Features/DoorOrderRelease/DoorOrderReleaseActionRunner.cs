@@ -1,12 +1,5 @@
 ﻿using ApplicationCore.Features.OpenDoorOrders;
-using ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
 using ApplicationCore.Shared;
-using ApplicationCore.Shared.CNC;
-using ApplicationCore.Shared.CNC.Job;
-using ApplicationCore.Shared.CNC.ReleasePDF;
-using ApplicationCore.Shared.CNC.WorkOrderReleaseEmail;
-using ApplicationCore.Shared.CNC.WSXML.Report;
-using ApplicationCore.Shared.CNC.WSXML;
 using ApplicationCore.Shared.Services;
 using CADCodeProxy.CSV;
 using CADCodeProxy.Machining;
@@ -26,6 +19,12 @@ using Range = Microsoft.Office.Interop.Excel.Range;
 using Domain.Components.ProgressModal;
 using Domain.Services;
 using Domain.Extensions;
+using OrderExporting.CNC.Programs;
+using OrderExporting.CNC.ReleasePDF;
+using OrderExporting.CNC.Programs.WSXML;
+using OrderExporting.CNC.Programs.Job;
+using OrderExporting.CNC.Programs.WorkOrderReleaseEmail;
+using OrderExporting.CNC.Programs.WSXML.Report;
 
 namespace ApplicationCore.Features.DoorOrderRelease;
 

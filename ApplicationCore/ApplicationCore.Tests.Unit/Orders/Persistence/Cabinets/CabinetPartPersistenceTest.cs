@@ -1,5 +1,5 @@
-﻿using Domain.Orders.Enums;
-using Domain.Orders.Products.Cabinets;
+﻿using Domain.Orders.Entities.Products.Cabinets;
+using Domain.Orders.Enums;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 

@@ -1,9 +1,8 @@
 ﻿using Domain.ValueObjects;
 using FluentAssertions;
-using Microsoft.AspNetCore.Components.Forms;
 using System.Diagnostics;
 
-namespace ApplicationCore.Tests.Unit.Shared;
+namespace Domain.Tests.Unit.ValueObjects;
 
 public class DimensionTests {
 

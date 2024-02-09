@@ -1,5 +1,6 @@
-﻿using Domain.Orders.Products.Closets;
-using ApplicationCore.Features.Products.UpdateClosetPart;
+﻿using ApplicationCore.Features.Products.UpdateClosetPart;
+using Domain.Orders.Entities.Products.Closets;
+using Domain.Orders.Enums;
 using Domain.ValueObjects;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence.ClosetParts;
@@ -9,7 +10,7 @@ public class ClosetPartPersistenceTest : PersistenceTests {
     [Fact]
     public void InsertOrderWithClosetPart() {
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
-                                "PC", Dimension.Zero, Dimension.Zero, new("", Features.Orders.Shared.Domain.Enums.ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
+                                "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
                                     { "Param1", "Value1"},
                                     { "Param2", "Value2"}
                                 });
@@ -19,7 +20,7 @@ public class ClosetPartPersistenceTest : PersistenceTests {
     [Fact]
     public void DeleteOrderWithClosetPart() {
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
-                                "PC", Dimension.Zero, Dimension.Zero, new("", Features.Orders.Shared.Domain.Enums.ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
+                                "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
                                     { "Param1", "Value1"},
                                     { "Param2", "Value2"}
                                 });
@@ -29,7 +30,7 @@ public class ClosetPartPersistenceTest : PersistenceTests {
     [Fact]
     public void InsertOrderWithClosetPartWithProductionNotes() {
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
-                                "PC", Dimension.Zero, Dimension.Zero, new("", Features.Orders.Shared.Domain.Enums.ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
+                                "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
                                     { "Param1", "Value1"},
                                     { "Param2", "Value2"}
                                 }) {
@@ -41,7 +42,7 @@ public class ClosetPartPersistenceTest : PersistenceTests {
     [Fact]
     public void DeleteOrderWithClosetPartWithProductionNotes() {
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
-                                "PC", Dimension.Zero, Dimension.Zero, new("", Features.Orders.Shared.Domain.Enums.ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
+                                "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
                                     { "Param1", "Value1"},
                                     { "Param2", "Value2"}
                                 }) {
@@ -55,7 +56,7 @@ public class ClosetPartPersistenceTest : PersistenceTests {
 
         // Arrange
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
-                                "PC", Dimension.Zero, Dimension.Zero, new("", Features.Orders.Shared.Domain.Enums.ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
+                                "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
                                     { "Param1", "Value1"},
                                     { "Param2", "Value2"}
                                 });

@@ -1,19 +1,17 @@
 ﻿using ApplicationCore.Features.Orders.OrderExport;
-using ApplicationCore.Features.Orders.OrderExport.Handlers.ExtExport.Services;
+using OrderExporting.ExtExport.Services;
 using ApplicationCore.Features.Orders.OrderRelease;
 using Domain.Orders.Builders;
-using ApplicationCore.Features.Orders.OrderRelease.Handlers.Invoice;
-using ApplicationCore.Features.Orders.OrderRelease.Handlers.PackingList;
-using ApplicationCore.Features.Orders.OrderRelease.Handlers.JobSummary;
-using ApplicationCore.Features.Orders.OrderRelease.Handlers.CNC;
+using OrderExporting.Invoice;
+using OrderExporting.PackingList;
+using OrderExporting.JobSummary;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ApplicationCore.Features.Orders.CustomerOrderNumber;
 using ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
-using ApplicationCore.Features.Orders.OrderRelease.Handlers.DovetailDBPackingList;
-using ApplicationCore.Features.Orders.OrderRelease.Handlers.FivePieceDoorCutList;
-using ApplicationCore.Features.Orders.OrderRelease.Handlers.DoweledDrawerBoxCutList;
-using ApplicationCore.Shared.CNC;
+using OrderExporting.DovetailDBPackingList;
+using OrderExporting.FivePieceDoorCutList;
+using OrderExporting.DoweledDrawerBoxCutList;
 using OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 using OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyWebOrderData;
 using OrderLoading.LoadAllmoxyOrderData.XMLValidation;
@@ -52,8 +50,6 @@ public static class DependencyInjection {
     }
 
     private static IServiceCollection AddReleaseServices(this IServiceCollection services) {
-        services.AddTransient<CNCPartGCodeGenerator>();
-        services.AddTransient<CNCReleaseDecoratorFactory>();
         services.AddTransient<IJobSummaryDecorator, JobSummaryDecorator>();
         services.AddTransient<JobSummaryDecoratorFactory>();
         services.AddTransient<IInvoiceDecorator, InvoiceDecorator>();

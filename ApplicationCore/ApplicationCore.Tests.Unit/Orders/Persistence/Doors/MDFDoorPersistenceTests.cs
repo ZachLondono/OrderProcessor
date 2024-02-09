@@ -1,5 +1,5 @@
-﻿using Domain.Orders.Enums;
-using Domain.Orders.Products.Doors;
+﻿using Domain.Orders.Entities.Products.Doors;
+using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 

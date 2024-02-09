@@ -1,13 +1,13 @@
 ﻿using Domain.Extensions;
-using ApplicationCore.Shared.CNC.Job;
-using ApplicationCore.Shared.CNC.ReleasePDF;
-using ApplicationCore.Shared.CNC.WorkOrderReleaseEmail;
-using ApplicationCore.Shared.CNC.WSXML;
-using ApplicationCore.Shared.CNC.WSXML.Report;
 using ApplicationCore.Shared.Services;
 using Domain.Services;
 using MimeKit;
 using QuestPDF.Fluent;
+using OrderExporting.CNC.ReleasePDF;
+using OrderExporting.CNC.Programs.WSXML;
+using OrderExporting.CNC.Programs.WorkOrderReleaseEmail;
+using OrderExporting.CNC.Programs.Job;
+using OrderExporting.CNC.Programs.WSXML.Report;
 
 namespace ApplicationCore.Features.GeneralReleasePDF;
 
