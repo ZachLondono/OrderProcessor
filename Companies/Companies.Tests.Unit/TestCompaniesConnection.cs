@@ -1,14 +1,10 @@
 ﻿using System.Data;
 
-namespace ApplicationCore.Tests.Unit.Companies;
+namespace Companies.Tests.Unit;
 
-public class TestCompaniesConnection : IDbConnection {
+public class TestCompaniesConnection(IDbConnection connection) : IDbConnection {
 
-    private readonly IDbConnection _connection;
-
-    public TestCompaniesConnection(IDbConnection connection) {
-        _connection = connection;
-    }
+    private readonly IDbConnection _connection = connection;
 
     public string? ConnectionString {
         get => _connection.ConnectionString;

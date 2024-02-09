@@ -1,15 +1,15 @@
 ﻿using Domain.Companies.Entities;
 using Domain.Companies.ValueObjects;
-using Domain.Companies.Customers.Commands;
-using Domain.Companies.Customers.Queries;
-using ApplicationCore.Shared.Data.Companies;
 using Domain.ValueObjects;
 using Dapper;
 using FluentAssertions;
 using System.Data;
 using Domain.Infrastructure.Data;
+using Companies.Customers.Commands;
+using Companies.Infrastructure;
+using Companies.Customers.Queries;
 
-namespace ApplicationCore.Tests.Unit.Companies;
+namespace Companies.Tests.Unit;
 
 public class CustomerPersistenceTests {
 
@@ -92,7 +92,7 @@ public class CustomerPersistenceTests {
         _ = _sut.Handle(new(customer, null)).Result;
 
         // Assert
-        var queryResult = connection.QueryFirst("SELECT * FROM customers WHERE id = @Id", new { Id = customer.Id });
+        var queryResult = connection.QueryFirst("SELECT * FROM customers WHERE id = @Id", new { customer.Id });
 
         ((string)queryResult.id).Should().Be(customer.Id.ToString());
         ((string)queryResult.name).Should().Be(customer.Name);
