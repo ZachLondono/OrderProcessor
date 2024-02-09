@@ -5,7 +5,7 @@ using Domain.Orders.Entities.Products.Cabinets;
 using FluentAssertions;
 using NSubstitute;
 
-namespace ApplicationCore.Tests.Unit.Orders.AllmoxyOrderLoading;
+namespace OrderLoading.Tests.Unit.AllmoxyOrderLoading;
 
 public class AllmoxyCabinetMappingTests {
 

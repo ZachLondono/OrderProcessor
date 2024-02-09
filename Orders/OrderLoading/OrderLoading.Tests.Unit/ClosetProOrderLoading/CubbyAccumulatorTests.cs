@@ -1,9 +1,7 @@
-﻿using ApplicationCore.Features.ClosetProCSVCutList;
-using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
-using Domain.ValueObjects;
+﻿using Domain.ValueObjects;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.Orders.ClosetProOrderLoading;
+namespace OrderLoading.Tests.Unit.ClosetProOrderLoading;
 
 public class CubbyAccumulatorTests {
 
@@ -61,7 +59,7 @@ public class CubbyAccumulatorTests {
         cubby.FixedShelves.Sum(s => s.Qty).Should().Be(2);
         var fixedShelf = cubby.FixedShelves.First();
         fixedShelf.UnitPrice.Should().Be(shelfPrice / 2);
-        fixedShelf.Width.Should().Be((cubbyWidth - Dimension.FromInches(0.75))/2);
+        fixedShelf.Width.Should().Be((cubbyWidth - Dimension.FromInches(0.75)) / 2);
         fixedShelf.Depth.Should().Be(cubbyDepth);
 
         cubby.DividerPanels.Should().HaveCount(1);

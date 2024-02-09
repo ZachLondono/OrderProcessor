@@ -1,12 +1,12 @@
-﻿using ApplicationCore.Features.ClosetProCSVCutList;
-using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
-using ApplicationCore.Features.ClosetProCSVCutList.Products;
-using Domain.Orders.Builders;
+﻿using Domain.Orders.Builders;
 using Domain.Orders.Enums;
 using Domain.ValueObjects;
 using FluentAssertions;
+using OrderLoading.ClosetProCSVCutList;
+using OrderLoading.ClosetProCSVCutList.CSVModels;
+using OrderLoading.ClosetProCSVCutList.Products;
 
-namespace ApplicationCore.Tests.Unit.Orders.ClosetProOrderLoading;
+namespace OrderLoading.Tests.Unit.ClosetProOrderLoading;
 
 public class ContinuousWallOfProductTests {
 

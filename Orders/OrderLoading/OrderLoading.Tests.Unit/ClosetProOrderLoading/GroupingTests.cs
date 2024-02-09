@@ -1,9 +1,7 @@
-﻿using ApplicationCore.Features.ClosetProCSVCutList;
-using ApplicationCore.Features.ClosetProCSVCutList.Products;
-using Domain.ValueObjects;
+﻿using Domain.ValueObjects;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.Orders.ClosetProOrderLoading;
+namespace OrderLoading.Tests.Unit.ClosetProOrderLoading;
 
 public class GroupingTests {
 

@@ -1,11 +1,9 @@
-﻿using ApplicationCore.Features.ClosetProCSVCutList;
-using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
-using Domain.Orders.Builders;
-using Domain.Orders.Components;
-using Domain.ValueObjects;
+﻿using Domain.ValueObjects;
 using FluentAssertions;
+using OrderLoading.ClosetProCSVCutList;
+using OrderLoading.ClosetProCSVCutList.CSVModels;
 
-namespace ApplicationCore.Tests.Unit.Orders.ClosetProOrderLoading;
+namespace OrderLoading.Tests.Unit.ClosetProOrderLoading;
 
 public class ProductMappingTests {
 

@@ -4,7 +4,7 @@ using Domain.Orders.Enums;
 using Domain.Orders.Entities.Products.Doors;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.Orders.DoorSpreadsheetOrderLoading;
+namespace OrderLoading.Tests.Unit.DoorSpreadsheetOrderLoading;
 
 public class DoorSpreadsheetOrderProviderTests {
 

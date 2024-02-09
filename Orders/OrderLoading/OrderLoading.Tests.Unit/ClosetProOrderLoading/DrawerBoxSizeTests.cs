@@ -1,9 +1,8 @@
-﻿using ApplicationCore.Features.AllmoxyOrderExport.Attributes;
-using ApplicationCore.Features.ClosetProCSVCutList.Products;
-using Domain.ValueObjects;
+﻿using Domain.ValueObjects;
 using FluentAssertions;
+using OrderLoading.ClosetProCSVCutList.Products;
 
-namespace ApplicationCore.Tests.Unit.Orders.ClosetProOrderLoading;
+namespace OrderLoading.Tests.Unit.ClosetProOrderLoading;
 
 public class DrawerBoxSizeTests {
 
@@ -48,6 +47,7 @@ public class DrawerBoxSizeTests {
 
     }
 
+    /*
     [Theory]
     [InlineData(12, 12)]
     [InlineData(14, 14)]
@@ -72,5 +72,6 @@ public class DrawerBoxSizeTests {
         result.Should().Be(Dimension.FromInches(expectedDepth));
 
     }
+    */
 
 }

@@ -1,11 +1,11 @@
-﻿using ApplicationCore.Features.ClosetProCSVCutList;
-using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
-using Domain.Orders.Enums;
+﻿using Domain.Orders.Enums;
 using Domain.Orders.Entities.Products;
 using Domain.Orders.Entities.Products.Closets;
 using FluentAssertions;
+using OrderLoading.ClosetProCSVCutList.CSVModels;
+using OrderLoading.ClosetProCSVCutList;
 
-namespace ApplicationCore.Tests.Unit.Orders.ClosetProOrderLoading;
+namespace OrderLoading.Tests.Unit.ClosetProOrderLoading;
 
 public class PartHelper {
 

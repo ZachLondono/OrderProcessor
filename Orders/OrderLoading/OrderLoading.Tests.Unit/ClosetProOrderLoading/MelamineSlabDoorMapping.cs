@@ -1,10 +1,10 @@
-﻿using ApplicationCore.Features.ClosetProCSVCutList;
-using ApplicationCore.Features.ClosetProCSVCutList.CSVModels;
-using Domain.Orders.Enums;
+﻿using Domain.Orders.Enums;
 using Domain.ValueObjects;
 using FluentAssertions;
+using OrderLoading.ClosetProCSVCutList;
+using OrderLoading.ClosetProCSVCutList.CSVModels;
 
-namespace ApplicationCore.Tests.Unit.Orders.ClosetProOrderLoading;
+namespace OrderLoading.Tests.Unit.ClosetProOrderLoading;
 
 public class MelamineSlabDoorMapping {
 
@@ -42,7 +42,7 @@ public class MelamineSlabDoorMapping {
             UnitL = "",
             UnitR = "",
             PartNum = 18,
-            InfoRecords = [] 
+            InfoRecords = []
         };
 
         // Act
@@ -90,7 +90,7 @@ public class MelamineSlabDoorMapping {
             UnitL = "",
             UnitR = "",
             PartNum = 12,
-            InfoRecords = [] 
+            InfoRecords = []
         };
 
         // Act

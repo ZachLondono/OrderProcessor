@@ -5,7 +5,7 @@ using NSubstitute.ReceivedExtensions;
 using RestSharp;
 using IRestClient = OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyWebOrderData.Rest.IRestClient;
 
-namespace ApplicationCore.Tests.Unit.Orders.AllmoxyOrderLoading;
+namespace OrderLoading.Tests.Unit.AllmoxyOrderLoading;
 
 public class AllmoxyClientTests {
 
