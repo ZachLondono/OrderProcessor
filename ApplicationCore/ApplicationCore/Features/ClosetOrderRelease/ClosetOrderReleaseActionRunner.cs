@@ -108,7 +108,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                 attachments.Add(file);
             }
 
-            var (HTMLBody, TextBody) = GenerateEmailBodies(releasedJob);
+            var (HTMLBody, TextBody) = GenerateEmailBodies(releasedJob, Options.IncludeDBList, Options.IncludeMDFList);
             string subject = $"RELEASED: {ClosetOrder.OrderNumber} {ClosetOrder.Customer}";
 
             if (Options.PreviewEmail) {
@@ -517,7 +517,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
     }
 
-    private static (string HTMLBody, string TextBody) GenerateEmailBodies(ReleasedJob? job) {
+    private static (string HTMLBody, string TextBody) GenerateEmailBodies(ReleasedJob? job, bool containsDrawerBoxes, bool containsMDFDoors) {
 
         var releasedJobs = new List<Job>();
 
@@ -534,8 +534,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
         }
 
-
-        var model = new ReleasedWorkOrderSummary(releasedJobs, false, false, false, null);
+        var model = new ReleasedWorkOrderSummary(releasedJobs, containsDrawerBoxes, containsMDFDoors, false, null);
 
         var htmlBody = ReleaseEmailBodyGenerator.GenerateHTMLReleaseEmailBody(model, true);
         var textBody = ReleaseEmailBodyGenerator.GenerateTextReleaseEmailBody(model, true);
