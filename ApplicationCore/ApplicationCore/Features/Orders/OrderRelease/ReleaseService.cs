@@ -98,8 +98,12 @@ public class ReleaseService {
 
         await OrchestrateRelease(orders, configuration, orderDate, dueDate, customerName, vendorName);
 
-        foreach (var order in orders) {
-            await Invoicing(order, configuration, customerName);
+        if (configuration.GenerateInvoice || configuration.SendInvoiceEmail) {
+            foreach (var order in orders) {
+                await Invoicing(order, configuration, customerName);
+            }
+        } else {
+            OnProgressReport?.Invoke("Not generating invoice pdf, because option was not enabled");
         }
 
         OnActionComplete?.Invoke("Release Complete");
@@ -113,7 +117,7 @@ public class ReleaseService {
             return;
         }
 
-        if (!configuration.GeneratePackingList && !configuration.GenerateJobSummary && !configuration.GenerateCNCRelease && !configuration.IncludeInvoiceInRelease) {
+        if (!configuration.AreMainPDFOptionsEnabled) {
             OnProgressReport?.Invoke("Not generating release pdf, because options where not enabled");
             return;
         }
@@ -173,7 +177,9 @@ public class ReleaseService {
     }
 
     private async Task<List<IDocumentDecorator>> CreateDocumentDecorators(List<Order> orders, ReleaseConfiguration configuration, List<ReleasedJob> releases) {
-        List<IDocumentDecorator> decorators = new();
+
+        List<IDocumentDecorator> decorators = [];
+
         if (configuration.GenerateJobSummary) {
             var jobSummaryDecorators = await CreateJobSummaryDecorators(orders, configuration, releases);
             decorators.AddRange(jobSummaryDecorators);
@@ -653,11 +659,6 @@ public class ReleaseService {
 
     private async Task Invoicing(Order order, ReleaseConfiguration configuration, string customerName) {
 
-        if (!configuration.GenerateInvoice && !configuration.SendInvoiceEmail) {
-            OnProgressReport?.Invoke("Not generating invoice pdf, because option was not enabled");
-            return;
-        }
-
         bool isTemp = !configuration.GenerateInvoice;
 
         IEnumerable<string> invoiceDirectories = GetInvoiceDirectories(configuration);
@@ -806,7 +807,7 @@ public class ReleaseService {
     private async Task<byte[]> BuildPDFAsync(IEnumerable<IDocumentDecorator> decorators, IEnumerable<string> attachedFiles) {
 
         if (!decorators.Any()) {
-            return Array.Empty<byte>();
+            return [];
         }
 
         var documentBytes = await Task.Run(() => {

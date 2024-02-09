@@ -40,7 +40,7 @@ public class ReleaseConfiguration {
     public string? ReleaseEmailRecipients { get; set; }
 
     public bool SendReleaseEmail {
-        get => (GenerateJobSummary || GeneratePackingList || GenerateCNCRelease || GenerateCNCGCode) && _sendReleaseEmail;
+        get => AreMainPDFOptionsEnabled && _sendReleaseEmail;
         set => _sendReleaseEmail = value;
     }
     public bool PreviewReleaseEmail {
@@ -58,5 +58,7 @@ public class ReleaseConfiguration {
     public string? InvoiceEmailRecipients { get; set; }
     public bool SendInvoiceEmail { get; set; }
     public bool PreviewInvoiceEmail { get; set; }
+
+    public bool AreMainPDFOptionsEnabled => (GenerateJobSummary || GeneratePackingList || GenerateCNCRelease || GenerateCNCGCode || GenerateDoweledDrawerBoxCutList || Generate5PieceCutList || IncludeDovetailDBPackingList);
 
 }

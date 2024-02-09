@@ -207,7 +207,7 @@
                     </div>                           
             }
 
-            @if (DataContext.Configuration.GenerateJobSummary || DataContext.Configuration.GeneratePackingList || DataContext.Configuration.GenerateCNCRelease || DataContext.Configuration.GenerateCNCGCode) {
+            @if (DataContext.Configuration.AreMainPDFOptionsEnabled) {
 
                 <br />
 
