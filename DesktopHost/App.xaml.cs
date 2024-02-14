@@ -9,7 +9,6 @@ using ApplicationCore.Shared.Services;
 using DesktopHost.Error;
 using Serilog;
 using System.Windows.Threading;
-using ApplicationCore.Application;
 using ApplicationCore.Shared.Settings;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
@@ -89,7 +88,7 @@ public partial class App : Application {
                 .Build();
     }
 
-    private static IServiceProvider BuildServiceProvider(IConfiguration configuration, InitializationState initState) {
+    private static ServiceProvider BuildServiceProvider(IConfiguration configuration, InitializationState initState) {
 
         LogVerbose("Building service provider");
 
