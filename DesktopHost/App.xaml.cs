@@ -103,7 +103,6 @@ public partial class App : Application {
                             .AddTransient<IWindowFocuser, WPFWindowFocuser>()
                             .AddSingleton(configuration)
                             .AddLogging(builder => builder.ClearProviders().AddSerilog())
-                            .AddViewModels()
                             .ConfigureSettings(configuration, LogVerbose);
 
         services.AddWpfBlazorWebView();
