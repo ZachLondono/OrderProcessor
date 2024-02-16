@@ -39,10 +39,10 @@ jobs:
     - name: Install Tailwindcss
       run: npm install -D tailwindcss
 
-    - name: Use .NET Core SDK 7.0.306
+    - name: Use .NET Core SDK 8.0.101
       uses: actions/setup-dotnet@v3
       with:
-       dotnet-version: 7.0.306
+       dotnet-version: 8.0.101
     
     - name: Create directory for output
       run: mkdir ${{ github.workspace }}\${{ env.ReleaseChannel }}
