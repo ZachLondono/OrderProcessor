@@ -81,6 +81,11 @@
             "alternative_names": []
           },
           {
+            "name": "150V",
+            "position": 5,
+            "alternative_names": []
+          },
+          {
             "name": "1-4Strt",
             "position": 5,
             "alternative_names": []
@@ -218,6 +223,11 @@
           },
           {
             "name": "140V",
+            "position": 5,
+            "alternative_names": []
+          },
+          {
+            "name": "150V",
             "position": 5,
             "alternative_names": []
           },
