@@ -89,6 +89,11 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         var (generatedGCodeDocument, tmpPdf, jobs) = await GetReleasePDFAndGenerateGCode(generator, doorOrder, options);
 
+        if (options.GenerateGCodeFromWorkbook && generatedGCodeDocument is null) {
+            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "Release failed."));
+            return;
+        }
+
         if (generatedGCodeDocument is not null) {
             documents.Add(generatedGCodeDocument);
         }
@@ -112,6 +117,9 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
                 releasedJobs.Add(job);
 
+            } else {
+                PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "Release failed."));
+                return;
             }
 
         }
@@ -120,6 +128,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         if (mergedFilePath is null || !File.Exists(mergedFilePath)) {
             PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "No file was generated"));
+            return;
         } else {
 
             PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, mergedFilePath));
@@ -159,6 +168,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
                 await SendEmailAsync(options.EmailRecipients, $"RELEASED: {doorOrder.OrderNumber} {doorOrder.Customer}", HTMLBody, TextBody, attachments);
             }
         }
+
     }
 
     private async Task<(Document?, string?, List<ReleasedJob>)> GetReleasePDFAndGenerateGCode(CNCPartGCodeGenerator generator, DoorOrder doorOrder, DoorOrderReleaseOptions options) {
@@ -231,7 +241,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             var (document, jobs) = await CreateCutListDocumentForBatches(generator, doorOrder, batches, orderDate, dueDate);
             generatedGCodeDocument = document;
             releasedJobs.AddRange(jobs);
-        }
+        } 
 
         return (generatedGCodeDocument, workbookPdfTmpFilePath, releasedJobs);
 
