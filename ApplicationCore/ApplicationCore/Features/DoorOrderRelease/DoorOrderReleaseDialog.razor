@@ -64,6 +64,23 @@
 
     <div class="mt-3">
         <label>
+            <InputCheckbox @bind-Value="Model.AddExistingCSVTokens" />
+            <span class="text-gray-700">Existing Tokens (CSV)</span>
+        </label>
+        @if (Model.AddExistingCSVTokens) {
+            <div>
+                <Button Color="Button.ButtonColor.Secondary" OnClick="ChooseCSVTokenFile" Class="mr-5">Choose File</Button>
+                @if (string.IsNullOrEmpty(Model.CSVTokenFilePath)) {
+                    <span>None selected</span>
+                } else {
+                    <span>@Model.CSVTokenFilePath</span>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="mt-3">
+        <label>
             <InputCheckbox @bind-Value="Model.PrintFile" />
             <span class="text-gray-700">Print</span>
         </label>
@@ -161,6 +178,9 @@
                 AddExistingWSXMLReport = false,
                 WSXMLReportFilePath = "",
 
+                AddExistingCSVTokens = false,
+                CSVTokenFilePath = "",
+
                 IncludeCover = true,
                 IncludePackingList = true,
                 IncludeInvoice = includeInvoice,
@@ -206,6 +226,16 @@
                 Filter = new("CADCode WS Report", "xml"),
             }, (fileName) => {
             Model.WSXMLReportFilePath = fileName;
+            InvokeAsync(StateHasChanged);
+        });
+
+    private void ChooseCSVTokenFile()
+        => FilePicker!.PickFile(new() {
+                Title = "Select CADCode CSV Token File",
+                InitialDirectory = @"R:\Door Orders\CC Input",
+                Filter = new("CADCode CSV Token File", "csv"),
+            }, (fileName) => {
+            Model.CSVTokenFilePath = fileName;
             InvokeAsync(StateHasChanged);
         });
 
@@ -261,6 +291,25 @@
             }
 
         }
+
+        if (Model.AddExistingCSVTokens) {
+
+            if (string.IsNullOrWhiteSpace(Model.CSVTokenFilePath)) {
+
+                _errorMessage = "Select a CSV Token file or uncheck 'Existing Tokens' option.";
+                return false;
+
+            }
+
+            if (!File.Exists(Model.CSVTokenFilePath)) {
+
+                _errorMessage = "Selected CSV Token file can not be found";
+                return false;
+
+            }
+
+        }
+
 
         if (!Directory.Exists(Model.OutputDirectory)) {
 

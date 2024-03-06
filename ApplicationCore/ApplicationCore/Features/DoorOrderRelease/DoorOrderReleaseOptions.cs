@@ -8,6 +8,9 @@ public class DoorOrderReleaseOptions {
     //public bool AddExistingJSONReport { get; set; }
     //public string JSONReportFilePath { get; set; } = string.Empty;
 
+    public bool AddExistingCSVTokens { get; set; }
+    public string CSVTokenFilePath { get; set; } = string.Empty;
+
     public bool GenerateGCodeFromWorkbook { get; set; }
 
     public string WorkbookFilePath { get; set; } = string.Empty;

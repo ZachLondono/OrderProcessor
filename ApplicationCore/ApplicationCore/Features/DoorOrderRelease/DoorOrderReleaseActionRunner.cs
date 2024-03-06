@@ -87,7 +87,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         List<Document> documents = [];
         List<ReleasedJob> releasedJobs = [];
 
-        var (generatedGCodeDocument, tmpPdf, jobs) = await GetReleasePDFAndGenerateGCode(generator, doorOrder, options);
+        var (generatedGCodeDocument, tmpPdf, generatedJobs) = await GetReleasePDFAndGenerateGCode(generator, doorOrder, options);
 
         if (options.GenerateGCodeFromWorkbook && generatedGCodeDocument is null) {
             PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "Release failed."));
@@ -102,8 +102,23 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             workbookPdfTmpFilePath = tmpPdf;
         }
 
-        if (jobs is not null) {
-            releasedJobs.AddRange(jobs);
+        if (generatedJobs is not null) {
+            releasedJobs.AddRange(generatedJobs);
+        }
+
+        if (options.AddExistingCSVTokens) {
+
+            var (csvDocument, csvJobs) = await GenerateGCodeFromCSVFile(generator, doorOrder, options.CSVTokenFilePath);
+
+            if (csvDocument is null) {
+                PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "Release failed."));
+                return;
+            } else {
+                documents.Add(csvDocument);
+            }
+
+            releasedJobs.AddRange(csvJobs);
+
         }
 
         if (options.AddExistingWSXMLReport) {
@@ -244,6 +259,38 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         } 
 
         return (generatedGCodeDocument, workbookPdfTmpFilePath, releasedJobs);
+
+    }
+
+    private async Task<(Document?, List<ReleasedJob>)> GenerateGCodeFromCSVFile(CNCPartGCodeGenerator generator, DoorOrder doorOrder, string tokenFile) {
+
+        var fileInfo = new FileInfo(tokenFile);
+        if (!fileInfo.Exists) {
+            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "CSV token file does not exist."));
+            return (null, []);
+        }
+
+        PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, $"Reading CSV Token File - {tokenFile}"));
+
+        try {
+
+            var batches = new CSVTokenReader().ReadBatchCSV(tokenFile);
+
+            if (batches.Length == 0) {
+                PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "No CNC batches where generated from workbook"));
+            }
+
+            DateTime orderDate = DateTime.Now;
+            DateTime dueDate = DateTime.Now;
+
+            return await CreateCutListDocumentForBatches(generator, doorOrder, batches, orderDate, dueDate);
+
+        } catch (System.Exception ex) {
+
+            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"Failed to read CSV tokens - {ex.Message}"));
+            return (null, []);
+
+        }
 
     }
 
