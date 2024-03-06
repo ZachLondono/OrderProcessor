@@ -22,16 +22,17 @@
                     <th>Name</th>
                     <th>Customer</th>
                     <th>Vendor</th>
-                    <th></th>
+                    <th>Released</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var order in _openDoorOrders) {
-                    <tr class="text-center border-b cursor-pointer hover:bg-slate-200" @onclick="() => SelectOrder(order)">
+                    <tr title="@(order.ReleasedDate is null ? "" : "Order has been previously released.")" class="text-center border-b cursor-pointer @(RowClass(order))" @onclick="() => SelectOrder(order)">
                         <td class="p-5">@order.OrderNumber</td>
                         <td class="p-5">@order.OrderName</td>
                         <td class="p-5">@order.Customer</td>
                         <td class="p-5">@order.Vendor</td>
+                        <td class="p-5">@(order.ReleasedDate?.ToShortDateString() ?? string.Empty)</td>
                     </tr>
                 }
             </tbody>
@@ -94,6 +95,10 @@
 
     private async Task Close() {
         await BlazoredModal.CloseAsync();
+    }
+
+    private string RowClass(DoorOrder order) {
+        return order.ReleasedDate is null ? "hover:bg-slate-200 " : "bg-red-100 hover:bg-red-200";
     }
 
 }

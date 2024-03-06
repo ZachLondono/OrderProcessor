@@ -56,7 +56,10 @@ public class GetOpenDoorOrders {
                                 string directory = workbook.Path;
                                 string filePath = workbook.FullName;
 
-                                doorOrders.Add(new(customerName, vendorName, jobName, jobNumber, reportFilePath, directory, filePath));
+                                string releasedDateStr = worksheet.Range["ReleasedDate"]?.Value2?.ToString() ?? "";
+                                DateTime? releasedDate = ParseReleaseDate(releasedDateStr);
+
+                                doorOrders.Add(new(customerName, vendorName, jobName, jobNumber, reportFilePath, directory, filePath, releasedDate));
 
                             } catch (Exception ex) {
                                 _logger.LogWarning(ex, "Exception thrown while trying to read order info from door order MDF tab");
@@ -78,6 +81,13 @@ public class GetOpenDoorOrders {
 
         }
 
+        private static DateTime? ParseReleaseDate(string releasedDateStr) {
+            try {
+                return DateTime.FromOADate(double.Parse(releasedDateStr));
+            } catch {
+                return null;
+            }
+        }
     }
 
 }
