@@ -26,7 +26,8 @@ public partial class InsertOrder {
                 AdjShelfQty = cabinet.AdjustableShelves,
                 DoorExtendDown = cabinet.ExtendedDoor,
                 DoorQty = cabinet.Doors.Quantity,
-                HingeSide = cabinet.Doors.HingeSide
+                HingeSide = cabinet.Doors.HingeSide,
+                IsGarage = cabinet.IsGarage
             };
 
             await connection.ExecuteAsync("""
@@ -37,7 +38,8 @@ public partial class InsertOrder {
                         adj_shelf_qty,
                         door_extend_down,
                         door_qty,
-                        hinge_side)
+                        hinge_side,
+                        is_garage)
                     VALUES
                         (@ProductId,
                         @BlindSide,
@@ -45,7 +47,8 @@ public partial class InsertOrder {
                         @AdjShelfQty,
                         @DoorExtendDown,
                         @DoorQty,
-                        @HingeSide);
+                        @HingeSide,
+                        @IsGarage);
                     """, parameters, trx);
 
         }

@@ -477,6 +477,7 @@ CREATE TABLE blind_base_cabinets (
 	drawer_qty INTEGER NOT NULL,
 	drawer_face_height TEXT NOT NULL,
 	db_config_id BLOB,
+	is_garage INTEGER NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
 	FOREIGN KEY (db_config_id) REFERENCES cabinet_db_configs(id)
@@ -495,6 +496,7 @@ CREATE TABLE blind_wall_cabinets (
 	door_extend_down REAL NOT NULL,
 	door_qty INTEGER NOT NULL,
 	hinge_side INTEGER NOT NULL,
+	is_garage INTEGER NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );

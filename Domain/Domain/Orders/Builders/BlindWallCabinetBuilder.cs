@@ -12,6 +12,7 @@ public class BlindWallCabinetBuilder : CabinetBuilder<BlindWallCabinet> {
     public BlindSide BlindSide { get; private set; }
     public Dimension BlindWidth { get; private set; }
     public Dimension ExtendDown { get; private set; }
+    public bool IsGarage { get; private set; }
 
     public BlindWallCabinetBuilder() {
         Doors = new();
@@ -45,9 +46,15 @@ public class BlindWallCabinetBuilder : CabinetBuilder<BlindWallCabinet> {
         return this;
     }
 
+    public BlindWallCabinetBuilder WithIsGarage(bool isGarage) {
+        IsGarage = isGarage;
+        return this;
+    }
+
     public override BlindWallCabinet Build() {
         var cabinet = BlindWallCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, Doors, BlindSide, BlindWidth, AdjustableShelves, ExtendDown);
         cabinet.ProductionNotes = ProductionNotes;
+        cabinet.IsGarage = IsGarage;
         return cabinet;
     }
 

@@ -1,5 +1,4 @@
-﻿using Domain.Orders;
-using Domain.Orders.Builders;
+﻿using Domain.Orders.Builders;
 using Domain.Orders.Components;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
@@ -7,7 +6,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-public class BlindWallCabinet : Cabinet, IMDFDoorContainer {
+public class BlindWallCabinet : GarageCabinet, IMDFDoorContainer {
 
     public BlindCabinetDoors Doors { get; }
     public int AdjustableShelves { get; }
@@ -17,7 +16,7 @@ public class BlindWallCabinet : Cabinet, IMDFDoorContainer {
 
     public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap + ExtendedDoor;
 
-    public override string GetDescription() => $"Blind Wall Cabinet - {Doors.Quantity} Doors";
+    public override string GetDescription() => $"Blind {(IsGarage ? "Garage " : "")}Wall Cabinet - {Doors.Quantity} Doors";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),

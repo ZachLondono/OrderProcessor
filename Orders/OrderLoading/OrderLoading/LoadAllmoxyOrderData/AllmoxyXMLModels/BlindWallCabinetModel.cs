@@ -1,5 +1,4 @@
-﻿using OrderLoading.LoadAllmoxyOrderData;
-using Domain.Orders.Builders;
+﻿using Domain.Orders.Builders;
 using Domain.Orders.Entities;
 using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.ValueObjects;
@@ -30,6 +29,8 @@ public class BlindWallCabinetModel : CabinetModelBase {
     [XmlElement("extendDoorDown")]
     public double ExtendDoorDown { get; set; }
 
+    [XmlAttribute("isGarage")]
+    public bool IsGarage { get; set; } = false;
 
     public override OneOf<IProduct, AdditionalItem> CreateProductOrItem(ProductBuilderFactory builderFactory) {
 
@@ -47,6 +48,7 @@ public class BlindWallCabinetModel : CabinetModelBase {
                     .WithBlindSide(AllmoxyXMLOrderProviderHelpers.GetBlindSide(BlindSide))
                     .WithBlindWidth(Dimension.FromMillimeters(BlindWidth))
                     .WithExtendedDoor(Dimension.FromMillimeters(ExtendDoorDown))
+                    .WithIsGarage(IsGarage)
                     .Build();
 
     }
