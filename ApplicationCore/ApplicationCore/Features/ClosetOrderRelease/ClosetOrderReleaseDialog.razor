@@ -337,7 +337,7 @@
 
         string[] outputDirs = Model.OutputDirectory.Split(';');
         foreach (var outputDir in outputDirs) {
-            if (Directory.Exists(Model.OutputDirectory)) {
+            if (Directory.Exists(outputDir)) {
                 continue;
             }
             _errorMessage = "One or more output directories does not exist or cannot be accessed.";
