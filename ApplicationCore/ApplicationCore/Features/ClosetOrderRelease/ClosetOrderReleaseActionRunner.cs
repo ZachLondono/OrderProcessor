@@ -92,7 +92,6 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                                                              Options.IncludeMDFList,
                                                              Options.WorkbookFilePath,
                                                              Options.InvoicePDF,
-                                                             false,
                                                              Options.InvoiceDirectory);
             
             if (excelPdfFilePath is null) {
@@ -296,7 +295,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
     }
 
-    private async Task<(string?,string?)> GeneratePDFFromWorkbook(bool includeCover, bool includePackingList, bool includePartList, bool includeDBList, bool includeMDFList, string filePath, bool seperateCover, bool seperatePackingList, string seperatePDFDirectory) {
+    private async Task<(string?,string?)> GeneratePDFFromWorkbook(bool includeCover, bool includePackingList, bool includePartList, bool includeDBList, bool includeMDFList, string filePath, bool invoice, string invoiceDirectory) {
 
         bool wasOrderOpen = true;
         string? tmpFileName = null;
@@ -322,18 +321,18 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
                 var pdfSheetNames = new List<string>();
 
-                if (includeCover || (seperateCover && Directory.Exists(seperatePDFDirectory))) {
+                if (includeCover || (invoice && Directory.Exists(invoiceDirectory))) {
                     const string sheetName = "Cover";
 
                     Worksheet cover = worksheets[sheetName];
                     cover.PageSetup.PrintArea = $"A1:E48";
                     if (includeCover) pdfSheetNames.Add(sheetName);
 
-                    if (seperateCover && Directory.Exists(seperatePDFDirectory)) {
+                    if (invoice && Directory.Exists(invoiceDirectory)) {
                         try {
                             cover.Outline.ShowLevels(RowLevels:2);
                             cover.PageSetup.FitToPagesTall = 1;
-                            invoiceFilePath = Path.Combine(seperatePDFDirectory, $"{ClosetOrder?.OrderNumber} Invoice");
+                            invoiceFilePath = Path.Combine(invoiceDirectory, $"{ClosetOrder?.OrderNumber} Invoice");
                             cover.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, invoiceFilePath, OpenAfterPublish: false);
                             invoiceFilePath += ".pdf";
                             PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, invoiceFilePath));
@@ -350,17 +349,6 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                     const string sheetName = "Packing List";
                     SetSheetPrintArea(worksheets, sheetName, "E", "L", 5);
                     pdfSheetNames.Add(sheetName);
-
-                    if (seperatePackingList && Directory.Exists(seperatePDFDirectory)) {
-                        try {
-                            Worksheet sheet = worksheets[sheetName];
-                            string filePath = Path.Combine(seperatePDFDirectory, $"{ClosetOrder?.OrderNumber} Packing List");
-                            sheet.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, filePath, OpenAfterPublish: false);
-                            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, filePath + ".pdf"));
-                        } catch (Exception ex) {
-                            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"Error while generating packing list pdf - {ex.Message}"));
-                        }
-                    }
                 }
 
                 if (includePartList) {
