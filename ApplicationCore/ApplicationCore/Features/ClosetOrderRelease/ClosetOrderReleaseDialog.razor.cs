@@ -1,0 +1,238 @@
+using ApplicationCore.Features.ClosetOrderSelector;
+using ApplicationCore.Features.GetJobCutListDirectory;
+using Blazored.Modal;
+using Blazored.Modal.Services;
+using Domain.Components.ProgressModal;
+using Domain.Infrastructure.Bus;
+using Domain.Services;
+using Microsoft.AspNetCore.Components;
+
+namespace ApplicationCore.Features.ClosetOrderRelease;
+public partial class ClosetOrderReleaseDialog {
+
+    [Parameter]
+    public ClosetOrder? Order { get; set; }
+
+    [CascadingParameter]
+    public IModalService Modal { get; set; } = default!;
+
+    [CascadingParameter]
+    public BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Inject]
+    public IBus? Bus { get; set; }
+
+    [Inject]
+    public ClosetOrderReleaseActionRunnerFactory? ActionRunnerFactory { get; set; }
+
+    [Inject]
+    public IFilePicker? FilePicker { get; set; }
+
+    public ClosetOrderReleaseOptions Model { get; set; } = new();
+
+    private string? _errorMessage = null;
+
+    protected override async Task OnInitializedAsync() {
+
+        if (Order is null || Bus is null) return;
+
+        string outputDirectory = @"X:\_CUTLISTS  Incoming";
+
+        var outputDirResult = await Bus.Send(new GetJobOrderCutListDirectory.Query(Order.OrderFileDirectory, ""));
+        outputDirResult.OnSuccess(dir => {
+            if (string.IsNullOrWhiteSpace(dir)) return;
+            outputDirectory += ";" + dir;
+        });
+
+        string emailRecipients = "maciej@royalcabinet.com;purchasing@royalcabinet.com";
+
+        string seperatePDFDir = GetJobDirectory(Order.OrderFileDirectory);
+
+        Model = new ClosetOrderReleaseOptions() {
+
+            WorkbookFilePath = Order.OrderFile,
+
+            AddExistingWSXMLReport = false, // TODO: try to find wsxml file automatically
+            WSXMLReportFilePath = "",
+
+            FileName = $"{Order.OrderNumber} - Closet Cut List",
+            OutputDirectory = outputDirectory,
+
+            IncludeCover = true,
+            IncludePackingList = true,
+            IncludePartList = false,
+            IncludeDBList = false,
+            IncludeMDFList = false,
+
+            SendEmail = true,
+            PreviewEmail = false,
+            EmailRecipients = emailRecipients,
+
+            InvoicePDF = false,
+            InvoiceDirectory = seperatePDFDir,
+            SendInvoiceEmail = false,
+            PreviewInvoiceEmail = false,
+
+            PreviewAcknowledgementEmail = false,
+            SendAcknowledgementEmail = false
+
+        };
+
+        StateHasChanged();
+
+        var file = await GetReportFile(Order.OrderNumber);
+        Model.WSXMLReportFilePath = file ?? ""; // TODO: allow for multiple files
+        Model.AddExistingWSXMLReport = file is not null;
+
+    }
+
+    private static string GetJobDirectory(string orderFileDirectory) {
+
+        if (!orderFileDirectory.StartsWith(@"R:\Job Scans")) {
+            return orderFileDirectory;
+        }
+
+        string directory = orderFileDirectory;
+        while (true) {
+
+            var dirInfo = new DirectoryInfo(directory);
+
+            if (dirInfo.Parent is null || dirInfo.Parent.Parent is null) {
+                break;
+            }
+
+            if (Path.GetFileNameWithoutExtension(dirInfo.Parent.Parent.FullName) is string dirName) {
+
+                if (dirName == "Job Scans") {
+                    return dirInfo.FullName;
+                }
+
+            } else {
+                break;
+            }
+
+            directory = dirInfo.Parent.FullName;
+
+        }
+
+        return orderFileDirectory;
+
+    }
+
+    private static async Task<string?> GetReportFile(string number) {
+        return await Task.Run(() => {
+            try {
+
+                var files = Directory.GetFiles(@"Y:\CADCode\Reports\", $"{number}*.xml");
+                return files.OrderByDescending(file => new FileInfo(file).LastWriteTime)
+                            .FirstOrDefault();
+
+            } catch {
+                return null;
+            }
+        });
+    }
+
+    private void ChooseReportFile()
+        => FilePicker!.PickFile(new() {
+            Title = "Select CADCode WS Report File",
+            InitialDirectory = @"Y:\CADCode\Reports",
+            Filter = new("CADCode WS Report", "xml"),
+        }, (fileName) => {
+            Model.WSXMLReportFilePath = fileName;
+            InvokeAsync(StateHasChanged);
+        });
+
+    private async Task GenerateClosetOrderRelease() {
+
+        if (ActionRunnerFactory is null || Order is null) return;
+
+        if (!ValidateModel()) {
+            StateHasChanged();
+            return;
+        }
+
+        var actionRunner = ActionRunnerFactory.CreateActionRunner(Order, Model);
+
+        var parameters = new ModalParameters() {
+        { "ActionRunner",  actionRunner },
+        { "InProgressTitle", "Releasing Order..." },
+        { "CompleteTitle", "Release Complete" }
+    };
+
+        var options = new ModalOptions() {
+            HideHeader = true,
+            HideCloseButton = true,
+            DisableBackgroundCancel = true,
+            Size = ModalSize.Large
+        };
+
+        var dialog = Modal.Show<ProgressModal>("Order Release Progress", parameters, options);
+        _ = await dialog.Result;
+
+        await BlazoredModal.CloseAsync();
+
+    }
+
+    private bool ValidateModel() {
+
+        _errorMessage = null;
+
+        if (Model.AddExistingWSXMLReport) {
+
+            if (string.IsNullOrWhiteSpace(Model.WSXMLReportFilePath)) {
+
+                _errorMessage = "Select a WSXML report or uncheck the 'Existing GCode' option.";
+                return false;
+
+            }
+
+            if (!File.Exists(Model.WSXMLReportFilePath)) {
+
+                _errorMessage = "Selected WSXML file can not be found.";
+                return false;
+
+            }
+
+        }
+
+        string[] outputDirs = Model.OutputDirectory.Split(';');
+        foreach (var outputDir in outputDirs) {
+            if (Directory.Exists(outputDir)) {
+                continue;
+            }
+            _errorMessage = "One or more output directories does not exist or cannot be accessed.";
+            return false;
+        }
+
+        if (Model.SendEmail && string.IsNullOrWhiteSpace(Model.EmailRecipients)) {
+
+            _errorMessage = "Specify email recipients or uncheck 'Send Email' option.";
+            return false;
+
+        }
+
+        if (Model.InvoicePDF) {
+
+            if (!Directory.Exists(Model.InvoiceDirectory)) {
+                _errorMessage = "Invoice output directory does not exist or cannot be accessed.";
+                return false;
+            }
+
+            if (Model.SendInvoiceEmail && string.IsNullOrWhiteSpace(Model.InvoiceEmailRecipients)) {
+                _errorMessage = "No invoice email recipients set.";
+                return false;
+            }
+
+        }
+
+        if (Model.SendAcknowledgementEmail && string.IsNullOrWhiteSpace(Model.AcknowledgmentEmailRecipients)) {
+                _errorMessage = "No acknowledgement email recipients set.";
+                return false;
+        }
+
+        return true;
+
+    }
+
+}

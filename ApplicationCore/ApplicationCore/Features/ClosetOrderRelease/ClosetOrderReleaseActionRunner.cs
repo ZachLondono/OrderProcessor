@@ -60,6 +60,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
         Document? cncDocument = null;
         string? excelPdfFilePath = null;
+        string? invoiceFilePath = null;
         ReleasedJob? releasedJob = null;
 
         if (Options.AddExistingWSXMLReport) {
@@ -84,7 +85,15 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                 return;
             }
 
-            excelPdfFilePath = await GeneratePDFFromWorkbook(Options.IncludeCover, Options.IncludePackingList, Options.IncludePartList, Options.IncludeDBList, Options.IncludeMDFList, Options.WorkbookFilePath, Options.SeperateCoverPDF, Options.SeperatePackingListPDF, Options.SeperatePDFDirectory);
+            (excelPdfFilePath, invoiceFilePath) = await GeneratePDFFromWorkbook(Options.IncludeCover,
+                                                             Options.IncludePackingList,
+                                                             Options.IncludePartList,
+                                                             Options.IncludeDBList,
+                                                             Options.IncludeMDFList,
+                                                             Options.WorkbookFilePath,
+                                                             Options.InvoicePDF,
+                                                             false,
+                                                             Options.InvoiceDirectory);
             
             if (excelPdfFilePath is null) {
                 return;
@@ -131,6 +140,14 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
             }
 
+        }
+
+        if (Options.SendAcknowledgementEmail) {
+            await AcknowlegmentEmail();
+        }
+
+        if (Options.SendInvoiceEmail && Options.InvoicePDF && invoiceFilePath is not null) {
+            await InvoiceEmail(invoiceFilePath);
         }
 
     }
@@ -279,10 +296,11 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
     }
 
-    private async Task<string?> GeneratePDFFromWorkbook(bool includeCover, bool includePackingList, bool includePartList, bool includeDBList, bool includeMDFList, string filePath, bool seperateCover, bool seperatePackingList, string seperatePDFDirectory) {
+    private async Task<(string?,string?)> GeneratePDFFromWorkbook(bool includeCover, bool includePackingList, bool includePartList, bool includeDBList, bool includeMDFList, string filePath, bool seperateCover, bool seperatePackingList, string seperatePDFDirectory) {
 
         bool wasOrderOpen = true;
         string? tmpFileName = null;
+        string? invoiceFilePath = null;
         await Task.Run(() => {
 
             var app = GetExcelInstance();
@@ -304,20 +322,21 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
                 var pdfSheetNames = new List<string>();
 
-                if (includeCover) {
+                if (includeCover || (seperateCover && Directory.Exists(seperatePDFDirectory))) {
                     const string sheetName = "Cover";
 
                     Worksheet cover = worksheets[sheetName];
                     cover.PageSetup.PrintArea = $"A1:E48";
-                    pdfSheetNames.Add(sheetName);
+                    if (includeCover) pdfSheetNames.Add(sheetName);
 
                     if (seperateCover && Directory.Exists(seperatePDFDirectory)) {
                         try {
                             cover.Outline.ShowLevels(RowLevels:2);
                             cover.PageSetup.FitToPagesTall = 1;
-                            string filePath = Path.Combine(seperatePDFDirectory, $"{ClosetOrder?.OrderNumber} Invoice");
-                            cover.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, filePath, OpenAfterPublish: false);
-                            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, filePath + ".pdf"));
+                            invoiceFilePath = Path.Combine(seperatePDFDirectory, $"{ClosetOrder?.OrderNumber} Invoice");
+                            cover.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, invoiceFilePath, OpenAfterPublish: false);
+                            invoiceFilePath += ".pdf";
+                            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, invoiceFilePath));
                         } catch (Exception ex) {
                             PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"Error while generating invoice pdf - {ex.Message}"));
                         }
@@ -410,7 +429,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
             PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "Closet order is not open"));
         }
 
-        return tmpFileName;
+        return (tmpFileName, invoiceFilePath);
 
     }
 
@@ -433,6 +452,49 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
         sheet.PageSetup.PrintArea = $"A1:{lastCol}{lastRow}";
         sheet.PageSetup.Orientation = orientation;
+
+    }
+
+    private async Task AcknowlegmentEmail() {
+
+        if (Options is null || ClosetOrder is null) {
+            return;
+        }
+
+        string subject = $"{ClosetOrder.OrderNumber} Processed";
+        string body = $"This is an acknowlegment that your order {ClosetOrder.OrderNumber} - {ClosetOrder.OrderName} has been processed.";
+
+        if (Options.PreviewAcknowledgementEmail) {
+
+            CreateAndDisplayOutlookEmail(Options.AcknowledgmentEmailRecipients, subject, body, body, []);
+
+        } else {
+
+            await SendEmail(Options.AcknowledgmentEmailRecipients, subject, body, body, []);
+
+        }
+
+    }
+
+    private async Task InvoiceEmail(string invoiceEmail) {
+
+        if (Options is null || ClosetOrder is null) {
+            return;
+        }
+
+        string subject = $"{ClosetOrder.OrderNumber} Invoice";
+        string body = $"Please see attached invoice.";
+        string[] attachments = [invoiceEmail];
+
+        if (Options.PreviewAcknowledgementEmail) {
+
+            CreateAndDisplayOutlookEmail(Options.InvoiceEmailRecipients, subject, body, body, attachments);
+
+        } else {
+
+            await SendEmail(Options.InvoiceEmailRecipients, subject, body, body, attachments);
+
+        }
 
     }
 
