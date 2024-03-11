@@ -12,15 +12,22 @@ public class ClosetOrderReleaseOptions {
     public bool IncludeDBList { get; set; }
     public bool IncludeMDFList { get; set; }
 
-    public string SeperatePDFDirectory { get; set; }
-    public bool SeperateCoverPDF { get; set; }
-    public bool SeperatePackingListPDF { get; set; }
-
     public string FileName { get; set; } = string.Empty;
     public string OutputDirectory { get; set; } = string.Empty;
 
     public bool SendEmail { get; set; }
     public bool PreviewEmail { get; set; }
     public string EmailRecipients { get; set; } = string.Empty;
+
+    public string InvoiceDirectory { get; set; } = string.Empty;
+    public bool InvoicePDF { get; set; }
+
+    public bool SendInvoiceEmail { get; set; }
+    public bool PreviewInvoiceEmail { get; set; }
+    public string InvoiceEmailRecipients { get; set; } = string.Empty;
+
+    public bool SendAcknowledgementEmail { get; set; }
+    public bool PreviewAcknowledgementEmail { get; set; }
+    public string AcknowledgmentEmailRecipients { get; set; } = string.Empty;
 
 }

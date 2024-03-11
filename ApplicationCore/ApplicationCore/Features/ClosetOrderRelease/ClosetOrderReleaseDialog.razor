@@ -105,38 +105,54 @@
         }
     </div>
 
-    <div class="my-5">
+    <div class="mt-5">
         <hr />
     </div>
 
     <div>
 
-        <span class="font-semibold">Seperate PDFs</span>
+        <span class="font-semibold">Invoice</span>
 
-        <div class="text-gray-700">
+        <div class="text-gray-700 mt-3">
             <div>
                 <label>
-                    <InputCheckbox @bind-Value="Model.SeperateCoverPDF" />
-                    Invoice
-                </label>
-            </div>
-            <div>
-                <label>
-                    <InputCheckbox @bind-Value="Model.SeperatePackingListPDF" />
-                    Packing List
+                    <InputCheckbox @bind-Value="Model.InvoicePDF" />
+                    Invoice PDF
                 </label>
             </div>
         </div>
 
-        @if (Model.SeperateCoverPDF || Model.SeperatePackingListPDF) {
+        @if (Model.InvoicePDF) {
             <div class="mt-3">
                 <label>
                     <span class="text-gray-700">
-                        Seperate PDF Output Directory
+                        Invoice Output Directory
                     </span>
-                    <InputText @bind-Value="Model.SeperatePDFDirectory" class="input-text w-full" spellcheck="false" />
+                    <InputText @bind-Value="Model.InvoiceDirectory" class="input-text w-full" spellcheck="false" />
                 </label>
             </div>
+
+            <div class="mt-3">
+                <label>
+                    <InputCheckbox @bind-Value="Model.SendInvoiceEmail" />
+                    <span class="text-gray-700">Invoice Email</span>
+                </label>
+            </div>
+
+            @if (Model.SendInvoiceEmail) {
+                <div class="ml-3">
+                    <div>
+                        <label>
+                            <InputCheckbox @bind-Value="Model.PreviewInvoiceEmail" />
+                            <span class="text-gray-700 text-sm">Preview email before sending</span>
+                        </label>
+                    </div>
+                    <label>
+                        <span class="text-sm font-medium text-gray-700">Email Recipients</span>
+                        <InputText @bind-Value="Model.InvoiceEmailRecipients" class="input-text w-full" placeholder="example@email.com" />
+                    </label>
+                </div>
+            }
         }
 
     </div>
@@ -145,214 +161,41 @@
         <hr />
     </div>
 
-    <div class="my-5 text-center">
-        <Button Color="Button.ButtonColor.Primary" class="mt-3" OnClickAsync="GenerateClosetOrderRelease">Generate PDF</Button>
+    <div>
+
+        <span class="font-semibold">Confirmation</span>
+
+        <div class="mt-3">
+            <label>
+                <InputCheckbox @bind-Value="Model.SendAcknowledgementEmail" />
+                <span class="text-gray-700">Send Acknowlegment Email</span>
+            </label>
+        </div>
+
+        @if (Model.SendAcknowledgementEmail) {
+            <div class="ml-3">
+                <div>
+                    <label>
+                        <InputCheckbox @bind-Value="Model.PreviewAcknowledgementEmail" />
+                        <span class="text-gray-700 text-sm">Preview email before sending</span>
+                    </label>
+                </div>
+                <label>
+                    <span class="text-sm font-medium text-gray-700">Email Recipients</span>
+                    <InputText @bind-Value="Model.AcknowledgmentEmailRecipients" class="input-text w-full" placeholder="example@email.com" />
+                </label>
+            </div>
+        }
+
     </div>
 
+    <div class="my-5">
+        <hr />
+    </div>
+
+    <div class="my-5 text-center">
+        <Button Color="Button.ButtonColor.Primary" class="mt-3" OnClickAsync="GenerateClosetOrderRelease">Release</Button>
+    </div>
+
+
 </EditForm>
-
-@code {
-
-    [Parameter]
-    public ClosetOrder? Order { get; set; }
-
-    [CascadingParameter]
-    public IModalService Modal { get; set; } = default!;
-
-    [CascadingParameter]
-    public BlazoredModalInstance BlazoredModal { get; set; } = default!;
-
-    [Inject]
-    public IBus? Bus { get; set; }
-
-    [Inject]
-    public ClosetOrderReleaseActionRunnerFactory? ActionRunnerFactory { get; set; }
-
-    [Inject]
-    public IFilePicker? FilePicker { get; set; }
-
-    public ClosetOrderReleaseOptions Model { get; set; } = new();
-
-    private string? _errorMessage = null;
-
-    protected override async Task OnInitializedAsync() {
-
-        if (Order is null || Bus is null) return;
-
-        string outputDirectory = @"X:\_CUTLISTS  Incoming";
-
-        var outputDirResult = await Bus.Send(new GetJobOrderCutListDirectory.Query(Order.OrderFileDirectory, ""));
-        outputDirResult.OnSuccess(dir => {
-            if (string.IsNullOrWhiteSpace(dir)) return;
-            outputDirectory += ";" + dir;
-        });
-
-        string emailRecipients = "maciej@royalcabinet.com;purchasing@royalcabinet.com";
-
-        string seperatePDFDir = GetJobDirectory(Order.OrderFileDirectory);
-
-        Model = new ClosetOrderReleaseOptions() {
-
-            WorkbookFilePath = Order.OrderFile,
-
-            AddExistingWSXMLReport = false, // TODO: try to find wsxml file automatically
-            WSXMLReportFilePath = "",
-
-            FileName = $"{Order.OrderNumber} - Closet Cut List",
-            OutputDirectory = outputDirectory,
-
-            IncludeCover = true,
-            IncludePackingList = true,
-            IncludePartList = false,
-            IncludeDBList = false,
-            IncludeMDFList = false,
-
-            SeperateCoverPDF = false,
-            SeperatePackingListPDF = false,
-            SeperatePDFDirectory = seperatePDFDir,
-
-            SendEmail = true,
-            PreviewEmail = false,
-            EmailRecipients = emailRecipients
-
-        };
-
-        StateHasChanged();
-
-        var file = await GetReportFile(Order.OrderNumber);
-        Model.WSXMLReportFilePath = file ?? ""; // TODO: allow for multiple files
-        Model.AddExistingWSXMLReport = file is not null;
-
-    }
-
-    private static string GetJobDirectory(string orderFileDirectory) {
-
-        if (!orderFileDirectory.StartsWith(@"R:\Job Scans")) {
-            return orderFileDirectory;
-        }
-
-        string directory = orderFileDirectory;
-        while (true) {
-
-            var dirInfo = new DirectoryInfo(directory);
-
-            if (dirInfo.Parent is null || dirInfo.Parent.Parent is null) {
-                break;
-            }
-
-            if (Path.GetFileNameWithoutExtension(dirInfo.Parent.Parent.FullName) is string dirName) {
-
-                if (dirName == "Job Scans") {
-                    return dirInfo.FullName;
-                }
-
-            } else {
-                break;
-            }
-
-            directory = dirInfo.Parent.FullName;
-
-        }
-
-        return orderFileDirectory;
-
-    }
-
-    private static async Task<string?> GetReportFile(string number) {
-        return await Task.Run(() => {
-            try {
-
-                var files = Directory.GetFiles(@"Y:\CADCode\Reports\", $"{number}*.xml");
-                return files.OrderByDescending(file => new FileInfo(file).LastWriteTime)
-                            .FirstOrDefault();
-
-            } catch {
-                return null;
-            }
-        });
-    }
-
-    private void ChooseReportFile()
-        => FilePicker!.PickFile(new() {
-                Title = "Select CADCode WS Report File",
-                InitialDirectory = @"Y:\CADCode\Reports",
-                Filter = new("CADCode WS Report", "xml"),
-            }, (fileName) => {
-            Model.WSXMLReportFilePath = fileName;
-            InvokeAsync(StateHasChanged);
-        });
-
-    private async Task GenerateClosetOrderRelease() {
-
-        if (ActionRunnerFactory is null || Order is null) return;
-
-        if (!ValidateModel()) {
-            StateHasChanged();
-            return;
-        }
-
-        var actionRunner = ActionRunnerFactory.CreateActionRunner(Order, Model);
-
-        var parameters = new ModalParameters() {
-            { "ActionRunner",  actionRunner },
-            { "InProgressTitle", "Releasing Order..." },
-            { "CompleteTitle", "Release Complete" }
-        };
-
-        var options = new ModalOptions() {
-            HideHeader = true,
-            HideCloseButton = true,
-            DisableBackgroundCancel = true,
-            Size = ModalSize.Large
-        };
-
-        var dialog = Modal.Show<ProgressModal>("Order Release Progress", parameters, options);
-        _ = await dialog.Result;
-
-        await BlazoredModal.CloseAsync();
-
-    }
-
-    private bool ValidateModel() {
-
-        _errorMessage = null;
-
-        if (Model.AddExistingWSXMLReport) {
-
-            if (string.IsNullOrWhiteSpace(Model.WSXMLReportFilePath)) {
-
-                _errorMessage = "Select a WSXML report or uncheck the 'Existing GCode' option.";
-                return false;
-
-            }
-
-            if (!File.Exists(Model.WSXMLReportFilePath)) {
-
-                _errorMessage = "Selected WSXML file can not be found.";
-                return false;
-
-            }
-
-        }
-
-        string[] outputDirs = Model.OutputDirectory.Split(';');
-        foreach (var outputDir in outputDirs) {
-            if (Directory.Exists(Model.OutputDirectory)) {
-                continue;
-            }
-            _errorMessage = "One or more output directories does not exist or cannot be accessed.";
-            return false;
-        }
-
-        if (Model.SendEmail && string.IsNullOrWhiteSpace(Model.EmailRecipients)) {
-
-            _errorMessage = "Specify email recipients or uncheck 'Send Email' option.";
-            return false;
-
-        }
-
-        return true;
-
-    }
-
-}
