@@ -10,7 +10,7 @@ public class FileReader : IFileReader {
 
         filename = RemoveInvalidPathCharacters(filename);
 
-        if (fileExtension.StartsWith(".")) {
+        if (fileExtension.StartsWith('.')) {
             fileExtension = fileExtension[1..];
         }
 
