@@ -47,6 +47,10 @@ public class BlindWallCabinet : GarageCabinet, IMDFDoorContainer {
         BlindWidth = blindWidth;
         ExtendedDoor = extendedDoor;
 
+        if (LeftSideType == CabinetSideType.ConfirmatFinished || RightSideType == CabinetSideType.ConfirmatFinished) {
+            ProductionNotes.Add("Confirmat finished (Garage finished) sides will not work with non-garage SKUs. Set cabinet sides to unfinished and then change material to the finished material.");
+        }
+
     }
 
     public bool ContainsDoors() => MDFDoorOptions is not null;

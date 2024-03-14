@@ -52,6 +52,11 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
         ToeType = toeType;
         BlindWidth = blindWidth;
         DrawerBoxOptions = drawerBoxOptions;
+
+        if (LeftSideType == CabinetSideType.ConfirmatFinished || RightSideType == CabinetSideType.ConfirmatFinished) {
+            ProductionNotes.Add("Confirmat finished (Garage finished) sides will not work with non-garage SKUs. Set cabinet sides to unfinished and then change material to the finished material.");
+        }
+
     }
 
     public override string GetProductSku() => $"BB{Doors.Quantity}D{GetDrawerCountSkuPart()}{GetBlindSideLetter()}";
