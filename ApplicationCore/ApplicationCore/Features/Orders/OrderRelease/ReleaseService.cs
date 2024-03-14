@@ -128,7 +128,19 @@ public class ReleaseService {
 
         var releases = await GetCNCReleases(orders, configuration, orderDate, dueDate, customer.Name, vendor.Name);
 
-        var decorators = CreateDocumentDecorators(orders, configuration, releases, vendor, customer);
+        List<IDocumentDecorator> decorators = [];
+        foreach (var order in orders) {
+            var orderVendor = vendor;
+            if (order.VendorId != vendor.Id) {
+                orderVendor = await GetVendor(order.VendorId);
+            }
+            var orderCustomer = customer;
+            if (order.CustomerId != customer.Id) {
+                orderCustomer = await GetCustomer(order.CustomerId);
+            }
+            var orderDecorators = CreateDocumentDecorators(order, configuration, releases, orderVendor, orderCustomer);
+            decorators.AddRange(orderDecorators);
+        }
 
         var additionalPDFs = new List<string>(configuration.AdditionalFilePaths);
         var cutLists = await CreateCutLists(orders, configuration, customer.Name, vendor.Name);
@@ -169,73 +181,43 @@ public class ReleaseService {
         return cutLists;
     }
 
-    private List<IDocumentDecorator> CreateDocumentDecorators(List<Order> orders, ReleaseConfiguration configuration, List<ReleasedJob> releases, Vendor vendor, Customer customer) {
+    private List<IDocumentDecorator> CreateDocumentDecorators(Order order, ReleaseConfiguration configuration, List<ReleasedJob> releases, Vendor vendor, Customer customer) {
 
         List<IDocumentDecorator> decorators = [];
 
         if (configuration.GenerateJobSummary) {
-            var jobSummaryDecorators = CreateJobSummaryDecorators(orders, configuration, releases, vendor, customer);
-            decorators.AddRange(jobSummaryDecorators);
-        }
-
-        if (configuration.GeneratePackingList) {
-            var packingListDecorators = CreatePackingListDecorators(orders, configuration, vendor, customer);
-            decorators.AddRange(packingListDecorators);
-        }
-
-        if (configuration.IncludeDovetailDBPackingList) {
-            var dovetailDBPackingListDecorators = CreateDovetailDBPackingListDecorators(orders, vendor, customer);
-            decorators.AddRange(dovetailDBPackingListDecorators);
-        }
-
-        if (configuration.IncludeInvoiceInRelease) {
-            var invoiceDecorators = CreateInvoiceDecorators(orders, vendor, customer);
-            decorators.AddRange(invoiceDecorators);
-        }
-
-        decorators.AddRange(releases.Select(_cncReleaseDecoratorFactory.Create).ToList());
-        return decorators;
-    }
-
-    private List<IDocumentDecorator> CreateDovetailDBPackingListDecorators(List<Order> orders, Vendor vendor, Customer customer) {
-        List<IDocumentDecorator> dovetailDBPackingListDecorators = new();
-        foreach (var order in orders) {
-            if (!order.Products.OfType<IDovetailDrawerBoxContainer>().Any(p => p.ContainsDovetailDrawerBoxes())) continue;
-            var dovetailDecorator = DovetailDBPackingListDecoratorFactory.CreateDecorator(order, vendor, customer);
-            dovetailDBPackingListDecorators.Add(dovetailDecorator);
-        }
-
-        return dovetailDBPackingListDecorators;
-    }
-
-    private List<IDocumentDecorator> CreatePackingListDecorators(List<Order> orders, ReleaseConfiguration configuration, Vendor vendor, Customer customer) {
-        List<IDocumentDecorator> packingListDecorators = [];
-        foreach (var order in orders) {
-            var decorator = PackingListDecoratorFactory.CreateDecorator(order, vendor, customer, configuration.IncludeCheckBoxesInPackingList, configuration.IncludeSignatureFieldInPackingList);
-            packingListDecorators.Add(decorator);
-        }
-
-        return packingListDecorators;
-    }
-
-    private List<IDocumentDecorator> CreateJobSummaryDecorators(List<Order> orders, ReleaseConfiguration configuration, List<ReleasedJob> releases, Vendor vendor, Customer customer) {
-
-        List<IDocumentDecorator> jobSummaryDecorators = [];
-        foreach (var order in orders) {
             List<string> materials = releases.SelectMany(r => r.Releases)
                                         .SelectMany(r => r.Programs)
                                         .Select(p => p.Material.Name)
                                         .Distinct()
                                         .ToList();
 
-            materials.AddRange(orders.SelectMany(o => o.Products.OfType<FivePieceDoorProduct>().Select(d => d.Material)).Distinct());
-            materials.AddRange(orders.SelectMany(o => o.Products.OfType<DoweledDrawerBoxProduct>().SelectMany(d => new string[] { d.BackMaterial.Name, d.FrontMaterial.Name, d.SideMaterial.Name, d.BottomMaterial.Name })).Distinct());
+            materials.AddRange(order.Products.OfType<FivePieceDoorProduct>().Select(d => d.Material).Distinct());
+            materials.AddRange(order.Products.OfType<DoweledDrawerBoxProduct>().SelectMany(d => new string[] { d.BackMaterial.Name, d.FrontMaterial.Name, d.SideMaterial.Name, d.BottomMaterial.Name }).Distinct());
 
             var decorator = JobSummaryDecoratorFactory.CreateDecorator(order, vendor, customer, configuration.IncludeProductTablesInSummary, configuration.SupplyOptions, materials.ToArray(), true);
-            jobSummaryDecorators.Add(decorator);
+            decorators.Add(decorator);
         }
 
-        return jobSummaryDecorators;
+        if (configuration.GeneratePackingList) {
+            var decorator = PackingListDecoratorFactory.CreateDecorator(order, vendor, customer, configuration.IncludeCheckBoxesInPackingList, configuration.IncludeSignatureFieldInPackingList);
+            decorators.Add(decorator);
+        }
+
+        if (configuration.IncludeDovetailDBPackingList) {
+            if (order.Products.OfType<IDovetailDrawerBoxContainer>().Any(p => p.ContainsDovetailDrawerBoxes())) {
+                var dovetailDecorator = DovetailDBPackingListDecoratorFactory.CreateDecorator(order, vendor, customer);
+                decorators.Add(dovetailDecorator);
+            }
+        }
+
+        if (configuration.IncludeInvoiceInRelease) {
+            var decorator = InvoiceDecoratorFactory.CreateDecorator(order, vendor, customer);
+            decorators.Add(decorator);
+        }
+
+        decorators.AddRange(releases.Select(_cncReleaseDecoratorFactory.Create).ToList());
+        return decorators;
     }
 
     private async Task SendReleaseEmail(List<Order> orders, ReleaseConfiguration configuration, string customerName, List<ReleasedJob> releases, string orderNumbers, IEnumerable<string> filePaths, string recipients) {
@@ -295,16 +277,6 @@ public class ReleaseService {
             OnError?.Invoke($"Could not send email - '{ex.Message}'");
             _logger.LogError(ex, "Exception thrown while trying to send release email");
         }
-    }
-
-    private List<IDocumentDecorator> CreateInvoiceDecorators(List<Order> orders, Vendor vendor, Customer customer) {
-        List<IDocumentDecorator> invoiceDecorators = new();
-        foreach (var order in orders) {
-            var decorator = InvoiceDecoratorFactory.CreateDecorator(order, vendor, customer);
-            invoiceDecorators.Add(decorator);
-        }
-
-        return invoiceDecorators;
     }
 
     private async Task<List<ReleasedJob>> GetCNCReleases(List<Order> orders, ReleaseConfiguration configuration, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
