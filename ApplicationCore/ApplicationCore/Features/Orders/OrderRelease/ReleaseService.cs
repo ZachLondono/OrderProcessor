@@ -46,7 +46,6 @@ public class ReleaseService {
 
     private readonly ILogger<ReleaseService> _logger;
     private readonly IFileReader _fileReader;
-    private readonly InvoiceDecoratorFactory _invoiceDecoratorFactory;
     private readonly PackingListDecoratorFactory _packingListDecoratorFactory;
     private readonly IDovetailDBPackingListDecoratorFactory _dovetailDBPackingListDecoratorFactory;
     private readonly CNCReleaseDecoratorFactory _cncReleaseDecoratorFactory;
@@ -58,9 +57,8 @@ public class ReleaseService {
     private readonly IDoweledDrawerBoxCutListWriter _doweledDrawerBoxCutListWriter;
     private readonly CNCPartGCodeGenerator _gcodeGenerator;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory,  CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IDovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, CNCPartGCodeGenerator gcodeGenerator) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory,  CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IDovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, CNCPartGCodeGenerator gcodeGenerator) {
         _fileReader = fileReader;
-        _invoiceDecoratorFactory = invoiceDecoratorFactory;
         _packingListDecoratorFactory = packingListDecoratorFactory;
         _cncReleaseDecoratorFactory = cncReleaseDecoratorFactory;
         _logger = logger;
@@ -99,7 +97,7 @@ public class ReleaseService {
 
         if (configuration.GenerateInvoice || configuration.SendInvoiceEmail) {
             foreach (var order in orders) {
-                await Invoicing(order, configuration, customer.Name);
+                await Invoicing(order, configuration, vendor, customer);
             }
         } else {
             OnProgressReport?.Invoke("Not generating invoice pdf, because option was not enabled");
@@ -195,7 +193,7 @@ public class ReleaseService {
         }
 
         if (configuration.IncludeInvoiceInRelease) {
-            var invoiceDecorators = await CreateInvoiceDecorators(orders);
+            var invoiceDecorators = CreateInvoiceDecorators(orders, vendor, customer);
             decorators.AddRange(invoiceDecorators);
         }
 
@@ -303,10 +301,10 @@ public class ReleaseService {
         }
     }
 
-    private async Task<List<IDocumentDecorator>> CreateInvoiceDecorators(List<Order> orders) {
+    private List<IDocumentDecorator> CreateInvoiceDecorators(List<Order> orders, Vendor vendor, Customer customer) {
         List<IDocumentDecorator> invoiceDecorators = new();
         foreach (var order in orders) {
-            var decorator = await _invoiceDecoratorFactory.CreateDecorator(order);
+            var decorator = InvoiceDecoratorFactory.CreateDecorator(order, vendor, customer);
             invoiceDecorators.Add(decorator);
         }
 
@@ -657,7 +655,7 @@ public class ReleaseService {
 
     }
 
-    private async Task Invoicing(Order order, ReleaseConfiguration configuration, string customerName) {
+    private async Task Invoicing(Order order, ReleaseConfiguration configuration, Vendor vendor, Customer customer) {
 
         bool isTemp = !configuration.GenerateInvoice;
 
@@ -671,9 +669,9 @@ public class ReleaseService {
 
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
-            var decorator = await _invoiceDecoratorFactory.CreateDecorator(order);
+            var decorator = InvoiceDecoratorFactory.CreateDecorator(order, vendor, customer);
             var documentBytes = await Task.Run(() => Document.Create(doc => decorator.Decorate(doc)).GeneratePdf());
-            filePaths = await SaveFileDataToDirectoriesAsync(documentBytes, invoiceDirectories, customerName, filename, isTemp);
+            filePaths = await SaveFileDataToDirectoriesAsync(documentBytes, invoiceDirectories, customer.Name, filename, isTemp);
         } catch (Exception ex) {
             OnError?.Invoke($"Could not generate invoice PDF - '{ex.Message}'");
             _logger.LogError(ex, "Exception thrown while trying to generate invoice pdf");
@@ -683,9 +681,9 @@ public class ReleaseService {
             OnProgressReport?.Invoke("Sending invoice email");
             try {
                 if (configuration.PreviewInvoiceEmail) {
-                    await Task.Run(() => CreateAndDisplayOutlookEmail(recipients, $"INVOICE: {order.Number} {customerName}", "Please see attached invoice", "Please see attached invoice", new string[] { filePaths.First() }));
+                    await Task.Run(() => CreateAndDisplayOutlookEmail(recipients, $"INVOICE: {order.Number} {customer.Name}", "Please see attached invoice", "Please see attached invoice", new string[] { filePaths.First() }));
                 } else {
-                    await SendEmailAsync(recipients, $"INVOICE: {order.Number} {customerName}", "Please see attached invoice", "Please see attached invoice", new string[] { filePaths.First() });
+                    await SendEmailAsync(recipients, $"INVOICE: {order.Number} {customer.Name}", "Please see attached invoice", "Please see attached invoice", new string[] { filePaths.First() });
                 }
             } catch (Exception ex) {
                 OnError?.Invoke($"Could not send invoice email - '{ex.Message}'");

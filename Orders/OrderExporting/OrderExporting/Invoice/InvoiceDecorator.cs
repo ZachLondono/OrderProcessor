@@ -5,31 +5,20 @@ using Domain.Orders.Entities.Products.Closets;
 using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.Entities.Products.DrawerBoxes;
 using Domain.ValueObjects;
+using OrderExporting.Shared;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace OrderExporting.Invoice;
 
-public class InvoiceDecorator : IInvoiceDecorator {
+public class InvoiceDecorator(Invoice inovice) : IDocumentDecorator {
 
-    private Invoice? invoice = null;
-
-    private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
-    private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
-
-    public InvoiceDecorator(CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync) {
-        _getCustomerByIdAsync = getCustomerByIdAsync;
-        _getVendorByIdAsync = getVendorByIdAsync;
-    }
-
-    public async Task AddData(Order order) {
-        invoice = await CreateInvoiceModel(order);
-    }
+    private readonly Invoice? _invoice = inovice;
 
     public void Decorate(IDocumentContainer container) {
 
-        if (invoice is null) {
+        if (_invoice is null) {
             return;
         }
 
@@ -49,42 +38,42 @@ public class InvoiceDecorator : IInvoiceDecorator {
                             .FontSize(36)
                             .Bold();
 
-                    ComposeHeader(column.Item(), invoice);
+                    ComposeHeader(column.Item(), _invoice);
 
-                    if (invoice.Cabinets.Any()) {
-                        ComposeCabinetTable(column.Item(), invoice.Cabinets);
+                    if (_invoice.Cabinets.Any()) {
+                        ComposeCabinetTable(column.Item(), _invoice.Cabinets);
                     }
 
-                    if (invoice.CabinetParts.Any()) {
-                        ComposeCabinetPartTable(column.Item(), invoice.CabinetParts);
+                    if (_invoice.CabinetParts.Any()) {
+                        ComposeCabinetPartTable(column.Item(), _invoice.CabinetParts);
                     }
 
-                    if (invoice.ClosetParts.Any()) {
-                        ComposeClosetPartTable(column.Item(), invoice.ClosetParts);
+                    if (_invoice.ClosetParts.Any()) {
+                        ComposeClosetPartTable(column.Item(), _invoice.ClosetParts);
                     }
 
-                    if (invoice.ZargenDrawers.Any()) {
-                        ComposeZargenDrawerTable(column.Item(), invoice.ZargenDrawers);
+                    if (_invoice.ZargenDrawers.Any()) {
+                        ComposeZargenDrawerTable(column.Item(), _invoice.ZargenDrawers);
                     }
 
-                    if (invoice.MDFDoors.Any()) {
-                        ComposeMDFDoorTable(column.Item(), invoice.MDFDoors);
+                    if (_invoice.MDFDoors.Any()) {
+                        ComposeMDFDoorTable(column.Item(), _invoice.MDFDoors);
                     }
 
-                    if (invoice.FivePieceDoors.Any()) {
-                        ComposeFivePieceDoorTable(column.Item(), invoice.FivePieceDoors);
+                    if (_invoice.FivePieceDoors.Any()) {
+                        ComposeFivePieceDoorTable(column.Item(), _invoice.FivePieceDoors);
                     }
 
-                    if (invoice.DovetailDrawerBoxes.Any()) {
-                        ComposeDovetailDrawerBoxTable(column.Item(), invoice.DovetailDrawerBoxes);
+                    if (_invoice.DovetailDrawerBoxes.Any()) {
+                        ComposeDovetailDrawerBoxTable(column.Item(), _invoice.DovetailDrawerBoxes);
                     }
 
-                    if (invoice.DoweledDrawerBoxes.Any()) {
-                        ComposeDoweledDrawerBoxTable(column.Item(), invoice.DoweledDrawerBoxes);
+                    if (_invoice.DoweledDrawerBoxes.Any()) {
+                        ComposeDoweledDrawerBoxTable(column.Item(), _invoice.DoweledDrawerBoxes);
                     }
 
-                    if (invoice.AdditionalItems.Any()) {
-                        ComposeAdditionalItemTable(column.Item(), invoice.AdditionalItems);
+                    if (_invoice.AdditionalItems.Any()) {
+                        ComposeAdditionalItemTable(column.Item(), _invoice.AdditionalItems);
                     }
 
                 });
@@ -914,128 +903,6 @@ public class InvoiceDecorator : IInvoiceDecorator {
             text.Span(whole.ToString()).FontSize(fontSize);
 
         }
-
-    }
-
-    private async Task<Invoice> CreateInvoiceModel(Order order) {
-
-        var vendor = await _getVendorByIdAsync(order.VendorId);
-        var customer = await _getCustomerByIdAsync(order.CustomerId);
-
-        return new Invoice() {
-            OrderNumber = order.Number,
-            OrderName = order.Name,
-            Date = DateTime.Today,
-            SubTotal = order.SubTotal,
-            SalesTax = order.Tax,
-            Shipping = order.Shipping.Price,
-            Total = order.Total,
-            Terms = "COD",
-            Discount = 0M,
-            Vendor = new() {
-                Name = vendor?.Name ?? "",
-                Line1 = vendor?.Address.Line1 ?? "",
-                Line2 = vendor?.Address.Line2 ?? "",
-                Line3 = vendor is null ? "" : vendor.Address.GetLine4(),
-                Line4 = vendor?.Phone ?? "",
-            },
-            Customer = new() {
-                Name = customer?.Name ?? "",
-                Line1 = order.Billing.Address.Line1,
-                Line2 = order.Billing.Address.Line2,
-                Line3 = order.Billing.Address.GetLine4(),
-                Line4 = order.Billing.PhoneNumber,
-            },
-            Cabinets = order.Products
-                            .OfType<Cabinet>()
-                            .Select(cab => new CabinetItem() {
-                                Line = cab.ProductNumber,
-                                Qty = cab.Qty,
-                                Height = cab.Height,
-                                Width = cab.Width,
-                                Depth = cab.Depth,
-                                Description = cab.GetDescription(),
-                                UnitPrice = cab.UnitPrice,
-                            }).ToList(),
-            CabinetParts = order.Products
-                                .OfType<CabinetPart>()
-                                .Select(cab => new CabinetPartItem() {
-                                    Line = cab.ProductNumber,
-                                    Qty = cab.Qty,
-                                    Description = cab.GetDescription(),
-                                    UnitPrice = cab.UnitPrice
-                                }).ToList(),
-            MDFDoors = order.Products
-                            .OfType<MDFDoorProduct>()
-                            .Select(cab => new MDFDoorItem() {
-                                Line = cab.ProductNumber,
-                                Qty = cab.Qty,
-                                Height = cab.Height,
-                                Width = cab.Width,
-                                Description = cab.GetDescription(),
-                                UnitPrice = cab.UnitPrice,
-                            }).ToList(),
-            FivePieceDoors = order.Products
-                            .OfType<FivePieceDoorProduct>()
-                            .Select(cab => new FivePieceDoorItem() {
-                                Line = cab.ProductNumber,
-                                Qty = cab.Qty,
-                                Height = cab.Height,
-                                Width = cab.Width,
-                                Description = cab.GetDescription(),
-                                UnitPrice = cab.UnitPrice,
-                            }).ToList(),
-            ClosetParts = order.Products
-                            .OfType<IClosetPartProduct>()
-                            .Select(cab => new ClosetPartItem() {
-                                Line = cab.ProductNumber,
-                                Qty = cab.Qty,
-                                Length = cab.Length,
-                                Width = cab.Width,
-                                Description = cab.GetDescription(),
-                                UnitPrice = cab.UnitPrice,
-                            }).ToList(),
-            ZargenDrawers = order.Products
-                            .OfType<ZargenDrawer>()
-                            .Select(cab => new ZargenDrawerItem() {
-                                Line = cab.ProductNumber,
-                                Qty = cab.Qty,
-                                Height = cab.Height,
-                                Depth = cab.Depth,
-                                OpeningWidth = cab.OpeningWidth,
-                                Description = cab.GetDescription(),
-                                UnitPrice = cab.UnitPrice,
-                            }).ToList(),
-            DovetailDrawerBoxes = order.Products
-                            .OfType<DovetailDrawerBoxProduct>()
-                            .Select(cab => new DovetailDrawerBoxItem() {
-                                Line = cab.ProductNumber,
-                                Qty = cab.Qty,
-                                Height = cab.Height,
-                                Width = cab.Width,
-                                Depth = cab.Depth,
-                                Description = cab.GetDescription(),
-                                UnitPrice = cab.UnitPrice,
-                            }).ToList(),
-            DoweledDrawerBoxes = order.Products
-                            .OfType<DoweledDrawerBoxProduct>()
-                            .Select(cab => new DoweledDrawerBoxItem() {
-                                Line = cab.ProductNumber,
-                                Qty = cab.Qty,
-                                Height = cab.Height,
-                                Width = cab.Width,
-                                Depth = cab.Depth,
-                                Description = cab.GetDescription(),
-                                UnitPrice = cab.UnitPrice,
-                            }).ToList(),
-            AdditionalItems = order.AdditionalItems
-                            .Select((item, idx) => new AdditionalItem() {
-                                Line = idx + 1,
-                                Qty = item.Qty,
-                                Description = item.Description,
-                                UnitPrice = item.UnitPrice
-                            }).ToList()
-        };
 
     }
 
