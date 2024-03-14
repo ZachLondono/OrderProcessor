@@ -46,7 +46,6 @@ public class ReleaseService {
 
     private readonly ILogger<ReleaseService> _logger;
     private readonly IFileReader _fileReader;
-    private readonly IDovetailDBPackingListDecoratorFactory _dovetailDBPackingListDecoratorFactory;
     private readonly CNCReleaseDecoratorFactory _cncReleaseDecoratorFactory;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
@@ -56,7 +55,7 @@ public class ReleaseService {
     private readonly IDoweledDrawerBoxCutListWriter _doweledDrawerBoxCutListWriter;
     private readonly CNCPartGCodeGenerator _gcodeGenerator;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory,  CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IDovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, CNCPartGCodeGenerator gcodeGenerator) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory,  CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, CNCPartGCodeGenerator gcodeGenerator) {
         _fileReader = fileReader;
         _cncReleaseDecoratorFactory = cncReleaseDecoratorFactory;
         _logger = logger;
@@ -64,7 +63,6 @@ public class ReleaseService {
         _getVendorByIdAsync = getVendorByIdAsync;
         _emailService = emailService;
         _wsxmlParser = wsxmlParser;
-        _dovetailDBPackingListDecoratorFactory = dovetailDBPackingListDecoratorFactory;
         _fivePieceDoorCutListWriter = fivePieceDoorCutListWriter;
         _doweledDrawerBoxCutListWriter = doweledDrawerBoxCutListWriter;
         _gcodeGenerator = gcodeGenerator;
@@ -130,7 +128,7 @@ public class ReleaseService {
 
         var releases = await GetCNCReleases(orders, configuration, orderDate, dueDate, customer.Name, vendor.Name);
 
-        var decorators = await CreateDocumentDecorators(orders, configuration, releases, vendor, customer);
+        var decorators = CreateDocumentDecorators(orders, configuration, releases, vendor, customer);
 
         var additionalPDFs = new List<string>(configuration.AdditionalFilePaths);
         var cutLists = await CreateCutLists(orders, configuration, customer.Name, vendor.Name);
@@ -171,7 +169,7 @@ public class ReleaseService {
         return cutLists;
     }
 
-    private async Task<List<IDocumentDecorator>> CreateDocumentDecorators(List<Order> orders, ReleaseConfiguration configuration, List<ReleasedJob> releases, Vendor vendor, Customer customer) {
+    private List<IDocumentDecorator> CreateDocumentDecorators(List<Order> orders, ReleaseConfiguration configuration, List<ReleasedJob> releases, Vendor vendor, Customer customer) {
 
         List<IDocumentDecorator> decorators = [];
 
@@ -186,7 +184,7 @@ public class ReleaseService {
         }
 
         if (configuration.IncludeDovetailDBPackingList) {
-            var dovetailDBPackingListDecorators = await CreateDovetailDBPackingListDecorators(orders);
+            var dovetailDBPackingListDecorators = CreateDovetailDBPackingListDecorators(orders, vendor, customer);
             decorators.AddRange(dovetailDBPackingListDecorators);
         }
 
@@ -199,11 +197,11 @@ public class ReleaseService {
         return decorators;
     }
 
-    private async Task<List<IDocumentDecorator>> CreateDovetailDBPackingListDecorators(List<Order> orders) {
+    private List<IDocumentDecorator> CreateDovetailDBPackingListDecorators(List<Order> orders, Vendor vendor, Customer customer) {
         List<IDocumentDecorator> dovetailDBPackingListDecorators = new();
         foreach (var order in orders) {
             if (!order.Products.OfType<IDovetailDrawerBoxContainer>().Any(p => p.ContainsDovetailDrawerBoxes())) continue;
-            var dovetailDecorator = await _dovetailDBPackingListDecoratorFactory.CreateDecorator(order);
+            var dovetailDecorator = DovetailDBPackingListDecoratorFactory.CreateDecorator(order, vendor, customer);
             dovetailDBPackingListDecorators.Add(dovetailDecorator);
         }
 

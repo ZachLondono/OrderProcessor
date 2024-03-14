@@ -6,9 +6,9 @@ using QuestPDF.Infrastructure;
 
 namespace OrderExporting.DovetailDBPackingList;
 
-public class DovetailDBPackingListDecorator : IDocumentDecorator {
+public class DovetailDBPackingListDecorator(DovetailDrawerBoxPackingList packingList) : IDocumentDecorator {
 
-    public DovetailDrawerBoxPackingList Data { get; set; } = new();
+    private readonly DovetailDrawerBoxPackingList _packingList = packingList; 
 
     public void Decorate(IDocumentContainer container) {
 
@@ -27,8 +27,8 @@ public class DovetailDBPackingListDecorator : IDocumentDecorator {
                         .FontSize(36)
                         .Bold();
 
-                    ComposeHeader(column.Item(), Data);
-                    ComposeTable(column.Item(), Data.Items);
+                    ComposeHeader(column.Item(), _packingList);
+                    ComposeTable(column.Item(), _packingList.Items);
 
                 });
 
