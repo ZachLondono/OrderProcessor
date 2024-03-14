@@ -46,7 +46,6 @@ public class ReleaseService {
 
     private readonly ILogger<ReleaseService> _logger;
     private readonly IFileReader _fileReader;
-    private readonly PackingListDecoratorFactory _packingListDecoratorFactory;
     private readonly IDovetailDBPackingListDecoratorFactory _dovetailDBPackingListDecoratorFactory;
     private readonly CNCReleaseDecoratorFactory _cncReleaseDecoratorFactory;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
@@ -57,9 +56,8 @@ public class ReleaseService {
     private readonly IDoweledDrawerBoxCutListWriter _doweledDrawerBoxCutListWriter;
     private readonly CNCPartGCodeGenerator _gcodeGenerator;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory,  CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IDovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, CNCPartGCodeGenerator gcodeGenerator) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory,  CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IDovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, CNCPartGCodeGenerator gcodeGenerator) {
         _fileReader = fileReader;
-        _packingListDecoratorFactory = packingListDecoratorFactory;
         _cncReleaseDecoratorFactory = cncReleaseDecoratorFactory;
         _logger = logger;
         _getCustomerByIdAsync = getCustomerByIdAsync;
@@ -183,7 +181,7 @@ public class ReleaseService {
         }
 
         if (configuration.GeneratePackingList) {
-            var packingListDecorators = await CreatePackingListDecorators(orders, configuration);
+            var packingListDecorators = CreatePackingListDecorators(orders, configuration, vendor, customer);
             decorators.AddRange(packingListDecorators);
         }
 
@@ -212,10 +210,10 @@ public class ReleaseService {
         return dovetailDBPackingListDecorators;
     }
 
-    private async Task<List<IDocumentDecorator>> CreatePackingListDecorators(List<Order> orders, ReleaseConfiguration configuration) {
-        List<IDocumentDecorator> packingListDecorators = new();
+    private List<IDocumentDecorator> CreatePackingListDecorators(List<Order> orders, ReleaseConfiguration configuration, Vendor vendor, Customer customer) {
+        List<IDocumentDecorator> packingListDecorators = [];
         foreach (var order in orders) {
-            var decorator = await _packingListDecoratorFactory.CreateDecorator(order, configuration.IncludeCheckBoxesInPackingList, configuration.IncludeSignatureFieldInPackingList);
+            var decorator = PackingListDecoratorFactory.CreateDecorator(order, vendor, customer, configuration.IncludeCheckBoxesInPackingList, configuration.IncludeSignatureFieldInPackingList);
             packingListDecorators.Add(decorator);
         }
 

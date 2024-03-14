@@ -12,23 +12,27 @@ public record PackingList {
 
     public Company Vendor { get; set; } = new();
 
-    public List<DovetailDovetailDrawerBoxItem> DovetailDrawerBoxes { get; set; } = new();
+    public List<DovetailDovetailDrawerBoxItem> DovetailDrawerBoxes { get; set; } = [];
 
-    public List<DoweledDrawerBoxItem> DoweledDrawerBoxes { get; set; } = new();
+    public List<DoweledDrawerBoxItem> DoweledDrawerBoxes { get; set; } = [];
 
-    public List<MDFDoorItem> MDFDoors { get; set; } = new();
+    public List<MDFDoorItem> MDFDoors { get; set; } = [];
 
-    public List<FivePieceDoorItem> FivePieceDoors { get; set; } = new();
+    public List<FivePieceDoorItem> FivePieceDoors { get; set; } = [];
 
-    public List<CabinetItem> Cabinets { get; set; } = new();
+    public List<CabinetItem> Cabinets { get; set; } = [];
 
-    public List<CabinetPartItem> CabinetParts { get; set; } = new();
+    public List<CabinetPartItem> CabinetParts { get; set; } = [];
 
-    public List<ClosetPartItem> ClosetParts { get; set; } = new();
+    public List<ClosetPartItem> ClosetParts { get; set; } = [];
 
-    public List<ZargenDrawerItem> ZargenDrawers { get; set; } = new();
+    public List<ZargenDrawerItem> ZargenDrawers { get; set; } = [];
 
-    public List<AdditionalItem> AdditionalItems { get; set; } = new();
+    public List<AdditionalItem> AdditionalItems { get; set; } = [];
+
+    public bool IncludeCheckBoxesNextToItems { get; set; } = false;
+
+    public bool IncludeSignatureField { get; set; } = false;
 
 }
 
