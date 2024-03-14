@@ -30,6 +30,7 @@ using OrderExporting.Shared;
 using OrderExporting.CNC.Programs.Job;
 using OrderExporting.CNC.Programs.WSXML.Report;
 using OrderExporting.CNC.Programs.WorkOrderReleaseEmail;
+using Domain.Companies.Entities;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -49,7 +50,6 @@ public class ReleaseService {
     private readonly PackingListDecoratorFactory _packingListDecoratorFactory;
     private readonly IDovetailDBPackingListDecoratorFactory _dovetailDBPackingListDecoratorFactory;
     private readonly CNCReleaseDecoratorFactory _cncReleaseDecoratorFactory;
-    private readonly JobSummaryDecoratorFactory _jobSummaryDecoratorFactory;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly IEmailService _emailService;
@@ -58,12 +58,11 @@ public class ReleaseService {
     private readonly IDoweledDrawerBoxCutListWriter _doweledDrawerBoxCutListWriter;
     private readonly CNCPartGCodeGenerator _gcodeGenerator;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory, JobSummaryDecoratorFactory jobSummaryDecoratorFactory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IDovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, CNCPartGCodeGenerator gcodeGenerator) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, InvoiceDecoratorFactory invoiceDecoratorFactory, PackingListDecoratorFactory packingListDecoratorFactory, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory,  CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IDovetailDBPackingListDecoratorFactory dovetailDBPackingListDecoratorFactory, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, CNCPartGCodeGenerator gcodeGenerator) {
         _fileReader = fileReader;
         _invoiceDecoratorFactory = invoiceDecoratorFactory;
         _packingListDecoratorFactory = packingListDecoratorFactory;
         _cncReleaseDecoratorFactory = cncReleaseDecoratorFactory;
-        _jobSummaryDecoratorFactory = jobSummaryDecoratorFactory;
         _logger = logger;
         _getCustomerByIdAsync = getCustomerByIdAsync;
         _getVendorByIdAsync = getVendorByIdAsync;
@@ -91,16 +90,16 @@ public class ReleaseService {
         }
 
         // TODO: check that all orders have the same customer & vendor, if not list all of them separated by a comma
-        var customerName = await GetCustomerName(orders.First().CustomerId);
-        var vendorName = await GetVendorName(orders.First().VendorId);
+        var customer = await GetCustomer(orders.First().CustomerId);
+        var vendor = await GetVendor(orders.First().VendorId);
         var orderDate = orders.First().OrderDate;
         var dueDate = orders.First().DueDate;
 
-        await OrchestrateRelease(orders, configuration, orderDate, dueDate, customerName, vendorName);
+        await OrchestrateRelease(orders, configuration, orderDate, dueDate, customer, vendor);
 
         if (configuration.GenerateInvoice || configuration.SendInvoiceEmail) {
             foreach (var order in orders) {
-                await Invoicing(order, configuration, customerName);
+                await Invoicing(order, configuration, customer.Name);
             }
         } else {
             OnProgressReport?.Invoke("Not generating invoice pdf, because option was not enabled");
@@ -110,7 +109,7 @@ public class ReleaseService {
 
     }
 
-    private async Task OrchestrateRelease(List<Order> orders, ReleaseConfiguration configuration, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
+    private async Task OrchestrateRelease(List<Order> orders, ReleaseConfiguration configuration, DateTime orderDate, DateTime? dueDate, Customer customer, Vendor vendor) {
 
         if (configuration.ReleaseOutputDirectory is null) {
             OnError?.Invoke("No output directory set");
@@ -133,22 +132,22 @@ public class ReleaseService {
 
         var filename = configuration.ReleaseFileName ?? $"{orderNumbers} RELEASE";
 
-        var releases = await GetCNCReleases(orders, configuration, orderDate, dueDate, customerName, vendorName);
+        var releases = await GetCNCReleases(orders, configuration, orderDate, dueDate, customer.Name, vendor.Name);
 
-        var decorators = await CreateDocumentDecorators(orders, configuration, releases);
+        var decorators = await CreateDocumentDecorators(orders, configuration, releases, vendor, customer);
 
         var additionalPDFs = new List<string>(configuration.AdditionalFilePaths);
-        var cutLists = await CreateCutLists(orders, configuration, customerName, vendorName);
+        var cutLists = await CreateCutLists(orders, configuration, customer.Name, vendor.Name);
         additionalPDFs.AddRange(cutLists);
 
         OnProgressReport?.Invoke("Generating release PDF");
         try {
 
             var documentData = await BuildPDFAsync(decorators, additionalPDFs);
-            var filePaths = await SaveFileDataToDirectoriesAsync(documentData, directories, customerName, filename, isTemp: false);
+            var filePaths = await SaveFileDataToDirectoriesAsync(documentData, directories, customer.Name, filename, isTemp: false);
 
             if (filePaths.Any() && configuration.SendReleaseEmail && configuration.ReleaseEmailRecipients is string recipients) {
-                await SendReleaseEmail(orders, configuration, customerName, releases, orderNumbers, filePaths, recipients);
+                await SendReleaseEmail(orders, configuration, customer.Name, releases, orderNumbers, filePaths, recipients);
             } else {
                 OnProgressReport?.Invoke("Not sending release email");
             }
@@ -176,12 +175,12 @@ public class ReleaseService {
         return cutLists;
     }
 
-    private async Task<List<IDocumentDecorator>> CreateDocumentDecorators(List<Order> orders, ReleaseConfiguration configuration, List<ReleasedJob> releases) {
+    private async Task<List<IDocumentDecorator>> CreateDocumentDecorators(List<Order> orders, ReleaseConfiguration configuration, List<ReleasedJob> releases, Vendor vendor, Customer customer) {
 
         List<IDocumentDecorator> decorators = [];
 
         if (configuration.GenerateJobSummary) {
-            var jobSummaryDecorators = await CreateJobSummaryDecorators(orders, configuration, releases);
+            var jobSummaryDecorators = CreateJobSummaryDecorators(orders, configuration, releases, vendor, customer);
             decorators.AddRange(jobSummaryDecorators);
         }
 
@@ -225,8 +224,9 @@ public class ReleaseService {
         return packingListDecorators;
     }
 
-    private async Task<List<IDocumentDecorator>> CreateJobSummaryDecorators(List<Order> orders, ReleaseConfiguration configuration, List<ReleasedJob> releases) {
-        List<IDocumentDecorator> jobSummaryDecorators = new();
+    private List<IDocumentDecorator> CreateJobSummaryDecorators(List<Order> orders, ReleaseConfiguration configuration, List<ReleasedJob> releases, Vendor vendor, Customer customer) {
+
+        List<IDocumentDecorator> jobSummaryDecorators = [];
         foreach (var order in orders) {
             List<string> materials = releases.SelectMany(r => r.Releases)
                                         .SelectMany(r => r.Programs)
@@ -237,7 +237,7 @@ public class ReleaseService {
             materials.AddRange(orders.SelectMany(o => o.Products.OfType<FivePieceDoorProduct>().Select(d => d.Material)).Distinct());
             materials.AddRange(orders.SelectMany(o => o.Products.OfType<DoweledDrawerBoxProduct>().SelectMany(d => new string[] { d.BackMaterial.Name, d.FrontMaterial.Name, d.SideMaterial.Name, d.BottomMaterial.Name })).Distinct());
 
-            var decorator = await _jobSummaryDecoratorFactory.CreateDecorator(order, configuration.IncludeProductTablesInSummary, configuration.SupplyOptions, materials.ToArray(), true);
+            var decorator = JobSummaryDecoratorFactory.CreateDecorator(order, vendor, customer, configuration.IncludeProductTablesInSummary, configuration.SupplyOptions, materials.ToArray(), true);
             jobSummaryDecorators.Add(decorator);
         }
 
@@ -910,43 +910,43 @@ public class ReleaseService {
         return result;
     }
 
-    private async Task<string> GetCustomerName(Guid customerId) {
+    private async Task<Customer> GetCustomer(Guid customerId) {
 
         try {
 
             var customer = await _getCustomerByIdAsync(customerId);
 
             if (customer is null) {
-                return string.Empty;
+                throw new InvalidOperationException($"Failed to get customer with id '{customerId}'");
             }
 
-            return customer.Name;
+            return customer;
 
         } catch (Exception ex) {
 
-            _logger.LogError(ex, "Exception thrown while getting customer name");
-            return string.Empty;
+            _logger.LogError(ex, "Exception thrown while getting customer");
+            throw;
 
         }
 
     }
 
-    private async Task<string> GetVendorName(Guid vendorId) {
+    private async Task<Vendor> GetVendor(Guid vendorId) {
 
         try {
 
             var vendor = await _getVendorByIdAsync(vendorId);
 
             if (vendor is null) {
-                return string.Empty;
+                throw new InvalidOperationException($"Failed to get vendor with id '{vendorId}'");
             }
 
-            return vendor.Name;
+            return vendor;
 
         } catch (Exception ex) {
 
             _logger.LogError(ex, "Exception thrown while getting vendor name");
-            return string.Empty;
+            throw;
 
         }
 

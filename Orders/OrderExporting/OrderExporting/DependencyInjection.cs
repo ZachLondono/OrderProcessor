@@ -18,7 +18,7 @@ public static class DependencyInjection {
 	public static IServiceCollection AddOrderExporting(this IServiceCollection services) {
 		return services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly))
 						.AddTransient<IExtWriter, ExtWriter>()
-                        .AddTransient<IJobSummaryDecorator, JobSummaryDecorator>()
+                        .AddTransient<JobSummaryDecorator>()
                         .AddTransient<JobSummaryDecoratorFactory>()
                         .AddTransient<IInvoiceDecorator, InvoiceDecorator>()
                         .AddTransient<InvoiceDecoratorFactory>()
