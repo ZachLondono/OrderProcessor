@@ -9,7 +9,6 @@ using Microsoft.Office.Interop.Outlook;
 using MimeKit;
 using QuestPDF.Fluent;
 using System.Runtime.InteropServices;
-using UglyToad.PdfPig.Writer;
 using OrderExporting.DovetailDBPackingList;
 using OrderExporting.FivePieceDoorCutList;
 using OrderExporting.DoweledDrawerBoxCutList;
@@ -23,10 +22,8 @@ using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.Entities.Products.DrawerBoxes;
 using Domain.Services;
 using Domain.Extensions;
-using OrderExporting.CNC.ReleasePDF;
 using OrderExporting.CNC.Programs.WSXML;
 using OrderExporting.CNC.Programs;
-using OrderExporting.Shared;
 using OrderExporting.CNC.Programs.Job;
 using OrderExporting.CNC.Programs.WSXML.Report;
 using OrderExporting.CNC.Programs.WorkOrderReleaseEmail;
@@ -46,7 +43,6 @@ public class ReleaseService {
 
     private readonly ILogger<ReleaseService> _logger;
     private readonly IFileReader _fileReader;
-    private readonly CNCReleaseDecoratorFactory _cncReleaseDecoratorFactory;
     private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly IEmailService _emailService;
@@ -54,10 +50,10 @@ public class ReleaseService {
     private readonly IFivePieceDoorCutListWriter _fivePieceDoorCutListWriter;
     private readonly IDoweledDrawerBoxCutListWriter _doweledDrawerBoxCutListWriter;
     private readonly CNCPartGCodeGenerator _gcodeGenerator;
+    private readonly ReleasePDFBuilder _releasePDFBuilder;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, CNCReleaseDecoratorFactory cncReleaseDecoratorFactory,  CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, CNCPartGCodeGenerator gcodeGenerator) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader,  CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, CNCPartGCodeGenerator gcodeGenerator, ReleasePDFBuilder releasePDFBuilder) {
         _fileReader = fileReader;
-        _cncReleaseDecoratorFactory = cncReleaseDecoratorFactory;
         _logger = logger;
         _getCustomerByIdAsync = getCustomerByIdAsync;
         _getVendorByIdAsync = getVendorByIdAsync;
@@ -66,6 +62,7 @@ public class ReleaseService {
         _fivePieceDoorCutListWriter = fivePieceDoorCutListWriter;
         _doweledDrawerBoxCutListWriter = doweledDrawerBoxCutListWriter;
         _gcodeGenerator = gcodeGenerator;
+        _releasePDFBuilder = releasePDFBuilder;
 
         _fivePieceDoorCutListWriter.OnError += (msg) => OnError?.Invoke(msg);
         _doweledDrawerBoxCutListWriter.OnError += (msg) => OnError?.Invoke(msg);
@@ -115,9 +112,9 @@ public class ReleaseService {
             return;
         }
 
-        var directories = (configuration.ReleaseOutputDirectory ?? "").Split(';').Where(s => !string.IsNullOrWhiteSpace(s));
+        var directories = (configuration.ReleaseOutputDirectory ?? "").Split(';').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
 
-        if (!directories.Any()) {
+        if (directories.Count == 0) {
             OnError?.Invoke("No output directory was specified for release pdf");
             return;
         }
@@ -134,34 +131,11 @@ public class ReleaseService {
                                     .Distinct()
                                     .ToList();
 
-        List<OrderDocumentModels> orderModels = [];
-        foreach (var order in orders) {
-            var orderVendor = vendor;
-            if (order.VendorId != vendor.Id) {
-                orderVendor = await GetVendor(order.VendorId);
-            }
-            var orderCustomer = customer;
-            if (order.CustomerId != customer.Id) {
-                orderCustomer = await GetCustomer(order.CustomerId);
-            }
-            orderModels.Add(CreateDocumentModels(order, configuration, materials, orderVendor, orderCustomer));
-        }
-
-        List<IDocumentDecorator> decorators = [];
-        decorators.AddRange(orderModels.Select(m => m.JobSummary).OfType<JobSummary>().Select(m => new JobSummaryDecorator(m)));
-        decorators.AddRange(orderModels.Select(m => m.PackingList).OfType<PackingList>().Select(m => new PackingListDecorator(m)));
-        decorators.AddRange(orderModels.Select(m => m.DovetailDBPackingList).OfType<DovetailDrawerBoxPackingList>().Select(m => new DovetailDBPackingListDecorator(m)));
-        decorators.AddRange(orderModels.Select(m => m.Invoice).OfType<Invoice>().Select(m => new InvoiceDecorator(m)));
-        decorators.AddRange(releases.Select(_cncReleaseDecoratorFactory.Create).ToList());
-
-        var additionalPDFs = new List<string>(configuration.AdditionalFilePaths);
-        var cutLists = await CreateCutLists(orders, configuration, customer.Name, vendor.Name);
-        additionalPDFs.AddRange(cutLists);
-
         OnProgressReport?.Invoke("Generating release PDF");
         try {
 
-            var documentData = await BuildPDFAsync(decorators, additionalPDFs);
+            byte[] documentData = await BuildPDFAsync(orders, configuration, customer, vendor, releases, materials);
+
             var filePaths = await SaveFileDataToDirectoriesAsync(documentData, directories, customer.Name, filename, isTemp: false);
 
             if (filePaths.Any() && configuration.SendReleaseEmail && configuration.ReleaseEmailRecipients is string recipients) {
@@ -177,9 +151,45 @@ public class ReleaseService {
 
     }
 
+    private async Task<byte[]> BuildPDFAsync(List<Order> orders, ReleaseConfiguration configuration, Customer customer, Vendor vendor, List<ReleasedJob> releases, List<string> materials) {
+
+        List<OrderDocumentModels> models = [];
+        List<string> cutLists = [];
+        foreach (var order in orders) {
+
+            var orderVendor = vendor;
+            if (order.VendorId != vendor.Id) {
+                orderVendor = await GetVendor(order.VendorId);
+            }
+            var orderCustomer = customer;
+            if (order.CustomerId != customer.Id) {
+                orderCustomer = await GetCustomer(order.CustomerId);
+            }
+
+            var orderModels = CreateDocumentModels(order, configuration, materials, orderVendor, orderCustomer);
+            models.Add(orderModels);
+
+            var orderCutLists = await CreateCutLists(orders, configuration, customer.Name, vendor.Name);
+            cutLists.AddRange(orderCutLists);
+
+        }
+
+        models.Select(m => m.JobSummary).OfType<JobSummary>().ForEach(m => _releasePDFBuilder.AddJobSummary(m));
+        models.Select(m => m.PackingList).OfType<PackingList>().ForEach(m => _releasePDFBuilder.AddPackingList(m));
+        models.Select(m => m.DovetailDBPackingList).OfType<DovetailDrawerBoxPackingList>().ForEach(m => _releasePDFBuilder.AddDovetailDBPackingList(m));
+        models.Select(m => m.Invoice).OfType<Invoice>().ForEach(m => _releasePDFBuilder.AddInvoice(m));
+        releases.ForEach(r => _releasePDFBuilder.AddReleasedJob(r));
+        cutLists.ForEach(c => _releasePDFBuilder.AddExistingPDF(c));
+        configuration.AdditionalFilePaths.ForEach(f => _releasePDFBuilder.AddExistingPDF(f));
+
+        var documentData = await _releasePDFBuilder.BuildAsync();
+        return documentData;
+
+    }
+
     private async Task<List<string>> CreateCutLists(List<Order> orders, ReleaseConfiguration configuration, string customerName, string vendorName) {
 
-        List<string> cutLists = new();
+        List<string> cutLists = [];
         if (configuration.Generate5PieceCutList) {
             var fivePieceCutLists = await Generate5PieceCutLists(customerName, vendorName, orders);
             cutLists.AddRange(fivePieceCutLists);
@@ -285,7 +295,7 @@ public class ReleaseService {
     }
 
     private async Task<List<ReleasedJob>> GetCNCReleases(List<Order> orders, ReleaseConfiguration configuration, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
-        List<ReleasedJob> releases = new();
+        List<ReleasedJob> releases = [];
 
         if (configuration.GenerateCNCRelease) {
             var wsxmlReleasedJobs = await GetWSXMLReleasedJobs(orders, configuration.CNCDataFilePaths, configuration.CopyCNCReportToWorkingDirectory, orderDate, dueDate, customerName, vendorName);
@@ -304,7 +314,7 @@ public class ReleaseService {
 
     private static Batch? CreateBatchFromOrders(List<Order> orders, string customerName) {
 
-        if (!orders.Any()) {
+        if (orders.Count == 0) {
             return null;
         }
 
@@ -314,7 +324,7 @@ public class ReleaseService {
                         .SelectMany(p => p.GetCNCParts(customerName))
                         .ToArray();
 
-        if (!parts.Any()) {
+        if (parts.Length == 0) {
             return null;
         }
 
@@ -324,14 +334,14 @@ public class ReleaseService {
         return new() {
             Name = batchName,
             Parts = parts,
-            InfoFields = new()
+            InfoFields = []
         };
 
     }
 
     private async Task<List<ReleasedJob>> GetWSXMLReleasedJobs(List<Order> orders, List<string> wsxmlFiles, bool copyToWorkingDirectory, DateTime orderDate, DateTime? dueDate, string customerName, string vendorName) {
 
-        List<ReleasedJob> wsxmlReleasedJobs = new();
+        List<ReleasedJob> wsxmlReleasedJobs = [];
         foreach (var filePath in wsxmlFiles) {
 
             if (Path.GetExtension(filePath) != ".xml") {
@@ -669,7 +679,7 @@ public class ReleaseService {
 
         if (isTemp) {
             filePaths.ForEach(file => {
-                _logger.LogInformation("Deleting temporary invoice pdf '@File'", file);
+                _logger.LogInformation("Deleting temporary invoice pdf '{File}", file);
                 File.Delete(file);
             });
         }
@@ -776,51 +786,9 @@ public class ReleaseService {
 
     }
 
-    private async Task<byte[]> BuildPDFAsync(IEnumerable<IDocumentDecorator> decorators, IEnumerable<string> attachedFiles) {
-
-        if (!decorators.Any()) {
-            return [];
-        }
-
-        var documentBytes = await Task.Run(() => {
-
-            var document = Document.Create(doc => {
-
-                foreach (var decorator in decorators) {
-                    try {
-                        decorator.Decorate(doc);
-                    } catch (Exception ex) {
-                        OnError?.Invoke($"Error adding pages to document - '{ex.Message}'");
-                    }
-                }
-
-            });
-
-            return document.GeneratePdf();
-
-        });
-
-        if (attachedFiles.Any()) {
-
-            List<byte[]> documents = new() {
-                documentBytes
-            };
-
-            foreach (var file in attachedFiles.Where(File.Exists)) {
-                documents.Add(await File.ReadAllBytesAsync(file));
-            }
-
-            documentBytes = await Task.Run(() => PdfMerger.Merge(documents));
-
-        }
-
-        return documentBytes;
-
-    }
-
     private async Task<IEnumerable<string>> SaveFileDataToDirectoriesAsync(byte[] documentBytes, IEnumerable<string> outputDirs, string customerName, string fileName, bool isTemp) {
 
-        List<string> files = new();
+        List<string> files = [];
 
         foreach (var outputDir in outputDirs) {
 
