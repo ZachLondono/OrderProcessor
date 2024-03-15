@@ -58,6 +58,7 @@ public static class DependencyInjection {
         services.AddSingleton(sp => sp);
         services.AddTransient<IEmailService, EmailService>();
         services.AddSingleton<IFileWriter, FileWriter>();
+        services.AddSingleton<ReleasePDFBuilder>();
 
         services.AddViewModels();
 
