@@ -128,6 +128,12 @@ public class ReleaseService {
 
         var releases = await GetCNCReleases(orders, configuration, orderDate, dueDate, customer.Name, vendor.Name);
 
+        List<string> materials = releases.SelectMany(r => r.Releases)
+                                    .SelectMany(r => r.Programs)
+                                    .Select(p => p.Material.Name)
+                                    .Distinct()
+                                    .ToList();
+
         List<IDocumentDecorator> decorators = [];
         foreach (var order in orders) {
             var orderVendor = vendor;
@@ -138,9 +144,11 @@ public class ReleaseService {
             if (order.CustomerId != customer.Id) {
                 orderCustomer = await GetCustomer(order.CustomerId);
             }
-            var orderDecorators = CreateDocumentDecorators(order, configuration, releases, orderVendor, orderCustomer);
+            var orderDecorators = CreateDocumentDecorators(order, configuration, materials, orderVendor, orderCustomer);
             decorators.AddRange(orderDecorators);
         }
+
+        decorators.AddRange(releases.Select(_cncReleaseDecoratorFactory.Create).ToList());
 
         var additionalPDFs = new List<string>(configuration.AdditionalFilePaths);
         var cutLists = await CreateCutLists(orders, configuration, customer.Name, vendor.Name);
@@ -181,17 +189,11 @@ public class ReleaseService {
         return cutLists;
     }
 
-    private List<IDocumentDecorator> CreateDocumentDecorators(Order order, ReleaseConfiguration configuration, List<ReleasedJob> releases, Vendor vendor, Customer customer) {
+    private List<IDocumentDecorator> CreateDocumentDecorators(Order order, ReleaseConfiguration configuration, List<string> materials, Vendor vendor, Customer customer) {
 
         List<IDocumentDecorator> decorators = [];
 
         if (configuration.GenerateJobSummary) {
-            List<string> materials = releases.SelectMany(r => r.Releases)
-                                        .SelectMany(r => r.Programs)
-                                        .Select(p => p.Material.Name)
-                                        .Distinct()
-                                        .ToList();
-
             materials.AddRange(order.Products.OfType<FivePieceDoorProduct>().Select(d => d.Material).Distinct());
             materials.AddRange(order.Products.OfType<DoweledDrawerBoxProduct>().SelectMany(d => new string[] { d.BackMaterial.Name, d.FrontMaterial.Name, d.SideMaterial.Name, d.BottomMaterial.Name }).Distinct());
 
@@ -216,7 +218,6 @@ public class ReleaseService {
             decorators.Add(decorator);
         }
 
-        decorators.AddRange(releases.Select(_cncReleaseDecoratorFactory.Create).ToList());
         return decorators;
     }
 
