@@ -6,14 +6,9 @@ using Domain.Orders.Entities;
 
 namespace OrderExporting.DovetailDBPackingList;
 
-public class DovetailDBPackingListDecoratorFactory {
+public class DovetailDBPackingListModelFactory {
 
-    public static DovetailDBPackingListDecorator CreateDecorator(Order order, Vendor vendor, Customer customer) {
-        var packingList = CreateDBPackingList(order, vendor, customer);
-        return new DovetailDBPackingListDecorator(packingList);
-    }
-
-    private static DovetailDrawerBoxPackingList CreateDBPackingList(Order order, Vendor vendor, Customer customer) {
+    public static DovetailDrawerBoxPackingList CreateDBPackingList(Order order, Vendor vendor, Customer customer) {
 
         return new() {
             OrderDate = order.OrderDate,

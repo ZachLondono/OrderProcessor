@@ -134,7 +134,7 @@ public class ReleaseService {
                                     .Distinct()
                                     .ToList();
 
-        List<IDocumentDecorator> decorators = [];
+        List<OrderDocumentModels> orderModels = [];
         foreach (var order in orders) {
             var orderVendor = vendor;
             if (order.VendorId != vendor.Id) {
@@ -144,10 +144,14 @@ public class ReleaseService {
             if (order.CustomerId != customer.Id) {
                 orderCustomer = await GetCustomer(order.CustomerId);
             }
-            var orderDecorators = CreateDocumentDecorators(order, configuration, materials, orderVendor, orderCustomer);
-            decorators.AddRange(orderDecorators);
+            orderModels.Add(CreateDocumentModels(order, configuration, materials, orderVendor, orderCustomer));
         }
 
+        List<IDocumentDecorator> decorators = [];
+        decorators.AddRange(orderModels.Select(m => m.JobSummary).OfType<JobSummary>().Select(m => new JobSummaryDecorator(m)));
+        decorators.AddRange(orderModels.Select(m => m.PackingList).OfType<PackingList>().Select(m => new PackingListDecorator(m)));
+        decorators.AddRange(orderModels.Select(m => m.DovetailDBPackingList).OfType<DovetailDrawerBoxPackingList>().Select(m => new DovetailDBPackingListDecorator(m)));
+        decorators.AddRange(orderModels.Select(m => m.Invoice).OfType<Invoice>().Select(m => new InvoiceDecorator(m)));
         decorators.AddRange(releases.Select(_cncReleaseDecoratorFactory.Create).ToList());
 
         var additionalPDFs = new List<string>(configuration.AdditionalFilePaths);
@@ -189,36 +193,36 @@ public class ReleaseService {
         return cutLists;
     }
 
-    private List<IDocumentDecorator> CreateDocumentDecorators(Order order, ReleaseConfiguration configuration, List<string> materials, Vendor vendor, Customer customer) {
+    private static OrderDocumentModels CreateDocumentModels(Order order, ReleaseConfiguration configuration, List<string> materials, Vendor vendor, Customer customer) {
 
-        List<IDocumentDecorator> decorators = [];
+        var models = new OrderDocumentModels();
 
         if (configuration.GenerateJobSummary) {
             materials.AddRange(order.Products.OfType<FivePieceDoorProduct>().Select(d => d.Material).Distinct());
             materials.AddRange(order.Products.OfType<DoweledDrawerBoxProduct>().SelectMany(d => new string[] { d.BackMaterial.Name, d.FrontMaterial.Name, d.SideMaterial.Name, d.BottomMaterial.Name }).Distinct());
 
-            var decorator = JobSummaryDecoratorFactory.CreateDecorator(order, vendor, customer, configuration.IncludeProductTablesInSummary, configuration.SupplyOptions, materials.ToArray(), true);
-            decorators.Add(decorator);
+            var jobSummary = JobSummaryModelFactory.CreateSummary(order, vendor, customer, configuration.IncludeProductTablesInSummary, true, materials.ToArray(), configuration.SupplyOptions);
+
+            models.JobSummary = jobSummary;
+
         }
 
         if (configuration.GeneratePackingList) {
-            var decorator = PackingListDecoratorFactory.CreateDecorator(order, vendor, customer, configuration.IncludeCheckBoxesInPackingList, configuration.IncludeSignatureFieldInPackingList);
-            decorators.Add(decorator);
+            var packingList = PackingListModelFactory.CreatePackingListModel(order, vendor, customer, configuration.IncludeCheckBoxesInPackingList, configuration.IncludeSignatureFieldInPackingList);
+            models.PackingList = packingList;
         }
 
-        if (configuration.IncludeDovetailDBPackingList) {
-            if (order.Products.OfType<IDovetailDrawerBoxContainer>().Any(p => p.ContainsDovetailDrawerBoxes())) {
-                var dovetailDecorator = DovetailDBPackingListDecoratorFactory.CreateDecorator(order, vendor, customer);
-                decorators.Add(dovetailDecorator);
-            }
+        if (configuration.IncludeDovetailDBPackingList && order.Products.OfType<IDovetailDrawerBoxContainer>().Any(p => p.ContainsDovetailDrawerBoxes())) {
+            var packingList = DovetailDBPackingListModelFactory.CreateDBPackingList(order, vendor, customer);
+            models.DovetailDBPackingList = packingList;
         }
 
         if (configuration.IncludeInvoiceInRelease) {
-            var decorator = InvoiceDecoratorFactory.CreateDecorator(order, vendor, customer);
-            decorators.Add(decorator);
+            var invoice = InvoiceModelFactory.CreateInvoiceModel(order, vendor, customer);
+            models.Invoice = invoice;
         }
 
-        return decorators;
+        return models;
     }
 
     private async Task SendReleaseEmail(List<Order> orders, ReleaseConfiguration configuration, string customerName, List<ReleasedJob> releases, string orderNumbers, IEnumerable<string> filePaths, string recipients) {
@@ -638,7 +642,8 @@ public class ReleaseService {
 
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
-            var decorator = InvoiceDecoratorFactory.CreateDecorator(order, vendor, customer);
+            var invoice = InvoiceModelFactory.CreateInvoiceModel(order, vendor, customer);
+            var decorator = new InvoiceDecorator(invoice);
             var documentBytes = await Task.Run(() => Document.Create(doc => decorator.Decorate(doc)).GeneratePdf());
             filePaths = await SaveFileDataToDirectoriesAsync(documentBytes, invoiceDirectories, customer.Name, filename, isTemp);
         } catch (Exception ex) {
@@ -917,6 +922,13 @@ public class ReleaseService {
 
         }
 
+    }
+
+    public class OrderDocumentModels {
+        public JobSummary? JobSummary { get; set; } = null;
+        public PackingList? PackingList { get; set; } = null;
+        public DovetailDrawerBoxPackingList? DovetailDBPackingList { get; set; } = null;
+        public Invoice? Invoice { get; set; } = null;
     }
 
 }

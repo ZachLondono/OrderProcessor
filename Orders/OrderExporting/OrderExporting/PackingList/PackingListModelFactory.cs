@@ -5,27 +5,18 @@ using Domain.Orders.Entities.Products.Closets;
 using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.Entities.Products.DrawerBoxes;
 
-namespace OrderExporting.Invoice;
+namespace OrderExporting.PackingList;
 
-public class InvoiceDecoratorFactory {
+public class PackingListModelFactory {
 
-    public static InvoiceDecorator CreateDecorator(Order order, Vendor vendor, Customer customer) {
-        var invoice = CreateInvoiceModel(order, vendor, customer);
-        return new InvoiceDecorator(invoice);
-    }
+    public static PackingList CreatePackingListModel(Order order, Vendor vendor, Customer customer, bool checkBoxes, bool signatureField) {
 
-    private static Invoice CreateInvoiceModel(Order order, Vendor vendor, Customer customer) {
-
-        return new Invoice() {
+        return new PackingList() {
+            IncludeCheckBoxesNextToItems = checkBoxes,
+            IncludeSignatureField = signatureField,
             OrderNumber = order.Number,
             OrderName = order.Name,
             Date = DateTime.Today,
-            SubTotal = order.SubTotal,
-            SalesTax = order.Tax,
-            Shipping = order.Shipping.Price,
-            Total = order.Total,
-            Terms = "COD",
-            Discount = 0M,
             Vendor = new() {
                 Name = vendor?.Name ?? "",
                 Line1 = vendor?.Address.Line1 ?? "",
@@ -35,10 +26,10 @@ public class InvoiceDecoratorFactory {
             },
             Customer = new() {
                 Name = customer?.Name ?? "",
-                Line1 = order.Billing.Address.Line1,
-                Line2 = order.Billing.Address.Line2,
-                Line3 = order.Billing.Address.GetLine4(),
-                Line4 = order.Billing.PhoneNumber,
+                Line1 = order.Shipping.Address.Line1,
+                Line2 = order.Shipping.Address.Line2,
+                Line3 = order.Shipping.Address.GetLine4(),
+                Line4 = order.Shipping.PhoneNumber,
             },
             Cabinets = order.Products
                             .OfType<Cabinet>()
@@ -48,16 +39,14 @@ public class InvoiceDecoratorFactory {
                                 Height = cab.Height,
                                 Width = cab.Width,
                                 Depth = cab.Depth,
-                                Description = cab.GetDescription(),
-                                UnitPrice = cab.UnitPrice,
+                                Description = cab.GetDescription()
                             }).ToList(),
             CabinetParts = order.Products
                                 .OfType<CabinetPart>()
-                                .Select(cab => new CabinetPartItem() {
-                                    Line = cab.ProductNumber,
-                                    Qty = cab.Qty,
-                                    Description = cab.GetDescription(),
-                                    UnitPrice = cab.UnitPrice
+                                .Select(cabPart => new CabinetPartItem() {
+                                    Line = cabPart.ProductNumber,
+                                    Qty = cabPart.Qty,
+                                    Description = cabPart.GetDescription()
                                 }).ToList(),
             MDFDoors = order.Products
                             .OfType<MDFDoorProduct>()
@@ -66,8 +55,7 @@ public class InvoiceDecoratorFactory {
                                 Qty = cab.Qty,
                                 Height = cab.Height,
                                 Width = cab.Width,
-                                Description = cab.GetDescription(),
-                                UnitPrice = cab.UnitPrice,
+                                Description = cab.GetDescription()
                             }).ToList(),
             FivePieceDoors = order.Products
                             .OfType<FivePieceDoorProduct>()
@@ -76,8 +64,7 @@ public class InvoiceDecoratorFactory {
                                 Qty = cab.Qty,
                                 Height = cab.Height,
                                 Width = cab.Width,
-                                Description = cab.GetDescription(),
-                                UnitPrice = cab.UnitPrice,
+                                Description = cab.GetDescription()
                             }).ToList(),
             ClosetParts = order.Products
                             .OfType<IClosetPartProduct>()
@@ -86,8 +73,7 @@ public class InvoiceDecoratorFactory {
                                 Qty = cab.Qty,
                                 Length = cab.Length,
                                 Width = cab.Width,
-                                Description = cab.GetDescription(),
-                                UnitPrice = cab.UnitPrice,
+                                Description = cab.GetDescription()
                             }).ToList(),
             ZargenDrawers = order.Products
                             .OfType<ZargenDrawer>()
@@ -97,19 +83,17 @@ public class InvoiceDecoratorFactory {
                                 Height = cab.Height,
                                 Depth = cab.Depth,
                                 OpeningWidth = cab.OpeningWidth,
-                                Description = cab.GetDescription(),
-                                UnitPrice = cab.UnitPrice,
+                                Description = cab.GetDescription()
                             }).ToList(),
             DovetailDrawerBoxes = order.Products
                             .OfType<DovetailDrawerBoxProduct>()
-                            .Select(cab => new DovetailDrawerBoxItem() {
+                            .Select(cab => new DovetailDovetailDrawerBoxItem() {
                                 Line = cab.ProductNumber,
                                 Qty = cab.Qty,
                                 Height = cab.Height,
                                 Width = cab.Width,
                                 Depth = cab.Depth,
-                                Description = cab.GetDescription(),
-                                UnitPrice = cab.UnitPrice,
+                                Description = cab.GetDescription()
                             }).ToList(),
             DoweledDrawerBoxes = order.Products
                             .OfType<DoweledDrawerBoxProduct>()
@@ -119,15 +103,13 @@ public class InvoiceDecoratorFactory {
                                 Height = cab.Height,
                                 Width = cab.Width,
                                 Depth = cab.Depth,
-                                Description = cab.GetDescription(),
-                                UnitPrice = cab.UnitPrice,
+                                Description = cab.GetDescription()
                             }).ToList(),
             AdditionalItems = order.AdditionalItems
                             .Select((item, idx) => new AdditionalItem() {
                                 Line = idx + 1,
                                 Qty = item.Qty,
-                                Description = item.Description,
-                                UnitPrice = item.UnitPrice
+                                Description = item.Description
                             }).ToList()
         };
 

@@ -18,14 +18,9 @@ using Domain.Orders;
 
 namespace OrderExporting.JobSummary;
 
-public class JobSummaryDecoratorFactory {
+public class JobSummaryModelFactory {
 
-    public static JobSummaryDecorator CreateDecorator(Order order, Vendor vendor, Customer customer, bool showItems, SupplyOptions supplyOptions, string[] materialTypes, bool showMaterialTypes) {
-        var summary = CreateSummary(order, vendor, customer, showItems, showMaterialTypes, materialTypes, supplyOptions);
-        return new JobSummaryDecorator(summary);
-    }
-
-    private static JobSummary CreateSummary(Order order, Vendor vendor, Customer customer, bool showItems, bool showMaterialTypes, string[] materialTypes, SupplyOptions supplyOptions) {
+    public static JobSummary CreateSummary(Order order, Vendor vendor, Customer customer, bool showItems, bool showMaterialTypes, string[] materialTypes, SupplyOptions supplyOptions) {
 
         var supplies = order.Products
                             .OfType<Cabinet>()
