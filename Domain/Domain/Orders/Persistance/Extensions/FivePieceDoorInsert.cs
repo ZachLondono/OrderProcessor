@@ -20,7 +20,8 @@ public partial class InsertOrder {
                     top_rail,
                     bottom_rail,
                     left_stile,
-                    right_stile)
+                    right_stile,
+                    type)
                 VALUES
                     (@ProductId,
                     @Width,
@@ -28,7 +29,8 @@ public partial class InsertOrder {
                     @TopRail,
                     @BottomRail,
                     @LeftStile,
-                    @RightStile);
+                    @RightStile,
+                    @DoorType);
                 """,
                 new {
                     ProductId = door.Id,
@@ -38,6 +40,7 @@ public partial class InsertOrder {
                     door.FrameSize.BottomRail,
                     door.FrameSize.LeftStile,
                     door.FrameSize.RightStile,
+                    door.DoorType
                 },
                 trx);
 

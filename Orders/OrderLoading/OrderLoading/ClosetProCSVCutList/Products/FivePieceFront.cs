@@ -32,7 +32,8 @@ public class FivePieceFront : IClosetProProduct {
                                        Frame,
                                        Dimension.FromInches(0.75),
                                        Dimension.FromInches(0.25),
-                                       Color);
+                                       Color,
+                                       Type);
 
     }
 

@@ -6,6 +6,7 @@ using Domain.ValueObjects;
 using OneOf;
 using System.Xml.Serialization;
 using Domain.Orders.Entities.Products.Doors;
+using Domain.Orders.Enums;
 
 namespace OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 
@@ -16,6 +17,9 @@ public class FivePieceDoorModel : ProductOrItemModel {
 
     [XmlAttribute("lineNumber")]
     public int LineNumber { get; set; }
+
+    [XmlAttribute("isDrawerFront")]
+    public bool IsDrawerFront { get; set; } = false;
 
     [XmlElement("qty")]
     public int Qty { get; set; }
@@ -60,7 +64,12 @@ public class FivePieceDoorModel : ProductOrItemModel {
 
         decimal unitPrice = AllmoxyXMLOrderProviderHelpers.StringToMoney(UnitPrice);
 
-        return new FivePieceDoorProduct(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, width, height, frameSize, frameThickness, panelThickness, MaterialFinish) {
+        DoorType doorType = IsDrawerFront switch {
+            true => DoorType.DrawerFront,
+            false => DoorType.Door
+        };
+
+        return new FivePieceDoorProduct(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, width, height, frameSize, frameThickness, panelThickness, MaterialFinish, doorType) {
             ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList()
         };
 

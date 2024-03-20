@@ -112,6 +112,7 @@ CREATE TABLE five_piece_door_products (
 	bottom_rail REAL NOT NULL,
 	left_stile REAL NOT NULL,
 	right_stile REAL NOT NULL,
+	type INTEGER NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
 	FOREIGN KEY (product_id) REFERENCES five_piece_door_configs(id)

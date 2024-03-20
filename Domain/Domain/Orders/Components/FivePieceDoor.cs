@@ -1,4 +1,5 @@
-﻿using Domain.Orders.ValueObjects;
+﻿using Domain.Orders.Enums;
+using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace Domain.Orders.Components;
@@ -11,12 +12,14 @@ public class FivePieceDoor : FivePieceDoorConfig {
     public Dimension Width { get; init; }
     public Dimension Height { get; init; }
     public DoorFrame FrameSize { get; init; }
+    public DoorType DoorType { get; init; }
 
-    public FivePieceDoor(Dimension width, Dimension height, DoorFrame frameSize, Dimension frameThickness, Dimension panelThickness, string material)
+    public FivePieceDoor(Dimension width, Dimension height, DoorFrame frameSize, Dimension frameThickness, Dimension panelThickness, string material, DoorType doorType)
             : base(frameThickness, panelThickness, material) {
         Width = width;
         Height = height;
         FrameSize = frameSize;
+        DoorType = doorType;
     }
 
     public IEnumerable<FivePieceDoorPart> GetParts(int qty) {
