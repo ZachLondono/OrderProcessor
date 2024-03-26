@@ -164,9 +164,9 @@ public class JobSummaryDecorator(JobSummary jobSummary) : IDocumentDecorator {
 
                     column.Item().Row(row => {
 
-                        if (jobSummary.Supplies.Any()) {
-                            ComposeSuppliesTable(row.RelativeItem(), jobSummary.Supplies);
-                        }
+                        //if (jobSummary.Supplies.Any()) {
+                        //    ComposeSuppliesTable(row.RelativeItem(), jobSummary.Supplies);
+                        //}
 
                         if (jobSummary.AdditionalItems.Any()) {
                             ComposeAdditionalItemsTable(row.RelativeItem(), jobSummary.AdditionalItems);
