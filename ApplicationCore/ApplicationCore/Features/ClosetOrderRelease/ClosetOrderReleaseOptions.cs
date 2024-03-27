@@ -11,6 +11,7 @@ public class ClosetOrderReleaseOptions {
     public bool IncludePartList { get; set; }
     public bool IncludeDBList { get; set; }
     public bool IncludeMDFList { get; set; }
+    public bool IncludeSummary { get; set; }
 
     public string FileName { get; set; } = string.Empty;
     public string OutputDirectory { get; set; } = string.Empty;
@@ -29,5 +30,9 @@ public class ClosetOrderReleaseOptions {
     public bool SendAcknowledgementEmail { get; set; }
     public bool PreviewAcknowledgementEmail { get; set; }
     public string AcknowledgmentEmailRecipients { get; set; } = string.Empty;
+
+    public bool SendDovetailReleaseEmail { get; set; }
+    public bool PreviewDovetailReleaseEmail { get; set; }
+    public string DovetailReleaseEmailRecipients { get; set; } = string.Empty;
 
 }

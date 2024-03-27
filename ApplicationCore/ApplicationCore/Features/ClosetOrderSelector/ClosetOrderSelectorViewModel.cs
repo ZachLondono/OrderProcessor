@@ -17,7 +17,7 @@ public class ClosetOrderSelectorViewModel {
         }
     }
 
-    private bool _isLoading = false;
+    private bool _isLoading = true;
     public bool IsLoading {
         get => _isLoading;
         set {
@@ -48,7 +48,6 @@ public class ClosetOrderSelectorViewModel {
             orders => _openClosetOrders = new(orders),
             error => _error = $"{error.Title} - {error.Details}"
         );
-        _isLoading = false;
 
         IsLoading = false;
 

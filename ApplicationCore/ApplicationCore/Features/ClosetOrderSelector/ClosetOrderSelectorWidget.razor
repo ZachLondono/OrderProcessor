@@ -51,9 +51,14 @@
     [CascadingParameter]
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
-    protected override async Task OnInitializedAsync() {
+    protected override void OnInitialized() {
         base.OnInitialized();
         DataContext.OnPropertyChanged += StateHasChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        base.OnAfterRender(firstRender);
+        if (!firstRender) return;
         await DataContext.LoadOpenOrders();
     }
 

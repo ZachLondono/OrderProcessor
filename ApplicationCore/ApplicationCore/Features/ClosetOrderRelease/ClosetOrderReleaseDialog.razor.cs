@@ -28,6 +28,13 @@ public partial class ClosetOrderReleaseDialog {
     [Inject]
     public IFilePicker? FilePicker { get; set; }
 
+    private static Dictionary<string, CustomerEmailSettings> _customerEmails = new() {
+        { "Closets by Glinsky", new("glinkie@icloud.com", "glinkie@icloud.com") },
+        { "Tailored Living - TLMid", new("tkerekes@tailoredcloset.com;lkerekes@tailoredcloset.com", "tkerekes@tailoredcloset.com;lkerekes@tailoredcloset.com") },
+        { "Tailored Living - TC", new("tcolumbia@tailoredcloset.com", "tcolumbia@tailoredcloset.com") },
+        { "Tailored Living - TS", new("sjclosetsandgarages@gmail.com", "sjclosetsandgarages@gmail.com;rnieves@scafidicranston.com") },
+    };
+
     public ClosetOrderReleaseOptions Model { get; set; } = new();
 
     private string? _errorMessage = null;
@@ -45,6 +52,17 @@ public partial class ClosetOrderReleaseDialog {
         });
 
         string emailRecipients = "maciej@royalcabinet.com;purchasing@royalcabinet.com";
+        string dovetailEmailRecipients = "dovetail@royalcabinet.com";
+
+        string acknowledgmentEmailRecipeints = string.Empty;
+        string invoiceEmailRecipeints = "accounting@royalcabinet.com";
+
+        if (_customerEmails.TryGetValue(Order.Customer, out var emailSettings)) {
+            acknowledgmentEmailRecipeints = emailSettings.AcknowledmentEmailRecipients;
+            if (!string.IsNullOrWhiteSpace(emailSettings.InvoiceEmailRecipients)) {
+                invoiceEmailRecipeints = emailSettings.InvoiceEmailRecipients + ";" + invoiceEmailRecipeints;
+            }
+        }
 
         string seperatePDFDir = GetJobDirectory(Order.OrderFileDirectory);
 
@@ -63,18 +81,25 @@ public partial class ClosetOrderReleaseDialog {
             IncludePartList = false,
             IncludeDBList = Order.ContainsDovetailBoxes,
             IncludeMDFList = Order.ContainsMDFFronts,
+            IncludeSummary = true,
 
             SendEmail = true,
             PreviewEmail = false,
             EmailRecipients = emailRecipients,
 
-            InvoicePDF = false,
+            InvoicePDF = true,
             InvoiceDirectory = seperatePDFDir,
-            SendInvoiceEmail = false,
+            SendInvoiceEmail = !string.IsNullOrWhiteSpace(invoiceEmailRecipeints),
             PreviewInvoiceEmail = false,
+            InvoiceEmailRecipients = invoiceEmailRecipeints,
 
             PreviewAcknowledgementEmail = false,
-            SendAcknowledgementEmail = false
+            SendAcknowledgementEmail = !string.IsNullOrWhiteSpace(acknowledgmentEmailRecipeints),
+            AcknowledgmentEmailRecipients = acknowledgmentEmailRecipeints,
+
+            SendDovetailReleaseEmail = Order.ContainsDovetailBoxes,
+            PreviewDovetailReleaseEmail = false,
+            DovetailReleaseEmailRecipients = dovetailEmailRecipients
 
         };
 
@@ -227,8 +252,13 @@ public partial class ClosetOrderReleaseDialog {
         }
 
         if (Model.SendAcknowledgementEmail && string.IsNullOrWhiteSpace(Model.AcknowledgmentEmailRecipients)) {
-                _errorMessage = "No acknowledgement email recipients set.";
-                return false;
+            _errorMessage = "No acknowledgement email recipients set.";
+            return false;
+        }
+
+        if (Model.SendDovetailReleaseEmail && string.IsNullOrWhiteSpace(Model.DovetailReleaseEmailRecipients)) {
+            _errorMessage = "No dovetail release email recipients set.";
+            return false;
         }
 
         return true;

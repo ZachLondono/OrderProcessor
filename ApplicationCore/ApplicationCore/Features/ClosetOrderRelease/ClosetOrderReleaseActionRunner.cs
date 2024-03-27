@@ -90,6 +90,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                                                              Options.IncludePartList,
                                                              Options.IncludeDBList,
                                                              Options.IncludeMDFList,
+                                                             Options.IncludeSummary,
                                                              Options.WorkbookFilePath,
                                                              Options.InvoicePDF,
                                                              Options.InvoiceDirectory);
@@ -147,6 +148,10 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
         if (Options.SendInvoiceEmail && Options.InvoicePDF && invoiceFilePath is not null) {
             await InvoiceEmail(invoiceFilePath);
+        }
+
+        if (Options.SendDovetailReleaseEmail) {
+            await DovetailReleaseEmail();
         }
 
     }
@@ -295,7 +300,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
     }
 
-    private async Task<(string?,string?)> GeneratePDFFromWorkbook(bool includeCover, bool includePackingList, bool includePartList, bool includeDBList, bool includeMDFList, string filePath, bool invoice, string invoiceDirectory) {
+    private async Task<(string?,string?)> GeneratePDFFromWorkbook(bool includeCover, bool includePackingList, bool includePartList, bool includeDBList, bool includeMDFList, bool includeSummary, string filePath, bool invoice, string invoiceDirectory) {
 
         bool wasOrderOpen = true;
         string? tmpFileName = null;
@@ -330,8 +335,13 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
                     if (invoice && Directory.Exists(invoiceDirectory)) {
                         try {
+
                             cover.Outline.ShowLevels(RowLevels:2);
+
+                            app.PrintCommunication = false;
                             cover.PageSetup.FitToPagesTall = 1;
+                            app.PrintCommunication = true;
+
                             invoiceFilePath = Path.Combine(invoiceDirectory, $"{ClosetOrder?.OrderNumber} Invoice");
                             cover.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, invoiceFilePath, OpenAfterPublish: false);
                             invoiceFilePath += ".pdf";
@@ -347,44 +357,53 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
                 if (includePackingList) {
                     const string sheetName = "Packing List";
-                    SetSheetPrintArea(worksheets, sheetName, "E", "L", 5);
-                    pdfSheetNames.Add(sheetName);
-                }
-
-                if (includePartList) {
-
-                    const string sheetName = "Closet Parts";
-                    SetSheetPrintArea(worksheets, sheetName, "B", "J", 2);
+                    SetSheetPrintArea(app, worksheets, sheetName, "E", "L", 5);
                     pdfSheetNames.Add(sheetName);
 
                     var cornerSheet = worksheets["Corner Shelves"];
                     var firstRowVal = cornerSheet.Range["B2"]?.Value2?.ToString() ?? "";
                     if (!string.IsNullOrWhiteSpace(firstRowVal)) {
-                        SetSheetPrintArea(worksheets, "Corner Shelves", "B", "K", 2);
-                        pdfSheetNames.Add(sheetName);
+                        SetSheetPrintArea(app, worksheets, "Corner Shelves", "B", "K", 2, header: "Corner Shelves");
+                        pdfSheetNames.Add("Corner Shelves");
                     }
 
-                    /*
                     var zargenSheet = worksheets["Zargen"];
-                    firstRowVal = cornerSheet.Range[""].Value2.ToString();
+                    firstRowVal = zargenSheet.Range["A2"]?.Value2?.ToString() ?? "";
                     if (!string.IsNullOrWhiteSpace(firstRowVal)) {
-                        SetSheetPrintArea(worksheets, "Zargen", "B", "K", 2);
-                        pdfSheetNames.Add(sheetName);
+                        SetZargenPrintArea(app, zargenSheet);
+                        pdfSheetNames.Add("Zargen");
                     }
-                    */
+
+                }
+
+                if (includePartList) {
+
+                    const string sheetName = "Closet Parts";
+                    SetSheetPrintArea(app, worksheets, sheetName, "B", "J", 2);
+                    pdfSheetNames.Add(sheetName);
 
                 }
 
                 if (includeDBList) {
                     const string sheetName = "Dovetail";
-                    SetSheetPrintArea(worksheets, sheetName, "B", "J", 17, XlPageOrientation.xlLandscape);
+                    worksheets[sheetName].Outline.ShowLevels(ColumnLevels: 1);
+                    SetSheetPrintArea(app, worksheets, sheetName, "B", "J", 17, XlPageOrientation.xlLandscape);
                     pdfSheetNames.Add(sheetName);
                 }
 
                 if (includeMDFList) {
                     const string sheetName = "MDF Fronts";
-                    SetSheetPrintArea(worksheets, sheetName, "B", "H", 6);
+                    app.PrintCommunication = false;
+                    worksheets[sheetName].PageSetup.CenterHeader = "MDF Fronts";
+                    app.PrintCommunication = true;
+                    SetSheetPrintArea(app, worksheets, sheetName, "B", "H", 6);
                     pdfSheetNames.Add(sheetName);
+                }
+
+                if (includeSummary) {
+                    Worksheet summary = worksheets["Summary"];
+                    summary.PageSetup.PrintArea = $"A1:F44";
+                    pdfSheetNames.Add("Summary");
                 }
 
                 Worksheet previouslyActiveSheet = workbook.ActiveSheet;
@@ -421,7 +440,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
     }
 
-    private static void SetSheetPrintArea(Sheets worksheets, string sheetName, string checkCol, string lastCol, int startRow, XlPageOrientation orientation = XlPageOrientation.xlPortrait) {
+    private static void SetSheetPrintArea(ExcelApp app, Sheets worksheets, string sheetName, string checkCol, string lastCol, int startRow, XlPageOrientation orientation = XlPageOrientation.xlPortrait, string? header = null) {
 
         Worksheet sheet = worksheets[sheetName];
         const int maxRow = 206;
@@ -438,8 +457,42 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
         }
 
+        app.PrintCommunication = false;
         sheet.PageSetup.PrintArea = $"A1:{lastCol}{lastRow}";
+        if (header is not null) sheet.PageSetup.CenterHeader = header;
         sheet.PageSetup.Orientation = orientation;
+        sheet.PageSetup.Zoom = false;
+        sheet.PageSetup.FitToPagesWide = 1;
+        sheet.PageSetup.FitToPagesTall = 0;
+        app.PrintCommunication = true;
+        
+    }
+
+    private static void SetZargenPrintArea(ExcelApp app, Worksheet worksheet) {
+
+        int row = 2;
+        int lastRow = 23;
+
+        while (row < lastRow) {
+
+            Range rng = worksheet.Range[$"A{row}"];
+            var val = rng.Value2?.ToString() ?? "";
+            if (string.IsNullOrWhiteSpace(val) || val == "0") {
+                break;
+            }
+
+            row += 2;
+
+        }
+
+        app.PrintCommunication = false;
+        worksheet.PageSetup.PrintArea = $"A1:F{row + 2}";
+        worksheet.PageSetup.Orientation = XlPageOrientation.xlPortrait;
+        worksheet.PageSetup.Zoom = false;
+        worksheet.PageSetup.FitToPagesWide = 1;
+        worksheet.PageSetup.FitToPagesTall = 0;
+        worksheet.PageSetup.CenterHeader = "Zargens";
+        app.PrintCommunication = true;
 
     }
 
@@ -459,6 +512,27 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
         } else {
 
             await SendEmail(Options.AcknowledgmentEmailRecipients, subject, body, body, []);
+
+        }
+
+    }
+
+    private async Task DovetailReleaseEmail() {
+
+        if (Options is null || ClosetOrder is null) {
+            return;
+        }
+
+        string subject = $"Ready to Release: {ClosetOrder.OrderNumber}";
+        string body = $"Please release dovetail drawer boxes for '{ClosetOrder.OrderNumber} - {ClosetOrder.OrderName}'\n{ClosetOrder.OrderFile}";
+
+        if (Options.PreviewDovetailReleaseEmail) {
+
+            CreateAndDisplayOutlookEmail(Options.DovetailReleaseEmailRecipients, subject, body, body, []);
+
+        } else {
+
+            await SendEmail(Options.DovetailReleaseEmailRecipients, subject, body, body, []);
 
         }
 

@@ -14,7 +14,7 @@ internal class GetJobOrderCutListDirectory {
                 return Task.FromResult(Response<string>.Success(query.DefaultOutputDirectory));
             }
 
-            if (!query.OrderFileDirectory.ToLowerInvariant().Contains("orders")) {
+            if (!query.OrderFileDirectory.Contains("orders", StringComparison.InvariantCultureIgnoreCase) && !query.OrderFileDirectory.Contains("work progress", StringComparison.InvariantCultureIgnoreCase)) {
                 return Task.FromResult(Response<string>.Success(Path.Combine(query.OrderFileDirectory, "CUTLIST")));
             }
 
@@ -29,7 +29,7 @@ internal class GetJobOrderCutListDirectory {
 
                 if (Path.GetFileNameWithoutExtension(directory) is string dirName) {
 
-                    if (dirName.ToLowerInvariant() == "orders") {
+                    if (dirName.Equals("orders", StringComparison.InvariantCultureIgnoreCase) || dirName.Equals("work progress", StringComparison.InvariantCultureIgnoreCase)) {
 
                         var parentDi = new DirectoryInfo(dirInfo.Parent.FullName);
                         var existingDir = parentDi.GetDirectories()
