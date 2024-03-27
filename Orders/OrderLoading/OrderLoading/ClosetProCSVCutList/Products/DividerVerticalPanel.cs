@@ -21,7 +21,7 @@ public class DividerVerticalPanel : IClosetProProduct {
 
     public IProduct ToProduct() {
 
-        var vertDrillingType = VerticalDividerPanelEndDrillingType.DoubleCams;
+        var vertDrillingType = VerticalDividerPanelEndDrillingType.SingleCams;
         string vertSku = $"PCDV{ClosetProPartMapper.GetDividerPanelSuffix(vertDrillingType)}";
 
         var material = new ClosetMaterial(Color, ClosetMaterialCore.ParticleBoard);
