@@ -8,11 +8,11 @@ public partial class ClosetProPartMapper {
 
     public static IClosetProProduct CreateFixedShelfFromPart(Part part, bool wallHasBacking, bool extendBack, RoomNamingStrategy strategy) {
 
-        if (part.ExportName == "L Fixed Shelf") {
+        if (part.ExportName == "L Fixed Shelf" || part.PartName == "L Fixed Shelf") {
 
             return CreateLFixedShelf(part, strategy);
 
-        } else if (part.ExportName == "Pie Fixed Shelf") {
+        } else if (part.ExportName == "Pie Fixed Shelf" || part.PartName == "Pie Fixed Shelf") {
 
             return CreateDiagonalFixedShelf(part, strategy);
 
@@ -26,11 +26,11 @@ public partial class ClosetProPartMapper {
 
     public static IClosetProProduct CreateAdjustableShelfFromPart(Part part, bool wallHasBacking, bool extendBack, RoomNamingStrategy strategy) {
 
-        if (part.ExportName == "L Adj Shelf") {
+        if (part.ExportName == "L Adj Shelf" || part.PartName == "L Adj Shelf") {
 
             return CreateLAdjustableShelf(part, strategy);
 
-        } else if (part.ExportName == "Pie Adj Shelf") {
+        } else if (part.ExportName == "Pie Adj Shelf" || part.PartName == "Pie Adj Shelf") {
 
             return CreateDiagonalAdjustableShelf(part, strategy);
 
