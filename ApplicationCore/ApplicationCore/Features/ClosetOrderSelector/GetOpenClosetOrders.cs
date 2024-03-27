@@ -43,26 +43,39 @@ public class GetOpenClosetOrders {
                     Workbooks workbooks = app.Workbooks;
                     foreach (Workbook workbook in workbooks) {
                         Sheets worksheets = workbook.Worksheets;
-                        foreach (Worksheet worksheet in worksheets) {
-                            if (worksheet.Name != "Cover") continue;
 
-                            try {
+                        try {
 
-                                string[] orderNumParts = (worksheet.Range["OrderNum"].Value2.ToString()).Split(' ', 2, StringSplitOptions.None);
-                                string customerName = worksheet.Range["CustomerName"].Value2.ToString();
-                                string jobNumber = orderNumParts[0];
-                                string jobName = worksheet.Range["JobName"].Value2.ToString();
-                                DateTime orderDate = ReadDateTimeFromWorkbook(worksheet, "E4");
-                                DateTime dueDate = ReadDateTimeFromWorkbook(worksheet, "E5");
-                                string reportFilePath = @$"Y:\CADCode\Reports\{jobNumber} {jobName}.xml"; // TODO: Get this directory from a settings file
-                                string directory = workbook.Path;
-                                string filePath = workbook.FullName;
+                            var coverSheet = worksheets.OfType<Worksheet>().FirstOrDefault(ws => ws.Name == "Cover");
 
-                                closetOrders.Add(new(customerName, jobName, jobNumber, orderDate, dueDate, reportFilePath, filePath, directory));
+                            if (coverSheet is null) continue;
 
-                            } catch (Exception ex) {
-                                _logger.LogWarning(ex, "Exception thrown while trying to read order info from door order Cover tab");
+                            string[] orderNumParts = (coverSheet.Range["OrderNum"].Value2.ToString()).Split(' ', 2, StringSplitOptions.None);
+                            string customerName = coverSheet.Range["CustomerName"].Value2.ToString();
+                            string jobNumber = orderNumParts[0];
+                            string jobName = coverSheet.Range["JobName"].Value2.ToString();
+                            DateTime orderDate = ReadDateTimeFromWorkbook(coverSheet, "E4");
+                            DateTime dueDate = ReadDateTimeFromWorkbook(coverSheet, "E5");
+                            string reportFilePath = @$"Y:\CADCode\Reports\{jobNumber} {jobName}.xml"; // TODO: Get this directory from a settings file
+                            string directory = workbook.Path;
+                            string filePath = workbook.FullName;
+
+                            bool containsDovetail = false;
+                            var dovetailSheet = worksheets.OfType<Worksheet>().FirstOrDefault(ws => ws.Name == "Dovetail");
+                            if (dovetailSheet is not null && !string.IsNullOrWhiteSpace(dovetailSheet.Range["B17"].Value2.ToString())) {
+                                containsDovetail = true;
                             }
+
+                            bool containsMDF = false;
+                            var mdfSheet = worksheets.OfType<Worksheet>().FirstOrDefault(ws => ws.Name == "MDF Fronts");
+                            if (mdfSheet is not null && !string.IsNullOrWhiteSpace(mdfSheet.Range["B6"].Value2.ToString())) {
+                                containsMDF = true;
+                            }
+
+                            closetOrders.Add(new(customerName, jobName, jobNumber, orderDate, dueDate, containsMDF, containsDovetail, reportFilePath, filePath, directory));
+
+                        } catch (Exception ex) {
+                            _logger.LogWarning(ex, "Exception thrown while trying to read order info from door order Cover tab");
                         }
 
                     }

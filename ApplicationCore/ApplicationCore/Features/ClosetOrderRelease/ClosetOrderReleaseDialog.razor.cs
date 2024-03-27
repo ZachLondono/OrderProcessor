@@ -61,8 +61,8 @@ public partial class ClosetOrderReleaseDialog {
             IncludeCover = true,
             IncludePackingList = true,
             IncludePartList = false,
-            IncludeDBList = false,
-            IncludeMDFList = false,
+            IncludeDBList = Order.ContainsDovetailBoxes,
+            IncludeMDFList = Order.ContainsMDFFronts,
 
             SendEmail = true,
             PreviewEmail = false,
