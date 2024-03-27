@@ -18,7 +18,7 @@ public record ClosetProSettings {
 
     public string DoweledDrawerBoxMaterialFinish { get; set; } = "White";
 
-    public Dimension VerticalPanelBottomRadius { get; set; } = Dimension.FromMillimeters(51);
+    public Dimension VerticalPanelBottomRadius { get; set; } = Dimension.FromMillimeters(0);
 
     //public string DividerShelfDrillingType { get; set; } = "";
     //public string DividerPanelDrillingType { get; set; } = "";
