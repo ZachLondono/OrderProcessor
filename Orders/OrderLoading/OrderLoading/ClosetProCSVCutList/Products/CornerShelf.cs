@@ -27,7 +27,7 @@ public class CornerShelf : IClosetProProduct {
         var parameters = new Dictionary<string, string> {
             { "RightWidth", RightWidth.AsMillimeters().ToString() },
             { "NotchSideLength", NotchSideLength.AsMillimeters().ToString() },
-            { "NotchLeft", "Y" },
+            { "NotchLeft", "1" },
         };
 
         if (Type == CornerShelfType.LAdjustable || Type == CornerShelfType.LFixed) {
