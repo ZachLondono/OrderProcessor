@@ -62,14 +62,16 @@ public class GetOpenClosetOrders {
 
                             bool containsDovetail = false;
                             var dovetailSheet = worksheets.OfType<Worksheet>().FirstOrDefault(ws => ws.Name == "Dovetail");
-                            if (dovetailSheet is not null && !string.IsNullOrWhiteSpace(dovetailSheet.Range["B17"].Value2.ToString())) {
-                                containsDovetail = true;
+                            if (dovetailSheet is not null) {
+                                string? firstQty = dovetailSheet.Range["B17"]?.Value2?.ToString() ?? null;
+                                containsDovetail = !string.IsNullOrWhiteSpace(firstQty);
                             }
 
                             bool containsMDF = false;
                             var mdfSheet = worksheets.OfType<Worksheet>().FirstOrDefault(ws => ws.Name == "MDF Fronts");
-                            if (mdfSheet is not null && !string.IsNullOrWhiteSpace(mdfSheet.Range["B6"].Value2.ToString())) {
-                                containsMDF = true;
+                            if (mdfSheet is not null) {
+                                string? firstQty = mdfSheet.Range["B6"]?.Value2?.ToString() ?? null;
+                                containsMDF = !string.IsNullOrWhiteSpace(firstQty);
                             }
 
                             closetOrders.Add(new(customerName, jobName, jobNumber, orderDate, dueDate, containsMDF, containsDovetail, reportFilePath, filePath, directory));
