@@ -22,28 +22,42 @@ public class MelamineSlabFront : IClosetProProduct {
 
     public IProduct ToProduct() {
 
-        string sku = Type switch {
-            DoorType.Door => "DOOR",
-            DoorType.DrawerFront => "DF-XX",
-            _ => throw new InvalidOperationException("Unexpected melamine slab front type")
-        };
         ClosetMaterial material = new(Color, ClosetMaterialCore.ParticleBoard);
         ClosetPaint? paint = null;
         string comment = "";
-        var parameters = new Dictionary<string, string>();
 
-        if (Type == DoorType.DrawerFront && HardwareSpread is Dimension hardwareSpread) {
-            parameters.Add("PullCenters", hardwareSpread.AsMillimeters().ToString());
-        }
-
+        string sku;
         Dimension width;
         Dimension length;
-        if (Type == DoorType.DrawerFront) {
-            width = Height;
-            length = Width;
-        } else {
-            width = Width;
-            length = Height;
+        var parameters = new Dictionary<string, string>();
+
+        switch (Type) {
+
+            case DoorType.Door:
+
+                sku = "DOOR";
+                width = Width;
+                length = Height;
+
+                parameters.Add("OpeningWidth", (width - Dimension.FromMillimeters(15)).ToString());
+
+                break;
+
+            case DoorType.DrawerFront:
+
+                sku = "DF-XX";
+                width = Height;
+                length = Width;
+
+                if (HardwareSpread is Dimension hardwareSpread) {
+                    parameters.Add("PullCenters", hardwareSpread.AsMillimeters().ToString());
+                }
+
+                break;
+
+            default:
+                throw new InvalidOperationException("Unexpected melamine slab front tyep");
+
         }
 
         return new ClosetPart(Guid.NewGuid(), Qty, UnitPrice, PartNumber, Room, sku, width, length, material, paint, EdgeBandingColor, comment, parameters);
