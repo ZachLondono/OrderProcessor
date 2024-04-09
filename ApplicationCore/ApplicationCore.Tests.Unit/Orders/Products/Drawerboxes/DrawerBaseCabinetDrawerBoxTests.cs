@@ -130,7 +130,7 @@ public class DrawerBaseCabinetDrawerBoxTests {
 
         // Act
         var drawers = cabinet.GetDovetailDrawerBoxes(new DBBuilderFactoryFactory().CreateBuilderFactory(() => {
-            DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+            DovetailDrawerBoxBuilder.CabinetUnderMountDrawerSlideBoxDepths = new Dimension[] {
                 Dimension.FromMillimeters(533),
                 Dimension.FromMillimeters(457),
                 Dimension.FromMillimeters(305),

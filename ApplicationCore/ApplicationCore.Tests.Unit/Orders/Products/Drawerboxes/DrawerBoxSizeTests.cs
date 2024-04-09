@@ -18,7 +18,7 @@ public class DrawerBoxSizeTests {
     public void Should_ReturnLargestSizeUMDrawerBoxThatCanFitInCabinet(double innerCabDepthMM, bool isRollOut, double expectedDepthMM) {
 
         // Arrange
-        DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+        DovetailDrawerBoxBuilder.CabinetUnderMountDrawerSlideBoxDepths = new Dimension[] {
             Dimension.FromMillimeters(100),
             Dimension.FromMillimeters(200),
             Dimension.FromMillimeters(300),
@@ -43,7 +43,7 @@ public class DrawerBoxSizeTests {
     public void Should_ThrowException_IfNoUnderMountSlideFitsInCabinet() {
 
         // Arrange
-        DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+        DovetailDrawerBoxBuilder.CabinetUnderMountDrawerSlideBoxDepths = new Dimension[] {
             Dimension.FromMillimeters(200),
             Dimension.FromMillimeters(300),
         };

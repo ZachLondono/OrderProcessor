@@ -124,7 +124,7 @@ public class BaseCabinetSuppliesTests {
 
         Supply expectedSupplyA = Supply.UndermountSlide(cabinet.Qty * drawerQty, Dimension.FromMillimeters(457));
 
-        DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+        DovetailDrawerBoxBuilder.CabinetUnderMountDrawerSlideBoxDepths = new Dimension[] {
             Dimension.FromMillimeters(457)
         };
 

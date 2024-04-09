@@ -110,7 +110,7 @@ public class TrashCabinetSuppliesTests {
                                 .WithDepth(Dimension.FromMillimeters(500))
                                 .Build();
         var expectedSupply = Supply.UndermountSlide(cabinet.Qty, Dimension.FromMillimeters(457));
-        DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+        DovetailDrawerBoxBuilder.CabinetUnderMountDrawerSlideBoxDepths = new Dimension[] {
             Dimension.FromMillimeters(457)
         };
 

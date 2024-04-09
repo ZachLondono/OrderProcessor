@@ -51,16 +51,27 @@ public class DovetailDrawerBoxBuilder {
         {  DrawerSlideType.SideMount, Dimension.FromMillimeters(0) }
     };
 
-    /// <summary>
-    /// Theses dimensions represent the Hettich 'Nominal' slide length (the drawer length)
-    /// </summary>
-    public static Dimension[] UnderMountDrawerSlideDepths { get; set; } = new Dimension[] {
+	/// <summary>
+	/// Theses dimensions represent the Hettich 'Nominal' slide length (the drawer length)
+	/// </summary>
+	public static Dimension[] CabinetUnderMountDrawerSlideBoxDepths { get; set; } = [
         Dimension.FromMillimeters(229),
         Dimension.FromMillimeters(305),
         Dimension.FromMillimeters(381),
         Dimension.FromMillimeters(457),
         Dimension.FromMillimeters(533)
-    };
+    ];
+
+    /// <summary>
+    /// Hettich Quadro V6
+    /// </summary>
+    public static Dimension[] ClosetUnderMountDrawerSlideBoxDepths { get; set; } = [
+        Dimension.FromMillimeters(266),
+        Dimension.FromMillimeters(296),
+        Dimension.FromMillimeters(336),
+        Dimension.FromMillimeters(396),
+        Dimension.FromMillimeters(566)
+    ];
 
     /// <summary>
     /// Additional setback for roll out drawer boxes ensures that the drawer box does not hit the door in front of it
@@ -178,36 +189,52 @@ public class DovetailDrawerBoxBuilder {
     public static Dimension GetDrawerBoxDepthFromInnerCabinetDepth(Dimension innerCabinetDepth, DrawerSlideType slideType, bool isRollOut = false) {
 
         var clearance = DrawerSlideDepthClearance[slideType];
-
         if (isRollOut) clearance += RollOutSetBack;
-
-        if (slideType is DrawerSlideType.UnderMount) {
-
-            foreach (var depth in UnderMountDrawerSlideDepths.OrderByDescending(depth => depth)) {
-
-                if (depth > innerCabinetDepth - clearance) {
-                    continue;
-                }
-
-                return depth;
-
-            }
-
-        } else if (slideType is DrawerSlideType.SideMount) {
-
-            double accuracy = isRollOut ? (50 / 25.4) : 2;
-
-            int multiple = (int)((innerCabinetDepth - clearance).AsInches() / accuracy);
-
-            return Dimension.FromInches(multiple * accuracy); ;
-
-        }
-
-        throw new ArgumentOutOfRangeException(nameof(innerCabinetDepth), "No valid drawer box depth for given cabinet depth and drawer slide type");
+        return GetBoxDepth(innerCabinetDepth, slideType, clearance, CabinetUnderMountDrawerSlideBoxDepths, false);
 
     }
 
-    public DovetailDrawerBoxBuilder WithNote(string note) {
+    public DovetailDrawerBoxBuilder WithInnerClosetBayDepth(Dimension innerCabinetDepth, DrawerSlideType slideType) {
+        Depth = GetDrawerBoxDepthFromInnerClosetBayDepth(innerCabinetDepth, slideType);
+        return this;
+    }
+
+    public static Dimension GetDrawerBoxDepthFromInnerClosetBayDepth(Dimension innerClosetBayDepth, DrawerSlideType slideType) {
+
+        var clearance = DrawerSlideDepthClearance[slideType];
+        return GetBoxDepth(innerClosetBayDepth, slideType, clearance, ClosetUnderMountDrawerSlideBoxDepths, false);
+
+    }
+
+    private static Dimension GetBoxDepth(Dimension innerUnitDepth, DrawerSlideType slideType, Dimension clearance, Dimension[] umSlideBoxDepths, bool isRollOut) {
+
+        if (slideType is DrawerSlideType.UnderMount) {
+
+			foreach (var depth in umSlideBoxDepths.OrderByDescending(depth => depth)) {
+
+				if (depth > innerUnitDepth - clearance) {
+					continue;
+				}
+
+				return depth;
+
+			}
+
+		} else if (slideType is DrawerSlideType.SideMount) {
+
+			double accuracy = isRollOut ? (50 / 25.4) : 2;
+
+			int multiple = (int)((innerUnitDepth - clearance).AsInches() / accuracy);
+
+			return Dimension.FromInches(multiple * accuracy); ;
+
+		}
+
+		throw new ArgumentOutOfRangeException(nameof(innerUnitDepth), "No valid drawer box depth for given cabinet depth and drawer slide type");
+
+	}
+
+	public DovetailDrawerBoxBuilder WithNote(string note) {
         Note = note;
         return this;
     }

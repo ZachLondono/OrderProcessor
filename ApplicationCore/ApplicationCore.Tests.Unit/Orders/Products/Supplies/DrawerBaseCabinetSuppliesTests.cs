@@ -41,7 +41,7 @@ public class DrawerBaseCabinetSuppliesTests {
                                 .Build();
         Supply expectedSupplyA = Supply.DrawerPull(cabinet.Qty * drawerQty);
         Supply expectedSupplyB = Supply.SidemountSlide(cabinet.Qty * drawerQty, Dimension.FromMillimeters(457));
-        DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+        DovetailDrawerBoxBuilder.CabinetUnderMountDrawerSlideBoxDepths = new Dimension[] {
             Dimension.FromMillimeters(457)
         };
 
@@ -77,7 +77,7 @@ public class DrawerBaseCabinetSuppliesTests {
 
         Supply expectedSupplyA = Supply.DrawerPull(cabinet.Qty * drawerQty);
         Supply expectedSupplyB = Supply.UndermountSlide(cabinet.Qty * drawerQty, Dimension.FromMillimeters(457));
-        DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+        DovetailDrawerBoxBuilder.CabinetUnderMountDrawerSlideBoxDepths = new Dimension[] {
             Dimension.FromMillimeters(457)
         };
 

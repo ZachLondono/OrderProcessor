@@ -53,7 +53,7 @@ public class DBBuilderFactoryFactory {
                 {  DrawerSlideType.SideMount, Dimension.FromMillimeters(0) }
             };
 
-        DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+        DovetailDrawerBoxBuilder.CabinetUnderMountDrawerSlideBoxDepths = new Dimension[] {
                 Dimension.FromMillimeters(250),
                 Dimension.FromMillimeters(280),
                 Dimension.FromMillimeters(320),

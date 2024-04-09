@@ -81,7 +81,7 @@ public class TallCabinetSuppliesTests {
                                 .Build();
 
         Supply expectedSupply = Supply.UndermountSlide(cabinet.Qty * rollOutQty, Dimension.FromMillimeters(457));
-        DovetailDrawerBoxBuilder.UnderMountDrawerSlideDepths = new Dimension[] {
+        DovetailDrawerBoxBuilder.CabinetUnderMountDrawerSlideBoxDepths = new Dimension[] {
             Dimension.FromMillimeters(457)
         };
 

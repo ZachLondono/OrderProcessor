@@ -70,7 +70,7 @@ public class DrawerBox : IClosetProProduct {
         DrawerSlideType slideType = DrawerSlideType.SideMount;
         if (UnderMountNotches) {
             notch = "Std_Notch";
-            accessory = "Hettich Slides";
+            accessory = "Hettich Quadro V6 Slides";
             clips = "Hettich";
             slideType = DrawerSlideType.UnderMount;
         }
@@ -80,7 +80,7 @@ public class DrawerBox : IClosetProProduct {
             .WithOptions(new(materialName, materialName, materialName, bottomMaterial, clips, notch, accessory, LogoPosition.None, scoopFront: ScoopFront))
             .WithBoxHeight(GetBoxHeight())
             .WithInnerCabinetWidth(Width, 1, slideType)
-            .WithInnerCabinetDepth(Depth, slideType, false)
+            .WithInnerClosetBayDepth(Depth, slideType)
             .WithQty(Qty)
             .WithProductNumber(PartNumber)
             .BuildProduct(UnitPrice, Room);
