@@ -2,6 +2,7 @@
 using OrderExporting.CNC.Programs.Job;
 using OrderExporting.CNC.ReleasePDF;
 using OrderExporting.DovetailDBPackingList;
+using OrderExporting.HardwareList;
 using OrderExporting.Invoice;
 using OrderExporting.JobSummary;
 using OrderExporting.PackingList;
@@ -13,7 +14,7 @@ namespace ApplicationCore.Shared.Services;
 
 public class ReleasePDFBuilder(CNCReleaseDecoratorFactory cncReleaseDecoratorFactory) {
 
-    private readonly List<OneOf<ReleasedJob, ExistingPDF, JobSummary, Invoice, PackingList, DovetailDrawerBoxPackingList>> _segments = [];
+    private readonly List<OneOf<ReleasedJob, ExistingPDF, JobSummary, Invoice, PackingList, DovetailDrawerBoxPackingList, HardwareList>> _segments = [];
     private readonly CNCReleaseDecoratorFactory _cncReleaseDecoratorFactory = cncReleaseDecoratorFactory;
 
     public void AddReleasedJob(ReleasedJob job) => AddReleasedJob(job, _segments.Count);
@@ -33,6 +34,9 @@ public class ReleasePDFBuilder(CNCReleaseDecoratorFactory cncReleaseDecoratorFac
 
     public void AddDovetailDBPackingList(DovetailDrawerBoxPackingList packingList) => AddDovetailDBPackingList(packingList, _segments.Count);
     public void AddDovetailDBPackingList(DovetailDrawerBoxPackingList packingList, int position) => _segments.Insert(position, packingList);
+
+    public void AddHardwareList(HardwareList hardwareList) => AddHardwareList(hardwareList, _segments.Count);
+    public void AddHardwareList(HardwareList hardwareList, int position) => _segments.Insert(position, hardwareList);
 
     public void Clear() => _segments.Clear();
 
@@ -68,6 +72,11 @@ public class ReleasePDFBuilder(CNCReleaseDecoratorFactory cncReleaseDecoratorFac
                 },
                 packingList => {
                     var decorator = new DovetailDBPackingListDecorator(packingList);
+                    accumulator.AddDecorator(decorator);
+                    return Task.CompletedTask;
+                },
+                hardwareList => {
+                    var decorator = new HardwareListDecorator(hardwareList);
                     accumulator.AddDecorator(decorator);
                     return Task.CompletedTask;
                 }
