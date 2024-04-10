@@ -2,8 +2,8 @@
 
 public interface IOrderProvider {
 
-    public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
+	public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
 
-    public Task<OrderData?> LoadOrderData(string source);
+	public Task<OrderData?> LoadOrderData(string source);
 
 }

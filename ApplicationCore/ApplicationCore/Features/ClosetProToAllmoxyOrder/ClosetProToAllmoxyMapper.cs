@@ -1,6 +1,9 @@
 ﻿using ApplicationCore.Features.AllmoxyOrderExport.Products;
 using ApplicationCore.Features.ClosetProToAllmoxyOrder.Models;
 using OrderLoading.ClosetProCSVCutList.Products;
+using OrderLoading.ClosetProCSVCutList.Products.Fronts;
+using OrderLoading.ClosetProCSVCutList.Products.Shelves;
+using OrderLoading.ClosetProCSVCutList.Products.Verticals;
 
 namespace ApplicationCore.Features.ClosetProToAllmoxyOrder;
 

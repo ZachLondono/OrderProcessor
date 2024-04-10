@@ -5,6 +5,9 @@ using FluentAssertions;
 using OrderLoading.ClosetProCSVCutList;
 using OrderLoading.ClosetProCSVCutList.CSVModels;
 using OrderLoading.ClosetProCSVCutList.Products;
+using OrderLoading.ClosetProCSVCutList.Products.Fronts;
+using OrderLoading.ClosetProCSVCutList.Products.Shelves;
+using OrderLoading.ClosetProCSVCutList.Products.Verticals;
 
 namespace OrderLoading.Tests.Unit.ClosetProOrderLoading;
 

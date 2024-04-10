@@ -2,7 +2,7 @@
 using ApplicationCore.Features.AllmoxyOrderExport.Products;
 using ApplicationCore.Features.AllmoxyOrderExport.Products.Fronts;
 using Domain.Orders.Enums;
-using OrderLoading.ClosetProCSVCutList.Products;
+using OrderLoading.ClosetProCSVCutList.Products.Fronts;
 
 namespace ApplicationCore.Features.ClosetProToAllmoxyOrder;
 

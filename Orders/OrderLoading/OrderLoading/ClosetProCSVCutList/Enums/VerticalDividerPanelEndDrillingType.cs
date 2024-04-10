@@ -1,8 +1,8 @@
 ﻿namespace OrderLoading.ClosetProCSVCutList;
 
 public enum VerticalDividerPanelEndDrillingType {
-    DoubleCams,
-    SingleCams,
-    NoCams
+	DoubleCams,
+	SingleCams,
+	NoCams
 }
 

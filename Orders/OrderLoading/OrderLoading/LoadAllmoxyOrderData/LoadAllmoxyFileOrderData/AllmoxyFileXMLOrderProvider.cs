@@ -10,22 +10,22 @@ namespace OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyFileOrderData;
 
 public class AllmoxyFileXMLOrderProvider : AllmoxyXMLOrderProvider {
 
-    private readonly IFileReader _fileReader;
+	private readonly IFileReader _fileReader;
 
-    public AllmoxyFileXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader,
-                                        GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync,
-                                        ILogger<AllmoxyXMLOrderProvider> logger)
-        : base(configuration, validator, builderFactory, getCustomerIdByAllmoxyIdAsync, insertCustomerAsync, fileReader, getCustomerOrderPrefixByIdAsync, getCustomerWorkingDirectoryRootByIdAsync, logger) {
-        _fileReader = fileReader;
-    }
+	public AllmoxyFileXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader,
+										GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync,
+										ILogger<AllmoxyXMLOrderProvider> logger)
+		: base(configuration, validator, builderFactory, getCustomerIdByAllmoxyIdAsync, insertCustomerAsync, fileReader, getCustomerOrderPrefixByIdAsync, getCustomerWorkingDirectoryRootByIdAsync, logger) {
+		_fileReader = fileReader;
+	}
 
-    protected override async Task<string> GetExportXMLFromSource(string source) {
-        try {
-            string exportXML = await _fileReader.ReadFileContentsAsync(source);
-            return exportXML;
-        } catch (Exception ex) {
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not load order data from Allmoxy: {ex.Message}");
-            return string.Empty;
-        }
-    }
+	protected override async Task<string> GetExportXMLFromSource(string source) {
+		try {
+			string exportXML = await _fileReader.ReadFileContentsAsync(source);
+			return exportXML;
+		} catch (Exception ex) {
+			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not load order data from Allmoxy: {ex.Message}");
+			return string.Empty;
+		}
+	}
 }
