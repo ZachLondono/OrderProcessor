@@ -31,6 +31,8 @@ public class ReleaseConfiguration {
         set => _includeDovetailDBPackingList = value;
     }
 
+    public bool GenerateHardwareList { get; set; }
+
     public bool GenerateJobSummary { get; set; }
     public bool IncludeProductTablesInSummary { get; set; }
     public SupplyOptions SupplyOptions { get; set; } = new();

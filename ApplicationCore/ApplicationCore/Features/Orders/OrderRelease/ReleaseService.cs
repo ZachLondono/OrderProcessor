@@ -28,6 +28,7 @@ using OrderExporting.CNC.Programs.Job;
 using OrderExporting.CNC.Programs.WSXML.Report;
 using OrderExporting.CNC.Programs.WorkOrderReleaseEmail;
 using Domain.Companies.Entities;
+using OrderExporting.HardwareList;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -177,6 +178,7 @@ public class ReleaseService {
         models.Select(m => m.JobSummary).OfType<JobSummary>().ForEach(m => _releasePDFBuilder.AddJobSummary(m));
         models.Select(m => m.PackingList).OfType<PackingList>().ForEach(m => _releasePDFBuilder.AddPackingList(m));
         models.Select(m => m.DovetailDBPackingList).OfType<DovetailDrawerBoxPackingList>().ForEach(m => _releasePDFBuilder.AddDovetailDBPackingList(m));
+        models.Select(m => m.HardwareList).OfType<HardwareList>().ForEach(m => _releasePDFBuilder.AddHardwareList(m));
         models.Select(m => m.Invoice).OfType<Invoice>().ForEach(m => _releasePDFBuilder.AddInvoice(m));
         releases.ForEach(r => _releasePDFBuilder.AddReleasedJob(r));
         cutLists.ForEach(c => _releasePDFBuilder.AddExistingPDF(c));
@@ -226,6 +228,16 @@ public class ReleaseService {
             var packingList = DovetailDBPackingListModelFactory.CreateDBPackingList(order, vendor, customer);
             models.DovetailDBPackingList = packingList;
         }
+
+        if (configuration.GenerateHardwareList) {
+            var hardwareList = new HardwareList() {
+                Supplies = [],
+                HangingRods = [],
+                DrawerSlides = [],
+            };
+            models.HardwareList = hardwareList;
+        }
+
 
         if (configuration.IncludeInvoiceInRelease) {
             var invoice = InvoiceModelFactory.CreateInvoiceModel(order, vendor, customer);
@@ -896,6 +908,7 @@ public class ReleaseService {
         public JobSummary? JobSummary { get; set; } = null;
         public PackingList? PackingList { get; set; } = null;
         public DovetailDrawerBoxPackingList? DovetailDBPackingList { get; set; } = null;
+        public HardwareList? HardwareList { get; set; } = null;
         public Invoice? Invoice { get; set; } = null;
     }
 
