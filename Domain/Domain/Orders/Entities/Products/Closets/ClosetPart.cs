@@ -2,6 +2,7 @@
 using Domain.ValueObjects;
 using Domain.ProductPlanner;
 using Domain.Orders.Enums;
+using Domain.Orders.Entities.Hardware;
 
 namespace Domain.Orders.Entities.Products.Closets;
 

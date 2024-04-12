@@ -46,11 +46,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrderExporting", "OrderExpo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderExporting", "Orders\OrderExporting\OrderExporting\OrderExporting.csproj", "{4187C06F-29CC-4B67-9516-919DBAB6B37B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderExporting.Tests.Unit", "Orders\OrderExporting\OrderExporting.Tests.Unit\OrderExporting.Tests.Unit.csproj", "{46EE5E95-B2A9-48C2-8ED5-F915D860C7E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderExporting.Tests.Unit", "Orders\OrderExporting\OrderExporting.Tests.Unit\OrderExporting.Tests.Unit.csproj", "{46EE5E95-B2A9-48C2-8ED5-F915D860C7E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Companies.Tests.Unit", "Companies\Companies.Tests.Unit\Companies.Tests.Unit.csproj", "{4C057AC4-B027-4AC6-8B58-6A897E779C38}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Companies.Tests.Unit", "Companies\Companies.Tests.Unit\Companies.Tests.Unit.csproj", "{4C057AC4-B027-4AC6-8B58-6A897E779C38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderLoading.Tests.Unit", "Orders\OrderLoading\OrderLoading.Tests.Unit\OrderLoading.Tests.Unit.csproj", "{A8B2278D-36F4-473B-932D-D2B7976FCD66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderLoading.Tests.Unit", "Orders\OrderLoading\OrderLoading.Tests.Unit\OrderLoading.Tests.Unit.csproj", "{A8B2278D-36F4-473B-932D-D2B7976FCD66}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

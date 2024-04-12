@@ -7,6 +7,7 @@ using System.Data;
 using Domain.Orders.Entities.Products;
 using Domain.Infrastructure.Bus;
 using Domain.Orders.Persistance;
+using Domain.Orders.Persistance.Repositories;
 
 namespace ApplicationCore.Features.Orders.Details.Queries;
 
@@ -52,7 +53,9 @@ public class GetOrderById {
                 };
             }
 
-            var order = orderData.ToDomainModel(request.OrderId, products, items);
+            var hardware = await GetHardware(request.OrderId, connection);
+
+            var order = orderData.ToDomainModel(request.OrderId, products, items, hardware);
 
             return order;
 
@@ -138,6 +141,21 @@ public class GetOrderById {
                 throw;
             }
             return accumulator;
+        }
+
+        private static async Task<Hardware> GetHardware(Guid orderId, IDbConnection connection) {
+
+            var suppliesRepo = new OrderSuppliesRepository(connection);
+            var supplies = await suppliesRepo.GetOrderSupplies(orderId);
+
+            var slidesRepo = new OrderDrawerSlidesRepository(connection);
+            var slides = await slidesRepo.GetOrderDrawerSlides(orderId);
+
+            var railsRepo = new OrderHangingRailRepository(connection);
+            var hangingRails = await railsRepo.GetOrderHangingRails(orderId);
+
+            return new(supplies.ToArray(), slides.ToArray(), hangingRails.ToArray());
+
         }
 
     }

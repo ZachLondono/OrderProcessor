@@ -29,7 +29,7 @@ public class Optimizer {
             weights[0, i] = (long)(lengths[i].AsMillimeters() * 100); // in 1000s of a millimeter
         }
 
-        long[] capacities = { (long) (capacity.AsMillimeters() * 100) };
+        long[] capacities = { (long)(capacity.AsMillimeters() * 100) };
 
         List<Dimension[]> parts = [];
 
@@ -58,7 +58,7 @@ public class Optimizer {
                 weights[0, i] = notPacked[i];
             }
 
-            parts.Add(packedItems.Select(v => Dimension.FromMillimeters(((double) v)/ (double)100)).ToArray());
+            parts.Add(packedItems.Select(v => Dimension.FromMillimeters(((double)v) / (double)100)).ToArray());
 
         }
 

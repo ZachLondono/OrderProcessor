@@ -1,6 +1,6 @@
 ﻿using Domain.Orders.Builders;
+using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Enums;
-using Domain.Orders.ValueObjects;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using FluentAssertions;

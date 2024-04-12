@@ -1,5 +1,6 @@
 ﻿using Domain.Orders.Builders;
 using Domain.Orders.Components;
+using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
@@ -122,6 +123,7 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
 
     public override IEnumerable<Supply> GetSupplies() {
 
+        /*
         List<Supply> supplies = new();
 
         if (AdjustableShelves > 0) {
@@ -160,6 +162,9 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
         }
 
         return supplies;
+        */
+
+        return [];
 
     }
 

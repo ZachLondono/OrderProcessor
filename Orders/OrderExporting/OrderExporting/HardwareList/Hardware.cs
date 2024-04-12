@@ -1,6 +1,6 @@
 ﻿namespace OrderExporting.HardwareList;
 
-public class HardwareList {
+public class Hardware {
 
 	public Supply[] Supplies { get; set; } = [];
 	public HangingRod[] HangingRods { get; set; } = [];

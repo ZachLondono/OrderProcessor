@@ -1,6 +1,7 @@
 ﻿using Domain.Orders;
 using Domain.Orders.Builders;
 using Domain.Orders.Components;
+using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Enums;
 using Domain.Orders.Exceptions;
 using Domain.Orders.ValueObjects;
@@ -84,6 +85,7 @@ public class WallPieCutCornerCabinet : Cabinet, IMDFDoorContainer {
 
     public override IEnumerable<Supply> GetSupplies() {
 
+        /*
         List<Supply> supplies = new();
 
         if (AdjustableShelves > 0) {
@@ -97,6 +99,9 @@ public class WallPieCutCornerCabinet : Cabinet, IMDFDoorContainer {
         supplies.AddRange(Supply.StandardHinge(DoorHeight, Qty));
 
         return supplies;
+        */
+
+        return [];
 
     }
 

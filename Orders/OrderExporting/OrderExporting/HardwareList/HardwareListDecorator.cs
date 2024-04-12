@@ -6,9 +6,9 @@ using QuestPDF.Infrastructure;
 
 namespace OrderExporting.HardwareList;
 
-public class HardwareListDecorator(HardwareList hardwareList) : IDocumentDecorator {
+public class HardwareListDecorator(Hardware hardwareList) : IDocumentDecorator {
 
-	private readonly HardwareList _hardwareList = hardwareList;
+	private readonly Hardware _hardwareList = hardwareList;
 
 	public void Decorate(IDocumentContainer container) {
 

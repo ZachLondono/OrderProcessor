@@ -1,5 +1,6 @@
 ﻿using Domain.Orders.Builders;
 using Domain.Orders.Components;
+using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Enums;
 using Domain.Orders.Exceptions;
 using Domain.Orders.ValueObjects;
@@ -130,6 +131,7 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
 
     public override IEnumerable<Supply> GetSupplies() {
 
+        /*
         List<Supply> supplies = new();
 
         if (ToeType == ToeType.LegLevelers) {
@@ -187,6 +189,9 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
         }
 
         return supplies;
+        */
+
+        return [];
 
     }
 

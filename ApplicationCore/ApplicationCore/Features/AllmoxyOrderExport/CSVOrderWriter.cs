@@ -53,25 +53,19 @@ public class CSVOrderWriter() {
                 csv.WriteRecord(adjustableAngledShelf);
             } else if (product is ShoeShelf shoeShelf) {
                 csv.WriteRecord(shoeShelf);
-            }
-
-            else if (product is SlabDoorFront slabDoor) {
+            } else if (product is SlabDoorFront slabDoor) {
                 csv.WriteRecord(slabDoor);
             } else if (product is SlabDrawerFront slabDrw) {
                 csv.WriteRecord(slabDrw);
-            }else if (product is FivePieceDoor fivePiece) {
+            } else if (product is FivePieceDoor fivePiece) {
                 csv.WriteRecord(fivePiece);
             } else if (product is MDFDoorFront mdf) {
                 csv.WriteRecord(mdf);
-            }
-
-            else if (product is DovetailDrawerBox dovetail) {
+            } else if (product is DovetailDrawerBox dovetail) {
                 csv.WriteRecord(dovetail);
             } else if (product is DoweledDrawerBox doweled) {
                 csv.WriteRecord(doweled);
-            }
-
-            else if (product is Back back) {
+            } else if (product is Back back) {
                 csv.WriteRecord(back);
             } else if (product is Nailer nailer) {
                 csv.WriteRecord(nailer);
@@ -79,9 +73,7 @@ public class CSVOrderWriter() {
                 csv.WriteRecord(toeKick);
             } else if (product is Top top) {
                 csv.WriteRecord(top);
-            }
-
-            else if (product is FloorMountedPanels floorMountedPanel) {
+            } else if (product is FloorMountedPanels floorMountedPanel) {
                 csv.WriteRecord(floorMountedPanel);
             } else if (product is IslandPanels islandPanels) {
                 csv.WriteRecord(islandPanels);
@@ -97,9 +89,7 @@ public class CSVOrderWriter() {
                 csv.WriteRecord(customHeightPanel);
             } else if (product is FloorMountedHutchPanels hutchPanel) {
                 csv.WriteRecord(hutchPanel);
-            }
-            
-            else {
+            } else {
 
                 throw new InvalidOperationException($"Unexpected allmoxy product {product.GetType()}");
 

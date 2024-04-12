@@ -15,6 +15,7 @@ using static OrderExporting.JobSummary.CabinetPartGroup;
 using Domain.Orders.Entities.Products.DrawerBoxes;
 using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders;
+using Domain.Orders.Entities.Hardware;
 
 namespace OrderExporting.JobSummary;
 
@@ -22,13 +23,7 @@ public class JobSummaryModelFactory {
 
     public static JobSummary CreateSummary(Order order, Vendor vendor, Customer customer, bool showItems, bool showMaterialTypes, string[] materialTypes, SupplyOptions supplyOptions) {
 
-        var supplies = order.Products
-                            .OfType<Cabinet>()
-                            .SelectMany(c => c.GetSupplies())
-                            .Where(s => supplyOptions.IncludeSupply(s.Type))
-                            .GroupBy(s => s.Name)
-                            .Select(g => new Supply(g.Sum(g => g.Qty), g.Key, g.First().Type))
-                            .ToList();
+        var supplies = new List<Supply>();
 
         var dovetailDb = order.Products
                     .OfType<DovetailDrawerBoxProduct>()

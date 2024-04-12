@@ -1,5 +1,6 @@
 ﻿using Domain.Orders.Builders;
 using Domain.Orders.Components;
+using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
@@ -97,6 +98,7 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
 
     public override IEnumerable<Supply> GetSupplies() {
 
+        /*
         List<Supply> supplies = new() {
             Supply.DoorPull(Qty),
             Supply.DrawerPull(Qty)
@@ -130,6 +132,9 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
         }
 
         return supplies;
+        */
+
+        return [];
 
     }
 

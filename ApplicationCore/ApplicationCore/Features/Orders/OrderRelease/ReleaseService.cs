@@ -53,7 +53,7 @@ public class ReleaseService {
     private readonly CNCPartGCodeGenerator _gcodeGenerator;
     private readonly ReleasePDFBuilder _releasePDFBuilder;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader,  CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, CNCPartGCodeGenerator gcodeGenerator, ReleasePDFBuilder releasePDFBuilder) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, CNCPartGCodeGenerator gcodeGenerator, ReleasePDFBuilder releasePDFBuilder) {
         _fileReader = fileReader;
         _logger = logger;
         _getCustomerByIdAsync = getCustomerByIdAsync;
@@ -178,7 +178,7 @@ public class ReleaseService {
         models.Select(m => m.JobSummary).OfType<JobSummary>().ForEach(m => _releasePDFBuilder.AddJobSummary(m));
         models.Select(m => m.PackingList).OfType<PackingList>().ForEach(m => _releasePDFBuilder.AddPackingList(m));
         models.Select(m => m.DovetailDBPackingList).OfType<DovetailDrawerBoxPackingList>().ForEach(m => _releasePDFBuilder.AddDovetailDBPackingList(m));
-        models.Select(m => m.HardwareList).OfType<HardwareList>().ForEach(m => _releasePDFBuilder.AddHardwareList(m));
+        models.Select(m => m.HardwareList).OfType<Hardware>().ForEach(m => _releasePDFBuilder.AddHardwareList(m));
         models.Select(m => m.Invoice).OfType<Invoice>().ForEach(m => _releasePDFBuilder.AddInvoice(m));
         releases.ForEach(r => _releasePDFBuilder.AddReleasedJob(r));
         cutLists.ForEach(c => _releasePDFBuilder.AddExistingPDF(c));
@@ -230,7 +230,7 @@ public class ReleaseService {
         }
 
         if (configuration.GenerateHardwareList) {
-            var hardwareList = new HardwareList() {
+            var hardwareList = new Hardware() {
                 Supplies = [],
                 HangingRods = [],
                 DrawerSlides = [],
@@ -908,7 +908,7 @@ public class ReleaseService {
         public JobSummary? JobSummary { get; set; } = null;
         public PackingList? PackingList { get; set; } = null;
         public DovetailDrawerBoxPackingList? DovetailDBPackingList { get; set; } = null;
-        public HardwareList? HardwareList { get; set; } = null;
+        public Hardware? HardwareList { get; set; } = null;
         public Invoice? Invoice { get; set; } = null;
     }
 

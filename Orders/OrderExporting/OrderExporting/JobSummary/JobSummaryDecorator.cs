@@ -7,6 +7,7 @@ using Domain.Orders.Enums;
 using Domain.ValueObjects;
 using Domain.Extensions;
 using OrderExporting.Shared;
+using Domain.Orders.Entities.Hardware;
 
 namespace OrderExporting.JobSummary;
 
@@ -896,6 +897,7 @@ public class JobSummaryDecorator(JobSummary jobSummary) : IDocumentDecorator {
     }
 
     private static void ComposeSuppliesTable(IContainer container, IEnumerable<Supply> supplies) {
+        /*
 
         var defaultCellStyle = (IContainer cell)
             => cell.Border(1)
@@ -951,6 +953,7 @@ public class JobSummaryDecorator(JobSummary jobSummary) : IDocumentDecorator {
                         });
 
                 });
+        */
 
     }
 

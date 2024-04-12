@@ -127,7 +127,7 @@ public partial class ClosetProToAllmoxyMapper {
             LEDDepth = 0,
         };
 
-    } 
+    }
 
     public static IAllmoxyProduct MapPartToShoeShelf(Shelf shelf) {
 

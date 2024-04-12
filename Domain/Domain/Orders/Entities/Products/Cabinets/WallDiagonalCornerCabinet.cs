@@ -1,6 +1,7 @@
 ﻿using Domain.Orders;
 using Domain.Orders.Builders;
 using Domain.Orders.Components;
+using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Enums;
 using Domain.Orders.Exceptions;
 using Domain.Orders.ValueObjects;
@@ -95,6 +96,7 @@ public class WallDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer {
 
     public override IEnumerable<Supply> GetSupplies() {
 
+        /*
         List<Supply> supplies = new();
 
         if (AdjustableShelves > 0) {
@@ -111,6 +113,9 @@ public class WallDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer {
         }
 
         return supplies;
+        */
+
+        return [];
 
     }
 

@@ -1,5 +1,6 @@
 ﻿using Domain.Orders.Builders;
 using Domain.Orders.Components;
+using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
@@ -81,6 +82,7 @@ public class BlindWallCabinet : GarageCabinet, IMDFDoorContainer {
 
     public override IEnumerable<Supply> GetSupplies() {
 
+        /*
         var supplies = new List<Supply>();
 
         if (AdjustableShelves > 0) {
@@ -97,6 +99,9 @@ public class BlindWallCabinet : GarageCabinet, IMDFDoorContainer {
         }
 
         return supplies;
+        */
+
+        return [];
 
     }
 

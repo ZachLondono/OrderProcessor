@@ -4,6 +4,7 @@ using Domain.ValueObjects;
 using CADCodeProxy.Machining;
 using Domain.Orders.Entities.Products;
 using Domain.Orders;
+using Domain.Orders.Entities.Hardware;
 
 namespace Domain.Orders.Entities.Products.DrawerBoxes;
 

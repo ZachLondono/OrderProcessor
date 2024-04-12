@@ -1,5 +1,6 @@
 ﻿using Domain.Orders.Builders;
 using Domain.Orders.Components;
+using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Enums;
 using Domain.Orders.Exceptions;
 using Domain.Orders.ValueObjects;
@@ -109,6 +110,7 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
 
     public override IEnumerable<Supply> GetSupplies() {
 
+        /*
         var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, false);
 
         List<Supply> supplies = new() {
@@ -130,6 +132,9 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
         }
 
         return supplies;
+        */
+
+        return [];
 
     }
 

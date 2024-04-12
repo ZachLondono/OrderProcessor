@@ -1,5 +1,5 @@
 ﻿using Domain.Orders.Entities;
-using Domain.Orders.ValueObjects;
+using Domain.Orders.Entities.Hardware;
 
 namespace OrderExporting.JobSummary;
 

@@ -32,15 +32,4 @@ public class SupplyOptions {
         IncludeCabinetLegs = true;
     }
 
-    public bool IncludeSupply(SupplyType supplyType) => supplyType switch {
-        SupplyType.Miscellaneous => IncludeMiscellaneous,
-        SupplyType.Hinges => IncludeHinges,
-        SupplyType.Pulls => IncludeDoorPulls,
-        SupplyType.DrawerSlides => IncludeSlides,
-        SupplyType.ShelfPins => IncludeShelfPins,
-        SupplyType.Cams => IncludeCams,
-        SupplyType.CabinetLegs => IncludeCabinetLegs,
-        _ => throw new InvalidOperationException("Unexpected supply type")
-    };
-
 }
