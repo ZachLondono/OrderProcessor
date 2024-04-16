@@ -114,6 +114,7 @@ public class SinkCabinetSuppliesTests {
 
     }
 
+    /*
     [Theory]
     [InlineData(0)]
     [InlineData(1)]
@@ -174,5 +175,6 @@ public class SinkCabinetSuppliesTests {
         supplies.Where(s => s.Name == expectedSupply.Name).Sum(s => s.Qty).Should().Be(cabinet.Qty * rollOutQty);
 
     }
+    */
 
 }

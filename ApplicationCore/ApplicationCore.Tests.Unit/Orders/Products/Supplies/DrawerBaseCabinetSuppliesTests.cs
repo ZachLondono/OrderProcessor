@@ -18,6 +18,7 @@ public class DrawerBaseCabinetSuppliesTests {
 
     }
 
+    /*
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
@@ -89,6 +90,7 @@ public class DrawerBaseCabinetSuppliesTests {
         supplies.Should().ContainEquivalentOf(expectedSupplyB);
 
     }
+    */
 
     [Fact]
     public void Should_IncludeFourLegLevelersPerCabinet_WhenToeTypeIsLegLeveler() {

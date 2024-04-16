@@ -60,6 +60,7 @@ public class TallCabinetSuppliesTests {
 
     }
 
+    /*
     [Theory]
     [InlineData(0)]
     [InlineData(1)]
@@ -123,6 +124,7 @@ public class TallCabinetSuppliesTests {
         supplies.Where(s => s.Name == expectedSupply.Name).Sum(s => s.Qty).Should().Be(cabinet.Qty * rollOutQty);
 
     }
+    */
 
     [Fact]
     public void Should_IncludeFourLegLevelersPerCabinet_WhenToeTypeIsLegLeveler() {

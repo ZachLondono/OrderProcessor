@@ -2,6 +2,7 @@
 using Domain.Orders.Persistance.DataModels;
 using Domain.Orders.Entities.Products.DrawerBoxes;
 using FluentAssertions;
+using Domain.Orders.ValueObjects;
 
 namespace ApplicationCore.Tests.Unit.Orders;
 
@@ -26,8 +27,10 @@ public class QueryMappingTests {
             new AdditionalItem(Guid.NewGuid(), 1, "Description", 123)
         };
 
+        var hardware = new Hardware([], [], []);
+
         // Act
-        var order = model.ToDomainModel(orderId, boxes, items);
+        var order = model.ToDomainModel(orderId, boxes, items, hardware);
 
         // Assert
         order.Id.Should().Be(orderId);

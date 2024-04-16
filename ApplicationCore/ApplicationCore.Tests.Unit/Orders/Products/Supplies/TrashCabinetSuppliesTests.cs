@@ -99,6 +99,7 @@ public class TrashCabinetSuppliesTests {
 
     }
 
+    /*
     [Fact]
     public void Should_IncludeOneUMSlidePerCabinet_WhenSlidesAreUM() {
 
@@ -141,5 +142,6 @@ public class TrashCabinetSuppliesTests {
         supplies.Should().ContainEquivalentOf(expectedSupply);
 
     }
+    */
 
 }

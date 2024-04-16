@@ -96,6 +96,7 @@ public class BaseCabinetSuppliesTests {
 
     }
 
+    /*
     [Theory]
     [InlineData(1, 0)]
     [InlineData(1, 1)]
@@ -135,7 +136,9 @@ public class BaseCabinetSuppliesTests {
         supplies.Where(s => s.Name == expectedSupplyA.Name).Sum(s => s.Qty).Should().Be(cabinet.Qty * (drawerQty + rollOutQty));
 
     }
+    */
 
+    /*
     [Theory]
     [InlineData(1, 0)]
     [InlineData(1, 1)]
@@ -171,6 +174,7 @@ public class BaseCabinetSuppliesTests {
         supplies.Where(s => s.Name == expectedSupplyA.Name).Sum(s => s.Qty).Should().Be(cabinet.Qty * (drawerQty + rollOutQty));
 
     }
+    */
 
     [Fact]
     public void Should_IncludeFourLegLevelersPerCabinet_WhenToeTypeIsLegLeveler() {

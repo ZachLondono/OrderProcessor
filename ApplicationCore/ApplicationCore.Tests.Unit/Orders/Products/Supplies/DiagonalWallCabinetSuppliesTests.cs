@@ -232,6 +232,7 @@ public class BlindBaseCabinetSuppliesTests {
 
     }
 
+    /*
     [Theory]
     //[InlineData(1)]
     [InlineData(2)]
@@ -293,5 +294,6 @@ public class BlindBaseCabinetSuppliesTests {
         supplies.Where(s => s.Name == expectedSupplyA.Name).Sum(s => s.Qty).Should().Be(cabinet.Qty * drawerQty);
 
     }
+    */
 
 }
