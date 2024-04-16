@@ -6,7 +6,6 @@ using Domain.Orders.Entities.Products.Closets;
 using static OrderExporting.JobSummary.ClosetPartGroup;
 using static OrderExporting.JobSummary.DoweledDrawerBoxGroup;
 using static OrderExporting.JobSummary.DovetailDrawerBoxGroup;
-using Domain.Orders.ValueObjects;
 using static OrderExporting.JobSummary.ZargenDrawerGroup;
 using static OrderExporting.JobSummary.CabinetGroup;
 using static OrderExporting.JobSummary.MDFDoorGroup;
@@ -15,15 +14,12 @@ using static OrderExporting.JobSummary.CabinetPartGroup;
 using Domain.Orders.Entities.Products.DrawerBoxes;
 using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders;
-using Domain.Orders.Entities.Hardware;
 
 namespace OrderExporting.JobSummary;
 
 public class JobSummaryModelFactory {
 
-    public static JobSummary CreateSummary(Order order, Vendor vendor, Customer customer, bool showItems, bool showMaterialTypes, string[] materialTypes, SupplyOptions supplyOptions) {
-
-        var supplies = new List<Supply>();
+    public static JobSummary CreateSummary(Order order, Vendor vendor, Customer customer, bool showItems, bool showMaterialTypes, string[] materialTypes) {
 
         var dovetailDb = order.Products
                     .OfType<DovetailDrawerBoxProduct>()
@@ -35,7 +31,7 @@ public class JobSummaryModelFactory {
                         Notch = b.DrawerBoxOptions.Notches
                     }, new DrawerBoxGroupComparer())
                     .Select(g => {
-                        g.Key.Items = g.Select(i => new OrderExporting.JobSummary.DovetailDrawerBoxItem() {
+                        g.Key.Items = g.Select(i => new DovetailDrawerBoxItem() {
                             Line = i.ProductNumber,
                             Qty = i.Qty,
                             Description = i.GetDescription(),
@@ -168,10 +164,10 @@ public class JobSummaryModelFactory {
                         .Select(g => {
 
                             g.Key.Items = g.Select(i => {
-                                List<string> comments = new();
+                                List<string> comments = [];
                                 if (!string.IsNullOrEmpty(i.Comment)) comments.Add(i.Comment);
 
-                                return new OrderExporting.JobSummary.CabinetItem {
+                                return new CabinetItem {
                                     Line = i.ProductNumber,
                                     Qty = i.Qty,
                                     Description = i.GetDescription(),
@@ -201,7 +197,7 @@ public class JobSummaryModelFactory {
                         }, new MDFDoorGroupComparer())
                         .Select(g => {
 
-                            g.Key.Items = g.Select(i => new OrderExporting.JobSummary.MDFDoorItem {
+                            g.Key.Items = g.Select(i => new MDFDoorItem {
                                 Line = i.ProductNumber,
                                 Description = i.GetDescription(),
                                 Qty = i.Qty,
@@ -243,23 +239,21 @@ public class JobSummaryModelFactory {
                                                     .OfType<IDovetailDrawerBoxContainer>()
                                                     .Any(p => p is not DovetailDrawerBoxProduct && p.ContainsDovetailDrawerBoxes())
                                                     ||
-                                                        order.Products
-                                                            .OfType<DovetailDrawerBoxProduct>()
-                                                            .Any()
-                                                        &&
-                                                        !order.Products.All(p => p is DovetailDrawerBoxProduct)
-                                                    ;
+                                                    order.Products
+                                                        .OfType<DovetailDrawerBoxProduct>()
+                                                        .Any()
+                                                    &&
+                                                    !order.Products.All(p => p is DovetailDrawerBoxProduct);
 
         bool containsMDFDoorSubComponents = order.Products
                                                 .OfType<IMDFDoorContainer>()
                                                 .Any(p => p is not MDFDoorProduct && p.ContainsDoors())
                                                 ||
-                                                    order.Products
-                                                        .OfType<MDFDoorProduct>()
-                                                        .Any()
-                                                    &&
-                                                    !order.Products.All(p => p is MDFDoorProduct)
-                                                ;
+                                                order.Products
+                                                    .OfType<MDFDoorProduct>()
+                                                    .Any()
+                                                &&
+                                                !order.Products.All(p => p is MDFDoorProduct);
 
         bool containsFivePieceDoorSubComponents = order.Products
                                                 .OfType<FivePieceDoorProduct>()
@@ -297,8 +291,6 @@ public class JobSummaryModelFactory {
 
             ShowMaterialTypesInSummary = showMaterialTypes,
             MaterialTypes = new(materialTypes),
-
-            Supplies = supplies,
 
         };
 

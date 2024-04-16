@@ -4,7 +4,8 @@ namespace OrderExporting.HardwareList;
 
 public class HangingRod {
 
+	public int Qty { get; set; }
 	public Dimension Length { get; set; }
-	public string Material { get; set; } = string.Empty;
+	public string Finish { get; set; } = string.Empty;
 
 }

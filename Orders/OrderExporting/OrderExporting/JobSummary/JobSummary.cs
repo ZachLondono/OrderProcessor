@@ -1,5 +1,4 @@
 ﻿using Domain.Orders.Entities;
-using Domain.Orders.Entities.Hardware;
 
 namespace OrderExporting.JobSummary;
 
@@ -33,7 +32,5 @@ public class JobSummary {
 
     public bool ShowMaterialTypesInSummary { get; set; } = false;
     public List<string> MaterialTypes { get; set; } = new();
-
-    public List<Supply> Supplies { get; set; } = new();
 
 }

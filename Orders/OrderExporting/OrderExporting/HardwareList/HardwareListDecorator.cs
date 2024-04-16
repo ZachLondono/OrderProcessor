@@ -74,7 +74,7 @@ public class HardwareListDecorator(Hardware hardwareList) : IDocumentDecorator {
 							});
 
 							foreach (var hangingRod in _hardwareList.HangingRods) {
-								AddRow(hangingRod.Material, hangingRod.Length);
+								AddRow(hangingRod.Finish, hangingRod.Length);
 							}
 
 							void AddRow(string item, Dimension length) {

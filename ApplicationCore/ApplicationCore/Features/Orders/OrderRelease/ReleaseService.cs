@@ -213,7 +213,7 @@ public class ReleaseService {
             materials.AddRange(order.Products.OfType<FivePieceDoorProduct>().Select(d => d.Material).Distinct());
             materials.AddRange(order.Products.OfType<DoweledDrawerBoxProduct>().SelectMany(d => new string[] { d.BackMaterial.Name, d.FrontMaterial.Name, d.SideMaterial.Name, d.BottomMaterial.Name }).Distinct());
 
-            var jobSummary = JobSummaryModelFactory.CreateSummary(order, vendor, customer, configuration.IncludeProductTablesInSummary, true, materials.ToArray(), configuration.SupplyOptions);
+            var jobSummary = JobSummaryModelFactory.CreateSummary(order, vendor, customer, configuration.IncludeProductTablesInSummary, true, materials.ToArray());
 
             models.JobSummary = jobSummary;
 
@@ -231,9 +231,20 @@ public class ReleaseService {
 
         if (configuration.GenerateHardwareList) {
             var hardwareList = new Hardware() {
-                Supplies = [],
-                HangingRods = [],
-                DrawerSlides = [],
+                Supplies = order.Hardware.Supplies.Select(s => new Supply() {
+                    Qty = s.Qty,
+                    Description = s.Description
+                }).ToArray(),
+                HangingRods = order.Hardware.HangingRails.Select(s => new HangingRod() {
+                    Qty = s.Qty,
+                    Length = s.Length,
+                    Finish = s.Finish
+                }).ToArray(),
+                DrawerSlides = order.Hardware.DrawerSlides.Select(s => new DrawerSlide() {
+                    Qty = s.Qty,
+                    Length = s.Length,
+                    Style = s.Style
+                }).ToArray(),
             };
             models.HardwareList = hardwareList;
         }
