@@ -1,4 +1,5 @@
 ﻿using System.Xml.Serialization;
+using OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels.Cabinets;
 
 namespace OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 
