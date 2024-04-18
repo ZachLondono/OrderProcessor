@@ -195,11 +195,6 @@ public partial class ClosetProPartMapper {
         if (!double.TryParse(dims[0], out double baseDepth)) throw new InvalidOperationException($"Invalid hutch panel base depth value '{dims[0]}'");
         if (!double.TryParse(dims[1], out double baseHeight)) throw new InvalidOperationException($"Invalid hutch panel base height value '{dims[1]}'");
         if (!double.TryParse(dims[2], out double topDepth)) throw new InvalidOperationException($"Invalid hutch panel top depth value '{dims[2]}'");
-        if (!double.TryParse(dims[3], out double topHeight)) throw new InvalidOperationException($"Invalid hutch panel top height value '{dims[3]}'");
-
-        if (baseHeight + topHeight != part.Height) {
-            throw new InvalidOperationException($"Hutch panel height does not match sum of top and base heights | panel:{part.Height} top:{topHeight} base:{baseHeight}");
-        }
 
         if (baseDepth != part.Depth) {
             throw new InvalidOperationException($"Hutch panel depth does not match base depth | panel:{part.Depth} base:{baseDepth}");
