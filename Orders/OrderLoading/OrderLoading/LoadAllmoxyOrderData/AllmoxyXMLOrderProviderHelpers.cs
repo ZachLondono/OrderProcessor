@@ -115,7 +115,7 @@ public static class AllmoxyXMLOrderProviderHelpers {
     public static HingeSide GetHingeSide(string value) => value switch {
         "Left" => HingeSide.Left,
         "Right" => HingeSide.Right,
-        "N/A" => HingeSide.NotApplicable,
+        "N/A" or "Both" => HingeSide.NotApplicable,
         _ => throw new ArgumentOutOfRangeException(nameof(value), value, "Unexpected hinge side value")
     };
 
