@@ -8,13 +8,9 @@ public class UpdateAdditionalItem {
 
     public record Command(AdditionalItem Item) : ICommand;
 
-    public class Handler : CommandHandler<Command> {
+    public class Handler(IOrderingDbConnectionFactory factory) : CommandHandler<Command> {
 
-        private readonly IOrderingDbConnectionFactory _factory;
-
-        public Handler(IOrderingDbConnectionFactory factory) {
-            _factory = factory;
-        }
+        private readonly IOrderingDbConnectionFactory _factory = factory;
 
         public override async Task<Response> Handle(Command command) {
 
