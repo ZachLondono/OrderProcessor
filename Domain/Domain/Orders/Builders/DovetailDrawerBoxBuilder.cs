@@ -70,6 +70,7 @@ public class DovetailDrawerBoxBuilder {
         Dimension.FromMillimeters(296),
         Dimension.FromMillimeters(336),
         Dimension.FromMillimeters(396),
+        Dimension.FromMillimeters(466),
         Dimension.FromMillimeters(566)
     ];
 
