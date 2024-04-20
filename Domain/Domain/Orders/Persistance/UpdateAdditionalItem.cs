@@ -30,7 +30,7 @@ public class UpdateAdditionalItem {
             int rowsAffected = await connection.ExecuteAsync(sql, new {
                 command.Item.Qty,
                 command.Item.Description,
-                command.Item.UnitPrice,
+                Price = command.Item.UnitPrice,
                 command.Item.Id
             });
 
