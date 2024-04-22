@@ -1,6 +1,4 @@
-﻿using Domain.Orders.Entities.Hardware;
-
-namespace Domain.Orders.Entities.Products;
+﻿namespace Domain.Orders.Entities.Products;
 
 public interface IProduct {
 
@@ -11,7 +9,6 @@ public interface IProduct {
     public string Room { get; set; }
 
     public string GetDescription();
-    public IEnumerable<Supply> GetSupplies();
 
     public List<string> ProductionNotes { get; }
 
