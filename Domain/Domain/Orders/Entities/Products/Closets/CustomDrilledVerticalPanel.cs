@@ -6,7 +6,6 @@ using CADCodeProxy.Enums;
 using CADCodeProxy.Machining;
 using CADCodeProxy.Machining.Tokens;
 using Domain.ProductPlanner;
-using Domain.Orders.Entities.Hardware;
 
 namespace Domain.Orders.Entities.Products.Closets;
 
@@ -24,7 +23,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     public ClosetPaint? Paint { get; }
     public string EdgeBandingColor { get; }
     public string Comment { get; }
-    public List<string> ProductionNotes { get; set; } = new();
+    public List<string> ProductionNotes { get; set; } = [];
 
     public ClosetVerticalDrillingType DrillingType { get; }
     public Dimension ExtendBack { get; }
@@ -42,7 +41,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     // TODO: Implement this 
     public bool EdgeBandTop { get; } = false;
 
-    private bool _requiresCustomDrilling;
+    private readonly bool _requiresCustomDrilling;
     private static readonly Dimension s_holeSpacing = Dimension.FromMillimeters(32);
     private static readonly Dimension s_holesOffEdge = Dimension.FromMillimeters(37);
     private static readonly Dimension s_holesOffTop = Dimension.FromMillimeters(9.5);
@@ -475,8 +474,6 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
         return position;
 
     }
-
-    public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
 
     public record VPDrillingOperation(Dimension Start, Dimension End, VPDrillingDepth Depth);
 
