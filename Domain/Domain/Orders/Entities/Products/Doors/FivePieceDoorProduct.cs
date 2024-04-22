@@ -1,5 +1,4 @@
 ﻿using Domain.Orders.Components;
-using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
@@ -13,7 +12,7 @@ public class FivePieceDoorProduct : FivePieceDoor, IProduct {
     public decimal UnitPrice { get; init; }
     public int ProductNumber { get; init; }
     public string Room { get; set; }
-    public List<string> ProductionNotes { get; set; } = new();
+    public List<string> ProductionNotes { get; set; } = [];
 
     public FivePieceDoorProduct(Guid id, int qty, decimal unitPrice, int productNumber, string room, Dimension width, Dimension height, DoorFrame frameSize, Dimension frameThickness, Dimension panelThickness, string material, DoorType doorType)
             : base(width, height, frameSize, frameThickness, panelThickness, material, doorType) {
@@ -28,8 +27,6 @@ public class FivePieceDoorProduct : FivePieceDoor, IProduct {
         DoorType.DrawerFront => "Five Piece Drawer Front",
         DoorType.Door or _ => "Five Piece Door"
     };
-
-    public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
 
     public IEnumerable<FivePieceDoorPart> GetParts() => GetParts(Qty);
 
