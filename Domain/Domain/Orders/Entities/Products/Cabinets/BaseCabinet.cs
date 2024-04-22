@@ -9,7 +9,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorContainer {
+public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorContainer, ISupplyContainer, IDrawerSlideContainer {
 
     public BaseCabinetDoors Doors { get; }
     public ToeType ToeType { get; }
@@ -160,10 +160,9 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
 
     }
 
-    public override IEnumerable<Supply> GetSupplies() {
+    public IEnumerable<Supply> GetSupplies() {
 
-        /*
-        List<Supply> supplies = new();
+        List<Supply> supplies = [];
 
         if (ToeType == ToeType.LegLevelers) {
 
@@ -190,31 +189,7 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
 
         }
 
-        Dimension boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, true);
-
-        if (Drawers.Quantity > 0) {
-
-            switch (DrawerBoxOptions.SlideType) {
-                case DrawerSlideType.UnderMount:
-                    supplies.Add(Supply.UndermountSlide(Drawers.Quantity * Qty, boxDepth));
-                    break;
-                case DrawerSlideType.SideMount:
-                    supplies.Add(Supply.SidemountSlide(Drawers.Quantity * Qty, boxDepth));
-                    break;
-            }
-
-        }
-
         if (Inside.RollOutBoxes.Qty > 0) {
-
-            switch (DrawerBoxOptions.SlideType) {
-                case DrawerSlideType.UnderMount:
-                    supplies.Add(Supply.UndermountSlide(Inside.RollOutBoxes.Qty * Qty, boxDepth));
-                    break;
-                case DrawerSlideType.SideMount:
-                    supplies.Add(Supply.SidemountSlide(Inside.RollOutBoxes.Qty * Qty, boxDepth));
-                    break;
-            }
 
             switch (Inside.RollOutBoxes.Blocks) {
                 case RollOutBlockPosition.Left:
@@ -229,9 +204,42 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
         }
 
         return supplies;
-        */
 
-        return [];
+    }
+
+    public IEnumerable<DrawerSlide> GetDrawerSlides() {
+
+        List<DrawerSlide> slides = [];
+
+        Dimension boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, true);
+
+        if (Drawers.Quantity > 0) {
+
+            switch (DrawerBoxOptions.SlideType) {
+                case DrawerSlideType.UnderMount:
+                    slides.Add(DrawerSlide.UndermountSlide(Drawers.Quantity * Qty, boxDepth));
+                    break;
+                case DrawerSlideType.SideMount:
+                    slides.Add(DrawerSlide.SidemountSlide(Drawers.Quantity * Qty, boxDepth));
+                    break;
+            }
+
+        }
+
+        if (Inside.RollOutBoxes.Qty > 0) {
+
+            switch (DrawerBoxOptions.SlideType) {
+                case DrawerSlideType.UnderMount:
+                    slides.Add(DrawerSlide.UndermountSlide(Inside.RollOutBoxes.Qty * Qty, boxDepth));
+                    break;
+                case DrawerSlideType.SideMount:
+                    slides.Add(DrawerSlide.SidemountSlide(Inside.RollOutBoxes.Qty * Qty, boxDepth));
+                    break;
+            }
+
+        }
+
+        return slides;
 
     }
 
@@ -344,5 +352,4 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
         RollOutBlockPosition.Right => "3",
         _ => "0"
     };
-
 }

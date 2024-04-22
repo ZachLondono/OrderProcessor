@@ -72,6 +72,4 @@ public class CabinetPart : IProduct, IPPProductContainer {
         };
     }
 
-    public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
-
 }

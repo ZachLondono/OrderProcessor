@@ -8,7 +8,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-public class BaseDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer {
+public class BaseDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer, ISupplyContainer {
 
     public Dimension RightWidth { get; }
     public Dimension RightDepth { get; }
@@ -83,9 +83,8 @@ public class BaseDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer {
 
     }
 
-    public override IEnumerable<Supply> GetSupplies() {
+    public IEnumerable<Supply> GetSupplies() {
 
-        /*
         var supplies = new List<Supply>();
 
         if (AdjustableShelves > 0) {
@@ -108,9 +107,6 @@ public class BaseDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer {
         }
 
         return supplies;
-        */
-
-        return [];
 
     }
 

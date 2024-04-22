@@ -7,7 +7,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer {
+public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer, ISupplyContainer, IDrawerSlideContainer {
 
     public BlindCabinetDoors Doors { get; }
     public HorizontalDrawerBank Drawers { get; }
@@ -121,20 +121,18 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
 
     }
 
-    public override IEnumerable<Supply> GetSupplies() {
+    public IEnumerable<Supply> GetSupplies() {
 
-        /*
-        List<Supply> supplies = new();
+        List<Supply> supplies = [
+            Supply.DoorPull(Doors.Quantity * Qty),
+            .. Supply.StandardHinge(DoorHeight, Qty)
+        ];
 
         if (AdjustableShelves > 0) {
 
             supplies.Add(Supply.LockingShelfPeg(AdjustableShelves * Qty * 4));
 
         }
-
-        supplies.Add(Supply.DoorPull(Doors.Quantity * Qty));
-
-        supplies.AddRange(Supply.StandardHinge(DoorHeight, Qty));
 
         if (Doors.Quantity == 2) {
             supplies.AddRange(Supply.BlindCornerHinge(2 * Qty));
@@ -143,18 +141,6 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
         if (Drawers.Quantity > 0) {
 
             supplies.Add(Supply.DrawerPull(Drawers.Quantity * Qty));
-
-            var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, false);
-
-            switch (DrawerBoxOptions.SlideType) {
-                case DrawerSlideType.UnderMount:
-                    supplies.Add(Supply.UndermountSlide(Drawers.Quantity * Qty, boxDepth));
-                    break;
-
-                case DrawerSlideType.SideMount:
-                    supplies.Add(Supply.SidemountSlide(Drawers.Quantity * Qty, boxDepth));
-                    break;
-            }
 
         }
 
@@ -165,9 +151,30 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
         }
 
         return supplies;
-        */
 
-        return [];
+    }
+
+    public IEnumerable<DrawerSlide> GetDrawerSlides() {
+
+        List<DrawerSlide> slides = [];
+
+        if (Drawers.Quantity > 0) {
+
+            var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, false);
+
+            switch (DrawerBoxOptions.SlideType) {
+                case DrawerSlideType.UnderMount:
+                    slides.Add(DrawerSlide.UndermountSlide(Drawers.Quantity * Qty, boxDepth));
+                    break;
+
+                case DrawerSlideType.SideMount:
+                    slides.Add(DrawerSlide.SidemountSlide(Drawers.Quantity * Qty, boxDepth));
+                    break;
+            }
+
+        }
+
+        return slides;
 
     }
 

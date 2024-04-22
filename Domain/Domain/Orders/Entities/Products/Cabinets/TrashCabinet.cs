@@ -7,7 +7,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer {
+public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer, ISupplyContainer, IDrawerSlideContainer {
 
     public Dimension DrawerFaceHeight { get; set; }
     public TrashPulloutConfiguration TrashPulloutConfiguration { get; set; }
@@ -96,24 +96,12 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
 
     }
 
-    public override IEnumerable<Supply> GetSupplies() {
+    public IEnumerable<Supply> GetSupplies() {
 
-        /*
-        List<Supply> supplies = new() {
+        List<Supply> supplies = [
             Supply.DoorPull(Qty),
             Supply.DrawerPull(Qty)
-        };
-
-        var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType);
-        switch (DrawerBoxOptions.SlideType) {
-            case DrawerSlideType.UnderMount:
-                supplies.Add(Supply.UndermountSlide(Qty, boxDepth));
-                break;
-
-            case DrawerSlideType.SideMount:
-                supplies.Add(Supply.SidemountSlide(Qty, boxDepth));
-                break;
-        }
+        ];
 
         if (ToeType == ToeType.LegLevelers) {
 
@@ -132,9 +120,25 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
         }
 
         return supplies;
-        */
 
-        return [];
+    }
+
+    public IEnumerable<DrawerSlide> GetDrawerSlides() {
+
+        List<DrawerSlide> slides = [];
+
+        var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType);
+        switch (DrawerBoxOptions.SlideType) {
+            case DrawerSlideType.UnderMount:
+                slides.Add(DrawerSlide.UndermountSlide(Qty, boxDepth));
+                break;
+
+            case DrawerSlideType.SideMount:
+                slides.Add(DrawerSlide.SidemountSlide(Qty, boxDepth));
+                break;
+        }
+
+        return slides;
 
     }
 

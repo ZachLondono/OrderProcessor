@@ -7,7 +7,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-public class BasePieCutCornerCabinet : Cabinet, IMDFDoorContainer {
+public class BasePieCutCornerCabinet : Cabinet, IMDFDoorContainer, ISupplyContainer {
 
     public Dimension RightWidth { get; }
     public Dimension RightDepth { get; }
@@ -77,10 +77,12 @@ public class BasePieCutCornerCabinet : Cabinet, IMDFDoorContainer {
 
     }
 
-    public override IEnumerable<Supply> GetSupplies() {
+    public IEnumerable<Supply> GetSupplies() {
 
-        /*
-        List<Supply> supplies = new();
+        List<Supply> supplies = [
+            Supply.DoorPull(Qty),
+            .. Supply.StandardHinge(DoorHeight, Qty),
+        ];
 
         if (ToeType == ToeType.LegLevelers) {
 
@@ -94,16 +96,9 @@ public class BasePieCutCornerCabinet : Cabinet, IMDFDoorContainer {
 
         }
 
-        supplies.Add(Supply.DoorPull(Qty));
-
-        supplies.AddRange(Supply.StandardHinge(DoorHeight, Qty));
-
         //supplies.Add(Supply.LazySusan(Qty));
 
         return supplies;
-        */
-
-        return [];
 
     }
 

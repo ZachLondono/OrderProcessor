@@ -7,7 +7,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-public class BlindWallCabinet : GarageCabinet, IMDFDoorContainer {
+public class BlindWallCabinet : GarageCabinet, IMDFDoorContainer, ISupplyContainer {
 
     public BlindCabinetDoors Doors { get; }
     public int AdjustableShelves { get; }
@@ -80,9 +80,8 @@ public class BlindWallCabinet : GarageCabinet, IMDFDoorContainer {
 
     }
 
-    public override IEnumerable<Supply> GetSupplies() {
+    public IEnumerable<Supply> GetSupplies() {
 
-        /*
         var supplies = new List<Supply>();
 
         if (AdjustableShelves > 0) {
@@ -99,9 +98,6 @@ public class BlindWallCabinet : GarageCabinet, IMDFDoorContainer {
         }
 
         return supplies;
-        */
-
-        return [];
 
     }
 
