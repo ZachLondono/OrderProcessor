@@ -120,7 +120,7 @@ public class OrderLoadWidgetViewModel : IOrderLoadWidgetViewModel {
                                  data.Info,
                                  data.Products,
                                  data.AdditionalItems,
-                                 new([], [], []));
+                                 data.Hardware);
 
             var result = await _bus.Send(new InsertOrder.Command(order));
             result.OnError(error => {

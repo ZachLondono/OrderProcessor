@@ -34,6 +34,8 @@ public record OrderData {
 
 	public required List<IProduct> Products { get; init; } = new();
 
+	public required Hardware Hardware { get; set; } = Hardware.None();
+
 	public required List<AdditionalItem> AdditionalItems { get; init; } = new();
 
 	public required string WorkingDirectory { get; init; }
