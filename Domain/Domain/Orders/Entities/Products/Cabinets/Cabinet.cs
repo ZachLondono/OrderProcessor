@@ -3,7 +3,6 @@ using Domain.Orders.Exceptions;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using Domain.ProductPlanner;
-using Domain.Orders.Entities.Hardware;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
@@ -86,8 +85,6 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
             _ => throw new InvalidProductOptionsException($"Unexpected cabinet material core type '{boxMaterial.Core}'"),
         };
     }
-
-    public abstract IEnumerable<Supply> GetSupplies();
 
     protected virtual string GetMaterialType() {
 
