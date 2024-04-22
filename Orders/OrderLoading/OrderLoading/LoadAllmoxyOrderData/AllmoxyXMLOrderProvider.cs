@@ -17,6 +17,7 @@ using Domain.Orders.Entities;
 using Domain.Orders.Entities.Products;
 using Domain.Services;
 using Domain.Extensions;
+using Domain.Orders.Entities.Hardware;
 
 namespace OrderLoading.LoadAllmoxyOrderData;
 
@@ -115,8 +116,8 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 			}
 		};
 
-		List<IProduct> products = new();
-		List<AdditionalItem> items = new();
+		List<IProduct> products = [];
+		List<AdditionalItem> items = [];
 		data.Products.ForEach(c => MapAndAddProduct(c, products, items));
 
 		// 'Folder 1' is the default allmoxy folder name, if that is the only folder name than it can be removed
@@ -144,6 +145,20 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 			dueDate = parsedDate;
 		}
 
+		var allSupplies = products.OfType<ISupplyContainer>()
+									.SelectMany(p => p.GetSupplies())
+									.GroupBy(p => p.Description)
+									.Select(g => new Supply(Guid.NewGuid(), g.Sum(s => s.Qty), g.Key))
+									.ToArray();
+
+		var allSlides = products.OfType<IDrawerSlideContainer>()
+									.SelectMany(p => p.GetDrawerSlides())
+									.GroupBy(p => (p.Length, p.Style))
+									.Select(g => new DrawerSlide(Guid.NewGuid(), g.Sum(s => s.Qty), g.Key.Length, g.Key.Style))
+									.ToArray();
+
+		Hardware hardware = new(allSupplies, allSlides, []);
+
 		OrderData? order = new() {
 			Number = number,
 			Name = data.Name,
@@ -160,7 +175,8 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 			AdditionalItems = items,
 			Products = products,
 			Rush = data.Shipping.Method.Contains("Rush"),
-			Info = info
+			Info = info,
+			Hardware = hardware,
 		};
 
 		return order;
