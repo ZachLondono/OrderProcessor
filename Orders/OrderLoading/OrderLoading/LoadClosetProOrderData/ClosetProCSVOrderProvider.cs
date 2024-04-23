@@ -17,6 +17,7 @@ using OrderLoading.ClosetProCSVCutList.Products.Shelves;
 using OrderLoading.ClosetProCSVCutList.Products.Verticals;
 using OrderLoading.ClosetProCSVCutList.Products.Fronts;
 using Domain.Orders.ValueObjects;
+using Domain.Orders.Entities.Hardware;
 
 namespace OrderLoading.LoadClosetProOrderData;
 
@@ -85,6 +86,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 		otherParts.AddRange(ClosetProPartMapper.MapPickListToItems(info.PickList));
 		otherParts.AddRange(ClosetProPartMapper.MapAccessoriesToItems(info.Accessories));
 		otherParts.AddRange(ClosetProPartMapper.MapBuyOutPartsToItems(info.BuyOutParts));
+
 		var additionalItems = otherParts.Select(p => new AdditionalItem(Guid.NewGuid(), p.Qty, $"{p.Name}", p.UnitPrice)).ToList();
 
         // TODO: need hardware list here
@@ -112,7 +114,10 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 		}
 		string workingDirectory = await CreateWorkingDirectory(csvData, info, orderNumber, workingDirectoryRoot);
 
-		Hardware hardware = Hardware.None();
+		var hangRails = ClosetProPartMapper.GetHangingRailsFromBuyOutParts(info.BuyOutParts).ToArray();
+		var slides = GetDrawerSlides(products);
+		var supplies = GetSupplies(cpProducts);
+		Hardware hardware = new(supplies, slides, hangRails);
 
 		return new OrderData() {
 			VendorId = vendorId,
@@ -213,6 +218,38 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 	}
 
+	private static DrawerSlide[] GetDrawerSlides(IEnumerable<IProduct> products) {
+		return products.OfType<IDrawerSlideContainer>().SelectMany(d => d.GetDrawerSlides()).ToArray();
+	}
+
+	private static Supply[] GetSupplies(IEnumerable<IClosetProProduct> products) {
+
+		List<Supply> supplies = [];
+
+		var shelves = products.OfType<Shelf>().ToArray();
+		var corners = products.OfType<CornerShelf>().ToArray();
+		// TODO: need to check if the adjustable shelves have pins or not
+		int adjPins = shelves.Where(s => s.Type == ShelfType.Adjustable).Sum(s => s.Qty);
+		adjPins += shelves.Where(s => s.Type == ShelfType.Shoe).Sum(s => s.Qty);
+		adjPins += corners.Where(s => s.Type == CornerShelfType.LAdjustable || s.Type == CornerShelfType.DiagonalAdjustable).Sum(s => s.Qty);
+		supplies.Add(Supply.LockingShelfPeg(adjPins * 4));
+
+		int fixedShelves = shelves.Where(s => s.Type == ShelfType.Fixed).Sum(s => s.Qty);
+		fixedShelves += corners.Where(s => s.Type == CornerShelfType.LFixed || s.Type == CornerShelfType.DiagonalFixed).Sum(s => s.Qty);
+		supplies.Add(Supply.RafixCam(fixedShelves * 4));
+
+		supplies.Add(Supply.DrawerClips(products.OfType<DrawerBox>().Where(d => d.UnderMountNotches).Sum(d => d.Qty)));
+
+		var verticals = products.OfType<VerticalPanel>().ToArray();
+		var drilledThrough = verticals.Where(v => v.Drilling == VerticalPanelDrilling.DrilledThrough).Sum(v => v.Qty);
+		var finishedSide = verticals.Where(v => v.Drilling != VerticalPanelDrilling.DrilledThrough).Sum(v => v.Qty);
+		supplies.Add(Supply.CamBolt(finishedSide * 4));
+		supplies.Add(Supply.CamBoltDoubleSided(drilledThrough * 4));
+
+        return supplies.ToArray();
+
+	}
+
 	private async Task<string> CreateWorkingDirectory(string csvData, ClosetProOrderInfo info, string orderNumber, string? customerWorkingDirectoryRoot) {
 		string cpDefaultWorkingDirectory = @"R:\Job Scans\ClosetProSoftware"; // TODO: Get base directory from configuration file
 		string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? cpDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {info.Header.DesignerCompany} - {info.Header.OrderName}", ' '));
@@ -264,7 +301,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 	}
 
-	private async Task<Customer> GetOrCreateCustomer(string designerCompanyName, string designerName) {
+	private async Task<CompanyCustomer> GetOrCreateCustomer(string designerCompanyName, string designerName) {
 
 		Guid? customerId = await _getCustomerIdByNameAsync(designerCompanyName);
 
