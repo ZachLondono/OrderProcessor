@@ -226,25 +226,30 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 		List<Supply> supplies = [];
 
+		// TODO: need to check if divider panels need cams
+
 		var shelves = products.OfType<Shelf>().ToArray();
 		var corners = products.OfType<CornerShelf>().ToArray();
+
 		// TODO: need to check if the adjustable shelves have pins or not
 		int adjPins = shelves.Where(s => s.Type == ShelfType.Adjustable).Sum(s => s.Qty);
 		adjPins += shelves.Where(s => s.Type == ShelfType.Shoe).Sum(s => s.Qty);
 		adjPins += corners.Where(s => s.Type == CornerShelfType.LAdjustable || s.Type == CornerShelfType.DiagonalAdjustable).Sum(s => s.Qty);
 		supplies.Add(Supply.LockingShelfPeg(adjPins * 4));
 
-		int fixedShelves = shelves.Where(s => s.Type == ShelfType.Fixed).Sum(s => s.Qty);
-		fixedShelves += corners.Where(s => s.Type == CornerShelfType.LFixed || s.Type == CornerShelfType.DiagonalFixed).Sum(s => s.Qty);
-		supplies.Add(Supply.RafixCam(fixedShelves * 4));
+		int cams = shelves.Where(s => s.Type == ShelfType.Fixed).Sum(s => s.Qty * 4);
+		cams += corners.Where(s => s.Type == CornerShelfType.LFixed || s.Type == CornerShelfType.DiagonalFixed).Sum(s => s.Qty * 6);
+		// TODO: check that toe kicks are fixed
+		cams += products.OfType<MiscellaneousClosetPart>().Where(p => p.Type == MiscellaneousType.ToeKick).Sum(t => t.Qty * 4); 
+		supplies.Add(Supply.RafixCam(cams * 4));
 
 		supplies.Add(Supply.DrawerClips(products.OfType<DrawerBox>().Where(d => d.UnderMountNotches).Sum(d => d.Qty)));
 
 		var verticals = products.OfType<VerticalPanel>().ToArray();
 		var drilledThrough = verticals.Where(v => v.Drilling == VerticalPanelDrilling.DrilledThrough).Sum(v => v.Qty);
 		var finishedSide = verticals.Where(v => v.Drilling != VerticalPanelDrilling.DrilledThrough).Sum(v => v.Qty);
-		supplies.Add(Supply.CamBolt(finishedSide * 4));
-		supplies.Add(Supply.CamBoltDoubleSided(drilledThrough * 4));
+		supplies.Add(Supply.CamBolt(finishedSide * 6));
+		supplies.Add(Supply.CamBoltDoubleSided(drilledThrough * 6));
 
         return supplies.ToArray();
 
