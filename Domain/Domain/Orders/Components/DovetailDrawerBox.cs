@@ -1,10 +1,12 @@
-﻿using Domain.Orders.Enums;
+﻿using Domain.Orders.Entities.Hardware;
+using Domain.Orders.Entities.Products;
+using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace Domain.Orders.Components;
 
-public class DovetailDrawerBox : IComponent {
+public class DovetailDrawerBox : IComponent, IDrawerSlideContainer, ISupplyContainer {
 
     public int Qty { get; }
     public int ProductNumber { get; }
@@ -101,6 +103,21 @@ public class DovetailDrawerBox : IComponent {
 
         return description;
 
+    }
+
+    public IEnumerable<Supply> GetSupplies() {
+        if (DrawerBoxOptions.Clips == "" || DrawerBoxOptions.Clips.Equals("None", StringComparison.InvariantCultureIgnoreCase)) {
+            return [];
+        }
+
+        return [ new Supply(Guid.NewGuid(), Qty, $"{DrawerBoxOptions.Clips} Drawer Clips") ];
+
+    }
+
+    public IEnumerable<DrawerSlide> GetDrawerSlides() {
+        if (DrawerBoxOptions.Notches == DovetailDrawerBoxConfig.NO_NOTCH) {
+            yield return DrawerSlide.UndermountSlide(Qty, Depth);
+        }
     }
 
 }
