@@ -44,7 +44,7 @@ public class HardwareListDecorator(Hardware hardwareList) : IDocumentDecorator {
                                 header.Cell().Border(1).AlignCenter().Padding(3).Text("Qty").Bold().FontSize(16);
                             });
 
-                            foreach (var item in _hardwareList.Supplies) {
+                            foreach (var item in _hardwareList.Supplies.Where(i => i.Qty > 0)) {
                                 AddRow(item.Description, item.Qty);
                             }
 
@@ -67,7 +67,7 @@ public class HardwareListDecorator(Hardware hardwareList) : IDocumentDecorator {
 
 							t.Header(header => {
 
-								header.Cell().ColumnSpan(2).AlignCenter().Text("Hanging Rods").Bold().FontSize(24);
+								header.Cell().ColumnSpan(2).AlignCenter().Text("Closet Hanging Rods").Bold().FontSize(24);
 								header.Cell().Border(1).AlignCenter().Text("Material").Bold().FontSize(16);
 								header.Cell().Border(1).AlignCenter().Text("Length (mm)").Bold().FontSize(16);
 
