@@ -81,10 +81,13 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 		var customer = await GetOrCreateCustomer(info.Header.DesignerCompany, designerName);
 
 		List<OtherPart> otherParts = [];
-		otherParts.AddRange(ClosetProPartMapper.MapPickListToItems(info.PickList, [], out var hardwareSpread));
+		otherParts.AddRange(ClosetProPartMapper.MapPickListToItems(info.PickList));
 		otherParts.AddRange(ClosetProPartMapper.MapAccessoriesToItems(info.Accessories));
 		otherParts.AddRange(ClosetProPartMapper.MapBuyOutPartsToItems(info.BuyOutParts));
 		var additionalItems = otherParts.Select(p => new AdditionalItem(Guid.NewGuid(), p.Qty, $"{p.Name}", p.UnitPrice)).ToList();
+
+        // TODO: need hardware list here
+		Dimension hardwareSpread = ClosetProPartMapper.GetHardwareSpread(info.PickList, []);
 
 		_partMapper.GroupLikeProducts = true; // TODO: Move this into the closet pro settings object
 		var cpProducts = _partMapper.MapPartsToProducts(info.Parts, hardwareSpread);

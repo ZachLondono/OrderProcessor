@@ -232,11 +232,24 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 	}
 
-	public static List<OtherPart> MapPickListToItems(IEnumerable<PickPart> parts, Dictionary<string, Dimension> frontHardwareSpreads, out Dimension hardwareSpread) {
+	public static Dimension GetHardwareSpread(IEnumerable<PickPart> parts, Dictionary<string, Dimension> frontHardwareSpreads) {
 
-		hardwareSpread = Dimension.Zero;
+		var pulls = parts.Where(p => p.Type == "Pull/Knob").ToArray();
 
-		List<Dimension> spreads = [];
+        // TODO: check pick list for "Pull/Knob" part types, if there is only one then the drilling spacing for drawer fronts can be inferred from that, if there are multiple then spacing cannot be inferred 
+		if (pulls.Length != 1) return Dimension.Zero;
+
+		var pull = pulls[0];
+
+        if (frontHardwareSpreads.TryGetValue(pull.Name, out Dimension spread)) {
+			return spread;
+		}
+
+		return Dimension.Zero;
+
+	}
+
+	public static List<OtherPart> MapPickListToItems(IEnumerable<PickPart> parts) {
 
 		List<OtherPart> items = [];
 		foreach (var item in parts) {
@@ -251,20 +264,6 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 				UnitPrice = cost
 			});
 
-			if (item.Type == "Pull/Knob") {
-				// TODO: check pick list for "Pull/Knob" part types, if there is only one then the drilling spacing for drawer fronts can be inferred from that, if there are multiple then spacing cannot be inferred 
-				if (frontHardwareSpreads.TryGetValue(item.Name, out Dimension spread)) {
-					spreads.Add(spread);
-				}
-			}
-
-		}
-
-		if (spreads.Count == 1) {
-			hardwareSpread = spreads[0];
-		} else {
-			// Hardware spread is unknown
-			hardwareSpread = Dimension.Zero;
 		}
 
 		return items;
