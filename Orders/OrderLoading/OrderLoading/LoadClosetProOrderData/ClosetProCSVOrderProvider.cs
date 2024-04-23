@@ -1,7 +1,6 @@
 ﻿using OrderLoading.ClosetProCSVCutList;
 using OrderLoading.ClosetProCSVCutList.CSVModels;
 using OrderLoading.ClosetProCSVCutList.Products;
-using Domain.Companies.Entities;
 using Domain.Companies.ValueObjects;
 using Domain.Orders.Builders;
 using Domain.Orders.Entities;
@@ -87,10 +86,13 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 		otherParts.AddRange(ClosetProPartMapper.MapAccessoriesToItems(info.Accessories));
 		otherParts.AddRange(ClosetProPartMapper.MapBuyOutPartsToItems(info.BuyOutParts));
 
-		var additionalItems = otherParts.Select(p => new AdditionalItem(Guid.NewGuid(), p.Qty, $"{p.Name}", p.UnitPrice)).ToList();
+		var hardwarePrice = otherParts.Sum(p => p.Qty * p.UnitPrice);
+		var additionalItems = new List<AdditionalItem>() {
+			new(Guid.NewGuid(), 1, "Included Hardware", hardwarePrice)
+		};
 
         // TODO: need hardware list here
-		Dimension hardwareSpread = ClosetProPartMapper.GetHardwareSpread(info.PickList, []);
+        Dimension hardwareSpread = ClosetProPartMapper.GetHardwareSpread(info.PickList, []);
 
 		_partMapper.GroupLikeProducts = true; // TODO: Move this into the closet pro settings object
 		var cpProducts = _partMapper.MapPartsToProducts(info.Parts, hardwareSpread);
@@ -115,9 +117,11 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 		string workingDirectory = await CreateWorkingDirectory(csvData, info, orderNumber, workingDirectoryRoot);
 
 		var hangRails = ClosetProPartMapper.GetHangingRailsFromBuyOutParts(info.BuyOutParts).ToArray();
+		var hangRailBrackets = ClosetProPartMapper.GetHangingRailBracketsFromBuyOutParts(info.BuyOutParts).ToArray();
 		var slides = GetDrawerSlides(products);
 		var supplies = GetSupplies(cpProducts);
-		Hardware hardware = new(supplies, slides, hangRails);
+		supplies.AddRange(hangRailBrackets);
+		Hardware hardware = new(supplies.ToArray(), slides, hangRails);
 
 		return new OrderData() {
 			VendorId = vendorId,
@@ -222,7 +226,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 		return products.OfType<IDrawerSlideContainer>().SelectMany(d => d.GetDrawerSlides()).ToArray();
 	}
 
-	private static Supply[] GetSupplies(IEnumerable<IClosetProProduct> products) {
+	private static List<Supply> GetSupplies(IEnumerable<IClosetProProduct> products) {
 
 		List<Supply> supplies = [];
 
@@ -235,23 +239,44 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 		int adjPins = shelves.Where(s => s.Type == ShelfType.Adjustable).Sum(s => s.Qty);
 		adjPins += shelves.Where(s => s.Type == ShelfType.Shoe).Sum(s => s.Qty);
 		adjPins += corners.Where(s => s.Type == CornerShelfType.LAdjustable || s.Type == CornerShelfType.DiagonalAdjustable).Sum(s => s.Qty);
-		supplies.Add(Supply.LockingShelfPeg(adjPins * 4));
+		// Closet spreadsheet adds an additional 4%
+		if (adjPins > 0) {
+			supplies.Add(Supply.LockingShelfPeg((int)(adjPins * 4 * 1.04)));
+		}
 
 		int cams = shelves.Where(s => s.Type == ShelfType.Fixed).Sum(s => s.Qty * 4);
 		cams += corners.Where(s => s.Type == CornerShelfType.LFixed || s.Type == CornerShelfType.DiagonalFixed).Sum(s => s.Qty * 6);
 		// TODO: check that toe kicks are fixed
-		cams += products.OfType<MiscellaneousClosetPart>().Where(p => p.Type == MiscellaneousType.ToeKick).Sum(t => t.Qty * 4); 
-		supplies.Add(Supply.RafixCam(cams * 4));
+		cams += products.OfType<MiscellaneousClosetPart>().Where(p => p.Type == MiscellaneousType.ToeKick).Sum(t => t.Qty * 4);
+		cams += 8; // The closet spreadsheet add 8 extra cams
+		if (cams > 0) {
+			supplies.Add(Supply.RafixCam(cams * 4));
+		}
 
-		supplies.Add(Supply.DrawerClips(products.OfType<DrawerBox>().Where(d => d.UnderMountNotches).Sum(d => d.Qty)));
+		var drawers = products.OfType<DrawerBox>().Where(d => d.UnderMountNotches).Sum(d => d.Qty);
+		if (drawers > 0) {
+			supplies.Add(Supply.DrawerClips(drawers));
+		}
 
 		var verticals = products.OfType<VerticalPanel>().ToArray();
 		var drilledThrough = verticals.Where(v => v.Drilling == VerticalPanelDrilling.DrilledThrough).Sum(v => v.Qty);
 		var finishedSide = verticals.Where(v => v.Drilling != VerticalPanelDrilling.DrilledThrough).Sum(v => v.Qty);
-		supplies.Add(Supply.CamBolt(finishedSide * 6));
-		supplies.Add(Supply.CamBoltDoubleSided(drilledThrough * 6));
+		// Closet spreadsheet adds an additional 5%
+		if (finishedSide > 0) {
+			supplies.Add(Supply.CamBolt((int)(finishedSide * 6 * 1.05)));
+		}
+		if (drilledThrough > 0) {
+			supplies.Add(Supply.CamBoltDoubleSided((int)(drilledThrough * 6 * 1.05)));
+		}
 
-        return supplies.ToArray();
+		var wallHung = verticals.Where(v => v.WallHung).Sum(v => v.Qty);
+		if (wallHung > 0) {
+			supplies.Add(Supply.HangingBracketLH(wallHung / 2));
+			supplies.Add(Supply.HangingBracketRH(wallHung / 2));
+			supplies.Add(Supply.LongEuroScrews(wallHung));
+		}
+
+        return supplies;
 
 	}
 

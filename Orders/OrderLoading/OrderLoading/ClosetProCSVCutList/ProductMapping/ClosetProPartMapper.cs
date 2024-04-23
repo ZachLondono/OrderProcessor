@@ -312,6 +312,24 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 	}
 
+	public static List<Supply> GetHangingRailBracketsFromBuyOutParts(IEnumerable<BuyOutPart> parts) {
+
+		List<Supply> supplies = [];
+
+		foreach (var part in parts) {
+
+			if (part.PartName == "Left Rod End") {
+				supplies.Add(Supply.RodMountingBracketOpen(part.Quantity));
+			} else if (part.PartName == "Right Rod End") {
+				supplies.Add(Supply.RodMountingBracketOpen(part.Quantity));
+			}
+
+        }
+
+        return supplies;
+
+	}
+
 	public static List<OtherPart> MapBuyOutPartsToItems(IEnumerable<BuyOutPart> parts) {
 
 		List<OtherPart> items = [];
