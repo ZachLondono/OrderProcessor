@@ -65,11 +65,11 @@ public class DrawerBox : IClosetProProduct {
 		string bottomMaterial = "1/4\" Ply";
 
 		string clips = "None";
-		string notch = "No_Notch";
+		string notch = DovetailDrawerBoxConfig.NO_NOTCH;
 		string accessory = "None";
 		DrawerSlideType slideType = DrawerSlideType.SideMount;
 		if (UnderMountNotches) {
-			notch = "Std_Notch";
+			notch = DovetailDrawerBoxConfig.STD_NOTCH;
 			accessory = "Hettich Quadro V6 Slides";
 			clips = "Hettich";
 			slideType = DrawerSlideType.UnderMount;
