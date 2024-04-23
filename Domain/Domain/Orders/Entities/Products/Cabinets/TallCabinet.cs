@@ -171,6 +171,10 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
                     break;
             }
 
+            if (DrawerBoxOptions.SlideType == DrawerSlideType.UnderMount) {
+                supplies.Add(Supply.DrawerPull(Inside.RollOutBoxes.Qty * Qty));
+            }
+
         }
 
         return supplies;
@@ -181,17 +185,21 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
 
         List<DrawerSlide> slides = [];
 
-        var depth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, true);
+        if (Inside.RollOutBoxes.Qty > 0) {
 
-        switch (DrawerBoxOptions.SlideType) {
-
-            case DrawerSlideType.UnderMount:
-                slides.Add(DrawerSlide.UndermountSlide(Inside.RollOutBoxes.Qty * Qty, depth));
-                break;
-
-            case DrawerSlideType.SideMount:
-                slides.Add(DrawerSlide.SidemountSlide(Inside.RollOutBoxes.Qty * Qty, depth));
-                break;
+            var depth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, true);
+    
+            switch (DrawerBoxOptions.SlideType) {
+    
+                case DrawerSlideType.UnderMount:
+                    slides.Add(DrawerSlide.UndermountSlide(Inside.RollOutBoxes.Qty * Qty, depth));
+                    break;
+    
+                case DrawerSlideType.SideMount:
+                    slides.Add(DrawerSlide.SidemountSlide(Inside.RollOutBoxes.Qty * Qty, depth));
+                    break;
+    
+            }
 
         }
 

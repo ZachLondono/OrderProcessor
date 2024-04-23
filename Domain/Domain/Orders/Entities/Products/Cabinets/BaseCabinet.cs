@@ -203,6 +203,18 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
 
         }
 
+        if (DrawerBoxOptions.SlideType == DrawerSlideType.UnderMount) {
+
+            if (Drawers.Quantity > 0) {
+                supplies.Add(Supply.DrawerClips(Drawers.Quantity * Qty));
+            }
+
+            if (Inside.RollOutBoxes.Qty > 0) {
+                supplies.Add(Supply.DrawerClips(Inside.RollOutBoxes.Qty * Qty));
+            }
+
+        }
+
         return supplies;
 
     }

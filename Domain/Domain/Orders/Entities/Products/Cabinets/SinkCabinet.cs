@@ -144,6 +144,12 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
 
         }
 
+        if (RollOutBoxes.Qty > 0 && DrawerBoxOptions.SlideType == DrawerSlideType.UnderMount) {
+            
+            supplies.Add(Supply.DrawerClips(RollOutBoxes.Qty * Qty));
+
+        }
+
         return supplies;
 
     }

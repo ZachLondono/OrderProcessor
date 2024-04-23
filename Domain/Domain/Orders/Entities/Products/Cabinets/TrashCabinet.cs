@@ -119,6 +119,10 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
                 break;
         }
 
+        if (DrawerBoxOptions.SlideType == DrawerSlideType.UnderMount) {
+            supplies.Add(Supply.DrawerClips(Qty));
+        }
+
         return supplies;
 
     }
