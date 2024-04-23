@@ -9,6 +9,7 @@ using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
 using Domain.Orders.Entities.Products;
 using Domain.Services;
+using Domain.Orders.ValueObjects;
 
 namespace OrderLoading.LoadDoweledDBSpreadsheetOrderData;
 
@@ -115,8 +116,8 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 				PriceAdjustment = 0,
 				Tax = 0,
 				WorkingDirectory = workingDirectory,
-				AdditionalItems = new(),
-				Info = new(),
+				AdditionalItems = [],
+				Info = [],
 				Billing = new() {
 					PhoneNumber = "",
 					InvoiceEmail = customerInfo.Email,
@@ -129,7 +130,8 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 					Price = 0,
 					Address = address
 				},
-				Products = boxes
+				Products = boxes,
+				Hardware = Hardware.None()
 			};
 
 		} catch (Exception ex) {

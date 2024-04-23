@@ -186,8 +186,8 @@ public class DoorSpreadsheetOrderProvider : IOrderProvider {
 			CustomerId = customerId,
 
 			Comment = string.Empty,
-			AdditionalItems = new(),
-			Info = new(),
+            AdditionalItems = [],
+			Info = [],
 			Rush = false,
 
 			Tax = 0,
@@ -206,7 +206,9 @@ public class DoorSpreadsheetOrderProvider : IOrderProvider {
 				Price = header.Freight
 			},
 
-			Products = items.Select(i => MapLineItem(i, header, units)).ToList()
+			Products = items.Select(i => MapLineItem(i, header, units)).ToList(),
+
+			Hardware = Hardware.None()
 
 		};
 

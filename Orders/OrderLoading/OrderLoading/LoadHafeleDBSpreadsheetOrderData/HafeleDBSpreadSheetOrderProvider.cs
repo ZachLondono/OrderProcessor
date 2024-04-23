@@ -156,15 +156,16 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 			OrderDate = workbookData.OrderDetails.OrderDate,
 			VendorId = _settings.VendorId,
 			Comment = workbookData.OrderComments,
-			Info = new() {
+            Info = new() {
 				{ "Hafele PO", workbookData.OrderDetails.HafelePO },
 				{ "Hafele Order Number", workbookData.OrderDetails.HafeleOrderNumber },
 				{ "Hafele Account Number", workbookData.OrderDetails.AccountNumber },
 				{ "Customer PO", workbookData.OrderDetails.PurchaseOrder }
 			},
-			AdditionalItems = new(),
+			AdditionalItems = [],
 			Tax = 0M,
 			PriceAdjustment = 0M,
+			Hardware = Hardware.None()
 		};
 
 		return (orderData, incomingDirectory);

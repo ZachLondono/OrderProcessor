@@ -184,8 +184,9 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 				AdditionalItems = additionalItems,
 				Products = products,
 				Rush = cover.RushCharge > 0,
-				Info = info
-			};
+				Info = info,
+                Hardware = Hardware.None()
+            };
 
 		} catch (Exception ex) {
 
