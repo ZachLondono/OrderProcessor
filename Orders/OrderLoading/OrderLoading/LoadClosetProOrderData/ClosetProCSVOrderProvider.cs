@@ -236,12 +236,12 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 		var corners = products.OfType<CornerShelf>().ToArray();
 
 		// TODO: need to check if the adjustable shelves have pins or not
-		int adjPins = shelves.Where(s => s.Type == ShelfType.Adjustable).Sum(s => s.Qty);
-		adjPins += shelves.Where(s => s.Type == ShelfType.Shoe).Sum(s => s.Qty);
-		adjPins += corners.Where(s => s.Type == CornerShelfType.LAdjustable || s.Type == CornerShelfType.DiagonalAdjustable).Sum(s => s.Qty);
+		int adjPins = shelves.Where(s => s.Type == ShelfType.Adjustable).Sum(s => s.Qty * 4);
+		adjPins += shelves.Where(s => s.Type == ShelfType.Shoe).Sum(s => s.Qty * 4);
+		adjPins += corners.Where(s => s.Type == CornerShelfType.LAdjustable || s.Type == CornerShelfType.DiagonalAdjustable).Sum(s => s.Qty * 6);
 		// Closet spreadsheet adds an additional 4%
 		if (adjPins > 0) {
-			supplies.Add(Supply.LockingShelfPeg((int)(adjPins * 4 * 1.04)));
+			supplies.Add(Supply.LockingShelfPeg((int)(adjPins * 1.04)));
 		}
 
 		int cams = shelves.Where(s => s.Type == ShelfType.Fixed).Sum(s => s.Qty * 4);
@@ -250,7 +250,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 		cams += products.OfType<MiscellaneousClosetPart>().Where(p => p.Type == MiscellaneousType.ToeKick).Sum(t => t.Qty * 4);
 		cams += 8; // The closet spreadsheet add 8 extra cams
 		if (cams > 0) {
-			supplies.Add(Supply.RafixCam(cams * 4));
+			supplies.Add(Supply.RafixCam(cams));
 		}
 
 		var drawers = products.OfType<DrawerBox>().Where(d => d.UnderMountNotches).Sum(d => d.Qty);
