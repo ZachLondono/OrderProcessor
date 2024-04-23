@@ -92,13 +92,14 @@ public class HardwareListDecorator(Hardware hardwareList) : IDocumentDecorator {
 							.Table(t => {
 
 							t.ColumnsDefinition(c => {
-								c.RelativeColumn();
 								c.ConstantColumn(150);
+								c.ConstantColumn(150);
+								c.RelativeColumn();
 							});
 
 							t.Header(header => {
 
-								header.Cell().ColumnSpan(2).AlignCenter().Text("Drawer Slides").Bold().FontSize(24);
+								header.Cell().ColumnSpan(3).AlignCenter().Text("Drawer Slides").Bold().FontSize(24);
 								header.Cell().Border(1).AlignCenter().Text("Qty").Bold().FontSize(16);
 								header.Cell().Border(1).AlignCenter().Text("Length (mm)").Bold().FontSize(16);
 								header.Cell().Border(1).AlignCenter().Text("Style").Bold().FontSize(16);
