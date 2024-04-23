@@ -16,6 +16,7 @@ using Domain.Services;
 using OrderLoading.ClosetProCSVCutList.Products.Shelves;
 using OrderLoading.ClosetProCSVCutList.Products.Verticals;
 using OrderLoading.ClosetProCSVCutList.Products.Fronts;
+using Domain.Orders.ValueObjects;
 
 namespace OrderLoading.LoadClosetProOrderData;
 
@@ -111,6 +112,8 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 		}
 		string workingDirectory = await CreateWorkingDirectory(csvData, info, orderNumber, workingDirectoryRoot);
 
+		Hardware hardware = Hardware.None();
+
 		return new OrderData() {
 			VendorId = vendorId,
 			CustomerId = customer.Id,
@@ -123,7 +126,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 			OrderDate = DateTime.Today,
 			DueDate = null,
 			Rush = false,
-			Info = new(),
+			Info = [],
 			Comment = string.Empty,
 			PriceAdjustment = 0M,
 			Tax = 0M,
@@ -138,7 +141,8 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 				Method = "Pick Up",
 				PhoneNumber = "",
 				Price = 0M
-			}
+			},
+			Hardware = hardware
 		};
 
 	}
