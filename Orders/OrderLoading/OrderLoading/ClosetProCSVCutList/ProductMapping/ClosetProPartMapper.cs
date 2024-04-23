@@ -3,6 +3,7 @@ using OrderLoading.ClosetProCSVCutList.Products;
 using Domain.Orders.Builders;
 using Domain.Extensions;
 using Domain.ValueObjects;
+using Domain.Orders.Entities.Hardware;
 
 namespace OrderLoading.ClosetProCSVCutList;
 
@@ -292,6 +293,25 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 	}
 
+	public static List<HangingRail> GetHangingRailsFromBuyOutParts(IEnumerable<BuyOutPart> parts) {
+
+		List<HangingRail> rails = [];
+
+		foreach (var part in parts) {
+
+            if (part.PartName != "Hang Rod") {
+                continue;
+            }
+
+            Dimension length = Dimension.FromInches(part.Width);
+            rails.Add(new HangingRail(Guid.NewGuid(), part.Quantity, length, part.Color));
+
+        }
+
+        return rails;
+
+	}
+
 	public static List<OtherPart> MapBuyOutPartsToItems(IEnumerable<BuyOutPart> parts) {
 
 		List<OtherPart> items = [];
@@ -302,22 +322,15 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 				unitPrice = 0M;
 			}
 
-			string name;
-			if (part.PartName == "Hang Rod") {
-				name = $"{part.PartName} - {part.Color} - {part.Width}\"L";
-			} else {
-				name = part.PartName;
-			}
+            items.Add(new() {
+                Qty = part.Quantity,
+                Name = part.PartName,
+                UnitPrice = (unitPrice / (decimal)part.Quantity)
+            });
 
-			items.Add(new() {
-				Qty = part.Quantity,
-				Name = name,
-				UnitPrice = (unitPrice / (decimal)part.Quantity)
-			});
+        }
 
-		}
-
-		return items;
+        return items;
 
 	}
 
