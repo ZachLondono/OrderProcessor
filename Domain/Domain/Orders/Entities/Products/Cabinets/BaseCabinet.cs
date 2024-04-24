@@ -224,6 +224,7 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
         List<DrawerSlide> slides = [];
 
         Dimension boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, true);
+        boxDepth = Dimension.FromMillimeters(Math.Round(boxDepth.AsMillimeters()));
 
         if (Drawers.Quantity > 0) {
 

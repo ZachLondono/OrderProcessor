@@ -132,6 +132,7 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
         List<DrawerSlide> slides = [];
 
         var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType);
+        boxDepth = Dimension.FromMillimeters(Math.Round(boxDepth.AsMillimeters()));
         switch (DrawerBoxOptions.SlideType) {
             case DrawerSlideType.UnderMount:
                 slides.Add(DrawerSlide.UndermountSlide(Qty, boxDepth));

@@ -116,7 +116,8 @@ public class DovetailDrawerBox : IComponent, IDrawerSlideContainer, ISupplyConta
 
     public IEnumerable<DrawerSlide> GetDrawerSlides() {
         if (DrawerBoxOptions.Notches != DovetailDrawerBoxConfig.NO_NOTCH) {
-            yield return DrawerSlide.UndermountSlide(Qty, Depth);
+            var fixedDepth = Dimension.FromMillimeters(Math.Round(Depth.AsMillimeters()));
+            yield return DrawerSlide.UndermountSlide(Qty, fixedDepth);
         }
     }
 

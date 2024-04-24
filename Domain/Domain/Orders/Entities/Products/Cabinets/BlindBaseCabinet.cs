@@ -165,6 +165,7 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
         if (Drawers.Quantity > 0) {
 
             var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, false);
+            boxDepth = Dimension.FromMillimeters(Math.Round(boxDepth.AsMillimeters()));
 
             switch (DrawerBoxOptions.SlideType) {
                 case DrawerSlideType.UnderMount:

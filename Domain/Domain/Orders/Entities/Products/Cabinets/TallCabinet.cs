@@ -188,6 +188,7 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
         if (Inside.RollOutBoxes.Qty > 0) {
 
             var depth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, true);
+            depth = Dimension.FromMillimeters(Math.Round(depth.AsMillimeters()));
     
             switch (DrawerBoxOptions.SlideType) {
     

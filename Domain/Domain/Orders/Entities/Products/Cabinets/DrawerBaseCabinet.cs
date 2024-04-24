@@ -130,6 +130,7 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
     public IEnumerable<DrawerSlide> GetDrawerSlides() {
 
         var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, false);
+        boxDepth = Dimension.FromMillimeters(Math.Round(boxDepth.AsMillimeters()));
         return [
 
             DrawerBoxOptions.SlideType switch {

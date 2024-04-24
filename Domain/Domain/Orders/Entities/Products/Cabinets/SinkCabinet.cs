@@ -96,7 +96,7 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
 
     }
 
-    public bool ContainsDovetailDrawerBoxes() => RollOutBoxes.Positions.Length != 0;
+    public bool ContainsDovetailDrawerBoxes() => RollOutBoxes.Qty != 0;
 
     public IEnumerable<DovetailDrawerBox> GetDovetailDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
@@ -161,6 +161,7 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
         if (RollOutBoxes.Qty > 0) {
 
             var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, true);
+            boxDepth = Dimension.FromMillimeters(Math.Round(boxDepth.AsMillimeters()));
 
             switch (DrawerBoxOptions.SlideType) {
                 case DrawerSlideType.UnderMount:
