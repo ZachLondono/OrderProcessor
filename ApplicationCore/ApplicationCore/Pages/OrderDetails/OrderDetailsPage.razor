@@ -1,6 +1,7 @@
 ﻿@page "/orders/details/{OrderIdStr}"
 @using ApplicationCore.Features.CustomizationScriptManager.Views
 @using ApplicationCore.Features.DeleteOrder
+@using ApplicationCore.Features.HardwareList
 @using ApplicationCore.Features.OrderRelationshipList
 @using ApplicationCore.Features.Orders.Details
 @using ApplicationCore.Features.Orders.OrderExport
@@ -48,6 +49,10 @@
                     </div>
                 </ProductActionsColumn>
             </OrderDetails>
+        </section>
+
+        <section>
+            <HardwareList OrderId="OrderId" />
         </section>
     
         <section class="mt-16">

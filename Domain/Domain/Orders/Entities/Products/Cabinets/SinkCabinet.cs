@@ -1,12 +1,13 @@
 ﻿using Domain.Orders.Builders;
 using Domain.Orders.Components;
+using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer {
+public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer, ISupplyContainer, IDrawerSlideContainer {
 
     public ToeType ToeType { get; }
     public HingeSide HingeSide { get; }
@@ -95,7 +96,7 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
 
     }
 
-    public bool ContainsDovetailDrawerBoxes() => RollOutBoxes.Positions.Any();
+    public bool ContainsDovetailDrawerBoxes() => RollOutBoxes.Qty != 0;
 
     public IEnumerable<DovetailDrawerBox> GetDovetailDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
@@ -120,9 +121,9 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
 
     }
 
-    public override IEnumerable<Supply> GetSupplies() {
+    public IEnumerable<Supply> GetSupplies() {
 
-        List<Supply> supplies = new();
+        List<Supply> supplies = [];
 
         if (AdjustableShelves > 0) {
 
@@ -143,23 +144,38 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
 
         }
 
+        if (RollOutBoxes.Qty > 0 && DrawerBoxOptions.SlideType == DrawerSlideType.UnderMount) {
+            
+            supplies.Add(Supply.DrawerClips(RollOutBoxes.Qty * Qty));
+
+        }
+
+        return supplies;
+
+    }
+
+    public IEnumerable<DrawerSlide> GetDrawerSlides() {
+
+        List<DrawerSlide> slides = [];
+
         if (RollOutBoxes.Qty > 0) {
 
             var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, true);
+            boxDepth = Dimension.FromMillimeters(Math.Round(boxDepth.AsMillimeters()));
 
             switch (DrawerBoxOptions.SlideType) {
                 case DrawerSlideType.UnderMount:
-                    supplies.Add(Supply.UndermountSlide(RollOutBoxes.Qty * Qty, boxDepth));
+                    slides.Add(DrawerSlide.UndermountSlide(RollOutBoxes.Qty * Qty, boxDepth));
                     break;
 
                 case DrawerSlideType.SideMount:
-                    supplies.Add(Supply.SidemountSlide(RollOutBoxes.Qty * Qty, boxDepth));
+                    slides.Add(DrawerSlide.SidemountSlide(RollOutBoxes.Qty * Qty, boxDepth));
                     break;
             }
 
         }
 
-        return supplies;
+        return slides;
 
     }
 

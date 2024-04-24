@@ -17,326 +17,342 @@ using Domain.Orders.Entities;
 using Domain.Orders.Entities.Products;
 using Domain.Services;
 using Domain.Extensions;
+using Domain.Orders.Entities.Hardware;
 
 namespace OrderLoading.LoadAllmoxyOrderData;
 
 public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 
-    private readonly AllmoxyConfiguration _configuration;
-    private readonly IXMLValidator _validator;
-    private readonly ProductBuilderFactory _builderFactory;
-    private readonly GetCustomerIdByAllmoxyIdAsync _getCustomerIdByAllmoxyIdAsync;
-    private readonly InsertCustomerAsync _insertCustomerAsync;
-    private readonly IFileReader _fileReader;
-    private readonly GetCustomerOrderPrefixByIdAsync _getCustomerOrderPrefixByIdAsync;
-    private readonly GetCustomerWorkingDirectoryRootByIdAsync _getCustomerWorkingDirectoryRootByIdAsync;
-    private readonly ILogger<AllmoxyXMLOrderProvider> _logger;
-
-    public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
-
-    public AllmoxyXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader,
-                                    GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync,
-                                    ILogger<AllmoxyXMLOrderProvider> logger) {
-        _configuration = configuration.Value;
-        _validator = validator;
-        _builderFactory = builderFactory;
-        _getCustomerIdByAllmoxyIdAsync = getCustomerIdByAllmoxyIdAsync;
-        _insertCustomerAsync = insertCustomerAsync;
-        _fileReader = fileReader;
-        _getCustomerOrderPrefixByIdAsync = getCustomerOrderPrefixByIdAsync;
-        _getCustomerWorkingDirectoryRootByIdAsync = getCustomerWorkingDirectoryRootByIdAsync;
-        _logger = logger;
-    }
-
-    protected abstract Task<string> GetExportXMLFromSource(string source);
-
-    public async Task<OrderData?> LoadOrderData(string source) {
-
-        var exportXML = await GetExportXMLFromSource(source);
-
-        if (exportXML == string.Empty) {
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "No order data found");
-            return null;
-        }
-
-        // Validate data
-        if (!ValidateData(exportXML)) {
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Order data was not valid");
-            return null;
-        }
-
-        // Deserialize data
-        OrderModel? data = DeserializeData(exportXML);
-        if (data is null) {
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find order information in given data");
-            return null;
-        }
-
-        ShippingInfo shipping = new() {
-            Contact = data.Shipping.Attn,
-            Method = data.Shipping.Method,
-            PhoneNumber = "",
-            Price = AllmoxyXMLOrderProviderHelpers.StringToMoney(data.Invoice.Shipping),
-            Address = new Address() {
-                Line1 = data.Shipping.Address.Line1,
-                Line2 = data.Shipping.Address.Line2,
-                Line3 = data.Shipping.Address.Line3,
-                City = data.Shipping.Address.City,
-                State = data.Shipping.Address.State,
-                Zip = data.Shipping.Address.Zip,
-                Country = data.Shipping.Address.Country
-            }
-        };
-
-        string customerName = data.Customer.Company;
-
-        Guid customerId = await CreateCustomerIfNotExists(data, customerName);
-
-        var info = new Dictionary<string, string>() {
-            { "Notes", data.Note },
-            { "Shipping Attn", data.Shipping.Attn },
-            { "Shipping Instructions", data.Shipping.Instructions },
-            { "Allmoxy Customer Id", data.Customer.CompanyId.ToString() }
-        };
-
-        DateTime orderDate = ParseOrderDate(data.OrderDate);
-
-        var billing = new BillingInfo() {
-            InvoiceEmail = null,
-            PhoneNumber = "",
-            Address = new() {
-                Line1 = data.Invoice.Address.Line1,
-                Line2 = data.Invoice.Address.Line2,
-                Line3 = data.Invoice.Address.Line3,
-                City = data.Invoice.Address.City,
-                State = data.Invoice.Address.State,
-                Zip = data.Invoice.Address.Zip,
-                Country = data.Invoice.Address.Country
-            }
-        };
-
-        List<IProduct> products = new();
-        List<AdditionalItem> items = new();
-        data.Products.ForEach(c => MapAndAddProduct(c, products, items));
-
-        // 'Folder 1' is the default allmoxy folder name, if that is the only folder name than it can be removed
-        var roomNames = products.Select(p => p.Room).Distinct().ToList();
-        if (roomNames.Count == 1 && roomNames.First() == "Folder 1") {
-            products.ForEach(p => p.Room = string.Empty);
-        }
-
-        string number = data.Number.ToString();
-        string? prefix = await _getCustomerOrderPrefixByIdAsync(customerId);
-        if (prefix is not null) {
-            number = prefix + number;
-        }
-
-        string? customerWorkingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customerId);
-        string allmoxyDefaultWorkingDirectory = @"R:\Job Scans\Allmoxy"; // TODO: Get base directory from configuration file
-        string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? allmoxyDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{number} - {data.Customer.Company} - {data.Name}", ' '));
-        if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDir) && incomingDir is not null) {
-            string dataFile = _fileReader.GetAvailableFileName(incomingDir, "Incoming", ".xml");
-            await File.WriteAllTextAsync(dataFile, exportXML);
-        }
-
-        DateTime? dueDate = null;
-        if (DateTime.TryParse(data.Shipping.Date, out DateTime parsedDate)) {
-            dueDate = parsedDate;
-        }
-
-        OrderData? order = new() {
-            Number = number,
-            Name = data.Name,
-            WorkingDirectory = workingDirectory,                                         // TODO: Get default working directory from configuration file
-            Comment = data.Description,
-            Shipping = shipping,
-            Billing = billing,
-            Tax = AllmoxyXMLOrderProviderHelpers.StringToMoney(data.Invoice.Tax),
-            PriceAdjustment = 0M,
-            OrderDate = orderDate,
-            DueDate = dueDate,
-            CustomerId = customerId,
-            VendorId = Guid.Parse(_configuration.VendorId),
-            AdditionalItems = items,
-            Products = products,
-            Rush = data.Shipping.Method.Contains("Rush"),
-            Info = info
-        };
+	private readonly AllmoxyConfiguration _configuration;
+	private readonly IXMLValidator _validator;
+	private readonly ProductBuilderFactory _builderFactory;
+	private readonly GetCustomerIdByAllmoxyIdAsync _getCustomerIdByAllmoxyIdAsync;
+	private readonly InsertCustomerAsync _insertCustomerAsync;
+	private readonly IFileReader _fileReader;
+	private readonly GetCustomerOrderPrefixByIdAsync _getCustomerOrderPrefixByIdAsync;
+	private readonly GetCustomerWorkingDirectoryRootByIdAsync _getCustomerWorkingDirectoryRootByIdAsync;
+	private readonly ILogger<AllmoxyXMLOrderProvider> _logger;
+
+	public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
+
+	public AllmoxyXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader,
+									GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync,
+									ILogger<AllmoxyXMLOrderProvider> logger) {
+		_configuration = configuration.Value;
+		_validator = validator;
+		_builderFactory = builderFactory;
+		_getCustomerIdByAllmoxyIdAsync = getCustomerIdByAllmoxyIdAsync;
+		_insertCustomerAsync = insertCustomerAsync;
+		_fileReader = fileReader;
+		_getCustomerOrderPrefixByIdAsync = getCustomerOrderPrefixByIdAsync;
+		_getCustomerWorkingDirectoryRootByIdAsync = getCustomerWorkingDirectoryRootByIdAsync;
+		_logger = logger;
+	}
+
+	protected abstract Task<string> GetExportXMLFromSource(string source);
+
+	public async Task<OrderData?> LoadOrderData(string source) {
+
+		var exportXML = await GetExportXMLFromSource(source);
+
+		if (exportXML == string.Empty) {
+			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "No order data found");
+			return null;
+		}
+
+		// Validate data
+		if (!ValidateData(exportXML)) {
+			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Order data was not valid");
+			return null;
+		}
+
+		// Deserialize data
+		OrderModel? data = DeserializeData(exportXML);
+		if (data is null) {
+			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find order information in given data");
+			return null;
+		}
+
+		ShippingInfo shipping = new() {
+			Contact = data.Shipping.Attn,
+			Method = data.Shipping.Method,
+			PhoneNumber = "",
+			Price = AllmoxyXMLOrderProviderHelpers.StringToMoney(data.Invoice.Shipping),
+			Address = new Address() {
+				Line1 = data.Shipping.Address.Line1,
+				Line2 = data.Shipping.Address.Line2,
+				Line3 = data.Shipping.Address.Line3,
+				City = data.Shipping.Address.City,
+				State = data.Shipping.Address.State,
+				Zip = data.Shipping.Address.Zip,
+				Country = data.Shipping.Address.Country
+			}
+		};
+
+		string customerName = data.Customer.Company;
+
+		Guid customerId = await CreateCustomerIfNotExists(data, customerName);
+
+		var info = new Dictionary<string, string>() {
+			{ "Notes", data.Note },
+			{ "Shipping Attn", data.Shipping.Attn },
+			{ "Shipping Instructions", data.Shipping.Instructions },
+			{ "Allmoxy Customer Id", data.Customer.CompanyId.ToString() }
+		};
+
+		DateTime orderDate = ParseOrderDate(data.OrderDate);
+
+		var billing = new BillingInfo() {
+			InvoiceEmail = null,
+			PhoneNumber = "",
+			Address = new() {
+				Line1 = data.Invoice.Address.Line1,
+				Line2 = data.Invoice.Address.Line2,
+				Line3 = data.Invoice.Address.Line3,
+				City = data.Invoice.Address.City,
+				State = data.Invoice.Address.State,
+				Zip = data.Invoice.Address.Zip,
+				Country = data.Invoice.Address.Country
+			}
+		};
+
+		List<IProduct> products = [];
+		List<AdditionalItem> items = [];
+		data.Products.ForEach(c => MapAndAddProduct(c, products, items));
+
+		// 'Folder 1' is the default allmoxy folder name, if that is the only folder name than it can be removed
+		var roomNames = products.Select(p => p.Room).Distinct().ToList();
+		if (roomNames.Count == 1 && roomNames.First() == "Folder 1") {
+			products.ForEach(p => p.Room = string.Empty);
+		}
+
+		string number = data.Number.ToString();
+		string? prefix = await _getCustomerOrderPrefixByIdAsync(customerId);
+		if (prefix is not null) {
+			number = prefix + number;
+		}
+
+		string? customerWorkingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customerId);
+		string allmoxyDefaultWorkingDirectory = @"R:\Job Scans\Allmoxy"; // TODO: Get base directory from configuration file
+		string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? allmoxyDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{number} - {data.Customer.Company} - {data.Name}", ' '));
+		if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDir) && incomingDir is not null) {
+			string dataFile = _fileReader.GetAvailableFileName(incomingDir, "Incoming", ".xml");
+			await File.WriteAllTextAsync(dataFile, exportXML);
+		}
+
+		DateTime? dueDate = null;
+		if (DateTime.TryParse(data.Shipping.Date, out DateTime parsedDate)) {
+			dueDate = parsedDate;
+		}
+
+		var allSupplies = products.OfType<ISupplyContainer>()
+									.SelectMany(p => p.GetSupplies())
+									.GroupBy(p => p.Description)
+									.Select(g => new Supply(Guid.NewGuid(), g.Sum(s => s.Qty), g.Key))
+									.ToArray();
+
+		var allSlides = products.OfType<IDrawerSlideContainer>()
+									.SelectMany(p => p.GetDrawerSlides())
+									.GroupBy(p => (p.Length, p.Style))
+									.Select(g => new DrawerSlide(Guid.NewGuid(), g.Sum(s => s.Qty), g.Key.Length, g.Key.Style))
+									.ToArray();
+
+		Hardware hardware = new(allSupplies, allSlides, []);
+
+		OrderData? order = new() {
+			Number = number,
+			Name = data.Name,
+			WorkingDirectory = workingDirectory,                                         // TODO: Get default working directory from configuration file
+			Comment = data.Description,
+			Shipping = shipping,
+			Billing = billing,
+			Tax = AllmoxyXMLOrderProviderHelpers.StringToMoney(data.Invoice.Tax),
+			PriceAdjustment = 0M,
+			OrderDate = orderDate,
+			DueDate = dueDate,
+			CustomerId = customerId,
+			VendorId = Guid.Parse(_configuration.VendorId),
+			AdditionalItems = items,
+			Products = products,
+			Rush = data.Shipping.Method.Contains("Rush"),
+			Info = info,
+			Hardware = hardware,
+		};
+
+		return order;
+
+	}
+
+	private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
+
+		workingDirectory = workingDirectory.Trim();
+
+		try {
+
+			if (Directory.Exists(workingDirectory)) {
+				incomingDirectory = CreateSubDirectories(workingDirectory);
+				return true;
+			} else if (Directory.CreateDirectory(workingDirectory).Exists) {
+				incomingDirectory = CreateSubDirectories(workingDirectory);
+				return true;
+			} else {
+				incomingDirectory = null;
+				return false;
+			}
 
-        return order;
-
-    }
-
-    private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
-
-        workingDirectory = workingDirectory.Trim();
+		} catch (Exception ex) {
+			incomingDirectory = null;
+			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
+		}
 
-        try {
+		return false;
 
-            if (Directory.Exists(workingDirectory)) {
-                incomingDirectory = CreateSubDirectories(workingDirectory);
-                return true;
-            } else if (Directory.CreateDirectory(workingDirectory).Exists) {
-                incomingDirectory = CreateSubDirectories(workingDirectory);
-                return true;
-            } else {
-                incomingDirectory = null;
-                return false;
-            }
+	}
 
-        } catch (Exception ex) {
-            incomingDirectory = null;
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
-        }
+	private static string? CreateSubDirectories(string workingDirectory) {
+		var cutListDir = Path.Combine(workingDirectory, "CUTLIST");
+		_ = Directory.CreateDirectory(cutListDir);
 
-        return false;
+		var ordersDir = Path.Combine(workingDirectory, "orders");
+		_ = Directory.CreateDirectory(ordersDir);
 
-    }
+		var incomingDir = Path.Combine(workingDirectory, "incoming");
+		return Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
+	}
 
-    private static string? CreateSubDirectories(string workingDirectory) {
-        var cutListDir = Path.Combine(workingDirectory, "CUTLIST");
-        _ = Directory.CreateDirectory(cutListDir);
+	private async Task<Guid> CreateCustomerIfNotExists(OrderModel data, string customerName) {
 
-        var ordersDir = Path.Combine(workingDirectory, "orders");
-        _ = Directory.CreateDirectory(ordersDir);
+		int allmoxyCustomerId = data.Customer.CompanyId;
+		Guid? customerId = await _getCustomerIdByAllmoxyIdAsync(allmoxyCustomerId);
 
-        var incomingDir = Path.Combine(workingDirectory, "incoming");
-        return Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
-    }
+		if (customerId is Guid id) {
+			return id;
+		} else {
 
-    private async Task<Guid> CreateCustomerIfNotExists(OrderModel data, string customerName) {
+			var shippingContact = new Contact() {
+				Name = data.Shipping.Attn,
+				Email = null,
+				Phone = null
+			};
 
-        int allmoxyCustomerId = data.Customer.CompanyId;
-        Guid? customerId = await _getCustomerIdByAllmoxyIdAsync(allmoxyCustomerId);
+			var shippingAddress = new CompanyAddress() {
+				Line1 = data.Shipping.Address.Line1,
+				Line2 = data.Shipping.Address.Line2,
+				Line3 = data.Shipping.Address.Line3,
+				City = data.Shipping.Address.City,
+				State = data.Shipping.Address.State,
+				Zip = data.Shipping.Address.Zip,
+				Country = data.Shipping.Address.Country
+			};
 
-        if (customerId is Guid id) {
-            return id;
-        } else {
+			var billingContact = new Contact();
 
-            var shippingContact = new Contact() {
-                Name = data.Shipping.Attn,
-                Email = null,
-                Phone = null
-            };
+			var billingAddress = new CompanyAddress();
 
-            var shippingAddress = new CompanyAddress() {
-                Line1 = data.Shipping.Address.Line1,
-                Line2 = data.Shipping.Address.Line2,
-                Line3 = data.Shipping.Address.Line3,
-                City = data.Shipping.Address.City,
-                State = data.Shipping.Address.State,
-                Zip = data.Shipping.Address.Zip,
-                Country = data.Shipping.Address.Country
-            };
+			var newCustomer = CompanyCustomer.Create(customerName, data.Shipping.Method, shippingContact, shippingAddress, billingContact, billingAddress);
 
-            var billingContact = new Contact();
+			await _insertCustomerAsync(newCustomer, allmoxyCustomerId);
 
-            var billingAddress = new CompanyAddress();
+			return newCustomer.Id;
 
-            var newCustomer = CompanyCustomer.Create(customerName, data.Shipping.Method, shippingContact, shippingAddress, billingContact, billingAddress);
+		}
 
-            await _insertCustomerAsync(newCustomer, allmoxyCustomerId);
+	}
 
-            return newCustomer.Id;
+	public bool ValidateData(string data) {
 
-        }
+		try {
 
-    }
+			using var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
-    public bool ValidateData(string data) {
+			var directory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
-        try {
+			if (directory is null) {
+				OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Failed to get directory of Allmoxy XML Schema");
+				_logger.LogError("Failed to get directory of Allmoxy XML Schema from assembly location {AssemblyLocation}", System.Reflection.Assembly.GetExecutingAssembly().Location);
+				return false;
+			}
 
-            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
+			var fullPath = Path.Combine(directory, _configuration.SchemaFilePath);
+			var errors = _validator.ValidateXML(stream, fullPath);
 
-            var directory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+			errors.ForEach(error => {
+				string message = error.Exception.Message;
+				if (error.Exception is XmlSchemaValidationException schemaEx) {
+					message = $"L{schemaEx.LineNumber}P{schemaEx.LinePosition} " + message;
+				}
+				OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Error] [{error.Severity}] {message}");
+			});
 
-            if (directory is null) {
-                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Failed to get directory of Allmoxy XML Schema");
-                _logger.LogError("Failed to get directory of Allmoxy XML Schema from assembly location {AssemblyLocation}", System.Reflection.Assembly.GetExecutingAssembly().Location);
-                return false;
-            }
+			return !errors.Any();
 
-            var fullPath = Path.Combine(directory, _configuration.SchemaFilePath);
-            var errors = _validator.ValidateXML(stream, fullPath);
+		} catch (XmlSchemaException ex) {
 
-            errors.ForEach(error => {
-                string message = error.Exception.Message;
-                if (error.Exception is XmlSchemaValidationException schemaEx) {
-                    message = $"L{schemaEx.LineNumber}P{schemaEx.LinePosition} " + message;
-                }
-                OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Error] [{error.Severity}] {message}");
-            });
+			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Schema Error] XML schema is not valid L{ex.LineNumber} - {ex.Message}");
+			_logger.LogError(ex, "Exception thrown while comparing Allmoxy XML order data against schema");
+			return false;
 
-            return !errors.Any();
+		} catch (XmlException ex) {
 
-        } catch (XmlSchemaException ex) {
+			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Schema Error] XML schema is not valid L{ex.LineNumber} - {ex.Message}");
+			_logger.LogError(ex, "Exception thrown while comparing Allmoxy XML order data against schema");
+			return false;
 
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Schema Error] XML schema is not valid L{ex.LineNumber} - {ex.Message}");
-            _logger.LogError(ex, "Exception thrown while comparing Allmoxy XML order data against schema");
-            return false;
+		} catch (Exception ex) {
 
-        } catch (XmlException ex) {
+			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not verify order data against schema");
+			_logger.LogError(ex, "Exception thrown while comparing Allmoxy XML order data against schema");
+			return false;
 
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Schema Error] XML schema is not valid L{ex.LineNumber} - {ex.Message}");
-            _logger.LogError(ex, "Exception thrown while comparing Allmoxy XML order data against schema");
-            return false;
+		}
 
-        } catch (Exception ex) {
+	}
 
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not verify order data against schema");
-            _logger.LogError(ex, "Exception thrown while comparing Allmoxy XML order data against schema");
-            return false;
+	private DateTime ParseOrderDate(string orderDateStr) {
 
-        }
+		if (DateTime.TryParse(orderDateStr, out DateTime orderDate)) {
+			return orderDate;
+		}
 
-    }
+		OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not parse order date '{(orderDateStr == "" ? "[BLANK]" : orderDateStr)}'");
 
-    private DateTime ParseOrderDate(string orderDateStr) {
+		return DateTime.Now;
 
-        if (DateTime.TryParse(orderDateStr, out DateTime orderDate)) {
-            return orderDate;
-        }
+	}
 
-        OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not parse order date '{(orderDateStr == "" ? "[BLANK]" : orderDateStr)}'");
+	private void MapAndAddProduct(ProductOrItemModel data, List<IProduct> products, List<AdditionalItem> items) {
 
-        return DateTime.Now;
+		try {
 
-    }
+			var productOrItem = data.CreateProductOrItem(_builderFactory);
 
-    private void MapAndAddProduct(ProductOrItemModel data, List<IProduct> products, List<AdditionalItem> items) {
+			productOrItem.Switch(
+				product => {
 
-        try {
+					if (product.Room == "folder_name") {
+						product.Room = string.Empty;
+					}
+					products.Add(product);
 
-            var productOrItem = data.CreateProductOrItem(_builderFactory);
+				},
+				items.Add);
 
-            productOrItem.Switch(
-                product => {
+		} catch (Exception ex) {
 
-                    if (product.Room == "folder_name") {
-                        product.Room = string.Empty;
-                    }
-                    products.Add(product);
+			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not load product {ex.Message}");
+			_logger.LogError(ex, "Exception thrown while mapping order data to product", data);
 
-                },
-                items.Add);
+		}
 
-        } catch (Exception ex) {
+	}
 
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not load product {ex.Message}");
-            _logger.LogError(ex, "Exception thrown while mapping order data to product", data);
-
-        }
-
-    }
-
-    private static OrderModel? DeserializeData(string exportXML) {
-        var serializer = new XmlSerializer(typeof(OrderModel));
-        var reader = new StringReader(exportXML);
-        if (serializer.Deserialize(reader) is OrderModel data) {
-            return data;
-        }
-        return null;
-    }
+	private static OrderModel? DeserializeData(string exportXML) {
+		var serializer = new XmlSerializer(typeof(OrderModel));
+		var reader = new StringReader(exportXML);
+		if (serializer.Deserialize(reader) is OrderModel data) {
+			return data;
+		}
+		return null;
+	}
 
 }

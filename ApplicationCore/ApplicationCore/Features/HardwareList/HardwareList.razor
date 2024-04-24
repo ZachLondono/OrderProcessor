@@ -1,0 +1,226 @@
+﻿@using Domain.Components
+@using static Domain.Components.Button
+
+<section class="mt-16">
+    <div class="mb-5">
+        <span class="font-bold text-xl">Hardware</span>
+        <Button Style="ButtonStyle.Text" OnClickAsync="AddSupply" Color="ButtonColor.Primary">+ Add</Button>
+    </div>
+    <div class="border border-slate-100 rounded-md">
+        <table class="table-auto w-full rounded-md">
+            <thead class="border-b bg-slate-100">
+                <tr>
+                    <th class="p-5">Qty</th>
+                    <th class="p-5">Description</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            @if (IsLoading) {
+
+                <tbody>
+                    <tr>
+                        <td>
+                            <span>Loading...</span>
+                        </td>
+                    </tr>
+                </tbody>
+
+            } else if (Hardware is null) {
+
+                <tbody>
+                    <tr>
+                        <td>
+                            <span>Could not load supplies</span>
+                        </td>
+                    </tr>
+                </tbody>
+
+            } else if (Hardware.Supplies.Count == 0) {
+
+                <tbody>
+                    <tr>
+                        <td>
+                            <span>No hardware.</span>
+                        </td>
+                    </tr>
+                </tbody>
+
+            } else {
+
+                <tbody>
+                    @foreach (var supply in Hardware.Supplies) {
+                        <tr class="text-center">
+                            <td class="p-5 border-b">
+                                <input type="number" @bind="@supply.Qty" />
+                            </td>
+                            <td class="p-5 border-b">
+                                <input type="text" @bind="@supply.Description" />
+                            </td>
+                            <td class="p-5 border-b">
+                                <Button Disabled="!supply.IsDirty" Style="ButtonStyle.Text" Color="ButtonColor.Primary" OnClickAsync="() => UpdateSupply(supply)">Save</Button>
+                                <Button Style="ButtonStyle.Text" Color="ButtonColor.Danger" OnClickAsync="() => DeleteSupply(supply)">Delete</Button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            }
+
+        </table>
+    </div>
+</section>
+
+<section class="mt-16">
+    <div class="mb-5">
+        <span class="font-bold text-xl">Drawer Slides</span>
+        <Button Style="ButtonStyle.Text" OnClickAsync="AddSlides" Color="ButtonColor.Primary">+ Add</Button>
+    </div>
+    <div class="border border-slate-100 rounded-md">
+        <table class="table-auto w-full rounded-md">
+
+            <thead class="border-b bg-slate-100">
+
+                <tr>
+                    <th class="p-5">Qty</th>
+                    <th class="p-5">Length</th>
+                    <th class="p-5">Style</th>
+                    <th></th>
+                </tr>
+
+            </thead>
+
+            @if (IsLoading) {
+
+                <tbody>
+                    <tr>
+                        <td>
+                            <span>Loading...</span>
+                        </td>
+                    </tr>
+                </tbody>
+
+            } else if (Hardware is null) {
+
+                <tbody>
+                    <tr>
+                        <td>
+                            <span>Could not load drawer slides</span>
+                        </td>
+                    </tr>
+                </tbody>
+
+            } else if (Hardware.DrawerSlides.Count == 0) {
+
+                <tbody>
+                    <tr>
+                        <td>
+                            <span>No drawer slides.</span>
+                        </td>
+                    </tr>
+                </tbody>
+
+            } else {
+
+                <tbody>
+                    @foreach (var slides in Hardware.DrawerSlides) {
+                        <tr class="text-center">
+                            <td class="p-5 border-b">
+                                <input type="number" @bind="@slides.Qty" />
+                            </td>
+                            <td class="p-5 border-b">
+                                <input type="number" value="@slides.Length.AsMillimeters()" @onchange="(e) => HandleSlideLengthChange(e, slides)" />
+                            </td>
+                            <td class="p-5 border-b">
+                                <input type="text" @bind="@slides.Style" />
+                            </td>
+                            <td class="p-5 border-b">
+                                <Button Disabled="!slides.IsDirty" Style="ButtonStyle.Text" OnClickAsync="() => UpdateDrawerSlide(slides)">Save</Button>
+                                <Button Style="ButtonStyle.Text" Color="ButtonColor.Danger" OnClickAsync="() => DeleteDrawerSlide(slides)">Delete</Button>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            }
+
+        </table>
+    </div>
+</section>
+
+<section class="mt-16">
+    <div class="mb-5">
+        <span class="font-bold text-xl">Hanging Rails</span>
+        <Button Style="ButtonStyle.Text" OnClickAsync="AddRails" Color="ButtonColor.Primary">+ Add</Button>
+    </div>
+    <div class="border border-slate-100 rounded-md">
+        <table class="table-auto w-full rounded-md">
+
+            <thead class="border-b bg-slate-100">
+                <tr>
+                    <th class="p-5">Qty</th>
+                    <th class="p-5">Length (mm)</th>
+                    <th class="p-5">Finish</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            @if (IsLoading) {
+
+                <tbody>
+                    <tr>
+                        <td>
+                            <span>Loading...</span>
+                        </td>
+                    </tr>
+                </tbody>
+
+            } else if (Hardware is null) {
+
+                <tbody>
+                    <tr>
+                        <td>
+                            <span>Could not load hanging rails</span>
+                        </td>
+                    </tr>
+                </tbody>
+
+            } else if (Hardware.HangingRails.Count == 0) {
+
+                <tbody>
+                    <tr>
+                        <td>
+                            <span>No hanging rails.</span>
+                        </td>
+                    </tr>
+                </tbody>
+
+            } else {
+
+                <tbody>
+                    @foreach (var rail in Hardware.HangingRails) {
+                        <tr class="text-center">
+                            <td class="p-5 border-b">
+                                <input type="number" @bind="@rail.Qty" />
+                            </td>
+                            <td class="p-5 border-b">
+                                <input type="number" value="@rail.Length.AsMillimeters()" @onchange="(e) => HandleHangingRailLengthChange(e, rail)" />
+                            </td>
+                            <td class="p-5 border-b">
+                                <input type="text" @bind="@rail.Finish" />
+                            </td>
+                            <td class="p-5 border-b">
+                                <Button Disabled="!rail.IsDirty" Style="ButtonStyle.Text" OnClickAsync="() => UpdateHangingRail(rail)">Save</Button>
+                                <Button Style="ButtonStyle.Text" Color="ButtonColor.Danger" OnClickAsync="() => DeleteHangingRail(rail)">Delete</Button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            }
+
+        </table>
+    </div>
+</section>
+

@@ -94,7 +94,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                                                              Options.WorkbookFilePath,
                                                              Options.InvoicePDF,
                                                              Options.InvoiceDirectory);
-            
+
             if (excelPdfFilePath is null) {
                 return;
             }
@@ -107,7 +107,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
             PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "File was not generated"));
             return;
-            
+
         }
 
         if (Options.SendEmail) {
@@ -127,7 +127,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
             }
 
         }
-        
+
         if (excelPdfFilePath is not null && _fileReader.DoesFileExist(excelPdfFilePath)) {
 
             try {
@@ -163,7 +163,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
         }
 
         var fileComponents = new List<byte[]>();
-        
+
         if (excelPdf is not null) {
 
             if (_fileReader.DoesFileExist(excelPdf)) {
@@ -171,7 +171,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                 try {
 
                     var data = await File.ReadAllBytesAsync(excelPdf);
-    
+
                     fileComponents.Add(data);
 
                 } catch (Exception ex) {
@@ -220,15 +220,15 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
             foreach (var directory in outputDirectories) {
 
                 var mergedDocument = await Task.Run(() => PdfMerger.Merge(fileComponents));
-    
+
                 mergedFilePath = _fileReader.GetAvailableFileName(directory, fileName, "pdf");
-                
+
                 await File.WriteAllBytesAsync(mergedFilePath, mergedDocument);
 
                 PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, mergedFilePath));
 
             }
-            
+
             return mergedFilePath;
 
         } catch (Exception ex) {
@@ -263,7 +263,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
             return (null, null);
 
         }
- 
+
         if (report is null) {
 
             PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "Could not parse WSXML report"));
@@ -286,7 +286,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
             return (null, null);
 
         }
-        
+
         if (decorator is null) {
 
             PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "Could not parse assemble CNC release PDF content"));
@@ -300,7 +300,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
     }
 
-    private async Task<(string?,string?)> GeneratePDFFromWorkbook(bool includeCover, bool includePackingList, bool includePartList, bool includeDBList, bool includeMDFList, bool includeSummary, string filePath, bool invoice, string invoiceDirectory) {
+    private async Task<(string?, string?)> GeneratePDFFromWorkbook(bool includeCover, bool includePackingList, bool includePartList, bool includeDBList, bool includeMDFList, bool includeSummary, string filePath, bool invoice, string invoiceDirectory) {
 
         bool wasOrderOpen = true;
         string? tmpFileName = null;
@@ -336,7 +336,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                     if (invoice && Directory.Exists(invoiceDirectory)) {
                         try {
 
-                            cover.Outline.ShowLevels(RowLevels:2);
+                            cover.Outline.ShowLevels(RowLevels: 2);
 
                             app.PrintCommunication = false;
                             cover.PageSetup.FitToPagesTall = 1;
@@ -465,7 +465,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
         sheet.PageSetup.FitToPagesWide = 1;
         sheet.PageSetup.FitToPagesTall = 0;
         app.PrintCommunication = true;
-        
+
     }
 
     private static void SetZargenPrintArea(ExcelApp app, Worksheet worksheet) {
@@ -653,7 +653,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                                     .Select(p => p.Material)
                                     .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained))
                                     .Select(g => new UsedMaterial(g.Count(), g.Key.Name, g.Key.Width, g.Key.Length, g.Key.Thickness));
-    
+
             releasedJobs.Add(new(job.JobName, usedMaterials));
 
         }

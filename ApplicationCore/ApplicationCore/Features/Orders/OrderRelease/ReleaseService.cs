@@ -28,6 +28,7 @@ using OrderExporting.CNC.Programs.Job;
 using OrderExporting.CNC.Programs.WSXML.Report;
 using OrderExporting.CNC.Programs.WorkOrderReleaseEmail;
 using Domain.Companies.Entities;
+using OrderExporting.HardwareList;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -52,7 +53,7 @@ public class ReleaseService {
     private readonly CNCPartGCodeGenerator _gcodeGenerator;
     private readonly ReleasePDFBuilder _releasePDFBuilder;
 
-    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader,  CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, CNCPartGCodeGenerator gcodeGenerator, ReleasePDFBuilder releasePDFBuilder) {
+    public ReleaseService(ILogger<ReleaseService> logger, IFileReader fileReader, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync, IEmailService emailService, IWSXMLParser wsxmlParser, IFivePieceDoorCutListWriter fivePieceDoorCutListWriter, IDoweledDrawerBoxCutListWriter doweledDrawerBoxCutListWriter, CNCPartGCodeGenerator gcodeGenerator, ReleasePDFBuilder releasePDFBuilder) {
         _fileReader = fileReader;
         _logger = logger;
         _getCustomerByIdAsync = getCustomerByIdAsync;
@@ -177,6 +178,7 @@ public class ReleaseService {
         models.Select(m => m.JobSummary).OfType<JobSummary>().ForEach(m => _releasePDFBuilder.AddJobSummary(m));
         models.Select(m => m.PackingList).OfType<PackingList>().ForEach(m => _releasePDFBuilder.AddPackingList(m));
         models.Select(m => m.DovetailDBPackingList).OfType<DovetailDrawerBoxPackingList>().ForEach(m => _releasePDFBuilder.AddDovetailDBPackingList(m));
+        models.Select(m => m.HardwareList).OfType<Hardware>().ForEach(m => _releasePDFBuilder.AddHardwareList(m));
         models.Select(m => m.Invoice).OfType<Invoice>().ForEach(m => _releasePDFBuilder.AddInvoice(m));
         releases.ForEach(r => _releasePDFBuilder.AddReleasedJob(r));
         cutLists.ForEach(c => _releasePDFBuilder.AddExistingPDF(c));
@@ -211,7 +213,7 @@ public class ReleaseService {
             materials.AddRange(order.Products.OfType<FivePieceDoorProduct>().Select(d => d.Material).Distinct());
             materials.AddRange(order.Products.OfType<DoweledDrawerBoxProduct>().SelectMany(d => new string[] { d.BackMaterial.Name, d.FrontMaterial.Name, d.SideMaterial.Name, d.BottomMaterial.Name }).Distinct());
 
-            var jobSummary = JobSummaryModelFactory.CreateSummary(order, vendor, customer, configuration.IncludeProductTablesInSummary, true, materials.ToArray(), configuration.SupplyOptions);
+            var jobSummary = JobSummaryModelFactory.CreateSummary(order, vendor, customer, configuration.IncludeProductTablesInSummary, true, materials.ToArray());
 
             models.JobSummary = jobSummary;
 
@@ -226,6 +228,27 @@ public class ReleaseService {
             var packingList = DovetailDBPackingListModelFactory.CreateDBPackingList(order, vendor, customer);
             models.DovetailDBPackingList = packingList;
         }
+
+        if (configuration.GenerateHardwareList) {
+            var hardwareList = new Hardware() {
+                Supplies = order.Hardware.Supplies.Select(s => new Supply() {
+                    Qty = s.Qty,
+                    Description = s.Description
+                }).ToArray(),
+                HangingRods = order.Hardware.HangingRails.Select(s => new HangingRod() {
+                    Qty = s.Qty,
+                    Length = s.Length,
+                    Finish = s.Finish
+                }).ToArray(),
+                DrawerSlides = order.Hardware.DrawerSlides.Select(s => new DrawerSlide() {
+                    Qty = s.Qty,
+                    Length = s.Length,
+                    Style = s.Style
+                }).ToArray(),
+            };
+            models.HardwareList = hardwareList;
+        }
+
 
         if (configuration.IncludeInvoiceInRelease) {
             var invoice = InvoiceModelFactory.CreateInvoiceModel(order, vendor, customer);
@@ -896,6 +919,7 @@ public class ReleaseService {
         public JobSummary? JobSummary { get; set; } = null;
         public PackingList? PackingList { get; set; } = null;
         public DovetailDrawerBoxPackingList? DovetailDBPackingList { get; set; } = null;
+        public Hardware? HardwareList { get; set; } = null;
         public Invoice? Invoice { get; set; } = null;
     }
 

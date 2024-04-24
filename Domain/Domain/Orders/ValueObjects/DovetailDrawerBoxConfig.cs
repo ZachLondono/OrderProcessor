@@ -7,6 +7,9 @@ public class DovetailDrawerBoxConfig {
     public const string FINGER_JOINT_BIRCH = "Birch FJ";
     public const string SOLID_BIRCH = "Birch CL";
 
+    public const string STD_NOTCH = "Std_Notch";
+    public const string NO_NOTCH = "No_Notch";
+
     public string FrontMaterial { get; }
     public string BackMaterial { get; }
     public string SideMaterial { get; }

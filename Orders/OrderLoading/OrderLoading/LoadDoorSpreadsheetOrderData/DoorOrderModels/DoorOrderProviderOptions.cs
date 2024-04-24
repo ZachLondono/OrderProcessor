@@ -2,6 +2,6 @@
 
 public class DoorOrderProviderOptions {
 
-    public Dictionary<string, string> VendorIds { get; set; } = new();
+	public Dictionary<string, string> VendorIds { get; set; } = new();
 
 }

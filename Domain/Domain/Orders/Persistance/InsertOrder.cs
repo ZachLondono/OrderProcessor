@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System.Data;
 using Domain.Orders.Entities.Products;
 using Domain.Infrastructure.Bus;
+using Domain.Orders.Persistance.Repositories;
 
 namespace Domain.Orders.Persistance;
 
@@ -44,6 +45,11 @@ public partial class InsertOrder {
                 await InsertItems(order.AdditionalItems, order.Id, connection, trx);
 
                 await InsertProducts(order.Products, order.Id, connection, trx);
+
+                var wasInserted = await InsertHardware(order.Hardware, order.Id, connection, trx);
+                if (!wasInserted) {
+                    throw new InvalidOperationException("Could not insert order hardware into database");
+                }
 
                 trx.Commit();
 
@@ -194,6 +200,32 @@ public partial class InsertOrder {
         private Task InsertProduct(object unknown, Guid orderId, IDbConnection connection, IDbTransaction trx) {
             _logger.LogCritical("No insert method for product type {Type}", unknown.GetType());
             return Task.CompletedTask;
+        }
+
+        private static async Task<bool> InsertHardware(Hardware hardware, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+
+            bool wasInserted = true;
+
+            var suppliesRepo = new OrderSuppliesRepository(connection, trx);
+            foreach (var supply in hardware.Supplies) {
+                wasInserted = await suppliesRepo.AddSupplyToOrder(orderId, supply);
+                if (!wasInserted) return false;
+            }
+
+            var slidesRepo = new OrderDrawerSlidesRepository(connection, trx);
+            foreach (var slide in hardware.DrawerSlides) {
+                wasInserted = await slidesRepo.AddDrawerSlideToOrder(orderId, slide);
+                if (!wasInserted) return false;
+            }
+
+            var railsRepo = new OrderHangingRailRepository(connection, trx);
+            foreach (var rail in hardware.HangingRails) {
+                wasInserted = await railsRepo.AddHangingRailToOrder(orderId, rail);
+                if (!wasInserted) return false;
+            }
+
+            return wasInserted;
+
         }
 
     }

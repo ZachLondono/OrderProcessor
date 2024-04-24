@@ -1,7 +1,7 @@
 ﻿namespace OrderLoading;
 
 public enum MessageSeverity {
-    Info,
-    Warning,
-    Error
+	Info,
+	Warning,
+	Error
 }

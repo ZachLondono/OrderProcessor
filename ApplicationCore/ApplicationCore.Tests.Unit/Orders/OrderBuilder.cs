@@ -25,6 +25,7 @@ internal class OrderBuilder {
     public Dictionary<string, string> Info { get; set; } = new();
     public List<AdditionalItem> Items { get; set; } = new();
     public List<IProduct> Products { get; set; } = new();
+    public Hardware Hardware { get; set; } = new([], [], []);
 
     public OrderBuilder() {
 
@@ -129,6 +130,11 @@ internal class OrderBuilder {
         return this;
     }
 
-    public Order Build() => new(Id, Source, Number, Name, Note, WorkingDirectory, CustomerId, VendorId, Comment, OrderDate, DueDate, Shipping, Billing, Tax, PriceAdjustment, Rush, Info, Products, Items);
+    public OrderBuilder WithHardware(Hardware hardware) {
+        Hardware = hardware;
+        return this;
+    }
+
+    public Order Build() => new(Id, Source, Number, Name, Note, WorkingDirectory, CustomerId, VendorId, Comment, OrderDate, DueDate, Shipping, Billing, Tax, PriceAdjustment, Rush, Info, Products, Items, Hardware);
 
 }

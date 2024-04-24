@@ -2,6 +2,6 @@
 
 public interface IOrderLoadWidgetViewModel {
 
-    public void AddLoadingMessage(MessageSeverity severity, string message);
+	public void AddLoadingMessage(MessageSeverity severity, string message);
 
 }

@@ -39,7 +39,7 @@ public partial class ClosetProToAllmoxyMapper {
             Qty = part.Qty,
             Width = part.Width.AsInches(),
             Length = part.Length.AsInches(),
-            PartComment = string.Empty 
+            PartComment = string.Empty
         };
 
     }

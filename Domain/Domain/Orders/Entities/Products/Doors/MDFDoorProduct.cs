@@ -1,9 +1,7 @@
-﻿using Domain.Orders;
-using Domain.Orders.Builders;
+﻿using Domain.Orders.Builders;
 using Domain.Orders.Components;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
-using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Doors;
@@ -29,7 +27,5 @@ public class MDFDoorProduct : MDFDoor, IProduct, IMDFDoorContainer {
     public bool ContainsDoors() => true;
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) { yield return this; }
-
-    public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
 
 }

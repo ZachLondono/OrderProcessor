@@ -2,7 +2,7 @@
 
 public interface IClosetProProduct {
 
-    public string Room { get; }
-    public int PartNumber { get; }
+	public string Room { get; }
+	public int PartNumber { get; }
 
 }

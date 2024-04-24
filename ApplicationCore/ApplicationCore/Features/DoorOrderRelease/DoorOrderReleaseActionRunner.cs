@@ -256,7 +256,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             var (document, jobs) = await CreateCutListDocumentForBatches(generator, doorOrder, batches, orderDate, dueDate);
             generatedGCodeDocument = document;
             releasedJobs.AddRange(jobs);
-        } 
+        }
 
         return (generatedGCodeDocument, workbookPdfTmpFilePath, releasedJobs);
 

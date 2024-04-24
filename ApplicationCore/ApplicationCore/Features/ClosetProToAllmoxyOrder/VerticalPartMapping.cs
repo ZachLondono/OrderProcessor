@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Features.AllmoxyOrderExport.Attributes;
 using ApplicationCore.Features.AllmoxyOrderExport.Products;
 using ApplicationCore.Features.AllmoxyOrderExport.Products.FloorMountedVerticals;
-using OrderLoading.ClosetProCSVCutList.Products;
+using OrderLoading.ClosetProCSVCutList.Products.Verticals;
 
 namespace ApplicationCore.Features.ClosetProToAllmoxyOrder;
 

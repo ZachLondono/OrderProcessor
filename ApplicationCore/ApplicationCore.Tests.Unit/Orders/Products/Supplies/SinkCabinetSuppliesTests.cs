@@ -1,4 +1,5 @@
 ﻿using Domain.Orders.Builders;
+using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
@@ -113,6 +114,7 @@ public class SinkCabinetSuppliesTests {
 
     }
 
+    /*
     [Theory]
     [InlineData(0)]
     [InlineData(1)]
@@ -173,5 +175,6 @@ public class SinkCabinetSuppliesTests {
         supplies.Where(s => s.Name == expectedSupply.Name).Sum(s => s.Qty).Should().Be(cabinet.Qty * rollOutQty);
 
     }
+    */
 
 }

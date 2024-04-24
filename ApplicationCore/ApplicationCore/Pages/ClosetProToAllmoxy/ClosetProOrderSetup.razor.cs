@@ -71,7 +71,8 @@ public partial class ClosetProOrderSetup {
 
         var order = await Reader.ReadCSVData(csvData);
 
-        ClosetProPartMapper.MapPickListToItems(order.PickList, [], out var hardwareSpread);
+        // TODO: need hardware list here
+        var hardwareSpread = ClosetProPartMapper.GetHardwareSpread(order.PickList, []);
         CPPartMapper.GroupLikeProducts = _loadingSettings.GroupLikeProducts;
         CPPartMapper.RoomNamingStrategy = _loadingSettings.RoomNamingStrategy;
         ClosetProProducts = CPPartMapper.MapPartsToProducts(order.Parts, hardwareSpread);

@@ -156,6 +156,11 @@
                 <br />
             }
 
+            <CheckBox @bind-IsChecked="DataContext.Configuration.GenerateHardwareList">
+                <span class="text-gray-700">Hardware List</span>
+            </CheckBox>
+            <br />
+
             <CheckBox @bind-IsChecked="DataContext.Configuration.GenerateCNCRelease">
                 <span class="text-gray-700">CNC Patterns</span>
             </CheckBox>

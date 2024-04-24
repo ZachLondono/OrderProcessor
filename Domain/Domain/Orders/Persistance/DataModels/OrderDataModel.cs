@@ -43,7 +43,7 @@ public class OrderDataModel {
     public string BillingZip { get; set; } = string.Empty;
     public string BillingCountry { get; set; } = string.Empty;
 
-    public Order ToDomainModel(Guid orderId, IReadOnlyCollection<IProduct> products, IReadOnlyCollection<AdditionalItem> items) {
+    public Order ToDomainModel(Guid orderId, IReadOnlyCollection<IProduct> products, IReadOnlyCollection<AdditionalItem> items, Hardware hardware) {
 
         ShippingInfo shippingInfo = new() {
             Contact = ShippingContact,
@@ -75,7 +75,7 @@ public class OrderDataModel {
             }
         };
 
-        var order = new Order(orderId, Source, Number, Name, Note, WorkingDirectory, CustomerId, VendorId, CustomerComment, OrderDate, DueDate, shippingInfo, billing, Tax, PriceAdjustment, Rush, Info.AsReadOnly(), products, items);
+        var order = new Order(orderId, Source, Number, Name, Note, WorkingDirectory, CustomerId, VendorId, CustomerComment, OrderDate, DueDate, shippingInfo, billing, Tax, PriceAdjustment, Rush, Info.AsReadOnly(), products, items, hardware);
         return order;
 
     }

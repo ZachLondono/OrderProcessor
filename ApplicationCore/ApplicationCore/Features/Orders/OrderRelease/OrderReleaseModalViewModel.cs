@@ -167,6 +167,7 @@ public class OrderReleaseModalViewModel {
             IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
             Generate5PieceCutList = DoAnyOrdersContainFivePieceDoors,
             GenerateDoweledDrawerBoxCutList = DoAnyOrdersContainDoweledDrawerBoxes,
+            GenerateHardwareList = false,
             IncludeDovetailDBPackingList = DoAnyOrdersContainDovetailDBs,
             ReleaseFileName = $"{orderNumbers} CUTLIST",
             ReleaseOutputDirectory = releaseDirectory,

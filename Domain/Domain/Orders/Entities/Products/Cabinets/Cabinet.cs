@@ -86,8 +86,6 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
         };
     }
 
-    public abstract IEnumerable<Supply> GetSupplies();
-
     protected virtual string GetMaterialType() {
 
         if (BoxMaterial.Core == CabinetMaterialCore.Plywood) {

@@ -1,6 +1,6 @@
-﻿using Domain.Orders;
-using Domain.Orders.Builders;
+﻿using Domain.Orders.Builders;
 using Domain.Orders.Components;
+using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Enums;
 using Domain.Orders.Exceptions;
 using Domain.Orders.ValueObjects;
@@ -8,7 +8,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-public class WallDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer {
+public class WallDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer, ISupplyContainer {
 
     public Dimension RightWidth { get; }
     public Dimension RightDepth { get; }
@@ -93,9 +93,9 @@ public class WallDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer {
 
     }
 
-    public override IEnumerable<Supply> GetSupplies() {
+    public IEnumerable<Supply> GetSupplies() {
 
-        List<Supply> supplies = new();
+        List<Supply> supplies = [];
 
         if (AdjustableShelves > 0) {
 

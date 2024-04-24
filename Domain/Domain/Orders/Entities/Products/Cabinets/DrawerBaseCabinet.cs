@@ -1,5 +1,6 @@
 ﻿using Domain.Orders.Builders;
 using Domain.Orders.Components;
+using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Enums;
 using Domain.Orders.Exceptions;
 using Domain.Orders.ValueObjects;
@@ -7,7 +8,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer {
+public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxContainer, ISupplyContainer, IDrawerSlideContainer {
 
     // TODO: add option for no doors
 
@@ -107,21 +108,14 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
 
     }
 
-    public override IEnumerable<Supply> GetSupplies() {
+    public IEnumerable<Supply> GetSupplies() {
 
-        var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, false);
-
-        List<Supply> supplies = new() {
+        List<Supply> supplies = [
 
             Supply.DrawerPull(Drawers.Qty * Qty),
+            Supply.DrawerClips(Drawers.Qty * Qty),
 
-            DrawerBoxOptions.SlideType switch {
-                DrawerSlideType.SideMount => Supply.SidemountSlide(Drawers.Qty * Qty, boxDepth),
-                DrawerSlideType.UnderMount => Supply.UndermountSlide(Drawers.Qty * Qty, boxDepth),
-                _ => throw new InvalidOperationException("Unknown slide type")
-            }
-
-        };
+        ];
 
         if (ToeType == ToeType.LegLevelers) {
 
@@ -130,6 +124,22 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
         }
 
         return supplies;
+
+    }
+
+    public IEnumerable<DrawerSlide> GetDrawerSlides() {
+
+        var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, false);
+        boxDepth = Dimension.FromMillimeters(Math.Round(boxDepth.AsMillimeters()));
+        return [
+
+            DrawerBoxOptions.SlideType switch {
+                DrawerSlideType.SideMount => DrawerSlide.SidemountSlide(Drawers.Qty * Qty, boxDepth),
+                DrawerSlideType.UnderMount => DrawerSlide.UndermountSlide(Drawers.Qty * Qty, boxDepth),
+                _ => throw new InvalidOperationException("Unknown slide type")
+            }
+
+        ];
 
     }
 

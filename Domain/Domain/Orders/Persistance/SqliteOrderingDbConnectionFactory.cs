@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Domain.Infrastructure.Data;
 using Domain.Infrastructure.Settings;
-using Domain.Orders.Persistance;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -12,7 +11,7 @@ namespace Domain.Orders.Persistance;
 
 public class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory {
 
-    public const int DB_VERSION = 1;
+    public const int DB_VERSION = 2;
     private static readonly SemaphoreSlim semaphore = new(1);
 
     private readonly IConfiguration _configuration;

@@ -2,8 +2,8 @@
 
 public class DoweledDBOrderProviderOptions {
 
-    public string DefaultWorkingDirectory { get; set; } = string.Empty;
+	public string DefaultWorkingDirectory { get; set; } = string.Empty;
 
-    public Dictionary<string, string> VendorIds { get; set; } = new();
+	public Dictionary<string, string> VendorIds { get; set; } = new();
 
 }

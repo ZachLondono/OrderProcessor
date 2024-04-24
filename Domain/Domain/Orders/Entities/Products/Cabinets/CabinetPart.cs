@@ -1,4 +1,5 @@
-﻿using Domain.Orders.Enums;
+﻿using Domain.Orders.Entities.Hardware;
+using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ProductPlanner;
 
@@ -70,7 +71,5 @@ public class CabinetPart : IProduct, IPPProductContainer {
             ["EB_WallBottom"] = new PPMaterial(ebMaterial, EdgeBandingColor),
         };
     }
-
-    public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
 
 }

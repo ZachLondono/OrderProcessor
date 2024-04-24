@@ -1,12 +1,13 @@
 ﻿using Domain.Orders.Builders;
 using Domain.Orders.Components;
+using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Cabinets;
 
-public class BlindWallCabinet : GarageCabinet, IMDFDoorContainer {
+public class BlindWallCabinet : GarageCabinet, IMDFDoorContainer, ISupplyContainer {
 
     public BlindCabinetDoors Doors { get; }
     public int AdjustableShelves { get; }
@@ -79,7 +80,7 @@ public class BlindWallCabinet : GarageCabinet, IMDFDoorContainer {
 
     }
 
-    public override IEnumerable<Supply> GetSupplies() {
+    public IEnumerable<Supply> GetSupplies() {
 
         var supplies = new List<Supply>();
 

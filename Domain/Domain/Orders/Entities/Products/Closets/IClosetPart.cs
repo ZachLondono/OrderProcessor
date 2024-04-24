@@ -1,5 +1,4 @@
 ﻿using Domain.Orders.ValueObjects;
-using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Products.Closets;

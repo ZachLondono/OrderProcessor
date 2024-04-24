@@ -21,7 +21,7 @@ public class ZargenDrawer : IProduct, IPPProductContainer {
     public string EdgeBandingColor { get; }
     public string Comment { get; }
     public IReadOnlyDictionary<string, string> Parameters { get; }
-    public List<string> ProductionNotes { get; set; } = new();
+    public List<string> ProductionNotes { get; set; } = [];
 
     public static Dimension[] StandardHeights => new Dimension[] {
         Dimension.FromMillimeters(93),
@@ -89,7 +89,5 @@ public class ZargenDrawer : IProduct, IPPProductContainer {
         return new List<PPProduct>() { new PPProduct(Id, Qty, Room, SKU, ProductNumber, "Royal_c", materialType, "slab", "standard", Comment, finishMaterials, ebMaterials, parameters, new Dictionary<string, string>(), new Dictionary<string, string>()) };
 
     }
-
-    public IEnumerable<Supply> GetSupplies() => Enumerable.Empty<Supply>();
 
 }

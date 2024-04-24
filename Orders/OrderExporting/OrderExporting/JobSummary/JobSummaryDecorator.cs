@@ -162,17 +162,9 @@ public class JobSummaryDecorator(JobSummary jobSummary) : IDocumentDecorator {
 
                     column.Item().PaddingTop(20).PaddingBottom(20).Row(row => row.RelativeItem().LineHorizontal(1).LineColor(Colors.Grey.Medium));
 
-                    column.Item().Row(row => {
-
-                        //if (jobSummary.Supplies.Any()) {
-                        //    ComposeSuppliesTable(row.RelativeItem(), jobSummary.Supplies);
-                        //}
-
-                        if (jobSummary.AdditionalItems.Any()) {
-                            ComposeAdditionalItemsTable(row.RelativeItem(), jobSummary.AdditionalItems);
-                        }
-
-                    });
+                    if (jobSummary.AdditionalItems.Any()) {
+                        ComposeAdditionalItemsTable(column.Item(), jobSummary.AdditionalItems);
+                    }
 
                     if (jobSummary.ShowItemsInSummary) {
 
@@ -895,65 +887,6 @@ public class JobSummaryDecorator(JobSummary jobSummary) : IDocumentDecorator {
 
     }
 
-    private static void ComposeSuppliesTable(IContainer container, IEnumerable<Supply> supplies) {
-
-        var defaultCellStyle = (IContainer cell)
-            => cell.Border(1)
-                    .BorderColor(Colors.Grey.Lighten1)
-                    .AlignMiddle()
-                    .PaddingVertical(5)
-                    .PaddingHorizontal(10);
-
-        var headerCellStyle = (IContainer cell)
-            => cell.Border(1)
-                    .BorderColor(Colors.Grey.Lighten1)
-                    .Background(Colors.Grey.Lighten3)
-                    .PaddingVertical(5)
-                    .PaddingHorizontal(10)
-                    .DefaultTextStyle(x => x.Bold());
-
-        var addRow = (TableDescriptor table, string name, int qty) => {
-
-            table.Cell().Element(defaultCellStyle).Text(name);
-            table.Cell().Element(defaultCellStyle).AlignCenter().Text(qty.ToString());
-
-        };
-
-        container.DefaultTextStyle(x => x.FontSize(10))
-                .Column(col => {
-
-                    col.Item()
-                        .PaddingTop(10)
-                        .PaddingLeft(8)
-                        .Text("Hardware")
-                        .FontSize(14);
-
-                    col.Item()
-                        .Table(table => {
-
-                            table.ColumnsDefinition(column => {
-                                column.ConstantColumn(150);
-                                column.ConstantColumn(50);
-                            });
-
-
-                            table.Header(header => {
-
-                                header.Cell().Element(headerCellStyle).Text("Name");
-                                header.Cell().Element(headerCellStyle).Text("Qty");
-
-                            });
-
-                            foreach (var supply in supplies) {
-                                addRow(table, supply.Name, supply.Qty);
-                            }
-
-                        });
-
-                });
-
-    }
-
     private static void ComposeAdditionalItemsTable(IContainer container, IEnumerable<AdditionalItem> items) {
 
         var defaultCellStyle = (IContainer cell)
@@ -996,7 +929,7 @@ public class JobSummaryDecorator(JobSummary jobSummary) : IDocumentDecorator {
 
                             foreach (var item in items) {
                                 table.Cell().Element(defaultCellStyle).Text(item.Qty.ToString());
-                                table.Cell().Element(defaultCellStyle).Text(item.Description);
+                                table.Cell().Element(defaultCellStyle).Text(item.Description).ExtraBold();
                             }
 
                         });

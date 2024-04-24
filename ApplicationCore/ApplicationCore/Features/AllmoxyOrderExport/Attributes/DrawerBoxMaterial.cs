@@ -30,7 +30,7 @@ public static class DrawerBoxMaterial {
     }
 
     public static Dimension GetBoxWidthFromOpening(Dimension openingWidth) {
-        return openingWidth - Dimension.FromInches(3.0/8.0);
+        return openingWidth - Dimension.FromInches(3.0 / 8.0);
     }
 
     public static Dimension GetBoxDepthFromOpening(Dimension openingDepth) {
