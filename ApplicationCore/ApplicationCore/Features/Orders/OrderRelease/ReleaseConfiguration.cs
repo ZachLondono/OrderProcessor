@@ -1,6 +1,4 @@
-﻿using OrderExporting.JobSummary;
-
-namespace ApplicationCore.Features.Orders.OrderRelease;
+﻿namespace ApplicationCore.Features.Orders.OrderRelease;
 
 public class ReleaseConfiguration {
 
@@ -60,6 +58,6 @@ public class ReleaseConfiguration {
     public bool SendInvoiceEmail { get; set; }
     public bool PreviewInvoiceEmail { get; set; }
 
-    public bool AreMainPDFOptionsEnabled => (GenerateJobSummary || GeneratePackingList || GenerateCNCRelease || GenerateCNCGCode || GenerateDoweledDrawerBoxCutList || Generate5PieceCutList || IncludeDovetailDBPackingList);
+    public bool AreMainPDFOptionsEnabled => (GenerateJobSummary || GeneratePackingList || GenerateCNCRelease || GenerateCNCGCode || GenerateDoweledDrawerBoxCutList || Generate5PieceCutList || IncludeDovetailDBPackingList || GenerateHardwareList);
 
 }
