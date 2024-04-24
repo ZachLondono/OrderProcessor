@@ -60,27 +60,13 @@ public partial class HardwareList {
                 _hardware = hardware;
                 Hardware = new() {
                     Supplies = _hardware.Supplies
-                                        .Select(s => new SupplyEditModel() {
-                                            Id = s.Id,
-                                            Qty = s.Qty,
-                                            Description = s.Description
-                                        })
+                                        .Select(s => new SupplyEditModel(s.Id, s.Qty, s.Description))
                                         .ToList(),
                     DrawerSlides = _hardware.DrawerSlides
-                                        .Select(s => new DrawerSlideEditModel() {
-                                            Id = s.Id,
-                                            Qty = s.Qty,
-                                            Length = s.Length,
-                                            Style = s.Style
-                                        })
+                                        .Select(s => new DrawerSlideEditModel(s.Id,s.Qty,s.Length,s.Style))
                                         .ToList(),
                     HangingRails = _hardware.HangingRails
-                                        .Select(s => new HangingRailEditModel() {
-                                            Id = s.Id,
-                                            Qty = s.Qty,
-                                            Length = s.Length,
-                                            Finish = s.Finish
-                                        })
+                                        .Select(s => new HangingRailEditModel(s.Id, s.Qty, s.Length, s.Finish))
                                         .ToList(),
                 };
             },
@@ -98,11 +84,7 @@ public partial class HardwareList {
         result.Match(
             _ => {
 
-                Hardware.Supplies.Add(new() {
-                    Id = supply.Id,
-                    Qty = supply.Qty,
-                    Description = supply.Description
-                });
+                Hardware.Supplies.Add(new(supply.Id,supply.Qty,supply.Description));
 
             },
             error => Error = error);
@@ -151,12 +133,7 @@ public partial class HardwareList {
         result.Match(
             _ => {
 
-                Hardware.DrawerSlides.Add(new() {
-                    Id = slide.Id,
-                    Qty = slide.Qty,
-                    Length = slide.Length,
-                    Style = slide.Style
-                });
+                Hardware.DrawerSlides.Add(new(slide.Id, slide.Qty, slide.Length, slide.Style));
 
             },
             error => Error = error);
@@ -203,12 +180,7 @@ public partial class HardwareList {
         result.Match(
             _ => {
 
-                Hardware.HangingRails.Add(new() {
-                    Id = rail.Id,
-                    Qty = rail.Qty,
-                    Length = rail.Length,
-                    Finish = rail.Finish
-                });
+                Hardware.HangingRails.Add(new(rail.Id, rail.Qty, rail.Length, rail.Finish));
 
             },
             error => Error = error);
