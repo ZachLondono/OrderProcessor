@@ -303,7 +303,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
                 continue;
             }
 
-            Dimension length = Dimension.FromInches(part.Width);
+            Dimension length = Dimension.FromMillimeters(Math.Round(Dimension.FromInches(part.Width).AsMillimeters()));
             rails.Add(new HangingRail(Guid.NewGuid(), part.Quantity, length, part.Color));
 
         }
