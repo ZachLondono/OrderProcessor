@@ -35,7 +35,6 @@ public class ReleaseConfiguration {
 
     public bool GenerateJobSummary { get; set; }
     public bool IncludeProductTablesInSummary { get; set; }
-    public SupplyOptions SupplyOptions { get; set; } = new();
     public bool IncludeInvoiceInRelease { get; set; }
     public bool Generate5PieceCutList { get; set; }
     public bool GenerateDoweledDrawerBoxCutList { get; set; }

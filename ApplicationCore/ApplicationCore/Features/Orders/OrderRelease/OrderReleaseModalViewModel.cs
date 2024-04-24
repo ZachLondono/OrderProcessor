@@ -45,23 +45,6 @@ public class OrderReleaseModalViewModel {
         }
     }
 
-    public bool IncludeSuppliesInSummary {
-        get => _includeSuppliesInSummary;
-        set {
-
-            _includeSuppliesInSummary = value;
-
-            if (value) {
-                Configuration.SupplyOptions.AllSupplies();
-            } else {
-                Configuration.SupplyOptions.NoSupplies();
-            }
-
-            OnPropertyChanged?.Invoke();
-
-        }
-    }
-
     public bool DoAnyOrdersContainDovetailDBs { get; private set; }
 
     public bool DoAnyOrdersContainFivePieceDoors { get; private set; }
@@ -73,7 +56,6 @@ public class OrderReleaseModalViewModel {
     private bool _isLoadingOrders = true;
     private bool _isLoadingConfiguration = false;
     private bool _isReportLoadingFiles = false;
-    private bool _includeSuppliesInSummary = false;
     private ReleaseConfiguration _configuration = new();
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly ReleaseService _service;
@@ -162,7 +144,6 @@ public class OrderReleaseModalViewModel {
             ReleaseEmailRecipients = vendor.ReleaseProfile.ReleaseEmailRecipients,
             GenerateJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
             IncludeProductTablesInSummary = false,
-            SupplyOptions = new(),                      // TODO: add this to the vendor release profile
             GeneratePackingList = vendor.ReleaseProfile.GeneratePackingList,
             IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
             Generate5PieceCutList = DoAnyOrdersContainFivePieceDoors,
