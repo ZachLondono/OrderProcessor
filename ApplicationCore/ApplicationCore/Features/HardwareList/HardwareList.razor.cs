@@ -170,6 +170,13 @@ public partial class HardwareList {
 
     }
 
+    private static void HandleSlideLengthChange(ChangeEventArgs e, DrawerSlideEditModel slide) {
+        if (e.Value is not null
+            && double.TryParse(e.Value.ToString(), out double dim)) {
+            slide.Length = Dimension.FromMillimeters(dim);
+        }
+    }
+
     private async Task AddRails() {
 
         if (Hardware is null) return;
@@ -215,6 +222,13 @@ public partial class HardwareList {
 
         StateHasChanged();
 
+    }
+
+    private static void HandleHangingRailLengthChange(ChangeEventArgs e, HangingRailEditModel rail) {
+        if (e.Value is not null
+            && double.TryParse(e.Value.ToString(), out double dim)) {
+            rail.Length = Dimension.FromMillimeters(dim);
+        }
     }
 
 }

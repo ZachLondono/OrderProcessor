@@ -125,11 +125,17 @@
                 <tbody>
                     @foreach (var slides in Hardware.DrawerSlides) {
                         <tr class="text-center">
-                            <td class="p-5 border-b">@slides.Qty</td>
-                            <td class="p-5 border-b">@slides.Length.AsInches().ToString("0")</td>
-                            <td class="p-5 border-b">@slides.Style</td>
                             <td class="p-5 border-b">
-                                <Button Disabled="slides.IsDirty" Style="ButtonStyle.Text" OnClickAsync="() => UpdateDrawerSlide(slides)">Save</Button>
+                                <input type="number" @bind="@slides.Qty" />
+                            </td>
+                            <td class="p-5 border-b">
+                                <input type="number" value="@slides.Length.AsMillimeters()" @onchange="(e) => HandleSlideLengthChange(e, slides)" />
+                            </td>
+                            <td class="p-5 border-b">
+                                <input type="text" @bind="@slides.Style" />
+                            </td>
+                            <td class="p-5 border-b">
+                                <Button Disabled="!slides.IsDirty" Style="ButtonStyle.Text" OnClickAsync="() => UpdateDrawerSlide(slides)">Save</Button>
                                 <Button Style="ButtonStyle.Text" Color="ButtonColor.Danger" OnClickAsync="() => DeleteDrawerSlide(slides)">Delete</Button>
                             </td>
                         </tr>
@@ -154,7 +160,7 @@
             <thead class="border-b bg-slate-100">
                 <tr>
                     <th class="p-5">Qty</th>
-                    <th class="p-5">Length</th>
+                    <th class="p-5">Length (mm)</th>
                     <th class="p-5">Finish</th>
                     <th></th>
                 </tr>
@@ -195,11 +201,17 @@
                 <tbody>
                     @foreach (var rail in Hardware.HangingRails) {
                         <tr class="text-center">
-                            <td class="p-5 border-b">@rail.Qty</td>
-                            <td class="p-5 border-b">@rail.Length.AsMillimeters().ToString("0")</td>
-                            <td class="p-5 border-b">@rail.Finish</td>
                             <td class="p-5 border-b">
-                                <Button Disabled="rail.IsDirty" Style="ButtonStyle.Text" OnClickAsync="() => UpdateHangingRail(rail)">Save</Button>
+                                <input type="number" @bind="@rail.Qty" />
+                            </td>
+                            <td class="p-5 border-b">
+                                <input type="number" value="@rail.Length.AsMillimeters()" @onchange="(e) => HandleHangingRailLengthChange(e, rail)" />
+                            </td>
+                            <td class="p-5 border-b">
+                                <input type="text" @bind="@rail.Finish" />
+                            </td>
+                            <td class="p-5 border-b">
+                                <Button Disabled="!rail.IsDirty" Style="ButtonStyle.Text" OnClickAsync="() => UpdateHangingRail(rail)">Save</Button>
                                 <Button Style="ButtonStyle.Text" Color="ButtonColor.Danger" OnClickAsync="() => DeleteHangingRail(rail)">Delete</Button>
                             </td>
                         </tr>
