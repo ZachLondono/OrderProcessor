@@ -58,7 +58,7 @@
                                 <input type="text" @bind="@supply.Description" />
                             </td>
                             <td class="p-5 border-b">
-                                <Button Disabled="supply.IsDirty" Style="ButtonStyle.Text" Color="ButtonColor.Primary" OnClickAsync="() => UpdateSupply(supply)">Save</Button>
+                                <Button Disabled="!supply.IsDirty" Style="ButtonStyle.Text" Color="ButtonColor.Primary" OnClickAsync="() => UpdateSupply(supply)">Save</Button>
                                 <Button Style="ButtonStyle.Text" Color="ButtonColor.Danger" OnClickAsync="() => DeleteSupply(supply)">Delete</Button>
                             </td>
                         </tr>
