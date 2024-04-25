@@ -153,6 +153,8 @@ public partial class HardwareList {
             error => Error = error
         );
 
+        StateHasChanged();
+
     }
 
     private async Task DeleteDrawerSlide(DrawerSlideEditModel model) {
@@ -206,6 +208,8 @@ public partial class HardwareList {
             _ => model.IsDirty = false,
             error => Error = error
         );
+
+        StateHasChanged();
 
     }
 
