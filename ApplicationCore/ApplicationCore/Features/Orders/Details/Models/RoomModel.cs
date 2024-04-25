@@ -28,6 +28,7 @@ public class RoomModel {
     public List<DoweledDrawerBoxProduct> DoweledDrawerBoxes { get; private set; }
     public List<MDFDoorProduct> MDFDoors { get; private set; }
     public List<FivePieceDoorProduct> FivePieceDoors { get; private set; }
+    public List<CounterTop> CounterTops { get; private set; }
 
     public RoomModel(string name, List<IProduct> products) {
 
@@ -56,6 +57,9 @@ public class RoomModel {
                             .ToList();
 
         FivePieceDoors = products.OfType<FivePieceDoorProduct>()
+                            .ToList();
+
+        CounterTops = products.OfType<CounterTop>()
                             .ToList();
 
     }

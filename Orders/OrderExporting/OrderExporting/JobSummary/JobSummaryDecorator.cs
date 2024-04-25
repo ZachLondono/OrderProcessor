@@ -61,6 +61,7 @@ public class JobSummaryDecorator(JobSummary jobSummary) : IDocumentDecorator {
                                         ("5-Piece Doors", jobSummary.FivePieceDoors.Sum(p => p.Items.Sum(i => i.Qty)) ),
                                         ("Dovetail DBs", jobSummary.DovetailDrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty)) ),
                                         ("Doweled DBs", jobSummary.DoweledDrawerBoxes.Sum(p => p.Items.Sum(i => i.Qty)) ),
+                                        ("Counter Tops", jobSummary.CounterTops.Sum(p => p.Qty) ),
                                         ("Other", jobSummary.AdditionalItems.Sum(i => i.Qty) )
                                     };
 
@@ -162,9 +163,19 @@ public class JobSummaryDecorator(JobSummary jobSummary) : IDocumentDecorator {
 
                     column.Item().PaddingTop(20).PaddingBottom(20).Row(row => row.RelativeItem().LineHorizontal(1).LineColor(Colors.Grey.Medium));
 
-                    if (jobSummary.AdditionalItems.Any()) {
-                        ComposeAdditionalItemsTable(column.Item(), jobSummary.AdditionalItems);
-                    }
+                    column.Item().Row(row => {
+
+                        row.Spacing(10);
+
+                        if (jobSummary.AdditionalItems.Any()) {
+                            ComposeAdditionalItemsTable(row.RelativeItem(), jobSummary.AdditionalItems);
+                        }
+
+                        if (jobSummary.CounterTops.Any()) {
+                            ComposeCounterTopTable(row.RelativeItem(), jobSummary.CounterTops);
+                        }
+
+                    });
 
                     if (jobSummary.ShowItemsInSummary) {
 
@@ -929,7 +940,83 @@ public class JobSummaryDecorator(JobSummary jobSummary) : IDocumentDecorator {
 
                             foreach (var item in items) {
                                 table.Cell().Element(defaultCellStyle).Text(item.Qty.ToString());
-                                table.Cell().Element(defaultCellStyle).Text(item.Description).ExtraBold();
+                                table.Cell().Element(defaultCellStyle).Text(item.Description);
+                            }
+
+                        });
+
+                });
+
+    }
+
+    private static void ComposeCounterTopTable(IContainer container, IEnumerable<CounterTopItem> items) {
+
+        var defaultCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .AlignMiddle()
+                    .PaddingVertical(5)
+                    .PaddingHorizontal(10)
+                    .DefaultTextStyle(t => t.ExtraBold());
+
+        var headerCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .Background(Colors.Grey.Lighten3)
+                    .PaddingVertical(5)
+                    .PaddingHorizontal(10)
+                    .DefaultTextStyle(x => x.Bold());
+
+        var ebText = (EdgeBandingSides eb)
+            => eb switch {
+                EdgeBandingSides.None => "None",
+                EdgeBandingSides.All => "All",
+                EdgeBandingSides.OneLong => "1L",
+                EdgeBandingSides.OneLongOneShort => "1L1S",
+                EdgeBandingSides.OneLongTwoShort => "1L2S",
+                EdgeBandingSides.TwoLong => "2L",
+                EdgeBandingSides.TwoLongOneShort => "2L1S",
+                EdgeBandingSides.TwoLongTwoShort => "2L2S",
+                EdgeBandingSides.OneShort => "1S",
+                EdgeBandingSides.TwoShort => "2S",
+                _ => "Unknown"
+            };
+
+        container.DefaultTextStyle(x => x.FontSize(10))
+                .Column(col => {
+
+                    col.Item()
+                        .PaddingTop(10)
+                        .PaddingLeft(8)
+                        .Text("Counter Tops")
+                        .FontSize(14);
+
+                    col.Item()
+                        .Table(table => {
+
+                            table.ColumnsDefinition(column => {
+                                column.ConstantColumn(40);
+                                column.RelativeColumn();
+                                column.ConstantColumn(55);
+                                column.ConstantColumn(55);
+                                column.ConstantColumn(40);
+                            });
+
+
+                            table.Header(header => {
+                                header.Cell().Element(headerCellStyle).Text("Qty");
+                                header.Cell().Element(headerCellStyle).Text("Finish");
+                                header.Cell().Element(headerCellStyle).Text("Width");
+                                header.Cell().Element(headerCellStyle).Text("Length");
+                                header.Cell().Element(headerCellStyle).Text("EB");
+                            });
+
+                            foreach (var item in items) {
+                                table.Cell().Element(defaultCellStyle).Text(item.Qty.ToString());
+                                table.Cell().Element(defaultCellStyle).Text(item.Finish);
+                                table.Cell().Element(defaultCellStyle).Text(item.Width.AsMillimeters().ToString("0"));
+                                table.Cell().Element(defaultCellStyle).Text(item.Length.AsMillimeters().ToString("0"));
+                                table.Cell().Element(defaultCellStyle).Text(ebText(item.EdgeBanding));
                             }
 
                         });

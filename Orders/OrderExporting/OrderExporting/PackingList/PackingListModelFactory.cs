@@ -1,5 +1,6 @@
 ﻿using Domain.Companies.Entities;
 using Domain.Orders.Entities;
+using Domain.Orders.Entities.Products;
 using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.Entities.Products.Closets;
 using Domain.Orders.Entities.Products.Doors;
@@ -105,6 +106,16 @@ public class PackingListModelFactory {
                                 Depth = cab.Depth,
                                 Description = cab.GetDescription()
                             }).ToList(),
+            CounterTops = order.Products
+                            .OfType<CounterTop>()
+                            .Select(c => new CounterTopItem() {
+                                Line = c.ProductNumber,
+                                Qty = c.Qty,
+                                Length = c.Length,
+                                Width = c.Width,
+                                Finish = c.Finish
+                            })
+                            .ToList(),
             AdditionalItems = order.AdditionalItems
                             .Select((item, idx) => new AdditionalItem() {
                                 Line = idx + 1,

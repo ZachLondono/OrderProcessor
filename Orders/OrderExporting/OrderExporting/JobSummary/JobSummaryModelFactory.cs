@@ -14,6 +14,7 @@ using static OrderExporting.JobSummary.CabinetPartGroup;
 using Domain.Orders.Entities.Products.DrawerBoxes;
 using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders;
+using Domain.Orders.Entities.Products;
 
 namespace OrderExporting.JobSummary;
 
@@ -235,6 +236,17 @@ public class JobSummaryModelFactory {
                         })
                         .ToList();
 
+        var counterTops = order.Products
+                                .OfType<CounterTop>()
+                                .Select(c => new CounterTopItem() {
+                                    Qty = c.Qty,
+                                    Finish = c.Finish,
+                                    Width = c.Width,
+                                    Length = c.Length,
+                                    EdgeBanding = c.EdgeBanding
+                                })
+                                .ToList();
+
         bool containsDovetailDBSubComponents = order.Products
                                                     .OfType<IDovetailDrawerBoxContainer>()
                                                     .Any(p => p is not DovetailDrawerBoxProduct && p.ContainsDovetailDrawerBoxes())
@@ -283,6 +295,7 @@ public class JobSummaryModelFactory {
             FivePieceDoors = fivePieceDoors,
             DovetailDrawerBoxes = dovetailDb,
             DoweledDrawerBoxes = doweledDb,
+            CounterTops = counterTops, 
             AdditionalItems = order.AdditionalItems.ToList(),
 
             ContainsDovetailDBSubComponents = containsDovetailDBSubComponents,
