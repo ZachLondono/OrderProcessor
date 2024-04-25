@@ -14,7 +14,7 @@
 @using Domain.Orders.Entities.Products.Closets;
 @using Domain.Orders.Entities.Products.Doors;
 @using Domain.Orders.Entities.Products.DrawerBoxes;
-@inject IBus Bus;
+@inject IBus Bus
 
 @if (Model is not null) {
 
@@ -142,6 +142,16 @@
                         ActionColumn="ProductActionsColumn"
                         UseInches="@UseInches"
                         Context="product" />
+                    </div>
+                }
+
+                @if (Model.CounterTops.Any()) {
+                    <div>
+                        <h3 class="font-semibold text-lg pl-3">Counter Tops (@Model.CounterTops.Count())</h3>
+                        <CounterTopProductTable CounterTops="@Model.CounterTops"
+                                                ActionColumn="ProductActionsColumn"
+                                                UseInches="@UseInches"
+                                                Context="product" />
                     </div>
                 }
             </div>

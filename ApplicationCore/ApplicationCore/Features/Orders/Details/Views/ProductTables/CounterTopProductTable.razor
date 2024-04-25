@@ -1,0 +1,65 @@
+﻿@using Domain.Orders.Entities.Products;
+@using Domain.Orders.Entities.Products.Cabinets;
+@using Domain.Orders;
+
+<div class="overflow-x-auto">
+    <table class="table-auto w-full">
+        <thead class="border-b">
+            <tr>
+                <th class="p-5">#</th>
+                <th class="p-5">Qty</th>
+                <th class="p-5">Finish</th>
+                <th class="p-5">Width</th>
+                <th class="p-5">Length</th>
+                <th class="p-5">Unit $</th>
+                <th class="p-5">Ext. $</th>
+                <th></th>
+            </tr>
+        </thead>
+        @foreach (var row in CounterTops) {
+            <tbody class="hover:bg-blue-500/10 border-b">
+                <tr>
+                    <td class="whitespace-nowrap p-5 text-center">@row.ProductNumber</td>
+                    <td class="whitespace-nowrap p-5 text-center">@row.Qty</td>
+                    <td class="whitespace-nowrap p-5 text-center">@row.Finish</td>
+                    @if (UseInches) {
+                        <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Width.GetFormatedFraction())"</td>
+                        <td class="whitespace-nowrap p-5 text-center">@((MarkupString)row.Length.GetFormatedFraction())"</td>
+                    } else {
+                        <td class="whitespace-nowrap p-5 text-center">@row.Width.AsMillimeters().ToString("0.00")</td>
+                        <td class="whitespace-nowrap p-5 text-center">@row.Length.AsMillimeters().ToString("0.00")</td>
+                    }
+                    <td class="whitespace-nowrap p-5 text-center">@row.UnitPrice.ToString("$0.00")</td>
+                    <td class="whitespace-nowrap p-5 text-center">@((row.UnitPrice * row.Qty).ToString("$0.00"))</td>
+                    <td class="p-5">
+                        @if (ActionColumn is not null) {
+                            @ActionColumn(row)
+                        }
+                    </td>
+                </tr>
+
+                @foreach (var note in row.ProductionNotes) {
+                    <tr>
+                        <td class="p-5 font-bold text-red-500" colspan="6">
+                            @note
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        }
+    </table>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public RenderFragment<IProduct>? ActionColumn { get; set; } = null;
+
+    [Parameter]
+    public IEnumerable<CounterTop> CounterTops { get; set; } = Enumerable.Empty<CounterTop>();
+
+    [Parameter]
+    public bool UseInches { get; set; }
+
+}

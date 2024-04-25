@@ -28,6 +28,8 @@ public record PackingList {
 
     public List<ZargenDrawerItem> ZargenDrawers { get; set; } = [];
 
+    public List<CounterTopItem> CounterTops { get; set; } = [];
+
     public List<AdditionalItem> AdditionalItems { get; set; } = [];
 
     public bool IncludeCheckBoxesNextToItems { get; set; } = false;

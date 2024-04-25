@@ -16,15 +16,16 @@ public class JobSummary {
     public string SpecialRequirements { get; set; } = string.Empty;
 
     public bool ShowItemsInSummary { get; set; } = false;
-    public List<CabinetGroup> Cabinets { get; set; } = new();
-    public List<CabinetPartGroup> CabinetParts { get; set; } = new();
-    public List<ClosetPartGroup> ClosetParts { get; set; } = new();
-    public List<ZargenDrawerGroup> ZargenDrawers { get; set; } = new();
-    public List<DovetailDrawerBoxGroup> DovetailDrawerBoxes { get; set; } = new();
-    public List<DoweledDrawerBoxGroup> DoweledDrawerBoxes { get; set; } = new();
-    public List<MDFDoorGroup> MDFDoors { get; set; } = new();
-    public List<FivePieceDoorGroup> FivePieceDoors { get; set; } = new();
-    public List<AdditionalItem> AdditionalItems { get; set; } = new();
+    public List<CabinetGroup> Cabinets { get; set; } = [];
+    public List<CabinetPartGroup> CabinetParts { get; set; } = [];
+    public List<ClosetPartGroup> ClosetParts { get; set; } = [];
+    public List<ZargenDrawerGroup> ZargenDrawers { get; set; } = [];
+    public List<DovetailDrawerBoxGroup> DovetailDrawerBoxes { get; set; } = [];
+    public List<DoweledDrawerBoxGroup> DoweledDrawerBoxes { get; set; } = [];
+    public List<MDFDoorGroup> MDFDoors { get; set; } = [];
+    public List<FivePieceDoorGroup> FivePieceDoors { get; set; } = [];
+    public List<CounterTopItem> CounterTops { get; set; } = [];
+    public List<AdditionalItem> AdditionalItems { get; set; } = [];
 
     public bool ContainsDovetailDBSubComponents { get; set; } = false;
     public bool ContainsMDFDoorSubComponents { get; set; } = false;

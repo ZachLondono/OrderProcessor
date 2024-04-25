@@ -40,6 +40,8 @@ public record Invoice {
 
     public List<ZargenDrawerItem> ZargenDrawers { get; set; } = new();
 
+    public List<CounterTopItem> CounterTops { get; set; } = new();
+
     public List<AdditionalItem> AdditionalItems { get; set; } = new();
 
 }

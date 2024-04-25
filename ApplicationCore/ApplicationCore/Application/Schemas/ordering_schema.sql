@@ -596,3 +596,13 @@ CREATE TABLE doweled_drawer_box_configs (
 	frontback_height_adjustment REAL NOT NULL,
 	PRIMARY KEY (id)
 );
+
+CREATE TABLE counter_tops (
+	product_id BLOB NOT NULL,
+	finish TEXT NOT NULL,
+	width REAL NOT NULL,
+	length REAL NOT NULL,
+	edge_banding INTEGER NOT NULL,
+	PRIMARY KEY (product_id),
+	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);

@@ -18,7 +18,18 @@ public static class AllmoxyXMLOrderProviderHelpers {
 	public const string MATCH_FINISH_CODE = "match";
 	public const string NO_FINISH_CODE = "none";
 
-	public static CabinetSideType GetCabinetSideType(string name) => name switch {
+	public const string NO_EDGEBANDING = "None";
+	public const string ALL_EDGEBANDING = "All";
+	public const string ONE_LONG = "1L";
+    public const string ONE_LONG_ONE_SHORT = "1L1S";
+    public const string ONE_LONG_TWO_SHORT = "1L2S";
+    public const string TWO_LONG = "2L";
+    public const string TWO_LONG_ONE_SHORT = "2L1S";
+    public const string TWO_LONG_TWO_SHORT = "2L2S";
+    public const string ONE_SHORT = "1S";
+    public const string TWO_SHORT = "2S";
+
+    public static CabinetSideType GetCabinetSideType(string name) => name switch {
 		"Unfinished" => CabinetSideType.Unfinished,
 		"Finished" => CabinetSideType.Finished,
 		"Integrated" => CabinetSideType.IntegratedPanel,

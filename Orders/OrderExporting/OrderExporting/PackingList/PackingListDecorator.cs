@@ -71,6 +71,10 @@ public class PackingListDecorator(PackingList packingList) : IDocumentDecorator 
                         ComposeDoweledDrawerBoxTable(column.Item(), _packingList.DoweledDrawerBoxes);
                     }
 
+                    if (_packingList.CounterTops.Any()) {
+                        ComposeCounterTopTable(column.Item(), _packingList.CounterTops);
+                    }
+
                     if (_packingList.AdditionalItems.Any()) {
                         ComposeAdditionalItemTable(column.Item(), _packingList.AdditionalItems);
                     }
@@ -806,6 +810,73 @@ public class PackingListDecorator(PackingList packingList) : IDocumentDecorator 
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Width.AsMillimeters().ToString("0"));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Height.AsMillimeters().ToString("0"));
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Depth.AsMillimeters().ToString("0"));
+                    }
+
+                });
+
+        });
+
+    }
+
+    public void ComposeCounterTopTable(IContainer container, IEnumerable<CounterTopItem> items) {
+
+        var defaultCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .AlignMiddle()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3);
+
+        var headerCellStyle = (IContainer cell)
+            => cell.Border(1)
+                    .BorderColor(Colors.Grey.Lighten1)
+                    .Background(Colors.Grey.Lighten3)
+                    .AlignCenter()
+                    .PaddingVertical(3)
+                    .PaddingHorizontal(3)
+                    .DefaultTextStyle(x => x.Bold());
+
+        container.Column(col => {
+
+            col.Item()
+                .PaddingTop(10)
+                .PaddingLeft(10)
+                .Text($"Counter Tops ({items.Sum(i => i.Qty)})")
+                .FontSize(16)
+                .Bold()
+                .Italic();
+
+            col.Item()
+                .DefaultTextStyle(x => x.FontSize(10))
+                .Table(table => {
+
+                    table.ColumnsDefinition(column => {
+                        if (_packingList.IncludeCheckBoxesNextToItems) column.ConstantColumn(20);
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(40);
+                        column.RelativeColumn();
+                        column.ConstantColumn(40);
+                        column.ConstantColumn(40);
+                    });
+
+                    table.Header(header => {
+
+                        if (_packingList.IncludeCheckBoxesNextToItems) header.Cell().Element(headerCellStyle).Text("x");
+                        header.Cell().Element(headerCellStyle).Text("#");
+                        header.Cell().Element(headerCellStyle).Text("Qty");
+                        header.Cell().Element(headerCellStyle).Text("Finish");
+                        header.Cell().Element(headerCellStyle).Text("Width");
+                        header.Cell().Element(headerCellStyle).Text("Length");
+
+                    });
+
+                    foreach (var item in items) {
+                        if (_packingList.IncludeCheckBoxesNextToItems) table.Cell().Element(defaultCellStyle);
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Finish);
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Width.AsMillimeters().ToString("0"));
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Length.AsMillimeters().ToString("0"));
                     }
 
                 });

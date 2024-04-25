@@ -40,6 +40,21 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="edgeBanding">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="none" />
+      <xs:enumeration value="all" />
+      <xs:enumeration value="1L" />
+      <xs:enumeration value="1L1S" />
+      <xs:enumeration value="1L2S" />
+      <xs:enumeration value="2L" />
+      <xs:enumeration value="2L1S" />
+      <xs:enumeration value="2L2S" />
+      <xs:enumeration value="1S" />
+      <xs:enumeration value="2S" />
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:complexType name="productionNotes">
     <xs:sequence>
       <xs:element name="note" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
@@ -647,6 +662,23 @@
                       <xs:element name="bottomThickness" type="xs:decimal"/>
                       <xs:element name="machineForUMSlides" type="xs:string" />
                       <xs:element name="frontBackHeightAdj" type="xs:decimal" />
+                      <xs:element name="room" type="xs:string" />
+                      <xs:element name="productionNotes" type="productionNotes" minOccurs="0" maxOccurs="1" />
+                    </xs:sequence>
+                    <xs:attribute name="groupNumber" type="xs:integer" use="required" />
+                    <xs:attribute name="lineNumber" type="xs:integer" use="required" />
+                  </xs:complexType>
+                </xs:element>
+
+                <xs:element name="counterTop">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="qty" type="xs:integer" />
+                      <xs:element name="unitPrice" type="xs:string" />
+                      <xs:element name="finish" type="xs:string" />
+                      <xs:element name="width" type="xs:decimal" />
+                      <xs:element name="length" type="xs:decimal" />
+                      <xs:element name="edgeBanding" type="edgeBanding" />
                       <xs:element name="room" type="xs:string" />
                       <xs:element name="productionNotes" type="productionNotes" minOccurs="0" maxOccurs="1" />
                     </xs:sequence>
