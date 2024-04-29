@@ -96,6 +96,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 		_partMapper.GroupLikeProducts = true; // TODO: Move this into the closet pro settings object
 		var cpProducts = _partMapper.MapPartsToProducts(info.Parts, hardwareSpread);
+		FixCornerShelfSupportDepth(cpProducts);
 		var products = cpProducts.Select(p => CreateProductFromClosetProProduct(p, customer.ClosetProSettings, _componentBuilderFactory))
 								 .ToList();
 
@@ -400,6 +401,51 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 	public static bool TryParseMoneyString(string text, out decimal value) {
 		return decimal.TryParse(text.Replace("$", ""), out value);
+	}
+
+	public static void FixCornerShelfSupportDepth(List<IClosetProProduct> parts) {
+
+		List<IClosetProProduct> partsToRemove = [];
+		List<IClosetProProduct> partsToAdd = [];
+
+		VerticalPanel? lastVertical = null;
+		foreach (var part in parts) {
+
+			if (part is CornerShelf cs && lastVertical is not null) {
+
+				partsToRemove.Add(lastVertical);
+				partsToAdd.Add(new VerticalPanel() {
+                    Qty = lastVertical.Qty,
+                    Color = lastVertical.Color,
+					EdgeBandingColor = lastVertical.EdgeBandingColor,
+					Room = lastVertical.Room,
+					UnitPrice = lastVertical.UnitPrice,
+					PartNumber = lastVertical.PartNumber,
+                    Height = lastVertical.Height,
+                    Depth = cs.ProductWidth,
+					Drilling = lastVertical.Drilling,
+					WallHung = lastVertical.WallHung,
+					ExtendBack = lastVertical.ExtendBack,
+					HasBottomRadius = lastVertical.HasBottomRadius,
+					BaseNotch = lastVertical.BaseNotch
+                });
+
+				lastVertical = null;
+				continue;
+
+			}
+
+			if (part is VerticalPanel vp && vp.Depth == Dimension.FromInches(6)) {
+
+				lastVertical = vp;
+
+			}
+
+		}
+
+		partsToRemove.ForEach(p => parts.Remove(p));
+		parts.AddRange(partsToAdd);
+
 	}
 
 }
