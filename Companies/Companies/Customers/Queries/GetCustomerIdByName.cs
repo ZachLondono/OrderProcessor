@@ -20,7 +20,7 @@ public class GetCustomerIdByName {
 
             using var connection = await _factory.CreateConnection();
 
-            var data = await connection.QuerySingleOrDefaultAsync<Guid?>("SELECT id FROM customers WHERE name = @Name;", query);
+            var data = await connection.QueryFirstOrDefaultAsync<Guid?>("SELECT id FROM customers WHERE name = @Name;", query);
 
             return data;
 
