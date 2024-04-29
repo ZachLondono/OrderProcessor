@@ -25,7 +25,6 @@ public static class AllmoxyXMLOrderProviderHelpers {
     public const string ONE_LONG_TWO_SHORT = "1L2S";
     public const string TWO_LONG = "2L";
     public const string TWO_LONG_ONE_SHORT = "2L1S";
-    public const string TWO_LONG_TWO_SHORT = "2L2S";
     public const string ONE_SHORT = "1S";
     public const string TWO_SHORT = "2S";
 

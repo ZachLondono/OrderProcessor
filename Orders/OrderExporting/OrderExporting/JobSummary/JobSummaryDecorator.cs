@@ -976,7 +976,6 @@ public class JobSummaryDecorator(JobSummary jobSummary) : IDocumentDecorator {
                 EdgeBandingSides.OneLongTwoShort => "1L2S",
                 EdgeBandingSides.TwoLong => "2L",
                 EdgeBandingSides.TwoLongOneShort => "2L1S",
-                EdgeBandingSides.TwoLongTwoShort => "2L2S",
                 EdgeBandingSides.OneShort => "1S",
                 EdgeBandingSides.TwoShort => "2S",
                 _ => "Unknown"

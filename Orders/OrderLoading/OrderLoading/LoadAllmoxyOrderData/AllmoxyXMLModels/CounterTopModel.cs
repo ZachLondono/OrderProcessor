@@ -56,7 +56,6 @@ public class CounterTopModel : ProductOrItemModel {
 			AllmoxyXMLOrderProviderHelpers.ONE_LONG_TWO_SHORT => EdgeBandingSides.OneLongTwoShort,
 			AllmoxyXMLOrderProviderHelpers.TWO_LONG => EdgeBandingSides.TwoLong,
 			AllmoxyXMLOrderProviderHelpers.TWO_LONG_ONE_SHORT => EdgeBandingSides.TwoLongOneShort,
-			AllmoxyXMLOrderProviderHelpers.TWO_LONG_TWO_SHORT => EdgeBandingSides.TwoLongTwoShort,
 			AllmoxyXMLOrderProviderHelpers.ONE_SHORT => EdgeBandingSides.OneShort,
 			AllmoxyXMLOrderProviderHelpers.TWO_SHORT => EdgeBandingSides.TwoShort,
 			_ => EdgeBandingSides.All,

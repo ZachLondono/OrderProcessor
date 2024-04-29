@@ -8,7 +8,6 @@ public enum EdgeBandingSides {
     OneLongTwoShort,
     TwoLong,
     TwoLongOneShort,
-    TwoLongTwoShort,
     OneShort,
     TwoShort
 }
