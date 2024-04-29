@@ -115,10 +115,10 @@ public partial class ClosetProPartMapper {
 			PartNumber = part.PartNum,
 			EdgeBandingColor = edgeBandingColor,
 
-			ProductWidth = width,
+			ProductWidth = left,
 			ProductLength = depth,
-			RightWidth = left,
-			NotchSideLength = right,
+			RightWidth = right,
+			NotchSideLength = width,
 			Type = type,
 		};
 
