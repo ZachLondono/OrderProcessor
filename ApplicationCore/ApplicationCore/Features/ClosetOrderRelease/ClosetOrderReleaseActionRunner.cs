@@ -524,15 +524,24 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
         }
 
         string subject = $"Ready to Release: {ClosetOrder.OrderNumber}";
-        string body = $"Please release dovetail drawer boxes for '{ClosetOrder.OrderNumber} - {ClosetOrder.OrderName}'\n{ClosetOrder.OrderFile}";
+        string textbody = $"""
+                            Please release dovetail drawer boxes for '{ClosetOrder.OrderNumber} - {ClosetOrder.OrderName}'
+                            {ClosetOrder.OrderFile}
+                            """;
+
+        string htmlbody = $"""
+                            Please release dovetail drawer boxes for '{ClosetOrder.OrderNumber} - {ClosetOrder.OrderName}'
+                            <br />
+                            {ClosetOrder.OrderFile}
+                            """;
 
         if (Options.PreviewDovetailReleaseEmail) {
 
-            CreateAndDisplayOutlookEmail(Options.DovetailReleaseEmailRecipients, subject, body, body, []);
+            CreateAndDisplayOutlookEmail(Options.DovetailReleaseEmailRecipients, subject, htmlbody, textbody, []);
 
         } else {
 
-            await SendEmail(Options.DovetailReleaseEmailRecipients, subject, body, body, []);
+            await SendEmail(Options.DovetailReleaseEmailRecipients, subject, htmlbody, textbody, []);
 
         }
 
