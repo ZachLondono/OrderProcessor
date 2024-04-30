@@ -58,6 +58,9 @@ public class ReleaseConfiguration {
     public bool SendInvoiceEmail { get; set; }
     public bool PreviewInvoiceEmail { get; set; }
 
+    public bool SendDovetailDBEmail { get; set; }
+    public string? DovetailDBEmailRecipients { get; set; }
+
     public bool AreMainPDFOptionsEnabled => (GenerateJobSummary || GeneratePackingList || GenerateCNCRelease || GenerateCNCGCode || GenerateDoweledDrawerBoxCutList || Generate5PieceCutList || IncludeDovetailDBPackingList || GenerateHardwareList);
 
 }

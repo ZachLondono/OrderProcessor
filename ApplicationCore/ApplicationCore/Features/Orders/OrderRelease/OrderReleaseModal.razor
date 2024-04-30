@@ -245,6 +245,24 @@
 
         </section>
 
+        <hr />
+
+        <section>
+
+            <h3 class="font-semibold mb-3">Dovetail Drawer Boxes</h3>
+
+            <CheckBox @bind-IsChecked="DataContext.Configuration.SendDovetailDBEmail">
+                <span class="text-gray-700">Send Dovetail DB Release Email</span>
+            </CheckBox>
+            @if (DataContext.Configuration.SendDovetailDBEmail) {
+                <div class="ml-3">
+                    <label class="block text-sm font-medium text-gray-700">Email Recipients</label>
+                    <input type="text" class="input-text mt-1 w-full" @bind="DataContext.Configuration.DovetailDBEmailRecipients" />
+                </div>
+            }
+
+        </section>
+
         <section>
             <Button Color="ButtonColor.Primary" Style="ButtonStyle.Text" OnClickAsync="ShowReleaseProgressModal" Disabled="_isReleasing">Release</Button>
             <Button Color="ButtonColor.Secondary" Style="ButtonStyle.Text" OnClickAsync="Cancel" Disabled="_isReleasing">Cancel</Button>

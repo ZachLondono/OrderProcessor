@@ -162,6 +162,9 @@ public class OrderReleaseModalViewModel {
             InvoiceFileName = $"{orderNumbers} INVOICE",
             InvoiceOutputDirectory = invoiceDirectory,
 
+            SendDovetailDBEmail = DoAnyOrdersContainDovetailDBs,
+            DovetailDBEmailRecipients = "dovetail@royalcabinet.com",
+
         };
 
         IsLoadingConfiguration = false;

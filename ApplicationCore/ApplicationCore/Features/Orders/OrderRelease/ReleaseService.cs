@@ -97,6 +97,12 @@ public class ReleaseService {
             OnProgressReport?.Invoke("Not generating invoice pdf, because option was not enabled");
         }
 
+        if (configuration.SendDovetailDBEmail && configuration.DovetailDBEmailRecipients is not null) {
+            foreach (var order in orders) {
+                await DovetailReleaseEmail(order.Number, order.Name, order.WorkingDirectory, configuration.DovetailDBEmailRecipients);
+            }
+        }
+
         OnActionComplete?.Invoke("Release Complete");
 
     }
@@ -871,6 +877,24 @@ public class ReleaseService {
         var sanitizedName = fileReader.RemoveInvalidPathCharacters(customerName);
         var result = outputDir.Replace("{customer}", sanitizedName);
         return result;
+    }
+
+    private async Task DovetailReleaseEmail(string orderNumber, string orderName, string filePath, string recipients) {
+
+        string subject = $"Ready to Release: {orderNumber}";
+        string textbody = $"""
+                       Please release dovetail drawer boxes for '{orderNumber} - {orderName}'
+                       {filePath}
+                       """;
+
+        string htmlbody = $"""
+                       Please release dovetail drawer boxes for '{orderNumber} - {orderName}'
+                       <br />
+                       {filePath}
+                       """;
+
+        await SendEmailAsync(recipients, subject, htmlbody, textbody, []);
+
     }
 
     private async Task<Customer> GetCustomer(Guid customerId) {
