@@ -59,6 +59,10 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
         DrawerBoxOptions = drawerBoxOptions;
         BaseNotch = baseNotch;
 
+        if (BaseNotch is not null && BaseNotch.Height != Dimension.Zero && BaseNotch.Depth != Dimension.Zero) {
+            ProductionNotes.Add("Check back panel length. PSI bug causes back panel to be too short.");
+        }
+
     }
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
