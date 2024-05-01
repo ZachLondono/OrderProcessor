@@ -26,11 +26,17 @@
 @if (_order is null) {
     <span>Order was not found or could not be loaded</span>
 } else {
-    
+
+    @if (_order is not null) {
+        <section>
+            <OrderWarnings Order="_order" />
+        </section>
+    }
+
     <section class="grid grid-cols-2" id="header">
 
         <div class="pl-10">
-            
+
             <OrderHeaderWidget OrderId="_order.Id" />
 
             @if (_order.Info.Count != 0) {
@@ -49,7 +55,7 @@
                             }
                             <!--
                             <tr>
-                                <td class="text-center cursor-pointer font-semibold hover:bg-blue-100 hover:text-blue-700 rounded-md">+ Add</td>
+                            <td class="text-center cursor-pointer font-semibold hover:bg-blue-100 hover:text-blue-700 rounded-md">+ Add</td>
                             </tr>
                             -->
                         </tbody>
@@ -57,13 +63,13 @@
                 </div>
             }
         </div>
-    
+
         @if (ActionPanel is not null){
             <div id="actions">
                 @ActionPanel(_order)
             </div>
         }
-    
+
     </section>
 
     <section class="mt-10" id="order_note">
@@ -86,7 +92,7 @@
             <Collapsable>
                 <Summary>
                     <h2 class="font-semibold text-lg">Shipping</h2>
-                    
+
                     <div>
                         <label id="shippingmethod" class="text-md w-24 inline-block">Method</label>
                         <span class="text-lg">@_order.Shipping.Method</span>
@@ -101,17 +107,17 @@
                         <label id="shippingmethod" class="text-md w-24 inline-block">Method</label>
                         <span class="text-lg">@_order.Shipping.Method</span>
                     </div>
-                    
+
                     <div>
                         <label id="shippingcontact" class="text-md w-24 inline-block">Contact</label>
                         <span class="text-lg">@_order.Shipping.Contact</span>
                     </div>
-                    
+
                     <div>
                         <label id="shippingphone" class="text-md w-24 inline-block">Phone</label>
                         <span class="text-lg">@_order.Shipping.PhoneNumber</span>
                     </div>
-                    
+
                     <div>                                                                                                                               
                         <h3 class="text-md w-24 inline-block">Address</h3>
                         <div class="ml-5">
@@ -119,32 +125,32 @@
                                 <label id="shippingline1" class="text-sm w-24 inline-block">Line 1</label>
                                 <span class="text-md">@_order.Shipping.Address.Line1</span>
                             </div>
-                    
+
                             <div>
                                 <label id="shippingline2" class="text-sm w-24 inline-block">Line 2</label>
                                 <span class="text-md">@_order.Shipping.Address.Line2</span>
                             </div>
-                    
+
                             <div>
                                 <label id="shippingline3" class="text-sm w-24 inline-block">Line 3</label>
                                 <span class="text-md">@_order.Shipping.Address.Line3</span>
                             </div>
-                    
+
                             <div>
                                 <label id="shippingcity" class="text-sm w-24 inline-block">City</label>
                                 <span class="text-md">@_order.Shipping.Address.City</span>
                             </div>
-                    
+
                             <div>
                                 <label id="shippingstate" class="text-sm w-24 inline-block">State</label>
                                 <span class="text-md">@_order.Shipping.Address.State</span>
                             </div>
-                    
+
                             <div>
                                 <label id="shippingzip" class="text-sm w-24 inline-block">Zip</label>
                                 <span class="text-md">@_order.Shipping.Address.Zip</span>
                             </div>
-                    
+
                             <div>
                                 <label id="shippingcountry" class="text-sm w-24 inline-block">Country</label>
                                 <span class="text-md">@_order.Shipping.Address.Country</span>
@@ -159,7 +165,7 @@
             <Collapsable>
                 <Summary>
                     <h2 class="font-semibold text-lg">Invoice</h2>
-                    
+
                     <div>
                         <label id="totalprice" class="text-md w-24 inline-block">Total Price</label>
                         <span class="text-lg">$@(_order.Total.ToString("0.00"))</span>
@@ -167,7 +173,7 @@
                 </Summary>
                 <Content>
                     <h2 class="font-semibold text-lg">Invoice</h2>
-                    
+
                     <table class="w-full">
                         <tbody>
                             <tr>
@@ -248,22 +254,22 @@
 
         <!--
         <div class="flex space-x-3 mb-5">
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-900 text-white">All</button>
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Closet Parts</button>
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Cabinets</button>
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Cabinet Parts</button>
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Doweled DBs</button>
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Doweled DBs</button>
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Zargen DBs</button>
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">MDF Doors</button>
-            <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">5-Piece Doors</button>
+        <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-900 text-white">All</button>
+        <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Closet Parts</button>
+        <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Cabinets</button>
+        <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Cabinet Parts</button>
+        <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Doweled DBs</button>
+        <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Doweled DBs</button>
+        <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">Zargen DBs</button>
+        <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">MDF Doors</button>
+        <button class="px-3 py-2 text-sm whitespace-nowrap rounded-md bg-slate-100 hover:bg-slate-200">5-Piece Doors</button>
         </div>
         -->
 
         <div class="mb-5">
             <button disabled="@_useInches" @onclick="ToggleUnits" class="bg-slate-100 disabled:bg-black disabled:text-white px-3.5 py-1 rounded-r-none rounded-l-md w-14 transition ease-in-out duration-300">in</button><!--
-         --><button disabled="@(!_useInches)" @onclick="ToggleUnits" class="bg-slate-100 disabled:bg-black disabled:text-white px-3.5 py-1 rounded-l-none rounded-r-md w-14 transition ease-in-out duration-300">mm</button>
-		</div>
+            --><button disabled="@(!_useInches)" @onclick="ToggleUnits" class="bg-slate-100 disabled:bg-black disabled:text-white px-3.5 py-1 rounded-l-none rounded-r-md w-14 transition ease-in-out duration-300">mm</button>
+        </div>
 
         @if (_order.Products.Count == 0) {
             <span>No products in order</span>
@@ -273,11 +279,11 @@
             var last = Rooms.LastOrDefault();
             foreach (var room in Rooms) {
                 <Room Model="room"
-                    Index="Rooms.IndexOf(room)"
-                    IsFirst="first!.Equals(room)"
-                    IsLast="last!.Equals(room)"
-                    UseInches="_useInches"
-                    ProductActionsColumn="ProductActionsColumn" />
+                Index="Rooms.IndexOf(room)"
+                IsFirst="first!.Equals(room)"
+                IsLast="last!.Equals(room)"
+                UseInches="_useInches"
+                ProductActionsColumn="ProductActionsColumn" />
             }
 
         }
@@ -291,16 +297,16 @@
         </div>
 
         <div class="border border-slate-100 rounded-md">
-	        <table class="table-auto w-full rounded-md">
-		        <thead class="border-b bg-slate-100">
+            <table class="table-auto w-full rounded-md">
+                <thead class="border-b bg-slate-100">
                     <tr>
-		    		    <th class="p-5">Qty</th>
-		    		    <th class="p-5">Description</th>
-		    		    <th class="p-5">Unit $</th>
-		    		    <th class="p-5">Ext. $</th>
-		    	    </tr>
-		        </thead>
-		        <tbody>
+                        <th class="p-5">Qty</th>
+                        <th class="p-5">Description</th>
+                        <th class="p-5">Unit $</th>
+                        <th class="p-5">Ext. $</th>
+                    </tr>
+                </thead>
+                <tbody>
                     @if (_order.AdditionalItems.Count == 0) {
                         <tr>
                             <td colspan="3" class="text-center p-5 font-medium">No Additional Items in Order</td>
@@ -312,7 +318,7 @@
                             <td class="p-5 border-b font-medium">@item.Description</td>
                             <td class="p-5 border-b">@item.UnitPrice.ToString("$0.00")</td>
                             <td class="p-5 border-b">@((item.UnitPrice * item.Qty).ToString("$0.00"))</td>
-		    	        </tr>
+                                </tr>
                     }
 		        </tbody>
 	        </table>
