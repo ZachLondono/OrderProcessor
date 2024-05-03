@@ -309,7 +309,9 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
         }
 
-        return rails;
+		return rails.GroupBy(r => (r.Length, r.Finish))
+					.Select(g => new HangingRail(Guid.NewGuid(), g.Sum(r => r.Qty), g.Key.Length, g.Key.Finish))
+					.ToList();
 
 	}
 
