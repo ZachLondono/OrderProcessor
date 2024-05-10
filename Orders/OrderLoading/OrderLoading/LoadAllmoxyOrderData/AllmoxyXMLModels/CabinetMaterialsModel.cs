@@ -46,7 +46,8 @@ public class CabinetModel {
 	[XmlElement("comment")]
 	public string Comment { get; set; } = string.Empty;
 
-	[XmlArray("productNotes")]
+	[XmlArray("productionNotes")]
+	[XmlArrayItem(ElementName = "note", Type = typeof(string))]
 	public List<string> ProductionNotes { get; set; } = new();
 
 }
