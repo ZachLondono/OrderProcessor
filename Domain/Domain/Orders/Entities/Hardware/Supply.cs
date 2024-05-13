@@ -49,7 +49,7 @@ public record Supply(Guid Id, int Qty, string Description) {
 
     }
 
-    public static Supply PullOutBlock(int qty) => new(Guid.NewGuid(), qty, "Pullout Block");
+    public static Supply PullOutBlock(int qty) => new(Guid.NewGuid(), qty, "1\" Pullout Block");
 
     public static Supply LockingShelfPeg(int qty) => new(Guid.NewGuid(), qty, "Adj. Shelf Peg, Locking");
 
