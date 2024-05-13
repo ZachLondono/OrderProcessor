@@ -151,7 +151,7 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
         }
 
         if (Drawers.Quantity > 0 && DrawerBoxOptions.SlideType == DrawerSlideType.UnderMount) {
-            supplies.Add(Supply.DrawerClips(Drawers.Quantity * Qty));
+            supplies.Add(Supply.CabinetDrawerClips(Drawers.Quantity * Qty));
         }
 
         return supplies;

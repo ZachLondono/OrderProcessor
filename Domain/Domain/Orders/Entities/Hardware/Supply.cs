@@ -15,7 +15,9 @@ public record Supply(Guid Id, int Qty, string Description) {
 
     public static Supply CabinetLeveler(int qty) => new(Guid.NewGuid(), qty, "Cabinet Leveler");
 
-    public static Supply DrawerClips(int qty) => new(Guid.NewGuid(), qty, "Hettich Clips (pair)");
+    public static Supply CabinetDrawerClips(int qty) => new(Guid.NewGuid(), qty, "Hettich Clips (pair) (Grey)");
+
+    public static Supply ClosetDrawerClips(int qty) => new(Guid.NewGuid(), qty, "Hettich Clips (pair) (Black/Blue)");
 
     public static IEnumerable<Supply> StandardHinge(int qty) => new Supply[2] { new(Guid.NewGuid(), qty, "Hinge, 125"), new(Guid.NewGuid(), qty, "Hinge Plate") };
 

@@ -256,7 +256,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 		var drawers = products.OfType<DrawerBox>().Where(d => d.UnderMountNotches).Sum(d => d.Qty);
 		if (drawers > 0) {
-			supplies.Add(Supply.DrawerClips(drawers));
+			supplies.Add(Supply.ClosetDrawerClips(drawers));
 		}
 
 		var verticals = products.OfType<VerticalPanel>().ToArray();
