@@ -265,7 +265,7 @@ public class PackingListDecorator(PackingList packingList) : IDocumentDecorator 
 
                     });
 
-                    foreach (var item in items) {
+                    foreach (var item in items.OrderBy(i => i.Line)) {
                         if (_packingList.IncludeCheckBoxesNextToItems) table.Cell().Element(defaultCellStyle);
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
@@ -327,7 +327,7 @@ public class PackingListDecorator(PackingList packingList) : IDocumentDecorator 
 
                     });
 
-                    foreach (var item in items) {
+                    foreach (var item in items.OrderBy(i => i.Line)) {
                         if (_packingList.IncludeCheckBoxesNextToItems) table.Cell().Element(defaultCellStyle);
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
@@ -398,7 +398,7 @@ public class PackingListDecorator(PackingList packingList) : IDocumentDecorator 
 
                     });
 
-                    foreach (var item in items) {
+                    foreach (var item in items.OrderBy(i => i.Line)) {
                         if (_packingList.IncludeCheckBoxesNextToItems) table.Cell().Element(defaultCellStyle);
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
@@ -477,7 +477,7 @@ public class PackingListDecorator(PackingList packingList) : IDocumentDecorator 
 
                     });
 
-                    foreach (var item in items) {
+                    foreach (var item in items.OrderBy(i => i.Line)) {
                         if (_packingList.IncludeCheckBoxesNextToItems) table.Cell().Element(defaultCellStyle);
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
@@ -555,7 +555,7 @@ public class PackingListDecorator(PackingList packingList) : IDocumentDecorator 
 
                     });
 
-                    foreach (var item in items) {
+                    foreach (var item in items.OrderBy(i => i.Line)) {
                         if (_packingList.IncludeCheckBoxesNextToItems) table.Cell().Element(defaultCellStyle);
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
@@ -632,7 +632,7 @@ public class PackingListDecorator(PackingList packingList) : IDocumentDecorator 
 
                     });
 
-                    foreach (var item in items) {
+                    foreach (var item in items.OrderBy(i => i.Line)) {
                         if (_packingList.IncludeCheckBoxesNextToItems) table.Cell().Element(defaultCellStyle);
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
@@ -714,7 +714,7 @@ public class PackingListDecorator(PackingList packingList) : IDocumentDecorator 
                     });
 
 
-                    foreach (var item in items) {
+                    foreach (var item in items.OrderBy(i => i.Line)) {
 
                         if (_packingList.IncludeCheckBoxesNextToItems) table.Cell().Element(defaultCellStyle);
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
@@ -799,7 +799,7 @@ public class PackingListDecorator(PackingList packingList) : IDocumentDecorator 
 
                     });
 
-                    foreach (var item in items) {
+                    foreach (var item in items.OrderBy(i => i.Line)) {
                         if (_packingList.IncludeCheckBoxesNextToItems) table.Cell().Element(defaultCellStyle);
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
@@ -870,7 +870,7 @@ public class PackingListDecorator(PackingList packingList) : IDocumentDecorator 
 
                     });
 
-                    foreach (var item in items) {
+                    foreach (var item in items.OrderBy(i => i.Line)) {
                         if (_packingList.IncludeCheckBoxesNextToItems) table.Cell().Element(defaultCellStyle);
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
@@ -933,7 +933,7 @@ public class PackingListDecorator(PackingList packingList) : IDocumentDecorator 
 
                     });
 
-                    foreach (var item in items) {
+                    foreach (var item in items.OrderBy(i => i.Line)) {
                         if (_packingList.IncludeCheckBoxesNextToItems) table.Cell().Element(defaultCellStyle);
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Line.ToString());
                         table.Cell().Element(defaultCellStyle).AlignCenter().Text(item.Qty.ToString());
