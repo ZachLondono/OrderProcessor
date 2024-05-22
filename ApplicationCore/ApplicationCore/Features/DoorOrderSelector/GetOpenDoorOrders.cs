@@ -55,11 +55,24 @@ public class GetOpenDoorOrders {
                                 string reportFilePath = @$"Y:\CADCode\Reports\{jobNumber} - {jobName}.xml"; // TODO: Get this directory from a settings file
                                 string directory = workbook.Path;
                                 string filePath = workbook.FullName;
+                                int itemCount = (int) worksheet.Range["DoorCount"].Value2;
+                                DateTime? orderDate = ParseOADate(worksheet.Range["OrderDate"].Value2.ToString());
+                                DateTime? dueDate = ParseOADate(worksheet.Range["DueDate"].Value2.ToString());
 
                                 string releasedDateStr = worksheet.Range["ReleasedDate"]?.Value2?.ToString() ?? "";
-                                DateTime? releasedDate = ParseReleaseDate(releasedDateStr);
+                                DateTime? releasedDate = ParseOADate(releasedDateStr);
 
-                                doorOrders.Add(new(customerName, vendorName, jobName, jobNumber, reportFilePath, directory, filePath, releasedDate));
+                                doorOrders.Add(new(customerName,
+                                                   vendorName,
+                                                   jobName,
+                                                   jobNumber,
+                                                   reportFilePath,
+                                                   directory,
+                                                   filePath,
+                                                   releasedDate,
+                                                   orderDate,
+                                                   dueDate,
+                                                   itemCount));
 
                             } catch (Exception ex) {
                                 _logger.LogWarning(ex, "Exception thrown while trying to read order info from door order MDF tab");
@@ -81,7 +94,7 @@ public class GetOpenDoorOrders {
 
         }
 
-        private static DateTime? ParseReleaseDate(string releasedDateStr) {
+        private static DateTime? ParseOADate(string releasedDateStr) {
             try {
                 return DateTime.FromOADate(double.Parse(releasedDateStr));
             } catch {
