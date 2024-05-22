@@ -25,6 +25,7 @@ using OrderExporting.CNC.Programs.WSXML;
 using OrderExporting.CNC.Programs.Job;
 using OrderExporting.CNC.Programs.WorkOrderReleaseEmail;
 using OrderExporting.CNC.Programs.WSXML.Report;
+using ApplicationCore.Features.DoorOrderRelease.OrderTracker;
 
 namespace ApplicationCore.Features.DoorOrderRelease;
 
@@ -182,6 +183,10 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             } else {
                 await SendEmailAsync(options.EmailRecipients, $"RELEASED: {doorOrder.OrderNumber} {doorOrder.Customer}", HTMLBody, TextBody, attachments);
             }
+        }
+
+        if (options.PostToTracker) {
+            await PostOrderToTracker(doorOrder);
         }
 
     }
@@ -728,6 +733,53 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         }
 
         return null;
+
+    }
+
+    private  async Task PostOrderToTracker(DoorOrder doorOrder) {
+
+        var client = new OrderTrackerApiClient();
+
+        DateTime orderedDate = DateTime.Today;
+        if (doorOrder.OrderDate is DateTime date) {
+            orderedDate = date;
+        }
+
+        DateTime dueDate = DateTime.Today.AddDays(14);
+        if (doorOrder.DueDate is DateTime date2) {
+            dueDate = date2;
+        }
+
+        var order = new NewOrder() {
+            Number = doorOrder.OrderNumber,
+            Name = doorOrder.OrderName,
+            Customer = doorOrder.Customer,
+            Vendor = doorOrder.Vendor,
+            OrderedDate = orderedDate,
+            WantByDate = dueDate,
+            IsRush = false,
+            Price = 0,
+            Shipping = 0,
+            Tax = 0
+        };
+
+        var createdOrder = await client.PostNewOrder(order);
+
+        if (createdOrder is null) {
+            PublishProgressMessage?.Invoke(new ProgressLogMessage(ProgressLogMessageType.Error, "Failed to post order to tracker"));
+            return;
+        }
+
+        var release = new NewMDFDoorRelease() {
+            ItemCount = doorOrder.ItemCount
+        };
+
+        var createdRelease = await client.PostNewMDFDoorRelease(createdOrder.Id, release);
+
+        if (createdRelease is null) {
+            PublishProgressMessage?.Invoke(new ProgressLogMessage(ProgressLogMessageType.Error, "Failed to post mdf door release to tracker"));
+            return;
+        }
 
     }
 

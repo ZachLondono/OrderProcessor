@@ -20,7 +20,6 @@ using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
 using ApplicationCore.Features.Products.UpdateClosetPart;
 using ApplicationCore.Features.Settings;
-using ApplicationCore.Features.TrackOrder;
 using ApplicationCore.Features.Updates;
 using ApplicationCore.Pages.OrderList;
 using ApplicationCore.Shared.Services;
@@ -110,8 +109,7 @@ public static class DependencyInjection {
                 .AddTransient<OrderListPageViewModel>()
                 .AddTransient<DoorOrderReleaseActionRunner>()
                 .AddTransient<ClosetOrderReleaseActionRunner>()
-                .AddTransient<ClosetProToAllmoxyMapper>()
-                .AddSingleton<OrderTracker>();
+                .AddTransient<ClosetProToAllmoxyMapper>();
 
     }
 

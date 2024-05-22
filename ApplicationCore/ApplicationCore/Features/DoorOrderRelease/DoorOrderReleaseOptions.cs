@@ -28,4 +28,6 @@ public class DoorOrderReleaseOptions {
     public bool PreviewEmail { get; set; } = false;
     public string EmailRecipients { get; set; } = string.Empty;
 
+    public bool PostToTracker { get; set; } = true;
+
 }

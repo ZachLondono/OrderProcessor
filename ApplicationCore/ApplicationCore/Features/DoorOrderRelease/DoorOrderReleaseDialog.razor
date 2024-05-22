@@ -125,6 +125,13 @@
         }
     </div>
 
+    <div class="mt-3">
+        <label class="font-semibold">
+            <InputCheckbox @bind-Value="Model.PostToTracker" />
+            <span class="text-gray-700">Post to Tracker</span>
+        </label>
+    </div>
+
     <div class="my-5 text-center">
         <Button Color="Button.ButtonColor.Primary" class="mt-3" OnClickAsync="GenerateDoorOrderRelease">Generate PDF</Button>
     </div>
