@@ -90,7 +90,14 @@ public class GetOpenClosetOrders {
                             containsMDF = !string.IsNullOrWhiteSpace(firstQty);
                         }
 
-                        closetOrders.Add(new(customerName, jobName, jobNumber, orderDate, dueDate, containsMDF, containsDovetail, reportFilePath, filePath, directory));
+                        bool containsOther = false;
+                        var otherSheet = worksheets.OfType<Worksheet>().FirstOrDefault(ws => ws.Name == "Other");
+                        if (otherSheet is not null) {
+                            string? firstQty = otherSheet.Range["B2"]?.Value2?.ToString() ?? null;
+                            containsOther = !string.IsNullOrWhiteSpace(firstQty);
+                        }
+
+                        closetOrders.Add(new(customerName, jobName, jobNumber, orderDate, dueDate, containsMDF, containsDovetail, containsOther, reportFilePath, filePath, directory));
 
                     } catch (Exception ex) {
                         _logger.LogWarning(ex, "Exception thrown while trying to read order info from door order Cover tab");

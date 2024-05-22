@@ -8,6 +8,7 @@ public record ClosetOrder(
     DateTime DueDate,
     bool ContainsMDFFronts,
     bool ContainsDovetailBoxes,
+    bool ContainsOther,
     string ReportFilePath,
     string OrderFile,
     string OrderFileDirectory);

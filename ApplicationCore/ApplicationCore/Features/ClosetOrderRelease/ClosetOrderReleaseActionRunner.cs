@@ -90,6 +90,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                                                              Options.IncludePartList,
                                                              Options.IncludeDBList,
                                                              Options.IncludeMDFList,
+                                                             Options.IncludeOthersList,
                                                              Options.IncludeSummary,
                                                              Options.WorkbookFilePath,
                                                              Options.InvoicePDF,
@@ -300,7 +301,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
     }
 
-    private async Task<(string?, string?)> GeneratePDFFromWorkbook(bool includeCover, bool includePackingList, bool includePartList, bool includeDBList, bool includeMDFList, bool includeSummary, string filePath, bool invoice, string invoiceDirectory) {
+    private async Task<(string?, string?)> GeneratePDFFromWorkbook(bool includeCover, bool includePackingList, bool includePartList, bool includeDBList, bool includeMDFList, bool includeOther, bool includeSummary, string filePath, bool invoice, string invoiceDirectory) {
 
         bool wasOrderOpen = true;
         string? tmpFileName = null;
@@ -330,7 +331,13 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                     const string sheetName = "Cover";
 
                     Worksheet cover = worksheets[sheetName];
-                    cover.PageSetup.PrintArea = $"A1:E48";
+
+                    int lastRow = 50;
+                    if (string.IsNullOrWhiteSpace(cover.Range["A50"]?.Value2?.ToString())) {
+                        lastRow = 48;
+                    }
+
+                    cover.PageSetup.PrintArea = $"A1:E{lastRow}";
                     if (includeCover) pdfSheetNames.Add(sheetName);
 
                     if (invoice && Directory.Exists(invoiceDirectory)) {
@@ -397,6 +404,12 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                     worksheets[sheetName].PageSetup.CenterHeader = "MDF Fronts";
                     app.PrintCommunication = true;
                     SetSheetPrintArea(app, worksheets, sheetName, "B", "H", 6);
+                    pdfSheetNames.Add(sheetName);
+                }
+
+                if (includeOther) {
+                    const string sheetName = "Other";
+                    SetSheetPrintArea(app, worksheets, sheetName, "A", "F", 2);
                     pdfSheetNames.Add(sheetName);
                 }
 

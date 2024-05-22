@@ -11,6 +11,7 @@ public class ClosetOrderReleaseOptions {
     public bool IncludePartList { get; set; }
     public bool IncludeDBList { get; set; }
     public bool IncludeMDFList { get; set; }
+    public bool IncludeOthersList { get; set; }
     public bool IncludeSummary { get; set; }
 
     public string FileName { get; set; } = string.Empty;
