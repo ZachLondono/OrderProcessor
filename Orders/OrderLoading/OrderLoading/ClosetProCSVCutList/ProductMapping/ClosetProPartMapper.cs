@@ -48,7 +48,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 			Part? nextPart = null;
 			if (part.PartName == "Melamine") {
 
-				products.Add(CreateFiller(part, RoomNamingStrategy));
+				products.Add(CreateMelaminePart(part, RoomNamingStrategy));
 
 			} else if (part.PartType == "Countertop") {
 

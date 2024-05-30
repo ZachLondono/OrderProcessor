@@ -24,6 +24,19 @@ public partial class ClosetProPartMapper {
 
 	}
 
+	/*
+	 * Used for mapping parts that are added using the "Material" section on the ClosetPro editor
+	 * The value of the 'CornerShelfSizes' property can be used to distinguish between a Cleat (c), Shelf (s) or Vertical (v)
+	 */
+	public static MiscellaneousClosetPart CreateMelaminePart(Part part, RoomNamingStrategy strategy) {
+
+		Dimension width = Dimension.FromInches(part.Width);
+        Dimension length = Dimension.FromInches(part.Height);
+
+		return CreateMiscPart(part, width, length, MiscellaneousType.ExtraPanel, strategy);
+
+	}
+
 	public static MiscellaneousClosetPart CreateBacking(Part part, RoomNamingStrategy strategy) {
 
 		Dimension width = Dimension.FromInches(part.Width);
