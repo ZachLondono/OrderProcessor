@@ -340,7 +340,7 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 		} catch (Exception ex) {
 
 			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not load product {ex.Message}");
-			_logger.LogError(ex, "Exception thrown while mapping order data to product", data);
+			_logger.LogError(ex, "Exception thrown while mapping order data to product: {Data}", data);
 
 		}
 
