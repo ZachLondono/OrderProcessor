@@ -17,7 +17,7 @@ public partial class ClosetProPartMapper {
 
 	public static MiscellaneousClosetPart CreateFiller(Part part, RoomNamingStrategy strategy) {
 
-		Dimension width = Dimension.FromInches(4);
+		Dimension width = Dimension.FromInches(4); // Fillers are oversized so they can be scribed to the wall
 		Dimension length = Dimension.FromInches(part.Height);
 
 		return CreateMiscPart(part, width, length, MiscellaneousType.Filler, strategy);
