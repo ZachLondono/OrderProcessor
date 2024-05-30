@@ -185,7 +185,7 @@ public class ReleasePDFDecoratorFactory(IOptions<PDFConfiguration> config, Patte
         var content = releases.First()
                               .SinglePrograms
                               .GroupBy(part => part.ProductNumber)
-                              //.Where(group => group.Count() == 2)
+                              .Where(group => group.Count() == 2)
                               .Where(group => group.Any(p => p.HasBackSideProgram))
                               .Select(group => (group.First(), group.Skip(1).First()))
                               .Select(group => new Dictionary<string, string>() {
