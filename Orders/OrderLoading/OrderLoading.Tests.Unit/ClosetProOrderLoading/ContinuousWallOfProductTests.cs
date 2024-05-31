@@ -73,7 +73,7 @@ public class ContinuousWallOfProductTests {
         // Arrange
         List<Part> parts = [
             CreateDoorRail(10, 10, "White", 1, 1),
-            CreateDoorInsert(5, 5, "White", 1, 1),
+            CreateDoorInsert(6, 6, "White", 1, 1),
         ];
 
         // Act
@@ -86,10 +86,10 @@ public class ContinuousWallOfProductTests {
         door.Type.Should().Be(DoorType.Door);
         door.Width.Should().Be(Dimension.FromInches(10));
         door.Height.Should().Be(Dimension.FromInches(10));
-        door.Frame.LeftStile.Should().Be(Dimension.FromInches(2.5));
-        door.Frame.RightStile.Should().Be(Dimension.FromInches(2.5));
-        door.Frame.TopRail.Should().Be(Dimension.FromInches(2.5));
-        door.Frame.BottomRail.Should().Be(Dimension.FromInches(2.5));
+        door.Frame.LeftStile.AsInches().Should().BeApproximately(2.5, 0.01);
+        door.Frame.RightStile.AsInches().Should().BeApproximately(2.5, 0.01);
+        door.Frame.TopRail.AsInches().Should().BeApproximately(2.5, 0.01);
+        door.Frame.BottomRail.AsInches().Should().BeApproximately(2.5, 0.01);
 
     }
 
@@ -99,7 +99,7 @@ public class ContinuousWallOfProductTests {
         // Arrange
         List<Part> parts = [
             CreateDrawerFrontRail(7.5, 10, "White", 1, 1),
-            CreateDrawerFrontInsert(5, 5, "White", 1, 1),
+            CreateDrawerFrontInsert(7.5+1-5, 10+1-5, "White", 1, 1),
         ];
 
         // Act
@@ -111,10 +111,10 @@ public class ContinuousWallOfProductTests {
         var door = products.OfType<FivePieceFront>().First();
         door.Width.Should().Be(Dimension.FromInches(10));
         door.Height.Should().Be(Dimension.FromInches(7.5));
-        door.Frame.LeftStile.Should().Be(Dimension.FromInches(2.5));
-        door.Frame.RightStile.Should().Be(Dimension.FromInches(2.5));
-        door.Frame.TopRail.Should().Be(Dimension.FromInches(1.25));
-        door.Frame.BottomRail.Should().Be(Dimension.FromInches(1.25));
+        door.Frame.LeftStile.AsInches().Should().BeApproximately(2.5, 0.01);
+        door.Frame.RightStile.AsInches().Should().BeApproximately(2.5, 0.01);
+        door.Frame.TopRail.AsInches().Should().BeApproximately(2.5, 0.01);
+        door.Frame.BottomRail.AsInches().Should().BeApproximately(2.5, 0.01);
 
     }
 

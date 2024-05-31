@@ -127,7 +127,7 @@ public partial class ClosetProPartMapper {
 
 	public static DoorFrame GetDoorFrame(Part rail, Part insert) {
 
-		Dimension insertOverlap = Dimension.FromInches(0.5); // The depth that ClosetPro assumes the center panel goes into the frame (both sides). E.g. a 12" wide door with 2" stiles will have a 10.5" wide center panel
+		Dimension insertOverlap = Dimension.FromInches(0.5); // The depth that ClosetPro assumes the center panel goes into the frame (both sides). E.g. a 10" wide door with 2.5" stiles will have a 6" wide center panel
 
 		Dimension height = Dimension.FromInches(rail.Height);
 		Dimension width = Dimension.FromInches(rail.Width);
@@ -135,8 +135,8 @@ public partial class ClosetProPartMapper {
 		Dimension insertHeight = Dimension.FromInches(insert.Height);
 		Dimension insertWidth = Dimension.FromInches(insert.Width);
 
-		Dimension railWidth = (height - insertHeight + insertOverlap) / 2;
-		Dimension stileWidth = (width - insertWidth + insertOverlap) / 2;
+		Dimension railWidth = (height - insertHeight + insertOverlap*2) / 2;
+		Dimension stileWidth = (width - insertWidth + insertOverlap*2) / 2;
 
 		return new(railWidth, stileWidth);
 
