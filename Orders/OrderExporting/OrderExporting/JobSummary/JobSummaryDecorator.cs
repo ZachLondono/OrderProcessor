@@ -167,11 +167,11 @@ public class JobSummaryDecorator(JobSummary jobSummary) : IDocumentDecorator {
 
                         row.Spacing(10);
 
-                        if (jobSummary.AdditionalItems.Any()) {
+                        if (jobSummary.AdditionalItems.Any() && jobSummary.ShowAdditionalItemsInSummary) {
                             ComposeAdditionalItemsTable(row.RelativeItem(), jobSummary.AdditionalItems);
                         }
 
-                        if (jobSummary.CounterTops.Any()) {
+                        if (jobSummary.CounterTops.Any() && jobSummary.ShowCounterTopsInSummary) {
                             ComposeCounterTopTable(row.RelativeItem(), jobSummary.CounterTops);
                         }
 

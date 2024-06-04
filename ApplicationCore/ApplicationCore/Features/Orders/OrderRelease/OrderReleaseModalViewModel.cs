@@ -144,6 +144,8 @@ public class OrderReleaseModalViewModel {
             ReleaseEmailRecipients = vendor.ReleaseProfile.ReleaseEmailRecipients,
             GenerateJobSummary = vendor.ReleaseProfile.GenerateJobSummary,
             IncludeProductTablesInSummary = false,
+            IncludeAdditionalItemsInSummary = true,
+            IncludeCounterTopsInSummary = true,
             GeneratePackingList = vendor.ReleaseProfile.GeneratePackingList,
             IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
             Generate5PieceCutList = DoAnyOrdersContainFivePieceDoors,

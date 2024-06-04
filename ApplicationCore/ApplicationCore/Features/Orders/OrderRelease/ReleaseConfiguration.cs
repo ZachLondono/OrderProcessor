@@ -32,7 +32,10 @@ public class ReleaseConfiguration {
     public bool GenerateHardwareList { get; set; }
 
     public bool GenerateJobSummary { get; set; }
+    public bool IncludeAdditionalItemsInSummary { get; set; }
+    public bool IncludeCounterTopsInSummary { get; set; }
     public bool IncludeProductTablesInSummary { get; set; }
+
     public bool IncludeInvoiceInRelease { get; set; }
     public bool Generate5PieceCutList { get; set; }
     public bool GenerateDoweledDrawerBoxCutList { get; set; }

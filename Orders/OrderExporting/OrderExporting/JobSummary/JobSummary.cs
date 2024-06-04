@@ -15,6 +15,9 @@ public class JobSummary {
 
     public string SpecialRequirements { get; set; } = string.Empty;
 
+    public bool ShowCounterTopsInSummary { get; set; } = true;
+    public bool ShowAdditionalItemsInSummary { get; set; } = true;
+
     public bool ShowItemsInSummary { get; set; } = false;
     public List<CabinetGroup> Cabinets { get; set; } = [];
     public List<CabinetPartGroup> CabinetParts { get; set; } = [];

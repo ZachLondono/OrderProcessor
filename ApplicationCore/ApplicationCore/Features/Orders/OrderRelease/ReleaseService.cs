@@ -219,7 +219,14 @@ public class ReleaseService {
             materials.AddRange(order.Products.OfType<FivePieceDoorProduct>().Select(d => d.Material).Distinct());
             materials.AddRange(order.Products.OfType<DoweledDrawerBoxProduct>().SelectMany(d => new string[] { d.BackMaterial.Name, d.FrontMaterial.Name, d.SideMaterial.Name, d.BottomMaterial.Name }).Distinct());
 
-            var jobSummary = JobSummaryModelFactory.CreateSummary(order, vendor, customer, configuration.IncludeProductTablesInSummary, true, materials.ToArray());
+            var jobSummary = JobSummaryModelFactory.CreateSummary(order,
+                                                                  vendor,
+                                                                  customer,
+                                                                  configuration.IncludeProductTablesInSummary,
+                                                                  configuration.IncludeAdditionalItemsInSummary,
+                                                                  configuration.IncludeCounterTopsInSummary,
+                                                                  true,
+                                                                  materials.ToArray());
 
             models.JobSummary = jobSummary;
 

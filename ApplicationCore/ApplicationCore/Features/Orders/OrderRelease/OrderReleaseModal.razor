@@ -49,6 +49,16 @@
             @if(DataContext.Configuration.GenerateJobSummary) {
                 <div class="ml-5">
                     <div>
+                        <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeAdditionalItemsInSummary">
+                            <span class="text-gray-700 text-sm">Include additional items on cover</span>
+                        </CheckBox>
+                    </div>
+                    <div>
+                        <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeCounterTopsInSummary">
+                            <span class="text-gray-700 text-sm">Include counter tops on cover</span>
+                        </CheckBox>
+                    </div>
+                    <div>
                         <CheckBox @bind-IsChecked="DataContext.Configuration.IncludeProductTablesInSummary">
                             <span class="text-gray-700 text-sm">Include products table in summary</span>
                         </CheckBox>
