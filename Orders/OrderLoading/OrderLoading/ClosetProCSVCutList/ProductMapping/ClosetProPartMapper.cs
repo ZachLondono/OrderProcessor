@@ -173,6 +173,8 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 			"Backing" or "Back-Panel" => CreateBacking(part, strategy),
 
+			"Flat Crown" or "Flat Base" => CreateFlatMolding(part, strategy),
+
 			_ => throw new InvalidOperationException($"Unexpected part [{part.PartNum}] {part.PartName} / {part.ExportName}")
 		};
 

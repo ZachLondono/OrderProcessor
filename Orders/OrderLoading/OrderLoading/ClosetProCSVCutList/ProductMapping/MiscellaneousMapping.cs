@@ -37,6 +37,19 @@ public partial class ClosetProPartMapper {
 
 	}
 
+	public static MiscellaneousClosetPart CreateFlatMolding(Part part, RoomNamingStrategy strategy) {
+
+		Dimension width = part.PartName switch {
+			"4\" Flat Crown" => Dimension.FromInches(4),
+			_ => throw new InvalidOperationException($"Unknown molding type {part.PartName}")
+		};
+
+		Dimension length = Dimension.FromInches(96);
+
+		return CreateMiscPart(part, width, length, MiscellaneousType.ExtraPanel, strategy);
+
+	}
+
 	public static MiscellaneousClosetPart CreateBacking(Part part, RoomNamingStrategy strategy) {
 
 		Dimension width = Dimension.FromInches(part.Width);
@@ -66,8 +79,8 @@ public partial class ClosetProPartMapper {
 
 	public static MiscellaneousClosetPart CreateTop(Part part, RoomNamingStrategy strategy) {
 
-		// TODO: need to choose width / depth correctly so graining is going in the right direction
-		Dimension width = Dimension.FromInches(part.Width);
+        // TODO: need to choose width / depth correctly so graining is going in the right direction
+        Dimension width = Dimension.FromInches(part.Width);
 		Dimension length = Dimension.FromInches(part.Depth);
 
 		return CreateMiscPart(part, width, length, MiscellaneousType.Top, strategy);
