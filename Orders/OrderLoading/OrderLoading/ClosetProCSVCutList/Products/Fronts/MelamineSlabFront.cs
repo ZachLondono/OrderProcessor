@@ -39,7 +39,7 @@ public class MelamineSlabFront : IClosetProProduct {
 				width = Width;
 				length = Height;
 
-				parameters.Add("OpeningWidth", (width - Dimension.FromMillimeters(15)).ToString());
+				parameters.Add("OpeningWidth", (width - Dimension.FromMillimeters(15)).AsMillimeters().ToString());
 
 				break;
 
