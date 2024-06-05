@@ -32,7 +32,7 @@ public class DividerShelf : IClosetProProduct {
 
 		var material = new ClosetMaterial(Color, ClosetMaterialCore.ParticleBoard);
 
-		var horzDrillingType = HorizontalDividerPanelEndDrillingType.DoubleCams;
+		var horzDrillingType = HorizontalDividerPanelEndDrillingType.SingleCams;
 
 		string sku = Type switch {
 			DividerShelfType.Top => $"SF-D{DividerCount}T{ClosetProPartMapper.GetDividerShelfSuffix(horzDrillingType)}",
