@@ -108,8 +108,20 @@ public class JobSummaryDecorator(JobSummary jobSummary) : IDocumentDecorator {
 
                         });
 
-                    if (jobSummary.ContainsMDFDoorSubComponents || jobSummary.ContainsDovetailDBSubComponents || jobSummary.ContainsFivePieceDoorSubComponents) {
+                    if (jobSummary.ContainsMDFDoorSubComponents
+                        || jobSummary.ContainsDovetailDBSubComponents
+                        || jobSummary.ContainsFivePieceDoorSubComponents
+                        || jobSummary.InstallCamsInClosetParts) {
                         column.Item().PaddingTop(30);
+                    }
+
+                    if (jobSummary.InstallCamsInClosetParts) {
+                        column.Item()
+                              .AlignCenter()
+                              .Text(t => {
+                                    t.DefaultTextStyle(ts => ts.Bold().FontSize(16));
+                                    t.Span("INSTALL CAMS").Underline();
+                              });
                     }
 
                     if (jobSummary.ContainsDovetailDBSubComponents) {

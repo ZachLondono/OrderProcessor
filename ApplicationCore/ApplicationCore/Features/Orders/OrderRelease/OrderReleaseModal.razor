@@ -63,6 +63,11 @@
                             <span class="text-gray-700 text-sm">Include products table in summary</span>
                         </CheckBox>
                     </div>
+                    <div>
+                        <CheckBox @bind-IsChecked="DataContext.Configuration.InstallCamsInClosetParts">
+                            <span class="text-gray-700 text-sm">Install cams in closet parts</span>
+                        </CheckBox>
+                    </div>
                 </div>
             } else {
                 <br />

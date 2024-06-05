@@ -20,7 +20,7 @@ namespace OrderExporting.JobSummary;
 
 public class JobSummaryModelFactory {
 
-    public static JobSummary CreateSummary(Order order, Vendor vendor, Customer customer, bool showItems, bool showAdditionalItems, bool showCounterTops, bool showMaterialTypes, string[] materialTypes) {
+    public static JobSummary CreateSummary(Order order, Vendor vendor, Customer customer, bool showItems, bool showAdditionalItems, bool showCounterTops, bool showMaterialTypes, bool installCamsInClosetParts, string[] materialTypes) {
 
         var dovetailDb = order.Products
                     .OfType<DovetailDrawerBoxProduct>()
@@ -304,6 +304,7 @@ public class JobSummaryModelFactory {
             ContainsDovetailDBSubComponents = containsDovetailDBSubComponents,
             ContainsMDFDoorSubComponents = containsMDFDoorSubComponents,
             ContainsFivePieceDoorSubComponents = containsFivePieceDoorSubComponents,
+            InstallCamsInClosetParts = installCamsInClosetParts,
 
             ShowMaterialTypesInSummary = showMaterialTypes,
             MaterialTypes = new(materialTypes),

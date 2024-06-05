@@ -146,6 +146,7 @@ public class OrderReleaseModalViewModel {
             IncludeProductTablesInSummary = false,
             IncludeAdditionalItemsInSummary = true,
             IncludeCounterTopsInSummary = true,
+            InstallCamsInClosetParts = false,
             GeneratePackingList = vendor.ReleaseProfile.GeneratePackingList,
             IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
             Generate5PieceCutList = DoAnyOrdersContainFivePieceDoors,

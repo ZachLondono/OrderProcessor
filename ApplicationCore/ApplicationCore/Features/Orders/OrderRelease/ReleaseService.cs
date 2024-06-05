@@ -226,6 +226,7 @@ public class ReleaseService {
                                                                   configuration.IncludeAdditionalItemsInSummary,
                                                                   configuration.IncludeCounterTopsInSummary,
                                                                   true,
+                                                                  configuration.InstallCamsInClosetParts,
                                                                   materials.ToArray());
 
             models.JobSummary = jobSummary;
