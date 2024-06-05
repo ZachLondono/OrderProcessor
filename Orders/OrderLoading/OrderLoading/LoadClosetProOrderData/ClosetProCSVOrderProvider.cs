@@ -56,108 +56,119 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 	public async Task<OrderData?> LoadOrderData(string sourceObj) {
 
-		var sourceObjParts = sourceObj.Split('*');
+        var sourceObjParts = sourceObj.Split('*');
 
-		if (sourceObjParts.Length != 3) {
-			throw new InvalidOperationException("Invalid data source");
-		}
+        if (sourceObjParts.Length != 3) {
+            throw new InvalidOperationException("Invalid data source");
+        }
 
-		string source = sourceObjParts[0];
-		string? customOrderNumber = string.IsNullOrWhiteSpace(sourceObjParts[1]) ? null : sourceObjParts[1];
-		string? customWorkingDirectoryRoot = string.IsNullOrWhiteSpace(sourceObjParts[2]) ? null : sourceObjParts[2];
+        string source = sourceObjParts[0];
+        string? customOrderNumber = string.IsNullOrWhiteSpace(sourceObjParts[1]) ? null : sourceObjParts[1];
+        string? customWorkingDirectoryRoot = string.IsNullOrWhiteSpace(sourceObjParts[2]) ? null : sourceObjParts[2];
 
-		var csvData = await GetCSVDataFromSourceAsync(source);
+        var csvData = await GetCSVDataFromSourceAsync(source);
 
-		if (csvData is null) {
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "No order data found");
-			return null;
-		}
+        if (csvData is null) {
+            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "No order data found");
+            return null;
+        }
 
-		_reader.OnReadError += (msg) => OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, msg);
-		var info = await _reader.ReadCSVData(csvData);
+        _reader.OnReadError += (msg) => OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, msg);
+        var info = await _reader.ReadCSVData(csvData);
 
-		// TODO: get this info from a configuration file
-		var vendorId = Guid.Parse("a81d759d-5b6c-4053-8cec-55a6c94d609e");
-		string designerName = info.Header.GetDesignerName();
-		var customer = await GetOrCreateCustomer(info.Header.DesignerCompany, designerName);
+        // TODO: get this info from a configuration file
+        var vendorId = Guid.Parse("a81d759d-5b6c-4053-8cec-55a6c94d609e");
+        string designerName = info.Header.GetDesignerName();
+        var customer = await GetOrCreateCustomer(info.Header.DesignerCompany, designerName);
 
-		List<OtherPart> otherParts = [];
-		otherParts.AddRange(ClosetProPartMapper.MapPickListToItems(info.PickList));
-		otherParts.AddRange(ClosetProPartMapper.MapAccessoriesToItems(info.Accessories));
-		otherParts.AddRange(ClosetProPartMapper.MapBuyOutPartsToItems(info.BuyOutParts));
+        List<OtherPart> otherParts = [];
+        otherParts.AddRange(ClosetProPartMapper.MapPickListToItems(info.PickList));
+        otherParts.AddRange(ClosetProPartMapper.MapAccessoriesToItems(info.Accessories));
+        otherParts.AddRange(ClosetProPartMapper.MapBuyOutPartsToItems(info.BuyOutParts));
 
-		var hardwarePrice = otherParts.Sum(p => p.Qty * p.UnitPrice);
-		var additionalItems = new List<AdditionalItem>() {
-			new(Guid.NewGuid(), 1, "Included Hardware", hardwarePrice)
-		};
+        var hardwarePrice = otherParts.Sum(p => p.Qty * p.UnitPrice);
+        var additionalItems = new List<AdditionalItem>() {
+            new(Guid.NewGuid(), 1, "Included Hardware", hardwarePrice)
+        };
 
         // TODO: need hardware list here
         Dimension hardwareSpread = ClosetProPartMapper.GetHardwareSpread(info.PickList, []);
 
-		_partMapper.GroupLikeProducts = true; // TODO: Move this into the closet pro settings object
-		var cpProducts = _partMapper.MapPartsToProducts(info.Parts, hardwareSpread);
-		FixCornerShelfSupportDepth(cpProducts);
-		var products = cpProducts.Select(p => CreateProductFromClosetProProduct(p, customer.ClosetProSettings, _componentBuilderFactory))
-								 .ToList();
+        _partMapper.GroupLikeProducts = true; // TODO: Move this into the closet pro settings object
+        var cpProducts = _partMapper.MapPartsToProducts(info.Parts, hardwareSpread);
+        FixCornerShelfSupportDepth(cpProducts);
+        var products = cpProducts.Select(p => CreateProductFromClosetProProduct(p, customer.ClosetProSettings, _componentBuilderFactory))
+                                 .ToList();
 
-		string orderNumber;
-		if (customOrderNumber is null && string.IsNullOrWhiteSpace(customOrderNumber)) {
-			orderNumber = await GetNextOrderNumber(customer.Id);
-			var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync(customer.Id) ?? "";
-			orderNumber = $"{orderNumberPrefix}{orderNumber}";
-		} else {
-			orderNumber = customOrderNumber;
-		}
+        string orderNumber;
+        if (customOrderNumber is null && string.IsNullOrWhiteSpace(customOrderNumber)) {
+            orderNumber = await GetNextOrderNumber(customer.Id);
+            var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync(customer.Id) ?? "";
+            orderNumber = $"{orderNumberPrefix}{orderNumber}";
+        } else {
+            orderNumber = customOrderNumber;
+        }
 
-		string? workingDirectoryRoot;
-		if (customWorkingDirectoryRoot is null) {
-			workingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customer.Id);
-		} else {
-			workingDirectoryRoot = customWorkingDirectoryRoot;
-		}
-		string workingDirectory = await CreateWorkingDirectory(csvData, info, orderNumber, workingDirectoryRoot);
+        string? workingDirectoryRoot;
+        if (customWorkingDirectoryRoot is null) {
+            workingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customer.Id);
+        } else {
+            workingDirectoryRoot = customWorkingDirectoryRoot;
+        }
 
-		var hangRails = ClosetProPartMapper.GetHangingRailsFromBuyOutParts(info.BuyOutParts).ToArray();
-		var hangRailBrackets = ClosetProPartMapper.GetHangingRailBracketsFromBuyOutParts(info.BuyOutParts).ToArray();
-		var slides = GetDrawerSlides(products);
-		var supplies = GetSupplies(cpProducts);
-		supplies.AddRange(hangRailBrackets);
-		Hardware hardware = new(supplies.ToArray(), slides, hangRails);
+        string orderName = GetOrderName(info.Header.OrderName);
 
-		return new OrderData() {
-			VendorId = vendorId,
-			CustomerId = customer.Id,
-			Name = info.Header.OrderName,
-			Number = orderNumber,
-			WorkingDirectory = workingDirectory,
-			Products = products,
-			AdditionalItems = additionalItems,
+        string workingDirectory = await CreateWorkingDirectory(csvData, info.Header.DesignerCompany, orderName, orderNumber, workingDirectoryRoot);
 
-			OrderDate = DateTime.Today,
-			DueDate = null,
-			Rush = false,
-			Info = [],
-			Comment = string.Empty,
-			PriceAdjustment = 0M,
-			Tax = 0M,
-			Billing = new() {
-				InvoiceEmail = null,
-				PhoneNumber = "",
-				Address = new()
-			},
-			Shipping = new() {
-				Contact = designerName,
-				Address = new(),
-				Method = "Pick Up",
-				PhoneNumber = "",
-				Price = 0M
-			},
-			Hardware = hardware
-		};
+        var hangRails = ClosetProPartMapper.GetHangingRailsFromBuyOutParts(info.BuyOutParts).ToArray();
+        var hangRailBrackets = ClosetProPartMapper.GetHangingRailBracketsFromBuyOutParts(info.BuyOutParts).ToArray();
+        var slides = GetDrawerSlides(products);
+        var supplies = GetSupplies(cpProducts);
+        supplies.AddRange(hangRailBrackets);
+        Hardware hardware = new(supplies.ToArray(), slides, hangRails);
 
-	}
+        return new OrderData() {
+            VendorId = vendorId,
+            CustomerId = customer.Id,
+            Name = orderName,
+            Number = orderNumber,
+            WorkingDirectory = workingDirectory,
+            Products = products,
+            AdditionalItems = additionalItems,
 
-	private static IProduct CreateProductFromClosetProProduct(IClosetProProduct product, ClosetProSettings settings, ComponentBuilderFactory factory) {
+            OrderDate = DateTime.Today,
+            DueDate = null,
+            Rush = false,
+            Info = [],
+            Comment = string.Empty,
+            PriceAdjustment = 0M,
+            Tax = 0M,
+            Billing = new() {
+                InvoiceEmail = null,
+                PhoneNumber = "",
+                Address = new()
+            },
+            Shipping = new() {
+                Contact = designerName,
+                Address = new(),
+                Method = "Pick Up",
+                PhoneNumber = "",
+                Price = 0M
+            },
+            Hardware = hardware
+        };
+
+    }
+
+    public static string GetOrderName(string orderName) {
+        int start = orderName.IndexOf('-');
+        if (start != -1) {
+            orderName = orderName[(start + 1)..];
+        }
+		return orderName;
+    }
+
+    private static IProduct CreateProductFromClosetProProduct(IClosetProProduct product, ClosetProSettings settings, ComponentBuilderFactory factory) {
 
 		if (product is CornerShelf cornerShelf) {
 
@@ -281,9 +292,9 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 	}
 
-	private async Task<string> CreateWorkingDirectory(string csvData, ClosetProOrderInfo info, string orderNumber, string? customerWorkingDirectoryRoot) {
+	private async Task<string> CreateWorkingDirectory(string csvData, string company, string orderName, string orderNumber, string? customerWorkingDirectoryRoot) {
 		string cpDefaultWorkingDirectory = @"R:\Job Scans\ClosetProSoftware"; // TODO: Get base directory from configuration file
-		string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? cpDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {info.Header.DesignerCompany} - {info.Header.OrderName}", ' '));
+		string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? cpDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {company} - {orderName}", ' '));
 		if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDir) && incomingDir is not null) {
 			string dataFile = _fileReader.GetAvailableFileName(incomingDir, "Incoming", ".csv");
 			await File.WriteAllTextAsync(dataFile, csvData);
