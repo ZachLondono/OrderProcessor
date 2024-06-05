@@ -12,7 +12,14 @@ public record Part(string Id, string LabelId, string Name, string Description, d
             AddVariable(v, variables);
         }
 
-        return new(element.AttributeValue("ID"), element.AttributeValue("LabelID"), element.ElementValue("Name"), element.ElementValue("Description"), element.ElementDouble("FinishedLength"), element.ElementDouble("FinishedWidth"), element.AttributeValue("PatSchID").Split(' '), variables);
+        return new(element.AttributeValue("ID"),
+                   element.AttributeValue("LabelID"),
+                   element.ElementValue("Name"),
+                   element.ElementValue("Description"),
+                   element.ElementDouble("FinishedWidth"),
+                   element.ElementDouble("FinishedLength"),
+                   element.AttributeValue("PatSchID").Split(' '),
+                   variables);
 
     }
 

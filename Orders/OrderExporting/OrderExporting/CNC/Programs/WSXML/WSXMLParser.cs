@@ -155,8 +155,8 @@ public partial class WSXMLParser : IWSXMLParser {
                                                                                                     Width = Dimension.FromMillimeters(part.Width),
                                                                                                     Length = Dimension.FromMillimeters(part.Length),
                                                                                                     Center = new() {
-                                                                                                        X = nestPart.location.Insert.X + (nestPart.location.IsRotated ? part.Length : part.Width) / 2,
-                                                                                                        Y = nestPart.location.Insert.Y + (nestPart.location.IsRotated ? part.Width : part.Length) / 2
+                                                                                                        X = nestPart.location.Insert.X + (nestPart.location.IsRotated ? part.Width : part.Length) / 2,
+                                                                                                        Y = nestPart.location.Insert.Y + (nestPart.location.IsRotated ? part.Length : part.Width) / 2
                                                                                                     },
                                                                                                     IsRotated = nestPart.location.IsRotated,
                                                                                                     Description = label.Fields.GetValueOrEmpty("Description"),
