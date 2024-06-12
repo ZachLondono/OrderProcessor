@@ -28,10 +28,10 @@ public class ZargenDrawerModel : ProductOrItemModel {
 	[XmlElement("openingWidth")]
 	public double OpeningWidth { get; set; }
 
-	[XmlElement("Height")]
+	[XmlElement("height")]
 	public double Height { get; set; }
 
-	[XmlElement("Depth")]
+	[XmlElement("depth")]
 	public double Depth { get; set; }
 
 	[XmlElement("qty")]
