@@ -59,6 +59,8 @@ public record Supply(Guid Id, int Qty, string Description) {
 
     public static Supply RafixCam(int qty) => new(Guid.NewGuid(), qty, "Rafix Cam");
 
+    public static Supply RafixDoubleCam(int qty) => new(Guid.NewGuid(), qty, "Rafix Cam, with Dowel");
+
     public static Supply CamBolt(int qty) => new(Guid.NewGuid(), qty, "Cam Bolt");
 
     public static Supply CamBoltDoubleSided(int qty) => new(Guid.NewGuid(), qty, "Cam Bolt, Double Sided");
