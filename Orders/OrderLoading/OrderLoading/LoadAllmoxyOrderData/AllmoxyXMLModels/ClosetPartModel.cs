@@ -56,7 +56,7 @@ public class ClosetPartModel : ProductOrItemModel {
 	public string Comment { get; set; } = string.Empty;
 
 	[XmlElement("installCams")]
-	public bool InstallCams { get; set; } = false;
+	public string InstallCams { get; set; } = "UNKNOWN";
 
 	[XmlArray("parameters")]
 	[XmlArrayItem(ElementName = "entry", Type = typeof(PSIParameter))]
@@ -98,7 +98,13 @@ public class ClosetPartModel : ProductOrItemModel {
 
 		string edgeBandColor = EdgeBandColor == "Match" ? MaterialFinish : EdgeBandColor;
 
-		return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, SKU, width, length, material, paint, edgeBandColor, Comment, InstallCams, parameters) {
+		bool installCams = InstallCams switch {
+			"Yes" => true,
+			"No" => false,
+			_ => throw new InvalidOperationException($"Unexpected value for 'instalCams' closet part element => '{InstallCams}'")
+		};
+
+		return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, SKU, width, length, material, paint, edgeBandColor, Comment, installCams, parameters) {
 			ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList()
 		};
 
