@@ -18,6 +18,7 @@ using Domain.Orders.Entities.Products;
 using Domain.Services;
 using Domain.Extensions;
 using Domain.Orders.Entities.Hardware;
+using Domain.Orders.Entities.Products.Closets;
 
 namespace OrderLoading.LoadAllmoxyOrderData;
 
@@ -149,7 +150,9 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 									.SelectMany(p => p.GetSupplies())
 									.GroupBy(p => p.Description)
 									.Select(g => new Supply(Guid.NewGuid(), g.Sum(s => s.Qty), g.Key))
-									.ToArray();
+									.ToList();
+		var cams = GetCams(products.OfType<ClosetPart>().Where(p => p.InstallCams));
+		allSupplies.AddRange(cams);
 
 		var allSlides = products.OfType<IDrawerSlideContainer>()
 									.SelectMany(p => p.GetDrawerSlides())
@@ -157,7 +160,7 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 									.Select(g => new DrawerSlide(Guid.NewGuid(), g.Sum(s => s.Qty), g.Key.Length, g.Key.Style))
 									.ToArray();
 
-		Hardware hardware = new(allSupplies, allSlides, []);
+		Hardware hardware = new(allSupplies.ToArray(), allSlides, []);
 
 		OrderData? order = new() {
 			Number = number,
@@ -353,6 +356,101 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 			return data;
 		}
 		return null;
+	}
+
+	public static IEnumerable<Supply> GetCams(IEnumerable<ClosetPart> closetParts) {
+
+		foreach (var part in closetParts) {
+
+			switch (part.SKU) {
+
+				case "PCDV-1CAM":
+				case "PCDV-B-1CAM":
+				case "PEDV-1CAM":
+				case "PEDV-B-1CAM":
+					yield return Supply.RafixCam(2 * part.Qty);
+					break;
+
+				case "SF":
+				case "SF-R1":
+				case "SF-R2":
+				case "SF-R3":
+				case "SF-R19":
+				case "SF-R20":
+				case "SF-E":
+				case "SF-LED":
+				case "SF-R1-LED":
+				case "SF-R2-LED":
+				case "SF-R3-LED":
+				case "SF-R19-LED":
+				case "SF-R20-LED":
+				case "SF-E-LED":
+				case "SF-E-Lock":
+				case "SF-Lock":
+				case "PCDV-CAM":
+				case "PCDV-B-CAM":
+				case "PEDV-CAM":
+				case "PEDV-B-CAM":
+				case "TK-F":
+					yield return Supply.RafixCam(4 * part.Qty);
+					break;
+
+				case "SFL":
+				case "SFL19":
+				case "SFL22":
+				case "SFL25":
+				case "SFD":
+				case "SFD19":
+				case "SFD22":
+				case "SFD25":
+					yield return Supply.RafixCam(6 * part.Qty);
+					break;
+
+				case "PCDV-1CAM-D":
+				case "PCDV-B-1CAM-D":
+				case "PEDV-1CAM-D":
+				case "PEDV-B-1CAM-D":
+					yield return Supply.RafixDoubleCam(2 * part.Qty);
+					break;
+
+				case "SF-D":
+				case "SF-R1-D":
+				case "SF-R2-D":
+				case "SF-R3-D":
+				case "SF-R19-D":
+				case "SF-R20-D":
+				case "SF-E-D":
+				case "SF-LED-D":
+				case "SF-R1-D-LED":
+				case "SF-R2-D-LED":
+				case "SF-R3-D-LED":
+				case "SF-R19-D-LED":
+				case "SF-R20-D-LED":
+				case "SF-E-Lock-D":
+				case "SF-Lock-D":
+				case "PCDV-CAM-D":
+				case "PCDV-B-CAM-D":
+				case "PEDV-CAM-D":
+				case "PEDV-B-CAM-D":
+				case "TK-FD":
+					yield return Supply.RafixDoubleCam(4 * part.Qty);
+					break;
+
+				case "SFL-D":
+				case "SFL19-D":
+				case "SFL22-D":
+				case "SFL25-D":
+				case "SFD-D":
+				case "SFD19-D":
+				case "SFD22-D":
+				case "SFD25-D":
+					yield return Supply.RafixDoubleCam(6 * part.Qty);
+					break;
+
+			}
+
+		}
+
 	}
 
 }
