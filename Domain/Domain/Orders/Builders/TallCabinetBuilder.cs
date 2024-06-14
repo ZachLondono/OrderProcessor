@@ -45,7 +45,7 @@ public class TallCabinetBuilder : CabinetBuilder<TallCabinet> {
         return this;
     }
 
-    public TallCabinetBuilder WithBaseNotch(CabinetBaseNotch baseNotch) {
+    public TallCabinetBuilder WithBaseNotch(CabinetBaseNotch? baseNotch) {
         BaseNotch = baseNotch;
         return this;
     }

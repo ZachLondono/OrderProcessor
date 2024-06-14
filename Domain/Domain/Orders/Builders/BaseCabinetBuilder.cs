@@ -53,7 +53,7 @@ public class BaseCabinetBuilder : CabinetBuilder<BaseCabinet> {
         return this;
     }
 
-    public BaseCabinetBuilder WithBaseNotch(CabinetBaseNotch baseNotch) {
+    public BaseCabinetBuilder WithBaseNotch(CabinetBaseNotch? baseNotch) {
         BaseNotch = baseNotch;
         return this;
     }
