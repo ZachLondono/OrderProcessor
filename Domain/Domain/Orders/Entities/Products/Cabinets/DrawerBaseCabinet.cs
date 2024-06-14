@@ -15,7 +15,6 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
     public ToeType ToeType { get; }
     public VerticalDrawerBank Drawers { get; }
     public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
-    public CabinetBaseNotch? BaseNotch { get; }
 
     public override string GetDescription() => $"{Drawers.FaceHeights.Length} Drawer {(IsGarage ? "Garage " : "")}Cabinet";
 
@@ -31,15 +30,15 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        ToeType toeType, VerticalDrawerBank drawers, CabinetDrawerBoxOptions drawerBoxOptions, CabinetBaseNotch? baseNotch) {
-        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, toeType, drawers, drawerBoxOptions, baseNotch);
+                        ToeType toeType, VerticalDrawerBank drawers, CabinetDrawerBoxOptions drawerBoxOptions) {
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, toeType, drawers, drawerBoxOptions);
     }
 
     public DrawerBaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        ToeType toeType, VerticalDrawerBank drawers, CabinetDrawerBoxOptions drawerBoxOptions, CabinetBaseNotch? baseNotch)
+                        ToeType toeType, VerticalDrawerBank drawers, CabinetDrawerBoxOptions drawerBoxOptions)
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (drawers.FaceHeights.Count() > 5)
@@ -48,7 +47,6 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
         Drawers = drawers;
         ToeType = toeType;
         DrawerBoxOptions = drawerBoxOptions;
-        BaseNotch = baseNotch;
     }
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
@@ -180,11 +178,6 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
 
         if (Drawers.FaceHeights.Any() && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
             parameters.Add("_DrawerRunType", "4");
-        }
-
-        if (BaseNotch is not null) {
-            parameters.Add("_BottomNotchD", BaseNotch.Depth.AsMillimeters().ToString());
-            parameters.Add("_BottomNotchH", BaseNotch.Height.AsMillimeters().ToString());
         }
 
         return parameters;

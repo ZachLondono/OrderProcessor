@@ -1,5 +1,4 @@
 ﻿using Domain.Orders.Entities.Products.Cabinets;
-using Domain.ValueObjects;
 using Dapper;
 using System.Data;
 
@@ -28,9 +27,7 @@ public partial class InsertOrder {
                 ToeType = cabinet.ToeType,
                 FaceHeights = cabinet.Drawers.FaceHeights,
                 DBConfigId = dbConfigId,
-                IsGarage = cabinet.IsGarage,
-                BaseNotchHeight = cabinet.BaseNotch?.Height ?? Dimension.Zero,
-                BaseNotchDepth = cabinet.BaseNotch?.Depth ?? Dimension.Zero
+                IsGarage = cabinet.IsGarage
             };
 
             await connection.ExecuteAsync("""
@@ -39,17 +36,13 @@ public partial class InsertOrder {
                         toe_type,
                         face_heights,
                         db_config_id,
-                        is_garage,
-                        base_notch_height,
-                        base_notch_depth)
+                        is_garage)
                     VALUES
                         (@ProductId,
                         @ToeType,
                         @FaceHeights,
                         @DBConfigId,
-                        @IsGarage,
-                        @BaseNotchHeight,
-                        @BaseNotchDepth);
+                        @IsGarage);
                     """, parameters, trx);
 
         }
