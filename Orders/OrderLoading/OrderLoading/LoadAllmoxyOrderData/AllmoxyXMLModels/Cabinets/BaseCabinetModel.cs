@@ -45,6 +45,12 @@ public class BaseCabinetModel : CabinetModelBase {
     [XmlElement("rollOuts")]
     public RollOuts RollOuts { get; set; } = new();
 
+    [XmlElement("bottomNotchHeight")]
+    public double BottomNotchHeight { get; set; }
+
+    [XmlElement("bottomNotchDepth")]
+    public double BottomNotchDepth { get; set; }
+
     [XmlAttribute("isGarage")]
     public bool IsGarage { get; set; } = false;
 
@@ -74,6 +80,13 @@ public class BaseCabinetModel : CabinetModelBase {
 
         var toeType = AllmoxyXMLOrderProviderHelpers.GetToeType(ToeType);
 
+        CabinetBaseNotch? notch = null;
+        if (BottomNotchHeight != 0 && BottomNotchDepth != 0) {
+            var height = Dimension.FromMillimeters(BottomNotchHeight);
+            var depth = Dimension.FromMillimeters(BottomNotchDepth);
+            notch = new(height, depth);
+        }
+
         var builder = builderFactory.CreateBaseCabinetBuilder();
 
         return InitializeBuilder<BaseCabinetBuilder, BaseCabinet>(builder)
@@ -83,6 +96,7 @@ public class BaseCabinetModel : CabinetModelBase {
                     .WithDrawers(drawers)
                     .WithBoxOptions(boxOptions)
                     .WithIsGarage(IsGarage)
+                    .WithBaseNotch(notch)
                     .Build();
 
     }

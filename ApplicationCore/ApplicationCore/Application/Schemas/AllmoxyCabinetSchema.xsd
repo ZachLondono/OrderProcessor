@@ -376,6 +376,8 @@
                       <xs:element name="adjShelfQty" type="xs:integer" />
                       <xs:element name="shelfDepth" type="xs:string" />
                       <xs:element name="vertDivQty" type="xs:integer" />
+                      <xs:element name="bottomNotchHeight" type="xs:decimal" />
+                      <xs:element name="bottomNotchDepth" type="xs:decimal" />
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />
@@ -410,6 +412,8 @@
                       <xs:element name="lowerDoorQty" type="xs:integer" />
                       <xs:element name="upperDoorQty" type="xs:integer" />
                       <xs:element name="lowerDoorHeight" type="xs:decimal" />
+                      <xs:element name="bottomNotchHeight" type="xs:decimal" />
+                      <xs:element name="bottomNotchDepth" type="xs:decimal" />
                     </xs:sequence>
                     <xs:attribute name="groupNumber" type="xs:integer" use="required" />
                     <xs:attribute name="lineNumber" type="xs:integer" use="required" />

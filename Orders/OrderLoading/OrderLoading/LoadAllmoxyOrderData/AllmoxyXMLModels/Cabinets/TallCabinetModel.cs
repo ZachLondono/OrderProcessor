@@ -48,6 +48,12 @@ public class TallCabinetModel : CabinetModelBase {
     [XmlElement("rollOuts")]
     public RollOuts RollOuts { get; set; } = new();
 
+    [XmlElement("bottomNotchHeight")]
+    public double BottomNotchHeight { get; set; }
+
+    [XmlElement("bottomNotchDepth")]
+    public double BottomNotchDepth { get; set; }
+
     [XmlAttribute("isGarage")]
     public bool IsGarage { get; set; } = false;
 
@@ -73,6 +79,13 @@ public class TallCabinetModel : CabinetModelBase {
 
         var boxOptions = new CabinetDrawerBoxOptions(AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial), AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide));
 
+        CabinetBaseNotch? notch = null;
+        if (BottomNotchHeight != 0 && BottomNotchDepth != 0) {
+            var height = Dimension.FromMillimeters(BottomNotchHeight);
+            var depth = Dimension.FromMillimeters(BottomNotchDepth);
+            notch = new(height, depth);
+        }
+
         var builder = builderFactory.CreateTallCabinetBuilder();
 
         return InitializeBuilder<TallCabinetBuilder, TallCabinet>(builder)
@@ -81,6 +94,7 @@ public class TallCabinetModel : CabinetModelBase {
                     .WithInside(inside)
                     .WithBoxOptions(boxOptions)
                     .WithIsGarage(IsGarage)
+                    .WithBaseNotch(notch)
                     .Build();
 
     }
