@@ -54,6 +54,7 @@ public class VerticalPanel : IClosetProProduct {
 							  paint,
 							  EdgeBandingColor,
 							  comment,
+							  true,
 							  parameters);
 
 	}

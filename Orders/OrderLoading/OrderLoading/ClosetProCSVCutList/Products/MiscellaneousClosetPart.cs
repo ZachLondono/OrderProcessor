@@ -45,6 +45,7 @@ public class MiscellaneousClosetPart : IClosetProProduct {
 							  null,
 							  EdgeBandingColor,
 							  "",
+							  true,
 							  new Dictionary<string, string>());
 
 	}

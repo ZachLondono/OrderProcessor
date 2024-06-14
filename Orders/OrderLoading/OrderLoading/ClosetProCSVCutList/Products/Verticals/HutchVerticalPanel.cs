@@ -58,6 +58,7 @@ public class HutchVerticalPanel : IClosetProProduct {
 							  paint,
 							  EdgeBandingColor,
 							  comment,
+							  true,
 							  parameters);
 
 	}

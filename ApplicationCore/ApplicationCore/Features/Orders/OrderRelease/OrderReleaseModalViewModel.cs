@@ -6,6 +6,7 @@ using Blazored.Modal;
 using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.Entities.Products.DrawerBoxes;
 using Domain.Infrastructure.Bus;
+using Domain.Orders.Entities.Products.Closets;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -137,6 +138,8 @@ public class OrderReleaseModalViewModel {
         DoAnyOrdersContainDoweledDrawerBoxes = orders.Any(order => order.Products.Any(p => p is DoweledDrawerBoxProduct));
         DoAnyOrdersContainCNCParts = orders.Any(order => order.Products.OfType<ICNCPartContainer>().Any(p => p.ContainsCNCParts()));
 
+        bool installCams = orders.Any(o => o.Products.OfType<ClosetPart>().Any(c => c.InstallCams));
+
         Configuration = new ReleaseConfiguration() {
 
             SendReleaseEmail = vendor.ReleaseProfile.SendReleaseEmail,
@@ -146,7 +149,7 @@ public class OrderReleaseModalViewModel {
             IncludeProductTablesInSummary = false,
             IncludeAdditionalItemsInSummary = true,
             IncludeCounterTopsInSummary = true,
-            InstallCamsInClosetParts = false,
+            InstallCamsInClosetParts = installCams,
             GeneratePackingList = vendor.ReleaseProfile.GeneratePackingList,
             IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
             Generate5PieceCutList = DoAnyOrdersContainFivePieceDoors,

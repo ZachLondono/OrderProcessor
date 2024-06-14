@@ -23,6 +23,7 @@ public partial class InsertOrder {
                 PaintedSide = closetPart.Paint?.Side ?? PaintedSide.None,
                 EdgeBandingFinish = closetPart.EdgeBandingColor,
                 Comment = closetPart.Comment,
+                InstallCams = closetPart.InstallCams,
                 Parameters = (IDictionary<string, string>)closetPart.Parameters
             };
 
@@ -38,6 +39,7 @@ public partial class InsertOrder {
                         painted_side,
                         edge_banding_finish,
                         comment,
+                        install_cams,
                         parameters)
                     VALUES
                         (@ProductId,
@@ -50,6 +52,7 @@ public partial class InsertOrder {
                         @PaintedSide,
                         @EdgeBandingFinish,
                         @Comment,
+                        @InstallCams,
                         @Parameters);
                     """, parameters, trx);
 

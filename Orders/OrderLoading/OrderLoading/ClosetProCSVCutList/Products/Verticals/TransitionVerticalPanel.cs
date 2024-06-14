@@ -56,6 +56,7 @@ public class TransitionVerticalPanel : IClosetProProduct {
 							  paint,
 							  EdgeBandingColor,
 							  comment,
+							  true,
 							  parameters);
 
 	}

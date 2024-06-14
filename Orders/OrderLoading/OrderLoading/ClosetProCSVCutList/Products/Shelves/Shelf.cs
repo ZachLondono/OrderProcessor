@@ -47,6 +47,7 @@ public class Shelf : IClosetProProduct {
 							  paint,
 							  EdgeBandingColor,
 							  comment,
+							  true,
 							  parameters);
 
 	}

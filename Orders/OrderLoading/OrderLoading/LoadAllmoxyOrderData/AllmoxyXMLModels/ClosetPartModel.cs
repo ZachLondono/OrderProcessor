@@ -55,6 +55,9 @@ public class ClosetPartModel : ProductOrItemModel {
 	[XmlElement("comment")]
 	public string Comment { get; set; } = string.Empty;
 
+	[XmlElement("installCams")]
+	public bool InstallCams { get; set; } = false;
+
 	[XmlArray("parameters")]
 	[XmlArrayItem(ElementName = "entry", Type = typeof(PSIParameter))]
 	public List<PSIParameter> Parameters { get; set; } = new();
@@ -95,7 +98,7 @@ public class ClosetPartModel : ProductOrItemModel {
 
 		string edgeBandColor = EdgeBandColor == "Match" ? MaterialFinish : EdgeBandColor;
 
-		return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, SKU, width, length, material, paint, edgeBandColor, Comment, parameters) {
+		return new ClosetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, SKU, width, length, material, paint, edgeBandColor, Comment, InstallCams, parameters) {
 			ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList()
 		};
 

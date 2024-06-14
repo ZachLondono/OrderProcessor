@@ -17,6 +17,7 @@ public class ClosetPartDataModel : ProductDataModelBase, IProductDataModel, IQue
     public PaintedSide PaintedSide { get; set; }
     public string EdgeBandingFinish { get; set; } = string.Empty;
     public string Comment { get; set; } = string.Empty;
+    public bool InstallCams { get; set; }
     public IDictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
     public List<string> ProductionNotes { get; set; } = new();
 
@@ -41,6 +42,7 @@ public class ClosetPartDataModel : ProductDataModelBase, IProductDataModel, IQue
             closet_parts.painted_side AS PaintedSide,
             closet_parts.edge_banding_finish AS EdgeBandingFinish,
             closet_parts.comment,
+            closet_parts.install_cams AS InstallCams,
             closet_parts.parameters
         
          FROM closet_parts
@@ -53,7 +55,7 @@ public class ClosetPartDataModel : ProductDataModelBase, IProductDataModel, IQue
 
     public IProduct MapToProduct() {
         ClosetPaint? paint = PaintColor is null ? null : new(PaintColor, PaintedSide);
-        return new ClosetPart(Id, Qty, UnitPrice, ProductNumber, Room, Sku, Width, Length, new(MaterialFinish, MaterialCore), paint, EdgeBandingFinish, Comment, Parameters.AsReadOnly()) {
+        return new ClosetPart(Id, Qty, UnitPrice, ProductNumber, Room, Sku, Width, Length, new(MaterialFinish, MaterialCore), paint, EdgeBandingFinish, Comment, InstallCams, Parameters.AsReadOnly()) {
             ProductionNotes = ProductionNotes
         };
     }

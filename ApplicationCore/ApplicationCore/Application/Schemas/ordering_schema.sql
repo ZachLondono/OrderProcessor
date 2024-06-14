@@ -217,6 +217,7 @@ CREATE TABLE closet_parts (
 	painted_side INTEGER NOT NULL,
 	edge_banding_finish TEXT NOT NULL,
 	comment TEXT NOT NULL,
+	install_cams INTEGER NOT NULL,
 	parameters TEXT NOT NULL,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE

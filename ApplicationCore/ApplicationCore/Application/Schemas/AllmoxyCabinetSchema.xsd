@@ -486,6 +486,7 @@
                       <xs:element name="edgeBandColor" type="xs:string" />
                       <xs:element name="comment" type="xs:string" />
                       <xs:element name="room" type="xs:string" />
+                      <xs:element name="installCams" type="xs:boolean" />
                       <xs:element name="parameters">
                         <xs:complexType>
                           <xs:sequence>

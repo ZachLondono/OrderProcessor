@@ -10,7 +10,7 @@ public class ClosetPartPersistenceTest : PersistenceTests {
     [Fact]
     public void InsertOrderWithClosetPart() {
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
-                                "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
+                                "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", false, new Dictionary<string, string>() {
                                     { "Param1", "Value1"},
                                     { "Param2", "Value2"}
                                 });
@@ -20,7 +20,7 @@ public class ClosetPartPersistenceTest : PersistenceTests {
     [Fact]
     public void DeleteOrderWithClosetPart() {
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
-                                "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
+                                "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", false, new Dictionary<string, string>() {
                                     { "Param1", "Value1"},
                                     { "Param2", "Value2"}
                                 });
@@ -30,7 +30,7 @@ public class ClosetPartPersistenceTest : PersistenceTests {
     [Fact]
     public void InsertOrderWithClosetPartWithProductionNotes() {
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
-                                "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
+                                "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", false, new Dictionary<string, string>() {
                                     { "Param1", "Value1"},
                                     { "Param2", "Value2"}
                                 }) {
@@ -42,7 +42,7 @@ public class ClosetPartPersistenceTest : PersistenceTests {
     [Fact]
     public void DeleteOrderWithClosetPartWithProductionNotes() {
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
-                                "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
+                                "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", false, new Dictionary<string, string>() {
                                     { "Param1", "Value1"},
                                     { "Param2", "Value2"}
                                 }) {
@@ -51,12 +51,24 @@ public class ClosetPartPersistenceTest : PersistenceTests {
         InsertAndDeleteOrderWithProduct(part);
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void InsertOrderWithClosetPart_InstallCams(bool installCams) {
+        var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
+                                "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", installCams, new Dictionary<string, string>() {
+                                    { "Param1", "Value1"},
+                                    { "Param2", "Value2"}
+                                });
+        InsertAndQueryOrderWithProduct(part);
+    }
+
     [Fact]
     public void UpdateClosetPart() {
 
         // Arrange
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
-                                "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", new Dictionary<string, string>() {
+                                "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", false, new Dictionary<string, string>() {
                                     { "Param1", "Value1"},
                                     { "Param2", "Value2"}
                                 });

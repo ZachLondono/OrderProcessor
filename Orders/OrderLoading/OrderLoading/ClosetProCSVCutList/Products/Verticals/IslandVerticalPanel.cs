@@ -50,6 +50,7 @@ public class IslandVerticalPanel : IClosetProProduct {
 							  paint,
 							  EdgeBandingColor,
 							  comment,
+							  true,
 							  parameters);
 
 	}

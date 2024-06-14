@@ -60,7 +60,7 @@ public class MelamineSlabFront : IClosetProProduct {
 
 		}
 
-		return new ClosetPart(Guid.NewGuid(), Qty, UnitPrice, PartNumber, Room, sku, width, length, material, paint, EdgeBandingColor, comment, parameters);
+		return new ClosetPart(Guid.NewGuid(), Qty, UnitPrice, PartNumber, Room, sku, width, length, material, paint, EdgeBandingColor, comment, false, parameters);
 
 	}
 

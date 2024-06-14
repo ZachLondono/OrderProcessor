@@ -19,12 +19,13 @@ public partial class ClosetPart : IPPProductContainer, IClosetPartProduct {
     public ClosetPaint? Paint { get; }
     public string EdgeBandingColor { get; }
     public string Comment { get; set; }
+    public bool InstallCams { get; set; }
     public IDictionary<string, string> Parameters { get; }
     public List<string> ProductionNotes { get; set; } = [];
 
     public string GetDescription() => $"Closet Part - {SKU}";
 
-    public ClosetPart(Guid id, int qty, decimal unitPrice, int productNumber, string room, string sku, Dimension width, Dimension length, ClosetMaterial material, ClosetPaint? paint, string edgeBandingColor, string comment, IDictionary<string, string> parameters) {
+    public ClosetPart(Guid id, int qty, decimal unitPrice, int productNumber, string room, string sku, Dimension width, Dimension length, ClosetMaterial material, ClosetPaint? paint, string edgeBandingColor, string comment, bool installCams, IDictionary<string, string> parameters) {
         Id = id;
         Qty = qty;
         UnitPrice = unitPrice;
@@ -37,13 +38,13 @@ public partial class ClosetPart : IPPProductContainer, IClosetPartProduct {
         Paint = paint;
         EdgeBandingColor = edgeBandingColor;
         Comment = comment;
+        InstallCams = installCams;
         Parameters = parameters;
     }
 
     public bool ContainsPPProducts() => true;
 
     public IEnumerable<PPProduct> GetPPProducts() {
-
 
         (string materialType, string finishMaterial, string ebMaterial) = Material.Core switch {
             ClosetMaterialCore.ParticleBoard => ("Melamine", "Mela", "PVC"),
@@ -72,6 +73,7 @@ public partial class ClosetPart : IPPProductContainer, IClosetPartProduct {
         };
 
         return new List<PPProduct>() { new PPProduct(Id, Qty, Room, SKU, ProductNumber, "Royal_c", materialType, "slab", "standard", Comment, finishMaterials, ebMaterials, parameters, new Dictionary<string, string>(), new Dictionary<string, string>()) };
+
     }
 
 }

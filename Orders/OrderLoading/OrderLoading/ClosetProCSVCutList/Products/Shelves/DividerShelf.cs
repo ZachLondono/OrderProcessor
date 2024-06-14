@@ -52,6 +52,7 @@ public class DividerShelf : IClosetProProduct {
 							  null,
 							  EdgeBandingColor,
 							  "",
+							  true,
 							  parameters);
 
 	}

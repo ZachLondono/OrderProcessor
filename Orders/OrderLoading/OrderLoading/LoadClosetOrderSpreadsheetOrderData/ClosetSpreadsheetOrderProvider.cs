@@ -56,7 +56,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 			return null;
 		}
 
-		Microsoft.Office.Interop.Excel.Application? app = null;
+		Application? app = null;
 		Workbooks? workbooks = null;
 		Workbook? workbook = null;
 
@@ -126,9 +126,11 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 			var mdfFrontHeader = MDFFrontHeader.ReadFromWorksheet(mdfFrontSheet);
 			var mdfFronts = LoadItemsFromWorksheet<MDFFront>(mdfFrontSheet);
 
+			bool installCams = cover.InstallCamsCharge > 0;
+
 			List<IProduct> products = [
-				.. MapClosetPartToProduct(cover, closetParts),
-				.. MapCornerShelfToProduct(cover, cornerShelves),
+				.. MapClosetPartToProduct(cover, closetParts, installCams),
+				.. MapCornerShelfToProduct(cover, cornerShelves, installCams),
 				.. MapZargenToProduct(cover, zargens),
 				.. MapDovetailDBToProduct(dovetailDBHeader, dovetailDBs),
 				.. MapMelamineDBToProduct(melamineDBHeader, melamineDBs),
@@ -214,7 +216,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
 	}
 
-	private IEnumerable<IProduct> MapClosetPartToProduct(Cover cover, IEnumerable<ClosetPart> closetParts) {
+	private IEnumerable<IProduct> MapClosetPartToProduct(Cover cover, IEnumerable<ClosetPart> closetParts, bool installCams) {
 
 		foreach (var closetPart in closetParts) {
 
@@ -224,13 +226,26 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 				{ "WallMount", closetPart.WallMount == "Yes" ? "1" : "0" }
 			};
 
-			yield return new Domain.Orders.Entities.Products.Closets.ClosetPart(Guid.NewGuid(), closetPart.Qty, closetPart.UnitPrice, closetPart.Number, closetPart.RoomName, closetPart.Item, Dimension.FromMillimeters(closetPart.Width), Dimension.FromMillimeters(closetPart.Length), new(cover.MaterialColor, Domain.Orders.Enums.ClosetMaterialCore.ParticleBoard), null, cover.MaterialColor, closetPart.Comment, parameters);
+			yield return new Domain.Orders.Entities.Products.Closets.ClosetPart(Guid.NewGuid(),
+                                                                       closetPart.Qty,
+                                                                       closetPart.UnitPrice,
+                                                                       closetPart.Number,
+                                                                       closetPart.RoomName,
+                                                                       closetPart.Item,
+                                                                       Dimension.FromMillimeters(closetPart.Width),
+                                                                       Dimension.FromMillimeters(closetPart.Length),
+                                                                       new(cover.MaterialColor, Domain.Orders.Enums.ClosetMaterialCore.ParticleBoard),
+                                                                       null,
+                                                                       cover.MaterialColor,
+                                                                       closetPart.Comment,
+																	   installCams,
+                                                                       parameters);
 
 		}
 
 	}
 
-	private IEnumerable<IProduct> MapCornerShelfToProduct(Cover cover, IEnumerable<CornerShelf> cornerShelves) {
+	private IEnumerable<IProduct> MapCornerShelfToProduct(Cover cover, IEnumerable<CornerShelf> cornerShelves, bool installCams) {
 
 		foreach (var cornerShelf in cornerShelves) {
 
@@ -241,7 +256,20 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 				{ "ShelfRadius", cornerShelf.ShelfRadius.ToString() }
 			};
 
-			yield return new Domain.Orders.Entities.Products.Closets.ClosetPart(Guid.NewGuid(), cornerShelf.Qty, cornerShelf.UnitPrice, cornerShelf.Number, cornerShelf.RoomName, cornerShelf.Item, Dimension.FromMillimeters(cornerShelf.ProductWidth), Dimension.FromMillimeters(cornerShelf.ProductLength), new(cover.MaterialColor, Domain.Orders.Enums.ClosetMaterialCore.ParticleBoard), null, cover.MaterialColor, cornerShelf.Comment, parameters);
+			yield return new Domain.Orders.Entities.Products.Closets.ClosetPart(Guid.NewGuid(),
+                                                                       cornerShelf.Qty,
+                                                                       cornerShelf.UnitPrice,
+                                                                       cornerShelf.Number,
+                                                                       cornerShelf.RoomName,
+                                                                       cornerShelf.Item,
+                                                                       Dimension.FromMillimeters(cornerShelf.ProductWidth),
+                                                                       Dimension.FromMillimeters(cornerShelf.ProductLength),
+                                                                       new(cover.MaterialColor, Domain.Orders.Enums.ClosetMaterialCore.ParticleBoard),
+                                                                       null,
+                                                                       cover.MaterialColor,
+                                                                       cornerShelf.Comment,
+																	   installCams,
+                                                                       parameters);
 
 		}
 

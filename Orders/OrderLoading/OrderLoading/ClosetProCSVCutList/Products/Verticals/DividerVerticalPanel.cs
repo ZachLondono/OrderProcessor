@@ -38,6 +38,7 @@ public class DividerVerticalPanel : IClosetProProduct {
 							  null,
 							  EdgeBandingColor,
 							  "",
+							  true,
 							  new Dictionary<string, string>());
 
 	}
