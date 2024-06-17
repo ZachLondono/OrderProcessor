@@ -65,11 +65,13 @@ public record Supply(Guid Id, int Qty, string Description) {
 
     public static Supply CamBoltDoubleSided(int qty) => new(Guid.NewGuid(), qty, "Cam Bolt, Double Sided");
 
-    public static Supply HangingBracketLH(int qty) => new(Guid.NewGuid(), qty, "Hanging Bracket, LH");
+    public static IEnumerable<Supply> HangingBracketLH(int qty) => [ new(Guid.NewGuid(), qty, "Hanging Bracket, LH"), new(Guid.NewGuid(), qty, "Hanging Bracket Cover, LH") ];
 
-    public static Supply HangingBracketRH(int qty) => new(Guid.NewGuid(), qty, "Hanging Bracket, RH");
+    public static IEnumerable<Supply> HangingBracketRH(int qty) => [ new(Guid.NewGuid(), qty, "Hanging Bracket, RH"), new(Guid.NewGuid(), qty, "Hanging Bracket Cover, RH") ];
 
     public static Supply LongEuroScrews(int qty) => new(Guid.NewGuid(), qty, "Long Euro Screws, For Hanging Bracket");
+
+    public static IEnumerable<Supply> HangingRail(int lengthIn) => [ new(Guid.NewGuid(), 1, $"{lengthIn}\" Hanging Rail"), new(Guid.NewGuid(), 1, $"{lengthIn}\" Hanging Rail Cover") ];
 
     public static Supply RodMountingBracketOpen(int qty) => new(Guid.NewGuid(), qty, "Rod Mounting Bracket, Open");
 

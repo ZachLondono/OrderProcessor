@@ -17,6 +17,7 @@ using OrderLoading.ClosetProCSVCutList.Products.Verticals;
 using OrderLoading.ClosetProCSVCutList.Products.Fronts;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Hardware;
+using Domain.Orders.Entities.Products.Closets;
 
 namespace OrderLoading.LoadClosetProOrderData;
 
@@ -240,59 +241,81 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 	private static List<Supply> GetSupplies(IEnumerable<IClosetProProduct> products) {
 
-		List<Supply> supplies = [];
+        List<Supply> supplies = [];
 
-		// TODO: need to check if divider panels need cams
+        // TODO: need to check if divider panels need cams
 
-		var shelves = products.OfType<Shelf>().ToArray();
-		var corners = products.OfType<CornerShelf>().ToArray();
+        var shelves = products.OfType<Shelf>().ToArray();
+        var corners = products.OfType<CornerShelf>().ToArray();
 
-		// TODO: need to check if the adjustable shelves have pins or not
-		int adjPins = shelves.Where(s => s.Type == ShelfType.Adjustable).Sum(s => s.Qty * 4);
-		adjPins += shelves.Where(s => s.Type == ShelfType.Shoe).Sum(s => s.Qty * 4);
-		adjPins += corners.Where(s => s.Type == CornerShelfType.LAdjustable || s.Type == CornerShelfType.DiagonalAdjustable).Sum(s => s.Qty * 6);
-		// Closet spreadsheet adds an additional 4%
-		if (adjPins > 0) {
-			supplies.Add(Supply.LockingShelfPeg((int)(adjPins * 1.04)));
-		}
+        // TODO: need to check if the adjustable shelves have pins or not
+        int adjPins = shelves.Where(s => s.Type == ShelfType.Adjustable).Sum(s => s.Qty * 4);
+        adjPins += shelves.Where(s => s.Type == ShelfType.Shoe).Sum(s => s.Qty * 4);
+        adjPins += corners.Where(s => s.Type == CornerShelfType.LAdjustable || s.Type == CornerShelfType.DiagonalAdjustable).Sum(s => s.Qty * 6);
+        // Closet spreadsheet adds an additional 4%
+        if (adjPins > 0) {
+            supplies.Add(Supply.LockingShelfPeg((int)(adjPins * 1.04)));
+        }
 
-		int cams = shelves.Where(s => s.Type == ShelfType.Fixed).Sum(s => s.Qty * 4);
-		cams += corners.Where(s => s.Type == CornerShelfType.LFixed || s.Type == CornerShelfType.DiagonalFixed).Sum(s => s.Qty * 6);
-		// TODO: check that toe kicks are fixed
-		cams += products.OfType<MiscellaneousClosetPart>().Where(p => p.Type == MiscellaneousType.ToeKick).Sum(t => t.Qty * 4);
-		cams += 8; // The closet spreadsheet add 8 extra cams
-		if (cams > 0) {
-			supplies.Add(Supply.RafixCam(cams));
-		}
+        int cams = shelves.Where(s => s.Type == ShelfType.Fixed).Sum(s => s.Qty * 4);
+        cams += corners.Where(s => s.Type == CornerShelfType.LFixed || s.Type == CornerShelfType.DiagonalFixed).Sum(s => s.Qty * 6);
+        // TODO: check that toe kicks are fixed
+        cams += products.OfType<MiscellaneousClosetPart>().Where(p => p.Type == MiscellaneousType.ToeKick).Sum(t => t.Qty * 4);
+        cams += 8; // The closet spreadsheet add 8 extra cams
+        if (cams > 0) {
+            supplies.Add(Supply.RafixCam(cams));
+        }
 
-		var drawers = products.OfType<DrawerBox>().Where(d => d.UnderMountNotches).Sum(d => d.Qty);
-		if (drawers > 0) {
-			supplies.Add(Supply.ClosetDrawerClips(drawers));
-		}
+        var drawers = products.OfType<DrawerBox>().Where(d => d.UnderMountNotches).Sum(d => d.Qty);
+        if (drawers > 0) {
+            supplies.Add(Supply.ClosetDrawerClips(drawers));
+        }
 
-		var verticals = products.OfType<VerticalPanel>().ToArray();
-		var drilledThrough = verticals.Where(v => v.Drilling == VerticalPanelDrilling.DrilledThrough).Sum(v => v.Qty);
-		var finishedSide = verticals.Where(v => v.Drilling != VerticalPanelDrilling.DrilledThrough).Sum(v => v.Qty);
-		// Closet spreadsheet adds an additional 5%
-		if (finishedSide > 0) {
-			supplies.Add(Supply.CamBolt((int)(finishedSide * 6 * 1.05)));
-		}
-		if (drilledThrough > 0) {
-			supplies.Add(Supply.CamBoltDoubleSided((int)(drilledThrough * 6 * 1.05)));
-		}
+        var verticals = products.OfType<VerticalPanel>().ToArray();
+        var drilledThrough = verticals.Where(v => v.Drilling == VerticalPanelDrilling.DrilledThrough).Sum(v => v.Qty);
+        var finishedSide = verticals.Where(v => v.Drilling != VerticalPanelDrilling.DrilledThrough).Sum(v => v.Qty);
+        // Closet spreadsheet adds an additional 5%
+        if (finishedSide > 0) {
+            supplies.Add(Supply.CamBolt((int)(finishedSide * 6 * 1.05)));
+        }
+        if (drilledThrough > 0) {
+            supplies.Add(Supply.CamBoltDoubleSided((int)(drilledThrough * 6 * 1.05)));
+        }
 
-		var wallHung = verticals.Where(v => v.WallHung).Sum(v => v.Qty);
-		if (wallHung > 0) {
-			supplies.Add(Supply.HangingBracketLH(wallHung / 2));
-			supplies.Add(Supply.HangingBracketRH(wallHung / 2));
-			supplies.Add(Supply.LongEuroScrews(wallHung));
-		}
+        supplies.AddRange(GetHangingRailSupplies(products));
 
         return supplies;
 
-	}
+    }
 
-	private async Task<string> CreateWorkingDirectory(string csvData, string company, string orderName, string orderNumber, string? customerWorkingDirectoryRoot) {
+    private static IEnumerable<Supply> GetHangingRailSupplies(IEnumerable<IClosetProProduct> products) {
+
+        var verticals = products.OfType<VerticalPanel>().ToArray();
+        var wallHung = verticals.Where(v => v.WallHung).ToArray();
+
+		if (wallHung.Length == 0) return [];
+
+		var rooms = products.GroupBy(p => p.Room)
+							.Where(g => g.OfType<VerticalPanel>().Any(v => v.WallHung))
+							.ToArray();
+		double shelfLengths = rooms.Select(r => r.OfType<Shelf>().FirstOrDefault()?.Width ?? Dimension.Zero).Sum(d => d.AsInches());
+		double panelThickness = (rooms.Length + 1) * 0.75;
+		double totalLength = (shelfLengths + panelThickness) / 12.0;
+
+        var finLeft = wallHung.Where(v => v.Drilling == VerticalPanelDrilling.FinishedLeft).Sum(v => v.Qty);
+        var finRight = wallHung.Where(v => v.Drilling == VerticalPanelDrilling.FinishedRight).Sum(v => v.Qty);
+        var drilledThrough = wallHung.Where(v => v.Drilling == VerticalPanelDrilling.DrilledThrough).Sum(v => v.Qty);
+
+        return [
+            .. Supply.HangingBracketLH(finLeft + (drilledThrough / 2)),
+            .. Supply.HangingBracketRH(finRight + (drilledThrough / 2)),
+            .. Supply.HangingRail((int) totalLength),
+            Supply.LongEuroScrews(finLeft + finRight + drilledThrough),
+        ];
+
+    }
+
+    private async Task<string> CreateWorkingDirectory(string csvData, string company, string orderName, string orderNumber, string? customerWorkingDirectoryRoot) {
 		string cpDefaultWorkingDirectory = @"R:\Job Scans\ClosetProSoftware"; // TODO: Get base directory from configuration file
 		string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? cpDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {company} - {orderName}", ' '));
 		if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDir) && incomingDir is not null) {
