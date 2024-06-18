@@ -1,4 +1,5 @@
-﻿using Domain.ValueObjects;
+﻿using ApplicationCore.Features.FivePieceOrderRelease;
+using Domain.ValueObjects;
 using OrderExporting.Shared;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -8,14 +9,9 @@ namespace ApplicationCore.Features.OptimizeStrips;
 
 public class OptimizationDocumentDecorator : IDocumentDecorator {
 
-    public required Dimension PartWidth { get; set; }
-    public required Dimension MaterialLength { get; set; }
-    public required string Material { get; set; }
-    public required Dimension[] Lengths { get; set; }
+    public required PartOptimizer.OptimizationResult Optimization { get; set; }
 
     public void Decorate(IDocumentContainer container) {
-
-        var optimizations = Optimizer.Optimize(MaterialLength, Lengths);
 
         container.Page(page => {
 
