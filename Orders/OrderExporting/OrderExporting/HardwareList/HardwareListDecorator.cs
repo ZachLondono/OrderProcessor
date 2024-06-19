@@ -22,7 +22,7 @@ public class HardwareListDecorator(Hardware hardwareList) : IDocumentDecorator {
 				.PaddingBottom(5)
 				.ShowOnce()
 				.AlignCenter()
-				.Text("Hardware List")
+				.Text($"{_hardwareList.OrderNumber} - Hardware List")
 				.FontSize(24)
 				.Bold();
 

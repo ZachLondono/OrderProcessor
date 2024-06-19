@@ -245,6 +245,7 @@ public class ReleaseService {
 
         if (configuration.GenerateHardwareList) {
             var hardwareList = new Hardware() {
+                OrderNumber = order.Number,
                 Supplies = order.Hardware.Supplies.Select(s => new Supply() {
                     Qty = s.Qty,
                     Description = s.Description
