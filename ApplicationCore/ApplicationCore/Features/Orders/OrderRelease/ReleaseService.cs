@@ -99,6 +99,10 @@ public class ReleaseService {
 
         if (configuration.SendDovetailDBEmail && configuration.DovetailDBEmailRecipients is not null) {
             foreach (var order in orders) {
+                if (!order.Products.OfType<IDovetailDrawerBoxContainer>().Any(p => p.ContainsDovetailDrawerBoxes())) {
+                    OnProgressReport?.Invoke($"Not sending dovetail db release email, becuase order '{order.Number}' does not contain any dovetail drawer boxes");
+                    continue;
+                }
                 await DovetailReleaseEmail(order.Number, order.Name, order.WorkingDirectory, configuration.DovetailDBEmailRecipients);
             }
         }
