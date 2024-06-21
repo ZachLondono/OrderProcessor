@@ -760,7 +760,8 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             IsRush = false,
             Price = 0,
             Shipping = 0,
-            Tax = 0
+            Tax = 0,
+            Note = ""
         };
 
         var createdOrder = await client.PostNewOrder(order);

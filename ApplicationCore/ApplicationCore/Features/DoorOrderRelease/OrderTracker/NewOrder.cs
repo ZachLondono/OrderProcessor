@@ -11,4 +11,5 @@ public class NewOrder {
     public required decimal Price { get; set; }
     public required decimal Shipping { get; set; }
     public required decimal Tax { get; set; }
+    public required string Note { get; set; }
 }

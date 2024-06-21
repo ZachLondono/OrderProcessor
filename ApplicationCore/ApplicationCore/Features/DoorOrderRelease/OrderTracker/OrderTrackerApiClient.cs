@@ -10,7 +10,7 @@ public class OrderTrackerApiClient {
 #if DEBUG
         _client = new RestClient("http://localhost:5293/");
 #else
-        _client = new RestClient("api.zacharylondono.com");
+        _client = new RestClient("http://api.zacharylondono.com");
 #endif
     }
 
