@@ -186,7 +186,11 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         }
 
         if (options.PostToTracker) {
-            await PostOrderToTracker(doorOrder);
+            try {
+                await PostOrderToTracker(doorOrder);
+            } catch (System.Exception ex) {
+                PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"Failed to post order to online tracker. - {ex.Message}"));
+            }
         }
 
     }
