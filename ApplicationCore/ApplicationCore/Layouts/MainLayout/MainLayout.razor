@@ -114,7 +114,67 @@
 						<line id="secondary-upstroke" x1="10.45" y1="12" x2="10.55" y2="12" style="fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"></line>
 						<path id="primary" d="M18,21H6V4A1,1,0,0,1,7,3H17a1,1,0,0,1,1,1ZM5,21H19" style="fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"></path>
 					</svg>
-					<span class="h-6 align-middle">Door Order Files</span>
+					<span class="h-6 align-middle">MDF Door Order</span>
+				</div>
+				<div @onclick="OpenFivePieceDoorOrdersDialog" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 dark:hover:bg-slate-600  text-gray-500 hover:text-black dark:hover:text-white">
+                    <svg width="69.039566mm"
+						 height="84.637268mm"
+						 viewBox="0 0 69.039566 84.637268"
+						 version="1.1"
+                         id="svg1"
+                         xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+                         xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+                         xmlns="http://www.w3.org/2000/svg"
+                         xmlns:svg="http://www.w3.org/2000/svg"
+						 class="w-6 h-6 mr-2 inline-block fill-current"
+						 stroke="currentColor">
+                        <sodipodi:namedview id="namedview1"
+                                            pagecolor="#505050"
+                                            bordercolor="#eeeeee"
+                                            borderopacity="1"
+                                            inkscape:showpageshadow="0"
+                                            inkscape:pageopacity="0"
+                                            inkscape:pagecheckerboard="0"
+                                            inkscape:deskcolor="#505050"
+                                            inkscape:document-units="mm" />
+                        <defs id="defs1" />
+						<g inkscape:label="Layer 1"
+						   inkscape:groupmode="layer"
+						   id="layer1">
+							<rect style="fill:none;stroke-width:5;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+								  id="rect1"
+								  width="14.039572"
+								  height="79.561012"
+								  x="2.5"
+								  y="2.5762539"
+								  ry="0.24785362"
+								  inkscape:export-filename="rect1.svg"
+								  inkscape:export-xdpi="95.552376"
+								  inkscape:export-ydpi="95.552376" />
+							<rect style="fill:none;stroke-width:5;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+								  id="rect1-4"
+								  width="14.039573"
+								  height="79.561012"
+								  x="52.499996"
+								  y="2.5762539"
+								  ry="0.24785359" />
+							<rect style="fill:none;stroke-width:5;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+								  id="rect1-4-6"
+								  width="34.111393"
+								  height="14.111392"
+								  x="17.46409"
+								  y="2.5"
+								  ry="0.04396072" />
+							<rect style="fill:none;stroke-width:5;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+								  id="rect1-4-6-3"
+								  width="34.111393"
+								  height="14.111392"
+								  x="17.46409"
+								  y="67.933563"
+								  ry="0.043960717" />
+						</g>
+                    </svg>
+                    <span class="h-6 align-middle">5-Piece Door Order</span>
 				</div>
 				<div @onclick="OpenClosetOrdersDialog" class="cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 dark:hover:bg-slate-600  text-gray-500 hover:text-black dark:hover:text-white">
 					<svg fill="#000000" height="800px" width="800px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="w-6 h-6 mr-2 inline-block fill-current" viewBox="0 0 512 512" xml:space="preserve">
@@ -131,7 +191,7 @@
 							</g>
 						</g>
 					</svg>
-					<span class="h-6 align-middle">Closet Order Files</span>
+					<span class="h-6 align-middle">Closet Parts Order</span>
 				</div>
 			</section>
 
@@ -272,7 +332,13 @@
 
 		}
 	}
-	
+
+	private Task OpenFivePieceDoorOrdersDialog() {
+
+		return Task.CompletedTask;
+
+	}
+
 	private async Task GoBack() {
 		await JSRuntime.InvokeVoidAsync("history.back");
 	}
