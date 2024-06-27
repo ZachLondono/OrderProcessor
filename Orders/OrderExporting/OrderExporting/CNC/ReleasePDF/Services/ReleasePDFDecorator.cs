@@ -130,6 +130,7 @@ public class ReleasePDFDecorator : IDocumentDecorator {
 
         page.Size(PageSizes.Letter);
         page.MarginHorizontal(2, Unit.Centimetre);
+        page.MarginVertical(5, Unit.Millimetre);
         page.PageColor(Colors.White);
 
         var headerStyle = config.HeaderStyle;
