@@ -43,6 +43,35 @@ public partial class ClosetProPartMapper {
 
 	}
 
+	public static IClosetProProduct CreateRollOutShelfFromPart(Part part, RoomNamingStrategy strategy) {
+
+		if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
+			unitPrice = 0M;
+		}
+		string room = GetRoomName(part, strategy);
+		Dimension depth = Dimension.FromInches(part.Depth);
+		Dimension width = Dimension.FromInches(part.Width) - Dimension.FromMillimeters(27);
+		string edgeBandingColor = part.InfoRecords
+								.Where(i => i.PartName == "Edge Banding")
+								.Select(i => i.Color)
+								.FirstOrDefault() ?? part.Color;
+
+		return new Shelf() {
+			Qty = part.Quantity,
+			UnitPrice = unitPrice,
+			Color = part.Color,
+			Room = room,
+			PartNumber = part.PartNum,
+			EdgeBandingColor = edgeBandingColor,
+
+			Width = width,
+			Depth = depth,
+			Type = ShelfType.RollOut, 
+			ExtendBack = false 
+		};
+
+	}
+
 	public static Shelf CreateAdjustableShelf(Part part, bool extendBack, bool wallHasBacking, RoomNamingStrategy strategy) => CreateShelf(part, ShelfType.Adjustable, extendBack, wallHasBacking, strategy);
 
 	public static Shelf CreateFixedShelf(Part part, bool extendBack, bool wallHasBacking, RoomNamingStrategy strategy) => CreateShelf(part, ShelfType.Fixed, extendBack, wallHasBacking, strategy);

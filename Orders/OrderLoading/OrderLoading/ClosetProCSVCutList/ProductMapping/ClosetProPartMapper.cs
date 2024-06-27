@@ -152,6 +152,8 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 			"AdjustableShelf" => CreateAdjustableShelfFromPart(part, wallHasBacking, false, strategy),
 
+			"rollouttray" => CreateAdjustableShelfFromPart(part, wallHasBacking, false, strategy),
+
 			"ShoeShelf" => CreateShoeShelf(part, false, wallHasBacking, strategy),
 
 			"Toe Kick_3.75" or "Toe Kick_2.5"
