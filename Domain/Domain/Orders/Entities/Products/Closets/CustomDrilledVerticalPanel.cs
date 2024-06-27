@@ -231,10 +231,10 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             Qty = Qty,
             PrimaryFace = new() {
                 ProgramName = $"{SKU}{ProductNumber}",
-                Rotation = 0,
+                Rotation = 90,
                 IsMirrored = DrillingType == ClosetVerticalDrillingType.FinishedRight,
-                Tokens = tokens.ToArray()
-            },
+                Tokens = [.. tokens]
+			},
             Width1Banding = edgeBanding,
             Length1Banding = topEdgeBanding,
             InfoFields = new() {
@@ -251,7 +251,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             }
         };
 
-        return new Part[] { part };
+		return [part];
 
     }
 
