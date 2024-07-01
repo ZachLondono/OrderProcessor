@@ -6,7 +6,7 @@ public record PartLabels(string Id, Dictionary<string, string> Fields) {
 
     public static PartLabels FromXElement(XElement element) {
 
-        Dictionary<string, string> fields = new();
+        Dictionary<string, string> fields = new(comparer: StringComparer.InvariantCultureIgnoreCase);
 
         string name = "";
         foreach (var subelement in element.Descendants()) {
