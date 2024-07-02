@@ -34,9 +34,16 @@ public class DividerShelf : IClosetProProduct {
 
 		var horzDrillingType = HorizontalDividerPanelEndDrillingType.SingleCams;
 
+		string comment = "";
+		string suffix = "-EQ";
+		if (DividerCount > 2) {
+			comment = "CHECK DIVIDER HOLE POSITIONS";
+			suffix = string.Empty;
+		}
+
 		string sku = Type switch {
-			DividerShelfType.Top => $"SF-D{DividerCount}T{ClosetProPartMapper.GetDividerShelfSuffix(horzDrillingType)}",
-			DividerShelfType.Bottom => $"SF-D{DividerCount}B{ClosetProPartMapper.GetDividerShelfSuffix(horzDrillingType)}",
+			DividerShelfType.Top => $"SF-D{DividerCount}T{ClosetProPartMapper.GetDividerShelfSuffix(horzDrillingType)}{suffix}",
+			DividerShelfType.Bottom => $"SF-D{DividerCount}B{ClosetProPartMapper.GetDividerShelfSuffix(horzDrillingType)}{suffix}",
 			_ => throw new InvalidOperationException("Unexpected divider shelf type")
 		};
 
@@ -51,7 +58,7 @@ public class DividerShelf : IClosetProProduct {
 							  material,
 							  null,
 							  EdgeBandingColor,
-							  "",
+							  comment,
 							  true,
 							  parameters);
 
