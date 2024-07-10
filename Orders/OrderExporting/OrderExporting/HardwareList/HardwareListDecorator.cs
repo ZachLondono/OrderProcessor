@@ -68,7 +68,7 @@ public class HardwareListDecorator(Hardware hardwareList) : IDocumentDecorator {
 
 								t.Header(header => {
 
-									header.Cell().ColumnSpan(2).AlignCenter().Text("Closet Hanging Rods").Bold().FontSize(24);
+									header.Cell().ColumnSpan(3).AlignCenter().Text("Closet Hanging Rods").Bold().FontSize(24);
 									header.Cell().Border(1).AlignCenter().Text("Material").Bold().FontSize(16);
 									header.Cell().Border(1).AlignCenter().Text("Length (mm)").Bold().FontSize(16);
 									header.Cell().Border(1).AlignCenter().Text("Qty").Bold().FontSize(16);
