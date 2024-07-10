@@ -60,29 +60,32 @@ public class HardwareListDecorator(Hardware hardwareList) : IDocumentDecorator {
 						col.Item()
 							.Table(t => {
 
-							t.ColumnsDefinition(c => {
-								c.RelativeColumn();
-								c.ConstantColumn(150);
+								t.ColumnsDefinition(c => {
+									c.RelativeColumn();
+									c.ConstantColumn(150);
+									c.ConstantColumn(150);
+								});
+
+								t.Header(header => {
+
+									header.Cell().ColumnSpan(2).AlignCenter().Text("Closet Hanging Rods").Bold().FontSize(24);
+									header.Cell().Border(1).AlignCenter().Text("Material").Bold().FontSize(16);
+									header.Cell().Border(1).AlignCenter().Text("Length (mm)").Bold().FontSize(16);
+									header.Cell().Border(1).AlignCenter().Text("Qty").Bold().FontSize(16);
+
+								});
+
+								foreach (var hangingRod in _hardwareList.HangingRods) {
+									AddRow(hangingRod.Finish, hangingRod.Length, hangingRod.Qty);
+								}
+
+								void AddRow(string item, Dimension length, int qty) {
+									t.Cell().Border(1).Padding(3).Text(item).FontSize(14);
+									t.Cell().Border(1).AlignCenter().Padding(3).Text(length.AsMillimeters().ToString("0")).FontSize(14);
+									t.Cell().Border(1).AlignCenter().Padding(3).Text(qty.ToString()).FontSize(14);
+								}
+
 							});
-
-							t.Header(header => {
-
-								header.Cell().ColumnSpan(2).AlignCenter().Text("Closet Hanging Rods").Bold().FontSize(24);
-								header.Cell().Border(1).AlignCenter().Text("Material").Bold().FontSize(16);
-								header.Cell().Border(1).AlignCenter().Text("Length (mm)").Bold().FontSize(16);
-
-							});
-
-							foreach (var hangingRod in _hardwareList.HangingRods) {
-								AddRow(hangingRod.Finish, hangingRod.Length);
-							}
-
-							void AddRow(string item, Dimension length) {
-								t.Cell().Border(1).Padding(3).Text(item).FontSize(14);
-								t.Cell().Border(1).AlignCenter().Padding(3).Text(length.AsMillimeters().ToString("0")).FontSize(14);
-							}
-
-						});
 
 					}
 
