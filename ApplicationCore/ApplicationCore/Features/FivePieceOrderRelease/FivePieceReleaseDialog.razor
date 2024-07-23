@@ -1,0 +1,102 @@
+﻿@using Domain.Components
+@using Domain.Components.ProgressModal
+
+<EditForm Model="Model">
+
+    <div>
+
+        <label class="font-semibold">Workbook -</label>
+        <span>@OrderFile.FilePath</span>
+
+        <div class="mt-3">
+            <label>
+                <span class="text-gray-700">
+                    File Name
+                </span>
+                <InputText @bind-Value="Model.FileName" class="input-text w-full" spellcheck="false" />
+            </label>
+        </div>
+
+        <div class="mt-3">
+            <label>
+                <span class="text-gray-700">
+                    Output Directory
+                </span>
+                <InputText @bind-Value="Model.OutputDirectory" class="input-text w-full" spellcheck="false" />
+            </label>
+        </div>
+
+        <div class="mt-3">
+            <label class="font-semibold">
+                <InputCheckbox @bind-Value="Model.SendEmail" />
+                <span class="text-gray-700">Send Release Email</span>
+            </label>
+            @if (Model.SendEmail) {
+                <div class="ml-3">
+                    <div>
+                        <label>
+                            <InputCheckbox @bind-Value="Model.PreviewEmail" />
+                            <span class="text-gray-700 text-sm">Preview email before sending</span>
+                        </label>
+                    </div>
+                    <label>
+                        <span class="text-sm font-medium text-gray-700">Email Recipients</span>
+                        <InputText @bind-Value="Model.EmailRecipients" class="input-text w-full" placeholder="example@email.com" />
+                    </label>
+                </div>
+            }
+        </div>
+
+    </div>
+
+    <div class="my-5 text-center">
+        <Button Color="Button.ButtonColor.Primary" class="mt-3" OnClickAsync="GenerateFivePieceOrderRelease">Release</Button>
+    </div>
+
+</EditForm>
+
+@code {
+
+    [Parameter]
+    public FivePieceOrderFile OrderFile { get; set; } = default!;
+
+    [Inject]
+    public FivePieceDoorReleaseActionRunner ActionRunner { get; set; } = default!;
+
+    [Inject]
+    public FivePieceOrderSheetParser Parser { get; set; } = default!;
+
+    [CascadingParameter]
+    public IModalService Modal { get; set; } = default!;
+
+    [CascadingParameter]
+    public BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    public FivePieceOrderReleaseOptions Model { get; set; } = new();
+
+    public async Task GenerateFivePieceOrderRelease() {
+
+        ActionRunner.Order = Parser.LoadOrderFromFile(OrderFile.FilePath);
+        ActionRunner.Options = Model;
+
+        var parameters = new ModalParameters() {
+            { "ActionRunner",  ActionRunner },
+            { "InProgressTitle", "Releasing Order..." },
+            { "CompleteTitle", "Release Complete" }
+        };
+
+        var options = new ModalOptions() {
+            HideHeader = true,
+            HideCloseButton = true,
+            DisableBackgroundCancel = true,
+            Size = ModalSize.Large
+        };
+
+        var dialog = Modal.Show<ProgressModal>("Order Release Progress", parameters, options);
+        _ = await dialog.Result;
+
+        await BlazoredModal.CloseAsync();
+
+    }
+
+}

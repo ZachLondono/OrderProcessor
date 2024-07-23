@@ -7,7 +7,7 @@ using ExcelApp = Microsoft.Office.Interop.Excel.Application;
 
 namespace ApplicationCore.Features.FivePieceOrderRelease;
 
-internal class FivePieceOrderSheetParser(IWindowFocuser windowFocuser) {
+public class FivePieceOrderSheetParser(IWindowFocuser windowFocuser) {
 
     private readonly IWindowFocuser _windowFocuser = windowFocuser;
 

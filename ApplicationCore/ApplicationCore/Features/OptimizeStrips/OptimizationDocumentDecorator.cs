@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Features.FivePieceOrderRelease;
-using Domain.ValueObjects;
 using OrderExporting.Shared;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -10,6 +9,9 @@ namespace ApplicationCore.Features.OptimizeStrips;
 public class OptimizationDocumentDecorator : IDocumentDecorator {
 
     public required PartOptimizer.OptimizationResult Optimization { get; set; }
+    public required string Material { get; set; }
+    public required double StripWidth { get; set; }
+    public required double StripLength { get; set; }
 
     public void Decorate(IDocumentContainer container) {
 
@@ -20,19 +22,19 @@ public class OptimizationDocumentDecorator : IDocumentDecorator {
 
             page.Header()
                 .AlignCenter()
-                .Text($"{PartWidth.AsInchFraction()}\" x {MaterialLength.AsInchFraction()}\" - {Material}")
+                .Text($"{StripWidth}\" x {StripLength}\" - {Material}")
                 .Bold()
                 .FontSize(16);
 
             page.Content()
                 .Column(col => {
 
-                    col.Item().Text($"{optimizations.PartsPerMaterial.Count()} Lengths").Bold().FontSize(16);
+                    col.Item().Text($"{Optimization.OptimizedStrips.Length} Lengths").Bold().FontSize(16);
 
                     int i = 1;
-                    foreach (var part in optimizations.PartsPerMaterial) {
+                    foreach (var part in Optimization.OptimizedStrips) {
 
-                        string val = string.Join(";  ", part.Select(p => Math.Round(p.AsMillimeters(), 1).ToString()));
+                        string val = string.Join(";  ", part.Select(p => Math.Round(p, 1).ToString()));
 
                         col.Item()
                             .PaddingLeft(20)
@@ -40,7 +42,7 @@ public class OptimizationDocumentDecorator : IDocumentDecorator {
 
                     }
 
-                    if (optimizations.UnplacedParts.Any()) {
+                    if (Optimization.UnplacedParts.Length != 0) {
 
                         col.Item()
                             .PaddingTop(30)
@@ -48,10 +50,10 @@ public class OptimizationDocumentDecorator : IDocumentDecorator {
                             .Bold()
                             .FontSize(16);
 
-                        foreach (var part in optimizations.UnplacedParts) {
+                        foreach (var part in Optimization.UnplacedParts) {
                             col.Item()
                                 .PaddingLeft(20)
-                                .Text(Math.Round(part.AsMillimeters()).ToString());
+                                .Text(Math.Round(part).ToString());
                         }
 
                     }

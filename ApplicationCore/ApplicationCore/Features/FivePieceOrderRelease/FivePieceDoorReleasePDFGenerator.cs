@@ -1,12 +1,14 @@
-﻿using Domain.Orders.Entities.Products.Doors;
+﻿using ApplicationCore.Features.OptimizeStrips;
+using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using OrderExporting.FivePieceDoorCutList;
+using OrderExporting.Shared;
 
 namespace ApplicationCore.Features.FivePieceOrderRelease;
 
-internal class FivePieceDoorReleasePDFGenerator(FivePieceDoorCutListWriter writer) {
+public class FivePieceDoorReleasePDFGenerator(FivePieceDoorCutListWriter writer) {
 
     private readonly FivePieceDoorCutListWriter _writer = writer;
 
@@ -50,8 +52,8 @@ internal class FivePieceDoorReleasePDFGenerator(FivePieceDoorCutListWriter write
         var kerf = 4;
         var stripLength = 2438;
 
-        var partsByWidth = doors.SelectMany(d => d.GetParts()).GroupBy(p => p.Width);
-        List<PartOptimizer.OptimizationResult> results = [];
+        var partsByWidth = doors.SelectMany(d => d.GetParts()).GroupBy(p => (p.Width, p.Material));
+        List<IDocumentDecorator> results = [];
 
         var optimizer = new PartOptimizer();
 
@@ -62,7 +64,12 @@ internal class FivePieceDoorReleasePDFGenerator(FivePieceDoorCutListWriter write
 
             var result = optimizer.OptimizeStrips(stripLength, kerf, lengths);
 
-            results.Add(result);
+            results.Add(new OptimizationDocumentDecorator() {
+                Material = group.Key.Material,
+                StripWidth = group.Key.Width.AsMillimeters(),
+                Optimization = result,
+                StripLength = stripLength
+            });
 
         }
 

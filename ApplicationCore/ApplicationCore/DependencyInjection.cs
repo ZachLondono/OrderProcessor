@@ -6,6 +6,7 @@ using ApplicationCore.Features.CustomizationScripts.ViewModels;
 using ApplicationCore.Features.DataFilePaths;
 using ApplicationCore.Features.DeleteOrder;
 using ApplicationCore.Features.DoorOrderRelease;
+using ApplicationCore.Features.FivePieceOrderRelease;
 using ApplicationCore.Features.GeneralReleasePDF;
 using ApplicationCore.Features.OrderList;
 using ApplicationCore.Features.OrderRelationshipList;
@@ -33,6 +34,7 @@ using Domain.Orders.ValueObjects;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OrderExporting;
+using OrderExporting.FivePieceDoorCutList;
 using OrderLoading;
 using System.Runtime.CompilerServices;
 
@@ -109,7 +111,12 @@ public static class DependencyInjection {
                 .AddTransient<OrderListPageViewModel>()
                 .AddTransient<DoorOrderReleaseActionRunner>()
                 .AddTransient<ClosetOrderReleaseActionRunner>()
-                .AddTransient<ClosetProToAllmoxyMapper>();
+                .AddTransient<ClosetProToAllmoxyMapper>()
+                .AddTransient<FivePieceDoorOrderFileSelectorViewModel>()
+                .AddTransient<FivePieceDoorReleaseActionRunner>()
+                .AddTransient<FivePieceDoorReleasePDFGenerator>()
+                .AddTransient<FivePieceDoorCutListWriter>()
+                .AddTransient<FivePieceOrderSheetParser>();
 
     }
 

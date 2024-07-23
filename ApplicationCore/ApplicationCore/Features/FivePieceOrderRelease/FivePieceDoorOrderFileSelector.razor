@@ -1,0 +1,73 @@
+﻿@using Domain.Components
+@using static Domain.Components.Button
+
+<h3>Open 5-piece Door Order</h3>
+
+@if (!string.IsNullOrEmpty(DataContext.Error)) {
+    <span class="text-red-500">@DataContext.Error</span>
+}
+
+@if (DataContext.IsLoading) {
+    <span>Loading...</span>
+} else {
+
+    @if (DataContext.OpenOrders.Any()) {
+        <table class="table-auto">
+            <thead class="border-b border-slate-300">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Customer</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in DataContext.OpenOrders) {
+                    <tr class="text-center border-b cursor-pointer hover:bg-slate-200" onclick="@(() => SelectOrder(order))">
+                        <td class="p-5">@order.TrackingNumber</td>
+                        <td class="p-5">@order.JobName</td>
+                        <td class="p-5">@order.CompanyName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    } else {
+        <div>
+            <span>No open 5-piece orders were found</span>
+        </div>
+    }
+
+    <div class="mt-5">
+        <Button OnClickAsync="Close" Color="ButtonColor.Danger">Close</Button>
+        <Button OnClickAsync="DataContext.LoadOpenOrders" Color="ButtonColor.Secondary">Refresh</Button>
+    </div>
+
+}
+
+@code {
+
+    [CascadingParameter]
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Inject]
+    public FivePieceDoorOrderFileSelectorViewModel DataContext { get; set; } = default!;
+
+    protected override void OnInitialized() {
+        base.OnInitialized();
+        DataContext.OnPropertyChanged += StateHasChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        base.OnAfterRender(firstRender);
+        if (!firstRender) return;
+        await DataContext.LoadOpenOrders();
+    }
+
+    private async Task SelectOrder(FivePieceOrderFile selectedOrder) {
+        await BlazoredModal.CloseAsync(ModalResult.Ok(selectedOrder));
+    }
+
+    private async Task Close() {
+        await BlazoredModal.CloseAsync();
+    }
+
+}

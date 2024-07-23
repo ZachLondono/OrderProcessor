@@ -3,6 +3,7 @@
 @using ApplicationCore.Features.ClosetOrderSelector
 @using ApplicationCore.Features.DoorOrderRelease
 @using ApplicationCore.Features.DoorOrderSelector
+@using ApplicationCore.Features.FivePieceOrderRelease
 @using ApplicationCore.Features.GeneralReleasePDF
 @using ApplicationCore.Features.OpenDoorOrders
 @using ApplicationCore.Features.Orders
@@ -333,9 +334,26 @@
 		}
 	}
 
-	private Task OpenFivePieceDoorOrdersDialog() {
+	private async Task OpenFivePieceDoorOrdersDialog() {
 
-		return Task.CompletedTask;
+		var dialog = Modal.Show<FivePieceDoorOrderFileSelector>("", new ModalOptions() {
+			Size = ModalSize.Automatic,
+			HideHeader = true,
+			DisableBackgroundCancel = true
+		});
+
+		var result = await dialog.Result;	
+		if (result.Confirmed && result.Data is FivePieceOrderFile orderFile) {
+
+			_ = await Modal.Show<FivePieceReleaseDialog>("Five Piece Order Release",
+			new ModalParameters() {
+				{ "OrderFile", orderFile }
+			}, new ModalOptions() {
+				DisableBackgroundCancel = true,
+				Size = ModalSize.ExtraLarge
+			}).Result;
+
+		}
 
 	}
 

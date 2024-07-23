@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Features.FivePieceOrderRelease;
 
-internal record LineItem(int PartNum,
+public record LineItem(int PartNum,
                          string Description,
                          int Line,
                          int Qty,

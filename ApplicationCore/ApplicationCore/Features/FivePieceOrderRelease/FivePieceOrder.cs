@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Features.FivePieceOrderRelease;
 
-internal record FivePieceOrder(DateTime OrderDate,
+public record FivePieceOrder(DateTime OrderDate,
                                 DateTime DueDate,
                                 string CompanyName,
                                 string TrackingNumber,
