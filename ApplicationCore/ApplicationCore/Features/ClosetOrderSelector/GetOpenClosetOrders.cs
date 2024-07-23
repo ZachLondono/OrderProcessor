@@ -27,7 +27,7 @@ public class GetOpenClosetOrders {
                 return Response<IEnumerable<ClosetOrder>>.Success(closetOrders);
 
             } catch (Exception ex) {
-                _logger.LogError(ex, "Exception thrown while trying to list all open door orders");
+                _logger.LogError(ex, "Exception thrown while trying to list all open closet orders");
                 return Response<IEnumerable<ClosetOrder>>.Error(new() {
                     Title = "Failed to Get Open Orders",
                     Details = ex.Message
