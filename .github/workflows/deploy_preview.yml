@@ -100,7 +100,7 @@ jobs:
                /p:AppInstallerUri="${{ env.DeployURI }}" `
                /p:AppxPackageDir="${{ github.workspace }}\${{ env.ReleaseChannel }}\" `
                /p:PackageName="Order Processor"
-               /p:PackageCertificatePassword=${{ secrets.PFX_KEY }} `
+               #/p:PackageCertificatePassword=${{ secrets.PFX_KEY }} `
     
     - name: Remove the .pfx
       run: Remove-Item -path ${{ env.WapProjectName }}\${{ env.SigningCertificate }}
