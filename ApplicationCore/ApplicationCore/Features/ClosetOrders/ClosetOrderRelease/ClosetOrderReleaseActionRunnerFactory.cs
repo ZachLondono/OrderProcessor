@@ -1,7 +1,7 @@
-﻿using ApplicationCore.Features.ClosetOrderSelector;
+﻿using ApplicationCore.Features.ClosetOrders.ClosetOrderSelector;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ApplicationCore.Features.ClosetOrderRelease;
+namespace ApplicationCore.Features.ClosetOrders.ClosetOrderRelease;
 
 public class ClosetOrderReleaseActionRunnerFactory(IServiceProvider serviceProvider) {
 

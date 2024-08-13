@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.ClosetOrderRelease;
+﻿namespace ApplicationCore.Features.ClosetOrders.ClosetOrderRelease;
 
 public class ClosetOrderReleaseOptions {
 

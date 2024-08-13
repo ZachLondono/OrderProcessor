@@ -1,4 +1,4 @@
-using ApplicationCore.Features.ClosetOrderSelector;
+using ApplicationCore.Features.ClosetOrders.ClosetOrderSelector;
 using ApplicationCore.Features.GetJobCutListDirectory;
 using Blazored.Modal;
 using Blazored.Modal.Services;
@@ -7,7 +7,8 @@ using Domain.Infrastructure.Bus;
 using Domain.Services;
 using Microsoft.AspNetCore.Components;
 
-namespace ApplicationCore.Features.ClosetOrderRelease;
+namespace ApplicationCore.Features.ClosetOrders.ClosetOrderRelease;
+
 public partial class ClosetOrderReleaseDialog {
 
     [Parameter]

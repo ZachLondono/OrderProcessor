@@ -1,5 +1,5 @@
-﻿using ApplicationCore.Features.ClosetOrderRelease;
-using ApplicationCore.Features.ClosetOrderSelector;
+﻿using ApplicationCore.Features.ClosetOrders.ClosetOrderRelease;
+using ApplicationCore.Features.ClosetOrders.ClosetOrderSelector;
 using ApplicationCore.Features.ClosetProToAllmoxyOrder;
 using ApplicationCore.Features.CreateOrderRelationship;
 using ApplicationCore.Features.CustomizationScripts.ViewModels;

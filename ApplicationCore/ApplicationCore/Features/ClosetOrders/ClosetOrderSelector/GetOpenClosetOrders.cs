@@ -5,7 +5,7 @@ using Domain.Excel;
 using ExcelApplication = Microsoft.Office.Interop.Excel.Application;
 using Domain.Infrastructure.Bus;
 
-namespace ApplicationCore.Features.ClosetOrderSelector;
+namespace ApplicationCore.Features.ClosetOrders.ClosetOrderSelector;
 
 public class GetOpenClosetOrders {
 

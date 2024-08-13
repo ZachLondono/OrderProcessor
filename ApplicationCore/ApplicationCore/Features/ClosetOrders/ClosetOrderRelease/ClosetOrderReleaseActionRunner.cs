@@ -1,4 +1,4 @@
-﻿using ApplicationCore.Features.ClosetOrderSelector;
+﻿using ApplicationCore.Features.ClosetOrders.ClosetOrderSelector;
 using ApplicationCore.Shared;
 using ApplicationCore.Shared.Services;
 using Domain.Components.ProgressModal;
@@ -25,7 +25,7 @@ using OrderExporting.CNC.Programs.WorkOrderReleaseEmail;
 using OrderExporting.CNC.Programs.WSXML.Report;
 using OrderExporting.Shared;
 
-namespace ApplicationCore.Features.ClosetOrderRelease;
+namespace ApplicationCore.Features.ClosetOrders.ClosetOrderRelease;
 
 public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunner> logger, CNCReleaseDecoratorFactory releaseDecoratorFactory, IFileReader fileReader, IEmailService emailService, IWSXMLParser wsxmlParser, IWindowFocuser windowFocuser)
         : IActionRunner {

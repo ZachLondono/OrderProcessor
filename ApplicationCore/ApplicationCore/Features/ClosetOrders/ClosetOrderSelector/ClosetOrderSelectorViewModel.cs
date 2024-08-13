@@ -1,6 +1,6 @@
 ﻿using Domain.Infrastructure.Bus;
 
-namespace ApplicationCore.Features.ClosetOrderSelector;
+namespace ApplicationCore.Features.ClosetOrders.ClosetOrderSelector;
 
 public class ClosetOrderSelectorViewModel {
 

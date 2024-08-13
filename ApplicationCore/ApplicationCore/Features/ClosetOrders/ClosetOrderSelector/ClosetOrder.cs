@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.ClosetOrderSelector;
+﻿namespace ApplicationCore.Features.ClosetOrders.ClosetOrderSelector;
 
 public record ClosetOrder(
     string Customer,
