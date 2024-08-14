@@ -1,6 +1,5 @@
 ﻿@using ApplicationCore.Features.BugReport
-@using ApplicationCore.Features.ClosetOrders.ClosetOrderRelease
-@using ApplicationCore.Features.ClosetOrders.ClosetOrderSelector
+@using ApplicationCore.Features.ClosetOrders
 @using ApplicationCore.Features.DoorOrderRelease
 @using ApplicationCore.Features.DoorOrderSelector
 @using ApplicationCore.Features.GeneralReleasePDF
@@ -254,23 +253,15 @@
 	}
 
 	private async Task OpenClosetOrdersDialog() {
-		var dialog = Modal.Show<ClosetOrderSelectorWidget>("", new ModalOptions() {
+
+		var dialog = Modal.Show<ClosetOrderActionSelector>("", new ModalOptions() {
 			Size = ModalSize.Automatic,
 			HideHeader = true,
 			DisableBackgroundCancel = true
 		});
-		var result = await dialog.Result;	
-		if (result.Confirmed && result.Data is ClosetOrder closetOrder) {
 
-			_ = await Modal.Show<ClosetOrderReleaseDialog>("Closet Order Release",
-			new ModalParameters() {
-				{ "Order", closetOrder }
-			}, new ModalOptions() {
-				DisableBackgroundCancel = true,
-				Size = ModalSize.ExtraLarge
-			}).Result;
+		_ = await dialog.Result;
 
-		}
 	}
 	
 	private async Task GoBack() {

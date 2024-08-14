@@ -1,0 +1,176 @@
+﻿@using Domain.Components
+
+@switch (_state) {
+
+    case DialogState.Importing:
+        <div>
+            <span>Importing order...</span>
+        </div>
+        break;
+
+    case DialogState.Complete:
+        <div>
+            <span>Order import complete.</span>
+        </div>
+        <div class="mt-5">
+            <Button OnClickAsync="Cancel">Close</Button>
+        </div>
+        break;
+
+    case DialogState.Setup:
+        <div>
+        
+            @if(_loadingError is not null) {
+                <span>@_loadingError</span>
+            } else if(_isLoading) {
+                <span>Loading Message...</span>
+            } else if (_message is null) {
+                <span>No Message Selected</span>
+            } else {
+        
+                <h1 class="font-bold text-lg">Currently Selected Message</h1>
+        
+                <div>
+                    @_message.SenderName
+                </div>
+                <div>
+                    @_message.SenderEmail
+                </div>
+                <div>
+                    @_message.Subject
+                </div>
+        
+                <div class="mt-3">
+                    <h2 class="font-semibold text-md">Attachments</h2>
+                    <div class="ml-3">
+                        @foreach(var attachment in _message.Attachments) {
+                            <div>
+                                <CheckBox @bind-IsChecked="attachment.CopyToOrders">
+                                    @attachment.FileName
+                                </CheckBox>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div>
+                    <div>
+                        <span>Name</span>
+                        <input type="text" class="input-text" @bind-value="_orderName"/>
+                    </div>
+                    <div>
+                        <span>Number</span>
+                        <input type="text" class="input-text" @bind-value="_orderNumber"/>
+                    </div>
+                </div>
+
+                <div>
+                    <Button OnClickAsync="ImportSelectedOrder">Import</Button>
+                </div>
+                
+            }
+        
+            <div class="mt-5">
+                <Button OnClick="LoadCurrentMessageDetails">Refresh</Button>
+                <Button OnClickAsync="Cancel">Cancel</Button>
+            </div>
+        
+        </div>
+        break;
+    
+}
+
+@code {
+
+    [CascadingParameter]
+    public IModalService ModalService { get; set; } = default!;
+
+    [CascadingParameter]
+    private BlazoredModalInstance ModalInstance { get; set; } = default!;
+
+    private DialogState _state = DialogState.Setup;
+
+    private string? _loadingError = null;
+    private bool _isLoading = false;
+    private string _orderNumber = "";
+    private string _orderName = "";
+    private OrderMessage? _message = null;
+    private OutlookWrapper? _wrapper = null;
+    private OrderImporter? _importer = null;
+
+    protected override void OnAfterRender(bool firstRender) {
+
+        if (!firstRender) return;
+
+        LoadCurrentMessageDetails();
+
+    }
+
+    private void LoadCurrentMessageDetails() {
+
+        _isLoading = true;
+        _loadingError = null;
+        _message = null;
+        StateHasChanged();
+
+        try {
+
+            if (_wrapper is null) _wrapper = new OutlookWrapper();
+            if (!_wrapper.IsInitialized) _wrapper.Initialize();
+            var mailItem = _wrapper.GetCurrentlySelectedMailItem();
+
+            if (mailItem is null) {
+                _isLoading = false;
+                StateHasChanged();
+                return;
+            }
+
+            _importer = new OrderImporter(mailItem);
+            _message =  _importer.GetMessageDetails();
+            _isLoading = false;
+            StateHasChanged();
+
+        } catch {
+
+            _isLoading = false;
+            _message = null;
+            _loadingError = "Couldn't get selected email";
+            StateHasChanged();
+
+        }
+
+    }
+
+    private async Task ImportSelectedOrder() {
+
+        if (_message is null) {
+            _loadingError = "Message not selected";
+            StateHasChanged();
+            return;
+        }
+
+        if (_importer is null) {
+            _loadingError = "Could not load order from message";
+            StateHasChanged();
+            return;
+        }
+
+        _state = DialogState.Importing;
+        StateHasChanged();
+
+        var order = new ClosetOrder(_orderNumber, _orderName, _message.Attachments);
+        await Task.Run(() =>
+        {
+            _importer.ImportOrderFromMailItem(order);
+        });
+
+        _state = DialogState.Complete;
+        StateHasChanged();
+
+    }
+
+    private async Task Cancel() {
+        await ModalInstance.CancelAsync();
+    }
+
+}

@@ -1,0 +1,59 @@
+﻿@using ApplicationCore.Features.ClosetOrders.ClosetOrderImport
+@using ApplicationCore.Features.ClosetOrders.ClosetOrderSelector
+@using ApplicationCore.Features.ClosetOrders.ClosetOrderRelease
+@using Domain.Components;
+
+<div>
+    <Button OnClickAsync="ReleaseOpenFile">Release Open File</Button>
+    <Button OnClickAsync="ImportFromEmail">Import From Email</Button>
+</div>
+
+@code {
+
+    [CascadingParameter]
+    public IModalService ModalService { get; set; } = default!;
+
+    [CascadingParameter]
+    private BlazoredModalInstance ModalInstance { get; set; } = default!;
+
+    private async Task ReleaseOpenFile() {
+
+        await ModalInstance.CloseAsync();
+
+        var dialog = ModalService.Show<ClosetOrderSelectorWidget>("", new ModalOptions() {
+			Size = ModalSize.Automatic,
+			HideHeader = true,
+			DisableBackgroundCancel = true
+		});
+
+        var result = await dialog.Result;	
+
+        if (result.Confirmed && result.Data is ClosetOrderSelector.ClosetOrder closetOrder) {
+
+			_ = await ModalService.Show<ClosetOrderReleaseDialog>("Closet Order Release",
+			new ModalParameters() {
+				{ "Order", closetOrder }
+			}, new ModalOptions() {
+				DisableBackgroundCancel = true,
+				Size = ModalSize.ExtraLarge
+			}).Result;
+
+		}
+
+	}
+
+	private async Task ImportFromEmail() {
+
+		await ModalInstance.CloseAsync();
+
+		var dialog = ModalService.Show<ClosetOrderEmailImporter>("", new ModalOptions() {
+			Size = ModalSize.Automatic,
+			HideHeader = true,
+			DisableBackgroundCancel = true
+		});
+
+		_ = await dialog.Result;
+
+    }
+
+}
