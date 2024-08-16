@@ -129,12 +129,14 @@ public class PSIMaterialTests {
 
     }
 
-    [Fact]
-    public void CleanMaterialName_TopsMaterialNameSuffix_RemoveSuffixFromMaterialName() {
+    [Theory]
+    [InlineData("tops")]
+    [InlineData("tops1")]
+    public void CleanMaterialName_TopsMaterialNameSuffix_RemoveSuffixFromMaterialName(string keyWord) {
 
         // Arrange
         string materialNameBase = "Other Material Information";
-        string materialName = $"{materialNameBase} (tops)";
+        string materialName = $"{materialNameBase} ({keyWord})";
 
         // Act
         var clean = PSIMaterial.CleanMaterialName(materialName);
@@ -144,12 +146,14 @@ public class PSIMaterialTests {
 
     }
 
-    [Fact]
-    public void CleanMaterialName_TopsMaterialNamePrefix_RemovePrefixFromMaterialName() {
+    [Theory]
+    [InlineData("tops")]
+    [InlineData("tops1")]
+    public void CleanMaterialName_TopsMaterialNamePrefix_RemovePrefixFromMaterialName(string keyWord) {
 
         // Arrange
         string materialNameBase = "Other Material Information";
-        string materialName = $"(tops) {materialNameBase}";
+        string materialName = $"({keyWord}) {materialNameBase}";
 
         // Act
         var clean = PSIMaterial.CleanMaterialName(materialName);
@@ -159,12 +163,48 @@ public class PSIMaterialTests {
 
     }
 
-    [Fact]
-    public void CleanMaterialName_TopsInMiddleOfMaterialName_RemoveTopsFromMaterialName() {
+    [Theory]
+    [InlineData("tops")]
+    [InlineData("tops1")]
+    public void CleanMaterialName_TopsInMiddleOfMaterialName_RemoveTopsFromMaterialName(string keyWord) {
 
         // Arrange
         string materialNameBase = "Other Material Information";
-        string materialName = materialNameBase.Replace(" ", " (tops) ");
+        string materialName = materialNameBase.Replace(" ", $" ({keyWord}) ");
+
+        // Act
+        var clean = PSIMaterial.CleanMaterialName(materialName);
+
+        // Assert
+        clean.Should().Be(materialNameBase);
+
+    }
+
+    [Theory]
+    [InlineData("tops")]
+    [InlineData("tops1")]
+    public void CleanMaterialName_TopsInMiddleOfMaterialName2_RemoveTopsFromMaterialName(string keyWord) {
+
+        // Arrange
+        string materialNameBase = "Other Material Information";
+        string materialName = $"Other Material({keyWord}) Information";
+
+        // Act
+        var clean = PSIMaterial.CleanMaterialName(materialName);
+
+        // Assert
+        clean.Should().Be(materialNameBase);
+
+    }
+
+    [Theory]
+    [InlineData("tops")]
+    [InlineData("tops1")]
+    public void CleanMaterialName_TopsInMiddleOfMaterialName3_RemoveTopsFromMaterialName(string keyWord) {
+
+        // Arrange
+        string materialNameBase = "Other Material Information";
+        string materialName = $"Other Material ({keyWord})Information";
 
         // Act
         var clean = PSIMaterial.CleanMaterialName(materialName);

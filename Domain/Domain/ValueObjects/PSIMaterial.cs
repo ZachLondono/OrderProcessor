@@ -62,15 +62,23 @@ public partial record PSIMaterial(string Side1Color, string Side1FinishType, str
 
     public static string CleanMaterialName(string materialName) {
 
-        if (!materialName.Contains("(tops)")) {
-            return materialName;
+        string[] keyWords = ["tops", "ver"];
+
+        foreach (var keyWord in keyWords) {
+
+            if (!materialName.Contains(keyWord)) {
+                continue;
+            }
+
+            materialName = Regex.Replace(materialName, @"[ ]{1,}\({keyWord}[0-9]*\)$".Replace("{keyWord}", keyWord), ""); // Starts with key word
+            materialName = Regex.Replace(materialName, @"^\({keyWord}[0-9]*\)[ ]{1,}".Replace("{keyWord}", keyWord), ""); // Ends with key word
+            materialName = Regex.Replace(materialName, @"[ ]{1,}\({keyWord}[0-9]*\)\s*".Replace("{keyWord}", keyWord), " "); // Keyword with at least one space preceding
+            materialName = Regex.Replace(materialName, @"\s*\({keyWord}[0-9]*\)[ ]{1,}".Replace("{keyWord}", keyWord), " "); // Keyword with at least one space after
+            materialName = Regex.Replace(materialName, @"\s*\({keyWord}[0-9]*\)\s*".Replace("{keyWord}", keyWord), ""); // Keyword with any amount of spaces before or after
+    
         }
 
-        return materialName.Replace(" (tops) ", " ")
-                           .Replace(" (tops)", " ")
-                           .Replace("(tops) ", " ")
-                           .Replace("(tops)", "")
-                           .Trim();
+        return materialName;
 
     }
 
