@@ -41,7 +41,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
     public virtual Part GetFrontPart(DoweledDrawerBoxConstruction construction, int productNumber, string customerName, string room) {
 
-        Dimension frontLength = Width - 2 * SideMaterial.Thickness;
+        Dimension frontLength = Width - 2 * SideMaterial.Thickness - construction.WidthUndersize;
 
         List<IToken> tokens = new();
         tokens.AddRange(CreateBottomDadoTokens(construction, frontLength, construction.FrontBackBottomDadoLengthOversize.AsMillimeters()));
@@ -91,7 +91,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
     public virtual Part GetBackPart(DoweledDrawerBoxConstruction construction, int productNumber, string customerName, string room) {
 
-        Dimension backLength = Width - 2 * SideMaterial.Thickness;
+        Dimension backLength = Width - 2 * SideMaterial.Thickness - construction.WidthUndersize;
 
         List<IToken> tokens = new();
         tokens.AddRange(CreateBottomDadoTokens(construction, backLength, construction.FrontBackBottomDadoLengthOversize.AsMillimeters()));
@@ -516,7 +516,8 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
         BottomUndersize = Dimension.FromMillimeters(1),
         UMSlidePocketToolName = "Pocket9",
         UMSlidePocketDiameter = Dimension.FromMillimeters(9),
-        UMSlideMaxDistanceOffOutsideFace = Dimension.FromInches(5.0 / 8.0)
+        UMSlideMaxDistanceOffOutsideFace = Dimension.FromInches(5.0 / 8.0),
+        WidthUndersize = Dimension.FromMillimeters(0.7)
     };
 
 }

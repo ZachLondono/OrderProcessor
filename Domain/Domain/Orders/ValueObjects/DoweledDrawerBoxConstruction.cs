@@ -33,6 +33,12 @@ public record DoweledDrawerBoxConstruction {
     public required Dimension UMSlidePocketDiameter { get; init; }
     public required Dimension UMSlideMaxDistanceOffOutsideFace { get; init; } // Max distance from outside face of side to drawer slide and outside face of front to clips
 
+
+    /// <summary>
+    /// Amount to undersize the width of the drawer box, to account for gaps where the front/back is attached to the sides during construction.
+    /// </summary>
+    public required Dimension WidthUndersize { get; init; }
+
     /*
      * These options require the front/back to be machined from the other side or require 2sided machining 
     public required Dimension UMSlideHookHoleCenterFromBottom { get; init; }
