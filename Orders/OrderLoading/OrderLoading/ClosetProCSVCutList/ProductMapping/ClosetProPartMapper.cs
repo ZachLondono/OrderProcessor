@@ -164,7 +164,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 			"Melamine Sidemount" or "Melamine Undermount"
 				=> CreateDowelDrawerBox(part, strategy),
 
-			"Dovetail Sidemount" or "Dovetail Undermount" or "Scoop Front Box"
+			"Dovetail Sidemount" or "Dovetail Undermount" or "Dovetail Scoop Front Box"
 				=> CreateDovetailDrawerBox(part, strategy),
 
 			"Zargen" => CreateZargenDrawerBox(),
