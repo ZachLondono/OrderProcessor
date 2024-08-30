@@ -42,6 +42,8 @@ public partial class ClosetProPartMapper {
 		Dimension width = part.PartName switch {
 			"4\" Flat Crown" => Dimension.FromInches(4),
 			"4\" Flat Baseboard" => Dimension.FromInches(4),
+			"6\" Flat Crown" => Dimension.FromInches(6),
+			"6\" Flat Baseboard" => Dimension.FromInches(6),
 			_ => throw new InvalidOperationException($"Unknown molding type {part.PartName}")
 		};
 
