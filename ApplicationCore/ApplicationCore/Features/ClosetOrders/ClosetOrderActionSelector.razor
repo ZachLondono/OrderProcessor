@@ -2,10 +2,11 @@
 @using ApplicationCore.Features.ClosetOrders.ClosetOrderSelector
 @using ApplicationCore.Features.ClosetOrders.ClosetOrderRelease
 @using Domain.Components;
+@using static Domain.Components.Button;
 
 <div>
-    <Button OnClickAsync="ReleaseOpenFile">Release Open File</Button>
-    <Button OnClickAsync="ImportFromEmail">Import From Email</Button>
+    <Button OnClickAsync="ReleaseOpenFile" Color="ButtonColor.Primary">Release Open File</Button>
+    <Button OnClickAsync="ImportFromEmail" Color="ButtonColor.Primary">Import From Email</Button>
 </div>
 
 @code {
