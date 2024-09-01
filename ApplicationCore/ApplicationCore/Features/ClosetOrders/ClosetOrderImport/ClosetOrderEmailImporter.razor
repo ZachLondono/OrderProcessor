@@ -1,4 +1,5 @@
 ﻿@using Domain.Components
+@using static Domain.Components.Button
 
 @switch (_state) {
 
@@ -13,7 +14,7 @@
             <span>Order import complete.</span>
         </div>
         <div class="mt-5">
-            <Button OnClickAsync="Cancel">Close</Button>
+            <Button OnClickAsync="Cancel" Color="ButtonColor.Primary">Close</Button>
         </div>
         break;
 
@@ -30,49 +31,61 @@
         
                 <h1 class="font-bold text-lg">Currently Selected Message</h1>
         
-                <div>
-                    @_message.SenderName
-                </div>
-                <div>
-                    @_message.SenderEmail
-                </div>
-                <div>
-                    @_message.Subject
-                </div>
-        
                 <div class="mt-3">
-                    <h2 class="font-semibold text-md">Attachments</h2>
-                    <div class="ml-3">
+                    <span class="text-xs text-gray-500">Sender</span>
+                    <div>@_message.SenderName</div>
+                    <div>@_message.SenderEmail</div>
+                </div>
+                <div class="mt-2.5">
+                    <span class="text-xs text-gray-500">Subject</span>
+                    <div>@_message.Subject</div>
+                </div>
+                <div class="mt-2.5">
+                    <span class="text-xs text-gray-500">Working Directory Root</span>
+                    <div>@_workingDirectoryRoot</div>
+                </div>
+
+                <div class="mt-6">
+                    <h2 class="font-semibold text-md">Order Number</h2>
+                    <input type="text" class="input-text w-full" @bind-value="_orderNumber" />
+                </div>
+                <div class="mt-3">
+                    <h2 class="font-semibold text-md">Order Name</h2>
+                    <input type="text" class="input-text w-full" @bind-value="_orderName" />
+                </div>
+
+                <div class="mt-10">
+                    <table class="ml-3 table">
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Incoming</th>
+                                <th>Orders</th>
+                            </tr>
+                        </thead>
                         @foreach(var attachment in _message.Attachments) {
-                            <div>
-                                <CheckBox @bind-IsChecked="attachment.CopyToOrders">
-                                    @attachment.FileName
-                                </CheckBox>
-                            </div>
+                            <tr>
+                                <td>@attachment.FileName</td>
+                                <td class="text-center">
+                                    <CheckBox @bind-IsChecked="attachment.CopyToIncoming" />
+                                </td>
+                                <td class="text-center">
+                                    <CheckBox @bind-IsChecked="attachment.CopyToOrders" />
+                                </td>
+                            </tr>
                         }
-                    </div>
+                    </table>
                 </div>
 
-                <div>
-                    <div>
-                        <span>Name</span>
-                        <input type="text" class="input-text" @bind-value="_orderName"/>
-                    </div>
-                    <div>
-                        <span>Number</span>
-                        <input type="text" class="input-text" @bind-value="_orderNumber"/>
-                    </div>
-                </div>
-
-                <div>
-                    <Button OnClickAsync="ImportSelectedOrder">Import</Button>
+                <div class="mt-10">
+                    <Button OnClickAsync="ImportSelectedOrder" Class="w-full" Color="ButtonColor.Primary">Import</Button>
                 </div>
                 
             }
         
-            <div class="mt-5">
-                <Button OnClick="LoadCurrentMessageDetails">Refresh</Button>
-                <Button OnClickAsync="Cancel">Cancel</Button>
+            <div class="mt-5 text-center">
+                <Button OnClick="LoadCurrentMessageDetails" Color="ButtonColor.Secondary">Refresh</Button>
+                <Button OnClickAsync="Cancel" Color="ButtonColor.Secondary">Cancel</Button>
             </div>
         
         </div>
@@ -94,6 +107,7 @@
     private bool _isLoading = false;
     private string _orderNumber = "";
     private string _orderName = "";
+    private string _workingDirectoryRoot = "";
     private OrderMessage? _message = null;
     private OutlookWrapper? _wrapper = null;
     private OrderImporter? _importer = null;
@@ -111,6 +125,7 @@
         _isLoading = true;
         _loadingError = null;
         _message = null;
+        _workingDirectoryRoot = "";
         StateHasChanged();
 
         try {
@@ -125,8 +140,13 @@
                 return;
             }
 
+
             _importer = new OrderImporter(mailItem);
             _message =  _importer.GetMessageDetails();
+            if (OrderImporter.CustomerWorkingDirectoryRoots.TryGetValue(_message.SenderEmail, out string? wdr)) {
+                _workingDirectoryRoot = wdr;
+            }
+
             _isLoading = false;
             StateHasChanged();
 

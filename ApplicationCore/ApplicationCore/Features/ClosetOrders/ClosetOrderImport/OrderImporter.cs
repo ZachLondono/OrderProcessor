@@ -6,8 +6,13 @@ public class OrderImporter {
 
     private readonly Outlook.MailItem _mailItem;
 
-    private readonly Dictionary<string, string> customerWorkingDirectoryRoots = new() {
-        { "cbg57c@aol.com", @"R:\Job Scans\Closets by Glinsky - CBG" }
+    public static readonly Dictionary<string, string> CustomerWorkingDirectoryRoots = new() {
+
+        { "cbg57c@aol.com", @"R:\Job Scans\Closets by Glinsky - CBG" },
+
+        { "lkerekes@tailoredcloset.com", @"R:\Job Scans\Closets-TLMid- TLMid" },
+        { "tkerekes@tailoredcloset.com", @"R:\Job Scans\Closets-TLMid- TLMid" },
+
     };
 
     public OrderImporter(Outlook.MailItem mailItem) {
@@ -16,7 +21,7 @@ public class OrderImporter {
 
     public bool ImportOrderFromMailItem(ClosetOrder order) {
 
-        if (!customerWorkingDirectoryRoots.TryGetValue(_mailItem.SenderEmailAddress, out string? workingDirectoryRoot)) {
+        if (!CustomerWorkingDirectoryRoots.TryGetValue(_mailItem.SenderEmailAddress, out string? workingDirectoryRoot)) {
             return false;
         }
 
@@ -33,6 +38,10 @@ public class OrderImporter {
         bool wereAttachmentsCopies = true;
 
         foreach (var orderAttachment in order.Attachments) {
+
+            if (!orderAttachment.CopyToIncoming) {
+                continue;
+            }
 
             var attachment = _mailItem.Attachments[orderAttachment.Index];
 
@@ -66,7 +75,10 @@ public class OrderImporter {
 
         List<OrderAttachment> attachments = [];
         foreach (Outlook.Attachment attachment in _mailItem.Attachments) {
-            attachments.Add(new(attachment.Index, attachment.FileName, true));
+            var ext = Path.GetExtension(attachment.FileName);
+            bool incoming = true;
+            bool orders = ext.Equals(".xlsm");
+            attachments.Add(new(attachment.Index, attachment.FileName, incoming, orders));
         }
 
         return new(name, address, subject, attachments.ToArray());
