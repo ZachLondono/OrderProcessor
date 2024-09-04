@@ -30,7 +30,7 @@ public partial class ClosetOrderReleaseDialog {
     public IFilePicker? FilePicker { get; set; }
 
     private static Dictionary<string, CustomerEmailSettings> _customerEmails = new() {
-        { "Closets by Glinsky", new("glinkie@icloud.com", "glinkie@icloud.com") },
+        { "Closets by Glinsky", new("cbg57c@aol.com;aglin65@aol.com", "cbg57c@aol.com;aglin65@aol.com") },
         { "Tailored Living - TLMid", new("tkerekes@tailoredcloset.com;lkerekes@tailoredcloset.com", "tkerekes@tailoredcloset.com;lkerekes@tailoredcloset.com") },
         { "Tailored Living - TC", new("tcolumbia@tailoredcloset.com", "tcolumbia@tailoredcloset.com") },
         { "Tailored Living - TS", new("sjclosetsandgarages@gmail.com", "sjclosetsandgarages@gmail.com;rnieves@scafidicranston.com") },
