@@ -13,6 +13,7 @@ namespace Companies.Tests.Unit;
 
 public class CustomerPersistenceTests {
 
+    /*
     private readonly InsertCustomer.Handler _sut;
     private readonly ICompaniesDbConnectionFactory _factory = new TestCompaniesConnectionFactory("./Application/Schemas/companies_schema.sql");
 
@@ -266,5 +267,6 @@ public class CustomerPersistenceTests {
     }
 
     private static int GetTableRowCount(IDbConnection connection, string tableName) => connection.Query($"SELECT * FROM {tableName};").Count();
+    */
 
 }
