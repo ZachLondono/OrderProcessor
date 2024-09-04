@@ -2,7 +2,14 @@
 
 namespace OrderExporting.CNC.Programs.WSXML.Report;
 
-public record Part(string Id, string LabelId, string Name, string Description, double Width, double Length, IEnumerable<string> PatternScheduleIds, Dictionary<string, string> Variables) {
+public record Part(string Id,
+                   string LabelId,
+                   string Name,
+                   string Description,
+                   double Width,
+                   double Length,
+                   IEnumerable<string> PatternScheduleIds,
+                   Dictionary<string, string> Variables) {
 
     public static Part FromXElement(XElement element) {
 
