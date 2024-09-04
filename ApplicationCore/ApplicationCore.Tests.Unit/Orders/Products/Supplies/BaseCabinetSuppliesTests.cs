@@ -253,12 +253,12 @@ public class BaseCabinetSuppliesTests {
     }
 
     [Theory]
-    [InlineData(1, RollOutBlockPosition.Left, 1)]
-    [InlineData(1, RollOutBlockPosition.Right, 1)]
-    [InlineData(1, RollOutBlockPosition.Both, 2)]
-    [InlineData(2, RollOutBlockPosition.Left, 2)]
-    [InlineData(2, RollOutBlockPosition.Right, 2)]
-    [InlineData(2, RollOutBlockPosition.Both, 4)]
+    [InlineData(1, RollOutBlockPosition.Left, 2)]
+    [InlineData(1, RollOutBlockPosition.Right, 2)]
+    [InlineData(1, RollOutBlockPosition.Both, 4)]
+    [InlineData(2, RollOutBlockPosition.Left, 4)]
+    [InlineData(2, RollOutBlockPosition.Right, 4)]
+    [InlineData(2, RollOutBlockPosition.Both, 8)]
     public void Should_IncludeRollOutBlockForEachSide_WhenEnabled(int rollOutQty, RollOutBlockPosition rollOutBlockPosition, int expectedQty) {
 
         // Arrange
