@@ -22,9 +22,11 @@ public class DoweledDrawerBoxConstructionBuilder {
     public string UMSlidePocketToolName { get; init; } = "Pocket9";
     public Dimension UMSlidePocketDiameter { get; init; } = Dimension.FromMillimeters(9);
     public Dimension UMSlideMaxDistanceOffOutsideFace { get; init; } = Dimension.FromInches(5.0 / 8.0);
+    public Dimension WidthUnderSize { get; init; } = Dimension.Zero;
 
     public DoweledDrawerBoxConstruction Build() {
         return new() {
+            WidthUndersize = WidthUnderSize,
             DowelPositionsByHeight = DowelPositionsByHeight,
             DowelDepth = DowelDepth,
             DowelDiameter = DowelDiameter,
