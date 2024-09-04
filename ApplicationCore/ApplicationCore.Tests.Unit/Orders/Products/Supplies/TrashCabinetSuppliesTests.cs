@@ -34,7 +34,7 @@ public class TrashCabinetSuppliesTests {
         var supplies = cabinet.GetSupplies();
 
         // Assert
-        supplies.Should().ContainEquivalentOf(expectedSupply);
+        supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
 
@@ -54,7 +54,7 @@ public class TrashCabinetSuppliesTests {
         var supplies = cabinet.GetSupplies();
 
         // Assert
-        supplies.Should().ContainEquivalentOf(expectedSupply);
+        supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
 
@@ -74,7 +74,7 @@ public class TrashCabinetSuppliesTests {
         var supplies = cabinet.GetSupplies();
 
         // Assert
-        supplies.Should().ContainEquivalentOf(expectedSupply);
+        supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
 
@@ -94,8 +94,8 @@ public class TrashCabinetSuppliesTests {
         var supplies = cabinet.GetSupplies();
 
         // Assert
-        supplies.Should().ContainEquivalentOf(expectedSupplyA);
-        supplies.Should().ContainEquivalentOf(expectedSupplyB);
+        supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupplyA));
+        supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupplyB));
 
     }
 

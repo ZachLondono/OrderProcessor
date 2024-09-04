@@ -36,7 +36,7 @@ public class DiagonalWallCabinetSuppliesTests {
         var supplies = cabinet.GetSupplies();
 
         // Assert
-        supplies.Should().ContainEquivalentOf(expectedSupply);
+        supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
 
@@ -60,7 +60,7 @@ public class DiagonalWallCabinetSuppliesTests {
         var supplies = cabinet.GetSupplies();
 
         // Assert
-        supplies.Should().ContainEquivalentOf(expectedSupply);
+        supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
 
@@ -86,7 +86,7 @@ public class DiagonalWallCabinetSuppliesTests {
 
         // Assert
         foreach (var supply in expectedSupplies) {
-            supplies.Should().ContainEquivalentOf(supply);
+            supplies.Should().Contain(s => SupplyComparer.Compare(s, supply));
         }
 
     }
@@ -120,7 +120,7 @@ public class BlindBaseCabinetSuppliesTests {
         var supplies = cabinet.GetSupplies();
 
         // Assert
-        supplies.Should().ContainEquivalentOf(expectedSupply);
+        supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
 
@@ -143,7 +143,7 @@ public class BlindBaseCabinetSuppliesTests {
         var supplies = cabinet.GetSupplies();
 
         // Assert
-        supplies.Should().ContainEquivalentOf(expectedSupply);
+        supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
 
@@ -169,7 +169,7 @@ public class BlindBaseCabinetSuppliesTests {
 
         // Assert
         foreach (var supply in expectedSupplies) {
-            supplies.Should().ContainEquivalentOf(supply);
+            supplies.Should().Contain(s => SupplyComparer.Compare(s, supply));
         }
 
     }
@@ -193,7 +193,7 @@ public class BlindBaseCabinetSuppliesTests {
         var supplies = cabinet.GetSupplies();
 
         // Assert
-        supplies.Should().ContainEquivalentOf(expectedSupply);
+        supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
 
@@ -228,7 +228,7 @@ public class BlindBaseCabinetSuppliesTests {
         var supplies = cabinet.GetSupplies();
 
         // Assert
-        supplies.Should().ContainEquivalentOf(expectedSupply);
+        supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
 

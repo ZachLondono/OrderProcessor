@@ -36,7 +36,7 @@ public class SinkCabinetSuppliesTests {
         var supplies = cabinet.GetSupplies();
 
         // Assert
-        supplies.Should().ContainEquivalentOf(expectedSupply);
+        supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
 
@@ -59,7 +59,7 @@ public class SinkCabinetSuppliesTests {
         var supplies = cabinet.GetSupplies();
 
         // Assert
-        supplies.Should().ContainEquivalentOf(expectedSupply);
+        supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
 
@@ -83,7 +83,7 @@ public class SinkCabinetSuppliesTests {
         var supplies = cabinet.GetSupplies();
 
         // Assert
-        supplies.Should().ContainEquivalentOf(expectedSupply);
+        supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
 
@@ -109,7 +109,7 @@ public class SinkCabinetSuppliesTests {
 
         // Assert
         foreach (var supply in expectedSupplies) {
-            supplies.Should().ContainEquivalentOf(supply);
+            supplies.Should().Contain(s => SupplyComparer.Compare(s, supply));
         }
 
     }
