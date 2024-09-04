@@ -675,12 +675,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         var releasedJobs = jobs.Where(j => j.Releases.Any())
                                 .Select(job => {
 
-                                    var usedMaterials = job.Releases
-                                                            .First()
-                                                            .Programs
-                                                            .Select(p => p.Material)
-                                                            .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained))
-                                                            .Select(g => new UsedMaterial(g.Count(), g.Key.Name, g.Key.Width, g.Key.Length, g.Key.Thickness));
+                                    var usedMaterials = job.Releases.First().GetUsedMaterials();
 
                                     return new Job(job.JobName, usedMaterials);
 

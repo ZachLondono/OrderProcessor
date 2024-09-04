@@ -168,12 +168,7 @@ internal class ReleasePDFDialogViewModel {
         message.From.Add(sender);
         message.Subject = $"RELEASED: {job.JobName} - {job.CustomerName}";
 
-        var usedMaterials = job.Releases
-                                .First()
-                                .Programs
-                                .Select(p => p.Material)
-                                .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained))
-                                .Select(g => new UsedMaterial(g.Count(), g.Key.Name, g.Key.Width, g.Key.Length, g.Key.Thickness));
+        var usedMaterials = job.Releases.First().GetUsedMaterials();
 
         IEnumerable<Job> jobs = new Job[] {
             new(job.JobName, usedMaterials)

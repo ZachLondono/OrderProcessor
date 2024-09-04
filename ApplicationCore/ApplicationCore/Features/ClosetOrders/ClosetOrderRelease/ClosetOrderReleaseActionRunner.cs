@@ -669,12 +669,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
         if (job is not null) {
 
-            var usedMaterials = job.Releases
-                                    .First()
-                                    .Programs
-                                    .Select(p => p.Material)
-                                    .GroupBy(m => (m.Name, m.Width, m.Length, m.Thickness, m.IsGrained))
-                                    .Select(g => new UsedMaterial(g.Count(), g.Key.Name, g.Key.Width, g.Key.Length, g.Key.Thickness));
+            var usedMaterials = job.Releases.First().GetUsedMaterials();
 
             releasedJobs.Add(new(job.JobName, usedMaterials));
 
