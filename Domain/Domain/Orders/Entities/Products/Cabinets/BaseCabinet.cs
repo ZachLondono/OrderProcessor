@@ -78,6 +78,11 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
         Inside = inside;
         DrawerBoxOptions = drawerBoxOptions;
         BaseNotch = baseNotch;
+
+        if (Inside.RollOutBoxes.Positions.Length > 0 && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
+            ProductionNotes.Add("PSI may not support roll out drawer boxes with side mount slieds");
+        }
+
     }
 
     public bool ContainsDoors() => MDFDoorOptions is not null;

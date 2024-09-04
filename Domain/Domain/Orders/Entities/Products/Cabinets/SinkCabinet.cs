@@ -50,6 +50,11 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
         DrawerBoxOptions = drawerBoxOptions;
         TiltFront = tiltFront;
         Scoops = scoops;
+
+        if (RollOutBoxes.Positions.Length > 0 && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
+            ProductionNotes.Add("PSI may not support roll out drawer boxes with side mount slieds");
+        }
+
     }
 
     public static SinkCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
