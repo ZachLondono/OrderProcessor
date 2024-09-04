@@ -172,10 +172,10 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
             switch (Inside.RollOutBoxes.Blocks) {
                 case RollOutBlockPosition.Left:
                 case RollOutBlockPosition.Right:
-                    supplies.Add(Supply.PullOutBlock(Inside.RollOutBoxes.Qty * Qty * 4));
+                    supplies.Add(Supply.PullOutBlock(Inside.RollOutBoxes.Qty * Qty * 2));
                     break;
                 case RollOutBlockPosition.Both:
-                    supplies.Add(Supply.PullOutBlock(Inside.RollOutBoxes.Qty * Qty * 2 * 4));
+                    supplies.Add(Supply.PullOutBlock(Inside.RollOutBoxes.Qty * Qty * 2 * 2));
                     break;
             }
 
