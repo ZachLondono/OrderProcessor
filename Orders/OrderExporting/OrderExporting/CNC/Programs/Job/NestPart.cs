@@ -20,5 +20,9 @@ public class NestedPart {
     public bool IsRotated { get; init; } = false;
     public bool HasBackSideProgram { get; init; } = false;
     public string Note { get; init; } = string.Empty;
+    public string? Length1EdgeBanding { get; init; } = null;
+    public string? Length2EdgeBanding { get; init; } = null;
+    public string? Width1EdgeBanding { get; init; } = null;
+    public string? Width2EdgeBanding { get; init; } = null;
 
 }

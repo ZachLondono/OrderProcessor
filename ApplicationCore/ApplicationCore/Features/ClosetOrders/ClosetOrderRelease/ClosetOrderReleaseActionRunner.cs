@@ -670,8 +670,9 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
         if (job is not null) {
 
             var usedMaterials = job.Releases.First().GetUsedMaterials();
+            var usedEdgeBanding = job.Releases.First().GetUsedEdgeBanding();
 
-            releasedJobs.Add(new(job.JobName, usedMaterials));
+            releasedJobs.Add(new(job.JobName, usedMaterials, usedEdgeBanding));
 
         }
 

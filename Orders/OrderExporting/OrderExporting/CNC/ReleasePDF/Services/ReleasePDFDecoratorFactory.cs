@@ -130,6 +130,8 @@ public class ReleasePDFDecoratorFactory(IOptions<PDFConfiguration> config, Patte
 
         Table materialTable = CreateMaterialsTable(releases);
 
+        Table edgeBandingTable = CreateEdgeBandingTable(releases);
+
         Table programsTable = CreateProgramsTable(releases);
 
         Table partsTable = CreatePartsTable(releases);
@@ -141,6 +143,7 @@ public class ReleasePDFDecoratorFactory(IOptions<PDFConfiguration> config, Patte
         var tables = new List<Table>();
         tables.AddRange(toolTables);
         if (materialTable.Content.Any()) tables.Add(materialTable);
+        if (edgeBandingTable.Content.Any()) tables.Add(edgeBandingTable);
         tables.Add(programsTable);
         if (partsTable.Content.Any()) tables.Add(partsTable);
         if (backSideMachiningTable != null) {
@@ -267,6 +270,28 @@ public class ReleasePDFDecoratorFactory(IOptions<PDFConfiguration> config, Patte
             }
         };
         return materialTable;
+    }
+
+    private static Table CreateEdgeBandingTable(IEnumerable<MachineRelease> releases) {
+        var usedbanding = releases.First().GetUsedEdgeBanding();
+
+        var edgeBandingTableContent = new List<Dictionary<string, string>>();
+        foreach (var banding in usedbanding) {
+            var linFt = Math.Ceiling(banding.Length / 25.4 / 12);
+            edgeBandingTableContent.Add(new() {
+                    { "Name", banding.Name },
+                    { "Length", $"{linFt}'" },
+                });
+        }
+
+        var edgeBandingTable = new Table() {
+            Title = "Edge Banding Used",
+            Content = edgeBandingTableContent,
+            ColumnWidths = new Dictionary<string, float> {
+                { "Length", 40 },
+            }
+        };
+        return edgeBandingTable;
     }
 
     private static Table CreateProgramsTable(IEnumerable<MachineRelease> releases) {

@@ -252,7 +252,11 @@ public class CNCPartGCodeGenerator {
                                                         PartId = placedPart.PartId.ToString(), //placedPart.Id, TODO: cadcode generated id 
                                                         IsRotated = placedPart.IsRotated,
                                                         HasBackSideProgram = false,
-                                                        Note = label.GetValueOrEmpty("PEFinishedSide")
+                                                        Note = label.GetValueOrEmpty("PEFinishedSide"),
+                                                        Length1EdgeBanding = label.GetValueOrDefault("Length Color 1"),
+                                                        Length2EdgeBanding = label.GetValueOrDefault("Length Color 2"),
+                                                        Width1EdgeBanding = label.GetValueOrDefault("Width Color 1"),
+                                                        Width2EdgeBanding = label.GetValueOrDefault("Width Color 2")
                                                     };
                                                 })
                                                 .ToList()

@@ -19,4 +19,35 @@ public class MachineRelease {
 
     }
 
+    public IEnumerable<UsedEdgeBanding> GetUsedEdgeBanding() {
+
+        return Programs.SelectMany(p => p.Parts)
+                        .SelectMany(p => {
+
+                            List<UsedEdgeBanding> eb = [];
+
+                            if (p.Length1EdgeBanding is not null) {
+                                eb.Add(new(p.Length1EdgeBanding, p.Length.AsMillimeters()));
+                            }
+
+                            if (p.Length2EdgeBanding is not null) {
+                                eb.Add(new(p.Length2EdgeBanding, p.Length.AsMillimeters()));
+                            }
+
+                            if (p.Width1EdgeBanding is not null) {
+                                eb.Add(new(p.Width1EdgeBanding, p.Length.AsMillimeters()));
+                            }
+
+                            if (p.Width2EdgeBanding is not null) {
+                                eb.Add(new(p.Width2EdgeBanding, p.Length.AsMillimeters()));
+                            }
+
+                            return eb;
+
+                        })
+                        .GroupBy(e => e.Name)
+                        .Select(g => new UsedEdgeBanding(g.Key, g.Sum(e => e.Length)));
+
+    }
+
 }

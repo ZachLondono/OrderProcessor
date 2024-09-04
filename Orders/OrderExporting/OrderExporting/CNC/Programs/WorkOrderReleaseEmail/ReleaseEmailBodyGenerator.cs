@@ -23,6 +23,16 @@ public class ReleaseEmailBodyGenerator {
 
         }
 
+        foreach (var job in model.ReleasedJobs) {
+
+            body += $"\n{job.JobName} Edge Banding:\n";
+            foreach (var banding in job.UsedEdgeBandings) {
+                var linFt = Math.Ceiling(banding.Length / 25.4 / 12);
+                body += $"{banding.Name} {linFt}'\n";
+            }
+
+        }
+
         return body;
 
     }
@@ -130,6 +140,52 @@ public class ReleaseEmailBodyGenerator {
                                     <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{material.Width}</td>
                                     <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{material.Length}</td>
                                     <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{material.Thickness}</td>
+                                </tr>
+
+                    """;
+
+            }
+
+            string tableFooter =
+                """
+
+                        </table>
+                    </div>
+                """;
+
+            body += tableHeader + tableBody + tableFooter;
+
+        }
+
+        foreach (var job in model.ReleasedJobs) {
+
+            string tableHeader =
+                $"""
+
+                    <br />
+                    <br />
+
+                    <div>
+                        <table style="border: 1px solid black;">
+
+                            <caption><b>{job.JobName} Edge Banding</b></caption>
+
+                            <tr style="border: 1px solid black; border-collapse: collapse;">
+                                <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Name</th>
+                                <th style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">Length</th>
+                            </tr>
+
+                """;
+
+            string tableBody = "";
+            foreach (var banding in job.UsedEdgeBandings) {
+                var linFt = Math.Ceiling(banding.Length / 25.4 / 12);
+                tableBody +=
+                    $"""
+
+                                <tr style="border: 1px solid black; border-collapse: collapse;">
+                                    <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{banding.Name}</td>
+                                    <td style="border: 1px solid black; border-collapse: collapse; padding-left: 5px; padding-right:5px;">{linFt}'</td>
                                 </tr>
 
                     """;

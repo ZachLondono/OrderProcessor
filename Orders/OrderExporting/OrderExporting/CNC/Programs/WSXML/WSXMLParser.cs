@@ -167,7 +167,11 @@ public partial class WSXMLParser : IWSXMLParser {
                                                                                                     HasFace6 = part.Variables.ContainsKey("Face6FileName"),
                                                                                                     Face6FileName = part.Variables.ContainsKey("Face6FileName") ? part.Variables["Face6FileName"] : null,
                                                                                                     HasBackSideProgram = label.Fields.GetValueOrEmpty("HasBackSideProgram") == "Y",
-                                                                                                    Note = label.Fields.GetValueOrEmpty("PEFinishedSide")
+                                                                                                    Note = label.Fields.GetValueOrEmpty("PEFinishedSide"),
+                                                                                                    Length1EdgeBanding = label.Fields.GetValueOrDefault("Length Color 1"),
+                                                                                                    Length2EdgeBanding = label.Fields.GetValueOrDefault("Length Color 2"),
+                                                                                                    Width1EdgeBanding = label.Fields.GetValueOrDefault("Width Color 1"),
+                                                                                                    Width2EdgeBanding = label.Fields.GetValueOrDefault("Width Color 2")
                                                                                                 };
                                                                                             })
                                                                                             .ToList()

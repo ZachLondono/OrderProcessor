@@ -867,8 +867,9 @@ public class ReleaseService {
                                 .Select(job => {
 
                                     var usedMaterials = job.Releases.First().GetUsedMaterials();
+                                    var usedEdgeBanding = job.Releases.First().GetUsedEdgeBanding();
 
-                                    return new Job(job.JobName, usedMaterials);
+                                    return new Job(job.JobName, usedMaterials, usedEdgeBanding);
 
                                 });
 

@@ -169,10 +169,11 @@ internal class ReleasePDFDialogViewModel {
         message.Subject = $"RELEASED: {job.JobName} - {job.CustomerName}";
 
         var usedMaterials = job.Releases.First().GetUsedMaterials();
+        var usedEdgeBanding = job.Releases.First().GetUsedEdgeBanding();
 
-        IEnumerable<Job> jobs = new Job[] {
-            new(job.JobName, usedMaterials)
-        };
+        IEnumerable<Job> jobs = [
+            new(job.JobName, usedMaterials, usedEdgeBanding)
+        ];
         var model = new ReleasedWorkOrderSummary(jobs, false, false, false, null);
 
         var body = ReleaseEmailBodyGenerator.GenerateHTMLReleaseEmailBody(model, true);
