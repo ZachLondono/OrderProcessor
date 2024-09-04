@@ -1,5 +1,4 @@
-﻿using Domain.Orders.ValueObjects;
-using Domain.ValueObjects;
+﻿using Domain.ValueObjects;
 
 namespace Domain.Orders.Entities.Hardware;
 
