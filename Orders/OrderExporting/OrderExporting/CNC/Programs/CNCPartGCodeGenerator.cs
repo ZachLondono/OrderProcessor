@@ -255,8 +255,8 @@ public class CNCPartGCodeGenerator {
                                                         Note = label.GetValueOrEmpty("PEFinishedSide"),
                                                         Length1EdgeBanding = label.GetValueOrDefault("Length Color 1"),
                                                         Length2EdgeBanding = label.GetValueOrDefault("Length Color 2"),
-                                                        Width1EdgeBanding = label.GetValueOrDefault("Width Color 1"),
-                                                        Width2EdgeBanding = label.GetValueOrDefault("Width Color 2")
+                                                        Width1EdgeBanding = label.GetValueOrDefault("WidthColor 1"),
+                                                        Width2EdgeBanding = label.GetValueOrDefault("WidthColor 2")
                                                     };
                                                 })
                                                 .ToList()

@@ -35,11 +35,11 @@ public class MachineRelease {
                             }
 
                             if (p.Width1EdgeBanding is not null) {
-                                eb.Add(new(p.Width1EdgeBanding, p.Length.AsMillimeters()));
+                                eb.Add(new(p.Width1EdgeBanding, p.Width.AsMillimeters()));
                             }
 
                             if (p.Width2EdgeBanding is not null) {
-                                eb.Add(new(p.Width2EdgeBanding, p.Length.AsMillimeters()));
+                                eb.Add(new(p.Width2EdgeBanding, p.Width.AsMillimeters()));
                             }
 
                             return eb;
