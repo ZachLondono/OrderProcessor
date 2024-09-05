@@ -80,8 +80,7 @@ public class JobSummaryDecorator(JobSummary jobSummary) : IDocumentDecorator {
 
                                 });
 
-
-                            if (jobSummary.ShowMaterialTypesInSummary && jobSummary.MaterialTypes.Any()) {
+                            if (jobSummary.ShowMaterialTypesInSummary && (jobSummary.MaterialTypes.Count != 0 || jobSummary.EdgeBandingTypes.Count != 0)) {
 
                                 row.RelativeItem(1)
                                     .AlignLeft()
@@ -89,20 +88,44 @@ public class JobSummaryDecorator(JobSummary jobSummary) : IDocumentDecorator {
                                     .DefaultTextStyle(style => style.FontSize(12))
                                     .Column(col => {
 
-                                        col.Item()
-                                            .AlignLeft()
-                                            .Text("Materials:")
-                                            .FontSize(14)
-                                            .Bold();
+                                        if (jobSummary.MaterialTypes.Count != 0) {
 
-                                        jobSummary.MaterialTypes
-                                                    .Select((mat, idx) => (mat, idx))
-                                                    .ForEach(item =>
-                                                        col.Item()
-                                                             .AlignLeft()
-                                                             .Text($"    {item.idx + 1})  {item.mat}")
-                                                             .FontSize(12)
-                                                             .Bold());
+                                            col.Item()
+                                                .AlignLeft()
+                                                .Text("Materials:")
+                                                .FontSize(14)
+                                                .Bold();
+
+                                            jobSummary.MaterialTypes
+                                                        .Select((mat, idx) => (mat, idx))
+                                                        .ForEach(item =>
+                                                            col.Item()
+                                                                 .AlignLeft()
+                                                                 .Text($"    {item.idx + 1})  {item.mat}")
+                                                                 .FontSize(12)
+                                                                 .Bold());
+
+                                        }
+
+                                        if (jobSummary.EdgeBandingTypes.Count != 0) {
+
+                                            col.Item()
+                                                .AlignLeft()
+                                                .Text("Edge Banding:")
+                                                .FontSize(14)
+                                                .Bold();
+
+                                            jobSummary.EdgeBandingTypes
+                                                        .Select((eb, idx) => (eb, idx))
+                                                        .ForEach(item =>
+                                                            col.Item()
+                                                                 .AlignLeft()
+                                                                 .Text($"    {item.idx + 1})  {item.eb}")
+                                                                 .FontSize(12)
+                                                                 .Bold());
+
+                                        }
+
                                     });
                             }
 

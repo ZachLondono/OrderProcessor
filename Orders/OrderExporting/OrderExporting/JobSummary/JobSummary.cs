@@ -37,5 +37,6 @@ public class JobSummary {
 
     public bool ShowMaterialTypesInSummary { get; set; } = false;
     public List<string> MaterialTypes { get; set; } = new();
+    public List<string> EdgeBandingTypes { get; set; } = new();
 
 }

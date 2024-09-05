@@ -142,10 +142,16 @@ public class ReleaseService {
                                     .Distinct()
                                     .ToList();
 
+        List<string> edgebanding = releases.SelectMany(r => r.Releases)
+                                           .SelectMany(r => r.GetUsedEdgeBanding())
+                                           .Select(e => e.Name)
+                                           .Distinct()
+                                           .ToList();
+
         OnProgressReport?.Invoke("Generating release PDF");
         try {
 
-            byte[] documentData = await BuildPDFAsync(orders, configuration, customer, vendor, releases, materials);
+            byte[] documentData = await BuildPDFAsync(orders, configuration, customer, vendor, releases, materials, edgebanding);
 
             var filePaths = await SaveFileDataToDirectoriesAsync(documentData, directories, customer.Name, filename, isTemp: false);
 
@@ -162,7 +168,7 @@ public class ReleaseService {
 
     }
 
-    private async Task<byte[]> BuildPDFAsync(List<Order> orders, ReleaseConfiguration configuration, Customer customer, Vendor vendor, List<ReleasedJob> releases, List<string> materials) {
+    private async Task<byte[]> BuildPDFAsync(List<Order> orders, ReleaseConfiguration configuration, Customer customer, Vendor vendor, List<ReleasedJob> releases, List<string> materials, List<string> edgebanding) {
 
         List<OrderDocumentModels> models = [];
         List<string> cutLists = [];
@@ -177,7 +183,7 @@ public class ReleaseService {
                 orderCustomer = await GetCustomer(order.CustomerId);
             }
 
-            var orderModels = CreateDocumentModels(order, configuration, materials, orderVendor, orderCustomer);
+            var orderModels = CreateDocumentModels(order, configuration, materials, edgebanding, orderVendor, orderCustomer);
             models.Add(orderModels);
 
             var orderCutLists = await CreateCutLists(orders, configuration, customer.Name, vendor.Name);
@@ -215,7 +221,7 @@ public class ReleaseService {
         return cutLists;
     }
 
-    private static OrderDocumentModels CreateDocumentModels(Order order, ReleaseConfiguration configuration, List<string> materials, Vendor vendor, Customer customer) {
+    private static OrderDocumentModels CreateDocumentModels(Order order, ReleaseConfiguration configuration, List<string> materials, List<string> edgebanding, Vendor vendor, Customer customer) {
 
         var models = new OrderDocumentModels();
 
@@ -231,7 +237,8 @@ public class ReleaseService {
                                                                   configuration.IncludeCounterTopsInSummary,
                                                                   true,
                                                                   configuration.InstallCamsInClosetParts,
-                                                                  materials.ToArray());
+                                                                  materials.ToArray(),
+                                                                  edgebanding.ToArray());
 
             models.JobSummary = jobSummary;
 
