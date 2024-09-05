@@ -227,14 +227,12 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
         string toolName;
         Dimension toolDiameter;
-        int numberOfPasses = 1;
         if (height >= construction.LargeBottomDadoToolMinimum) {
             toolName = construction.LargeBottomDadoToolName;
             toolDiameter = construction.LargeBottomDadoToolDiameter;
         } else {
             toolName = construction.SmallBottomDadoToolName;
             toolDiameter = construction.SmallBottomDadoToolDiameter;
-            numberOfPasses = 2;
         }
 
         var passCount = Dimension.CeilingMM(height / toolDiameter).AsMillimeters();
@@ -273,8 +271,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
                 StartDepth = construction.BottomDadoDepth.AsMillimeters(),
                 EndDepth = construction.BottomDadoDepth.AsMillimeters(),
                 Offset = routeOffset,
-                ToolName = toolName,
-                NumberOfPasses = numberOfPasses
+                ToolName = toolName
             });
 
         }
@@ -304,8 +301,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
             StartDepth = construction.BottomDadoDepth.AsMillimeters(),
             EndDepth = construction.BottomDadoDepth.AsMillimeters(),
             Offset = routeOffset,
-            ToolName = toolName,
-            NumberOfPasses = numberOfPasses
+            ToolName = toolName
         });
 
         return tokens;
