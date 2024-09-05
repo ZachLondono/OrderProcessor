@@ -226,8 +226,6 @@ public class ReleaseService {
         var models = new OrderDocumentModels();
 
         if (configuration.GenerateJobSummary) {
-            materials.AddRange(order.Products.OfType<FivePieceDoorProduct>().Select(d => d.Material).Distinct());
-            materials.AddRange(order.Products.OfType<DoweledDrawerBoxProduct>().SelectMany(d => new string[] { d.BackMaterial.Name, d.FrontMaterial.Name, d.SideMaterial.Name, d.BottomMaterial.Name }).Distinct());
 
             var jobSummary = JobSummaryModelFactory.CreateSummary(order,
                                                                   vendor,
