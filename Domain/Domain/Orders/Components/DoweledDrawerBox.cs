@@ -517,7 +517,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
         UMSlidePocketToolName = "Pocket9",
         UMSlidePocketDiameter = Dimension.FromMillimeters(9),
         UMSlideMaxDistanceOffOutsideFace = Dimension.FromInches(5.0 / 8.0),
-        WidthUndersize = Dimension.FromMillimeters(0.7)
+        WidthUndersize = Dimension.FromMillimeters(0.5)
     };
 
 }
