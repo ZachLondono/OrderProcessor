@@ -99,8 +99,8 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
     public IEnumerable<Supply> GetSupplies() {
 
         List<Supply> supplies = [
-            Supply.DoorPull(Qty),
-            Supply.DrawerPull(Qty)
+            // Supply.DoorPull(Qty),
+            // Supply.DrawerPull(Qty)
         ];
 
         if (ToeType == ToeType.LegLevelers) {

@@ -39,6 +39,7 @@ public class WallPieCutCornerCabinetSuppliesTests {
 
     }
 
+    /*
     [Fact]
     public void Should_IncludeOneDoorPullPerCabinet() {
 
@@ -57,6 +58,7 @@ public class WallPieCutCornerCabinetSuppliesTests {
         supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
+    */
 
     [Theory]
     [InlineData(876, 2)]

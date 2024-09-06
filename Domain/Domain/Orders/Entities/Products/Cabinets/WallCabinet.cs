@@ -90,7 +90,7 @@ public class WallCabinet : GarageCabinet, IMDFDoorContainer, ISupplyContainer {
 
         if (Doors.Quantity > 0) {
 
-            supplies.Add(Supply.DoorPull(Doors.Quantity * Qty));
+            //supplies.Add(Supply.DoorPull(Doors.Quantity * Qty));
             supplies.AddRange(Supply.StandardHinge(DoorHeight, Doors.Quantity * Qty));
 
         }

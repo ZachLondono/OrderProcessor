@@ -110,7 +110,7 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
 
         List<Supply> supplies = [
 
-            Supply.DrawerPull(Drawers.Qty * Qty),
+            // Supply.DrawerPull(Drawers.Qty * Qty),
             Supply.CabinetDrawerClips(Drawers.Qty * Qty),
 
         ];

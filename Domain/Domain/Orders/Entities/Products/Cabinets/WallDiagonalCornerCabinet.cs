@@ -105,7 +105,7 @@ public class WallDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer, ISupp
 
         if (DoorQty > 0) {
 
-            supplies.Add(Supply.DoorPull(DoorQty * Qty));
+            //supplies.Add(Supply.DoorPull(DoorQty * Qty));
             supplies.AddRange(Supply.CrossCornerHinge(DoorHeight, DoorQty * Qty));
 
         }

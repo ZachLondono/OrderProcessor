@@ -138,14 +138,14 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
 
         if (DoorQty > 0) {
 
-            supplies.Add(Supply.DoorPull(DoorQty * Qty));
+            // supplies.Add(Supply.DoorPull(DoorQty * Qty));
             supplies.AddRange(Supply.StandardHinge(DoorHeight, DoorQty * Qty));
 
         }
 
         if (FalseDrawerQty > 0) {
 
-            supplies.Add(Supply.DrawerPull(FalseDrawerQty * Qty));
+            // supplies.Add(Supply.DrawerPull(FalseDrawerQty * Qty));
 
         }
 

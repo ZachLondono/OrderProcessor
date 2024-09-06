@@ -183,14 +183,14 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
 
         if (Doors.Quantity > 0) {
 
-            supplies.Add(Supply.DoorPull(Doors.Quantity * Qty));
+            // supplies.Add(Supply.DoorPull(Doors.Quantity * Qty));
             supplies.AddRange(Supply.StandardHinge(DoorHeight, Doors.Quantity * Qty));
 
         }
 
         if (Drawers.Quantity > 0) {
 
-            supplies.Add(Supply.DrawerPull(Drawers.Quantity * Qty));
+            // supplies.Add(Supply.DrawerPull(Drawers.Quantity * Qty));
 
         }
 

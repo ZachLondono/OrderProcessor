@@ -124,7 +124,7 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
     public IEnumerable<Supply> GetSupplies() {
 
         List<Supply> supplies = [
-            Supply.DoorPull(Doors.Quantity * Qty),
+            // Supply.DoorPull(Doors.Quantity * Qty),
             .. Supply.StandardHinge(DoorHeight, Qty)
         ];
 
@@ -140,7 +140,7 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
 
         if (Drawers.Quantity > 0) {
 
-            supplies.Add(Supply.DrawerPull(Drawers.Quantity * Qty));
+            // supplies.Add(Supply.DrawerPull(Drawers.Quantity * Qty));
 
         }
 

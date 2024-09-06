@@ -78,6 +78,7 @@ public class TrashCabinetSuppliesTests {
 
     }
 
+    /*
     [Fact]
     public void Should_IncludeOneDoorAndOneDrawerPullPerCabinet() {
 
@@ -98,6 +99,7 @@ public class TrashCabinetSuppliesTests {
         supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupplyB));
 
     }
+    */
 
     /*
     [Fact]

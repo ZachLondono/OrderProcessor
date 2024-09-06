@@ -18,6 +18,7 @@ public class SinkCabinetSuppliesTests {
 
     }
 
+    /*
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
@@ -39,7 +40,9 @@ public class SinkCabinetSuppliesTests {
         supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
+    */
 
+    /*
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
@@ -62,6 +65,7 @@ public class SinkCabinetSuppliesTests {
         supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
+    */
 
     [Theory]
     [InlineData(1, 4)]

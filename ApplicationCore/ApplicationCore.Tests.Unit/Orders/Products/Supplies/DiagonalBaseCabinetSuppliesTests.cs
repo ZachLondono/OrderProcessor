@@ -89,6 +89,7 @@ public class DiagonalBaseCabinetSuppliesTests {
 
     }
 
+    /*
     [Theory]
     [InlineData(1, 1)]
     [InlineData(2, 2)]
@@ -111,5 +112,6 @@ public class DiagonalBaseCabinetSuppliesTests {
         supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
+    */
 
 }

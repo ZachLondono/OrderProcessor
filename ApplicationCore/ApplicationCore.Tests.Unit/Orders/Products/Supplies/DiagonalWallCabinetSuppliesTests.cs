@@ -18,6 +18,7 @@ public class DiagonalWallCabinetSuppliesTests {
 
     }
 
+    /*
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
@@ -39,6 +40,7 @@ public class DiagonalWallCabinetSuppliesTests {
         supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
+    */
 
     [Theory]
     [InlineData(1, 4)]
@@ -174,6 +176,7 @@ public class BlindBaseCabinetSuppliesTests {
 
     }
 
+    /*
     [Theory]
     [InlineData(1, 1)]
     [InlineData(2, 2)]
@@ -196,7 +199,6 @@ public class BlindBaseCabinetSuppliesTests {
         supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
-
 
     [Theory]
     [InlineData(1, 0)]
@@ -231,6 +233,7 @@ public class BlindBaseCabinetSuppliesTests {
         supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
 
     }
+    */
 
     /*
     [Theory]

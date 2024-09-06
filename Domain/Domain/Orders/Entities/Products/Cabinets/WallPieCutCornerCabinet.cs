@@ -85,7 +85,7 @@ public class WallPieCutCornerCabinet : Cabinet, IMDFDoorContainer, ISupplyContai
     public IEnumerable<Supply> GetSupplies() {
 
         List<Supply> supplies = [
-            Supply.DoorPull(Qty),
+            //Supply.DoorPull(Qty),
             .. Supply.StandardHinge(DoorHeight, Qty)
         ];
 
