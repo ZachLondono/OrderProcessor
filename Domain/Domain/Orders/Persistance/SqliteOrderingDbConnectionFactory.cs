@@ -91,14 +91,18 @@ public class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory {
         string fullPath = Path.Combine(directory, relativeSchemaPath);
         var schema = await File.ReadAllTextAsync(fullPath);
 
-        await connection.OpenAsync();
-        var trx = await connection.BeginTransactionAsync();
+        await Task.Run(() => {
 
-        await connection.ExecuteAsync(schema, trx);
-        await connection.ExecuteAsync($"PRAGMA SCHEMA_VERSION = {DB_VERSION};", trx);
+            connection.Open();
+            var trx = connection.BeginTransaction();
 
-        trx.Commit();
-        connection.Close();
+            connection.Execute(schema, trx);
+            connection.Execute($"PRAGMA SCHEMA_VERSION = {DB_VERSION};", trx);
+
+            trx.Commit();
+            connection.Close();
+
+        });
 
     }
 

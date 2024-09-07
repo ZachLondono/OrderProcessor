@@ -43,7 +43,7 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
 
             if (File.Exists(_dataSource)) {
 
-                int dbVersion = await GetDatabaseVersion(connection);
+                int dbVersion = await GetDatabaseVersionAsync(connection);
                 if (dbVersion != DB_VERSION) {
                     throw new IncompatibleDatabaseVersion(dbVersion);
                 }
@@ -89,19 +89,25 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
         string fullPath = Path.Combine(directory, relativeSchemaPath);
         var schema = await File.ReadAllTextAsync(fullPath);
 
-        await connection.OpenAsync();
-        var trx = await connection.BeginTransactionAsync();
+        await Task.Run(() => {
 
-        await connection.ExecuteAsync(schema, trx);
-        await connection.ExecuteAsync($"PRAGMA SCHEMA_VERSION = {DB_VERSION};", trx);
+            connection.Open();
+            var trx = connection.BeginTransaction();
 
-        await trx.CommitAsync();
-        await connection.CloseAsync();
+            connection.Execute(schema, trx);
+            connection.Execute($"PRAGMA SCHEMA_VERSION = {DB_VERSION};", trx);
+
+            trx.Commit();
+            connection.Close();
+
+        });
 
     }
 
-    private static async Task<int> GetDatabaseVersion(SqliteConnection connection) {
-        return await connection.QuerySingleAsync<int>("PRAGMA schema_version;");
+    private static async Task<int> GetDatabaseVersionAsync(SqliteConnection connection) {
+
+        return await Task.Run(() => connection.QuerySingle<int>("PRAGMA schema_version;"));
+
     }
 
 }
