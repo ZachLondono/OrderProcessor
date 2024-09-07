@@ -20,7 +20,7 @@ public class GetAllVendors {
 
             using var connection = await _factory.CreateConnection();
 
-            var vendors = await connection.QueryAsync<VendorListItem>("SELECT id, NAME FROM vendors;");
+            var vendors = connection.Query<VendorListItem>("SELECT id, NAME FROM vendors;");
 
             return Response<IEnumerable<VendorListItem>>.Success(vendors);
 

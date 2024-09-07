@@ -21,7 +21,7 @@ internal class GetCustomizationScriptsByOrderId {
 
             using var connection = await _factory.CreateConnection();
 
-            var scripts = await connection.QueryAsync<CustomizationScript>(
+            var scripts = connection.Query<CustomizationScript>(
                 """
                 SELECT
                     id,

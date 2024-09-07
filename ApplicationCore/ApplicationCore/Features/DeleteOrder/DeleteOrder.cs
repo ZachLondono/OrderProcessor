@@ -20,7 +20,7 @@ public class DeleteOrder {
 
             using var connection = await _factory.CreateConnection();
 
-            int rows = await connection.ExecuteAsync("DELETE FROM orders WHERE id = @OrderId;", command);
+            int rows = connection.Execute("DELETE FROM orders WHERE id = @OrderId;", command);
 
             if (rows > 0) {
                 return Response.Success();

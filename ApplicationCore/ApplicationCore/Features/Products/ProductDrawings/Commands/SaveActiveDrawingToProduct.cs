@@ -43,11 +43,11 @@ public class SaveActiveDrawingToProduct {
 
                 using var connection = await _connectionFactory.CreateConnection();
 
-                int? exists = await connection.QueryFirstOrDefaultAsync<int>("SELECT 1 FROM product_drawings WHERE id = @DrawingId;", command);
+                int? exists = connection.QueryFirstOrDefault<int>("SELECT 1 FROM product_drawings WHERE id = @DrawingId;", command);
 
                 if (exists is int n && n == 1) {
 
-                    await connection.ExecuteAsync(
+                    connection.Execute(
                         """
                         UPDATE product_drawings
                           SET name = @Name, dxf_data = @DXFData
@@ -57,7 +57,7 @@ public class SaveActiveDrawingToProduct {
 
                 } else {
 
-                    await connection.ExecuteAsync(
+                    connection.Execute(
                         """
                         INSERT INTO product_drawings
                             (id,

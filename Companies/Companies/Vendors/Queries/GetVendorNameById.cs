@@ -20,7 +20,7 @@ public class GetVendorNameById {
 
             using var connection = await _factory.CreateConnection();
 
-            var name = await connection.QuerySingleAsync<string>("SELECT name FROM vendors WHERE id = @VendorId;", query);
+            var name = connection.QuerySingle<string>("SELECT name FROM vendors WHERE id = @VendorId;", query);
 
             return name ?? "";
 

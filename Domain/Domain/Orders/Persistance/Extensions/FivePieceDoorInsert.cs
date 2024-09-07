@@ -11,7 +11,7 @@ public partial class InsertOrder {
 
             await InsertFivePieceDoorConfig(door.Id, door, connection, trx);
             await InsertIntoProductTable(door, orderId, connection, trx);
-            await connection.ExecuteAsync(
+            connection.Execute(
                 """
                 INSERT INTO five_piece_door_products
                     (product_id,

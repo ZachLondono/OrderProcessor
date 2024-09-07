@@ -1,9 +1,8 @@
 ﻿using Domain.Companies.Entities;
 using Domain.Companies.ValueObjects;
-using Dapper;
-using System.Data;
 using Domain.Infrastructure.Bus;
 using Companies.Infrastructure;
+using Domain.Infrastructure.Data;
 
 namespace Companies.Customers.Commands;
 
@@ -45,8 +44,8 @@ public class UpdateCustomer {
 
         }
 
-        private static async Task UpdateCustomer(Customer customer, IDbConnection connection, IDbTransaction trx) {
-            await connection.ExecuteAsync(
+        private static async Task UpdateCustomer(Customer customer, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+            connection.Execute(
                 """
                 UPDATE customers
                 SET
@@ -58,9 +57,9 @@ public class UpdateCustomer {
                 """, customer, trx);
         }
 
-        public static async Task UpdateContact(Contact contact, Guid customerId, string idColName, IDbConnection connection, IDbTransaction trx) {
+        public static async Task UpdateContact(Contact contact, Guid customerId, string idColName, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 $"""
                 UPDATE contacts
                 SET
@@ -77,9 +76,9 @@ public class UpdateCustomer {
 
         }
 
-        public static async Task UpdateAddress(Address address, Guid customerId, string idColName, IDbConnection connection, IDbTransaction trx) {
+        public static async Task UpdateAddress(Address address, Guid customerId, string idColName, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 $"""
                 UPDATE addresses
                 SET
@@ -104,9 +103,9 @@ public class UpdateCustomer {
 
         }
 
-        public static async Task UpdateClosetProSettings(ClosetProSettings settings, Guid customerId, IDbConnection connection, IDbTransaction trx) {
+        public static async Task UpdateClosetProSettings(ClosetProSettings settings, Guid customerId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 $"""
                 UPDATE closet_pro_settings
                 SET

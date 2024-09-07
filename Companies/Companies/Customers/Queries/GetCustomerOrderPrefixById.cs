@@ -20,7 +20,7 @@ public class GetCustomerOrderPrefixById {
 
             using var connection = await _factory.CreateConnection();
 
-            var data = await connection.QuerySingleOrDefaultAsync<string?>("SELECT order_number_prefix FROM customers WHERE id = @Id;", query);
+            var data = connection.QuerySingleOrDefault<string?>("SELECT order_number_prefix FROM customers WHERE id = @Id;", query);
 
             return data;
 

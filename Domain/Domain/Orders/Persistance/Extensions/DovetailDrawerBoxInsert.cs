@@ -21,7 +21,7 @@ public partial class InsertOrder {
                 LabelFields = (IDictionary<string, string>)drawerBox.LabelFields
             };
 
-            await connection.ExecuteAsync("""
+            connection.Execute("""
                     INSERT INTO dovetail_drawer_products
                         (product_id,
                         height,

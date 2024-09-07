@@ -6,6 +6,7 @@ using System.Data;
 using Domain.Orders.Entities.Products;
 using Domain.Infrastructure.Bus;
 using Domain.Orders.Persistance.Repositories;
+using Domain.Infrastructure.Data;
 
 namespace Domain.Orders.Persistance;
 
@@ -71,8 +72,8 @@ public partial class InsertOrder {
 
         }
 
-        private static async Task InsertOrder(Order order, Guid shippingAddressId, Guid billingAddressId, IDbConnection connection, IDbTransaction trx) {
-            await connection.ExecuteAsync(
+        private static async Task InsertOrder(Order order, Guid shippingAddressId, Guid billingAddressId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+            connection.Execute(
                 """
                 INSERT INTO orders
                     (id,
@@ -150,12 +151,12 @@ public partial class InsertOrder {
                 }, trx);
         }
 
-        private static async Task InsertAddress(Address address, Guid id, IDbConnection connection, IDbTransaction trx) {
+        private static async Task InsertAddress(Address address, Guid id, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             string addressInsertQuery = @"INSERT INTO addresses (id, line1, line2, line3, city, state, zip, country)
                                             VALUES (@Id, @Line1, @Line2, @Line3, @City, @State, @Zip, @Country);";
 
-            await connection.ExecuteAsync(addressInsertQuery, new {
+            connection.Execute(addressInsertQuery, new {
                 Id = id,
                 address.Line1,
                 address.Line2,
@@ -168,14 +169,14 @@ public partial class InsertOrder {
 
         }
 
-        private static async Task InsertItems(IEnumerable<AdditionalItem> items, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+        private static async Task InsertItems(IEnumerable<AdditionalItem> items, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             foreach (var item in items) {
 
                 const string itemCommand = @"INSERT INTO additional_items (id, order_id, qty, description, price)
                                         VALUES (@Id, @OrderId, @Qty, @Description, @UnitPrice);";
 
-                await connection.ExecuteAsync(itemCommand, new {
+                connection.Execute(itemCommand, new {
                     item.Id,
                     OrderId = orderId,
                     item.Qty,
@@ -187,7 +188,7 @@ public partial class InsertOrder {
 
         }
 
-        private async Task InsertProducts(IEnumerable<IProduct> products, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+        private async Task InsertProducts(IEnumerable<IProduct> products, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             foreach (var product in products) {
 
@@ -197,12 +198,12 @@ public partial class InsertOrder {
 
         }
 
-        private Task InsertProduct(object unknown, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+        private Task InsertProduct(object unknown, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
             _logger.LogCritical("No insert method for product type {Type}", unknown.GetType());
             return Task.CompletedTask;
         }
 
-        private static async Task<bool> InsertHardware(Hardware hardware, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+        private static async Task<bool> InsertHardware(Hardware hardware, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             bool wasInserted = true;
 

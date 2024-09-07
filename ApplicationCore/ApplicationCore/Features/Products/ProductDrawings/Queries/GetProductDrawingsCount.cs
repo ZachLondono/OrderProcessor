@@ -22,7 +22,7 @@ public class GetProductDrawingsCount {
 
                 using var connection = await _factory.CreateConnection();
 
-                int count = await connection.QuerySingleOrDefaultAsync<int>(
+                int count = connection.QuerySingleOrDefault<int>(
                     """
                     SELECT
                         COUNT(*)

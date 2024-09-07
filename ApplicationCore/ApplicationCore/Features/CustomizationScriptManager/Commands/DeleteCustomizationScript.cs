@@ -20,7 +20,7 @@ internal class DeleteCustomizationScript {
 
             using var connection = await _factory.CreateConnection();
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 """
                 DELETE FROM order_customization_scripts
                 WHERE id = @Id;

@@ -24,7 +24,7 @@ public class RemoveAdditionalItem {
                 DELETE FROM additional_items WHERE id = @ItemId;
                 """;
 
-            int rowsAffected = await connection.ExecuteAsync(sql, command);
+            int rowsAffected = connection.Execute(sql, command);
 
             if (rowsAffected < 1) {
 

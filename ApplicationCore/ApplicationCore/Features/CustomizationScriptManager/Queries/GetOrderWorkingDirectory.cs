@@ -20,7 +20,7 @@ public class GetOrderWorkingDirectory {
 
             using var connection = await _factory.CreateConnection();
 
-            var workingDirectory = await connection.QuerySingleOrDefaultAsync<string>(
+            var workingDirectory = connection.QuerySingleOrDefault<string>(
                 """
                 SELECT 
                     working_directory

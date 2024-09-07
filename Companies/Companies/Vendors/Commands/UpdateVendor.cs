@@ -4,6 +4,7 @@ using Dapper;
 using System.Data;
 using Domain.Infrastructure.Bus;
 using Companies.Infrastructure;
+using Domain.Infrastructure.Data;
 
 namespace Companies.Vendors.Commands;
 
@@ -37,9 +38,9 @@ public class UpdateVendor {
 
         }
 
-        private static async Task UpdateVendor(IDbConnection connection, IDbTransaction trx, Vendor vendor) {
+        private static async Task UpdateVendor(ISynchronousDbConnection connection, ISynchronousDbTransaction trx, Vendor vendor) {
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 """
                 UPDATE vendors
                 SET
@@ -86,9 +87,9 @@ public class UpdateVendor {
 
         }
 
-        public static async Task UpdateAddress(Address address, Guid vendorId, IDbConnection connection, IDbTransaction trx) {
-
-            await connection.ExecuteAsync(
+        public static async Task UpdateAddress(Address address, Guid vendorId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+            
+            connection.Execute(
                 $"""
                 UPDATE addresses
                 SET

@@ -21,7 +21,7 @@ internal class AddCustomizationScript {
 
             using var connection = await _factory.CreateConnection();
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 """
                 INSERT INTO order_customization_scripts
                 (id, order_id, name, script_file_path, type)

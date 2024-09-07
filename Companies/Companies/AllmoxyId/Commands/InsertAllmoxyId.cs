@@ -20,7 +20,7 @@ public class InsertAllmoxyId {
 
             using var connection = await _factory.CreateConnection();
 
-            int result = await connection.ExecuteAsync("INSERT INTO allmoxy_ids (id, customer_id) VALUES (@AllmoxyId, @CustomerId);", command);
+            int result = connection.Execute("INSERT INTO allmoxy_ids (id, customer_id) VALUES (@AllmoxyId, @CustomerId);", command);
 
             if (result == 0) {
 

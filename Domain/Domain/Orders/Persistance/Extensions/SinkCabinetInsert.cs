@@ -43,7 +43,7 @@ public partial class InsertOrder {
                 ScoopFromFront = (Dimension?)(cabinet.Scoops is null ? null : cabinet.Scoops.FromFront),
             };
 
-            await connection.ExecuteAsync("""
+            connection.Execute("""
                     INSERT INTO sink_cabinets
                         (product_id,
                         toe_type,

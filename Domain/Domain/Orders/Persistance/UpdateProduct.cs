@@ -30,7 +30,7 @@ public class UpdateProduct {
                                WHERE id = @Id;
                                """;
 
-            int rowsAffected = await connection.ExecuteAsync(sql, command.Product);
+            int rowsAffected = connection.Execute(sql, command.Product);
 
             if (rowsAffected < 1) {
                 return Response.Error(new() {

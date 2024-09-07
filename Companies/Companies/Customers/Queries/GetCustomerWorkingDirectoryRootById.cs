@@ -20,7 +20,7 @@ public class GetCustomerWorkingDirectoryRootById {
 
             using var connection = await _factory.CreateConnection();
 
-            var data = await connection.QuerySingleOrDefaultAsync<string?>("SELECT working_directory_root FROM customers WHERE id = @Id;", query);
+            var data = connection.QuerySingleOrDefault<string?>("SELECT working_directory_root FROM customers WHERE id = @Id;", query);
 
             return data;
 

@@ -20,7 +20,7 @@ public class GetCustomerNameById {
 
             using var connection = await _factory.CreateConnection();
 
-            var name = await connection.QuerySingleAsync<string>("SELECT name FROM customers WHERE id = @CustomerId;", query);
+            var name = connection.QuerySingle<string>("SELECT name FROM customers WHERE id = @CustomerId;", query);
 
             return name ?? "";
 

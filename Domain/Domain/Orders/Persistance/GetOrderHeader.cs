@@ -31,7 +31,7 @@ public class GetOrderHeader {
 
             using var connection = await _factory.CreateConnection();
 
-            var header = await connection.QuerySingleAsync<OrderHeader>(
+            var header = connection.QuerySingle<OrderHeader>(
                 """
                 SELECT 
                     id AS OrderId,

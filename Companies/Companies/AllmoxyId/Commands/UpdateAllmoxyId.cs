@@ -1,5 +1,4 @@
 ﻿using Companies.Infrastructure;
-using Dapper;
 using Domain.Infrastructure.Bus;
 
 namespace Companies.AllmoxyId.Commands;
@@ -20,7 +19,7 @@ public class UpdateAllmoxyId {
 
             using var connection = await _factory.CreateConnection();
 
-            int result = await connection.ExecuteAsync("UPDATE allmoxy_ids SET id = @AllmoxyId WHERE customer_id = @CustomerId;", command);
+            int result = connection.Execute("UPDATE allmoxy_ids SET id = @AllmoxyId WHERE customer_id = @CustomerId;", command);
 
             if (result == 0) {
 

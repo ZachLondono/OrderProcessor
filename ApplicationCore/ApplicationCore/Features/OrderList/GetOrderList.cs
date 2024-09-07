@@ -46,7 +46,7 @@ public class GetOrderList {
                         FROM orders{queryFilter};
                         """;
 
-            var items = await connection.QueryAsync<OrderListItem>(query, request);
+            var items = connection.Query<OrderListItem>(query, request);
 
             return new(items);
 

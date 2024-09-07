@@ -20,7 +20,7 @@ public class GetAllCustomers {
 
             using var connection = await _factory.CreateConnection();
 
-            var customers = await connection.QueryAsync<CustomerListItem>("SELECT id, NAME FROM customers;");
+            var customers = connection.Query<CustomerListItem>("SELECT id, NAME FROM customers;");
 
             return Response<IEnumerable<CustomerListItem>>.Success(customers);
 

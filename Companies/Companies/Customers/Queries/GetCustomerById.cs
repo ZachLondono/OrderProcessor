@@ -23,7 +23,7 @@ public class GetCustomerById {
 
             using var connection = await _factory.CreateConnection();
 
-            var data = await connection.QuerySingleOrDefaultAsync<CustomerDataModel>(
+            var data = connection.QuerySingleOrDefault<CustomerDataModel>(
                 """
                 SELECT
                     

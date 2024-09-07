@@ -23,7 +23,7 @@ public class UpdateAdditionalItem {
                 WHERE id = @Id;
                 """;
 
-            int rowsAffected = await connection.ExecuteAsync(sql, new {
+            int rowsAffected = connection.Execute(sql, new {
                 command.Item.Qty,
                 command.Item.Description,
                 Price = command.Item.UnitPrice,

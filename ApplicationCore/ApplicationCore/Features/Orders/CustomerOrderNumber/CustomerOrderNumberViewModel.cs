@@ -39,7 +39,7 @@ internal class CustomerOrderNumberViewModel {
 
             using var connection = await _factory.CreateConnection();
 
-            var model = await connection.QuerySingleOrDefaultAsync<CustomerOrderNumberModel>(
+            var model = connection.QuerySingleOrDefault<CustomerOrderNumberModel>(
                 "SELECT customer_id AS CustomerId, number AS Number FROM order_numbers WHERE customer_id = @CustomerId;",
                 new {
                     CustomerId = customerId
@@ -76,7 +76,7 @@ internal class CustomerOrderNumberViewModel {
 
             using var connection = await _factory.CreateConnection();
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 "UPDATE order_numbers SET number = @Number WHERE customer_id = @CustomerId;",
                 Model);
 
@@ -104,7 +104,7 @@ internal class CustomerOrderNumberViewModel {
                 Number = 1
             };
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 "INSERT INTO order_numbers  (customer_id, number) VALUES (@CustomerId, @Number);",
                 model);
 

@@ -19,7 +19,7 @@ public class UpdateProductDrawingName {
 
             using var connection = await _connectionFactory.CreateConnection();
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 """
                 UPDATE product_drawings
                     SET name = @DrawingName

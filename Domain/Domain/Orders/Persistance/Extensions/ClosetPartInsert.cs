@@ -27,7 +27,7 @@ public partial class InsertOrder {
                 Parameters = (IDictionary<string, string>)closetPart.Parameters
             };
 
-            await connection.ExecuteAsync("""
+            connection.Execute("""
                     INSERT INTO closet_parts
                         (product_id,
                         sku,

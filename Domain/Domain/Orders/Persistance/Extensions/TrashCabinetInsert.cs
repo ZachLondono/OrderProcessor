@@ -30,7 +30,7 @@ public partial class InsertOrder {
                 DBConfigId = dbConfigId
             };
 
-            await connection.ExecuteAsync("""
+            connection.Execute("""
                     INSERT INTO trash_cabinets
                         (product_id,
                         toe_type,

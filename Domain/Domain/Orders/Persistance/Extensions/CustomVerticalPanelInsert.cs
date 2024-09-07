@@ -37,7 +37,7 @@ public partial class InsertOrder {
                 LEDChannelDepth = verticalPanel.LEDChannelDepth
             };
 
-            await connection.ExecuteAsync("""
+            connection.Execute("""
                     INSERT INTO custom_drilled_vertical_panels
                         (product_id,
                         width,

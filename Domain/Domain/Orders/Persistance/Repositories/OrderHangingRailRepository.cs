@@ -1,18 +1,18 @@
-﻿using Dapper;
+﻿using Domain.Infrastructure.Data;
 using Domain.Orders.Entities.Hardware;
 using Domain.ValueObjects;
 using System.Data;
 
 namespace Domain.Orders.Persistance.Repositories;
 
-public class OrderHangingRailRepository(IDbConnection connection, IDbTransaction? trx = null) {
+public class OrderHangingRailRepository(ISynchronousDbConnection connection, ISynchronousDbTransaction? trx = null) {
 
-    private readonly IDbConnection _connection = connection;
-    private readonly IDbTransaction? _trx = trx;
+    private readonly ISynchronousDbConnection _connection = connection;
+    private readonly ISynchronousDbTransaction? _trx = trx;
 
     public async Task<IEnumerable<HangingRail>> GetOrderHangingRails(Guid orderId) {
 
-        var data = await _connection.QueryAsync<HangingRailModel>(
+        var data = _connection.Query<HangingRailModel>(
             """
             SELECT
                 id,
@@ -33,7 +33,7 @@ public class OrderHangingRailRepository(IDbConnection connection, IDbTransaction
 
     public async Task<bool> AddHangingRailToOrder(Guid orderId, HangingRail hangingRail) {
 
-        int rows = await _connection.ExecuteAsync(
+        int rows = _connection.Execute(
             """
             INSERT INTO hanging_rails
                 (id,
@@ -63,7 +63,7 @@ public class OrderHangingRailRepository(IDbConnection connection, IDbTransaction
 
     public async Task<bool> DeleteHangingRail(Guid hangingRailId) {
 
-        int rows = await _connection.ExecuteAsync(
+        int rows = _connection.Execute(
             """
             DELETE FROM hanging_rails WHERE id = @Id;
             """,
@@ -78,7 +78,7 @@ public class OrderHangingRailRepository(IDbConnection connection, IDbTransaction
 
     public async Task<bool> UpdateHangingRail(HangingRail hangingRail) {
 
-        int rows = await _connection.ExecuteAsync(
+        int rows = _connection.Execute(
             """
             UPDATE hanging_rails
             SET qty = @Qty, length = @Length, finish = @Finish

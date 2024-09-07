@@ -43,7 +43,7 @@ public partial class InsertOrder {
                 BaseNotchDepth = cabinet.BaseNotch?.Depth ?? Dimension.Zero
             };
 
-            await connection.ExecuteAsync("""
+            connection.Execute("""
                     INSERT INTO tall_cabinets
                         (product_id,
                         toe_type,

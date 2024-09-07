@@ -5,7 +5,6 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Data;
 
 namespace Companies.Infrastructure;
 
@@ -24,7 +23,7 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
         _dataSource = options.CurrentValue.CompaniesDBPath;
     }
 
-    public async Task<IDbConnection> CreateConnection() {
+    public async Task<ISynchronousDbConnection> CreateConnection() {
 
         try {
 
@@ -58,7 +57,7 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
 
             }
 
-            return connection;
+            return new SynchronousSQLiteDbConnection(connection);
 
         } catch (Exception ex) {
 

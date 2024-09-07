@@ -1,9 +1,9 @@
-﻿using System.Data;
+﻿using Domain.Infrastructure.Data;
 
 namespace Companies.Infrastructure;
 
 public interface ICompaniesDbConnectionFactory {
 
-    public Task<IDbConnection> CreateConnection();
+    public Task<ISynchronousDbConnection> CreateConnection();
 
 }

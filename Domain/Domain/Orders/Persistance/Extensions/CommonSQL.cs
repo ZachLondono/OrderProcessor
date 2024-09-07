@@ -21,7 +21,7 @@ public partial class InsertOrder {
                 ProductionNotes = product.ProductionNotes,
             };
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 """
                 INSERT INTO products
                     (id, order_id, qty, unit_price, product_number, room, production_notes)
@@ -57,7 +57,7 @@ public partial class InsertOrder {
                 MDFConfigId = mdfConfigId
             };
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 """
                 INSERT INTO cabinets
                     (product_id,
@@ -120,7 +120,7 @@ public partial class InsertOrder {
                 MDFPaintColor = options.PaintColor
             };
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 """
                 INSERT INTO mdf_door_configs
                     (id,
@@ -153,7 +153,7 @@ public partial class InsertOrder {
                 door.Material
             };
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 """
                 INSERT INTO five_piece_door_configs
                     (id,
@@ -177,7 +177,7 @@ public partial class InsertOrder {
                 dbOptions.SlideType
             };
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 """
                 INSERT INTO cabinet_db_configs
                     (id,
@@ -209,7 +209,7 @@ public partial class InsertOrder {
                 dbConfig.Assembled,
             };
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 """
                 INSERT INTO dovetail_drawer_box_configs
                     (id,
@@ -263,7 +263,7 @@ public partial class InsertOrder {
                 FrontBackHeightAdjustment = dbConfig.FrontBackHeightAdjustment
             };
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 """
                 INSERT INTO doweled_drawer_box_configs
                     (id,

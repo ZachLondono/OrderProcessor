@@ -1,9 +1,8 @@
 ﻿using Domain.Companies.Entities;
 using Domain.Companies.ValueObjects;
-using Dapper;
-using System.Data;
 using Domain.Infrastructure.Bus;
 using Companies.Infrastructure;
+using Domain.Infrastructure.Data;
 
 namespace Companies.Customers.Commands;
 
@@ -47,8 +46,15 @@ public class InsertCustomer {
 
         }
 
-        private static async Task InsertCustomer(Customer customer, Guid shippingContactId, Guid shippingAddressId, Guid billingContactId, Guid billingAddressId, Guid closetProSettingsId, IDbConnection connection, IDbTransaction trx) {
-            int rows = await connection.ExecuteAsync(
+        private static async Task InsertCustomer(Customer customer,
+                                                 Guid shippingContactId,
+                                                 Guid shippingAddressId,
+                                                 Guid billingContactId,
+                                                 Guid billingAddressId,
+                                                 Guid closetProSettingsId,
+                                                 ISynchronousDbConnection connection,
+                                                 ISynchronousDbTransaction trx) {
+            int rows = connection.Execute(
                     """
                     INSERT INTO customers (
                         id,
@@ -92,11 +98,11 @@ public class InsertCustomer {
 
         }
 
-        public static async Task<Guid> InsertContact(Contact contact, IDbConnection connection, IDbTransaction trx) {
+        public static async Task<Guid> InsertContact(Contact contact, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             Guid id = Guid.NewGuid();
 
-            int rows = await connection.ExecuteAsync(
+            int rows = connection.Execute(
                     $"""
                     INSERT INTO contacts (
                         id,
@@ -124,11 +130,11 @@ public class InsertCustomer {
 
         }
 
-        public static async Task<Guid> InsertAddress(Address address, IDbConnection connection, IDbTransaction trx) {
+        public static async Task<Guid> InsertAddress(Address address, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             Guid id = Guid.NewGuid();
 
-            int rows = await connection.ExecuteAsync(
+            int rows = connection.Execute(
                 $"""
                 INSERT INTO addresses (
                     id,
@@ -168,9 +174,9 @@ public class InsertCustomer {
 
         }
 
-        public static async Task InsertAllmoxyId(Guid customerId, int allmoxyId, IDbConnection connection, IDbTransaction trx) {
+        public static async Task InsertAllmoxyId(Guid customerId, int allmoxyId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
-            int rows = await connection.ExecuteAsync(
+            int rows = connection.Execute(
                 "INSERT INTO allmoxy_ids (id, customer_id) VALUES (@AllmoxyId, @CustomerId)",
                 new {
                     CustomerId = customerId,
@@ -183,11 +189,11 @@ public class InsertCustomer {
 
         }
 
-        public static async Task<Guid> InsertClosetProSettings(ClosetProSettings settings, IDbConnection connection, IDbTransaction trx) {
+        public static async Task<Guid> InsertClosetProSettings(ClosetProSettings settings, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             Guid id = Guid.NewGuid();
 
-            int rows = await connection.ExecuteAsync(
+            int rows = connection.Execute(
                 """
                 INSERT INTO closet_pro_settings
                     (id, toe_kick_sku, adjustable_shelf_sku, fixed_shelf_sku, l_fixed_shelf_sku, l_adjustable_shelf_sku, l_shelf_radius, diagonal_fixed_shelf_sku, diagonal_adjustable_shelf_sku, doweled_drawer_box_material_finish, vertical_panel_bottom_radius)

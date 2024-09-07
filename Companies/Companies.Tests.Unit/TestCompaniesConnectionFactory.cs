@@ -1,7 +1,6 @@
 ﻿using Companies.Infrastructure;
-using Dapper;
+using Domain.Infrastructure.Data;
 using Microsoft.Data.Sqlite;
-using System.Data;
 
 namespace Companies.Tests.Unit;
 
@@ -14,7 +13,7 @@ public class TestCompaniesConnectionFactory : ICompaniesDbConnectionFactory {
         _schemaFilePath = schemaFilePath;
     }
 
-    public Task<IDbConnection> CreateConnection() {
+    public Task<ISynchronousDbConnection> CreateConnection() {
 
         if (_connection is null) {
 
@@ -28,7 +27,7 @@ public class TestCompaniesConnectionFactory : ICompaniesDbConnectionFactory {
 
         }
 
-        return Task.FromResult((IDbConnection)_connection);
+        return Task.FromResult((ISynchronousDbConnection) _connection);
 
     }
 

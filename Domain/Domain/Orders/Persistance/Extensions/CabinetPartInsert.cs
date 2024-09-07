@@ -21,7 +21,7 @@ public partial class InsertOrder {
                 Parameters = cabinetPart.Parameters
             };
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 """
                 INSERT INTO cabinet_parts
                     (product_id,

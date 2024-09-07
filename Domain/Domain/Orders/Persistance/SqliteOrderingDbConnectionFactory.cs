@@ -24,9 +24,9 @@ public class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory {
         _dataSource = options.CurrentValue.OrderingDBPath;
     }
 
-    public Task<IDbConnection> CreateConnection() => CreateConnection(_dataSource);
+    public Task<ISynchronousDbConnection> CreateConnection() => CreateConnection(_dataSource);
 
-    public async Task<IDbConnection> CreateConnection(string dataSource) {
+    public async Task<ISynchronousDbConnection> CreateConnection(string dataSource) {
 
         try {
 
@@ -61,7 +61,7 @@ public class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory {
 
             }
 
-            return connection;
+            return new SynchronousSQLiteDbConnection(connection);
 
         } catch (Exception ex) {
 
@@ -112,7 +112,7 @@ public class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory {
     }
 
     private static async Task<int> GetDatabaseVersion(SqliteConnection connection) {
-        return await connection.QuerySingleAsync<int>("PRAGMA schema_version;");
+        return connection.QuerySingle<int>("PRAGMA schema_version;");
     }
 
 }

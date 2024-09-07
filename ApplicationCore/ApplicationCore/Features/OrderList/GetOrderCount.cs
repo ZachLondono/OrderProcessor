@@ -37,7 +37,7 @@ public class GetOrderCount {
                         FROM orders{queryFilter};
                         """;
 
-            var count = await connection.QuerySingleAsync<int>(query, request);
+            var count = connection.QuerySingle<int>(query, request);
 
             return new(count);
 

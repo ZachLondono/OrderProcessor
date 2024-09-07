@@ -19,7 +19,7 @@ public partial class InsertOrder {
                 EdgeBanding = counter.EdgeBanding
             };
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 """
                 INSERT INTO counter_tops 
                     (product_id,

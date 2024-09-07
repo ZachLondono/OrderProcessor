@@ -335,20 +335,20 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 		try {
 
-			var newNumber = await connection.QuerySingleOrDefaultAsync<int?>("SELECT number FROM order_numbers WHERE customer_id = @CustomerId;", new {
+			var newNumber = connection.QuerySingleOrDefault<int?>("SELECT number FROM order_numbers WHERE customer_id = @CustomerId;", new {
 				CustomerId = customerId
 			});
 
 			if (newNumber is null) {
 				int initialNumber = 1;
-				await connection.ExecuteAsync("INSERT INTO order_numbers (customer_id, number) VALUES (@CustomerId, @InitialNumber);", new {
+				connection.Execute("INSERT INTO order_numbers (customer_id, number) VALUES (@CustomerId, @InitialNumber);", new {
 					CustomerId = customerId,
 					InitialNumber = initialNumber
 				}, trx);
 				newNumber = initialNumber;
 			}
 
-			await connection.ExecuteAsync("UPDATE order_numbers SET number = @IncrementedValue WHERE customer_id = @CustomerId", new {
+			connection.Execute("UPDATE order_numbers SET number = @IncrementedValue WHERE customer_id = @CustomerId", new {
 				CustomerId = customerId,
 				IncrementedValue = newNumber + 1
 			});

@@ -19,7 +19,7 @@ public partial class InsertOrder {
                 Depth = drawerBox.Depth
             };
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 """
                 INSERT INTO doweled_drawer_products 
                     (product_id,

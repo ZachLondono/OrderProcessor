@@ -20,7 +20,7 @@ public class GetAllmoxyId {
 
             using var connection = await _factory.CreateConnection();
 
-            int? allmoxyId = await connection.QueryFirstOrDefaultAsync<int?>("SELECT id FROM allmoxy_ids WHERE customer_id = @CustomerId;", query);
+            int? allmoxyId = connection.QueryFirstOrDefault<int?>("SELECT id FROM allmoxy_ids WHERE customer_id = @CustomerId;", query);
 
             return allmoxyId;
 

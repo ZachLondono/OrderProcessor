@@ -27,7 +27,7 @@ public partial class InsertOrder {
                 Parameters = (IDictionary<string, string>)zargenDrawer.Parameters
             };
 
-            await connection.ExecuteAsync("""
+            connection.Execute("""
                     INSERT INTO zargen_drawers 
                         (product_id,
                         sku,

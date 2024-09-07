@@ -25,7 +25,7 @@ public partial class InsertOrder {
                 mdfdoor.Orientation
             };
 
-            await connection.ExecuteAsync("""
+            connection.Execute("""
                     INSERT INTO mdf_door_products
                         (product_id,
                         note,
@@ -52,7 +52,7 @@ public partial class InsertOrder {
 
             if (mdfdoor.AdditionalOpenings.Any()) {
                 foreach (var opening in mdfdoor.AdditionalOpenings) {
-                    await connection.ExecuteAsync("""
+                    connection.Execute("""
                         INSERT INTO mdf_door_openings 
                             (id,
                             product_id,

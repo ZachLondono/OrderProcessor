@@ -28,7 +28,7 @@ public partial class InsertOrder {
                 AdjShelfQty = cabinet.AdjustableShelves
             };
 
-            await connection.ExecuteAsync("""
+            connection.Execute("""
                     INSERT INTO pie_cut_wall_cabinets
                         (product_id,
                         right_width,

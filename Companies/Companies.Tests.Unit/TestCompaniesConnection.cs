@@ -1,8 +1,9 @@
-﻿using System.Data;
+﻿using Domain.Infrastructure.Data;
+using System.Data;
 
 namespace Companies.Tests.Unit;
 
-public class TestCompaniesConnection(IDbConnection connection) : IDbConnection {
+public class TestCompaniesConnection(IDbConnection connection) : ISynchronousDbConnection {
 
     private readonly IDbConnection _connection = connection;
 
@@ -17,12 +18,8 @@ public class TestCompaniesConnection(IDbConnection connection) : IDbConnection {
 
     public ConnectionState State => _connection.State;
 
-    public IDbTransaction BeginTransaction() {
-        return _connection.BeginTransaction();
-    }
-
-    public IDbTransaction BeginTransaction(IsolationLevel il) {
-        return _connection.BeginTransaction(il);
+    public ISynchronousDbTransaction BeginTransaction() {
+        return new SynchronousDbTransaction(_connection.BeginTransaction());
     }
 
     public void ChangeDatabase(string databaseName) {
@@ -41,6 +38,26 @@ public class TestCompaniesConnection(IDbConnection connection) : IDbConnection {
 
     public void Open() {
         _connection.Open();
+    }
+
+    public int Execute(string sql, object? param = null, ISynchronousDbTransaction? transaction = null) {
+        throw new NotImplementedException();
+    }
+
+    public T? QueryFirstOrDefault<T>(string sql, object? param = null, ISynchronousDbTransaction? transaction = null) {
+        throw new NotImplementedException();
+    }
+
+    public T? QuerySingleOrDefault<T>(string sql, object? param = null, ISynchronousDbTransaction? transaction = null) {
+        throw new NotImplementedException();
+    }
+
+    public T QuerySingle<T>(string sql, object? param = null, ISynchronousDbTransaction? transaction = null) {
+        throw new NotImplementedException();
+    }
+
+    public IEnumerable<T> Query<T>(string sql, object? param = null, ISynchronousDbTransaction? transaction = null) {
+        throw new NotImplementedException();
     }
 
 }

@@ -20,7 +20,7 @@ internal class InsertOrderRelationship {
 
             using var connection = await _factory.CreateConnection();
 
-            var result = await connection.QueryFirstOrDefaultAsync<int>(
+            var result = connection.QueryFirstOrDefault<int>(
                 """
                 SELECT EXISTS (SELECT 1 FROM order_relationships WHERE (order_1_id = @Order1Id AND order_2_id = @Order2Id) OR (order_1_id = @Order2Id AND order_2_id = @Order1Id)); 
                 """,
@@ -31,7 +31,7 @@ internal class InsertOrderRelationship {
                 return Response.Success();
             }
 
-            await connection.ExecuteAsync(
+            connection.Execute(
                 """
                 INSERT INTO order_relationships (order_1_id, order_2_id) VALUES (@Order1Id, @Order2Id);
                 """,

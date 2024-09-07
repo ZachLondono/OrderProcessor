@@ -27,7 +27,7 @@ public class GetVendorById {
 
             try {
 
-                var data = await connection.QuerySingleOrDefaultAsync<VendorDataModel>(
+                var data = connection.QuerySingleOrDefault<VendorDataModel>(
                                                                                                                                                                 """
                 SELECT
                     

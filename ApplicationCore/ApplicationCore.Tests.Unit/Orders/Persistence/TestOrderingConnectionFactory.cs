@@ -1,7 +1,6 @@
-﻿using Dapper;
+﻿using Domain.Infrastructure.Data;
 using Domain.Orders.Persistance;
 using Microsoft.Data.Sqlite;
-using System.Data;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence;
 
@@ -14,7 +13,7 @@ internal class TestOrderingConnectionFactory : IOrderingDbConnectionFactory {
         _schemaFilePath = schemaFilePath;
     }
 
-    public Task<IDbConnection> CreateConnection() {
+    public Task<ISynchronousDbConnection> CreateConnection() {
 
         if (_connection is null) {
 
@@ -28,7 +27,7 @@ internal class TestOrderingConnectionFactory : IOrderingDbConnectionFactory {
 
         }
 
-        return Task.FromResult((IDbConnection)_connection);
+        return Task.FromResult((ISynchronousDbConnection)_connection);
 
     }
 

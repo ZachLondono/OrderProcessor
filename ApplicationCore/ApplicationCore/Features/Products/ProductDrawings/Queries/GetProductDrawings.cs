@@ -23,7 +23,7 @@ public class GetProductDrawings {
 
                 using var connection = await _factory.CreateConnection();
 
-                var drawings = await connection.QueryAsync<ProductDrawing>(
+                var drawings = connection.Query<ProductDrawing>(
                     """
                     SELECT
                         id AS ID,

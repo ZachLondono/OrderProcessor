@@ -1,17 +1,17 @@
-﻿using Dapper;
+﻿using Domain.Infrastructure.Data;
 using Domain.Orders.Entities.Hardware;
 using System.Data;
 
 namespace Domain.Orders.Persistance.Repositories;
 
-public class OrderSuppliesRepository(IDbConnection connection, IDbTransaction? trx = null) {
+public class OrderSuppliesRepository(ISynchronousDbConnection connection, ISynchronousDbTransaction? trx = null) {
 
-    private readonly IDbConnection _connection = connection;
-    private readonly IDbTransaction? _trx = trx;
+    private readonly ISynchronousDbConnection _connection = connection;
+    private readonly ISynchronousDbTransaction? _trx = trx;
 
     public async Task<IEnumerable<Supply>> GetOrderSupplies(Guid orderId) {
 
-        var data = await _connection.QueryAsync<SupplyModel>(
+        var data = _connection.Query<SupplyModel>(
             """
             SELECT
                 id,
@@ -31,7 +31,7 @@ public class OrderSuppliesRepository(IDbConnection connection, IDbTransaction? t
 
     public async Task<bool> AddSupplyToOrder(Guid orderId, Supply supply) {
 
-        var rows = await _connection.ExecuteAsync(
+        var rows = _connection.Execute(
             """
             INSERT INTO supplies
                 (id,
@@ -58,7 +58,7 @@ public class OrderSuppliesRepository(IDbConnection connection, IDbTransaction? t
 
     public async Task<bool> DeleteSupply(Guid supplyId) {
         
-        var rows = await _connection.ExecuteAsync(
+        var rows = _connection.Execute(
             """
             DELETE FROM supplies
             WHERE id = @Id;
@@ -74,7 +74,7 @@ public class OrderSuppliesRepository(IDbConnection connection, IDbTransaction? t
 
     public async Task<bool> UpdateSupply(Supply supply) {
 
-        var rows = await _connection.ExecuteAsync(
+        var rows = _connection.Execute(
             """
             UPDATE supplies
             SET qty = @Qty, description = @Description

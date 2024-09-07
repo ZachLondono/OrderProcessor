@@ -1,8 +1,9 @@
-﻿using System.Data;
+﻿using Domain.Infrastructure.Data;
+using System.Data;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence;
 
-internal class TestOrderingConnection : IDbConnection {
+internal class TestOrderingConnection : ISynchronousDbConnection {
 
     private readonly IDbConnection _connection;
 
@@ -21,20 +22,8 @@ internal class TestOrderingConnection : IDbConnection {
 
     public ConnectionState State => _connection.State;
 
-    public IDbTransaction BeginTransaction() {
-        return _connection.BeginTransaction();
-    }
-
-    public IDbTransaction BeginTransaction(IsolationLevel il) {
-        return _connection.BeginTransaction(il);
-    }
-
-    public void ChangeDatabase(string databaseName) {
-        _connection.ChangeDatabase(databaseName);
-    }
-
-    public IDbCommand CreateCommand() {
-        return _connection.CreateCommand();
+    public ISynchronousDbTransaction BeginTransaction() {
+        return new SynchronousDbTransaction(_connection.BeginTransaction());
     }
 
     public void Close() {
@@ -45,6 +34,26 @@ internal class TestOrderingConnection : IDbConnection {
 
     public void Open() {
         _connection.Open();
+    }
+
+    public int Execute(string sql, object? param = null, ISynchronousDbTransaction? transaction = null) {
+        throw new NotImplementedException();
+    }
+
+    public T? QueryFirstOrDefault<T>(string sql, object? param = null, ISynchronousDbTransaction? transaction = null) {
+        throw new NotImplementedException();
+    }
+
+    public T? QuerySingleOrDefault<T>(string sql, object? param = null, ISynchronousDbTransaction? transaction = null) {
+        throw new NotImplementedException();
+    }
+
+    public T QuerySingle<T>(string sql, object? param = null, ISynchronousDbTransaction? transaction = null) {
+        throw new NotImplementedException();
+    }
+
+    public IEnumerable<T> Query<T>(string sql, object? param = null, ISynchronousDbTransaction? transaction = null) {
+        throw new NotImplementedException();
     }
 
 }

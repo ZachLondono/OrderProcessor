@@ -34,7 +34,7 @@ public class UpdateClosetPart {
 
             using var connection = await _factory.CreateConnection();
 
-            int rows = await connection.ExecuteAsync(query, new {
+            int rows = connection.Execute(query, new {
                 command.ClosetPart.Id,
                 command.ClosetPart.SKU,
                 command.ClosetPart.Comment,

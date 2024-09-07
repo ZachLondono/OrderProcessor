@@ -8,6 +8,7 @@ using Domain.Orders.Entities.Products;
 using Domain.Infrastructure.Bus;
 using Domain.Orders.Persistance;
 using Domain.Orders.Persistance.Repositories;
+using Domain.Infrastructure.Data;
 
 namespace ApplicationCore.Features.Orders.Details.Queries;
 
@@ -29,7 +30,7 @@ public class GetOrderById {
 
             using var connection = await _factory.CreateConnection();
 
-            var orderData = await connection.QuerySingleOrDefaultAsync<OrderDataModel>(OrderDataModel.GetQueryById(), new { Id = request.OrderId });
+            var orderData = connection.QuerySingleOrDefault<OrderDataModel>(OrderDataModel.GetQueryById(), new { Id = request.OrderId });
 
             if (orderData is null) {
 
@@ -40,7 +41,7 @@ public class GetOrderById {
 
             }
 
-            var itemData = await connection.QueryAsync<AdditionalItemDataModel>(AdditionalItemDataModel.GetQueryByOrderId(), request);
+            var itemData = connection.Query<AdditionalItemDataModel>(AdditionalItemDataModel.GetQueryByOrderId(), request);
             var items = itemData.Select(i => i.ToDomainModel()).ToList();
 
             IReadOnlyCollection<IProduct> products;
@@ -61,7 +62,7 @@ public class GetOrderById {
 
         }
 
-        private async Task<IReadOnlyCollection<IProduct>> GetProducts(Guid orderId, IDbConnection connection) {
+        private async Task<IReadOnlyCollection<IProduct>> GetProducts(Guid orderId, ISynchronousDbConnection connection) {
 
             List<IProductDataModel> productData = new();
 
@@ -93,12 +94,12 @@ public class GetOrderById {
 
         }
 
-        private async Task AddProductDataToCollection<T>(List<IProductDataModel> productData, Guid orderId, IDbConnection connection) where T : IQueryableProductDataModel {
+        private async Task AddProductDataToCollection<T>(List<IProductDataModel> productData, Guid orderId, ISynchronousDbConnection connection) where T : IQueryableProductDataModel {
 
             try {
 
                 string query = T.GetQueryByOrderId;
-                var data = await connection.QueryAsync<T>(query, new { OrderId = orderId });
+                var data = connection.Query<T>(query, new { OrderId = orderId });
                 productData.AddRange(data.Cast<IProductDataModel>());
 
             } catch (Exception ex) {
@@ -108,16 +109,16 @@ public class GetOrderById {
 
         }
 
-        private async Task AddMDFDoorProductDataToCollection(List<IProductDataModel> productData, Guid orderId, IDbConnection connection) {
+        private async Task AddMDFDoorProductDataToCollection(List<IProductDataModel> productData, Guid orderId, ISynchronousDbConnection connection) {
 
             try {
 
                 var query = MDFDoorDataModel.GetQueryByOrderId;
-                var doors = await connection.QueryAsync<MDFDoorDataModel>(query, new { OrderId = orderId });
+                var doors = connection.Query<MDFDoorDataModel>(query, new { OrderId = orderId });
 
                 string openingsQuery = MDFDoorDataModel.GetAdditionalOpeningsQueryByProductId;
                 foreach (var door in doors) {
-                    var data = await connection.QueryAsync<AdditionalOpening>(openingsQuery, new { ProductId = door.Id });
+                    var data = connection.Query<AdditionalOpening>(openingsQuery, new { ProductId = door.Id });
                     if (data is IEnumerable<AdditionalOpening> openings) {
                         door.AdditionalOpenings = openings.ToArray();
                     } else {
@@ -144,7 +145,7 @@ public class GetOrderById {
             return accumulator;
         }
 
-        private static async Task<Hardware> GetHardware(Guid orderId, IDbConnection connection) {
+        private static async Task<Hardware> GetHardware(Guid orderId, ISynchronousDbConnection connection) {
 
             var suppliesRepo = new OrderSuppliesRepository(connection);
             var supplies = await suppliesRepo.GetOrderSupplies(orderId);

@@ -1,9 +1,9 @@
-﻿using System.Data;
+﻿using Domain.Infrastructure.Data;
 
 namespace Domain.Orders.Persistance;
 
 public interface IOrderingDbConnectionFactory {
 
-    public Task<IDbConnection> CreateConnection();
+    public Task<ISynchronousDbConnection> CreateConnection();
 
 }

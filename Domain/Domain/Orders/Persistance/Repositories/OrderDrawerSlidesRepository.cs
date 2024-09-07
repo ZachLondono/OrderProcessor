@@ -1,18 +1,18 @@
 ﻿using Domain.Orders.Entities.Hardware;
-using Dapper;
 using System.Data;
 using Domain.ValueObjects;
+using Domain.Infrastructure.Data;
 
 namespace Domain.Orders.Persistance.Repositories;
 
-public class OrderDrawerSlidesRepository(IDbConnection connection, IDbTransaction? trx = null) {
+public class OrderDrawerSlidesRepository(ISynchronousDbConnection connection, ISynchronousDbTransaction? trx = null) {
 
-    private readonly IDbConnection _connection = connection;
-    private readonly IDbTransaction? _trx = trx;
+    private readonly ISynchronousDbConnection _connection = connection;
+    private readonly ISynchronousDbTransaction? _trx = trx;
 
     public async Task<IEnumerable<DrawerSlide>> GetOrderDrawerSlides(Guid orderId) {
 
-        var data = await _connection.QueryAsync<DrawerSlideModel>(
+        var data = _connection.Query<DrawerSlideModel>(
             """
             SELECT
                 id,
@@ -33,7 +33,7 @@ public class OrderDrawerSlidesRepository(IDbConnection connection, IDbTransactio
 
     public async Task<bool> AddDrawerSlideToOrder(Guid orderId, DrawerSlide drawerSlide) {
 
-        int rows = await _connection.ExecuteAsync(
+        int rows = _connection.Execute(
             """
             INSERT INTO drawer_slides 
                 (id,
@@ -62,7 +62,7 @@ public class OrderDrawerSlidesRepository(IDbConnection connection, IDbTransactio
 
     public async Task<bool> DeleteDrawerSlide(Guid drawerSlideId) {
 
-        int rows = await _connection.ExecuteAsync(
+        int rows = _connection.Execute(
             """
             DELETE FROM drawer_slides WHERE id = @Id;
             """,
@@ -77,7 +77,7 @@ public class OrderDrawerSlidesRepository(IDbConnection connection, IDbTransactio
 
     public async Task<bool> UpdateDrawerSlide(DrawerSlide drawerSlide) {
 
-        int rows = await _connection.ExecuteAsync(
+        int rows = _connection.Execute(
             """
             UPDATE drawer_slides
             SET qty = @Qty, length = @Length, style = @Style

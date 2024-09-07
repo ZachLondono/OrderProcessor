@@ -30,7 +30,7 @@ public partial class InsertOrder {
                 IsGarage = cabinet.IsGarage
             };
 
-            await connection.ExecuteAsync("""
+            connection.Execute("""
                     INSERT INTO wall_cabinets
                         (product_id,
                         door_qty,

@@ -20,7 +20,7 @@ internal class GetOrderNumberById {
 
             using var connection = await _factory.CreateConnection();
 
-            string? name = await connection.QuerySingleOrDefaultAsync<string>("SELECT number FROM orders WHERE id = @Id", query);
+            string? name = connection.QuerySingleOrDefault<string>("SELECT number FROM orders WHERE id = @Id", query);
 
             if (name is null) {
 

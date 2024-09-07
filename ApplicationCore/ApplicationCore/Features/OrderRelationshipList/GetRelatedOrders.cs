@@ -20,7 +20,7 @@ internal class GetRelatedOrders {
 
             using var connection = await _factory.CreateConnection();
 
-            var orders = await connection.QueryAsync<RelatedOrder>(
+            var orders = connection.Query<RelatedOrder>(
                 """
                 SELECT
                 	IIF(order_1_id = @OrderId, order_2_id, order_1_id) AS Id,

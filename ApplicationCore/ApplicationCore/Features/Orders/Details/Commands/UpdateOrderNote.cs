@@ -27,7 +27,7 @@ public class UpdateOrderNote {
                                WHERE id = @OrderId;
                                """;
 
-            int rowsAffected = await connection.ExecuteAsync(sql, new {
+            int rowsAffected = connection.Execute(sql, new {
                 command.Note,
                 command.OrderId
             });

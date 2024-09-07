@@ -22,7 +22,7 @@ public class DeleteProductDrawing {
 
                 using var connection = await _connectionFactory.CreateConnection();
 
-                var result = await connection.ExecuteAsync("DELETE FROM product_drawings WHERE id = @DrawingId", command);
+                var result = connection.Execute("DELETE FROM product_drawings WHERE id = @DrawingId", command);
 
                 if (result < 1) {
 
