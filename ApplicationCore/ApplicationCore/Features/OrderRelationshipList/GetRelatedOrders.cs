@@ -1,5 +1,4 @@
-﻿using Dapper;
-using Domain.Infrastructure.Bus;
+﻿using Domain.Infrastructure.Bus;
 using Domain.Orders.Persistance;
 
 namespace ApplicationCore.Features.OrderRelationshipList;
@@ -20,7 +19,7 @@ internal class GetRelatedOrders {
 
             using var connection = await _factory.CreateConnection();
 
-            var orders = connection.Query<RelatedOrder>(
+            var orders = await Task.Run(() => connection.Query<RelatedOrder>(
                 """
                 SELECT
                 	IIF(order_1_id = @OrderId, order_2_id, order_1_id) AS Id,
@@ -30,7 +29,7 @@ internal class GetRelatedOrders {
                     JOIN orders ON IIF(order_1_id = @OrderId, order_2_id, order_1_id) = orders.id
                 WHERE
                 	(order_1_id = @OrderId) OR (order_2_id = @OrderId);
-                """, query);
+                """, query));
 
             return Response<IEnumerable<RelatedOrder>>.Success(orders);
 
