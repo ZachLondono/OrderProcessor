@@ -18,7 +18,7 @@ public class AddSupplyToOrder {
             using var connection = await _factory.CreateConnection();
 
             var repo = new OrderSuppliesRepository(connection);
-            var wasInserted = repo.AddSupplyToOrder(command.OrderId, command.Supply);
+            var wasInserted = await Task.Run(() => repo.AddSupplyToOrder(command.OrderId, command.Supply));
 
             if (wasInserted) {
 

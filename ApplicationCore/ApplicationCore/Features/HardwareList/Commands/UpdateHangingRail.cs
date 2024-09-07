@@ -18,7 +18,7 @@ public class UpdateHangingRail {
             using var connection = await _factory.CreateConnection();
 
             var repo = new OrderHangingRailRepository(connection);
-            var wasInserted = repo.UpdateHangingRail(command.Rail);
+            var wasInserted = await Task.Run(() => repo.UpdateHangingRail(command.Rail));
 
             if (wasInserted) {
 

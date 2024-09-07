@@ -6,7 +6,6 @@ using Domain.Orders.Entities.Hardware;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using Microsoft.AspNetCore.Components;
-using Windows.System.Update;
 
 namespace ApplicationCore.Features.HardwareList;
 

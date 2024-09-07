@@ -18,7 +18,7 @@ public class UpdateDrawerSlide {
             using var connection = await _factory.CreateConnection();
 
             var repo = new OrderDrawerSlidesRepository(connection);
-            var wasInserted = repo.UpdateDrawerSlide(command.Slide);
+            var wasInserted = await Task.Run(() => repo.UpdateDrawerSlide(command.Slide));
 
             if (wasInserted) {
 
