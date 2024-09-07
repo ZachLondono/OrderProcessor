@@ -79,7 +79,12 @@ public class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory {
 
     private async Task InitializeDatabase(SqliteConnection connection) {
 
-        var directory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        string? directory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+        if (directory is null) {
+            throw new InvalidOperationException("Failed to get directory of executing assembly. Could not find path to ordering database schema.");
+        }
+
         var relativeSchemaPath = _configuration.GetRequiredSection("Schemas").GetValue<string>("Ordering");
 
         if (relativeSchemaPath is null) {

@@ -76,7 +76,12 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
 
     private async Task InitializeDatabase(SqliteConnection connection) {
 
-        var directory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        string? directory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+        if (directory is null) {
+            throw new InvalidOperationException("Failed to get directory of executing assembly. Could not find path to companies database schema.");
+        }
+
         var relativeSchemaPath = _configuration.GetRequiredSection("Schemas").GetValue<string>("Companies");
 
         if (relativeSchemaPath is null) {
