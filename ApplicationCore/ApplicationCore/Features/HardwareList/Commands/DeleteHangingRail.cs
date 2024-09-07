@@ -17,7 +17,7 @@ public class DeleteHangingRail {
             using var connection = await _factory.CreateConnection();
 
             var repo = new OrderHangingRailRepository(connection);
-            var wasInserted = await repo.DeleteHangingRail(command.RailId);
+            var wasInserted = repo.DeleteHangingRail(command.RailId);
 
             if (wasInserted) {
 

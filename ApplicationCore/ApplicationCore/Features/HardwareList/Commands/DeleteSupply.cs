@@ -17,7 +17,7 @@ public class DeleteSupply {
             using var connection = await _factory.CreateConnection();
 
             var repo = new OrderSuppliesRepository(connection);
-            var wasDeleted = await repo.DeleteSupply(command.SupplyId);
+            var wasDeleted = repo.DeleteSupply(command.SupplyId);
 
             if (wasDeleted) {
 

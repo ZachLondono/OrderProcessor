@@ -1,8 +1,6 @@
 ﻿using Domain.Orders.Entities;
 using Domain.Orders.ValueObjects;
-using Dapper;
 using Microsoft.Extensions.Logging;
-using System.Data;
 using Domain.Orders.Entities.Products;
 using Domain.Infrastructure.Bus;
 using Domain.Orders.Persistance.Repositories;
@@ -36,18 +34,18 @@ public partial class InsertOrder {
             try {
 
                 Guid shippingAddressId = Guid.NewGuid();
-                await InsertAddress(order.Shipping.Address, shippingAddressId, connection, trx);
+                InsertAddress(order.Shipping.Address, shippingAddressId, connection, trx);
 
                 Guid billingAddressId = Guid.NewGuid();
-                await InsertAddress(order.Billing.Address, billingAddressId, connection, trx);
+                InsertAddress(order.Billing.Address, billingAddressId, connection, trx);
 
-                await InsertOrder(order, shippingAddressId, billingAddressId, connection, trx);
+                InsertOrder(order, shippingAddressId, billingAddressId, connection, trx);
 
-                await InsertItems(order.AdditionalItems, order.Id, connection, trx);
+                InsertItems(order.AdditionalItems, order.Id, connection, trx);
 
-                await InsertProducts(order.Products, order.Id, connection, trx);
+                InsertProducts(order.Products, order.Id, connection, trx);
 
-                var wasInserted = await InsertHardware(order.Hardware, order.Id, connection, trx);
+                var wasInserted = InsertHardware(order.Hardware, order.Id, connection, trx);
                 if (!wasInserted) {
                     throw new InvalidOperationException("Could not insert order hardware into database");
                 }
@@ -72,7 +70,7 @@ public partial class InsertOrder {
 
         }
 
-        private static async Task InsertOrder(Order order, Guid shippingAddressId, Guid billingAddressId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+        private static void InsertOrder(Order order, Guid shippingAddressId, Guid billingAddressId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
             connection.Execute(
                 """
                 INSERT INTO orders
@@ -151,7 +149,7 @@ public partial class InsertOrder {
                 }, trx);
         }
 
-        private static async Task InsertAddress(Address address, Guid id, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+        private static void InsertAddress(Address address, Guid id, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             string addressInsertQuery = @"INSERT INTO addresses (id, line1, line2, line3, city, state, zip, country)
                                             VALUES (@Id, @Line1, @Line2, @Line3, @City, @State, @Zip, @Country);";
@@ -169,7 +167,7 @@ public partial class InsertOrder {
 
         }
 
-        private static async Task InsertItems(IEnumerable<AdditionalItem> items, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+        private static void InsertItems(IEnumerable<AdditionalItem> items, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             foreach (var item in items) {
 
@@ -188,40 +186,39 @@ public partial class InsertOrder {
 
         }
 
-        private async Task InsertProducts(IEnumerable<IProduct> products, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+        private void InsertProducts(IEnumerable<IProduct> products, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             foreach (var product in products) {
 
-                await InsertProduct((dynamic)product, orderId, connection, trx);
+                InsertProduct((dynamic)product, orderId, connection, trx);
 
             }
 
         }
 
-        private Task InsertProduct(object unknown, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+        private void InsertProduct(object unknown, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
             _logger.LogCritical("No insert method for product type {Type}", unknown.GetType());
-            return Task.CompletedTask;
         }
 
-        private static async Task<bool> InsertHardware(Hardware hardware, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+        private static bool InsertHardware(Hardware hardware, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             bool wasInserted = true;
 
             var suppliesRepo = new OrderSuppliesRepository(connection, trx);
             foreach (var supply in hardware.Supplies) {
-                wasInserted = await suppliesRepo.AddSupplyToOrder(orderId, supply);
+                wasInserted = suppliesRepo.AddSupplyToOrder(orderId, supply);
                 if (!wasInserted) return false;
             }
 
             var slidesRepo = new OrderDrawerSlidesRepository(connection, trx);
             foreach (var slide in hardware.DrawerSlides) {
-                wasInserted = await slidesRepo.AddDrawerSlideToOrder(orderId, slide);
+                wasInserted = slidesRepo.AddDrawerSlideToOrder(orderId, slide);
                 if (!wasInserted) return false;
             }
 
             var railsRepo = new OrderHangingRailRepository(connection, trx);
             foreach (var rail in hardware.HangingRails) {
-                wasInserted = await railsRepo.AddHangingRailToOrder(orderId, rail);
+                wasInserted = railsRepo.AddHangingRailToOrder(orderId, rail);
                 if (!wasInserted) return false;
             }
 

@@ -1,7 +1,6 @@
 ﻿using Domain.Orders.Entities;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Persistance.DataModels;
-using Dapper;
 using Microsoft.Extensions.Logging;
 using System.Data;
 using Domain.Orders.Entities.Products;
@@ -46,7 +45,7 @@ public class GetOrderById {
 
             IReadOnlyCollection<IProduct> products;
             try {
-                products = await GetProducts(request.OrderId, connection);
+                products = GetProducts(request.OrderId, connection);
             } catch (Exception ex) {
                 return new Error() {
                     Title = "Failed to load products",
@@ -54,7 +53,7 @@ public class GetOrderById {
                 };
             }
 
-            var hardware = await GetHardware(request.OrderId, connection);
+            var hardware = GetHardware(request.OrderId, connection);
 
             var order = orderData.ToDomainModel(request.OrderId, products, items, hardware);
 
@@ -62,39 +61,39 @@ public class GetOrderById {
 
         }
 
-        private async Task<IReadOnlyCollection<IProduct>> GetProducts(Guid orderId, ISynchronousDbConnection connection) {
+        private IReadOnlyCollection<IProduct> GetProducts(Guid orderId, ISynchronousDbConnection connection) {
 
-            List<IProductDataModel> productData = new();
+            List<IProductDataModel> productData = [];
 
             // add product data to list here
-            await AddProductDataToCollection<ClosetPartDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<CustomDrilledVerticalPanelDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<ZargenDrawerDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<DovetailDrawerBoxDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<DoweledDrawerBoxDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<FivePieceDoorDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<CounterTopDataModel>(productData, orderId, connection);
-            await AddMDFDoorProductDataToCollection(productData, orderId, connection);
+            AddProductDataToCollection<ClosetPartDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<CustomDrilledVerticalPanelDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<ZargenDrawerDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<DovetailDrawerBoxDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<DoweledDrawerBoxDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<FivePieceDoorDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<CounterTopDataModel>(productData, orderId, connection);
+            AddMDFDoorProductDataToCollection(productData, orderId, connection);
 
-            await AddProductDataToCollection<CabinetPartDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<BaseCabinetDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<WallCabinetDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<DrawerBaseCabinetDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<TallCabinetDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<SinkCabinetDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<TrashCabinetDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<DiagonalBaseCabinetDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<DiagonalWallCabinetDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<PieCutWallCabinetDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<PieCutBaseCabinetDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<BlindWallCabinetDataModel>(productData, orderId, connection);
-            await AddProductDataToCollection<BlindBaseCabinetDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<CabinetPartDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<BaseCabinetDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<WallCabinetDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<DrawerBaseCabinetDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<TallCabinetDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<SinkCabinetDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<TrashCabinetDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<DiagonalBaseCabinetDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<DiagonalWallCabinetDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<PieCutWallCabinetDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<PieCutBaseCabinetDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<BlindWallCabinetDataModel>(productData, orderId, connection);
+            AddProductDataToCollection<BlindBaseCabinetDataModel>(productData, orderId, connection);
 
             return productData.Aggregate(new List<IProduct>(), ProductAggregator).ToList();
 
         }
 
-        private async Task AddProductDataToCollection<T>(List<IProductDataModel> productData, Guid orderId, ISynchronousDbConnection connection) where T : IQueryableProductDataModel {
+        private void AddProductDataToCollection<T>(List<IProductDataModel> productData, Guid orderId, ISynchronousDbConnection connection) where T : IQueryableProductDataModel {
 
             try {
 
@@ -109,7 +108,7 @@ public class GetOrderById {
 
         }
 
-        private async Task AddMDFDoorProductDataToCollection(List<IProductDataModel> productData, Guid orderId, ISynchronousDbConnection connection) {
+        private void AddMDFDoorProductDataToCollection(List<IProductDataModel> productData, Guid orderId, ISynchronousDbConnection connection) {
 
             try {
 
@@ -145,16 +144,16 @@ public class GetOrderById {
             return accumulator;
         }
 
-        private static async Task<Hardware> GetHardware(Guid orderId, ISynchronousDbConnection connection) {
+        private static Hardware GetHardware(Guid orderId, ISynchronousDbConnection connection) {
 
             var suppliesRepo = new OrderSuppliesRepository(connection);
-            var supplies = await suppliesRepo.GetOrderSupplies(orderId);
+            var supplies = suppliesRepo.GetOrderSupplies(orderId);
 
             var slidesRepo = new OrderDrawerSlidesRepository(connection);
-            var slides = await slidesRepo.GetOrderDrawerSlides(orderId);
+            var slides = slidesRepo.GetOrderDrawerSlides(orderId);
 
             var railsRepo = new OrderHangingRailRepository(connection);
-            var hangingRails = await railsRepo.GetOrderHangingRails(orderId);
+            var hangingRails = railsRepo.GetOrderHangingRails(orderId);
 
             return new(supplies.ToArray(), slides.ToArray(), hangingRails.ToArray());
 

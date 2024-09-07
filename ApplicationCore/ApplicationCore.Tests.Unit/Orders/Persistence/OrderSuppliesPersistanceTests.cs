@@ -39,7 +39,7 @@ public class OrderSuppliesPersistanceTests {
         // Assert
         var connection = Factory.CreateConnection().Result;
         var repo = new OrderSuppliesRepository(connection);
-        var supplies = await repo.GetOrderSupplies(order.Id);
+        var supplies = repo.GetOrderSupplies(order.Id);
         supplies.Should().ContainEquivalentOf(supply);
 
     }
@@ -63,7 +63,7 @@ public class OrderSuppliesPersistanceTests {
         // Assert
         var connection = Factory.CreateConnection().Result;
         var repo = new OrderSuppliesRepository(connection);
-        var supplies = await repo.GetOrderSupplies(order.Id);
+        var supplies = repo.GetOrderSupplies(order.Id);
         supplies.Should().BeEmpty();
 
     }

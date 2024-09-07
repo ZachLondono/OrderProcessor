@@ -7,17 +7,17 @@ namespace Domain.Orders.Persistance;
 public partial class InsertOrder {
     public partial class Handler {
 
-        private static async Task InsertProduct(BasePieCutCornerCabinet cabinet, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+        private static void InsertProduct(BasePieCutCornerCabinet cabinet, Guid orderId, IDbConnection connection, IDbTransaction trx) {
 
             Guid? mdfConfigId = null;
             var mdfConfig = cabinet.MDFDoorOptions;
             if (mdfConfig is not null) {
                 mdfConfigId = Guid.NewGuid();
-                await InsertMDFConfig((Guid)mdfConfigId, mdfConfig, connection, trx);
+                InsertMDFConfig((Guid)mdfConfigId, mdfConfig, connection, trx);
             }
 
-            await InsertIntoProductTable(cabinet, orderId, connection, trx);
-            await InsertCabinet(cabinet, mdfConfigId, connection, trx);
+            InsertIntoProductTable(cabinet, orderId, connection, trx);
+            InsertCabinet(cabinet, mdfConfigId, connection, trx);
 
             var parameters = new {
                 ProductId = cabinet.Id,

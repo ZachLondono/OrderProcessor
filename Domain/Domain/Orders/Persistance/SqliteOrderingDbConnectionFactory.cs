@@ -5,7 +5,6 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Data;
 
 namespace Domain.Orders.Persistance;
 
@@ -45,7 +44,7 @@ public class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory {
 
             if (File.Exists(dataSource)) {
 
-                int dbVersion = await GetDatabaseVersion(connection);
+                int dbVersion = GetDatabaseVersion(connection);
                 if (dbVersion != DB_VERSION) {
                     semaphore.Release();
                     throw new IncompatibleDatabaseVersion(dbVersion);
@@ -111,7 +110,7 @@ public class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory {
 
     }
 
-    private static async Task<int> GetDatabaseVersion(SqliteConnection connection) {
+    private static int GetDatabaseVersion(SqliteConnection connection) {
         return connection.QuerySingle<int>("PRAGMA schema_version;");
     }
 

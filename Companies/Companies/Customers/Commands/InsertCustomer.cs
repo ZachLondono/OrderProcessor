@@ -27,16 +27,23 @@ public class InsertCustomer {
             connection.Open();
             var trx = connection.BeginTransaction();
 
-            var billingContactId = await InsertContact(customer.BillingContact, connection, trx);
-            var billingAddressId = await InsertAddress(customer.BillingAddress, connection, trx);
-            var shippingContactId = await InsertContact(customer.ShippingContact, connection, trx);
-            var shippingAddressId = await InsertAddress(customer.ShippingAddress, connection, trx);
-            var cpSettingsId = await InsertClosetProSettings(customer.ClosetProSettings, connection, trx);
+            var billingContactId = InsertContact(customer.BillingContact, connection, trx);
+            var billingAddressId = InsertAddress(customer.BillingAddress, connection, trx);
+            var shippingContactId = InsertContact(customer.ShippingContact, connection, trx);
+            var shippingAddressId = InsertAddress(customer.ShippingAddress, connection, trx);
+            var cpSettingsId = InsertClosetProSettings(customer.ClosetProSettings, connection, trx);
 
-            await InsertCustomer(customer, shippingContactId, shippingAddressId, billingContactId, billingAddressId, cpSettingsId, connection, trx);
+            InsertCustomer(customer,
+                           shippingContactId,
+                           shippingAddressId,
+                           billingContactId,
+                           billingAddressId,
+                           cpSettingsId,
+                           connection,
+                           trx);
 
             if (command.AllmoxyId is int allmoxyId) {
-                await InsertAllmoxyId(customer.Id, allmoxyId, connection, trx);
+                InsertAllmoxyId(customer.Id, allmoxyId, connection, trx);
             }
 
             trx.Commit();
@@ -46,7 +53,7 @@ public class InsertCustomer {
 
         }
 
-        private static async Task InsertCustomer(Customer customer,
+        private static void InsertCustomer(Customer customer,
                                                  Guid shippingContactId,
                                                  Guid shippingAddressId,
                                                  Guid billingContactId,
@@ -98,7 +105,7 @@ public class InsertCustomer {
 
         }
 
-        public static async Task<Guid> InsertContact(Contact contact, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+        public static Guid InsertContact(Contact contact, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             Guid id = Guid.NewGuid();
 
@@ -130,7 +137,7 @@ public class InsertCustomer {
 
         }
 
-        public static async Task<Guid> InsertAddress(Address address, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+        public static Guid InsertAddress(Address address, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             Guid id = Guid.NewGuid();
 
@@ -174,7 +181,7 @@ public class InsertCustomer {
 
         }
 
-        public static async Task InsertAllmoxyId(Guid customerId, int allmoxyId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+        public static void InsertAllmoxyId(Guid customerId, int allmoxyId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             int rows = connection.Execute(
                 "INSERT INTO allmoxy_ids (id, customer_id) VALUES (@AllmoxyId, @CustomerId)",
@@ -189,7 +196,7 @@ public class InsertCustomer {
 
         }
 
-        public static async Task<Guid> InsertClosetProSettings(ClosetProSettings settings, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+        public static Guid InsertClosetProSettings(ClosetProSettings settings, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             Guid id = Guid.NewGuid();
 

@@ -18,7 +18,7 @@ public class UpdateSupply {
             using var connection = await _factory.CreateConnection();
 
             var repo = new OrderSuppliesRepository(connection);
-            var wasInserted = await repo.UpdateSupply(command.Supply);
+            var wasInserted = repo.UpdateSupply(command.Supply);
 
             if (wasInserted) {
 

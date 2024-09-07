@@ -10,7 +10,7 @@ public class OrderHangingRailRepository(ISynchronousDbConnection connection, ISy
     private readonly ISynchronousDbConnection _connection = connection;
     private readonly ISynchronousDbTransaction? _trx = trx;
 
-    public async Task<IEnumerable<HangingRail>> GetOrderHangingRails(Guid orderId) {
+    public IEnumerable<HangingRail> GetOrderHangingRails(Guid orderId) {
 
         var data = _connection.Query<HangingRailModel>(
             """
@@ -31,7 +31,7 @@ public class OrderHangingRailRepository(ISynchronousDbConnection connection, ISy
 
     }
 
-    public async Task<bool> AddHangingRailToOrder(Guid orderId, HangingRail hangingRail) {
+    public bool AddHangingRailToOrder(Guid orderId, HangingRail hangingRail) {
 
         int rows = _connection.Execute(
             """
@@ -61,7 +61,7 @@ public class OrderHangingRailRepository(ISynchronousDbConnection connection, ISy
 
     }
 
-    public async Task<bool> DeleteHangingRail(Guid hangingRailId) {
+    public bool DeleteHangingRail(Guid hangingRailId) {
 
         int rows = _connection.Execute(
             """
@@ -76,7 +76,7 @@ public class OrderHangingRailRepository(ISynchronousDbConnection connection, ISy
 
     }
 
-    public async Task<bool> UpdateHangingRail(HangingRail hangingRail) {
+    public bool UpdateHangingRail(HangingRail hangingRail) {
 
         int rows = _connection.Execute(
             """

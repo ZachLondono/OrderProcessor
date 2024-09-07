@@ -7,10 +7,10 @@ namespace Domain.Orders.Persistance;
 public partial class InsertOrder {
     public partial class Handler {
 
-        private static async Task InsertProduct(FivePieceDoorProduct door, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+        private static void InsertProduct(FivePieceDoorProduct door, Guid orderId, IDbConnection connection, IDbTransaction trx) {
 
-            await InsertFivePieceDoorConfig(door.Id, door, connection, trx);
-            await InsertIntoProductTable(door, orderId, connection, trx);
+            InsertFivePieceDoorConfig(door.Id, door, connection, trx);
+            InsertIntoProductTable(door, orderId, connection, trx);
             connection.Execute(
                 """
                 INSERT INTO five_piece_door_products

@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.HardwareList.Models;
-using Domain.Infrastructure.Bus;
+﻿using Domain.Infrastructure.Bus;
 using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Persistance;
 using Domain.Orders.Persistance.Repositories;
@@ -19,7 +18,7 @@ public class AddSupplyToOrder {
             using var connection = await _factory.CreateConnection();
 
             var repo = new OrderSuppliesRepository(connection);
-            var wasInserted = await repo.AddSupplyToOrder(command.OrderId, command.Supply);
+            var wasInserted = repo.AddSupplyToOrder(command.OrderId, command.Supply);
 
             if (wasInserted) {
 

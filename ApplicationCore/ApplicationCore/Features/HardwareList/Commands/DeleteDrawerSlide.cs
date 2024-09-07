@@ -17,7 +17,7 @@ public class DeleteDrawerSlide {
             using var connection = await _factory.CreateConnection();
 
             var repo = new OrderDrawerSlidesRepository(connection);
-            var wasInserted = await repo.DeleteDrawerSlide(command.SlideId);
+            var wasInserted = repo.DeleteDrawerSlide(command.SlideId);
 
             if (wasInserted) {
 

@@ -2,7 +2,6 @@
 using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
-using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace Domain.Orders.Persistance.DataModels;

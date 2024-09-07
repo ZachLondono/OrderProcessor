@@ -1,7 +1,5 @@
 ﻿using Domain.Companies.Entities;
 using Domain.Companies.ValueObjects;
-using Dapper;
-using System.Data;
 using Domain.Infrastructure.Bus;
 using Companies.Infrastructure;
 using Domain.Infrastructure.Data;
@@ -28,8 +26,8 @@ public class UpdateVendor {
             var trx = connection.BeginTransaction();
 
             var vendor = command.Vendor;
-            await UpdateVendor(connection, trx, vendor);
-            await UpdateAddress(vendor.Address, vendor.Id, connection, trx);
+            UpdateVendor(connection, trx, vendor);
+            UpdateAddress(vendor.Address, vendor.Id, connection, trx);
 
             trx.Commit();
             connection.Close();
@@ -38,7 +36,7 @@ public class UpdateVendor {
 
         }
 
-        private static async Task UpdateVendor(ISynchronousDbConnection connection, ISynchronousDbTransaction trx, Vendor vendor) {
+        private static void UpdateVendor(ISynchronousDbConnection connection, ISynchronousDbTransaction trx, Vendor vendor) {
 
             connection.Execute(
                 """
@@ -87,7 +85,7 @@ public class UpdateVendor {
 
         }
 
-        public static async Task UpdateAddress(Address address, Guid vendorId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+        public static void UpdateAddress(Address address, Guid vendorId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
             
             connection.Execute(
                 $"""

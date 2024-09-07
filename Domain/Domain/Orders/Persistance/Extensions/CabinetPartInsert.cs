@@ -6,9 +6,9 @@ namespace Domain.Orders.Persistance;
 public partial class InsertOrder {
     public partial class Handler {
 
-        private static async Task InsertProduct(CabinetPart cabinetPart, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+        private static void InsertProduct(CabinetPart cabinetPart, Guid orderId, IDbConnection connection, IDbTransaction trx) {
 
-            await InsertIntoProductTable(cabinetPart, orderId, connection, trx);
+            InsertIntoProductTable(cabinetPart, orderId, connection, trx);
 
             var parameters = new {
                 ProductId = cabinetPart.Id,

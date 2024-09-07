@@ -9,7 +9,7 @@ public class OrderSuppliesRepository(ISynchronousDbConnection connection, ISynch
     private readonly ISynchronousDbConnection _connection = connection;
     private readonly ISynchronousDbTransaction? _trx = trx;
 
-    public async Task<IEnumerable<Supply>> GetOrderSupplies(Guid orderId) {
+    public IEnumerable<Supply> GetOrderSupplies(Guid orderId) {
 
         var data = _connection.Query<SupplyModel>(
             """
@@ -29,7 +29,7 @@ public class OrderSuppliesRepository(ISynchronousDbConnection connection, ISynch
 
     }
 
-    public async Task<bool> AddSupplyToOrder(Guid orderId, Supply supply) {
+    public bool AddSupplyToOrder(Guid orderId, Supply supply) {
 
         var rows = _connection.Execute(
             """
@@ -56,7 +56,7 @@ public class OrderSuppliesRepository(ISynchronousDbConnection connection, ISynch
 
     }
 
-    public async Task<bool> DeleteSupply(Guid supplyId) {
+    public bool DeleteSupply(Guid supplyId) {
         
         var rows = _connection.Execute(
             """
@@ -72,7 +72,7 @@ public class OrderSuppliesRepository(ISynchronousDbConnection connection, ISynch
 
     }
 
-    public async Task<bool> UpdateSupply(Supply supply) {
+    public bool UpdateSupply(Supply supply) {
 
         var rows = _connection.Execute(
             """
@@ -91,7 +91,7 @@ public class OrderSuppliesRepository(ISynchronousDbConnection connection, ISynch
 
         public Guid Id { get; set; }
         public int Qty { get; set; }
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
     }
 

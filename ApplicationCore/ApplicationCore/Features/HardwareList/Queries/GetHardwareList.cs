@@ -19,13 +19,13 @@ public class GetHardwareList {
             using var connection = await _factory.CreateConnection();
 
             var suppliesRepo = new OrderSuppliesRepository(connection);
-            var supplies = await suppliesRepo.GetOrderSupplies(query.OrderId);
+            var supplies = suppliesRepo.GetOrderSupplies(query.OrderId);
 
             var slidesRepo = new OrderDrawerSlidesRepository(connection);
-            var slides = await slidesRepo.GetOrderDrawerSlides(query.OrderId);
+            var slides = slidesRepo.GetOrderDrawerSlides(query.OrderId);
 
             var railsRepo = new OrderHangingRailRepository(connection);
-            var hangingRails = await railsRepo.GetOrderHangingRails(query.OrderId);
+            var hangingRails = railsRepo.GetOrderHangingRails(query.OrderId);
 
             return new Hardware(supplies.ToArray(), slides.ToArray(), hangingRails.ToArray());
 

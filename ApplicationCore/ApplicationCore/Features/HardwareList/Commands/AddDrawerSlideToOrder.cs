@@ -18,7 +18,7 @@ public class AddDrawerSlideToOrder {
             using var connection = await _factory.CreateConnection();
 
             var repo = new OrderDrawerSlidesRepository(connection);
-            var wasInserted = await repo.AddDrawerSlideToOrder(command.OrderId, command.DrawerSlide);
+            var wasInserted = repo.AddDrawerSlideToOrder(command.OrderId, command.DrawerSlide);
 
             if (wasInserted) {
 

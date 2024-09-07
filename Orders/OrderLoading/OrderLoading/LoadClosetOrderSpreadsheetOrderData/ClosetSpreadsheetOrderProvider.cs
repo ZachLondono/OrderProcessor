@@ -3,7 +3,6 @@ using Domain.Orders.Entities;
 using Domain.Orders.ValueObjects;
 using Domain.Extensions;
 using Domain.ValueObjects;
-using Dapper;
 using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
 using static Domain.Companies.CompanyDirectory;
@@ -391,7 +390,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
 			try {
 				items.Add(T.ReadFromWorksheet(worksheet, row));
-			} catch (Exception ex) {
+			} catch {
 				OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Error reading item at row {row}");
 				// TODO: log exception
 			}

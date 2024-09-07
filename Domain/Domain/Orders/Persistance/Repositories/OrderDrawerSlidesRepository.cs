@@ -10,7 +10,7 @@ public class OrderDrawerSlidesRepository(ISynchronousDbConnection connection, IS
     private readonly ISynchronousDbConnection _connection = connection;
     private readonly ISynchronousDbTransaction? _trx = trx;
 
-    public async Task<IEnumerable<DrawerSlide>> GetOrderDrawerSlides(Guid orderId) {
+    public IEnumerable<DrawerSlide> GetOrderDrawerSlides(Guid orderId) {
 
         var data = _connection.Query<DrawerSlideModel>(
             """
@@ -31,7 +31,7 @@ public class OrderDrawerSlidesRepository(ISynchronousDbConnection connection, IS
 
     }
 
-    public async Task<bool> AddDrawerSlideToOrder(Guid orderId, DrawerSlide drawerSlide) {
+    public bool AddDrawerSlideToOrder(Guid orderId, DrawerSlide drawerSlide) {
 
         int rows = _connection.Execute(
             """
@@ -60,7 +60,7 @@ public class OrderDrawerSlidesRepository(ISynchronousDbConnection connection, IS
         return rows > 0;
     }
 
-    public async Task<bool> DeleteDrawerSlide(Guid drawerSlideId) {
+    public bool DeleteDrawerSlide(Guid drawerSlideId) {
 
         int rows = _connection.Execute(
             """
@@ -75,7 +75,7 @@ public class OrderDrawerSlidesRepository(ISynchronousDbConnection connection, IS
 
     }
 
-    public async Task<bool> UpdateDrawerSlide(DrawerSlide drawerSlide) {
+    public bool UpdateDrawerSlide(DrawerSlide drawerSlide) {
 
         int rows = _connection.Execute(
             """

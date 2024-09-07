@@ -27,15 +27,15 @@ public class UpdateCustomer {
             connection.Open();
             var trx = connection.BeginTransaction();
 
-            await UpdateCustomer(customer, connection, trx);
+            UpdateCustomer(customer, connection, trx);
 
-            await UpdateContact(customer.BillingContact, customer.Id, "billing_contact_id", connection, trx);
-            await UpdateAddress(customer.BillingAddress, customer.Id, "billing_address_id", connection, trx);
+            UpdateContact(customer.BillingContact, customer.Id, "billing_contact_id", connection, trx);
+            UpdateAddress(customer.BillingAddress, customer.Id, "billing_address_id", connection, trx);
 
-            await UpdateContact(customer.ShippingContact, customer.Id, "shipping_contact_id", connection, trx);
-            await UpdateAddress(customer.ShippingAddress, customer.Id, "shipping_address_id", connection, trx);
+            UpdateContact(customer.ShippingContact, customer.Id, "shipping_contact_id", connection, trx);
+            UpdateAddress(customer.ShippingAddress, customer.Id, "shipping_address_id", connection, trx);
 
-            await UpdateClosetProSettings(customer.ClosetProSettings, customer.Id, connection, trx);
+            UpdateClosetProSettings(customer.ClosetProSettings, customer.Id, connection, trx);
 
             trx.Commit();
             connection.Close();
@@ -44,7 +44,7 @@ public class UpdateCustomer {
 
         }
 
-        private static async Task UpdateCustomer(Customer customer, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+        private static void UpdateCustomer(Customer customer, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
             connection.Execute(
                 """
                 UPDATE customers
@@ -57,7 +57,7 @@ public class UpdateCustomer {
                 """, customer, trx);
         }
 
-        public static async Task UpdateContact(Contact contact, Guid customerId, string idColName, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+        public static void UpdateContact(Contact contact, Guid customerId, string idColName, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             connection.Execute(
                 $"""
@@ -76,7 +76,7 @@ public class UpdateCustomer {
 
         }
 
-        public static async Task UpdateAddress(Address address, Guid customerId, string idColName, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+        public static void UpdateAddress(Address address, Guid customerId, string idColName, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             connection.Execute(
                 $"""
@@ -103,7 +103,7 @@ public class UpdateCustomer {
 
         }
 
-        public static async Task UpdateClosetProSettings(ClosetProSettings settings, Guid customerId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+        public static void UpdateClosetProSettings(ClosetProSettings settings, Guid customerId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             connection.Execute(
                 $"""

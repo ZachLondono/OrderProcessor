@@ -64,8 +64,6 @@
     private List<AvailableDrawing> _availableDrawings { get; set; } = new();
     private Error? _error = null;
 
-    private bool _value = false;
-
     public async Task LoadOpenFiles() {
 
         var response = await Bus.Send(new EnumerateOpenDrawings.Command());
