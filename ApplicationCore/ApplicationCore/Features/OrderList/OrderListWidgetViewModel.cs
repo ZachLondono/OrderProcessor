@@ -10,7 +10,7 @@ public class OrderListWidgetViewModel {
     public Action? OnPropertyChanged { get; set; }
 
     private IEnumerable<OrderListItem>? _orders = null;
-    private bool _isLoading = false;
+    private bool _isLoading = true;
     private bool _hasError = false;
     private string? _errorMessage = null;
     private int _pageCount = 0;
