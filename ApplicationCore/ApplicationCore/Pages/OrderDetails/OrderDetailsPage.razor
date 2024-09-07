@@ -60,6 +60,7 @@
         </section>
     
     </div>
+
 }
 
 @code {
@@ -73,8 +74,6 @@
     public string OrderIdStr { get; set; } = string.Empty;
 
     public Guid OrderId { get; set; }
-
-    public static List<Order> GetOrder(Order order) => new() { order };
 
     protected override void OnParametersSet() {
         if (Guid.TryParse(OrderIdStr, out Guid orderId)) {
