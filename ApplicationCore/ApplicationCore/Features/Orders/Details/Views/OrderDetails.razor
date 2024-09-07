@@ -279,11 +279,11 @@
             var last = Rooms.LastOrDefault();
             foreach (var room in Rooms) {
                 <Room Model="room"
-                Index="Rooms.IndexOf(room)"
-                IsFirst="first!.Equals(room)"
-                IsLast="last!.Equals(room)"
-                UseInches="_useInches"
-                ProductActionsColumn="ProductActionsColumn" />
+                      Index="Rooms.IndexOf(room)"
+                      IsFirst="first!.Equals(room)"
+                      IsLast="last!.Equals(room)"
+                      UseInches="_useInches"
+                      ProductActionsColumn="ProductActionsColumn" />
             }
 
         }
@@ -318,7 +318,7 @@
                             <td class="p-5 border-b font-medium">@item.Description</td>
                             <td class="p-5 border-b">@item.UnitPrice.ToString("$0.00")</td>
                             <td class="p-5 border-b">@((item.UnitPrice * item.Qty).ToString("$0.00"))</td>
-                                </tr>
+                        </tr>
                     }
 		        </tbody>
 	        </table>
