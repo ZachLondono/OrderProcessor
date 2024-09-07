@@ -1,5 +1,4 @@
-﻿using Dapper;
-using Domain.Infrastructure.Bus;
+﻿using Domain.Infrastructure.Bus;
 using Domain.Orders.Persistance;
 
 namespace ApplicationCore.Features.OrderList;
@@ -46,7 +45,7 @@ public class GetOrderList {
                         FROM orders{queryFilter};
                         """;
 
-            var items = connection.Query<OrderListItem>(query, request);
+            var items = await Task.Run(() => connection.Query<OrderListItem>(query, request));
 
             return new(items);
 

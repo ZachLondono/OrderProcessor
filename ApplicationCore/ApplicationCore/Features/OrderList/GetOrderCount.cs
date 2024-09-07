@@ -1,5 +1,4 @@
-﻿using Dapper;
-using Domain.Infrastructure.Bus;
+﻿using Domain.Infrastructure.Bus;
 using Domain.Orders.Persistance;
 
 namespace ApplicationCore.Features.OrderList;
@@ -27,8 +26,7 @@ public class GetOrderCount {
             var queryFilter = new OrderListQueryFilterBuilder() {
                 SearchTerm = request.SearchTerm,
                 CustomerId = request.CustomerId,
-                VendorId = request.VendorId,
-
+                VendorId = request.VendorId
             }.GetQueryFilter();
 
             var query = $"""
@@ -37,7 +35,7 @@ public class GetOrderCount {
                         FROM orders{queryFilter};
                         """;
 
-            var count = connection.QuerySingle<int>(query, request);
+            var count = await Task.Run(() => connection.QuerySingle<int>(query, request));
 
             return new(count);
 

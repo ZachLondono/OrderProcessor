@@ -1,5 +1,4 @@
 ﻿using Companies.Infrastructure;
-using Dapper;
 using Domain.Infrastructure.Bus;
 
 namespace Companies.Vendors.List;
@@ -20,7 +19,7 @@ public class GetAllVendors {
 
             using var connection = await _factory.CreateConnection();
 
-            var vendors = connection.Query<VendorListItem>("SELECT id, NAME FROM vendors;");
+            var vendors = await Task.Run(() => connection.Query<VendorListItem>("SELECT id, NAME FROM vendors;"));
 
             return Response<IEnumerable<VendorListItem>>.Success(vendors);
 
