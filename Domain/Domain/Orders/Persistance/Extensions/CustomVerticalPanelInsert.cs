@@ -1,14 +1,13 @@
 ﻿using Domain.Orders.ValueObjects;
-using Dapper;
 using Domain.Orders.Entities.Products.Closets;
-using System.Data;
+using Domain.Infrastructure.Data;
 
 namespace Domain.Orders.Persistance;
 
 public partial class InsertOrder {
     public partial class Handler {
 
-        private static void InsertProduct(CustomDrilledVerticalPanel verticalPanel, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+        private static void InsertProduct(CustomDrilledVerticalPanel verticalPanel, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             InsertIntoProductTable(verticalPanel, orderId, connection, trx);
 

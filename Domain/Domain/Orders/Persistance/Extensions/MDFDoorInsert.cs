@@ -1,13 +1,12 @@
-﻿using Dapper;
+﻿using Domain.Infrastructure.Data;
 using Domain.Orders.Entities.Products.Doors;
-using System.Data;
 
 namespace Domain.Orders.Persistance;
 
 public partial class InsertOrder {
     public partial class Handler {
 
-        private static void InsertProduct(MDFDoorProduct mdfdoor, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+        private static void InsertProduct(MDFDoorProduct mdfdoor, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             InsertMDFConfig(mdfdoor.Id, mdfdoor, connection, trx);
             InsertIntoProductTable(mdfdoor, orderId, connection, trx);

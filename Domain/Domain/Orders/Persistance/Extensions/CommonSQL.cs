@@ -1,8 +1,7 @@
 ﻿using Domain.Orders.ValueObjects;
-using Dapper;
 using Domain.Orders.Entities.Products;
 using Domain.Orders.Entities.Products.Cabinets;
-using System.Data;
+using Domain.Infrastructure.Data;
 
 namespace Domain.Orders.Persistance;
 
@@ -10,7 +9,7 @@ public partial class InsertOrder {
 
     public partial class Handler {
 
-        private static void InsertIntoProductTable(IProduct product, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+        private static void InsertIntoProductTable(IProduct product, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             var parameters = new {
                 product.Id,
@@ -32,7 +31,7 @@ public partial class InsertOrder {
 
         }
 
-        private static void InsertCabinet(Cabinet cabinet, Guid? mdfConfigId, IDbConnection connection, IDbTransaction trx) {
+        private static void InsertCabinet(Cabinet cabinet, Guid? mdfConfigId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             var parameters = new {
                 ProductId = cabinet.Id,
@@ -108,7 +107,7 @@ public partial class InsertOrder {
 
         }
 
-        private static void InsertMDFConfig(Guid id, MDFDoorOptions options, IDbConnection connection, IDbTransaction trx) {
+        private static void InsertMDFConfig(Guid id, MDFDoorOptions options, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             var parameters = new {
                 MDFConfigId = id,
@@ -145,7 +144,7 @@ public partial class InsertOrder {
 
         }
 
-        private static void InsertFivePieceDoorConfig(Guid id, FivePieceDoorConfig door, IDbConnection connection, IDbTransaction trx) {
+        private static void InsertFivePieceDoorConfig(Guid id, FivePieceDoorConfig door, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             var parameters = new {
                 Id = id,
@@ -170,7 +169,7 @@ public partial class InsertOrder {
 
         }
 
-        private static void InsertCabinetDBConfig(Guid id, CabinetDrawerBoxOptions dbOptions, IDbConnection connection, IDbTransaction trx) {
+        private static void InsertCabinetDBConfig(Guid id, CabinetDrawerBoxOptions dbOptions, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             var parameters = new {
                 Id = id,
@@ -192,7 +191,7 @@ public partial class InsertOrder {
 
         }
 
-        private static void InsertDovetailDBConfig(Guid id, DovetailDrawerBoxConfig dbConfig, IDbConnection connection, IDbTransaction trx) {
+        private static void InsertDovetailDBConfig(Guid id, DovetailDrawerBoxConfig dbConfig, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             var parameters = new {
                 Id = id,
@@ -244,7 +243,7 @@ public partial class InsertOrder {
 
         }
 
-        private static void InsertDoweledDBConfig(Guid id, DoweledDrawerBoxConfig dbConfig, IDbConnection connection, IDbTransaction trx) {
+        private static void InsertDoweledDBConfig(Guid id, DoweledDrawerBoxConfig dbConfig, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             var parameters = new {
                 Id = id,

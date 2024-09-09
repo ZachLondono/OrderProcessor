@@ -1,13 +1,12 @@
 ﻿using Domain.Orders.Entities.Products;
-using System.Data;
-using Dapper;
+using Domain.Infrastructure.Data;
 
 namespace Domain.Orders.Persistance;
 
 public partial class InsertOrder {
     public partial class Handler {
 
-        private static void InsertProduct(CounterTop counter, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+        private static void InsertProduct(CounterTop counter, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             InsertIntoProductTable(counter, orderId, connection, trx);
 

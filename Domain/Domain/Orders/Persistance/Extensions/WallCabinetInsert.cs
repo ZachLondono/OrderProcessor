@@ -1,5 +1,4 @@
-﻿using System.Data;
-using Dapper;
+﻿using Domain.Infrastructure.Data;
 using Domain.Orders.Entities.Products.Cabinets;
 
 namespace Domain.Orders.Persistance;
@@ -7,7 +6,7 @@ namespace Domain.Orders.Persistance;
 public partial class InsertOrder {
     public partial class Handler {
 
-        private static void InsertProduct(WallCabinet cabinet, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+        private static void InsertProduct(WallCabinet cabinet, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             Guid? mdfConfigId = null;
             var mdfConfig = cabinet.MDFDoorOptions;

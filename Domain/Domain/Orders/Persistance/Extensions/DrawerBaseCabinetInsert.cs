@@ -1,13 +1,12 @@
 ﻿using Domain.Orders.Entities.Products.Cabinets;
-using Dapper;
-using System.Data;
+using Domain.Infrastructure.Data;
 
 namespace Domain.Orders.Persistance;
 
 public partial class InsertOrder {
     public partial class Handler {
 
-        private static void InsertProduct(DrawerBaseCabinet cabinet, Guid orderId, IDbConnection connection, IDbTransaction trx) {
+        private static void InsertProduct(DrawerBaseCabinet cabinet, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             Guid? mdfConfigId = null;
             var mdfConfig = cabinet.MDFDoorOptions;
