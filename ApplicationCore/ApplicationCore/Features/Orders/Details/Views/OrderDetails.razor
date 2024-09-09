@@ -23,15 +23,15 @@
 @inject IBus Bus
 @inject NavigationService NavigationService
 
-@if (_order is null) {
+@if (_isLoading) {
+    <span>Loading...</span>
+} else if (_order is null) {
     <span>Order was not found or could not be loaded</span>
 } else {
 
-    @if (_order is not null) {
-        <section>
-            <OrderWarnings Order="_order" />
-        </section>
-    }
+    <section>
+        <OrderWarnings Order="_order" />
+    </section>
 
     <section class="grid grid-cols-2" id="header">
 

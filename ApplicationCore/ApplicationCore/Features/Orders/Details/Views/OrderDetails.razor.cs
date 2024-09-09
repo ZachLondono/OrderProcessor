@@ -2,7 +2,6 @@
 using ApplicationCore.Features.Orders.Details.Models;
 using ApplicationCore.Features.Orders.Details.Queries;
 using Domain.Orders.Entities;
-using ApplicationCore.Shared.Services;
 using Blazored.Modal;
 using Blazored.Modal.Services;
 using Domain.Orders.Entities.Products;
@@ -28,6 +27,7 @@ public partial class OrderDetails {
     public List<RoomModel> Rooms { get; set; } = new();
 
     private Order? _order = null;
+    private bool _isLoading = true;
     private bool _isNoteDirty = false;
     private string _note = string.Empty;
     private bool _useInches = false;
@@ -36,13 +36,16 @@ public partial class OrderDetails {
 
         var result = await Bus.Send(new GetOrderById.Query(OrderId));
 
-        result.OnSuccess(order => {
+        result.Match(
+            order => {
 
-            _order = order;
-            _note = order.Note;
-            SeparateRooms();
+                _order = order;
+                _note = order.Note;
+                SeparateRooms();
+                _isLoading = false;
 
-        });
+            },
+            _ => _isLoading = false);
 
     }
 
