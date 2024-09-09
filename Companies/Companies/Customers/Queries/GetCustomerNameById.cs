@@ -1,5 +1,4 @@
 ﻿using Companies.Infrastructure;
-using Dapper;
 using Domain.Infrastructure.Bus;
 
 namespace Companies.Customers.Queries;
@@ -20,7 +19,7 @@ public class GetCustomerNameById {
 
             using var connection = await _factory.CreateConnection();
 
-            var name = connection.QuerySingle<string>("SELECT name FROM customers WHERE id = @CustomerId;", query);
+            var name = await Task.Run(() => connection.QuerySingle<string>("SELECT name FROM customers WHERE id = @CustomerId;", query));
 
             return name ?? "";
 

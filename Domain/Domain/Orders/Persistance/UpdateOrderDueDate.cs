@@ -1,5 +1,4 @@
-﻿using Dapper;
-using Domain.Infrastructure.Bus;
+﻿using Domain.Infrastructure.Bus;
 
 namespace Domain.Orders.Persistance;
 
@@ -26,10 +25,10 @@ public class UpdateOrderDueDate {
                                WHERE id = @OrderId;
                                """;
 
-            int rowsAffected = connection.Execute(sql, new {
+            int rowsAffected = await Task.Run(() => connection.Execute(sql, new {
                 command.DueDate,
                 command.OrderId
-            });
+            }));
 
             if (rowsAffected < 1) {
                 return Response.Error(new() {

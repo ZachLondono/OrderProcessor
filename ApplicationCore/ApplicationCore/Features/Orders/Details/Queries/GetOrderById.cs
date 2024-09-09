@@ -29,35 +29,39 @@ public class GetOrderById {
 
             using var connection = await _factory.CreateConnection();
 
-            var orderData = connection.QuerySingleOrDefault<OrderDataModel>(OrderDataModel.GetQueryById(), new { Id = request.OrderId });
+            return await Task.Run<Response<Order>>(() => {
 
-            if (orderData is null) {
+                var orderData = connection.QuerySingleOrDefault<OrderDataModel>(OrderDataModel.GetQueryById(), new { Id = request.OrderId });
 
-                return new Error() {
-                    Title = "Order not found",
-                    Details = $"Could not find order in database with given id {request.OrderId}"
-                };
+                if (orderData is null) {
 
-            }
+                    return new Error() {
+                        Title = "Order not found",
+                        Details = $"Could not find order in database with given id {request.OrderId}"
+                    };
 
-            var itemData = connection.Query<AdditionalItemDataModel>(AdditionalItemDataModel.GetQueryByOrderId(), request);
-            var items = itemData.Select(i => i.ToDomainModel()).ToList();
+                }
 
-            IReadOnlyCollection<IProduct> products;
-            try {
-                products = GetProducts(request.OrderId, connection);
-            } catch (Exception ex) {
-                return new Error() {
-                    Title = "Failed to load products",
-                    Details = ex.Message
-                };
-            }
+                var itemData = connection.Query<AdditionalItemDataModel>(AdditionalItemDataModel.GetQueryByOrderId(), request);
+                var items = itemData.Select(i => i.ToDomainModel()).ToList();
 
-            var hardware = GetHardware(request.OrderId, connection);
+                IReadOnlyCollection<IProduct> products;
+                try {
+                    products = GetProducts(request.OrderId, connection);
+                } catch (Exception ex) {
+                    return new Error() {
+                        Title = "Failed to load products",
+                        Details = ex.Message
+                    };
+                }
 
-            var order = orderData.ToDomainModel(request.OrderId, products, items, hardware);
+                var hardware = GetHardware(request.OrderId, connection);
 
-            return order;
+                var order = orderData.ToDomainModel(request.OrderId, products, items, hardware);
+
+                return new(order);
+
+            });
 
         }
 

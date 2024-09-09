@@ -1,5 +1,4 @@
-﻿using Dapper;
-using Domain.Infrastructure.Bus;
+﻿using Domain.Infrastructure.Bus;
 
 namespace Domain.Orders.Persistance;
 
@@ -20,14 +19,14 @@ public class GetOrderWorkingDirectory {
 
             using var connection = await _factory.CreateConnection();
 
-            return connection.QuerySingle<string>(
+            return await Task.Run(() => connection.QuerySingle<string>(
                 """
                 SELECT 
                     working_directory
                 FROM orders
                 WHERE id = @OrderId;
                 """,
-                query);
+                query));
 
         }
 

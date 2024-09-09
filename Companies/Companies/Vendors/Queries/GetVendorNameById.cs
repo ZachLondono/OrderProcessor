@@ -1,5 +1,4 @@
 ﻿using Companies.Infrastructure;
-using Dapper;
 using Domain.Infrastructure.Bus;
 
 namespace Companies.Vendors.Queries;
@@ -20,7 +19,7 @@ public class GetVendorNameById {
 
             using var connection = await _factory.CreateConnection();
 
-            var name = connection.QuerySingle<string>("SELECT name FROM vendors WHERE id = @VendorId;", query);
+            var name = await Task.Run(() => connection.QuerySingle<string>("SELECT name FROM vendors WHERE id = @VendorId;", query));
 
             return name ?? "";
 

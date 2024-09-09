@@ -1,5 +1,4 @@
-﻿using Dapper;
-using Domain.Infrastructure.Bus;
+﻿using Domain.Infrastructure.Bus;
 
 namespace Domain.Orders.Persistance;
 
@@ -31,7 +30,7 @@ public class GetOrderHeader {
 
             using var connection = await _factory.CreateConnection();
 
-            var header = connection.QuerySingle<OrderHeader>(
+            var header = await Task.Run(() => connection.QuerySingle<OrderHeader>(
                 """
                 SELECT 
                     id AS OrderId,
@@ -46,7 +45,7 @@ public class GetOrderHeader {
                 FROM orders
                 WHERE id = @OrderId;
                 """,
-                query);
+                query));
 
             return header;
 
