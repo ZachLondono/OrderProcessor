@@ -57,6 +57,7 @@ public class OrderLoadWidgetViewModel : IOrderLoadWidgetViewModel {
 
         if (order is null) {
             _logger.LogWarning("No order was created from order data {Data}", data);
+            State = State.Error;
             return;
         }
 
@@ -126,13 +127,13 @@ public class OrderLoadWidgetViewModel : IOrderLoadWidgetViewModel {
             result.OnError(error => {
                 _logger.LogError("Error creating order from data {Data} {Error}", data, error);
                 AddLoadingMessage(MessageSeverity.Error, error.Title + " - " + error.Details);
-                State = State.Error;
+                order = null;
             });
 
         } catch (Exception ex) {
 
             AddLoadingMessage(MessageSeverity.Error, $"Exception thrown while trying to create new order - {ex.Message}");
-            State = State.Error;
+            order = null;
 
         }
 
