@@ -14,8 +14,6 @@ public class SynchronousDbTransaction : ISynchronousDbTransaction {
 
     public void Rollback() => _transaction.Rollback();
 
-    IDbTransaction ISynchronousDbTransaction.GetDbTransaction() {
-        throw new NotImplementedException();
-    }
+    IDbTransaction ISynchronousDbTransaction.GetDbTransaction() => _transaction; 
 
 }

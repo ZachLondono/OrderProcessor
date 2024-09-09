@@ -11,7 +11,7 @@ public class SynchronousSQLiteDbConnection : ISynchronousDbConnection {
         _connection = connection;
     }
 
-    public void Open() => new NotImplementedException();
+    public void Open() => _connection.Open();
     public void Close() => _connection.Close();
 
     public ISynchronousDbTransaction BeginTransaction() => new SynchronousDbTransaction(_connection.BeginTransaction());
