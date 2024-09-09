@@ -85,19 +85,29 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                 return;
             }
 
-            (excelPdfFilePath, invoiceFilePath) = await GeneratePDFFromWorkbook(Options.IncludeCover,
-                                                             Options.IncludePackingList,
-                                                             Options.IncludePartList,
-                                                             Options.IncludeDBList,
-                                                             Options.IncludeMDFList,
-                                                             Options.IncludeOthersList,
-                                                             Options.IncludeSummary,
-                                                             Options.WorkbookFilePath,
-                                                             Options.InvoicePDF,
-                                                             Options.InvoiceDirectory);
+            try {
 
-            if (excelPdfFilePath is null) {
+                (excelPdfFilePath, invoiceFilePath) = await GeneratePDFFromWorkbook(Options.IncludeCover,
+                                                                 Options.IncludePackingList,
+                                                                 Options.IncludePartList,
+                                                                 Options.IncludeDBList,
+                                                                 Options.IncludeMDFList,
+                                                                 Options.IncludeOthersList,
+                                                                 Options.IncludeSummary,
+                                                                 Options.WorkbookFilePath,
+                                                                 Options.InvoicePDF,
+                                                                 Options.InvoiceDirectory);
+    
+                if (excelPdfFilePath is null) {
+                    return;
+                }
+
+            } catch (Exception ex) {
+
+                PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, "Failed to generate PDFs from excel document."));
+                _logger.LogError(ex, "Exception thrown while interacting with Excel closet order. {ReleaseOptions}", Options);
                 return;
+
             }
 
         }
