@@ -60,4 +60,7 @@ public class TestCompaniesConnection(IDbConnection connection) : ISynchronousDbC
         throw new NotImplementedException();
     }
 
+    public IEnumerable<dynamic> Query(string sql, object? param = null, ISynchronousDbTransaction? transaction = null) {
+        throw new NotImplementedException();
+    }
 }

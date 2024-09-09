@@ -56,4 +56,7 @@ internal class TestOrderingConnection : ISynchronousDbConnection {
         throw new NotImplementedException();
     }
 
+    public IEnumerable<dynamic> Query(string sql, object? param = null, ISynchronousDbTransaction? transaction = null) {
+        throw new NotImplementedException();
+    }
 }
