@@ -1,5 +1,4 @@
-﻿using Domain.Orders;
-using Domain.Orders.Builders;
+﻿using Domain.Orders.Builders;
 using Domain.Orders.Components;
 using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Enums;
@@ -20,7 +19,8 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
 
     public Dimension DoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
 
-    public override string GetDescription() => $"Base {(IsGarage ? "Garage " : "")}Cabinet - {Doors.Quantity} Doors, {Drawers.Quantity} Drawers";
+    public override string GetDescription()
+        => $"Base {(IsGarage ? "Garage " : "")}Cabinet - {Doors.Quantity} Doors{(Drawers.Quantity > 0 ? $", {Drawers.Quantity} Drawers" : "")}{(Inside.RollOutBoxes.Any() ? $", {Inside.RollOutBoxes.Qty} Roll Out Drawers" : "")}";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),

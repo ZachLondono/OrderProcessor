@@ -21,7 +21,8 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
     public bool TiltFront { get; }
     public ScoopSides? Scoops { get; }
 
-    public override string GetDescription() => $"Sink Cabinet - {DoorQty} Doors, {FalseDrawerQty} False Drawers";
+    public override string GetDescription()
+        => $"Sink Cabinet - {DoorQty} Doors{(FalseDrawerQty > 0 ? $", {FalseDrawerQty} False Drawers" : "")}{(RollOutBoxes.Any() ? $", {RollOutBoxes.Qty} Roll Out Drawers" : "")}";
 
     public Dimension DoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (FalseDrawerQty > 0 ? DrawerFaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
 
