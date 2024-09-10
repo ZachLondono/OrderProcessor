@@ -56,7 +56,7 @@ public partial class WorkingDirectoryWidget {
         if (Directory.Exists(_workingDirectory)) {
 
             ProcessStartInfo startInfo = new ProcessStartInfo {
-                Arguments = _workingDirectory.Replace('/', '\\'),
+                Arguments = "\"" + _workingDirectory.Replace('/', '\\') + "\"",
                 FileName = "explorer.exe"
             };
 
