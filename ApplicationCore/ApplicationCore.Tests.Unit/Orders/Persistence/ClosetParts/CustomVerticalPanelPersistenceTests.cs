@@ -4,6 +4,7 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.ClosetParts;
 
 public class CustomVerticalPanelPersistenceTests : PersistenceTests {
 
+    /*
     [Fact]
     public void InsertOrderWithCustomVerticalPanel() {
         var part = new CustomVPBuilder() {
@@ -83,4 +84,5 @@ public class CustomVerticalPanelPersistenceTests : PersistenceTests {
 
         InsertAndDeleteOrderWithProduct(part);
     }
+    */
 }

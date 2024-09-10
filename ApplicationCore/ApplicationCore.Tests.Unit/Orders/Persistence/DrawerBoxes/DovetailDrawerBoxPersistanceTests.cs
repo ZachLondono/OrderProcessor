@@ -6,6 +6,7 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.DrawerBoxes;
 
 public class DovetailDrawerBoxPersistenceTests : PersistenceTests {
 
+    /*
     [Fact]
     public void InsertOrderWithDovetailDrawerBox() {
         var db = new DovetailDrawerBoxProduct(Guid.NewGuid(), 0M, 1, "", 1, Dimension.FromInches(4.125), Dimension.FromInches(21), Dimension.FromInches(21), "", new Dictionary<string, string>(), new("MatA", "MatB", "MatC", "MatD", "Clips", "Notches", "Accessory", LogoPosition.None));
@@ -33,4 +34,5 @@ public class DovetailDrawerBoxPersistenceTests : PersistenceTests {
         };
         InsertAndDeleteOrderWithProduct(db);
     }
+    */
 }

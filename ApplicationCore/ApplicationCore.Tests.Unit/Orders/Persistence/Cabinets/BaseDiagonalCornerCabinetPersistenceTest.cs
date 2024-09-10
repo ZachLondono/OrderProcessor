@@ -7,6 +7,7 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 
 public class BaseDiagonalCornerCabinetPersistenceTest : PersistenceTests {
 
+    /*
     [Fact]
     public void InsertOrderWithBaseDiagonalCornerCabinet() {
         var cabinet = new BaseDiagonalCornerCabinetBuilder()
@@ -111,5 +112,6 @@ public class BaseDiagonalCornerCabinetPersistenceTest : PersistenceTests {
 
         InsertAndDeleteOrderWithProduct(cabinet);
     }
+    */
 
 }

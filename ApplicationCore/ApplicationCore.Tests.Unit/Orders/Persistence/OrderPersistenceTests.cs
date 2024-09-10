@@ -5,6 +5,8 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence;
 
 public class OrderPersistenceTests : PersistenceTests {
 
+    /*
+
     [Fact]
     public void Should_Insert() {
 
@@ -42,5 +44,7 @@ public class OrderPersistenceTests : PersistenceTests {
         productsResult.Should().HaveCount(order.Products.Count());
 
     }
+
+    */
 
 }

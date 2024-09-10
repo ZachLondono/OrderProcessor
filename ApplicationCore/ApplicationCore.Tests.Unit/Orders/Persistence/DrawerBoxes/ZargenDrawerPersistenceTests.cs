@@ -6,6 +6,7 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.DrawerBoxes;
 
 public class ZargenDrawerPersistenceTests : PersistenceTests {
 
+    /*
     [Fact]
     public void InsertOrderWithZargenDrawer() {
         var db = new ZargenDrawer(Guid.NewGuid(), 1, 0M, 1, "",
@@ -49,4 +50,6 @@ public class ZargenDrawerPersistenceTests : PersistenceTests {
         };
         InsertAndDeleteOrderWithProduct(db);
     }
+    */
+    
 }

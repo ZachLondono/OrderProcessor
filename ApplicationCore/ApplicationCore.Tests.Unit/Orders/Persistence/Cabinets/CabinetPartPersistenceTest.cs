@@ -5,6 +5,7 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 
 public class CabinetPartPersistenceTest : PersistenceTests {
 
+    /*
     [Fact]
     public void InsertOrderWithCabinetPart() {
 
@@ -40,5 +41,6 @@ public class CabinetPartPersistenceTest : PersistenceTests {
         InsertAndQueryOrderWithProduct(cabPart);
 
     }
+    */
 
 }

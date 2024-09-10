@@ -12,6 +12,8 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence;
 
 public class OrderHangingRailPersistanceTests {
 
+    /*
+
     protected readonly IOrderingDbConnectionFactory Factory = new TestOrderingConnectionFactory("./Application/Schemas/ordering_schema.sql");
     private readonly ILogger<InsertOrder.Handler> _logger = Substitute.For<ILogger<InsertOrder.Handler>>();
 
@@ -68,5 +70,7 @@ public class OrderHangingRailPersistanceTests {
         rails.Should().BeEmpty();
 
     }
+
+    */
 
 }

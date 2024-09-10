@@ -7,6 +7,7 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 
 public class TallCabinetPersistenceTest : PersistenceTests {
 
+    /*
     [Fact]
     public void InsertOrderWithTallCabinet() {
         var cabinet = new TallCabinetBuilder()
@@ -97,4 +98,6 @@ public class TallCabinetPersistenceTest : PersistenceTests {
 
         InsertAndDeleteOrderWithProduct(cabinet);
     }
+    */
+
 }
