@@ -43,11 +43,22 @@
             <InputNumber @bind-Value="_settings.Port" class="input-text w-full" step="1" />
         </div>
 
+        <hr class="my-5"/>
+
+        <div>
+            <label>Bcc Recipients</label>
+            <InputText @bind-Value="_settings.BccRecipients" class="input-text w-full" />
+        </div>
+
         <div class="my-5">
             <Button type="submit" Color="ButtonColor.Primary">Save</Button>
         </div>
 
     </EditForm>
+
+    @if (_message is not null) {
+        <span>@_message</span>
+    }
 
 }
 
@@ -56,6 +67,8 @@
     private Error? _error = null;
 
     private EmailSettings? _settings = null;
+
+    private string? _message = null;
 
     [Inject]
     public IWritableOptions<EmailSettings>? Options { get; set; }
@@ -92,15 +105,19 @@
 
         try {
 
+            _message = null;
+
             Options.Update(settings => {
                 settings.Port = _settings.Port;
                 settings.Host = _settings.Host;
                 settings.SenderName = _settings.SenderName;
                 settings.SenderEmail = _settings.SenderEmail;
                 settings.ProtectedPassword = _settings.ProtectedPassword;
+                settings.BccRecipients = _settings.BccRecipients;
             });
 
             _error = null;
+            _message = "Settings will be applied next time application is reset.";
 
         } catch (Exception ex) {
 

@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Shared.Settings;
+using Domain.Extensions;
 using Domain.Services;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -31,6 +32,11 @@ public class EmailService : IEmailService {
         using var client = new SmtpClient();
         client.Connect(_settings.Host, _settings.Port, SecureSocketOptions.Auto);
         client.Authenticate(_settings.SenderEmail, password);
+
+        _settings.BccRecipients
+                 .Split(';')
+                 .Where(s => !string.IsNullOrWhiteSpace(s))
+                 .ForEach(r => message.Bcc.Add(new MailboxAddress(r, r)));
 
         var response = await client.SendAsync(message);
 

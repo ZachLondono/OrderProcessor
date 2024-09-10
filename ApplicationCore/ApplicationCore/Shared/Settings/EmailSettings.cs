@@ -12,4 +12,6 @@ public class EmailSettings {
 
     public int Port { get; set; }
 
+    public string BccRecipients { get; set; } = string.Empty;
+
 }
