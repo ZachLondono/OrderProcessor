@@ -19,23 +19,17 @@ public class OrderImporter {
         _mailItem = mailItem;
     }
 
-    public bool ImportOrderFromMailItem(ClosetOrder order) {
-
-        if (!CustomerWorkingDirectoryRoots.TryGetValue(_mailItem.SenderEmailAddress, out string? workingDirectoryRoot)) {
-            return false;
-        }
+    public string? ImportOrderFromMailItem(ClosetOrder order, string workingDirectoryRoot) {
 
         if (workingDirectoryRoot is null || !Directory.Exists(workingDirectoryRoot)) {
-            return false;
+            return null;
         }
 
         var structure = ClosetOrderDirectoryStructure.BuildOrderDirectoryStructure(workingDirectoryRoot, order.Number, order.Name);
 
         if (order.Attachments.Length == 0) {
-            return true;
+            return structure.WorkingDirectory;
         }
-
-        bool wereAttachmentsCopies = true;
 
         foreach (var orderAttachment in order.Attachments) {
 
@@ -46,7 +40,6 @@ public class OrderImporter {
             var attachment = _mailItem.Attachments[orderAttachment.Index];
 
             if (attachment is null) {
-                wereAttachmentsCopies = false;
                 continue;
             }
 
@@ -54,7 +47,7 @@ public class OrderImporter {
 
         }
 
-        return wereAttachmentsCopies;
+        return structure.WorkingDirectory;
 
     }
 

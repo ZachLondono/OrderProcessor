@@ -11,7 +11,7 @@
 
     case DialogState.Complete:
         <div>
-            <span>Order import complete.</span>
+            <span>Order imported to '@_newWorkingDirectory'</span>
         </div>
         <div class="mt-5">
             <Button OnClickAsync="Cancel" Color="ButtonColor.Primary">Close</Button>
@@ -42,7 +42,7 @@
                 </div>
                 <div class="mt-2.5">
                     <span class="text-xs text-gray-500">Working Directory Root</span>
-                    <div>@_workingDirectoryRoot</div>
+                    <input type="text" class="input-text w-full" @bind-value="_workingDirectoryRoot" />
                 </div>
 
                 <div class="mt-6">
@@ -112,6 +112,8 @@
     private OutlookWrapper? _wrapper = null;
     private OrderImporter? _importer = null;
 
+    private string? _newWorkingDirectory = null;
+
     protected override void OnAfterRender(bool firstRender) {
 
         if (!firstRender) return;
@@ -175,13 +177,19 @@
             return;
         }
 
+        if (!Directory.Exists(_workingDirectoryRoot)) {
+            _loadingError = "Can not access working directory root";
+            StateHasChanged();
+            return;
+        }
+
         _state = DialogState.Importing;
         StateHasChanged();
 
         var order = new ClosetOrder(_orderNumber, _orderName, _message.Attachments);
         await Task.Run(() =>
         {
-            _importer.ImportOrderFromMailItem(order);
+            _newWorkingDirectory = _importer.ImportOrderFromMailItem(order, _workingDirectoryRoot);
         });
 
         _state = DialogState.Complete;
