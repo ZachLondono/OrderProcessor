@@ -62,8 +62,19 @@ public class OrderImporter {
 
     public OrderMessage GetMessageDetails() {
 
+        var senders = GetEmailSenders();
+
         var name = _mailItem.SenderName;
         var address = _mailItem.SenderEmailAddress;
+
+        foreach (var sender in senders) {
+            if (CustomerWorkingDirectoryRoots.ContainsKey(sender.EmailAddress)) {
+                name = sender.Name;
+                address = sender.EmailAddress;
+                break;
+            }
+        }
+
         var subject = _mailItem.Subject;
 
         List<OrderAttachment> attachments = [];
@@ -77,5 +88,27 @@ public class OrderImporter {
         return new(name, address, subject, attachments.ToArray());
 
     }
+
+    private EmailSender[] GetEmailSenders() {
+
+        List<EmailSender> senders = [
+            new(_mailItem.SenderName, _mailItem.SenderEmailAddress)
+        ];
+
+        var conv = _mailItem.GetConversation();
+
+        if (conv is null) return senders.ToArray();
+
+        var convSenders = conv.GetRootItems()
+                              .OfType<Outlook.MailItem>()
+                              .Select(i => new EmailSender(i.SenderName, i.SenderEmailAddress));
+
+        senders.AddRange(convSenders);
+
+        return senders.ToArray();
+
+    }
+
+    private record struct EmailSender(string Name, string EmailAddress);
 
 }
