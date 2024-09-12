@@ -12,8 +12,6 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence;
 
 public class OrderHangingRailPersistanceTests {
 
-    /*
-
     protected readonly IOrderingDbConnectionFactory Factory = new TestOrderingConnectionFactory("./Application/Schemas/ordering_schema.sql");
     private readonly ILogger<InsertOrder.Handler> _logger = Substitute.For<ILogger<InsertOrder.Handler>>();
 
@@ -42,7 +40,7 @@ public class OrderHangingRailPersistanceTests {
         // Assert
         var connection = Factory.CreateConnection().Result;
         var repo = new OrderHangingRailRepository(connection);
-        var rails = await repo.GetOrderHangingRails(order.Id);
+        var rails = repo.GetOrderHangingRails(order.Id);
         rails.Should().ContainEquivalentOf(rail);
 
     }
@@ -66,11 +64,9 @@ public class OrderHangingRailPersistanceTests {
         // Assert
         var connection = Factory.CreateConnection().Result;
         var repo = new OrderHangingRailRepository(connection);
-        var rails = await repo.GetOrderHangingRails(order.Id);
+        var rails = repo.GetOrderHangingRails(order.Id);
         rails.Should().BeEmpty();
 
     }
-
-    */
 
 }

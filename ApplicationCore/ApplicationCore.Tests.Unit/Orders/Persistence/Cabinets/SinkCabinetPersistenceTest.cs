@@ -5,7 +5,6 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 
 public class SinkCabinetPersistenceTest : PersistenceTests {
 
-    /*
     [Fact]
     public void InsertOrderWithSinkCabinet() {
         var cabinet = new SinkCabinetBuilder()
@@ -53,6 +52,5 @@ public class SinkCabinetPersistenceTest : PersistenceTests {
 
         InsertAndDeleteOrderWithProduct(cabinet);
     }
-    */
 
 }

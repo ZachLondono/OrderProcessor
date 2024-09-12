@@ -5,7 +5,6 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 
 public class BasePieCutCornerCabinetPersistenceTest : PersistenceTests {
 
-    /*
     [Fact]
     public void InsertOrderWithBasePieCutCornerCabinet() {
         var cabinet = new BasePieCutCornerCabinetBuilder()
@@ -53,6 +52,5 @@ public class BasePieCutCornerCabinetPersistenceTest : PersistenceTests {
 
         InsertAndDeleteOrderWithProduct(cabinet);
     }
-    */
 
 }

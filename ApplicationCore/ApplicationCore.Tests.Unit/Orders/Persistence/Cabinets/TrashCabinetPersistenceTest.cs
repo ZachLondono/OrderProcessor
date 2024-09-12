@@ -5,7 +5,6 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 
 public class TrashCabinetPersistenceTest : PersistenceTests {
 
-    /*
     [Fact]
     public void InsertOrderWithTrashCabinet() {
         var cabinet = new TrashCabinetBuilder()
@@ -53,5 +52,5 @@ public class TrashCabinetPersistenceTest : PersistenceTests {
 
         InsertAndDeleteOrderWithProduct(cabinet);
     }
-    */
+
 }

@@ -1,11 +1,11 @@
-﻿using Dapper;
+﻿using ApplicationCore.Features.Orders.Details.Queries;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence;
 
 public class OrderPersistenceTests : PersistenceTests {
-
-    /*
 
     [Fact]
     public void Should_Insert() {
@@ -22,7 +22,7 @@ public class OrderPersistenceTests : PersistenceTests {
 
         // Act
         var insertResult = Sut.Handle(new(order)).Result;
-        insertResult.OnError(error => Assert.Fail("Handler returned error"));
+        insertResult.OnError(error => Assert.Fail($"Handler returned error - {error.Title} : {error.Details}"));
 
         // Assert
         var connection = Factory.CreateConnection().Result;
@@ -45,6 +45,31 @@ public class OrderPersistenceTests : PersistenceTests {
 
     }
 
-    */
+    [Fact]
+    public void Should_Insert_And_Select() {
+
+        // Arrange
+        var order = new OrderBuilder() {
+            Source = "Test Source",
+            Number = "Test Number",
+            Name = "TestName",
+            Items = new() {
+                new(Guid.Empty, 1, "Test Item", 123.45M)
+            },
+        }.Build();
+
+        // Act
+        var insertResult = Sut.Handle(new(order)).Result;
+        insertResult.OnError(error => Assert.Fail($"Handler returned error - {error.Title} : {error.Details}"));
+
+        // Assert
+
+        var logger = Substitute.For<ILogger<GetOrderById.Handler>>();
+        var handler = new GetOrderById.Handler(logger, Factory);
+        var getResult = handler.Handle(new(order.Id)).Result;
+
+        order.Should().BeEquivalentTo(getResult.Value!);
+
+    }
 
 }

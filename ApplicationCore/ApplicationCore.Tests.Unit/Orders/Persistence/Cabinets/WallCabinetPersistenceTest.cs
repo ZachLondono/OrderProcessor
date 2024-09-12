@@ -6,7 +6,6 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 
 public class WallCabinetPersistenceTest : PersistenceTests {
 
-    /*
     [Fact]
     public void InsertOrderWithWallCabinet() {
         var cabinet = new WallCabinetBuilder()
@@ -90,5 +89,5 @@ public class WallCabinetPersistenceTest : PersistenceTests {
 
         InsertAndDeleteOrderWithProduct(cabinet);
     }
-    */
+
 }

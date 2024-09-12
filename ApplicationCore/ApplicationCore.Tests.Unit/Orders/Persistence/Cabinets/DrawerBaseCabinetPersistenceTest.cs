@@ -7,7 +7,6 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 
 public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
 
-    /*
     [Fact]
     public void InsertOrderWithDrawerBaseCabinet() {
         var cabinet = new DrawerBaseCabinetBuilder()
@@ -93,6 +92,5 @@ public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
 
         InsertAndDeleteOrderWithProduct(cabinet);
     }
-    */
 
 }

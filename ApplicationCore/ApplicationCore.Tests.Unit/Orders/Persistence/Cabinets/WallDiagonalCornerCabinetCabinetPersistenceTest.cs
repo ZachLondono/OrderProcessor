@@ -6,7 +6,6 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 
 public class WallDiagonalCornerCabinetCabinetPersistenceTest : PersistenceTests {
 
-    /*
     [Fact]
     public void InsertOrderWithWallDiagonalCornerCabinet() {
         var cabinet = new WallDiagonalCornerCabinetBuilder()
@@ -100,6 +99,5 @@ public class WallDiagonalCornerCabinetCabinetPersistenceTest : PersistenceTests 
 
         InsertAndDeleteOrderWithProduct(cabinet);
     }
-    */
 
 }

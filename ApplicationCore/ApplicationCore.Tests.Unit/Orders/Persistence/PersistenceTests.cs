@@ -1,5 +1,4 @@
 ﻿using Domain.Orders.Entities;
-using Dapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -11,17 +10,19 @@ using Domain.Infrastructure.Data;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence;
 
-public abstract class PersistenceTests {
+public abstract class PersistenceTests : IDisposable {
 
     protected readonly InsertOrder.Handler Sut;
-    protected readonly IOrderingDbConnectionFactory Factory = new TestOrderingConnectionFactory("./Application/Schemas/ordering_schema.sql");
+    protected readonly TestOrderingConnectionFactory Factory = new TestOrderingConnectionFactory("./Application/Schemas/ordering_schema.sql");
     private readonly ILogger<InsertOrder.Handler> _logger = Substitute.For<ILogger<InsertOrder.Handler>>();
 
     public PersistenceTests() {
-
         Sut = new(_logger, Factory);
         SqlMapping.AddSqlMaps();
+    }
 
+    public void Dispose() {
+        Factory.Dispose();
     }
 
     protected void InsertAndQueryOrderWithProduct<T>(T product) where T : IProduct {

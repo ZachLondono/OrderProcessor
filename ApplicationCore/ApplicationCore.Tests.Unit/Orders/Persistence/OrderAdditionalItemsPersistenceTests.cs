@@ -1,7 +1,6 @@
 ﻿using ApplicationCore.Features.DeleteOrder;
 using Domain.Orders.Entities;
 using Domain.Orders.Persistance;
-using Dapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -10,8 +9,6 @@ using Domain.Infrastructure.Data;
 namespace ApplicationCore.Tests.Unit.Orders.Persistence;
 
 public class OrderAdditionalItemsPersistenceTests {
-
-    /*
 
     protected readonly IOrderingDbConnectionFactory Factory = new TestOrderingConnectionFactory("./Application/Schemas/ordering_schema.sql");
     private readonly ILogger<InsertOrder.Handler> _logger = Substitute.For<ILogger<InsertOrder.Handler>>();
@@ -101,7 +98,5 @@ public class OrderAdditionalItemsPersistenceTests {
         items.Should().Be(0);
 
     }
-
-    */
 
 }

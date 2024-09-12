@@ -4,7 +4,7 @@ using Domain.ValueObjects;
 namespace ApplicationCore.Tests.Unit.Orders.Persistence.DrawerBoxes;
 
 public class DoweledDrawerBoxPersistenceTests : PersistenceTests {
-    /*
+
     [Fact]
     public void InsertOrderWithDoweledDrawerBox() {
         var db = new DoweledDrawerBoxProduct(Guid.NewGuid(), 0M, 1, "", 1,
@@ -44,5 +44,5 @@ public class DoweledDrawerBoxPersistenceTests : PersistenceTests {
         };
         InsertAndDeleteOrderWithProduct(db);
     }
-    */
+
 }

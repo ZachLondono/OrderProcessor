@@ -12,8 +12,6 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence;
 
 public class OrderDrawerSlidesPersistanceTests {
 
-    /*
-
     protected readonly IOrderingDbConnectionFactory Factory = new TestOrderingConnectionFactory("./Application/Schemas/ordering_schema.sql");
     private readonly ILogger<InsertOrder.Handler> _logger = Substitute.For<ILogger<InsertOrder.Handler>>();
 
@@ -42,7 +40,7 @@ public class OrderDrawerSlidesPersistanceTests {
         // Assert
         var connection = Factory.CreateConnection().Result;
         var repo = new OrderDrawerSlidesRepository(connection);
-        var orderSlides = await repo.GetOrderDrawerSlides(order.Id);
+        var orderSlides = repo.GetOrderDrawerSlides(order.Id);
         orderSlides.Should().ContainEquivalentOf(slides);
 
     }
@@ -66,11 +64,9 @@ public class OrderDrawerSlidesPersistanceTests {
         // Assert
         var connection = Factory.CreateConnection().Result;
         var repo = new OrderDrawerSlidesRepository(connection);
-        var orderSlides = await repo.GetOrderDrawerSlides(order.Id);
+        var orderSlides = repo.GetOrderDrawerSlides(order.Id);
         orderSlides.Should().BeEmpty();
 
     }
-
-    */
 
 }

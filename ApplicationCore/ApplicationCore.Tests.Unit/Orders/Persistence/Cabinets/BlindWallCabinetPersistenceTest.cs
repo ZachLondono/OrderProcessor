@@ -5,7 +5,6 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 
 public class BlindWallCabinetPersistenceTest : PersistenceTests {
 
-    /*
     [Fact]
     public void InsertOrderWithBlindWallCabinet() {
         var cabinet = new BlindWallCabinetBuilder()
@@ -53,6 +52,5 @@ public class BlindWallCabinetPersistenceTest : PersistenceTests {
 
         InsertAndDeleteOrderWithProduct(cabinet);
     }
-    */
 
 }

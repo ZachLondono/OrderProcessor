@@ -7,7 +7,6 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.ClosetParts;
 
 public class ClosetPartPersistenceTest : PersistenceTests {
 
-    /*
     [Fact]
     public void InsertOrderWithClosetPart() {
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
@@ -89,6 +88,5 @@ public class ClosetPartPersistenceTest : PersistenceTests {
         VerifyProductExistsInOrder(orderId, part);
 
     }
-    */
 
 }
