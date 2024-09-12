@@ -3,6 +3,7 @@ using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Persistance.DataModels;
 
@@ -17,11 +18,10 @@ public class BaseCabinetDataModel : CabinetRollOutContainerDataModelBase, IProdu
     public Dimension DrawerFaceHeight { get; set; }
     public int DrawerQty { get; set; }
     public bool IsGarage { get; set; }
-    public List<string> ProductionNotes { get; set; } = new();
     public Dimension BaseNotchHeight { get; set; }
     public Dimension BaseNotchDepth { get; set; }
 
-    public IProduct MapToProduct() {
+    public IProduct MapToProduct(IEnumerable<ProductionNote> productionNotes) {
 
         var dbOptions = GetDrawerBoxOptions();
         var mdfConfig = GetMDFDoorConfiguration();
@@ -51,7 +51,7 @@ public class BaseCabinetDataModel : CabinetRollOutContainerDataModelBase, IProdu
         return new BaseCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             doors, ToeType, drawers, inside, dbOptions, baseNotch) {
             IsGarage = IsGarage,
-            ProductionNotes = ProductionNotes
+            ProductionNotes = productionNotes.ToList()
         };
 
     }
@@ -65,7 +65,6 @@ public class BaseCabinetDataModel : CabinetRollOutContainerDataModelBase, IProdu
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
            	    products.room,
-                products.production_notes AS ProductionNotes,
 
            	    cabinets.height,
            	    cabinets.width,

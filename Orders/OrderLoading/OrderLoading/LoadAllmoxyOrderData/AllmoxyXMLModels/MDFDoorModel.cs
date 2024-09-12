@@ -119,7 +119,7 @@ public class MDFDoorModel : ProductOrItemModel {
 		}
 
 		var product = MDFDoorProduct.Create(unitPrice, Room, Qty, GetProductNumber(), type, height, width, Note, frameSize, Material, thickness, FramingBead, EdgeProfile, PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), Finish);
-		product.ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList();
+		product.ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).Select(ProductionNote.Create).ToList();
 		return product;
 
 	}

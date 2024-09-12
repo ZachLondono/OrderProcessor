@@ -3,6 +3,7 @@ using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Persistance.DataModels;
 
@@ -15,9 +16,8 @@ public class WallCabinetDataModel : CabinetDataModelBase, IProductDataModel, IQu
     public int VertDivQty { get; set; }
     public bool FinishedBottom { get; set; }
     public bool IsGarage { get; set; }
-    public List<string> ProductionNotes { get; set; } = new();
 
-    public IProduct MapToProduct() {
+    public IProduct MapToProduct(IEnumerable<ProductionNote> productionNotes) {
 
         var mdfConfig = GetMDFDoorConfiguration();
         var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
@@ -27,7 +27,7 @@ public class WallCabinetDataModel : CabinetDataModelBase, IProductDataModel, IQu
         var inside = new WallCabinetInside(AdjShelfQty, VertDivQty);
 
         return new WallCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment, doors, inside, FinishedBottom) {
-            ProductionNotes = ProductionNotes,
+            ProductionNotes = productionNotes.ToList(),
             IsGarage = IsGarage
         };
 
@@ -42,7 +42,6 @@ public class WallCabinetDataModel : CabinetDataModelBase, IProductDataModel, IQu
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
            	    products.room,
-                products.production_notes AS ProductionNotes,
 
            	    cabinets.height,
            	    cabinets.width,

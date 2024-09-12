@@ -10,6 +10,6 @@ public interface IProduct {
 
     public string GetDescription();
 
-    public List<string> ProductionNotes { get; }
+    public List<ProductionNote> ProductionNotes { get; }
 
 }

@@ -3,6 +3,7 @@ using Domain.Orders.Entities.Products.Closets;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Persistance.DataModels;
 
@@ -19,7 +20,6 @@ public class ClosetPartDataModel : ProductDataModelBase, IProductDataModel, IQue
     public string Comment { get; set; } = string.Empty;
     public bool InstallCams { get; set; }
     public IDictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
-    public List<string> ProductionNotes { get; set; } = new();
 
     public static string GetQueryByOrderId
         =>
@@ -31,7 +31,6 @@ public class ClosetPartDataModel : ProductDataModelBase, IProductDataModel, IQue
         	products.unit_price AS UnitPrice,
         	products.product_number AS ProductNumber,
             products.room,
-            products.production_notes AS ProductionNotes,
 
             closet_parts.sku,
             closet_parts.width,
@@ -53,10 +52,10 @@ public class ClosetPartDataModel : ProductDataModelBase, IProductDataModel, IQue
             products.order_id = @OrderId;
         """;
 
-    public IProduct MapToProduct() {
+    public IProduct MapToProduct(IEnumerable<ProductionNote> productionNotes) {
         ClosetPaint? paint = PaintColor is null ? null : new(PaintColor, PaintedSide);
         return new ClosetPart(Id, Qty, UnitPrice, ProductNumber, Room, Sku, Width, Length, new(MaterialFinish, MaterialCore), paint, EdgeBandingFinish, Comment, InstallCams, Parameters.AsReadOnly()) {
-            ProductionNotes = ProductionNotes
+            ProductionNotes = productionNotes.ToList()
         };
     }
 

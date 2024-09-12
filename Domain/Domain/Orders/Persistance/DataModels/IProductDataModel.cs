@@ -1,9 +1,12 @@
-﻿using Domain.Orders.Entities.Products;
+﻿using Domain.Orders.Entities;
+using Domain.Orders.Entities.Products;
 
 namespace Domain.Orders.Persistance.DataModels;
 
 public interface IProductDataModel {
 
-    public IProduct MapToProduct();
+    public Guid Id { get; }
+
+    public IProduct MapToProduct(IEnumerable<ProductionNote> productionNotes);
 
 }

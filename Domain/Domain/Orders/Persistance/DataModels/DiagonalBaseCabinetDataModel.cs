@@ -3,6 +3,7 @@ using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Persistance.DataModels;
 
@@ -15,9 +16,8 @@ public class DiagonalBaseCabinetDataModel : CabinetDataModelBase, IProductDataMo
     public int DoorQty { get; set; }
     public int AdjShelfQty { get; set; }
     public bool IsGarage { get; set; }
-    public List<string> ProductionNotes { get; set; } = new();
 
-    public IProduct MapToProduct() {
+    public IProduct MapToProduct(IEnumerable<ProductionNote> productionNotes) {
 
         var mdfConfig = GetMDFDoorConfiguration();
 
@@ -27,7 +27,7 @@ public class DiagonalBaseCabinetDataModel : CabinetDataModelBase, IProductDataMo
         return new BaseDiagonalCornerCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             RightWidth, RightDepth, ToeType, AdjShelfQty, HingeSide, DoorQty) {
             IsGarage = IsGarage,
-            ProductionNotes = ProductionNotes
+            ProductionNotes = productionNotes.ToList()
         };
 
     }
@@ -41,7 +41,6 @@ public class DiagonalBaseCabinetDataModel : CabinetDataModelBase, IProductDataMo
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
            	    products.room,
-                products.production_notes AS ProductionNotes,
 
            	    cabinets.height,
            	    cabinets.width,

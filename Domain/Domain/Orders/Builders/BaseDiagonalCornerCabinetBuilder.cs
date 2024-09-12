@@ -2,6 +2,7 @@
 using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Builders;
 
@@ -62,7 +63,7 @@ public class BaseDiagonalCornerCabinetBuilder : CabinetBuilder<BaseDiagonalCorne
     public override BaseDiagonalCornerCabinet Build() {
         var cabinet = BaseDiagonalCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, RightWidth, RightDepth, ToeType, AdjustableShelves, HingeSide, DoorQty);
         cabinet.IsGarage = IsGarage;
-        cabinet.ProductionNotes = ProductionNotes;
+        cabinet.ProductionNotes = ProductionNotes.Select(ProductionNote.Create).ToList();
         return cabinet;
     }
 

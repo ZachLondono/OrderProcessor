@@ -3,6 +3,7 @@ using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Persistance.DataModels;
 
@@ -13,9 +14,8 @@ public class PieCutWallCabinetDataModel : CabinetDataModelBase, IProductDataMode
     public HingeSide HingeSide { get; set; }
     public Dimension DoorExtendDown { get; set; }
     public int AdjShelfQty { get; set; }
-    public List<string> ProductionNotes { get; set; } = new();
 
-    public IProduct MapToProduct() {
+    public IProduct MapToProduct(IEnumerable<ProductionNote> productionNotes) {
 
         var mdfConfig = GetMDFDoorConfiguration();
 
@@ -24,7 +24,7 @@ public class PieCutWallCabinetDataModel : CabinetDataModelBase, IProductDataMode
 
         return new WallPieCutCornerCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             RightWidth, RightDepth, AdjShelfQty, HingeSide, DoorExtendDown) {
-            ProductionNotes = ProductionNotes
+            ProductionNotes = productionNotes.ToList()
         };
     }
 
@@ -37,7 +37,6 @@ public class PieCutWallCabinetDataModel : CabinetDataModelBase, IProductDataMode
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
            	    products.room,
-                products.production_notes AS ProductionNotes,
 
            	    cabinets.height,
            	    cabinets.width,

@@ -70,7 +70,7 @@ public class FivePieceDoorModel : ProductOrItemModel {
 		};
 
 		return new FivePieceDoorProduct(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, width, height, frameSize, frameThickness, panelThickness, MaterialFinish, doorType) {
-			ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList()
+			ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).Select(ProductionNote.Create).ToList()
 		};
 
 	}

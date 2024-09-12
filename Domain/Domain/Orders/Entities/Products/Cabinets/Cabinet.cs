@@ -25,7 +25,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
     public CabinetSideType RightSideType { get; }
     public CabinetSideType LeftSideType { get; }
     public string Comment { get; }
-    public List<string> ProductionNotes { get; set; } = new();
+    public List<ProductionNote> ProductionNotes { get; set; } = new();
     public abstract string GetDescription();
 
     public CabinetConstruction Construction { get; set; }

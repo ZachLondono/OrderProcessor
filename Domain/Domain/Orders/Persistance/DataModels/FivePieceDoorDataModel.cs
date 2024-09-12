@@ -3,6 +3,7 @@ using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
 using Domain.Orders.Enums;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Persistance.DataModels;
 
@@ -18,7 +19,6 @@ public class FivePieceDoorDataModel : ProductDataModelBase, IProductDataModel, I
     public Dimension FrameThickness { get; set; }
     public Dimension PanelThickness { get; set; }
     public string Material { get; set; } = string.Empty;
-    public List<string> ProductionNotes { get; set; } = new();
 
     public static string GetQueryByOrderId =>
         """
@@ -29,7 +29,6 @@ public class FivePieceDoorDataModel : ProductDataModelBase, IProductDataModel, I
             products.unit_price AS UnitPrice,
             products.product_number AS ProductNumber,
             products.room,
-            products.production_notes AS ProductionNotes,
 
             fpd_product.width,
             fpd_product.height,
@@ -52,7 +51,7 @@ public class FivePieceDoorDataModel : ProductDataModelBase, IProductDataModel, I
 
         """;
 
-    public IProduct MapToProduct() {
+    public IProduct MapToProduct(IEnumerable<ProductionNote> productionNotes) {
         DoorFrame frameSize = new() {
             TopRail = TopRail,
             BottomRail = BottomRail,
@@ -60,7 +59,7 @@ public class FivePieceDoorDataModel : ProductDataModelBase, IProductDataModel, I
             RightStile = RightStile
         };
         return new FivePieceDoorProduct(Id, Qty, UnitPrice, ProductNumber, Room, Width, Height, frameSize, FrameThickness, PanelThickness, Material, DoorType) {
-            ProductionNotes = ProductionNotes
+            ProductionNotes = productionNotes.ToList()
         };
     }
 

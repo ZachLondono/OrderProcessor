@@ -100,7 +100,7 @@ public class ZargenDrawerModel : ProductOrItemModel {
 		string edgeBandColor = EdgeBandColor == "Match" ? MaterialFinish : EdgeBandColor;
 
 		return new ZargenDrawer(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, SKU, openingWidth, height, depth, material, paint, edgeBandColor, Comment, parameters) {
-			ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList()
+			ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).Select(ProductionNote.Create).ToList()
 		};
 
 	}

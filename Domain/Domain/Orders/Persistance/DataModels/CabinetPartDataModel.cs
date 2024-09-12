@@ -1,6 +1,7 @@
 ﻿using Domain.Orders.Enums;
 using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.Entities.Products;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Persistance.DataModels;
 
@@ -13,7 +14,6 @@ public class CabinetPartDataModel : ProductDataModelBase, IProductDataModel, IQu
     public string EdgeBandingFinish { get; set; } = string.Empty;
     public string Comment { get; set; } = string.Empty;
     public IDictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
-    public List<string> ProductionNotes { get; set; } = new();
 
     public static string GetQueryByOrderId
         =>
@@ -25,7 +25,6 @@ public class CabinetPartDataModel : ProductDataModelBase, IProductDataModel, IQu
         	products.unit_price AS UnitPrice,
         	products.product_number AS ProductNumber,
             products.room,
-            products.production_notes AS ProductionNotes,
 
             cabinet_parts.sku,
             cabinet_parts.material_core AS MaterialCore,
@@ -43,8 +42,18 @@ public class CabinetPartDataModel : ProductDataModelBase, IProductDataModel, IQu
             products.order_id = @OrderId;
         """;
 
-    public IProduct MapToProduct() {
-        return new CabinetPart(Id, Qty, UnitPrice, ProductNumber, Sku, Room, new(MaterialFinish, MaterialFinishType, MaterialCore), EdgeBandingFinish, Comment, Parameters, ProductionNotes);
+    public IProduct MapToProduct(IEnumerable<ProductionNote> productionNotes) {
+        return new CabinetPart(Id,
+                               Qty,
+                               UnitPrice,
+                               ProductNumber,
+                               Sku,
+                               Room,
+                               new(MaterialFinish, MaterialFinishType, MaterialCore),
+                               EdgeBandingFinish,
+                               Comment,
+                               Parameters,
+                               productionNotes.ToList());
     }
 
 }

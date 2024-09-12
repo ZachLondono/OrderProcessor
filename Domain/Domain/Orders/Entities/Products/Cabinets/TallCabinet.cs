@@ -60,14 +60,6 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
         DrawerBoxOptions = drawerBoxOptions;
         BaseNotch = baseNotch;
 
-        if (BaseNotch is not null && BaseNotch.Height != Dimension.Zero && BaseNotch.Depth != Dimension.Zero) {
-            ProductionNotes.Add("Check back panel length. PSI bug causes back panel to be too short.");
-        }
-
-        if (Inside.RollOutBoxes.Positions.Length > 0 && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
-            ProductionNotes.Add("PSI may not support roll out drawer boxes with side mount slieds");
-        }
-
     }
 
     public bool ContainsDoors() => MDFDoorOptions is not null;

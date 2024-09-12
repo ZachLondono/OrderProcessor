@@ -2,6 +2,7 @@
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products.Cabinets;
 using Domain.ValueObjects;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Builders;
 
@@ -89,9 +90,17 @@ public class SinkCabinetBuilder : CabinetBuilder<SinkCabinet> {
     }
 
     public override SinkCabinet Build() {
+
         var cabinet = SinkCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, ToeType, HingeSide, DoorQty, FalseDrawerQty, DrawerFaceHeight, AdjustableShelves, ShelfDepth, RollOutBoxes, BoxOptions, TiltFront, Scoops);
-        cabinet.ProductionNotes = ProductionNotes;
+
+        if (RollOutBoxes.Positions.Length > 0 && BoxOptions.SlideType == DrawerSlideType.SideMount) {
+            ProductionNotes.Add("PSI may not support roll out drawer boxes with side mount slieds");
+        }
+
+        cabinet.ProductionNotes.AddRange(ProductionNotes.Select(ProductionNote.Create));
+
         return cabinet;
+
     }
 
 }

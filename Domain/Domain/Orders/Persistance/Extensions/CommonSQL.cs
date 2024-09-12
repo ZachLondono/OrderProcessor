@@ -2,6 +2,7 @@
 using Domain.Orders.Entities.Products;
 using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Infrastructure.Data;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Persistance;
 
@@ -18,7 +19,6 @@ public partial class InsertOrder {
                 product.UnitPrice,
                 product.ProductNumber,
                 Room = product.Room,
-                ProductionNotes = product.ProductionNotes,
             };
 
             connection.Execute(
@@ -27,6 +27,28 @@ public partial class InsertOrder {
                     (id, order_id, qty, unit_price, product_number, room, production_notes)
                 VALUES
                     (@Id, @OrderId, @Qty, @UnitPrice, @ProductNumber, @Room, @ProductionNotes);
+                """, parameters, trx);
+
+            foreach (var note in product.ProductionNotes) {
+                InsertProductionNote(product.Id, note, connection, trx);
+            }
+
+        }
+
+        private static void InsertProductionNote(Guid productId, ProductionNote note, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+
+            var parameters = new {
+                Id = note.Id,
+                ProductId = productId,
+                Value = note.Value
+            };
+
+            connection.Execute(
+                """
+                INSERT INTO product_production_notes
+                    (id, product_id, value)
+                VALUES
+                    (@Id, @ProductId, @Value);
                 """, parameters, trx);
 
         }

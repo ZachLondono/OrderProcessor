@@ -93,7 +93,7 @@ public class GetOrderById {
             AddProductDataToCollection<BlindWallCabinetDataModel>(productData, orderId, connection);
             AddProductDataToCollection<BlindBaseCabinetDataModel>(productData, orderId, connection);
 
-            return productData.Aggregate(new List<IProduct>(), ProductAggregator).ToList();
+            return productData.Aggregate(new List<IProduct>(), (acc, data) =>  ProductAggregator(acc, data, connection)).ToList();
 
         }
 
@@ -138,9 +138,14 @@ public class GetOrderById {
 
         }
 
-        private List<IProduct> ProductAggregator(List<IProduct> accumulator, IProductDataModel data) {
+        private List<IProduct> ProductAggregator(List<IProduct> accumulator, IProductDataModel data, ISynchronousDbConnection connection) {
             try {
-                accumulator.Add(data.MapToProduct());
+
+                var productionNotes = connection.Query<ProductionNote>(ProductionNoteDataModel.GetQueryByProductId(),
+                                                                       new { ProductId = data.Id });
+
+                accumulator.Add(data.MapToProduct(productionNotes));
+
             } catch (Exception ex) {
                 _logger.LogError(ex, "Exception thrown while trying to map data to product");
                 throw;
