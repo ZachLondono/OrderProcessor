@@ -2,6 +2,7 @@
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products.Cabinets;
 using Domain.ValueObjects;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Builders;
 
@@ -41,7 +42,7 @@ public class TrashCabinetBuilder : CabinetBuilder<TrashCabinet> {
 
     public override TrashCabinet Build() {
         var cabinet = TrashCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, DrawerFaceHeight, TrashPulloutConfiguration, BoxOptions, ToeType);
-        cabinet.ProductionNotes = ProductionNotes;
+        cabinet.ProductionNotes = ProductionNotes.Select(ProductionNote.Create).ToList();
         return cabinet;
     }
 

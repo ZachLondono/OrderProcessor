@@ -10,16 +10,35 @@ public class DovetailDrawerBoxProduct : DovetailDrawerBox, IProduct, IDovetailDr
     public Guid Id { get; }
     public decimal UnitPrice { get; }
     public string Room { get; set; }
-    public List<string> ProductionNotes { get; set; } = [];
+    public List<ProductionNote> ProductionNotes { get; set; } = [];
 
-    public DovetailDrawerBoxProduct(Guid id, decimal unitPrice, int qty, string room, int productNumber, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DovetailDrawerBoxConfig options)
+    public DovetailDrawerBoxProduct(Guid id,
+                                    decimal unitPrice,
+                                    int qty,
+                                    string room,
+                                    int productNumber,
+                                    Dimension height,
+                                    Dimension width,
+                                    Dimension depth,
+                                    string note,
+                                    IReadOnlyDictionary<string, string> labelFields,
+                                    DovetailDrawerBoxConfig options)
                             : base(qty, productNumber, height, width, depth, note, options, labelFields) {
         Id = id;
         UnitPrice = unitPrice;
         Room = room;
     }
 
-    public static DovetailDrawerBoxProduct Create(decimal unitPrice, int qty, string room, int productNumber, Dimension height, Dimension width, Dimension depth, string note, IReadOnlyDictionary<string, string> labelFields, DovetailDrawerBoxConfig options) {
+    public static DovetailDrawerBoxProduct Create(decimal unitPrice,
+                                                  int qty,
+                                                  string room,
+                                                  int productNumber,
+                                                  Dimension height,
+                                                  Dimension width,
+                                                  Dimension depth,
+                                                  string note,
+                                                  IReadOnlyDictionary<string, string> labelFields,
+                                                  DovetailDrawerBoxConfig options) {
         return new(Guid.NewGuid(), unitPrice, qty, room, productNumber, height, width, depth, note, labelFields, options);
     }
 

@@ -2,6 +2,7 @@
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products.Cabinets;
 using Domain.ValueObjects;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Builders;
 
@@ -77,10 +78,42 @@ public class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
     }
 
     public override BlindBaseCabinet Build() {
-        var cabinet = BlindBaseCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, Doors, BlindSide, BlindWidth, AdjustableShelves, ShelfDepth, Drawers, ToeType, BoxOptions);
-        cabinet.ProductionNotes = ProductionNotes;
+
+        var cabinet = BlindBaseCabinet.Create(Qty,
+                                              UnitPrice,
+                                              ProductNumber,
+                                              Room,
+                                              Assembled,
+                                              Height,
+                                              Width,
+                                              Depth,
+                                              BoxMaterial,
+                                              FinishMaterial,
+                                              SlabDoorMaterial,
+                                              MDFDoorOptions,
+                                              EdgeBandingColor,
+                                              RightSideType,
+                                              LeftSideType,
+                                              Comment,
+                                              Doors,
+                                              BlindSide,
+                                              BlindWidth,
+                                              AdjustableShelves,
+                                              ShelfDepth,
+                                              Drawers,
+                                              ToeType,
+                                              BoxOptions);
+
         cabinet.IsGarage = IsGarage;
+
+        if (LeftSideType == CabinetSideType.ConfirmatFinished || RightSideType == CabinetSideType.ConfirmatFinished) {
+            ProductionNotes.Add("Confirmat finished (Garage finished) sides will not work with non-garage SKUs. Set cabinet sides to unfinished and then change material to the finished material.");
+        }
+
+        cabinet.ProductionNotes.AddRange(ProductionNotes.Select(ProductionNote.Create));
+
         return cabinet;
+
     }
 
 }

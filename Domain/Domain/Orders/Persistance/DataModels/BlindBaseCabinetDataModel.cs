@@ -3,6 +3,7 @@ using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Persistance.DataModels;
 
@@ -17,9 +18,8 @@ public class BlindBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBase,
     public HingeSide HingeSide { get; set; }
     public int DrawerQty { get; set; }
     public Dimension DrawerFaceHeight { get; set; }
-    public List<string> ProductionNotes { get; set; } = new();
 
-    public IProduct MapToProduct() {
+    public IProduct MapToProduct(IEnumerable<ProductionNote> productionNotes) {
 
         var dbOptions = GetDrawerBoxOptions();
         var mdfConfig = GetMDFDoorConfiguration();
@@ -36,7 +36,7 @@ public class BlindBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBase,
 
         return new BlindBaseCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             doors, BlindSide, BlindWidth, AdjShelfQty, ShelfDepth, drawers, ToeType, dbOptions) {
-            ProductionNotes = ProductionNotes
+            ProductionNotes = productionNotes.ToList()
         };
 
     }
@@ -50,7 +50,6 @@ public class BlindBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBase,
            	    products.unit_price AS UnitPrice,
            	    products.product_number AS ProductNumber,
            	    products.room,
-                products.production_notes AS ProductionNotes,
 
            	    cabinets.height,
            	    cabinets.width,

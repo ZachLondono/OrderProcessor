@@ -3,6 +3,7 @@ using Domain.Orders.Entities.Products.Closets;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Persistance.DataModels;
 
@@ -28,7 +29,6 @@ public class CustomDrilledVerticalPanelDataModel : ProductDataModelBase, IProduc
     public Dimension LEDChannelOffFront { get; set; }
     public Dimension LEDChannelWidth { get; set; }
     public Dimension LEDChannelDepth { get; set; }
-    public List<string> ProductionNotes { get; set; } = new();
 
     public static string GetQueryByOrderId
         =>
@@ -40,7 +40,6 @@ public class CustomDrilledVerticalPanelDataModel : ProductDataModelBase, IProduc
         	products.unit_price AS UnitPrice,
         	products.product_number AS ProductNumber,
             products.room,
-            products.production_notes AS ProductionNotes,
             
             custom_drilled_vertical_panels.width,
             custom_drilled_vertical_panels.length,
@@ -71,11 +70,11 @@ public class CustomDrilledVerticalPanelDataModel : ProductDataModelBase, IProduc
             products.order_id = @OrderId;
         """;
 
-    public IProduct MapToProduct() {
+    public IProduct MapToProduct(IEnumerable<ProductionNote> productionNotes) {
         ClosetPaint? paint = PaintColor is null ? null : new(PaintColor, PaintedSide);
         ClosetMaterial material = new(MaterialFinish, MaterialCore);
         return new CustomDrilledVerticalPanel(Id, Qty, UnitPrice, ProductNumber, Room, Width, Length, material, paint, EdgeBandingFinish, Comment, DrillingType, ExtendBack, ExtendFront, HoleDimensionFromBottom, HoleDimensionFromTop, TransitionHoleDimensionFromBottom, TransitionHoleDimensionFromTop, BottomNotchDepth, BottomNotchHeight, LEDChannelOffFront, LEDChannelWidth, LEDChannelDepth) {
-            ProductionNotes = ProductionNotes
+            ProductionNotes = productionNotes.ToList()
         };
     }
 

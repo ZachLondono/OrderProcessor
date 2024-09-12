@@ -3,6 +3,7 @@ using Domain.Orders.Entities.Products.Closets;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Persistance.DataModels;
 
@@ -19,7 +20,6 @@ public class ZargenDrawerDataModel : ProductDataModelBase, IProductDataModel, IQ
     public string EdgeBandingFinish { get; set; } = string.Empty;
     public string Comment { get; set; } = string.Empty;
     public IDictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
-    public List<string> ProductionNotes { get; set; } = new();
 
     public static string GetQueryByOrderId
         =>
@@ -31,7 +31,6 @@ public class ZargenDrawerDataModel : ProductDataModelBase, IProductDataModel, IQ
         	products.unit_price AS UnitPrice,
         	products.product_number AS ProductNumber,
             products.room,
-            products.production_notes AS ProductionNotes,
 
             zargen_drawers.sku,
             zargen_drawers.opening_width AS OpeningWidth,
@@ -53,10 +52,10 @@ public class ZargenDrawerDataModel : ProductDataModelBase, IProductDataModel, IQ
             products.order_id = @OrderId;
         """;
 
-    public IProduct MapToProduct() {
+    public IProduct MapToProduct(IEnumerable<ProductionNote> productionNotes) {
         ClosetPaint? paint = PaintColor is null ? null : new(PaintColor, PaintedSide);
         return new ZargenDrawer(Id, Qty, UnitPrice, ProductNumber, Room, Sku, OpeningWidth, Height, Depth, new(MaterialFinish, MaterialCore), paint, EdgeBandingFinish, Comment, Parameters.AsReadOnly()) {
-            ProductionNotes = ProductionNotes
+            ProductionNotes = productionNotes.ToList()
         };
     }
 

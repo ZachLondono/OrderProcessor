@@ -70,7 +70,7 @@ public class DoweledDrawerBoxModel : ProductOrItemModel {
 		var frontBackAdj = Dimension.FromMillimeters(FrontBackHeightAdj);
 
 		return new DoweledDrawerBoxProduct(Guid.NewGuid(), UnitPrice, Qty, Room, GetProductNumber(), height, width, depth, boxMat, boxMat, boxMat, bottomMat, MachineForUMSlides, frontBackAdj) {
-			ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList(),
+			ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).Select(ProductionNote.Create).ToList(),
 		};
 
 	}

@@ -21,7 +21,7 @@ public partial class ClosetPart : IPPProductContainer, IClosetPartProduct {
     public string Comment { get; set; }
     public bool InstallCams { get; set; }
     public IDictionary<string, string> Parameters { get; }
-    public List<string> ProductionNotes { get; set; } = [];
+    public List<ProductionNote> ProductionNotes { get; set; } = [];
 
     public string GetDescription() => $"Closet Part - {SKU}";
 
