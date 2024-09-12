@@ -1,6 +1,7 @@
 ﻿using Domain.Orders.Enums;
 using Domain.Orders.Entities.Products.Cabinets;
 using Domain.ValueObjects;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Builders;
 
@@ -60,7 +61,7 @@ public class WallDiagonalCornerCabinetBuilder : CabinetBuilder<WallDiagonalCorne
     public override WallDiagonalCornerCabinet Build() {
         var cabinet = WallDiagonalCornerCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, RightWidth, RightDepth, AdjustableShelves, HingeSide, DoorQty, ExtendDown);
         cabinet.IsGarage = IsGarage;
-        cabinet.ProductionNotes = ProductionNotes;
+        cabinet.ProductionNotes = ProductionNotes.Select(ProductionNote.Create).ToList();
         return cabinet;
     }
 

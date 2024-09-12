@@ -61,12 +61,14 @@ public class CounterTopModel : ProductOrItemModel {
 			_ => EdgeBandingSides.All,
 		};
 
+		var productionNotes = ProductionNotes.Select(ProductionNote.Create).ToList();
+
 		return new CounterTop(Guid.NewGuid(),
 								Qty,
 								unitPrice,
 								GetProductNumber(),
 								Room,
-								ProductionNotes,
+								productionNotes,
 								Finish,
 								width,
 								length,

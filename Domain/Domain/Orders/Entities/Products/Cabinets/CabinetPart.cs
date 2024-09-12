@@ -1,5 +1,4 @@
-﻿using Domain.Orders.Entities.Hardware;
-using Domain.Orders.Enums;
+﻿using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ProductPlanner;
 
@@ -17,9 +16,19 @@ public class CabinetPart : IProduct, IPPProductContainer {
     public string EdgeBandingColor { get; }
     public string Comment { get; }
     public IDictionary<string, string> Parameters { get; }
-    public List<string> ProductionNotes { get; }
+    public List<ProductionNote> ProductionNotes { get; }
 
-    public CabinetPart(Guid id, int qty, decimal unitPrice, int productNumber, string sku, string room, CabinetMaterial material, string edgeBandingColor, string comment, IDictionary<string, string> parameters, List<string> productionNotes) {
+    public CabinetPart(Guid id,
+                       int qty,
+                       decimal unitPrice,
+                       int productNumber,
+                       string sku,
+                       string room,
+                       CabinetMaterial material,
+                       string edgeBandingColor,
+                       string comment,
+                       IDictionary<string, string> parameters,
+                       List<ProductionNote> productionNotes) {
         Id = id;
         Qty = qty;
         UnitPrice = unitPrice;

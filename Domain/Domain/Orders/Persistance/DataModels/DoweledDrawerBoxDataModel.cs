@@ -2,6 +2,7 @@
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
 using Domain.Orders.Entities.Products.DrawerBoxes;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Persistance.DataModels;
 
@@ -24,7 +25,6 @@ public class DoweledDrawerBoxDataModel : ProductDataModelBase, IProductDataModel
     public bool BottomMatGraining { get; set; }
     public bool MachineThicknessForUM { get; set; }
     public Dimension FrontBackHeightAdjustment { get; set; }
-    public List<string> ProductionNotes { get; set; } = new();
 
     public static string GetQueryByOrderId =>
         """
@@ -35,7 +35,6 @@ public class DoweledDrawerBoxDataModel : ProductDataModelBase, IProductDataModel
             products.unit_price AS UnitPrice,
             products.product_number AS ProductNumber,
             products.room,
-            products.production_notes AS ProductionNotes,
 
             db_product.height,
             db_product.width,
@@ -64,7 +63,7 @@ public class DoweledDrawerBoxDataModel : ProductDataModelBase, IProductDataModel
         WHERE products.order_id = @OrderId;
         """;
 
-    public IProduct MapToProduct() {
+    public IProduct MapToProduct(IEnumerable<ProductionNote> productionNotes) {
 
         var frontMaterial = new DoweledDrawerBoxMaterial(FrontMatName, FrontMatThickness, FrontMatGraining);
         var backMaterial = new DoweledDrawerBoxMaterial(BackMatName, BackMatThickness, BackMatGraining);
@@ -74,7 +73,7 @@ public class DoweledDrawerBoxDataModel : ProductDataModelBase, IProductDataModel
                                             Height, Width, Depth,
                                             frontMaterial, backMaterial, sideMaterial, bottomMaterial,
                                             MachineThicknessForUM, FrontBackHeightAdjustment) {
-            ProductionNotes = ProductionNotes
+            ProductionNotes = productionNotes.ToList()
         };
 
     }

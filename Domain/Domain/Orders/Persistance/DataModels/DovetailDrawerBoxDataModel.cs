@@ -3,6 +3,7 @@ using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
 using Domain.Orders.Entities.Products.DrawerBoxes;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Persistance.DataModels;
 
@@ -13,7 +14,6 @@ public class DovetailDrawerBoxDataModel : ProductDataModelBase, IProductDataMode
     public Dimension Depth { get; set; }
     public string Note { get; set; } = string.Empty;
     public IDictionary<string, string> LabelFields { get; set; } = new Dictionary<string, string>();
-    public List<string> ProductionNotes { get; set; } = new();
 
     public string FrontMaterial { get; set; } = string.Empty;
     public string BackMaterial { get; set; } = string.Empty;
@@ -37,7 +37,6 @@ public class DovetailDrawerBoxDataModel : ProductDataModelBase, IProductDataMode
                 products.unit_price AS UnitPrice,
                 products.product_number AS ProductNumber,
                 products.room,
-                products.production_notes AS ProductionNotes,
 
             	db_product.height,
             	db_product.width,
@@ -66,12 +65,12 @@ public class DovetailDrawerBoxDataModel : ProductDataModelBase, IProductDataMode
             WHERE products.order_id = @OrderId;
             """;
 
-    public IProduct MapToProduct() {
+    public IProduct MapToProduct(IEnumerable<ProductionNote> productionNotes) {
 
         var options = new DovetailDrawerBoxConfig(FrontMaterial, BackMaterial, SideMaterial, BottomMaterial, Clips, Notches, Accessory, Logo, PostFinish, ScoopFront, FaceMountingHoles, Assembled, null, null);
 
         var box = new DovetailDrawerBoxProduct(Id, UnitPrice, Qty, Room, ProductNumber, Height, Width, Depth, Note, LabelFields.AsReadOnly(), options) {
-            ProductionNotes = ProductionNotes
+            ProductionNotes = productionNotes.ToList()
         };
 
         return box;

@@ -1,6 +1,8 @@
 ﻿using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products.Cabinets;
+using Domain.Orders.Entities;
+using Domain.ValueObjects;
 
 namespace Domain.Orders.Builders;
 
@@ -51,9 +53,21 @@ public class TallCabinetBuilder : CabinetBuilder<TallCabinet> {
     }
 
     public override TallCabinet Build() {
+
         var cabinet = TallCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, Doors, ToeType, Inside, BoxOptions, BaseNotch);
+
+        if (BaseNotch is not null && BaseNotch.Height != Dimension.Zero && BaseNotch.Depth != Dimension.Zero) {
+            ProductionNotes.Add("Check back panel length. PSI bug causes back panel to be too short.");
+        }
+
+        if (Inside.RollOutBoxes.Positions.Length > 0 && BoxOptions.SlideType == DrawerSlideType.SideMount) {
+            ProductionNotes.Add("PSI may not support roll out drawer boxes with side mount slieds");
+        }
+
         cabinet.IsGarage = IsGarage;
-        cabinet.ProductionNotes = ProductionNotes;
+        cabinet.ProductionNotes.AddRange(ProductionNotes.Select(ProductionNote.Create));
+
         return cabinet;
+
     }
 }

@@ -8,7 +8,7 @@ public class CounterTop(Guid id,
                   decimal unitPrice,
                   int productNumber,
                   string room,
-                  List<string> productionNotes,
+                  List<ProductionNote> productionNotes,
                   string finish,
                   Dimension width,
                   Dimension length,
@@ -19,7 +19,7 @@ public class CounterTop(Guid id,
     public decimal UnitPrice { get; } = unitPrice;
     public int ProductNumber { get; } = productNumber;
     public string Room { get; set; } = room;
-    public List<string> ProductionNotes { get; } = productionNotes;
+    public List<ProductionNote> ProductionNotes { get; } = productionNotes;
     public string Finish { get; } = finish;
     public Dimension Width { get; } = width;
     public Dimension Length { get; } = length;

@@ -94,11 +94,11 @@ public class DovetailDrawerBoxModel : ProductOrItemModel {
 		else if (Material == "Economy Birch")
 			Material = DovetailDrawerBoxConfig.FINGER_JOINT_BIRCH;
 
-		var productionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList();
+		var productionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).Select(p => ProductionNote.Create(p)).ToList();
 
 		if (!_notchTypes.TryGetValue(Notch, out string? notch)) {
 			notch = Notch;
-			productionNotes.Add("CHECK NOTCH TYPE");
+			productionNotes.Add(ProductionNote.Create("CHECK NOTCH TYPE"));
 		}
 
 		LogoPosition logo = Logo switch {
@@ -107,7 +107,7 @@ public class DovetailDrawerBoxModel : ProductOrItemModel {
 		};
 
 		if (Logo != "Yes" && Logo != "No") {
-			productionNotes.Add("CHECK LOGO OPTION");
+			productionNotes.Add(ProductionNote.Create("CHECK LOGO OPTION"));
 		}
 
 		var options = new DovetailDrawerBoxConfig(Material, Material, Material, Bottom, Clips, notch, Insert, logo);

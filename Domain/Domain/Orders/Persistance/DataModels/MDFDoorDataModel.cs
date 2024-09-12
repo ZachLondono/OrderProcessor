@@ -3,6 +3,7 @@ using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Persistance.DataModels;
 
@@ -18,7 +19,6 @@ public class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuerya
     public Dimension RightStile { get; set; }
     public DoorOrientation Orientation { get; set; }
     public AdditionalOpening[] AdditionalOpenings { get; set; } = Array.Empty<AdditionalOpening>();
-    public List<string> ProductionNotes { get; set; } = new();
 
     public string FramingBead { get; set; } = string.Empty;
     public string EdgeDetail { get; set; } = string.Empty;
@@ -38,7 +38,6 @@ public class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuerya
             products.unit_price AS UnitPrice,
             products.product_number AS ProductNumber,
         	products.room,
-            products.production_notes AS ProductionNotes,
 
         	mdf_product.note,
         	mdf_product.height,
@@ -76,7 +75,7 @@ public class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuerya
         WHERE product_id = @ProductId;
         """;
 
-    public IProduct MapToProduct() {
+    public IProduct MapToProduct(IEnumerable<ProductionNote> productionNotes) {
 
         var frameSize = new DoorFrame() {
             TopRail = TopRail,
@@ -86,7 +85,7 @@ public class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuerya
         };
 
         return new MDFDoorProduct(Id, UnitPrice, Room, Qty, ProductNumber, Type, Height, Width, Note, frameSize, Material, Thickness, FramingBead, EdgeDetail, PanelDetail, PanelDrop, Orientation, AdditionalOpenings, PaintColor) {
-            ProductionNotes = ProductionNotes
+            ProductionNotes = productionNotes.ToList()
         };
 
     }

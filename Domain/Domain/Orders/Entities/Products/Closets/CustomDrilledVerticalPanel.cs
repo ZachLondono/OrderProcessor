@@ -9,7 +9,7 @@ using Domain.ProductPlanner;
 
 namespace Domain.Orders.Entities.Products.Closets;
 
-public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPartContainer, IClosetPartProduct {
+public class CustomDrilledVerticalPanel : IPPProductContainer, ICNCPartContainer, IClosetPartProduct {
 
     public Guid Id { get; }
     public int Qty { get; }
@@ -23,7 +23,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     public ClosetPaint? Paint { get; }
     public string EdgeBandingColor { get; }
     public string Comment { get; }
-    public List<string> ProductionNotes { get; set; } = [];
+    public List<ProductionNote> ProductionNotes { get; set; } = [];
 
     public ClosetVerticalDrillingType DrillingType { get; }
     public Dimension ExtendBack { get; }

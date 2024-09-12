@@ -79,7 +79,19 @@ public class CabinetPartModel : ProductOrItemModel {
 
 		string edgeBandColor = EdgeBandColor == "Match" ? MaterialFinish : EdgeBandColor;
 
-		return new CabinetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), SKU, Room, material, edgeBandColor, Comment, parameters, ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList());
+		var productionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).Select(ProductionNote.Create).ToList();
+
+		return new CabinetPart(Guid.NewGuid(),
+                         Qty,
+                         unitPrice,
+                         GetProductNumber(),
+                         SKU,
+                         Room,
+                         material,
+                         edgeBandColor,
+                         Comment,
+                         parameters,
+                         productionNotes);
 	}
 
 }

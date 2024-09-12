@@ -22,7 +22,7 @@ public class ZargenDrawer : IProduct, IPPProductContainer, ISupplyContainer {
     public string EdgeBandingColor { get; }
     public string Comment { get; }
     public IReadOnlyDictionary<string, string> Parameters { get; }
-    public List<string> ProductionNotes { get; set; } = [];
+    public List<ProductionNote> ProductionNotes { get; set; } = [];
 
     public static Dictionary<Dimension, string> StandardHeights => new() {
         { Dimension.FromMillimeters(93), "6035" },
@@ -37,7 +37,20 @@ public class ZargenDrawer : IProduct, IPPProductContainer, ISupplyContainer {
         { Dimension.FromMillimeters(477), "6436" },
     };
 
-    public ZargenDrawer(Guid id, int qty, decimal unitPrice, int productNumber, string room, string sku, Dimension openingWidth, Dimension height, Dimension depth, ClosetMaterial material, ClosetPaint? paint, string edgeBandingColor, string comment, IReadOnlyDictionary<string, string> parameters) {
+    public ZargenDrawer(Guid id,
+                        int qty,
+                        decimal unitPrice,
+                        int productNumber,
+                        string room,
+                        string sku,
+                        Dimension openingWidth,
+                        Dimension height,
+                        Dimension depth,
+                        ClosetMaterial material,
+                        ClosetPaint? paint,
+                        string edgeBandingColor,
+                        string comment,
+                        IReadOnlyDictionary<string, string> parameters) {
         Id = id;
         Qty = qty;
         UnitPrice = unitPrice;

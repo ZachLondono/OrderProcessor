@@ -146,7 +146,7 @@ public class CustomDrillingVerticalPanelModel : ProductOrItemModel {
 		}
 
 		return new CustomDrilledVerticalPanel(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), Room, width, length, material, paint, edgeBandColor, Comment, drillingType, extendBack, extendFront, holeDimensionFromBottom, holeDimensionFromTop, transitionHoleDimensionFromBottom, transitionHoleDimensionFromTop, bottomNotchDepth, bottomNotchHeight, ledChannelOffFront, ledChannelWidth, ledChannelDepth) {
-			ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList()
+			ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).Select(ProductionNote.Create).ToList()
 		};
 
 	}

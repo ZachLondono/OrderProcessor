@@ -2,6 +2,7 @@
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products.Cabinets;
 using Domain.ValueObjects;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Builders;
 
@@ -59,9 +60,37 @@ public class BaseCabinetBuilder : CabinetBuilder<BaseCabinet> {
     }
 
     public override BaseCabinet Build() {
-        var cabinet = BaseCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, Doors, ToeType, Drawers, Inside, BoxOptions, BaseNotch);
+
+        var cabinet = BaseCabinet.Create(Qty,
+                                         UnitPrice,
+                                         ProductNumber,
+                                         Room,
+                                         Assembled,
+                                         Height,
+                                         Width,
+                                         Depth,
+                                         BoxMaterial,
+                                         FinishMaterial,
+                                         SlabDoorMaterial,
+                                         MDFDoorOptions,
+                                         EdgeBandingColor,
+                                         RightSideType,
+                                         LeftSideType,
+                                         Comment,
+                                         Doors,
+                                         ToeType,
+                                         Drawers,
+                                         Inside,
+                                         BoxOptions,
+                                         BaseNotch);
+
         cabinet.IsGarage = IsGarage;
-        cabinet.ProductionNotes = ProductionNotes;
+
+        if (Inside.RollOutBoxes.Positions.Length > 0 && BoxOptions.SlideType == DrawerSlideType.SideMount) {
+            ProductionNotes.Add("PSI may not support roll out drawer boxes with side mount slieds");
+        }
+
+        cabinet.ProductionNotes.AddRange(ProductionNotes.Select(ProductionNote.Create));
         return cabinet;
     }
 

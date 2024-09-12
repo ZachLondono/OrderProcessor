@@ -3,6 +3,7 @@ using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
+using Domain.Orders.Entities;
 
 namespace Domain.Orders.Persistance.DataModels;
 
@@ -20,9 +21,8 @@ public class SinkCabinetDataModel : CabinetRollOutContainerDataModelBase, IProdu
     public double? ScoopDepth { get; set; }
     public double? ScoopFromFront { get; set; }
     public double? ScoopFromBack { get; set; }
-    public List<string> ProductionNotes { get; set; } = new();
 
-    public IProduct MapToProduct() {
+    public IProduct MapToProduct(IEnumerable<ProductionNote> productionNotes) {
 
         var dbOptions = GetDrawerBoxOptions();
         var mdfConfig = GetMDFDoorConfiguration();
@@ -42,7 +42,7 @@ public class SinkCabinetDataModel : CabinetRollOutContainerDataModelBase, IProdu
 
         return new SinkCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
             ToeType, HingeSide, DoorQty, FalseDrawerQty, DrawerFaceHeight, AdjShelfQty, ShelfDepth, rollOuts, dbOptions, TiltFront, scoops) {
-            ProductionNotes = ProductionNotes
+            ProductionNotes = productionNotes.ToList()
         };
 
     }
@@ -57,7 +57,6 @@ public class SinkCabinetDataModel : CabinetRollOutContainerDataModelBase, IProdu
             products.unit_price AS UnitPrice,
             products.product_number AS ProductNumber,
             products.room,
-            products.production_notes AS ProductionNotes,
 
             cabinets.height,
             cabinets.width,
