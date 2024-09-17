@@ -73,7 +73,7 @@ public partial class ClosetProPartMapper {
 			BaseNotch = baseNotch,
 			ExtendBack = wallHasBacking,
 			WallHung = isWallMount,               // Closet pro does not support wall hung hutch panels, at this time
-			HasBottomRadius = false,
+			HasBottomRadius = hasRadiusBottom,
 			Drilling = finLeft ? VerticalPanelDrilling.FinishedLeft : finRight ? VerticalPanelDrilling.FinishedRight : VerticalPanelDrilling.DrilledThrough,
 		};
 
@@ -124,7 +124,7 @@ public partial class ClosetProPartMapper {
 			BaseNotch = baseNotch,
 			ExtendBack = wallHasBacking,
 			WallHung = isWallMount,               // Closet pro does not support wall hung hutch panels, at this time
-			HasBottomRadius = false,
+			HasBottomRadius = hasRadiusBottom,
 			Drilling = finLeft ? VerticalPanelDrilling.FinishedLeft : finRight ? VerticalPanelDrilling.FinishedRight : VerticalPanelDrilling.DrilledThrough,
 		};
 
