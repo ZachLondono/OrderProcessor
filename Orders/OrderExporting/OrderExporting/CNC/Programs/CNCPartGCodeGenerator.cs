@@ -322,11 +322,18 @@ public class CNCPartGCodeGenerator {
             toolTable[i + 1] = "";
         }
 
-        foreach (var toolName in usedToolNames) {
+        machineCarousel.Tools = machineCarousel.Tools.Select(t => new Tool() {
+            Position = t.Position,
+            Name = t.Name.Trim(),
+            AlternativeNames = t.AlternativeNames.Select(t => t.Trim()).ToList()
+        }).ToList();
+
+        foreach (var toolName in usedToolNames.Select(t => t.Trim())) {
 
             foreach (var tool in machineCarousel.Tools) {
 
-                if (string.Equals(toolName, tool.Name, StringComparison.OrdinalIgnoreCase) || tool.AlternativeNames.Contains(toolName, StringComparer.OrdinalIgnoreCase)) {
+                if (string.Equals(toolName, tool.Name, StringComparison.OrdinalIgnoreCase)
+                    || tool.AlternativeNames.Contains(toolName, StringComparer.OrdinalIgnoreCase)) {
                     toolTable[tool.Position] = tool.Name;
                     break;
                 }
