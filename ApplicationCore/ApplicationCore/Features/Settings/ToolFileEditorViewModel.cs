@@ -46,7 +46,7 @@ internal class ToolFileEditorViewModel {
         try {
 
             _options.Update(config => {
-                config.MachineToolMaps = Configuration.MachineToolMaps;
+                config.MachineToolMaps = CleanNames(Configuration.MachineToolMaps);
             });
 
             Error = null;
@@ -61,5 +61,19 @@ internal class ToolFileEditorViewModel {
         }
 
     }
+
+    private static List<MachineToolMap> CleanNames(List<MachineToolMap> maps)
+       => maps.Select(m => {
+                  m.MachineName = m.MachineName.Trim();
+                  m.Tools = m.Tools
+                             .Select(t => new Tool() {
+                                 Position = t.Position,
+                                 Name = t.Name.Trim(),
+                                 AlternativeNames = t.AlternativeNames.Select(t => t.Trim()).ToList()
+                             })
+                             .ToList();
+                  return m;
+              })
+              .ToList();
 
 }
