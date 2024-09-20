@@ -14,19 +14,28 @@ public class GetOrderWorkingDirectory {
             _factory = factory;
         }
 
-
         public override async Task<Response<string>> Handle(Query query) {
 
             using var connection = await _factory.CreateConnection();
 
-            return await Task.Run(() => connection.QuerySingle<string>(
+            var workingDirectory = await Task.Run(() => connection.QuerySingleOrDefault<string>(
                 """
                 SELECT 
                     working_directory
                 FROM orders
                 WHERE id = @OrderId;
-                """,
-                query));
+                """, query));
+
+            if (workingDirectory is null) {
+
+                return new Error() {
+                    Title = "Working Directory Not Found",
+                    Details = "Could not find working directory for order."
+                };
+
+            }
+
+            return workingDirectory;
 
         }
 

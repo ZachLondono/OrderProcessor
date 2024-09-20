@@ -30,7 +30,7 @@ public class GetOrderHeader {
 
             using var connection = await _factory.CreateConnection();
 
-            var header = await Task.Run(() => connection.QuerySingle<OrderHeader>(
+            var header = await Task.Run(() => connection.QuerySingleOrDefault<OrderHeader>(
                 """
                 SELECT 
                     id AS OrderId,
@@ -46,6 +46,15 @@ public class GetOrderHeader {
                 WHERE id = @OrderId;
                 """,
                 query));
+
+            if (header is null) {
+
+                return new Error() {
+                    Title = "Could Not Load Order Info",
+                    Details = "Could not find order information for given order."
+                };
+
+            }
 
             return header;
 

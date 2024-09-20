@@ -1,5 +1,4 @@
-﻿using Dapper;
-using Domain.Infrastructure.Bus;
+﻿using Domain.Infrastructure.Bus;
 using Domain.Orders.Persistance;
 
 namespace ApplicationCore.Features.CustomizationScriptList.Queries;
@@ -20,13 +19,22 @@ public class GetOrderWorkingDirectory {
 
             using var connection = await _factory.CreateConnection();
 
-            var workingDirectory = connection.QuerySingleOrDefault<string>(
+            var workingDirectory = await Task.Run(() => connection.QuerySingleOrDefault<string>(
                 """
                 SELECT 
                     working_directory
                 FROM orders
                 WHERE id = @OrderId;
-                """, query);
+                """, query));
+
+            if (workingDirectory is null) {
+
+                return new Error() {
+                    Title = "Working Directory Not Found",
+                    Details = "Could not find working directory for order."
+                };
+
+            }
 
             return workingDirectory;
 
