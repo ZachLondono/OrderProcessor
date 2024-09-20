@@ -4,7 +4,9 @@
 <section class="mt-16">
     <div class="mb-5">
         <span class="font-bold text-xl">Hardware</span>
-        <Button Style="ButtonStyle.Text" OnClickAsync="AddSupply" Color="ButtonColor.Primary">+ Add</Button>
+        @if (!IsLoading) {
+            <Button Style="ButtonStyle.Text" OnClickAsync="AddSupply" Color="ButtonColor.Primary">+ Add</Button>
+        }
     </div>
     <div class="border border-slate-100 rounded-md">
         <table class="table-auto w-full rounded-md">
@@ -74,7 +76,9 @@
 <section class="mt-16">
     <div class="mb-5">
         <span class="font-bold text-xl">Drawer Slides</span>
-        <Button Style="ButtonStyle.Text" OnClickAsync="AddSlides" Color="ButtonColor.Primary">+ Add</Button>
+        @if (!IsLoading) {
+            <Button Style="ButtonStyle.Text" OnClickAsync="AddSlides" Color="ButtonColor.Primary">+ Add</Button>
+        }
     </div>
     <div class="border border-slate-100 rounded-md">
         <table class="table-auto w-full rounded-md">
@@ -152,7 +156,9 @@
 <section class="mt-16">
     <div class="mb-5">
         <span class="font-bold text-xl">Hanging Rails</span>
-        <Button Style="ButtonStyle.Text" OnClickAsync="AddRails" Color="ButtonColor.Primary">+ Add</Button>
+        @if (!IsLoading) {
+            <Button Style="ButtonStyle.Text" OnClickAsync="AddRails" Color="ButtonColor.Primary">+ Add</Button>
+        }
     </div>
     <div class="border border-slate-100 rounded-md">
         <table class="table-auto w-full rounded-md">

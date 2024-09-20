@@ -38,7 +38,7 @@ public partial class HardwareList {
         }
     }
 
-    private bool _isLoading = false;
+    private bool _isLoading = true;
     public bool IsLoading {
         get => _isLoading;
         set {
@@ -68,6 +68,7 @@ public partial class HardwareList {
                                         .Select(s => new HangingRailEditModel(s.Id, s.Qty, s.Length, s.Finish))
                                         .ToList(),
                 };
+                IsLoading = false;
             },
             error => Error = error);
 
