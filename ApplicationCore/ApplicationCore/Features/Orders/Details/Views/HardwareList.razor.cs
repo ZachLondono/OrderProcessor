@@ -1,13 +1,13 @@
-﻿using ApplicationCore.Features.HardwareList.Commands;
-using ApplicationCore.Features.HardwareList.Models;
-using ApplicationCore.Features.HardwareList.Queries;
+﻿using ApplicationCore.Features.Orders.Details.Commands.HardwareList;
+using ApplicationCore.Features.Orders.Details.Models.HardwareList;
+using ApplicationCore.Features.Orders.Details.Queries;
 using Domain.Infrastructure.Bus;
 using Domain.Orders.Entities.Hardware;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using Microsoft.AspNetCore.Components;
 
-namespace ApplicationCore.Features.HardwareList;
+namespace ApplicationCore.Features.Orders.Details.Views;
 
 public partial class HardwareList {
 

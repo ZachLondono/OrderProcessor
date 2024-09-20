@@ -3,11 +3,11 @@ using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Persistance;
 using Domain.Orders.Persistance.Repositories;
 
-namespace ApplicationCore.Features.HardwareList.Commands;
+namespace ApplicationCore.Features.Orders.Details.Commands.HardwareList;
 
-public class AddHangingRailToOrder {
+public class UpdateHangingRail {
 
-    public record Command(Guid OrderId, HangingRail HangingRail) : ICommand;
+    public record Command(HangingRail Rail) : ICommand;
 
     public class Handler(IOrderingDbConnectionFactory factory) : CommandHandler<Command> {
 
@@ -18,7 +18,7 @@ public class AddHangingRailToOrder {
             using var connection = await _factory.CreateConnection();
 
             var repo = new OrderHangingRailRepository(connection);
-            var wasInserted = await Task.Run(() => repo.AddHangingRailToOrder(command.OrderId, command.HangingRail));
+            var wasInserted = await Task.Run(() => repo.UpdateHangingRail(command.Rail));
 
             if (wasInserted) {
 
@@ -27,14 +27,13 @@ public class AddHangingRailToOrder {
             } else {
 
                 return new Error() {
-                    Title = "Failed to Add Hanging Rail to Order",
+                    Title = "Failed to Update Hanging Rail",
                     Details = "Hanging rail data could not be saved to database."
                 };
 
             }
 
         }
-
     }
 
 }

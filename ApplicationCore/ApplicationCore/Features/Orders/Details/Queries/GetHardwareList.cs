@@ -3,7 +3,7 @@ using Domain.Orders.Persistance;
 using Domain.Orders.Persistance.Repositories;
 using Domain.Orders.ValueObjects;
 
-namespace ApplicationCore.Features.HardwareList.Queries;
+namespace ApplicationCore.Features.Orders.Details.Queries;
 
 public class GetHardwareList {
 
@@ -21,13 +21,13 @@ public class GetHardwareList {
 
                 var suppliesRepo = new OrderSuppliesRepository(connection);
                 var supplies = suppliesRepo.GetOrderSupplies(query.OrderId);
-    
+
                 var slidesRepo = new OrderDrawerSlidesRepository(connection);
                 var slides = slidesRepo.GetOrderDrawerSlides(query.OrderId);
-    
+
                 var railsRepo = new OrderHangingRailRepository(connection);
                 var hangingRails = railsRepo.GetOrderHangingRails(query.OrderId);
-    
+
                 return new Hardware(supplies.ToArray(), slides.ToArray(), hangingRails.ToArray());
 
             });

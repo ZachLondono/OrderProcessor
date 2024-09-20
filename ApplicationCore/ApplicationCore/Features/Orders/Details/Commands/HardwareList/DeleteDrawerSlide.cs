@@ -1,13 +1,12 @@
 ﻿using Domain.Infrastructure.Bus;
-using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Persistance;
 using Domain.Orders.Persistance.Repositories;
 
-namespace ApplicationCore.Features.HardwareList.Commands;
+namespace ApplicationCore.Features.Orders.Details.Commands.HardwareList;
 
-public class AddDrawerSlideToOrder {
+public class DeleteDrawerSlide {
 
-    public record Command(Guid OrderId, DrawerSlide DrawerSlide) : ICommand;
+    public record Command(Guid SlideId) : ICommand;
 
     public class Handler(IOrderingDbConnectionFactory factory) : CommandHandler<Command> {
 
@@ -18,7 +17,7 @@ public class AddDrawerSlideToOrder {
             using var connection = await _factory.CreateConnection();
 
             var repo = new OrderDrawerSlidesRepository(connection);
-            var wasInserted = await Task.Run(() => repo.AddDrawerSlideToOrder(command.OrderId, command.DrawerSlide));
+            var wasInserted = await Task.Run(() => repo.DeleteDrawerSlide(command.SlideId));
 
             if (wasInserted) {
 
@@ -27,14 +26,13 @@ public class AddDrawerSlideToOrder {
             } else {
 
                 return new Error() {
-                    Title = "Failed to Add Drawer Slide to Order",
+                    Title = "Failed to Delete Drawer Slide",
                     Details = "Drawer slide data could not be saved to database."
                 };
 
             }
 
         }
-
     }
 
 }

@@ -1,13 +1,12 @@
 ﻿using Domain.Infrastructure.Bus;
-using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Persistance;
 using Domain.Orders.Persistance.Repositories;
 
-namespace ApplicationCore.Features.HardwareList.Commands;
+namespace ApplicationCore.Features.Orders.Details.Commands.HardwareList;
 
-public class UpdateDrawerSlide {
+public class DeleteSupply {
 
-    public record Command(DrawerSlide Slide) : ICommand;
+    public record Command(Guid SupplyId) : ICommand;
 
     public class Handler(IOrderingDbConnectionFactory factory) : CommandHandler<Command> {
 
@@ -17,18 +16,18 @@ public class UpdateDrawerSlide {
 
             using var connection = await _factory.CreateConnection();
 
-            var repo = new OrderDrawerSlidesRepository(connection);
-            var wasInserted = await Task.Run(() => repo.UpdateDrawerSlide(command.Slide));
+            var repo = new OrderSuppliesRepository(connection);
+            var wasDeleted = await Task.Run(() => repo.DeleteSupply(command.SupplyId));
 
-            if (wasInserted) {
+            if (wasDeleted) {
 
                 return Response.Success();
 
             } else {
 
                 return new Error() {
-                    Title = "Failed to Update Drawer Slide",
-                    Details = "Drawer slide data could not be saved to database."
+                    Title = "Failed to Delete Supply",
+                    Details = "Supply data could not be saved to database."
                 };
 
             }

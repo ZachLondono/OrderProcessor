@@ -1,12 +1,13 @@
 ﻿using Domain.Infrastructure.Bus;
+using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Persistance;
 using Domain.Orders.Persistance.Repositories;
 
-namespace ApplicationCore.Features.HardwareList.Commands;
+namespace ApplicationCore.Features.Orders.Details.Commands.HardwareList;
 
-public class DeleteHangingRail {
+public class AddDrawerSlideToOrder {
 
-    public record Command(Guid RailId) : ICommand;
+    public record Command(Guid OrderId, DrawerSlide DrawerSlide) : ICommand;
 
     public class Handler(IOrderingDbConnectionFactory factory) : CommandHandler<Command> {
 
@@ -16,8 +17,8 @@ public class DeleteHangingRail {
 
             using var connection = await _factory.CreateConnection();
 
-            var repo = new OrderHangingRailRepository(connection);
-            var wasInserted = await Task.Run(() => repo.DeleteHangingRail(command.RailId));
+            var repo = new OrderDrawerSlidesRepository(connection);
+            var wasInserted = await Task.Run(() => repo.AddDrawerSlideToOrder(command.OrderId, command.DrawerSlide));
 
             if (wasInserted) {
 
@@ -26,13 +27,14 @@ public class DeleteHangingRail {
             } else {
 
                 return new Error() {
-                    Title = "Failed to Delete Hanging Rail",
-                    Details = "Hanging rail data could not be saved to database."
+                    Title = "Failed to Add Drawer Slide to Order",
+                    Details = "Drawer slide data could not be saved to database."
                 };
 
             }
 
         }
+
     }
 
 }

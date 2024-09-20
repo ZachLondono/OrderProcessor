@@ -1,6 +1,6 @@
 ﻿using Domain.ValueObjects;
 
-namespace ApplicationCore.Features.HardwareList.Models;
+namespace ApplicationCore.Features.Orders.Details.Models.HardwareList;
 
 public class DrawerSlideEditModel(Guid id, int qty, Dimension length, string style) {
 

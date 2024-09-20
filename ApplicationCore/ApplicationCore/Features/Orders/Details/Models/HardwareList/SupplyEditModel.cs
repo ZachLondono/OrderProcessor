@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.HardwareList.Models;
+﻿namespace ApplicationCore.Features.Orders.Details.Models.HardwareList;
 
 public class SupplyEditModel(Guid id, int qty, string description) {
 

@@ -1,12 +1,13 @@
 ﻿using Domain.Infrastructure.Bus;
+using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Persistance;
 using Domain.Orders.Persistance.Repositories;
 
-namespace ApplicationCore.Features.HardwareList.Commands;
+namespace ApplicationCore.Features.Orders.Details.Commands.HardwareList;
 
-public class DeleteSupply {
+public class AddSupplyToOrder {
 
-    public record Command(Guid SupplyId) : ICommand;
+    public record Command(Guid OrderId, Supply Supply) : ICommand;
 
     public class Handler(IOrderingDbConnectionFactory factory) : CommandHandler<Command> {
 
@@ -17,22 +18,23 @@ public class DeleteSupply {
             using var connection = await _factory.CreateConnection();
 
             var repo = new OrderSuppliesRepository(connection);
-            var wasDeleted = await Task.Run(() => repo.DeleteSupply(command.SupplyId));
+            var wasInserted = await Task.Run(() => repo.AddSupplyToOrder(command.OrderId, command.Supply));
 
-            if (wasDeleted) {
+            if (wasInserted) {
 
                 return Response.Success();
 
             } else {
 
                 return new Error() {
-                    Title = "Failed to Delete Supply",
+                    Title = "Failed to Add Supply to Order",
                     Details = "Supply data could not be saved to database."
                 };
 
             }
 
         }
+
     }
 
 }
