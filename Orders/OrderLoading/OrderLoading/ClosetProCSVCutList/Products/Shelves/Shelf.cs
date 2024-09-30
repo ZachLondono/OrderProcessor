@@ -33,9 +33,13 @@ public class Shelf : IClosetProProduct {
 		ClosetMaterial material = new(Color, ClosetMaterialCore.ParticleBoard);
 		ClosetPaint? paint = null;
 		string comment = "";
-		Dictionary<string, string> parameters = [];
 
-		return new ClosetPart(Guid.NewGuid(),
+		Dictionary<string, string> parameters = [];
+		if (ExtendBack) {
+			parameters["ExtendBack"] = "19";
+		}
+
+		var part = new ClosetPart(Guid.NewGuid(),
 							  Qty,
 							  UnitPrice,
 							  PartNumber,
@@ -49,6 +53,12 @@ public class Shelf : IClosetProProduct {
 							  comment,
 							  true,
 							  parameters);
+
+		if (ExtendBack) {
+			part.ProductionNotes.Add("Verify that any drilling on this full depth shelf part correctly lines up with it's vertical panel. Some PSI products do not support the 'ExtendBack' parameter.");
+		}
+
+		return part;
 
 	}
 
