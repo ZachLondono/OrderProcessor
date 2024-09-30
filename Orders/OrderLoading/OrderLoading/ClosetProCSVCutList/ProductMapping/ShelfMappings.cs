@@ -11,9 +11,17 @@ public partial class ClosetProPartMapper {
 
 		if (part.ExportName == "L Fixed Shelf" || part.PartName == "L Fixed Shelf") {
 
+			if (wallHasBacking || extendBack) {
+				throw new UnsupportedDesignException("Corner units with back panels are not supported");
+			}
+
 			return CreateLFixedShelf(part, strategy);
 
 		} else if (part.ExportName == "Pie Fixed Shelf" || part.PartName == "Pie Fixed Shelf") {
+
+			if (wallHasBacking || extendBack) {
+				throw new UnsupportedDesignException("Corner units with back panels are not supported");
+			}
 
 			return CreateDiagonalFixedShelf(part, strategy);
 
@@ -29,9 +37,17 @@ public partial class ClosetProPartMapper {
 
 		if (part.ExportName == "L Adj Shelf" || part.PartName == "L Adj Shelf") {
 
+			if (wallHasBacking || extendBack) {
+				throw new UnsupportedDesignException("Corner units with back panels are not supported");
+			}
+
 			return CreateLAdjustableShelf(part, strategy);
 
 		} else if (part.ExportName == "Pie Adj Shelf" || part.PartName == "Pie Adj Shelf") {
+
+			if (wallHasBacking || extendBack) {
+				throw new UnsupportedDesignException("Corner units with back panels are not supported");
+			}
 
 			return CreateDiagonalAdjustableShelf(part, strategy);
 
