@@ -107,10 +107,6 @@ public partial class ClosetProPartMapper {
 								.Select(i => i.Color)
 								.FirstOrDefault() ?? part.Color;
 
-		if (wallHasBacking && (part.PartName == "Top Fixed Shelf" || part.PartName == "Bottom Fixed Shelf")) {
-			extendBack = true;
-		}
-
 		return new Shelf() {
 			Qty = part.Quantity,
 			UnitPrice = unitPrice,

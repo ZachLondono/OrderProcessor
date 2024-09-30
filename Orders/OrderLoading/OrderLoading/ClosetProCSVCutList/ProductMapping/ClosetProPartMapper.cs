@@ -16,7 +16,6 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 	public List<IClosetProProduct> MapPartsToProducts(IEnumerable<Part> parts, Dimension hardwareSpread) {
 
-
 		var products = parts.GroupBy(p => p.WallNum)
 							.SelectMany(p => GetPartsForWall(p, hardwareSpread));
 
@@ -79,20 +78,27 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 					break;
 				}
 
-			} else if (part.ExportName == "FixedShelf" && enumerator.MoveNext()) {
+			} else if (part.ExportName == "FixedShelf") {
 
-				var possibleCubbyPart = enumerator.Current;
-				if (possibleCubbyPart.ExportName == "Cubby-V" || possibleCubbyPart.ExportName == "Cubby-H") {
+				// If there are more parts in the enumeration, this fixed shelf may be part of a Cubby
+				if (enumerator.MoveNext()) {
 
-					var cubbyProducts = CreateCubbyProducts(enumerator, part, possibleCubbyPart, doesWallHaveBacking, RoomNamingStrategy);
-					products.AddRange(cubbyProducts);
+					var possibleCubbyPart = enumerator.Current;
+					if (possibleCubbyPart.ExportName == "Cubby-V" || possibleCubbyPart.ExportName == "Cubby-H") {
 
-					if (enumerator.MoveNext()) {
-						part = enumerator.Current;
-						continue;
-					} else {
-						break;
+						var cubbyProducts = CreateCubbyProducts(enumerator, part, possibleCubbyPart, doesWallHaveBacking, RoomNamingStrategy);
+						products.AddRange(cubbyProducts);
+
+						if (enumerator.MoveNext()) {
+							part = enumerator.Current;
+							continue;
+						} else {
+							break;
+						}
+
 					}
+
+					nextPart = possibleCubbyPart;
 
 				}
 
@@ -104,7 +110,6 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 				}
 
 				products.Add(CreateFixedShelfFromPart(part, doesWallHaveBacking, extendBack, RoomNamingStrategy));
-				nextPart = possibleCubbyPart;
 
 			} else if (part.ExportName == "AdjustableShelf") {
 
@@ -147,8 +152,6 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 				=> CreateVerticalPanelFromPart(part, wallHasBacking, strategy),
 
 			"VP-Hutch" => CreateHutchVerticalPanel(part, wallHasBacking, strategy),
-
-			"FixedShelf" => CreateFixedShelfFromPart(part, wallHasBacking, false, strategy),
 
 			"AdjustableShelf" => CreateAdjustableShelfFromPart(part, wallHasBacking, false, strategy),
 
