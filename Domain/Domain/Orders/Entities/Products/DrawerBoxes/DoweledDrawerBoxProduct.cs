@@ -25,6 +25,6 @@ public class DoweledDrawerBoxProduct : DoweledDrawerBox, IProduct, ICNCPartConta
 
     public string GetDescription() => $"Doweled Drawer Box{(MachineThicknessForUMSlides ? " - Standard Notched" : "")}";
 
-    public IEnumerable<Part> GetCNCParts(string customerName) => GetCNCParts(ProductNumber, customerName, Room);
+    public IEnumerable<Part> GetCNCParts() => GetCNCParts(ProductNumber, Room);
 
 }

@@ -27,19 +27,19 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
     public bool ContainsCNCParts() => true;
 
-    public virtual IEnumerable<Part> GetCNCParts(int productNumber, string customerName, string room) {
+    public virtual IEnumerable<Part> GetCNCParts(int productNumber, string room) {
         // TODO: maybe pass in the construction object to this method
         // TODO: make the bellow methods static, maybe
-        yield return GetFrontPart(Construction, productNumber, customerName, room);
-        yield return GetBackPart(Construction, productNumber, customerName, room);
-        var (left, right) = GetSideParts(Construction, productNumber, customerName, room);
+        yield return GetFrontPart(Construction, productNumber, room);
+        yield return GetBackPart(Construction, productNumber, room);
+        var (left, right) = GetSideParts(Construction, productNumber, room);
         yield return left;
         yield return right;
-        yield return GetBottomPart(Construction, productNumber, customerName, room);
+        yield return GetBottomPart(Construction, productNumber, room);
     }
 
 
-    public virtual Part GetFrontPart(DoweledDrawerBoxConstruction construction, int productNumber, string customerName, string room) {
+    public virtual Part GetFrontPart(DoweledDrawerBoxConstruction construction, int productNumber, string room) {
 
         Dimension frontLength = Width - 2 * SideMaterial.Thickness - construction.WidthUndersize;
 
@@ -71,7 +71,6 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
             InfoFields = new() {
                 { "ProductName", "Front" },
                 { "Description", "Drawer Box Front" },
-                { "CustomerInfo1", customerName },
                 { "Level1", room },
                 { "Comment1", "" },
                 { "Comment2", "" },
@@ -89,7 +88,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
     }
 
-    public virtual Part GetBackPart(DoweledDrawerBoxConstruction construction, int productNumber, string customerName, string room) {
+    public virtual Part GetBackPart(DoweledDrawerBoxConstruction construction, int productNumber, string room) {
 
         Dimension backLength = Width - 2 * SideMaterial.Thickness - construction.WidthUndersize;
 
@@ -106,7 +105,6 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
             InfoFields = new() {
                 { "ProductName", "Back" },
                 { "Description", "Drawer Box Back" },
-                { "CustomerInfo1", customerName },
                 { "Level1", room },
                 { "Comment1", "" },
                 { "Comment2", "" },
@@ -124,7 +122,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
     }
 
-    public virtual (Part Left, Part Right) GetSideParts(DoweledDrawerBoxConstruction construction, int productNumber, string customerName, string room) {
+    public virtual (Part Left, Part Right) GetSideParts(DoweledDrawerBoxConstruction construction, int productNumber, string room) {
 
         Dimension dadoLengthAdj = (FrontMaterial.Thickness < BackMaterial.Thickness ? FrontMaterial : BackMaterial).Thickness - construction.BottomDadoDepth;
 
@@ -162,7 +160,6 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
             InfoFields = new() {
                 { "ProductName", "Left" },
                 { "Description", "Drawer Box Left Side" },
-                { "CustomerInfo1", customerName },
                 { "Level1", room },
                 { "Comment1", "" },
                 { "Comment2", "" },
@@ -191,7 +188,6 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
             InfoFields = new() {
                 { "ProductName", "Right" },
                 { "Description", "Drawer Box Right Side" },
-                { "CustomerInfo1", customerName },
                 { "Level1", room },
                 { "Comment1", "" },
                 { "Comment2", "" },
@@ -309,7 +305,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
     }
 
-    public virtual Part GetBottomPart(DoweledDrawerBoxConstruction construction, int productNumber, string customerName, string room) {
+    public virtual Part GetBottomPart(DoweledDrawerBoxConstruction construction, int productNumber, string room) {
         var bottom = GetBottom(construction, productNumber);
         return new Part() {
             Qty = bottom.Qty,
@@ -321,7 +317,6 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
             InfoFields = new() {
                 { "ProductName", "Bottom" },
                 { "Description", "Drawer Box Bottom" },
-                { "CustomerInfo1", customerName },
                 { "Level1", room },
                 { "Comment1", "" },
                 { "Comment2", "" },

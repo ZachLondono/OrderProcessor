@@ -214,9 +214,12 @@ internal class ExportService {
 
         try {
 
-            parts = cncPartContainers
-                .SelectMany(p => p.GetCNCParts(customerName))
-                .ToArray();
+            parts = order.Products
+                         .OfType<ICNCPartContainer>()
+                         .Where(p => p.ContainsCNCParts())
+                         .Select((p, seq) => new CNCPartContainerDecorator(p, seq, order, customerName))
+                         .SelectMany(p => p.GetCNCParts())
+                         .ToArray();
 
         } catch (Exception ex) {
 

@@ -365,11 +365,16 @@ public class ReleaseService {
             return null;
         }
 
-        var parts = orders.SelectMany(o => o.Products)
-                        .OfType<ICNCPartContainer>()
-                        .Where(p => p.ContainsCNCParts())
-                        .SelectMany(p => p.GetCNCParts(customerName))
-                        .ToArray();
+        int index = 1;
+        var parts = orders.SelectMany(o => {
+
+            return o.Products
+                    .OfType<ICNCPartContainer>()
+                    .Where(p => p.ContainsCNCParts())
+                    .Select(p => new CNCPartContainerDecorator(p, index++, o, customerName))
+                    .SelectMany(p => p.GetCNCParts());
+
+        }).ToArray();
 
         if (parts.Length == 0) {
             return null;
