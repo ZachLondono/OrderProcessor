@@ -50,7 +50,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
     private static readonly Dimension s_stoppedDepth = Dimension.FromMillimeters(16.5);
     private static readonly Dimension s_drillThroughDepth = Dimension.FromMillimeters(26);
     private static readonly string s_cutOutTool = "3-8Comp";
-    private static readonly Dimension s_panelThickness = Dimension.FromMillimeters(19.05);
+    private static readonly Dimension s_panelThickness = Dimension.FromMillimeters(19.00);
 
     private static readonly string s_largeLEDToolName = "1-2Dado";
     private static readonly Dimension s_largeLEDToolDiameter = Dimension.FromMillimeters(13.6);
