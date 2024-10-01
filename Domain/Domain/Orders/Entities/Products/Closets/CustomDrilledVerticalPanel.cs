@@ -171,7 +171,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
     public bool ContainsCNCParts() => _requiresCustomDrilling;
 
-    public IEnumerable<Part> GetCNCParts(string customerName) {
+    public IEnumerable<Part> GetCNCParts() {
 
         if (!_requiresCustomDrilling) {
             return Enumerable.Empty<Part>();
@@ -247,7 +247,6 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
                 { "Side1Material", Material.Core.ToString() },
                 { "CabinetNumber", ProductNumber.ToString() },
                 { "Cabinet Number", ProductNumber.ToString() },
-                { "CustomerInfo1", customerName }
             }
         };
 
