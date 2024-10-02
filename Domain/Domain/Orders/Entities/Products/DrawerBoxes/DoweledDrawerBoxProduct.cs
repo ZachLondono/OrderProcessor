@@ -15,15 +15,39 @@ public class DoweledDrawerBoxProduct : DoweledDrawerBox, IProduct, ICNCPartConta
     public string Room { get; set; }
     public List<string> ProductionNotes { get; set; } = [];
 
-    public DoweledDrawerBoxProduct(Guid id, decimal unitPrice, int qty, string room, int productNumber, Dimension height, Dimension width, Dimension depth, DoweledDrawerBoxMaterial front, DoweledDrawerBoxMaterial back, DoweledDrawerBoxMaterial sides, DoweledDrawerBoxMaterial bottom, bool machineThicknessForUMSlides, Dimension frontBackHeightAdjustment)
-        : base(qty, height, width, depth, front, back, sides, bottom, machineThicknessForUMSlides, frontBackHeightAdjustment) {
+    public DoweledDrawerBoxProduct(Guid id,
+                                   decimal unitPrice,
+                                   int qty,
+                                   string room,
+                                   int productNumber,
+                                   Dimension height,
+                                   Dimension width,
+                                   Dimension depth,
+                                   DoweledDrawerBoxMaterial front,
+                                   DoweledDrawerBoxMaterial back,
+                                   DoweledDrawerBoxMaterial sides,
+                                   DoweledDrawerBoxMaterial bottom,
+                                   bool machineThicknessForUMSlides,
+                                   Dimension frontBackHeightAdjustment,
+                                   string umNotch)
+        : base(qty,
+               height,
+               width,
+               depth,
+               front,
+               back,
+               sides,
+               bottom,
+               machineThicknessForUMSlides,
+               frontBackHeightAdjustment,
+               umNotch) {
         Id = id;
         ProductNumber = productNumber;
         UnitPrice = unitPrice;
         Room = room;
     }
 
-    public string GetDescription() => $"Doweled Drawer Box{(MachineThicknessForUMSlides ? " - Standard Notched" : "")}";
+    public string GetDescription() => $"Doweled Drawer Box - {UMNotch}";
 
     public IEnumerable<Part> GetCNCParts() => GetCNCParts(ProductNumber, Room);
 

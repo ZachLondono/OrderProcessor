@@ -1,4 +1,5 @@
 ﻿using Domain.Orders.Entities.Products.DrawerBoxes;
+using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
 namespace ApplicationCore.Tests.Unit.Orders.Persistence.DrawerBoxes;
@@ -10,7 +11,7 @@ public class DoweledDrawerBoxPersistenceTests : PersistenceTests {
         var db = new DoweledDrawerBoxProduct(Guid.NewGuid(), 0M, 1, "", 1,
                                             Dimension.FromInches(4.125), Dimension.FromInches(21), Dimension.FromInches(21),
                                             new("", Dimension.Zero, false), new("", Dimension.Zero, false), new("", Dimension.Zero, false), new("", Dimension.Zero, false),
-                                            false, Dimension.Zero);
+                                            false, Dimension.Zero, DoweledDrawerBoxConfig.NO_NOTCH);
         InsertAndQueryOrderWithProduct(db);
     }
 
@@ -19,7 +20,7 @@ public class DoweledDrawerBoxPersistenceTests : PersistenceTests {
         var db = new DoweledDrawerBoxProduct(Guid.NewGuid(), 0M, 1, "", 1,
                                             Dimension.FromInches(4.125), Dimension.FromInches(21), Dimension.FromInches(21),
                                             new("", Dimension.Zero, false), new("", Dimension.Zero, false), new("", Dimension.Zero, false), new("", Dimension.Zero, false),
-                                            false, Dimension.Zero);
+                                            false, Dimension.Zero, DoweledDrawerBoxConfig.NO_NOTCH);
         InsertAndDeleteOrderWithProduct(db);
     }
 
@@ -28,7 +29,7 @@ public class DoweledDrawerBoxPersistenceTests : PersistenceTests {
         var db = new DoweledDrawerBoxProduct(Guid.NewGuid(), 0M, 1, "", 1,
                                             Dimension.FromInches(4.125), Dimension.FromInches(21), Dimension.FromInches(21),
                                             new("", Dimension.Zero, false), new("", Dimension.Zero, false), new("", Dimension.Zero, false), new("", Dimension.Zero, false),
-                                            false, Dimension.Zero) {
+                                            false, Dimension.Zero, DoweledDrawerBoxConfig.NO_NOTCH) {
             ProductionNotes = new() { "A", "B", "C" }
         };
         InsertAndQueryOrderWithProduct(db);
@@ -39,7 +40,7 @@ public class DoweledDrawerBoxPersistenceTests : PersistenceTests {
         var db = new DoweledDrawerBoxProduct(Guid.NewGuid(), 0M, 1, "", 1,
                                             Dimension.FromInches(4.125), Dimension.FromInches(21), Dimension.FromInches(21),
                                             new("", Dimension.Zero, false), new("", Dimension.Zero, false), new("", Dimension.Zero, false), new("", Dimension.Zero, false),
-                                            false, Dimension.Zero) {
+                                            false, Dimension.Zero, DoweledDrawerBoxConfig.NO_NOTCH) {
             ProductionNotes = new() { "A", "B", "C" }
         };
         InsertAndDeleteOrderWithProduct(db);

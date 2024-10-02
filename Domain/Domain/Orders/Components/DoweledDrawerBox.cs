@@ -17,8 +17,8 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
 
     public DoweledDrawerBox(int qty, Dimension height, Dimension width, Dimension depth,
                             DoweledDrawerBoxMaterial front, DoweledDrawerBoxMaterial back, DoweledDrawerBoxMaterial sides, DoweledDrawerBoxMaterial bottom,
-                            bool machineForUM, Dimension frontBackHeightAdjustment)
-                            : base(front, back, sides, bottom, machineForUM, frontBackHeightAdjustment) {
+                            bool machineForUM, Dimension frontBackHeightAdjustment, string umNotch)
+                            : base(front, back, sides, bottom, machineForUM, frontBackHeightAdjustment, umNotch) {
         Qty = qty;
         Height = height;
         Width = width;

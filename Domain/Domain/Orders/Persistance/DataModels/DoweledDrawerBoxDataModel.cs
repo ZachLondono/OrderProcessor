@@ -24,6 +24,7 @@ public class DoweledDrawerBoxDataModel : ProductDataModelBase, IProductDataModel
     public bool BottomMatGraining { get; set; }
     public bool MachineThicknessForUM { get; set; }
     public Dimension FrontBackHeightAdjustment { get; set; }
+    public string UMNotch { get; set; } = string.Empty;
     public List<string> ProductionNotes { get; set; } = new();
 
     public static string GetQueryByOrderId =>
@@ -54,7 +55,8 @@ public class DoweledDrawerBoxDataModel : ProductDataModelBase, IProductDataModel
             config.bottom_mat_thickness AS BottomMatThickness,
             config.bottom_mat_graining AS BottomMatGraining,
             config.machine_thickness_for_um AS MachineThicknessForUM,
-            config.frontback_height_adjustment AS FrontBackHeightAdjustment
+            config.frontback_height_adjustment AS FrontBackHeightAdjustment,
+            config.um_notches AS UMNotch
 
         FROM doweled_drawer_products AS db_product
 
@@ -73,7 +75,7 @@ public class DoweledDrawerBoxDataModel : ProductDataModelBase, IProductDataModel
         return new DoweledDrawerBoxProduct(Id, UnitPrice, Qty, Room, ProductNumber,
                                             Height, Width, Depth,
                                             frontMaterial, backMaterial, sideMaterial, bottomMaterial,
-                                            MachineThicknessForUM, FrontBackHeightAdjustment) {
+                                            MachineThicknessForUM, FrontBackHeightAdjustment, UMNotch) {
             ProductionNotes = ProductionNotes
         };
 
