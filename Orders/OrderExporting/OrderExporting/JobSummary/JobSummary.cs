@@ -34,6 +34,7 @@ public class JobSummary {
     public bool ContainsMDFDoorSubComponents { get; set; } = false;
     public bool ContainsFivePieceDoorSubComponents { get; set; } = false;
     public bool InstallCamsInClosetParts { get; set; } = false;
+    public string DoweledDBNotchMessage { get; set; } = string.Empty;
 
     public bool ShowMaterialTypesInSummary { get; set; } = false;
     public List<string> MaterialTypes { get; set; } = new();

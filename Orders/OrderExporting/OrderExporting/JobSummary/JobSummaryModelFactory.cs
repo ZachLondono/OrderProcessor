@@ -282,6 +282,16 @@ public class JobSummaryModelFactory {
                                                &&
                                                !order.Products.All(p => p is FivePieceDoorProduct);
 
+        string doweledDBMessage = "";
+        var doweledDBNotches = order.Products.OfType<DoweledDrawerBoxProduct>().Select(d => d.UMNotch);
+        if (doweledDBNotches.All(x => x == doweledDBNotches.First())) {
+            doweledDBMessage = $"MELA BOXES - {doweledDBNotches.First()}";
+        } else {
+            doweledDBMessage = "CHECK PACKING LIST FOR MELA BOX NOTCHES";
+        }
+
+
+
         return new JobSummary() {
 
             Number = order.Number,
@@ -314,6 +324,7 @@ public class JobSummaryModelFactory {
             ContainsMDFDoorSubComponents = containsMDFDoorSubComponents,
             ContainsFivePieceDoorSubComponents = containsFivePieceDoorSubComponents,
             InstallCamsInClosetParts = installCamsInClosetParts,
+            DoweledDBNotchMessage = doweledDBMessage,
 
             ShowMaterialTypesInSummary = showMaterialTypes,
             MaterialTypes = new(materialTypes),
