@@ -313,7 +313,8 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 													 new(header.BoxMaterial, Dimension.FromInches(0.75), true),
 													 new(header.BottomMaterial, Dimension.FromInches(0.75), true),
 													 false,
-													 Dimension.Zero);
+													 Dimension.Zero,
+													 DoweledDrawerBoxConfig.NO_NOTCH);
 
 		}
 
