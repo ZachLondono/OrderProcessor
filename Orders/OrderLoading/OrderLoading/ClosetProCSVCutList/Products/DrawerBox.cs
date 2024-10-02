@@ -40,6 +40,8 @@ public class DrawerBox : IClosetProProduct {
 
 		var heightAdj = Dimension.FromMillimeters(1); // TODO: get this from settings
 
+		string umNotch = UnderMountNotches ? DoweledDrawerBoxConfig.STANDARD_NOTCH : DoweledDrawerBoxConfig.NO_NOTCH;
+
 		// TODO: box height should not be the same as Height property when drawer has drawer front
 
 		return new DoweledDrawerBoxProduct(Guid.NewGuid(),
@@ -55,7 +57,8 @@ public class DrawerBox : IClosetProProduct {
 										   material,
 										   botMaterial,
 										   UnderMountNotches,
-										   heightAdj);
+										   heightAdj,
+										   umNotch);
 
 	}
 

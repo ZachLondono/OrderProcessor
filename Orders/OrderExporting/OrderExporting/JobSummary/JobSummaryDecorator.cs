@@ -177,6 +177,14 @@ public class JobSummaryDecorator(JobSummary jobSummary) : IDocumentDecorator {
                                 });
                     }
 
+                    if (!string.IsNullOrWhiteSpace(jobSummary.DoweledDBNotchMessage)) {
+                        column.Item()
+                                .AlignCenter()
+                                .Text(jobSummary.DoweledDBNotchMessage)
+                                .Bold()
+                                .FontSize(16);
+                    }
+
                     column.Item()
                             .PaddingLeft(10)
                             .PaddingTop(20)

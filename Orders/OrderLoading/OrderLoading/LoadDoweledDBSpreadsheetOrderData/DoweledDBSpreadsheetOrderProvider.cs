@@ -84,8 +84,9 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 			bool useInches = header.Units == "English (in)";
 			bool machineThicknessForUMSlides = slideSpecs.UMSlideMachining;
 			var frontBackHeightAdjustment = Dimension.FromMillimeters(constructionSpecs.FrontBackDrop);
+			string notches = header.UnderMountNotches;
 			var boxes = LoadAllLineItems(orderSheet)
-											.Select(i => i.CreateDoweledDrawerBoxProduct(useInches, machineThicknessForUMSlides, frontBackHeightAdjustment))
+											.Select(i => i.CreateDoweledDrawerBoxProduct(useInches, machineThicknessForUMSlides, frontBackHeightAdjustment, notches))
 											.Cast<IProduct>()
 											.ToList();
 

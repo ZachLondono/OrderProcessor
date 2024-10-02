@@ -211,7 +211,8 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 							sides,
 							bottom,
 							false,
-							frontBackHeightAdj);
+							frontBackHeightAdj,
+							DoweledDrawerBoxConfig.NO_NOTCH);
 
 			});
 

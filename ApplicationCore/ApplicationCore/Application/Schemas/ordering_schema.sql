@@ -593,6 +593,7 @@ CREATE TABLE doweled_drawer_box_configs (
 	bottom_mat_graining INTEGER NOT NULL,
 	machine_thickness_for_um INTEGER NOT NULL,
 	frontback_height_adjustment REAL NOT NULL,
+	um_notches TEXT NOT NULL,
 	PRIMARY KEY (id)
 );
 

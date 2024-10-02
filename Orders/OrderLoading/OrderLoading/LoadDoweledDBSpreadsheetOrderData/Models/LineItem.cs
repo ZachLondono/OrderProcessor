@@ -64,7 +64,7 @@ public record LineItem {
 
 	}
 
-	public DoweledDrawerBoxProduct CreateDoweledDrawerBoxProduct(bool useInches, bool machineThicknessForUMSlides, Dimension frontBackHeightAdjustment) {
+	public DoweledDrawerBoxProduct CreateDoweledDrawerBoxProduct(bool useInches, bool machineThicknessForUMSlides, Dimension frontBackHeightAdjustment, string notches) {
 
 		var id = Guid.NewGuid();
 		var room = "";
@@ -85,7 +85,21 @@ public record LineItem {
 		var sidesMaterial = new DoweledDrawerBoxMaterial(SidesColor, sideThickness, SidesGrained);
 		var bottomMaterial = new DoweledDrawerBoxMaterial(BottomColor, bottomThickness, BottomGrained);
 
-		return new DoweledDrawerBoxProduct(id, UnitPrice, Qty, room, Number, height, width, depth, frontBackMaterial, frontBackMaterial, sidesMaterial, bottomMaterial, machineThicknessForUMSlides, frontBackHeightAdjustment);
+		return new DoweledDrawerBoxProduct(id,
+                                     UnitPrice,
+                                     Qty,
+                                     room,
+                                     Number,
+                                     height,
+                                     width,
+                                     depth,
+                                     frontBackMaterial,
+                                     frontBackMaterial,
+                                     sidesMaterial,
+                                     bottomMaterial,
+                                     machineThicknessForUMSlides,
+                                     frontBackHeightAdjustment,
+									 notches);
 
 	}
 

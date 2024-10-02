@@ -15,6 +15,7 @@ public record Header {
 	public string Construction { get; init; } = string.Empty;
 	public string Units { get; init; } = string.Empty;
 	public string SpecialInstructions { get; init; } = string.Empty;
+	public string UnderMountNotches { get; init; } = string.Empty;
 
 	public static Header ReadFromSheet(Worksheet worksheet) {
 
@@ -47,7 +48,8 @@ public record Header {
 			ConnectorType = worksheet.GetRangeStringValue("SelectedConnectionType"),
 			Construction = worksheet.GetRangeStringValue("SelectedConstructionOption"),
 			Units = worksheet.GetRangeStringValue("SelectedUnits"),
-			SpecialInstructions = string.Join("; ", noteSegments.Where(s => !string.IsNullOrWhiteSpace(s)))
+			SpecialInstructions = string.Join("; ", noteSegments.Where(s => !string.IsNullOrWhiteSpace(s))),
+			UnderMountNotches = worksheet.GetRangeStringValue("SelectedUnderMountSlideOption")
 		};
 
 	}

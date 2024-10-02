@@ -69,7 +69,23 @@ public class DoweledDrawerBoxModel : ProductOrItemModel {
 
 		var frontBackAdj = Dimension.FromMillimeters(FrontBackHeightAdj);
 
-		return new DoweledDrawerBoxProduct(Guid.NewGuid(), UnitPrice, Qty, Room, GetProductNumber(), height, width, depth, boxMat, boxMat, boxMat, bottomMat, MachineForUMSlides, frontBackAdj) {
+		string notch = MachineForUMSlides ? DoweledDrawerBoxConfig.STANDARD_NOTCH : DoweledDrawerBoxConfig.NO_NOTCH;
+
+		return new DoweledDrawerBoxProduct(Guid.NewGuid(),
+                                     UnitPrice,
+                                     Qty,
+                                     Room,
+                                     GetProductNumber(),
+                                     height,
+                                     width,
+                                     depth,
+                                     boxMat,
+                                     boxMat,
+                                     boxMat,
+                                     bottomMat,
+                                     MachineForUMSlides,
+                                     frontBackAdj,
+									 notch) {
 			ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList(),
 		};
 

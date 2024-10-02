@@ -46,7 +46,7 @@ public partial class ClosetProToAllmoxyMapper {
         return new DoweledDrawerBox() {
             Folder = box.Room,
             BoxConstruction = DoweledDrawerBoxConstruction.WHITE_MELA,
-            UndermountNotch = DoweledUndermountNotching.NONE,
+            UndermountNotch = box.UnderMountNotches ? DoweledUndermountNotching.STANDARD : DoweledUndermountNotching.NONE,
             Qty = box.Qty,
             Height = box.Height.AsInches(),
             Width = box.Width.AsInches(),

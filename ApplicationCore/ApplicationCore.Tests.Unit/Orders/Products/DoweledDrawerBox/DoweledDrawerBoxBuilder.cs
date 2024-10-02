@@ -16,9 +16,20 @@ public class DoweledDrawerBoxBuilder {
     public DoweledDrawerBoxMaterial BottomMaterial { get; set; } = new("White", Dimension.FromInches(0.25), true);
     public bool MachineThicknessForUMSlides { get; set; } = false;
     public Dimension FrontBackHeightAdjustment { get; set; } = Dimension.Zero;
+    public string UMNotch { get; set; } = DoweledDrawerBoxConfig.NO_NOTCH;
 
     public DoweledDrawerBox Build() {
-        return new(Qty, Height, Width, Depth, FrontMaterial, BackMaterial, SideMaterial, BottomMaterial, MachineThicknessForUMSlides, FrontBackHeightAdjustment);
+        return new(Qty,
+                   Height,
+                   Width,
+                   Depth,
+                   FrontMaterial,
+                   BackMaterial,
+                   SideMaterial,
+                   BottomMaterial,
+                   MachineThicknessForUMSlides,
+                   FrontBackHeightAdjustment,
+                   UMNotch);
     }
 
 }

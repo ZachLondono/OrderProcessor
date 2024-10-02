@@ -260,7 +260,8 @@ public partial class InsertOrder {
                 BottomMatThickness = dbConfig.BottomMaterial.Thickness,
                 BottomMatGraining = dbConfig.BottomMaterial.IsGrained,
                 MachineThicknessForUM = dbConfig.MachineThicknessForUMSlides,
-                FrontBackHeightAdjustment = dbConfig.FrontBackHeightAdjustment
+                FrontBackHeightAdjustment = dbConfig.FrontBackHeightAdjustment,
+                UMNotch = dbConfig.UMNotch
             };
 
             connection.Execute(
@@ -280,7 +281,8 @@ public partial class InsertOrder {
                     bottom_mat_thickness,
                     bottom_mat_graining,
                     machine_thickness_for_um,
-                    frontback_height_adjustment)
+                    frontback_height_adjustment,
+                    um_notches)
                 VALUES
                     (@Id,
                     @FrontMatName,
@@ -296,7 +298,8 @@ public partial class InsertOrder {
                     @BottomMatThickness,
                     @BottomMatGraining,
                     @MachineThicknessForUM,
-                    @FrontBackHeightAdjustment); 
+                    @FrontBackHeightAdjustment,
+                    @UMNotch); 
                 """, parameters, trx);
 
         }
