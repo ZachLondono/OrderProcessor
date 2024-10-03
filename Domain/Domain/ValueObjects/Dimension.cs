@@ -27,7 +27,7 @@ public readonly struct Dimension : IComparable {
 
     }
 
-    public Fraction AsInchFraction(double accuracy = 0.0001) {
+    public Fraction AsInchFraction(double accuracy = 0.000001) {
 
         // https://stackoverflow.com/questions/5124743/algorithm-for-simplifying-decimal-to-fractions/42085412#42085412
 
