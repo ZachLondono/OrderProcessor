@@ -2,4 +2,4 @@
 
 namespace Domain.Orders.ValueObjects;
 
-public record DoweledDrawerBoxBottom(int ProductNumber, int Qty, Dimension Width, Dimension Length, DoweledDrawerBoxMaterial Material);
+public record DoweledDrawerBoxBottom(int Qty, Dimension Width, Dimension Length, DoweledDrawerBoxMaterial Material);

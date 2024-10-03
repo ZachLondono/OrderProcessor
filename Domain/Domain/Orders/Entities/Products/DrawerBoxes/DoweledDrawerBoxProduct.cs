@@ -49,6 +49,23 @@ public class DoweledDrawerBoxProduct : DoweledDrawerBox, IProduct, ICNCPartConta
 
     public string GetDescription() => $"Doweled Drawer Box - {UMNotch}";
 
-    public IEnumerable<Part> GetCNCParts() => GetCNCParts(ProductNumber, Room);
+    public override IEnumerable<Part> GetCNCParts() {
+
+        foreach (var part in base.GetCNCParts()) {
+
+            part.PrimaryFace.ProgramName = part.PrimaryFace.ProgramName + ProductNumber;
+            if (part.SecondaryFace is not null) {
+                part.SecondaryFace.ProgramName = part.SecondaryFace.ProgramName + ProductNumber;
+            }
+
+            part.InfoFields.Add("Level1", Room);
+            part.InfoFields.Add("CabinetNumber", ProductNumber.ToString());
+            part.InfoFields.Add("Cabinet Number", ProductNumber.ToString());
+
+            yield return part;
+
+        }
+
+    }
 
 }

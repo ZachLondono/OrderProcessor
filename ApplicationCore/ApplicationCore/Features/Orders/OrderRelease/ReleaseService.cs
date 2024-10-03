@@ -660,14 +660,14 @@ public class ReleaseService {
                         OrderName = order.Name,
                         OrderNumber = order.Number,
                         TotalBoxCount = group.Sum(box => box.Qty),
-                        Items = group.Select(box => box.GetBottom(DoweledDrawerBox.Construction, box.ProductNumber))
-                                        .GroupBy(b => (b.Width, b.Length))
+                        Items = group.Select(box => (box.ProductNumber, box.GetBottom(DoweledDrawerBox.Construction)))
+                                        .GroupBy(b => (b.Item2.Width, b.Item2.Length))
                                         .OrderByDescending(g => g.Key.Length)
                                         .OrderByDescending(g => g.Key.Width)
                                         .Select(bottomGroup => new DoweledDBCutListLineItem() {
                                             CabNumbers = string.Join(", ", bottomGroup.Select(p => p.ProductNumber)),
                                             Note = "",
-                                            Qty = bottomGroup.Sum(p => p.Qty),
+                                            Qty = bottomGroup.Sum(p => p.Item2.Qty),
                                             PartName = "Bottom",
                                             Length = bottomGroup.Key.Length.AsMillimeters(),
                                             Width = bottomGroup.Key.Width.AsMillimeters()
