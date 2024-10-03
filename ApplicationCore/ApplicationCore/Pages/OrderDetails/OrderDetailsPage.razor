@@ -35,8 +35,10 @@
                         <OrderReleaseWidget OrderIds="new Guid[] { OrderId }" />
                         <OrderDeleteButton OrderId="OrderId" OnOrderDeleted="OnOrderDeleted" />
                         <BricsCADFileSaveWidget OutputDirectory="@order.WorkingDirectory"/>
-                        <AddToScheduleButton Order="order" />
-                        <CustomizationScriptsManagerButton OrderId="OrderId" />
+                        <!--
+                            <AddToScheduleButton Order="order" />
+                            <CustomizationScriptsManagerButton OrderId="OrderId" />
+                        -->
                     </div>
                 </ActionPanel>
                 <ProductActionsColumn Context="product">
