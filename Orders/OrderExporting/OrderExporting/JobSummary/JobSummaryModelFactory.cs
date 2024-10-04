@@ -283,14 +283,15 @@ public class JobSummaryModelFactory {
                                                !order.Products.All(p => p is FivePieceDoorProduct);
 
         string doweledDBMessage = "";
-        var doweledDBNotches = order.Products.OfType<DoweledDrawerBoxProduct>().Select(d => d.UMNotch);
-        if (doweledDBNotches.All(x => x == doweledDBNotches.First())) {
-            doweledDBMessage = $"MELA BOXES - {doweledDBNotches.First()}";
-        } else {
-            doweledDBMessage = "CHECK PACKING LIST FOR MELA BOX NOTCHES";
+        var doweledDbBoxes = order.Products.OfType<DoweledDrawerBoxProduct>().ToArray();
+        if (doweledDbBoxes.Length != 0) {
+            var doweledDBNotches = doweledDbBoxes.Select(d => d.UMNotch);
+            if (doweledDBNotches.All(x => x == doweledDBNotches.First())) {
+                doweledDBMessage = $"MELA BOXES - {doweledDBNotches.First()}";
+            } else {
+                doweledDBMessage = "CHECK PACKING LIST FOR MELA BOX NOTCHES";
+            }
         }
-
-
 
         return new JobSummary() {
 
