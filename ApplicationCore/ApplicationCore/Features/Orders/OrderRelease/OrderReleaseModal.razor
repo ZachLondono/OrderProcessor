@@ -113,10 +113,17 @@
                 </CheckBox>
                 <br />
             }
-            
+
             @if (DataContext.DoAnyOrdersContainCNCParts) {
                 <CheckBox @bind-IsChecked="DataContext.Configuration.GenerateCNCGCode">
                     <span class="text-gray-700">Generate GCode</span>
+                </CheckBox>
+                <br />
+            }
+
+            @if (DataContext.DoAnyOrdersContainCabinets) {
+                <CheckBox @bind-IsChecked="DataContext.Configuration.GenerateCabinetList">
+                    <span class="text-gray-700">Cabinet List</span>
                 </CheckBox>
                 <br />
             }

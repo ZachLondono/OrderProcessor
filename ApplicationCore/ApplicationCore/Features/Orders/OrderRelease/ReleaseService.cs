@@ -29,6 +29,9 @@ using OrderExporting.CNC.Programs.WSXML.Report;
 using OrderExporting.CNC.Programs.WorkOrderReleaseEmail;
 using Domain.Companies.Entities;
 using OrderExporting.HardwareList;
+using OrderExporting.CabinetList;
+using Domain.Orders.Entities.Products.Cabinets;
+using Domain.Orders.Enums;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -193,6 +196,7 @@ public class ReleaseService {
 
         models.Select(m => m.JobSummary).OfType<JobSummary>().ForEach(m => _releasePDFBuilder.AddJobSummary(m));
         models.Select(m => m.PackingList).OfType<PackingList>().ForEach(m => _releasePDFBuilder.AddPackingList(m));
+        models.Select(m => m.CabinetList).OfType<CabinetList>().ForEach(m => _releasePDFBuilder.AddCabinetList(m));
         models.Select(m => m.DovetailDBPackingList).OfType<DovetailDrawerBoxPackingList>().ForEach(m => _releasePDFBuilder.AddDovetailDBPackingList(m));
         models.Select(m => m.HardwareList).OfType<Hardware>().ForEach(m => _releasePDFBuilder.AddHardwareList(m));
         models.Select(m => m.Invoice).OfType<Invoice>().ForEach(m => _releasePDFBuilder.AddInvoice(m));
@@ -273,6 +277,26 @@ public class ReleaseService {
             models.HardwareList = hardwareList;
         }
 
+        if (configuration.GenerateCabinetList) {
+
+            var cabinets = order.Products
+                                .OfType<Domain.Orders.Entities.Products.Cabinets.Cabinet>()
+                                .Select(c =>
+                                    new OrderExporting.CabinetList.Cabinet(c.ProductNumber,
+                                                         c.Qty,
+                                                         c.GetSimpleDescription(),
+                                                         Math.Round(c.Width.AsMillimeters()),
+                                                         Math.Round(c.Height.AsMillimeters()),
+                                                         Math.Round(c.Depth.AsMillimeters()),
+                                                         GetHingeSide(c),
+                                                         c.RightSideType == CabinetSideType.Finished,
+                                                         c.LeftSideType == CabinetSideType.Finished,
+                                                         c.GetNotes().ToArray())
+                                ).ToArray();
+
+            models.CabinetList = new CabinetList($"{order.Number} - {order.Name}", cabinets);
+
+        }
 
         if (configuration.IncludeInvoiceInRelease) {
             var invoice = InvoiceModelFactory.CreateInvoiceModel(order, vendor, customer);
@@ -280,6 +304,60 @@ public class ReleaseService {
         }
 
         return models;
+    }
+
+    private static HingedSide GetHingeSide(Domain.Orders.Entities.Products.Cabinets.Cabinet c) {
+        HingedSide hingeSide = HingedSide.NA;
+
+        var mapHingeSide = (HingeSide hs) => hs switch {
+            HingeSide.Left => HingedSide.Left,
+            HingeSide.Right => HingedSide.Left,
+            HingeSide.NotApplicable or _ => HingedSide.NA,
+        };
+
+        if (c is BaseCabinet bc) {
+
+            hingeSide = mapHingeSide(bc.Doors.HingeSide);
+
+        } else if (c is WallCabinet wc) {
+
+            hingeSide = mapHingeSide(wc.Doors.HingeSide);
+
+        } else if (c is TallCabinet tc) {
+
+            hingeSide = mapHingeSide(tc.Doors.HingeSide);
+
+        } else if (c is BaseDiagonalCornerCabinet bdcc) {
+
+            hingeSide = mapHingeSide(bdcc.HingeSide);
+
+        } else if (c is BasePieCutCornerCabinet bpccc) {
+
+            hingeSide = mapHingeSide(bpccc.HingeSide);
+
+        } else if (c is BlindBaseCabinet bbc) {
+
+            hingeSide = mapHingeSide(bbc.Doors.HingeSide);
+
+        } else if (c is BlindWallCabinet bwc) {
+
+            hingeSide = mapHingeSide(bwc.Doors.HingeSide);
+
+        } else if (c is SinkCabinet sk) {
+
+            hingeSide = mapHingeSide(sk.HingeSide);
+
+        } else if (c is WallDiagonalCornerCabinet wdcc) {
+
+            hingeSide = mapHingeSide(wdcc.HingeSide);
+
+        } else if (c is WallPieCutCornerCabinet wpccc) {
+
+            hingeSide = mapHingeSide(wpccc.HingeSide);
+
+        }
+
+        return hingeSide;
     }
 
     private async Task SendReleaseEmail(List<Order> orders, ReleaseConfiguration configuration, string customerName, List<ReleasedJob> releases, string orderNumbers, IEnumerable<string> filePaths, string recipients) {
@@ -961,6 +1039,7 @@ public class ReleaseService {
     public class OrderDocumentModels {
         public JobSummary? JobSummary { get; set; } = null;
         public PackingList? PackingList { get; set; } = null;
+        public CabinetList? CabinetList { get; set; } = null;
         public DovetailDrawerBoxPackingList? DovetailDBPackingList { get; set; } = null;
         public Hardware? HardwareList { get; set; } = null;
         public Invoice? Invoice { get; set; } = null;

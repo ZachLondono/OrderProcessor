@@ -7,6 +7,7 @@ using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.Entities.Products.DrawerBoxes;
 using Domain.Infrastructure.Bus;
 using Domain.Orders.Entities.Products.Closets;
+using Domain.Orders.Entities.Products.Cabinets;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -53,6 +54,8 @@ public class OrderReleaseModalViewModel {
     public bool DoAnyOrdersContainDoweledDrawerBoxes { get; private set; }
 
     public bool DoAnyOrdersContainCNCParts { get; private set; }
+
+    public bool DoAnyOrdersContainCabinets { get; private set; }
 
     private bool _isLoadingOrders = true;
     private bool _isLoadingConfiguration = false;
@@ -137,6 +140,7 @@ public class OrderReleaseModalViewModel {
         DoAnyOrdersContainFivePieceDoors = orders.Any(order => order.Products.Any(p => p is FivePieceDoorProduct));
         DoAnyOrdersContainDoweledDrawerBoxes = orders.Any(order => order.Products.Any(p => p is DoweledDrawerBoxProduct));
         DoAnyOrdersContainCNCParts = orders.Any(order => order.Products.OfType<ICNCPartContainer>().Any(p => p.ContainsCNCParts()));
+        DoAnyOrdersContainCabinets = orders.Any(order => order.Products.OfType<Cabinet>().Any());
 
         bool installCams = orders.Any(o => o.Products.OfType<ClosetPart>().Any(c => c.InstallCams));
 
@@ -154,6 +158,7 @@ public class OrderReleaseModalViewModel {
             IncludeInvoiceInRelease = vendor.ReleaseProfile.IncludeInvoice,
             Generate5PieceCutList = DoAnyOrdersContainFivePieceDoors,
             GenerateDoweledDrawerBoxCutList = DoAnyOrdersContainDoweledDrawerBoxes,
+            GenerateCabinetList = DoAnyOrdersContainCabinets,
             GenerateHardwareList = false,
             IncludeDovetailDBPackingList = DoAnyOrdersContainDovetailDBs,
             ReleaseFileName = $"{orderNumbers} CUTLIST",

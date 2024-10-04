@@ -20,6 +20,7 @@ public class ReleaseConfiguration {
         get => GeneratePackingList && _includeCheckBoxesInPackingList;
         set => _includeCheckBoxesInPackingList = value;
     }
+
     public bool IncludeSignatureFieldInPackingList {
         get => GeneratePackingList && _includeSignatureFieldInPackingList;
         set => _includeSignatureFieldInPackingList = value;
@@ -28,6 +29,8 @@ public class ReleaseConfiguration {
         get => GeneratePackingList && _includeDovetailDBPackingList;
         set => _includeDovetailDBPackingList = value;
     }
+
+    public bool GenerateCabinetList { get; set; }
 
     public bool GenerateHardwareList { get; set; }
 
