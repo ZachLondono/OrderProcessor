@@ -22,6 +22,8 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
     public override string GetDescription()
         => $"Base {(IsGarage ? "Garage " : "")}Cabinet - {Doors.Quantity} Doors{(Drawers.Quantity > 0 ? $", {Drawers.Quantity} Drawers" : "")}{(Inside.RollOutBoxes.Any() ? $", {Inside.RollOutBoxes.Qty} Roll Out Drawers" : "")}";
 
+    public override string GetSimpleDescription() => "Base Cabinet";
+
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
         BottomGap = Dimension.Zero,
@@ -82,6 +84,41 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
         if (Inside.RollOutBoxes.Positions.Length > 0 && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
             ProductionNotes.Add("PSI may not support roll out drawer boxes with side mount slieds");
         }
+
+    }
+
+    public override IEnumerable<string> GetNotes() {
+
+        List<string> notes = [
+            $"{Doors.Quantity} Doors",
+            $"{Drawers.Quantity} Drawer Fronts",
+            $"{Inside.AdjustableShelves} Adjustable Shelves",
+            $"{Inside.VerticalDividers} Vertical Dividers",
+            $"{Inside.RollOutBoxes.Qty} Interior Roll Out Boxes",
+        ];
+
+        if (Inside.RollOutBoxes.Qty > 0) {
+            switch (Inside.RollOutBoxes.Blocks) {
+                case RollOutBlockPosition.None:
+                    notes.Add("No roll out blocks");
+                    break;
+                case RollOutBlockPosition.Both:
+                    notes.Add("Roll out blocks Left & Right");
+                    break;
+                case RollOutBlockPosition.Left:
+                    notes.Add("Roll out blocks Left");
+                    break;
+                case RollOutBlockPosition.Right:
+                    notes.Add("Roll out blocks Right");
+                    break;
+            }
+        }
+
+        if (BaseNotch is not null) {
+            notes.Add($"Base Notch: {BaseNotch.Height.AsInches()}\"H x {BaseNotch.Depth.AsInches()}\"D");
+        }
+
+        return notes;
 
     }
 

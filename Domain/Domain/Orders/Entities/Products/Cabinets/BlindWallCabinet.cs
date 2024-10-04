@@ -18,6 +18,7 @@ public class BlindWallCabinet : GarageCabinet, IMDFDoorContainer, ISupplyContain
     public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap + ExtendedDoor;
 
     public override string GetDescription() => $"Blind {(IsGarage ? "Garage " : "")}Wall Cabinet - {Doors.Quantity} Doors";
+    public override string GetSimpleDescription() => "Blind Wall Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),
@@ -55,6 +56,23 @@ public class BlindWallCabinet : GarageCabinet, IMDFDoorContainer, ISupplyContain
     }
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
+
+    public override IEnumerable<string> GetNotes() {
+
+        List<string> notes = [
+            $"{Doors.Quantity} Doors",
+            $"{AdjustableShelves} Adjustable Shelves",
+            $"Blind Width: {BlindWidth.AsInches()}\"",
+            $"Blind Side: {BlindSide}",
+        ];
+
+        if (ExtendedDoor > Dimension.Zero) {
+            notes.Add($"Doors extended down {ExtendedDoor.AsInches()}\"");
+        }
+
+        return notes;
+
+    }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 

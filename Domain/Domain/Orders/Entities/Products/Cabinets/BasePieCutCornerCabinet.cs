@@ -16,6 +16,7 @@ public class BasePieCutCornerCabinet : Cabinet, IMDFDoorContainer, ISupplyContai
     public HingeSide HingeSide { get; }
 
     public override string GetDescription() => "Pie Cut Corner Base Cabinet";
+    public override string GetSimpleDescription() => "Pie Cut Corner Base Cabinet";
 
     public Dimension DoorHeight => Height - ToeType.HeightAdjustment - DoorGaps.TopGap;
 
@@ -48,6 +49,16 @@ public class BasePieCutCornerCabinet : Cabinet, IMDFDoorContainer, ISupplyContai
     => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, toeType, adjustableShelves, hingeSide);
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
+
+    public override IEnumerable<string> GetNotes() {
+
+        return [
+            $"{AdjustableShelves} Adjustable Shelves",
+            $"Right Width: {RightWidth.AsInches()}\"",
+            $"Right Depth: {RightDepth.AsInches()}\"",
+        ];
+
+    }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 

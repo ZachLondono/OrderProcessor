@@ -24,6 +24,8 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
     public override string GetDescription()
         => $"Sink Cabinet - {DoorQty} Doors{(FalseDrawerQty > 0 ? $", {FalseDrawerQty} False Drawers" : "")}{(RollOutBoxes.Any() ? $", {RollOutBoxes.Qty} Roll Out Drawers" : "")}";
 
+    public override string GetSimpleDescription() => "Sink Cabinet";
+
     public Dimension DoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (FalseDrawerQty > 0 ? DrawerFaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
@@ -66,6 +68,43 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
                         => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, toeType, hingeSide, doorQty, falseDrawerQty, drawerFaceHeight, adjustableShelves, shelfDepth, rollOutBoxes, drawerBoxOptions, tiltFront, scoops);
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
+
+    public override IEnumerable<string> GetNotes() {
+
+        List<string> notes = [
+            $"{DoorQty} Doors",
+            $"{FalseDrawerQty} False Drawer Fronts",
+            $"{AdjustableShelves} Adjustable Shelves",
+            $"{(TiltFront ? "Tilt Front" : "No Tilt Front")}",
+            $"{RollOutBoxes.Qty} Interior Roll Out Boxes",
+        ];
+
+        if (RollOutBoxes.Qty > 0) {
+            switch (RollOutBoxes.Blocks) {
+                case RollOutBlockPosition.None:
+                    notes.Add("No roll out blocks");
+                    break;
+                case RollOutBlockPosition.Both:
+                    notes.Add("Roll out blocks Left & Right");
+                    break;
+                case RollOutBlockPosition.Left:
+                    notes.Add("Roll out blocks Left");
+                    break;
+                case RollOutBlockPosition.Right:
+                    notes.Add("Roll out blocks Right");
+                    break;
+            }
+        }
+
+        if (Scoops is not null) {
+
+            notes.Add($"Side Scoops {Scoops.FromFront.AsInches()}\" From Front, {Scoops.FromBack.AsInches()}\" From Back, {Scoops.Depth.AsInches()}\" Deep");
+
+        }
+
+        return notes;
+
+    }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 

@@ -15,6 +15,7 @@ public class WallCabinet : GarageCabinet, IMDFDoorContainer, ISupplyContainer {
     public bool FinishedBottom { get; }
 
     public override string GetDescription() => $"Wall {(IsGarage ? "Garage " : "")}Cabinet - {Doors.Quantity} Doors";
+    public override string GetSimpleDescription() => "Wall Cabinet";
 
     public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap + Doors.ExtendDown;
 
@@ -50,6 +51,22 @@ public class WallCabinet : GarageCabinet, IMDFDoorContainer, ISupplyContainer {
         Doors = doors;
         Inside = inside;
         FinishedBottom = finishedBottom;
+
+    }
+
+    public override IEnumerable<string> GetNotes() {
+
+        List<string> notes = [
+            $"{Doors.Quantity} Doors",
+            $"{Inside.AdjustableShelves} Adjustable Shelves",
+            $"{Inside.VerticalDividers} Vertical Dividers",
+        ];
+
+        if (Doors.ExtendDown > Dimension.Zero) {
+            notes.Add($"Doors extended down {Doors.ExtendDown.AsInches()}\"");
+        }
+
+        return notes;
 
     }
 

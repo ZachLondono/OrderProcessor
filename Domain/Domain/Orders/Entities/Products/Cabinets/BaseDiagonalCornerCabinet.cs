@@ -20,6 +20,7 @@ public class BaseDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer, ISupp
     public Dimension DoorHeight => Height - ToeType.HeightAdjustment - DoorGaps.TopGap - DoorGaps.BottomGap;
 
     public override string GetDescription() => $"Diagonal Corner Base {(IsGarage ? "Garage " : "")}Cabinet - {DoorQty} Doors";
+    public override string GetSimpleDescription() => "Diagonal Corner Base Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
@@ -54,6 +55,17 @@ public class BaseDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer, ISupp
                         => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, toeType, adjShelfQty, hingeSide, doorQty);
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
+
+    public override IEnumerable<string> GetNotes() {
+
+        return [
+            $"{DoorQty} Doors",
+            $"{AdjustableShelves} Adjustable Shelves",
+            $"Right Width: {RightWidth.AsInches()}\"",
+            $"Right Depth: {RightDepth.AsInches()}\"",
+        ];
+
+    }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 

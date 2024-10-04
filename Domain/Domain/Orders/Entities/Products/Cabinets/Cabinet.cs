@@ -27,6 +27,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
     public string Comment { get; }
     public List<string> ProductionNotes { get; set; } = new();
     public abstract string GetDescription();
+    public abstract string GetSimpleDescription();
 
     public CabinetConstruction Construction { get; set; }
 
@@ -85,6 +86,8 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
             _ => throw new InvalidProductOptionsException($"Unexpected cabinet material core type '{boxMaterial.Core}'"),
         };
     }
+
+    public abstract IEnumerable<string> GetNotes();
 
     protected virtual string GetMaterialType() {
 

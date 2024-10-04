@@ -17,6 +17,7 @@ public class WallPieCutCornerCabinet : Cabinet, IMDFDoorContainer, ISupplyContai
     public Dimension ExtendedDoor { get; }
 
     public override string GetDescription() => "Pie Cut Corner Wall Cabinet";
+    public override string GetSimpleDescription() => "Pie Cut Corner Wall Cabinet";
 
     public Dimension DoorHeight => Height - DoorGaps.TopGap + ExtendedDoor;
 
@@ -100,6 +101,22 @@ public class WallPieCutCornerCabinet : Cabinet, IMDFDoorContainer, ISupplyContai
     }
 
     public override string GetProductSku() => "WCPC";
+
+    public override IEnumerable<string> GetNotes() {
+
+        List<string> notes = [
+            $"{AdjustableShelves} Adjustable Shelves",
+            $"{RightWidth.AsInches()}\" Right Width",
+            $"{RightDepth.AsInches()}\" Right Depth",
+        ];
+
+        if (ExtendedDoor > Dimension.Zero) {
+            notes.Add($"Doors extended down {ExtendedDoor.AsInches()}\"");
+        }
+
+        return notes;
+
+    }
 
     protected override IDictionary<string, string> GetParameters() {
         var parameters = new Dictionary<string, string>() {

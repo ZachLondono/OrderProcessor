@@ -20,6 +20,7 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
         _ => "Trash Pullout Cabinet"
     };
 
+    public override string GetSimpleDescription() => "Trash Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
@@ -49,6 +50,23 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
         => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, drawerFaceHeight, trashPulloutConfiguration, drawerBoxOptions, toeType);
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
+
+    public override IEnumerable<string> GetNotes() {
+
+        List<string> notes = [];
+
+        switch (TrashPulloutConfiguration) {
+            case TrashPulloutConfiguration.OneCan:
+                notes.Add("One trash can");
+                break;
+            case TrashPulloutConfiguration.TwoCans:
+                notes.Add("Two trash can");
+                break;
+        }
+
+        return notes;
+
+    }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 

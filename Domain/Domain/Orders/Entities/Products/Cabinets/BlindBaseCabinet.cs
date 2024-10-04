@@ -21,6 +21,7 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
     public Dimension DoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
 
     public override string GetDescription() => $"Blind {(IsGarage ? "Garage " : "")}Base Cabinet - {Doors.Quantity} Doors, {Drawers.Quantity} Drawers";
+    public override string GetSimpleDescription() => "Blind Base Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
@@ -63,6 +64,19 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
     public override string GetProductSku() => $"BB{Doors.Quantity}D{GetDrawerCountSkuPart()}{GetBlindSideLetter()}";
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
+
+    public override IEnumerable<string> GetNotes() {
+
+        return [
+            $"{Doors.Quantity} Doors",
+            $"{Drawers.Quantity} Drawer Fronts",
+            $"{AdjustableShelves} Adjustable Shelves",
+            $"Blind Width: {BlindWidth.AsInches()}\"",
+            $"Blind Side: {BlindSide}",
+            $"Lazy Susan: None"
+        ];
+
+    }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 

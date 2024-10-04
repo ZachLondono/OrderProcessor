@@ -22,6 +22,8 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
     public override string GetDescription()
         => $"Tall {(IsGarage ? "Garage " : "")}Cabinet - {(Doors.UpperQuantity > 0 ? $"{Doors.UpperQuantity} Upper Doors, {Doors.LowerQuantity} Lower Doors" : $"{Doors.LowerQuantity} Full Height Doors")}{(Inside.RollOutBoxes.Any() ? $", {Inside.RollOutBoxes.Qty} Roll Out Drawers" : "")}";
 
+    public override string GetSimpleDescription() => "Tall Cabinet";
+
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(3),
         BottomGap = Dimension.Zero,
@@ -71,6 +73,48 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
     }
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
+
+    public override IEnumerable<string> GetNotes() {
+
+        List<string> notes = [
+            $"{Doors.LowerQuantity} Lower Doors",
+            $"{Doors.UpperQuantity} Upper Doors",
+        ];
+
+        if (Doors.UpperQuantity > 0) {
+            notes.Add($"{Doors.LowerDoorHeight}\" Lower Door Height");
+        }
+
+        notes.Add($"{Inside.AdjustableShelvesLower} Adjustable Shelves, Lower");
+        notes.Add($"{Inside.AdjustableShelvesUpper} Adjustable Shelves, Upper");
+        notes.Add($"{Inside.VerticalDividersLower} Vertical Dividers, Lower");
+        notes.Add($"{Inside.VerticalDividersUpper} Vertical Dividers, Upper");
+
+        notes.Add($"{Inside.RollOutBoxes.Qty} Interior Roll Out Boxes");
+        if (Inside.RollOutBoxes.Qty > 0) {
+            switch (Inside.RollOutBoxes.Blocks) {
+                case RollOutBlockPosition.None:
+                    notes.Add("No roll out blocks");
+                    break;
+                case RollOutBlockPosition.Both:
+                    notes.Add("Roll out blocks Left & Right");
+                    break;
+                case RollOutBlockPosition.Left:
+                    notes.Add("Roll out blocks Left");
+                    break;
+                case RollOutBlockPosition.Right:
+                    notes.Add("Roll out blocks Right");
+                    break;
+            }
+        }
+        
+        if (BaseNotch is not null) {
+            notes.Add($"Base Notch: {BaseNotch.Height.AsInches()}\"H x {BaseNotch.Depth.AsInches()}\"D");
+        }
+
+        return notes;
+
+    }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 

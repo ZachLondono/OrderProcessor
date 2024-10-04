@@ -18,6 +18,7 @@ public class WallDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer, ISupp
     public Dimension ExtendedDoor { get; }
 
     public override string GetDescription() => $"Diagonal Corner Wall {(IsGarage ? "Garage" : "")}Cabinet - {DoorQty} Doors";
+    public override string GetSimpleDescription() => "Diagonal Corner Wall Cabinet";
 
     public Dimension DoorHeight => Height - DoorGaps.TopGap - DoorGaps.BottomGap + ExtendedDoor;
 
@@ -64,6 +65,23 @@ public class WallDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer, ISupp
     };
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
+
+    public override IEnumerable<string> GetNotes() {
+
+        List<string> notes = [
+            $"{DoorQty} Doors",
+            $"{AdjustableShelves} Adjustable Shelves",
+            $"{RightWidth.AsInches()}\" Right Width",
+            $"{RightDepth.AsInches()}\" Right Depth",
+        ];
+
+        if (ExtendedDoor > Dimension.Zero) {
+            notes.Add($"Doors extended down {ExtendedDoor.AsInches()}\"");
+        }
+
+        return notes;
+
+    }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 

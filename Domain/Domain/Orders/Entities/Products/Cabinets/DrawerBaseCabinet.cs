@@ -17,6 +17,7 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
     public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
 
     public override string GetDescription() => $"{Drawers.FaceHeights.Length} Drawer {(IsGarage ? "Garage " : "")}Cabinet";
+    public override string GetSimpleDescription() => "Drawer Base Cabinet";
 
     public static CabinetDoorGaps DoorGaps { get; set; } = new() {
         TopGap = Dimension.FromMillimeters(7),
@@ -50,6 +51,14 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
     }
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
+
+    public override IEnumerable<string> GetNotes() {
+
+        return [
+            $"{Drawers.Qty} Drawers"
+        ];
+
+    }
 
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
