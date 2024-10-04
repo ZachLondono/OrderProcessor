@@ -1,4 +1,5 @@
 ﻿using OneOf;
+using OrderExporting.CabinetList;
 using OrderExporting.CNC.Programs.Job;
 using OrderExporting.CNC.ReleasePDF;
 using OrderExporting.DovetailDBPackingList;
@@ -14,7 +15,7 @@ namespace ApplicationCore.Shared.Services;
 
 public class ReleasePDFBuilder(CNCReleaseDecoratorFactory cncReleaseDecoratorFactory) {
 
-    private readonly List<OneOf<ReleasedJob, ExistingPDF, JobSummary, Invoice, PackingList, DovetailDrawerBoxPackingList, Hardware>> _segments = [];
+    private readonly List<OneOf<ReleasedJob, ExistingPDF, JobSummary, Invoice, PackingList, DovetailDrawerBoxPackingList, Hardware, CabinetList>> _segments = [];
     private readonly CNCReleaseDecoratorFactory _cncReleaseDecoratorFactory = cncReleaseDecoratorFactory;
 
     public void AddReleasedJob(ReleasedJob job) => AddReleasedJob(job, _segments.Count);
@@ -37,6 +38,9 @@ public class ReleasePDFBuilder(CNCReleaseDecoratorFactory cncReleaseDecoratorFac
 
     public void AddHardwareList(Hardware hardwareList) => AddHardwareList(hardwareList, _segments.Count);
     public void AddHardwareList(Hardware hardwareList, int position) => _segments.Insert(position, hardwareList);
+
+    public void AddCabinetList(CabinetList cabinetList) => AddCabinetList(cabinetList, _segments.Count);
+    public void AddCabinetList(CabinetList cabinetList, int position) => _segments.Insert(position, cabinetList);
 
     public void Clear() => _segments.Clear();
 
@@ -77,6 +81,11 @@ public class ReleasePDFBuilder(CNCReleaseDecoratorFactory cncReleaseDecoratorFac
                 },
                 hardwareList => {
                     var decorator = new HardwareListDecorator(hardwareList);
+                    accumulator.AddDecorator(decorator);
+                    return Task.CompletedTask;
+                },
+                cabinetList => {
+                    var decorator = new CabinetListDecorator(cabinetList);
                     accumulator.AddDecorator(decorator);
                     return Task.CompletedTask;
                 }
