@@ -4,7 +4,7 @@ using FluentAssertions;
 
 namespace Domain.Tests.Unit.Orders.DoweledDrawerBoxes;
 
-public class DoweledDrawerBoxTest {
+public class DoweledDrawerBoxDowelPositionTest {
 
     [Theory]
     [InlineData(3, 0)]
@@ -17,9 +17,9 @@ public class DoweledDrawerBoxTest {
 
         // Arrange
         var arrays = new Dimension[][] {
-            new Dimension[] { Dimension.FromInches(1) },
-            new Dimension[] { Dimension.FromInches(2) },
-            new Dimension[] { Dimension.FromInches(3) },
+            [ Dimension.FromInches(1) ],
+            [ Dimension.FromInches(2) ],
+            [ Dimension.FromInches(3) ],
         };
 
         var positionMap = new Dictionary<Dimension, Dimension[]>() {
@@ -43,9 +43,9 @@ public class DoweledDrawerBoxTest {
 
         // Arrange
         var arrays = new Dimension[][] {
-            new Dimension[] { Dimension.FromInches(1) },
-            new Dimension[] { Dimension.FromInches(2) },
-            new Dimension[] { Dimension.FromInches(3) },
+            [ Dimension.FromInches(1) ],
+            [ Dimension.FromInches(2) ],
+            [ Dimension.FromInches(3) ],
         };
 
         var positionMap = new Dictionary<Dimension, Dimension[]>() {
