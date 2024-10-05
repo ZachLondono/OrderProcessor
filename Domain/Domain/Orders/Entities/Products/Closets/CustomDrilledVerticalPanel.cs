@@ -330,7 +330,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
         var routeOffset = Offset.Left;
 
-        var passCount = Dimension.CeilingMM(LEDChannelWidth / toolDiameter).AsMillimeters();
+        var passCount = double.Ceiling(LEDChannelWidth / toolDiameter);
         var passDistance = LEDChannelWidth / passCount;
 
         List<IToken> tokens = new();
@@ -435,7 +435,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             throw new InvalidOperationException();
         }
 
-        double holeIndex = Math.Floor(((maxDistanceFromTop + Dimension.FromMillimeters(9.5) - s_holesOffTop) / s_holeSpacing).AsMillimeters());
+        double holeIndex = Math.Floor((maxDistanceFromTop + Dimension.FromMillimeters(9.5) - s_holesOffTop) / s_holeSpacing);
 
         var distanceFromTop = Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop;
 
@@ -460,7 +460,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             return length - s_holesOffTop;
         }
 
-        double holeIndex = Math.Ceiling(((length - (maxDistanceFromBottom + s_holesOffBottom) - s_holesOffTop) / s_holeSpacing).AsMillimeters());
+        double holeIndex = Math.Ceiling((length - (maxDistanceFromBottom + s_holesOffBottom) - s_holesOffTop) / s_holeSpacing);
 
         var distanceFromTop = Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop;
 

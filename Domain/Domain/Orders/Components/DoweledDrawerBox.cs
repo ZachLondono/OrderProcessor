@@ -223,7 +223,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
             toolDiameter = construction.SmallBottomDadoToolDiameter;
         }
 
-        var passCount = Dimension.CeilingMM(height / toolDiameter).AsMillimeters();
+        var passCount = double.Ceiling(height / toolDiameter);
         var passDistance = height / passCount;
 
         List<IToken> tokens = new();

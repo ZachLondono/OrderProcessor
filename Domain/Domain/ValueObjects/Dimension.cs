@@ -103,7 +103,7 @@ public readonly struct Dimension : IComparable {
 
     public static Dimension operator *(double mult, Dimension dim1) => FromMillimeters(mult * dim1.AsMillimeters());
 
-    public static Dimension operator /(Dimension dim1, Dimension dim2) => FromMillimeters(dim1.AsMillimeters() / dim2.AsMillimeters());
+    public static double operator /(Dimension dim1, Dimension dim2) => dim1.AsMillimeters() / dim2.AsMillimeters();
 
     public static Dimension operator /(Dimension dim1, int divosor) => FromMillimeters(dim1.AsMillimeters() / divosor);
 
