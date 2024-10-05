@@ -93,7 +93,7 @@ public readonly struct Dimension : IComparable {
 
     public static bool operator !=(Dimension dim1, Dimension dim2) => dim1.AsMillimeters() != dim2.AsMillimeters();
 
-    public static Dimension operator *(Dimension dim1, Dimension dim2) => FromMillimeters(dim1.AsMillimeters() * dim2.AsMillimeters());
+    public static Area operator *(Dimension dim1, Dimension dim2) => Area.FromSquareMillimeters(dim1.AsMillimeters() * dim2.AsMillimeters());
 
     public static Dimension operator *(Dimension dim1, int mult) => FromMillimeters(dim1.AsMillimeters() * mult);
 

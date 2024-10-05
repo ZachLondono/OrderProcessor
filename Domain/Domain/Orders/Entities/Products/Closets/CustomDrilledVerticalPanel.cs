@@ -437,7 +437,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
         double holeIndex = Math.Floor((maxDistanceFromTop + Dimension.FromMillimeters(9.5) - s_holesOffTop) / s_holeSpacing);
 
-        var distanceFromTop = Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop;
+        var distanceFromTop = holeIndex * s_holeSpacing + s_holesOffTop;
 
         if (distanceFromTop >= length) {
             throw new InvalidOperationException();
@@ -462,7 +462,7 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
 
         double holeIndex = Math.Ceiling((length - (maxDistanceFromBottom + s_holesOffBottom) - s_holesOffTop) / s_holeSpacing);
 
-        var distanceFromTop = Dimension.FromMillimeters(holeIndex) * s_holeSpacing + s_holesOffTop;
+        var distanceFromTop = holeIndex * s_holeSpacing + s_holesOffTop;
 
         if (distanceFromTop >= length) {
             throw new InvalidOperationException();

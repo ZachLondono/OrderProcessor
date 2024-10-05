@@ -76,7 +76,7 @@ public class BaseDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer, ISupp
         Dimension a = Width - RightDepth - Dimension.FromMillimeters(19);
         Dimension b = RightWidth - Depth - Dimension.FromMillimeters(19);
 
-        Dimension diagOpening = Dimension.Sqrt(a * a + b * b);
+        Dimension diagOpening = Area.Sqrt(a * a + b * b);
 
         Dimension width = RoundToHalfMM(diagOpening - 2 * DoorGaps.EdgeReveal);
         if (DoorQty == 2) {
