@@ -1,7 +1,7 @@
 ﻿using Domain.ValueObjects;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.Orders.Products.CustomVP;
+namespace Domain.Tests.Unit.Orders.CustomVP;
 
 public class PanelCustomDrilling {
 

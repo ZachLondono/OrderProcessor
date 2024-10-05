@@ -1,9 +1,8 @@
-﻿using Domain.Orders.Entities.Products.Closets;
-using Domain.ValueObjects;
+﻿using Domain.ValueObjects;
 using FluentAssertions;
 using static Domain.Orders.Entities.Products.Closets.CustomDrilledVerticalPanel;
 
-namespace ApplicationCore.Tests.Unit.Orders.Products.CustomVP;
+namespace Domain.Tests.Unit.Orders.CustomVP;
 
 public class ClosetHoles {
 
@@ -23,7 +22,7 @@ public class ClosetHoles {
         Dimension length = Dimension.FromMillimeters(panelLength);
 
         // Act
-        var result = CustomDrilledVerticalPanel.GetValidHolePositionFromTop(length, distance);
+        var result = GetValidHolePositionFromTop(length, distance);
 
         // Assert
         result.AsMillimeters().Should().Be(expectedHolePosition);
@@ -45,7 +44,7 @@ public class ClosetHoles {
         Dimension length = Dimension.FromMillimeters(panelLength);
 
         // Act
-        Dimension result = CustomDrilledVerticalPanel.GetValidHolePositionFromBottom(length, distance);
+        Dimension result = GetValidHolePositionFromBottom(length, distance);
 
         // Assert
         result.AsMillimeters().Should().Be(expectedHolePosition);
