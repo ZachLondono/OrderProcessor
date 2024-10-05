@@ -1,0 +1,35 @@
+﻿using Domain.Orders.Components;
+using Domain.Orders.ValueObjects;
+using Domain.ValueObjects;
+
+namespace Domain.Tests.Unit.Orders.Products.DoweledDrawerBoxes;
+
+public class DoweledDrawerBoxBuilder {
+
+    public int Qty { get; set; } = 1;
+    public Dimension Height { get; set; } = Dimension.FromInches(4.125);
+    public Dimension Width { get; set; } = Dimension.FromInches(21);
+    public Dimension Depth { get; set; } = Dimension.FromInches(21);
+    public DoweledDrawerBoxMaterial FrontMaterial { get; set; } = new("White", Dimension.FromInches(0.75), true);
+    public DoweledDrawerBoxMaterial BackMaterial { get; set; } = new("White", Dimension.FromInches(0.75), true);
+    public DoweledDrawerBoxMaterial SideMaterial { get; set; } = new("White", Dimension.FromInches(0.75), true);
+    public DoweledDrawerBoxMaterial BottomMaterial { get; set; } = new("White", Dimension.FromInches(0.25), true);
+    public bool MachineThicknessForUMSlides { get; set; } = false;
+    public Dimension FrontBackHeightAdjustment { get; set; } = Dimension.Zero;
+    public string UMNotch { get; set; } = DoweledDrawerBoxConfig.NO_NOTCH;
+
+    public DoweledDrawerBox Build() {
+        return new(Qty,
+                   Height,
+                   Width,
+                   Depth,
+                   FrontMaterial,
+                   BackMaterial,
+                   SideMaterial,
+                   BottomMaterial,
+                   MachineThicknessForUMSlides,
+                   FrontBackHeightAdjustment,
+                   UMNotch);
+    }
+
+}
