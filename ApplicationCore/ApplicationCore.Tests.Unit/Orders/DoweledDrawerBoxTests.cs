@@ -41,7 +41,7 @@ public class DoweledDrawerBoxTests {
         var expectedBottomDepth = boxWidth - 2 * sideThickness + 2 * dadoDepth - bottomUndersize;
 
         // Act
-        var part = box.GetBottomPart(construction, 1, "");
+        var part = box.GetBottomPart(construction);
 
         // Assert
         part.Width.Should().Be(expectedBottomWidth.AsMillimeters());
@@ -85,7 +85,7 @@ public class DoweledDrawerBoxTests {
         var expectedFrontLength = boxWidth - 2 * sideThickness;
 
         // Act
-        var part = box.GetFrontPart(construction, 1, "");
+        var part = box.GetFrontPart(construction);
 
         // Assert
         part.Width.Should().Be(expectedFrontWidth.AsMillimeters());
@@ -129,7 +129,7 @@ public class DoweledDrawerBoxTests {
         var expectedSideLength = boxDepth;
 
         // Act
-        var (left, right) = box.GetSideParts(construction, 1, "");
+        var (left, right) = box.GetSideParts(construction);
 
         // Assert
         left.Width.Should().Be(expectedSideWidth.AsMillimeters());
