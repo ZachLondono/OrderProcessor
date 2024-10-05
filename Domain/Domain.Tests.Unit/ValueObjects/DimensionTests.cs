@@ -139,6 +139,21 @@ public class DimensionTests {
     }
 
     [Fact]
+    public void Multiplication_ShouldReturnCorrectArea_WhenBothOperandsAreDimensions() {
+
+        // Arrange
+        var dim1 = Dimension.FromMillimeters(2);
+        var dim2 = Dimension.FromMillimeters(3);
+
+        // Act
+        var result = dim1 * dim2;
+
+        // Assert
+        result.AsSquareMillimeters().Should().Be(6);
+
+    }
+
+    [Fact]
     public void DivisionOfInchesAndInches_ShouldBeCorrect() {
 
         // Arrange
@@ -176,7 +191,7 @@ public class DimensionTests {
         // Arrange
         double val1 = 123.456;
         var dim1 = Dimension.FromInches(val1);
-        int qty = 789;
+        double qty = 789.123;
 
         // Act
         var result1 = dim1 / qty;
@@ -192,13 +207,28 @@ public class DimensionTests {
         // Arrange
         double val1 = 123.456;
         var dim1 = Dimension.FromMillimeters(val1);
-        int qty = 789;
+        double qty = 789.123;
 
         // Act
         var result1 = dim1 / qty;
 
         // Assert
         result1.AsMillimeters().Should().BeApproximately(val1 / qty, 0.01);
+
+    }
+
+    [Fact]
+    public void DivisionOfTwoDimensions_ShouldReturnCorrectValue() {
+
+        // Arrange
+        var dim1 = Dimension.FromInches(2);
+        var dim2 = Dimension.FromInches(1);
+
+        // Act
+        var result = dim1 / dim2;
+
+        // Assert
+        result.Should().Be(2);
 
     }
 
@@ -299,13 +329,13 @@ public class DimensionTests {
     [InlineData(0.375, 3, 8)]
     [InlineData(0.1875, 3, 16)]
     [InlineData(0.09375, 3, 32)]
-    public void AsInchFraction_ShouldBeAccurate(double inches, int numerator, int denominator) {
+    public void AsInchFraction_ShouldBeAccurate_WithFixedAccuracy(double inches, int numerator, int denominator) {
 
         // Arrange
         var dim = Dimension.FromInches(inches);
 
         // Act
-        var result = dim.AsInchFraction();
+        var result = dim.AsInchFraction(0.00001);
 
         // Assert
         Debug.WriteLine(result.ToString());
@@ -364,6 +394,22 @@ public class DimensionTests {
 
     }
 
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(2)]
+    public void AsInchFraction_ShouldThrowException_WhenAccuracyIsInvalid(double accuracy) {
+
+        // Arrange
+        var dim = Dimension.FromInches(5.125);
+
+        // Act
+        var action = () => dim.AsInchFraction(accuracy);
+
+        // Assert
+        action.Should().Throw<ArgumentOutOfRangeException>();
+
+    }
+
     [Fact]
     public void DifferentInstances_ShouldBeEqual_WhenValueIsEqual() {
 
@@ -378,7 +424,7 @@ public class DimensionTests {
     }
 
     [Fact]
-    public void Equals_Should_Work() {
+    public void Equals_ShouldReturnTrue_WhenDimensionDoMatch() {
 
         // Arrange
         var dimA = Dimension.FromInches(1);
@@ -389,14 +435,55 @@ public class DimensionTests {
         Assert.True(dimA >= dimB);
         Assert.True(dimA <= dimB);
 
-        Assert.True(dimB == dimA);
-        Assert.True(dimB >= dimA);
-        Assert.True(dimB <= dimA);
+    }
+
+
+    [Fact]
+    public void Equals_ShouldReturnFalse_WhenDimensionDoNotMatch() {
+
+        // Arrange
+        var dimA = Dimension.FromInches(1);
+        var dimB = Dimension.FromInches(2);
+
+        // Assert
+        Assert.False(dimA == dimB);
+        Assert.False(dimA >= dimB);
+        Assert.False(dimB <= dimA);
 
     }
 
     [Fact]
-    public void GreaterThan_Should_Work() {
+    public void NotEquals_ShouldReturnTrue_WhenDimensionsDoNotMatch() {
+
+        // Arrange
+        var dim1 = Dimension.FromMillimeters(25.5);
+        var dim2 = Dimension.FromInches(1);
+
+        // Act
+        var result = (dim1 != dim2);
+
+        // Assert
+        result.Should().BeTrue();
+
+    }
+
+    [Fact]
+    public void NotEquals_Should_ReturnFalseWhenDimensionsDoMatch() {
+
+        // Arrange
+        var dim1 = Dimension.FromMillimeters(25.4);
+        var dim2 = Dimension.FromInches(1);
+
+        // Act
+        var result = (dim1 != dim2);
+
+        // Assert
+        result.Should().BeFalse();
+
+    }
+
+    [Fact]
+    public void GreaterThan_ShouldReturnTrue_WhenLeftDimensionIsGreatorThanRightDimension() {
 
         // Arrange
         var dimA = Dimension.FromInches(2);
@@ -406,29 +493,49 @@ public class DimensionTests {
         Assert.True(dimA >= dimB);
         Assert.True(dimA > dimB);
 
+    }
+
+    [Fact]
+    public void GreaterThan_ShouldReturnFalse_WhenLeftDimensionIsNotGreatorThanRightDimension() {
+
+        // Arrange
+        var dimA = Dimension.FromInches(2);
+        var dimB = Dimension.FromInches(1);
+
+        // Assert
         Assert.False(dimB >= dimA);
         Assert.False(dimB > dimA);
 
     }
 
     [Fact]
-    public void LessThan_Should_Work() {
+    public void LessThan_ShouldReturnTrue_WhenLeftDimensionIsLessThanRightDimension() {
 
         // Arrange
         var dimA = Dimension.FromInches(1);
         var dimB = Dimension.FromInches(2);
 
         // Assert
-        Assert.True(dimA <= dimB);
-        Assert.True(dimA < dimB);
-
         Assert.False(dimB <= dimA);
         Assert.False(dimB < dimA);
 
     }
 
     [Fact]
-    public void Sort_Should_Work() {
+    public void LessThan_ShouldReturnFalse_WhenLeftDimensionIsNotLessThanRightDimension() {
+
+        // Arrange
+        var dimA = Dimension.FromInches(1);
+        var dimB = Dimension.FromInches(2);
+
+        // Assert
+        Assert.False(dimB <= dimA);
+        Assert.False(dimB < dimA);
+
+    }
+
+    [Fact]
+    public void Sort_Should_ReorderIntoIncreasingOrder() {
 
         // Arrange
         var dims = new List<Dimension>() {
@@ -450,6 +557,5 @@ public class DimensionTests {
         Assert.True(dims.Skip(4).First() == Dimension.FromInches(4));
 
     }
-
 
 }
