@@ -117,6 +117,10 @@ public readonly struct Dimension : IComparable {
 
     public static bool operator <(Dimension dim1, Dimension dim2) => dim1.AsMillimeters() < dim2.AsMillimeters();
 
+    public static bool operator <=(Dimension left, Dimension right) => left.AsMillimeters() <= right.AsMillimeters();
+
+    public static bool operator >=(Dimension left, Dimension right) => left.AsMillimeters() >= right.AsMillimeters();
+
     public override bool Equals(object? obj) {
 
         if (obj is not Dimension dim) {
@@ -134,9 +138,5 @@ public readonly struct Dimension : IComparable {
     public override int GetHashCode() {
         return _mm.GetHashCode();
     }
-
-    public static bool operator <=(Dimension left, Dimension right) => left.AsMillimeters() <= right.AsMillimeters();
-
-    public static bool operator >=(Dimension left, Dimension right) => left.AsMillimeters() >= right.AsMillimeters();
 
 }
