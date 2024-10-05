@@ -17,10 +17,10 @@ public class Area {
 
     public static Area FromSquareInches(double sqr_in) => new(sqr_in * (25.4*25.4));
 
-    public static Area FromSquareMillimeters(double sqr_in) => new(sqr_in * (25.4*25.4));
+    public static Area FromSquareMillimeters(double sqr_mm) => new(sqr_mm);
 
     public static Dimension Sqrt(Area area) => Dimension.FromMillimeters(Math.Sqrt(area.AsSquareMillimeters()));
 
-    public static Area operator +(Area area1, Area area2) => Area.FromSquareMillimeters(area1.AsSquareMillimeters() + area2.AsSquareMillimeters());
+    public static Area operator +(Area area1, Area area2) => FromSquareMillimeters(area1.AsSquareMillimeters() + area2.AsSquareMillimeters());
 
 }
