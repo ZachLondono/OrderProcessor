@@ -1,10 +1,8 @@
 ﻿using Domain.Orders.Components;
 using Domain.ValueObjects;
-using CADCodeProxy.CSV;
-using CADCodeProxy.Machining;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.Orders.Products.DoweledDrawerBoxTests;
+namespace Domain.Tests.Unit.Orders.DoweledDrawerBoxes;
 
 public class DoweledDrawerBoxTest {
 

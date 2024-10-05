@@ -1,7 +1,7 @@
 ﻿using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
-namespace ApplicationCore.Tests.Unit.Orders.Products.DoweledDrawerBoxTests;
+namespace Domain.Tests.Unit.Orders.DoweledDrawerBoxes;
 
 public class DoweledDrawerBoxConstructionBuilder {
 

@@ -1,9 +1,8 @@
 ﻿using Domain.Orders.Components;
 using Domain.ValueObjects;
-using ApplicationCore.Tests.Unit.Orders.Products.DoweledDrawerBoxTests;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.Orders;
+namespace Domain.Tests.Unit.Orders.DoweledDrawerBoxes;
 
 public class DoweledDrawerBoxTests {
 
