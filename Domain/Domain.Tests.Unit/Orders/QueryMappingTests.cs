@@ -4,7 +4,7 @@ using Domain.Orders.Entities.Products.DrawerBoxes;
 using FluentAssertions;
 using Domain.Orders.ValueObjects;
 
-namespace ApplicationCore.Tests.Unit.Orders;
+namespace Domain.Tests.Unit.Orders;
 
 public class QueryMappingTests {
 
