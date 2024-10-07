@@ -310,7 +310,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
             .. Supply.HangingBracketLH(finLeft + (drilledThrough / 2)),
             .. Supply.HangingBracketRH(finRight + (drilledThrough / 2)),
             .. Supply.HangingRail((int) totalLength),
-            Supply.LongEuroScrews(finLeft + finRight + drilledThrough),
+            Supply.LongEuroScrews((finLeft + finRight + drilledThrough) * 2),
         ];
 
     }
