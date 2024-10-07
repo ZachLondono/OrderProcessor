@@ -1,21 +1,22 @@
 ﻿using Domain.Orders.Builders;
-using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using FluentAssertions;
+using Domain.Orders.Enums;
+using Domain.Orders.ValueObjects;
 
-namespace ApplicationCore.Tests.Unit.ProductPlanner.Cabinets;
+namespace Domain.Tests.Unit.ProductPlanner.Cabinets;
 
-public class BaseCabinetTests {
+public class DiagonalBaseCornerCabinetTests {
 
     [Fact]
-    public void BaseCabinet_Should_NotHaveGarageMaterialWhenIsNotGarage() {
+    public void DiagonalBaseCornerCabinet_Should_NotHaveGarageMaterialWhenIsNotGarage() {
 
-        // Arrange
-        var cabinet = new BaseCabinetBuilder()
+        var cabinet = new BaseDiagonalCornerCabinetBuilder()
             .WithIsGarage(false)
-            .WithDoors(BaseCabinetDoors.NoDoors())
-            .WithInside(BaseCabinetInside.Empty())
-            .WithDrawers(HorizontalDrawerBank.None())
+            .WithRightWidth(Dimension.FromInches(12))
+            .WithRightDepth(Dimension.FromInches(12))
+            .WithHingeSide(HingeSide.NotApplicable)
+            .WithDoorQty(1)
             .WithToeType(ToeType.NoToe)
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
@@ -25,7 +26,6 @@ public class BaseCabinetTests {
 
         // Act
         var products = cabinet.GetPPProducts();
-
 
         // Assert
         products.Should().HaveCount(1);
@@ -34,14 +34,14 @@ public class BaseCabinetTests {
     }
 
     [Fact]
-    public void BaseCabinet_Should_HaveGarageMaterialWhenIsGarage() {
+    public void DiagonalBaseCornerBaseCabinet_Should_HaveGarageMaterialWhenIsGarage() {
 
-        // Arrange
-        var cabinet = new BaseCabinetBuilder()
+        var cabinet = new BaseDiagonalCornerCabinetBuilder()
             .WithIsGarage(true)
-            .WithDoors(BaseCabinetDoors.NoDoors())
-            .WithInside(BaseCabinetInside.Empty())
-            .WithDrawers(HorizontalDrawerBank.None())
+            .WithRightWidth(Dimension.FromInches(12))
+            .WithRightDepth(Dimension.FromInches(12))
+            .WithHingeSide(HingeSide.NotApplicable)
+            .WithDoorQty(1)
             .WithToeType(ToeType.NoToe)
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
@@ -51,7 +51,6 @@ public class BaseCabinetTests {
 
         // Act
         var products = cabinet.GetPPProducts();
-
 
         // Assert
         products.Should().HaveCount(1);

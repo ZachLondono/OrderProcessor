@@ -2,9 +2,8 @@
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using FluentAssertions;
-using Domain.Orders.ValueObjects;
 
-namespace ApplicationCore.Tests.Unit.ProductPlanner.Cabinets;
+namespace Domain.Tests.Unit.ProductPlanner.Cabinets;
 
 public class DrawerBaseCabinetTests {
 

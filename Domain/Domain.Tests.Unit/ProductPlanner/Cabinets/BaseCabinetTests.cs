@@ -2,19 +2,20 @@
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using FluentAssertions;
-using Domain.Orders.ValueObjects;
 
-namespace ApplicationCore.Tests.Unit.ProductPlanner.Cabinets;
+namespace Domain.Tests.Unit.ProductPlanner.Cabinets;
 
-public class TallCabinetTests {
+public class BaseCabinetTests {
 
     [Fact]
-    public void TallCabinet_Should_NotHaveGarageMaterialWhenIsNotGarage() {
+    public void BaseCabinet_Should_NotHaveGarageMaterialWhenIsNotGarage() {
 
-        var cabinet = new TallCabinetBuilder()
+        // Arrange
+        var cabinet = new BaseCabinetBuilder()
             .WithIsGarage(false)
-            .WithDoors(TallCabinetDoors.NoDoors())
-            .WithInside(TallCabinetInside.Empty())
+            .WithDoors(BaseCabinetDoors.NoDoors())
+            .WithInside(BaseCabinetInside.Empty())
+            .WithDrawers(HorizontalDrawerBank.None())
             .WithToeType(ToeType.NoToe)
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
@@ -24,6 +25,7 @@ public class TallCabinetTests {
 
         // Act
         var products = cabinet.GetPPProducts();
+
 
         // Assert
         products.Should().HaveCount(1);
@@ -32,12 +34,14 @@ public class TallCabinetTests {
     }
 
     [Fact]
-    public void TallCabinet_Should_HaveGarageMaterialWhenIsGarage() {
+    public void BaseCabinet_Should_HaveGarageMaterialWhenIsGarage() {
 
-        var cabinet = new TallCabinetBuilder()
+        // Arrange
+        var cabinet = new BaseCabinetBuilder()
             .WithIsGarage(true)
-            .WithDoors(TallCabinetDoors.NoDoors())
-            .WithInside(TallCabinetInside.Empty())
+            .WithDoors(BaseCabinetDoors.NoDoors())
+            .WithInside(BaseCabinetInside.Empty())
+            .WithDrawers(HorizontalDrawerBank.None())
             .WithToeType(ToeType.NoToe)
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
@@ -47,6 +51,7 @@ public class TallCabinetTests {
 
         // Act
         var products = cabinet.GetPPProducts();
+
 
         // Assert
         products.Should().HaveCount(1);

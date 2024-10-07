@@ -3,7 +3,7 @@ using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using FluentAssertions;
 
-namespace ApplicationCore.Tests.Unit.ProductPlanner.Cabinets;
+namespace Domain.Tests.Unit.ProductPlanner.Cabinets;
 
 public class WallCabinetTests {
 

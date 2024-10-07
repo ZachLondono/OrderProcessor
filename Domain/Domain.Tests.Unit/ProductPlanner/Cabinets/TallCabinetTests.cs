@@ -1,22 +1,19 @@
 ﻿using Domain.Orders.Builders;
+using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using FluentAssertions;
-using Domain.Orders.Enums;
-using Domain.Orders.ValueObjects;
 
-namespace ApplicationCore.Tests.Unit.ProductPlanner.Cabinets;
+namespace Domain.Tests.Unit.ProductPlanner.Cabinets;
 
-public class DiagonalBaseCornerCabinetTests {
+public class TallCabinetTests {
 
     [Fact]
-    public void DiagonalBaseCornerCabinet_Should_NotHaveGarageMaterialWhenIsNotGarage() {
+    public void TallCabinet_Should_NotHaveGarageMaterialWhenIsNotGarage() {
 
-        var cabinet = new BaseDiagonalCornerCabinetBuilder()
+        var cabinet = new TallCabinetBuilder()
             .WithIsGarage(false)
-            .WithRightWidth(Dimension.FromInches(12))
-            .WithRightDepth(Dimension.FromInches(12))
-            .WithHingeSide(HingeSide.NotApplicable)
-            .WithDoorQty(1)
+            .WithDoors(TallCabinetDoors.NoDoors())
+            .WithInside(TallCabinetInside.Empty())
             .WithToeType(ToeType.NoToe)
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
@@ -34,14 +31,12 @@ public class DiagonalBaseCornerCabinetTests {
     }
 
     [Fact]
-    public void DiagonalBaseCornerBaseCabinet_Should_HaveGarageMaterialWhenIsGarage() {
+    public void TallCabinet_Should_HaveGarageMaterialWhenIsGarage() {
 
-        var cabinet = new BaseDiagonalCornerCabinetBuilder()
+        var cabinet = new TallCabinetBuilder()
             .WithIsGarage(true)
-            .WithRightWidth(Dimension.FromInches(12))
-            .WithRightDepth(Dimension.FromInches(12))
-            .WithHingeSide(HingeSide.NotApplicable)
-            .WithDoorQty(1)
+            .WithDoors(TallCabinetDoors.NoDoors())
+            .WithInside(TallCabinetInside.Empty())
             .WithToeType(ToeType.NoToe)
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
