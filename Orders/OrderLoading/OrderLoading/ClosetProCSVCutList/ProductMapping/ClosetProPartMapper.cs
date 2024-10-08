@@ -300,7 +300,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 	}
 
-	public static List<HangingRail> GetHangingRailsFromBuyOutParts(IEnumerable<BuyOutPart> parts) {
+	public static (HangingRail[], Supply[]) GetHangingRailsFromBuyOutParts(IEnumerable<BuyOutPart> parts) {
 
 		List<HangingRail> rails = [];
 
@@ -316,9 +316,16 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
         }
 
-		return rails.GroupBy(r => (r.Length, r.Finish))
+		rails = rails.GroupBy(r => (r.Length, r.Finish))
 					.Select(g => new HangingRail(Guid.NewGuid(), g.Sum(r => r.Qty), g.Key.Length, g.Key.Finish))
 					.ToList();
+
+		Supply[] supplies = [
+			Supply.RodMountingBracketOpen(rails.Count),
+			Supply.RodMountingBracketClosed(rails.Count),
+		];
+
+        return (rails.ToArray(), supplies);
 
 	}
 

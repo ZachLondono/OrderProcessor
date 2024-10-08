@@ -121,11 +121,14 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
         string workingDirectory = await CreateWorkingDirectory(csvData, info.Header.DesignerCompany, orderName, orderNumber, workingDirectoryRoot);
 
-        var hangRails = ClosetProPartMapper.GetHangingRailsFromBuyOutParts(info.BuyOutParts).ToArray();
+        (HangingRail[] hangRails, Supply[] hangRailSupplies) = ClosetProPartMapper.GetHangingRailsFromBuyOutParts(info.BuyOutParts);
+        (DrawerSlide[] slides, Supply[] slideSupplies) = GetDrawerSlides(products);
         var hangRailBrackets = ClosetProPartMapper.GetHangingRailBracketsFromBuyOutParts(info.BuyOutParts).ToArray();
-        var slides = GetDrawerSlides(products);
         var supplies = GetSupplies(cpProducts);
         supplies.AddRange(hangRailBrackets);
+        supplies.AddRange(hangRailSupplies);
+        supplies.AddRange(slideSupplies);
+
         Hardware hardware = new(supplies.ToArray(), slides, hangRails);
 
         return new OrderData() {
@@ -235,8 +238,18 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 	}
 
-	private static DrawerSlide[] GetDrawerSlides(IEnumerable<IProduct> products) {
-		return products.OfType<IDrawerSlideContainer>().SelectMany(d => d.GetDrawerSlides()).ToArray();
+	private static (DrawerSlide[], Supply[]) GetDrawerSlides(IEnumerable<IProduct> products) {
+
+		var slides =  products.OfType<IDrawerSlideContainer>()
+								.SelectMany(d => d.GetDrawerSlides())
+								.ToArray();
+
+		Supply[] screws = [
+			Supply.DrawerSlideEuroScrews(slides.Length / 2),
+			Supply.ClosetDrawerClips(slides.Length)
+		];
+
+		return (slides, screws);
 	}
 
 	private static List<Supply> GetSupplies(IEnumerable<IClosetProProduct> products) {
@@ -264,11 +277,6 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
         cams += 8; // The closet spreadsheet add 8 extra cams
         if (cams > 0) {
             supplies.Add(Supply.RafixCam(cams));
-        }
-
-        var drawers = products.OfType<DrawerBox>().Where(d => d.UnderMountNotches).Sum(d => d.Qty);
-        if (drawers > 0) {
-            supplies.Add(Supply.ClosetDrawerClips(drawers));
         }
 
         var verticals = products.OfType<VerticalPanel>().ToArray();
