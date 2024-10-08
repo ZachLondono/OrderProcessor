@@ -18,6 +18,16 @@ public record Supply(Guid Id, int Qty, string Description) {
 
     public static Supply ClosetDrawerClips(int qty) => new(Guid.NewGuid(), qty, "Hettich Clips (pair) (Black/Blue)");
 
+    /// <summary>
+    /// Screws used to attach a drawer slide to a vertical panel. 2 per slide.
+    /// </summary>
+    public static Supply DrawerSlideEuroScrews(int slideQty) => new(Guid.NewGuid(), slideQty * 2, "Regular Euro Screws, For Drawer Slide");
+
+    /// <summary>
+    /// Screws used when two drawer boxes share a vertical panel. 2 per slide.
+    /// </summary>
+    public static Supply DrawerSlideShortEuroScrews(int slideQty) => new(Guid.NewGuid(), slideQty * 2, "Short Euro Screws, For Drawer Slide");
+
     public static IEnumerable<Supply> StandardHinge(int qty) => new Supply[2] { new(Guid.NewGuid(), qty, "Hinge, 125"), new(Guid.NewGuid(), qty, "Hinge Plate") };
 
     public static IEnumerable<Supply> StandardHinge(Dimension doorHeight, int doorQty) {
