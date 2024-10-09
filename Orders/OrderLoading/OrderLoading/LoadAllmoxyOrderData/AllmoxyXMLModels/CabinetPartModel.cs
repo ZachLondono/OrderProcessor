@@ -77,7 +77,7 @@ public class CabinetPartModel : ProductOrItemModel {
 
 		IDictionary<string, string> parameters = Parameters.ToDictionary(p => p.Name, p => p.Value);
 
-		string edgeBandColor = EdgeBandColor == "Match" ? MaterialFinish : EdgeBandColor;
+		string edgeBandColor = EdgeBandColor == "Match Finish" ? MaterialFinish : EdgeBandColor;
 
 		return new CabinetPart(Guid.NewGuid(), Qty, unitPrice, GetProductNumber(), SKU, Room, material, edgeBandColor, Comment, parameters, ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList());
 	}
