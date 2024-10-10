@@ -110,7 +110,14 @@ public class DovetailDrawerBoxBuilder {
         return this;
     }
 
-    public static Dimension GetDrawerBoxHeightFromDrawerFaceHeight(Dimension faceHeight) {
+    public DovetailDrawerBoxBuilder WithDrawerFaceHeight(Dimension faceHeight, Dimension verticalClearance) {
+        Height = GetDrawerBoxHeightFromDrawerFaceHeight(faceHeight, verticalClearance);
+        return this;
+    }
+
+    public static Dimension GetDrawerBoxHeightFromDrawerFaceHeight(Dimension faceHeight) => GetDrawerBoxHeightFromDrawerFaceHeight(faceHeight, VerticalClearance);
+
+    public static Dimension GetDrawerBoxHeightFromDrawerFaceHeight(Dimension faceHeight, Dimension verticalClearance) {
 
         var availableHeights = StdHeights.OrderByDescending(height => height).ToArray();
 
@@ -120,7 +127,7 @@ public class DovetailDrawerBoxBuilder {
 
         foreach (var height in availableHeights) {
 
-            if (height > faceHeight - VerticalClearance) {
+            if (height > faceHeight - verticalClearance) {
                 continue;
             }
 
