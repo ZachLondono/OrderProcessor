@@ -97,11 +97,15 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
 
         var boxes = new List<DovetailDrawerBox>();
 
-        foreach (var height in Drawers.FaceHeights) {
+        for (int i = 0; i < Drawers.FaceHeights.Length; i++) {
+
+            var height = Drawers.FaceHeights[i];
+
+            var verticalClearance = GetVerticalDrawerBoxClearance(i, Drawers.FaceHeights.Length, Construction);
 
             var box = getBuilder().WithInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType)
                                     .WithInnerCabinetWidth(InnerWidth, 1, DrawerBoxOptions.SlideType)
-                                    .WithDrawerFaceHeight(height)
+                                    .WithDrawerFaceHeight(height, verticalClearance)
                                     .WithQty(Qty)
                                     .WithOptions(DrawerBoxOptions.GetDrawerBoxOptions())
                                     .WithProductNumber(ProductNumber)
@@ -112,6 +116,38 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
         }
 
         return boxes;
+
+    }
+
+    public static Dimension GetVerticalDrawerBoxClearance(int boxIndex, int boxCount, CabinetConstruction construction) {
+
+        Dimension clrTandemTop = Dimension.FromMillimeters(6);
+
+        Dimension topClearance;
+        if (boxIndex == 0) {
+
+            topClearance = construction.TopThickness - DoorGaps.TopGap + clrTandemTop;
+
+        } else {
+
+            topClearance = construction.TopThickness / 2 - DoorGaps.VerticalGap / 2 + clrTandemTop;
+
+        }
+
+        Dimension botClearance;
+        if (boxIndex == (boxCount - 1)) {
+
+            botClearance = Dimension.FromMillimeters(19) + construction.BottomThickness + DoorGaps.BottomGap;
+
+        } else {
+
+            botClearance = Dimension.FromMillimeters(15) + construction.TopThickness / 2 + DoorGaps.VerticalGap / 2;
+
+        }
+
+        Dimension verticalClearance = topClearance + botClearance;
+
+        return verticalClearance;
 
     }
 
