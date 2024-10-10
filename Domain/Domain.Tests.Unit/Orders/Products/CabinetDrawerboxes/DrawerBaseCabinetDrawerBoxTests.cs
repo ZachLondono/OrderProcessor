@@ -103,6 +103,90 @@ public class DrawerBaseCabinetDrawerBoxTests {
 
     }
 
+    [Fact]
+    public void DrawerBoxHeight_WhenCabinetHasThreeDrawerBoxesA() {
+
+        // Arrange
+        Dimension cabinetHeight = Dimension.FromInches(30);
+        Dimension[] faceHeights = [
+            Dimension.FromInches(7),
+            Dimension.FromInches(7),
+            Dimension.FromInches(19.8125),
+        ];
+        Dimension[] expectedHeights = [
+            Dimension.FromMillimeters(105),
+            Dimension.FromMillimeters(137),
+            Dimension.FromMillimeters(260),
+        ];
+
+        CompareExpectedDrawerBoxHeights(cabinetHeight, faceHeights, expectedHeights);
+
+    }
+
+    [Fact]
+    public void DrawerBoxHeight_WhenCabinetHasThreeDrawerBoxesB() {
+
+        Dimension cabinetHeight = Dimension.FromMillimeters(762);
+        Dimension[] faceHeights = [
+            Dimension.FromInches(7),
+            Dimension.FromInches(7),
+            Dimension.FromMillimeters(291.40),
+        ];
+        Dimension[] expectedHeights = [
+            Dimension.FromMillimeters(105),
+            Dimension.FromMillimeters(137),
+            Dimension.FromMillimeters(210),
+        ];
+
+        CompareExpectedDrawerBoxHeights(cabinetHeight, faceHeights, expectedHeights);
+
+    }
+
+    [Fact]
+    public void DrawerBoxHeight_WhenCabinetHasFourDrawerBoxes() {
+
+        Dimension cabinetHeight = Dimension.FromMillimeters(762);
+        Dimension[] faceHeights = [
+            Dimension.FromInches(7),
+            Dimension.FromInches(7),
+            Dimension.FromInches(7),
+            Dimension.FromMillimeters(224.6),
+        ];
+        Dimension[] expectedHeights = [
+            Dimension.FromMillimeters(105),
+            Dimension.FromMillimeters(137),
+            Dimension.FromMillimeters(137),
+            Dimension.FromMillimeters(159),
+        ];
+
+        CompareExpectedDrawerBoxHeights(cabinetHeight, faceHeights, expectedHeights);
+
+    }
+
+    private void CompareExpectedDrawerBoxHeights(Dimension cabinetHeight, Dimension[] faceHeights, Dimension[] expectedDrawerBoxHeights) {
+
+        // Arrange
+        var cabinet = new DrawerBaseCabinetBuilder()
+                            .WithDrawers(new() {
+                                FaceHeights = faceHeights 
+                            })
+                            .WithToeType(ToeType.NoToe)
+                            .WithQty(1)
+                            .WithHeight(cabinetHeight)
+                            .WithWidth(Dimension.FromMillimeters(457))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .Build();
+
+        // Act
+        var drawers = cabinet.GetDovetailDrawerBoxes(new DBBuilderFactoryFactory().CreateBuilderFactory())
+                            .Select(db => db.Height);
+
+        // Assert
+        drawers.Should().ContainInOrder(expectedDrawerBoxHeights);
+        drawers.Should().HaveCount(expectedDrawerBoxHeights.Length);
+
+    }
+
     [Theory]
     [InlineData(800, DrawerSlideType.UnderMount, 533)]
     [InlineData(700, DrawerSlideType.UnderMount, 533)]
