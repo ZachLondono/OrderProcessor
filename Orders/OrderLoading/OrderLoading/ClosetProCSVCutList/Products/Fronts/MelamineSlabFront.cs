@@ -90,7 +90,7 @@ public class MelamineSlabFront : IClosetProProduct {
 
 		output = Dimension.FromMillimeters(rounded * 32 + 29);
 
-		var error = Math.Abs((input - output).AsMillimeters());
+		var error = Math.Abs((input.AsMillimeters() - output.AsMillimeters()));
 
 		if (error > maxErrorMM) {
 
