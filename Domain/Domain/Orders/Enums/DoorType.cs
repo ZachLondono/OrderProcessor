@@ -2,5 +2,6 @@
 
 public enum DoorType {
     Door,
-    DrawerFront
+    DrawerFront,
+    HamperDoor
 }

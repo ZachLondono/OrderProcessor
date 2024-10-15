@@ -108,7 +108,13 @@ public partial class ClosetProPartMapper {
 
 		Dimension height = Dimension.FromInches(part.Height);
 		Dimension width = Dimension.FromInches(part.Width);
-		DoorType doorType = part.PartName.Contains("Drawer") ? DoorType.DrawerFront : DoorType.Door;
+
+		DoorType doorType = DoorType.Door;
+		if (part.PartName.Contains("Drawer")) {
+			doorType = DoorType.DrawerFront;
+		} else if (part.PartName.Contains("Tilt Down")) {
+			doorType = DoorType.HamperDoor;
+		}
 
 		return new() {
 			Qty = part.Quantity,

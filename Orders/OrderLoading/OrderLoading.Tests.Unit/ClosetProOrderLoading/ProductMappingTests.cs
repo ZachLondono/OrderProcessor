@@ -1,4 +1,5 @@
-﻿using Domain.ValueObjects;
+﻿using Domain.Orders.Entities.Products.Closets;
+using Domain.ValueObjects;
 using FluentAssertions;
 using OrderLoading.ClosetProCSVCutList;
 using OrderLoading.ClosetProCSVCutList.CSVModels;
@@ -358,6 +359,120 @@ public class ProductMappingTests {
     }
 
     [Fact]
+    public void SlabDoor_HeightShouldBeChangedToComplientHeight_WhenWithinErrorRange() {
+
+        // Arrange
+        var part = new Part() {
+            Width = 10,
+            Height = 15.0625,
+            PartName = "Cab Door Insert",
+            ExportName = "Slab",
+        };
+
+        // Act
+        var product = ClosetProPartMapper.CreateSlabFront(part, Dimension.Zero, RoomNamingStrategy.ByWallAndSection).ToProduct();
+
+        // Assert
+        (product as ClosetPart)!.Length.Should().Be(Dimension.FromInches(15));
+
+    }
+
+    [Fact]
+    public void SlabHamperDoor_HeightShouldBeChangedToComplientHeight_WhenWithinErrorRange() {
+
+        // Arrange
+        var part = new Part() {
+            Width = 10,
+            Height = 15.0625,
+            PartName = "Tilt Down Hamper Insert",
+            ExportName = "Slab",
+        };
+
+        // Act
+        var product = ClosetProPartMapper.CreateSlabFront(part, Dimension.Zero, RoomNamingStrategy.ByWallAndSection).ToProduct();
+
+        // Assert
+        (product as ClosetPart)!.Length.Should().Be(Dimension.FromInches(15));
+
+    }
+
+    [Fact]
+    public void SlabDrawerFront_HeightShouldBeChangedToComplientHeight_WhenWithinErrorRange() {
+
+        // Arrange
+        var part = new Part() {
+            Width = 10,
+            Height = 15.0625,
+            PartName = "Drawer XX Small Insert",
+            ExportName = "Slab",
+        };
+
+        // Act
+        var product = ClosetProPartMapper.CreateSlabFront(part, Dimension.Zero, RoomNamingStrategy.ByWallAndSection).ToProduct();
+
+        // Assert
+        (product as ClosetPart)!.Width.Should().Be(Dimension.FromInches(15));
+
+    }
+
+    [Fact]
+    public void SlabDoor_HeightShouldNotBeChangedToComplientHeight_WhenOutsideErrorRange() {
+
+        // Arrange
+        var part = new Part() {
+            Width = 10,
+            Height = 15.5,
+            PartName = "Cab Door Insert",
+            ExportName = "Slab",
+        };
+
+        // Act
+        var product = ClosetProPartMapper.CreateSlabFront(part, Dimension.Zero, RoomNamingStrategy.ByWallAndSection).ToProduct();
+
+        // Assert
+        (product as ClosetPart)!.Length.Should().Be(Dimension.FromInches(part.Height));
+
+    }
+
+    [Fact]
+    public void SlabHamperDoor_HeightShouldNotBeChangedToComplientHeight_WhenOutsideErrorRange() {
+
+        // Arrange
+        var part = new Part() {
+            Width = 10,
+            Height = 15.5,
+            PartName = "Tilt Down Hamper Insert",
+            ExportName = "Slab",
+        };
+
+        // Act
+        var product = ClosetProPartMapper.CreateSlabFront(part, Dimension.Zero, RoomNamingStrategy.ByWallAndSection).ToProduct();
+
+        // Assert
+        (product as ClosetPart)!.Length.Should().Be(Dimension.FromInches(part.Height));
+
+    }
+
+    [Fact]
+    public void SlabDrawerFront_HeightShouldNotBeChangedToComplientHeight_WhenOutsideErrorRange() {
+
+        // Arrange
+        var part = new Part() {
+            Width = 10,
+            Height = 15.5,
+            PartName = "Drawer XX Small Insert",
+            ExportName = "Slab",
+        };
+
+        // Act
+        var product = ClosetProPartMapper.CreateSlabFront(part, Dimension.Zero, RoomNamingStrategy.ByWallAndSection).ToProduct();
+
+        // Assert
+        (product as ClosetPart)!.Width.Should().Be(Dimension.FromInches(part.Height));
+
+    }
+
+    [Fact]
     public void SlabDoorInsert() {
 
         // Arrange
@@ -382,6 +497,36 @@ public class ProductMappingTests {
         // Assert
         var slabDoor = helper.CompareToProduct(product);
         slabDoor.SKU.Should().Be("DOOR");
+        slabDoor.Length.Should().Be(Dimension.FromInches(part.Height));
+        slabDoor.Width.Should().Be(Dimension.FromInches(part.Width));
+
+    }
+
+    [Fact]
+    public void HamperDoorInsert() {
+
+        // Arrange
+        var part = new Part() {
+            Width = 10,
+            Height = 15,
+            Color = "White",
+            PartCost = "123.45",
+            Quantity = 1,
+            PartName = "Tilt Down Hamper Insert",
+            ExportName = "Slab",
+            InfoRecords = new()
+        };
+        var helper = new PartHelper() {
+            Part = part
+        };
+
+        // Act
+        var vp = ClosetProPartMapper.CreateSlabFront(part, Dimension.Zero, RoomNamingStrategy.ByWallAndSection);
+        var product = vp.ToProduct();
+
+        // Assert
+        var slabDoor = helper.CompareToProduct(product);
+        slabDoor.SKU.Should().Be("HAMPDOOR");
         slabDoor.Length.Should().Be(Dimension.FromInches(part.Height));
         slabDoor.Width.Should().Be(Dimension.FromInches(part.Width));
 

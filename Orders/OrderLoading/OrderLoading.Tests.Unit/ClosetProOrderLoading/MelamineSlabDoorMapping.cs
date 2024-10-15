@@ -56,6 +56,55 @@ public class MelamineSlabDoorMapping {
 
     }
 
+
+    [Fact]
+    public void HamperDoor() {
+
+        // Arrange
+        Dimension hardwareSpread = Dimension.FromMillimeters(128);
+        Part part = new() {
+            WallNum = 1,
+            SectionNum = 2,
+            PartType = "Door",
+            PartName = "Tilt Down Hamper Insert",
+            ExportName = "Slab",
+            Color = "White",
+            Height = 38.976,
+            Width = 12.25,
+            Depth = 0,
+            Quantity = 2,
+            VertHand = "D",
+            VertDrillL = 0,
+            VertDrillR = 0,
+            BBHeight = 0,
+            BBDepth = 0,
+            ShoeHeight = 0,
+            ShoeDepth = 0,
+            DrillLeft1 = "",
+            DrillLeft2 = "",
+            DrillRight1 = "",
+            DrillRight2 = "",
+            RailNotch = "N",
+            RailNotchElevation = 0,
+            CornerShelfSizes = "",
+            PartCost = "$21.63",
+            UnitL = "",
+            UnitR = "",
+            PartNum = 18,
+            InfoRecords = []
+        };
+
+        // Act
+        var front = ClosetProPartMapper.CreateSlabFront(part, hardwareSpread, RoomNamingStrategy.ByWallAndSection);
+
+        // Assert
+        front.Height.Should().Be(Dimension.FromInches(part.Height));
+        front.Width.Should().Be(Dimension.FromInches(part.Width));
+        front.Type.Should().Be(DoorType.HamperDoor);
+        front.HardwareSpread.Should().Be(hardwareSpread);
+
+    }
+
     [Fact]
     public void DrawerFront() {
 

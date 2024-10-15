@@ -37,7 +37,9 @@ public class MelamineSlabFront : IClosetProProduct {
 
 				sku = "DOOR";
 				width = Width;
-				length = Height;
+				if (!TryGetNearest32MMComplientHalfOverlayHeight(Height, out length)) {
+					length = Height;
+				}
 
 				parameters.Add("OpeningWidth", (width - Dimension.FromMillimeters(15)).AsMillimeters().ToString());
 
@@ -46,11 +48,27 @@ public class MelamineSlabFront : IClosetProProduct {
 			case DoorType.DrawerFront:
 
 				sku = "DF-XX";
-				width = Height;
 				length = Width;
+				if (!TryGetNearest32MMComplientHalfOverlayHeight(Height, out width)) {
+					width = Height;
+				}
 
-				if (HardwareSpread is Dimension hardwareSpread) {
-					parameters.Add("PullCenters", hardwareSpread.AsMillimeters().ToString());
+				if (HardwareSpread is not null) {
+					parameters.Add("PullCenters", ((Dimension) HardwareSpread).AsMillimeters().ToString());
+				}
+
+				break;
+
+			case DoorType.HamperDoor:
+
+				sku = "HAMPDOOR";
+				width = Width;
+				if (!TryGetNearest32MMComplientHalfOverlayHeight(Height, out length)) {
+					length = Height;
+				}
+
+				if (HardwareSpread is not null) {
+					parameters.Add("PullCenters", ((Dimension) HardwareSpread).AsMillimeters().ToString());
 				}
 
 				break;
@@ -61,6 +79,26 @@ public class MelamineSlabFront : IClosetProProduct {
 		}
 
 		return new ClosetPart(Guid.NewGuid(), Qty, UnitPrice, PartNumber, Room, sku, width, length, material, paint, EdgeBandingColor, comment, false, parameters);
+
+	}
+
+	public static bool TryGetNearest32MMComplientHalfOverlayHeight(Dimension input, out Dimension output, double maxErrorMM = 2) {
+
+		var multiple = (input.AsMillimeters() - 29d) / 32d;
+
+		var rounded = Math.Round(multiple);
+
+		output = Dimension.FromMillimeters(rounded * 32 + 29);
+
+		var error = Math.Abs((input - output).AsMillimeters());
+
+		if (error > maxErrorMM) {
+
+			return false;
+
+		}
+
+		return true;
 
 	}
 
