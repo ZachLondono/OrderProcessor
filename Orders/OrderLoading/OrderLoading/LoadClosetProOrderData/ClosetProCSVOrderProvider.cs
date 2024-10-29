@@ -129,7 +129,8 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
         supplies.AddRange(hangRailSupplies);
         supplies.AddRange(slideSupplies);
 
-        Hardware hardware = new(supplies.ToArray(), slides, hangRails);
+		var suppliesArray = supplies.Where(s => s.Qty != 0).ToArray();
+        Hardware hardware = new(suppliesArray, slides, hangRails);
 
         return new OrderData() {
             VendorId = vendorId,

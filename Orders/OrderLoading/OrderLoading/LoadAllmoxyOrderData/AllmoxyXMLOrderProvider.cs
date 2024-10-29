@@ -160,7 +160,9 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 									.Select(g => new DrawerSlide(Guid.NewGuid(), g.Sum(s => s.Qty), g.Key.Length, g.Key.Style))
 									.ToArray();
 
-		Hardware hardware = new(allSupplies.ToArray(), allSlides, []);
+		var suppliesArray = allSupplies.Where(s => s.Qty > 0).ToArray();
+
+		Hardware hardware = new(suppliesArray, allSlides, []);
 
 		OrderData? order = new() {
 			Number = number,
