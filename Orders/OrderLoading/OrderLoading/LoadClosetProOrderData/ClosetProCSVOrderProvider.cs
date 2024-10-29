@@ -241,14 +241,23 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 	private static (DrawerSlide[], Supply[]) GetDrawerSlides(IEnumerable<IProduct> products) {
 
-		var slides =  products.OfType<IDrawerSlideContainer>()
+		var slides = products.OfType<IDrawerSlideContainer>()
 								.SelectMany(d => d.GetDrawerSlides())
+								.GroupBy(d => (d.Length, d.Style))
+								.Select(g => new DrawerSlide(Guid.NewGuid(), g.Sum(g => g.Qty), g.Key.Length, g.Key.Style))
 								.ToArray();
 
-		Supply[] screws = [
-			Supply.DrawerSlideEuroScrews(slides.Length / 2),
-			Supply.ClosetDrawerClips(slides.Length)
-		];
+		Supply[] screws = [];
+		if (slides.Length != 0) {
+
+			int totalSlides = slides.Sum(s => s.Qty);
+
+			screws = [
+				Supply.DrawerSlideEuroScrews(slides.Length * 2 * totalSlides),
+				Supply.ClosetDrawerClips(slides.Length * totalSlides)
+			];
+
+		}
 
 		return (slides, screws);
 	}
