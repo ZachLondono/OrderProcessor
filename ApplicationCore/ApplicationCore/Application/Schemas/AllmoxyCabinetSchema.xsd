@@ -180,7 +180,7 @@
         <xs:element name="products">
           <xs:complexType>
             <xs:sequence>
-              <xs:choice maxOccurs="unbounded">
+              <xs:choice maxOccurs="unbounded" minOccurs="0">
 
                 <xs:element name="trashCabinet">
                   <xs:complexType>
