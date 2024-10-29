@@ -316,16 +316,23 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
         }
 
-		rails = rails.GroupBy(r => (r.Length, r.Finish))
+		var groupedRails = rails.GroupBy(r => (r.Length, r.Finish))
 					.Select(g => new HangingRail(Guid.NewGuid(), g.Sum(r => r.Qty), g.Key.Length, g.Key.Finish))
 					.ToList();
 
-		Supply[] supplies = [
-			Supply.RodMountingBracketOpen(rails.Count),
-			Supply.RodMountingBracketClosed(rails.Count),
-		];
+		Supply[] supplies = [];
+        if (rails.Count != 0) {
 
-        return (rails.ToArray(), supplies);
+			var totalQty = rails.Sum(r => r.Qty);
+
+			supplies = [
+				Supply.RodMountingBracketOpen(totalQty),
+				Supply.RodMountingBracketClosed(totalQty),
+			];
+
+		}
+
+        return (groupedRails.ToArray(), supplies);
 
 	}
 
