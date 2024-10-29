@@ -14,9 +14,9 @@ public record Supply(Guid Id, int Qty, string Description) {
 
     public static Supply CabinetLeveler(int qty) => new(Guid.NewGuid(), qty, "Cabinet Leveler");
 
-    public static Supply CabinetDrawerClips(int qty) => new(Guid.NewGuid(), qty, "Hettich Clips (pair) (Grey)");
+    public static Supply CabinetDrawerClips(int pairQty) => new(Guid.NewGuid(), pairQty, "Hettich Clips (pair) (Grey)");
 
-    public static Supply ClosetDrawerClips(int qty) => new(Guid.NewGuid(), qty, "Hettich Clips (pair) (Black/Blue)");
+    public static Supply ClosetDrawerClips(int pairQty) => new(Guid.NewGuid(), pairQty, "Hettich Clips (pair) (Black/Blue)");
 
     /// <summary>
     /// Screws used to attach a drawer slide to a vertical panel. 2 per slide.
