@@ -109,7 +109,9 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
         }
         
         if (BaseNotch is not null) {
-            notes.Add($"Base Notch: {BaseNotch.Height.AsInches()}\"H x {BaseNotch.Depth.AsInches()}\"D");
+            var notchHeight = Math.Round(BaseNotch.Height.AsInches(), 2);
+            var notchDepth = Math.Round(BaseNotch.Depth.AsInches(), 2);
+            notes.Add($"Base Notch: {notchHeight}\"H x {notchDepth}\"D");
         }
 
         return notes;
