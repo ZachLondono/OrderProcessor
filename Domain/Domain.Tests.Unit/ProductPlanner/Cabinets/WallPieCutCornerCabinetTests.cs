@@ -1,70 +1,17 @@
 ﻿using Domain.Orders.Builders;
 using Domain.Orders.Entities.Products.Cabinets;
-using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using FluentAssertions;
 
 namespace Domain.Tests.Unit.ProductPlanner.Cabinets;
 
-public class BaseCabinetTests {
-
-    [Fact]
-    public void BaseCabinet_ShouldNotHaveGarageMaterial_WhenIsNotGarage() {
-
-        // Arrange
-        var cabinet = new BaseCabinetBuilder()
-            .WithIsGarage(false)
-            .WithDoors(BaseCabinetDoors.NoDoors())
-            .WithInside(BaseCabinetInside.Empty())
-            .WithDrawers(HorizontalDrawerBank.None())
-            .WithToeType(ToeType.NoToe)
-            .WithWidth(Dimension.FromInches(25))
-            .WithDepth(Dimension.FromInches(25))
-            .WithHeight(Dimension.FromInches(25))
-            .WithQty(1)
-            .Build();
-
-        // Act
-        var products = cabinet.GetPPProducts();
-
-
-        // Assert
-        products.Should().HaveCount(1);
-        products.First().MaterialType.Should().NotBe("Garage");
-
-    }
-
-    [Fact]
-    public void BaseCabinet_ShouldHaveGarageMaterial_WhenIsGarage() {
-
-        // Arrange
-        var cabinet = new BaseCabinetBuilder()
-            .WithIsGarage(true)
-            .WithDoors(BaseCabinetDoors.NoDoors())
-            .WithInside(BaseCabinetInside.Empty())
-            .WithDrawers(HorizontalDrawerBank.None())
-            .WithToeType(ToeType.NoToe)
-            .WithWidth(Dimension.FromInches(25))
-            .WithDepth(Dimension.FromInches(25))
-            .WithHeight(Dimension.FromInches(25))
-            .WithQty(1)
-            .Build();
-
-        // Act
-        var products = cabinet.GetPPProducts();
-
-
-        // Assert
-        products.Should().HaveCount(1);
-        products.First().MaterialType.Should().Be("Garage");
-
-    }
+public class WallPieCutCornerCabinetTests {
 
     [Fact]
     public void DoorType_ShouldBeSlab_WhenSlabDoorMaterialIsNotNullAndMDFOptionsIsNull() {
 
         // Arrange
-        var cabinet = new BaseCabinetBuilder()
+        var cabinet = new WallPieCutCornerCabinetBuilder()
                             .WithMDFDoorOptions(null)
                             .WithSlabDoorMaterial(new("", Domain.Orders.Enums.CabinetMaterialFinishType.Melamine, Domain.Orders.Enums.CabinetMaterialCore.ParticleBoard, null))
                             .Build();
@@ -83,7 +30,7 @@ public class BaseCabinetTests {
     public void DoorType_ShouldBeByOut_WhenSlabDoorMaterialIsNullAndMDFOptionsIsNotNull() {
 
         // Arrange
-        var cabinet = new BaseCabinetBuilder()
+        var cabinet = new WallPieCutCornerCabinetBuilder()
                             .WithMDFDoorOptions(new("", Dimension.Zero, "", "", "", Dimension.Zero, null))
                             .WithSlabDoorMaterial(null)
                             .Build();
@@ -102,7 +49,7 @@ public class BaseCabinetTests {
     public void DoorType_ShouldBeByOut_WhenSlabDoorMaterialIsNullAndMDFOptionsIsNull() {
 
         // Arrange
-        var cabinet = new BaseCabinetBuilder()
+        var cabinet = new WallPieCutCornerCabinetBuilder()
                             .WithMDFDoorOptions(null)
                             .WithSlabDoorMaterial(null)
                             .Build();

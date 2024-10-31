@@ -291,6 +291,8 @@ public class ReleaseService {
                                                          GetHingeSide(c),
                                                          c.RightSideType == CabinetSideType.Finished,
                                                          c.LeftSideType == CabinetSideType.Finished,
+                                                         c.Assembled,
+                                                         (c.SlabDoorMaterial is not null ? FrontsType.Slab : (c.MDFDoorOptions is not null ? FrontsType.MDF : FrontsType.None)),
                                                          c.GetNotes().ToArray())
                                 ).ToArray();
 
