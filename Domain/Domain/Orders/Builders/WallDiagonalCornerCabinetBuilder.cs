@@ -18,7 +18,7 @@ public class WallDiagonalCornerCabinetBuilder : CabinetBuilder<WallDiagonalCorne
         RightWidth = Dimension.Zero;
         RightDepth = Dimension.Zero;
         HingeSide = HingeSide.Left;
-        DoorQty = 0;
+        DoorQty = 1;
         AdjustableShelves = 0;
     }
 
