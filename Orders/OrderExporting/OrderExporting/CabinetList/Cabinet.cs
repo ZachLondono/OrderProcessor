@@ -9,4 +9,6 @@ public record Cabinet(int CabNum,
                       HingedSide HingedSide,
                       bool FinishedLeft,
                       bool FinishedRight,
+                      bool IsAssembled,
+                      FrontsType Fronts,
                       string[] Notes);

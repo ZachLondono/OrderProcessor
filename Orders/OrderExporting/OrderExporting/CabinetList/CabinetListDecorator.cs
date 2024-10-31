@@ -109,26 +109,42 @@ public class CabinetListDecorator(CabinetList data) : IDocumentDecorator {
                                 addCenteredCell(cab.FinishedLeft ? "F" : "");
                                 addCenteredCell(cab.FinishedRight ? "F" : "");
 
+                                AddNoteRow(true, false, cab.IsAssembled ? "ASSEMBLED" : "NOT ASSEMBLED");
+                                string fronts = cab.Fronts switch {
+                                    FrontsType.None => "Fronts by Others",
+                                    FrontsType.Slab => "Slab Fronts",
+                                    FrontsType.MDF => "MDF Fronts",
+                                    _ => ""
+                                };
+                                AddNoteRow(false, false, fronts);
+
                                 for (int i = 0; i < cab.Notes.Length; i++) {
 
-                                    string? note = cab.Notes[i];
+									string? note = cab.Notes[i];
 
-                                    table.Cell()
-                                        .ColumnSpan(9)
-                                        .BorderLeft(1)
-                                        .BorderRight(1)
-                                        //.Background("E4E4E7")
-                                        .BorderBottom(i == cab.Notes.Length - 1 ? 1 : 0)
-                                        .PaddingTop(i == 0 ? 5 : 0)
-                                        .PaddingBottom(i == cab.Notes.Length - 1 ? 5 : 0)
-                                        .PaddingLeft(20)
-                                        .Text(note);
+                                    bool isFirst = false;
+                                    bool isLast = (i == cab.Notes.Length - 1);
 
-                                }
+									AddNoteRow(isFirst, isLast, note);
 
-                            }
+								}
 
-                        });
+							}
+
+							void AddNoteRow(bool isFirst, bool isLast, string note) {
+								table.Cell()
+									.ColumnSpan(9)
+									.BorderLeft(1)
+									.BorderRight(1)
+									//.Background("E4E4E7")
+									.BorderBottom(isLast ? 1 : 0)
+									.PaddingTop(isFirst ? 5 : 0)
+									.PaddingBottom(isLast ? 5 : 0)
+									.PaddingLeft(20)
+									.Text(note);
+							}
+
+						});
 
                 });
 
