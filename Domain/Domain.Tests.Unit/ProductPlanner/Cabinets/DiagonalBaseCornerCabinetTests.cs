@@ -3,13 +3,14 @@ using Domain.ValueObjects;
 using FluentAssertions;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
+using Domain.Orders.Entities.Products.Cabinets;
 
 namespace Domain.Tests.Unit.ProductPlanner.Cabinets;
 
 public class DiagonalBaseCornerCabinetTests {
 
     [Fact]
-    public void DiagonalBaseCornerCabinet_Should_NotHaveGarageMaterialWhenIsNotGarage() {
+    public void DiagonalBaseCornerCabinet_ShouldNotHaveGarageMaterial_WhenIsNotGarage() {
 
         var cabinet = new BaseDiagonalCornerCabinetBuilder()
             .WithIsGarage(false)
@@ -34,7 +35,7 @@ public class DiagonalBaseCornerCabinetTests {
     }
 
     [Fact]
-    public void DiagonalBaseCornerBaseCabinet_Should_HaveGarageMaterialWhenIsGarage() {
+    public void DiagonalBaseCornerBaseCabinet_ShouldHaveGarageMaterial_WhenIsGarage() {
 
         var cabinet = new BaseDiagonalCornerCabinetBuilder()
             .WithIsGarage(true)
@@ -55,6 +56,63 @@ public class DiagonalBaseCornerCabinetTests {
         // Assert
         products.Should().HaveCount(1);
         products.First().MaterialType.Should().Be("Garage");
+
+    }
+
+    [Fact]
+    public void DoorType_ShouldBeSlab_WhenSlabDoorMaterialIsNotNullAndMDFOptionsIsNull() {
+
+        // Arrange
+        var cabinet = new BaseDiagonalCornerCabinetBuilder()
+                            .WithMDFDoorOptions(null)
+                            .WithSlabDoorMaterial(new("", Domain.Orders.Enums.CabinetMaterialFinishType.Melamine, Domain.Orders.Enums.CabinetMaterialCore.ParticleBoard, null))
+                            .Build();
+
+        // Act
+        var products = cabinet.GetPPProducts();
+
+        // Assert
+        products.Should().AllBeEquivalentTo(new {
+            DoorType = Cabinet.SLAB_DOOR_TYPE
+        }, o => o.ExcludingMissingMembers());
+
+    }
+
+    [Fact]
+    public void DoorType_ShouldBeByOut_WhenSlabDoorMaterialIsNullAndMDFOptionsIsNotNull() {
+
+        // Arrange
+        var cabinet = new BaseDiagonalCornerCabinetBuilder()
+                            .WithMDFDoorOptions(new("", Dimension.Zero, "", "", "", Dimension.Zero, null))
+                            .WithSlabDoorMaterial(null)
+                            .Build();
+
+        // Act
+        var products = cabinet.GetPPProducts();
+
+        // Assert
+        products.Should().AllBeEquivalentTo(new {
+            DoorType = Cabinet.BUYOUT_DOOR_TYPE
+        }, o => o.ExcludingMissingMembers());
+
+    }
+
+    [Fact]
+    public void DoorType_ShouldBeByOut_WhenSlabDoorMaterialIsNullAndMDFOptionsIsNull() {
+
+        // Arrange
+        var cabinet = new BaseDiagonalCornerCabinetBuilder()
+                            .WithMDFDoorOptions(null)
+                            .WithSlabDoorMaterial(null)
+                            .Build();
+
+        // Act
+        var products = cabinet.GetPPProducts();
+
+        // Assert
+        products.Should().AllBeEquivalentTo(new {
+            DoorType = Cabinet.BUYOUT_DOOR_TYPE
+        }, o => o.ExcludingMissingMembers());
 
     }
 
