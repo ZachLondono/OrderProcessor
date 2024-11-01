@@ -16,8 +16,11 @@ public partial class InsertOrder {
                 InsertMDFConfig((Guid)mdfConfigId, mdfConfig, connection, trx);
             }
 
-            var dbConfigId = Guid.NewGuid();
-            InsertCabinetDBConfig(dbConfigId, cabinet.DrawerBoxOptions, connection, trx);
+            Guid? dbConfigId = null;
+            if (cabinet.DrawerBoxOptions is not null) {
+                dbConfigId = Guid.NewGuid();
+                InsertCabinetDBConfig((Guid)dbConfigId, cabinet.DrawerBoxOptions, connection, trx);
+            }
 
             InsertIntoProductTable(cabinet, orderId, connection, trx);
             InsertCabinet(cabinet, mdfConfigId, connection, trx);

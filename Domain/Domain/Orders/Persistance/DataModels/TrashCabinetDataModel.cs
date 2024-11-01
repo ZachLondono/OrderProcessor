@@ -80,7 +80,7 @@ public class TrashCabinetDataModel : CabinetDrawerBoxContainerDataModelBase, IPr
 
                JOIN products ON trash_cabinets.product_id = products.id
                JOIN cabinets ON cabinets.product_id = trash_cabinets.product_id
-               JOIN cabinet_db_configs AS db_config ON trash_cabinets.db_config_id = db_config.id
+               LEFT JOIN cabinet_db_configs AS db_config ON trash_cabinets.db_config_id = db_config.id
                LEFT JOIN mdf_door_configs ON cabinets.mdf_config_id = mdf_door_configs.id
 
             WHERE
