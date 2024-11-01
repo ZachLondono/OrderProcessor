@@ -14,7 +14,7 @@ public class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
     public BlindSide BlindSide { get; private set; }
     public Dimension BlindWidth { get; private set; }
     public ToeType ToeType { get; private set; }
-    public CabinetDrawerBoxOptions BoxOptions { get; private set; }
+    public CabinetDrawerBoxOptions? BoxOptions { get; private set; }
     public bool IsGarage { get; private set; }
 
     public BlindBaseCabinetBuilder() {
@@ -66,7 +66,7 @@ public class BlindBaseCabinetBuilder : CabinetBuilder<BlindBaseCabinet> {
         return this;
     }
 
-    public BlindBaseCabinetBuilder WithBoxOptions(CabinetDrawerBoxOptions boxOptions) {
+    public BlindBaseCabinetBuilder WithBoxOptions(CabinetDrawerBoxOptions? boxOptions) {
         BoxOptions = boxOptions;
         return this;
     }
