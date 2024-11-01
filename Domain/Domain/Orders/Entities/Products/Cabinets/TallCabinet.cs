@@ -13,7 +13,7 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
     public TallCabinetDoors Doors { get; }
     public ToeType ToeType { get; }
     public TallCabinetInside Inside { get; }
-    public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
+    public CabinetDrawerBoxOptions? DrawerBoxOptions { get; }
     public CabinetBaseNotch? BaseNotch { get; }
 
     public Dimension LowerDoorHeight => Doors.UpperQuantity > 0 ? Doors.LowerDoorHeight : Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap;
@@ -36,7 +36,7 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        TallCabinetDoors doors, ToeType toeType, TallCabinetInside inside, CabinetDrawerBoxOptions drawerBoxOptions, CabinetBaseNotch? baseNotch) {
+                        TallCabinetDoors doors, ToeType toeType, TallCabinetInside inside, CabinetDrawerBoxOptions? drawerBoxOptions, CabinetBaseNotch? baseNotch) {
         return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, toeType, inside, drawerBoxOptions, baseNotch);
     }
 
@@ -44,7 +44,7 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        TallCabinetDoors doors, ToeType toeType, TallCabinetInside inside, CabinetDrawerBoxOptions drawerBoxOptions, CabinetBaseNotch? baseNotch)
+                        TallCabinetDoors doors, ToeType toeType, TallCabinetInside inside, CabinetDrawerBoxOptions? drawerBoxOptions, CabinetBaseNotch? baseNotch)
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (doors.UpperQuantity > 2 || doors.UpperQuantity < 0 || doors.LowerQuantity > 2 || doors.LowerQuantity < 0)
@@ -66,7 +66,7 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
             ProductionNotes.Add("Check back panel length. PSI bug causes back panel to be too short.");
         }
 
-        if (Inside.RollOutBoxes.Positions.Length > 0 && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
+        if (Inside.RollOutBoxes.Positions.Length > 0 && DrawerBoxOptions is not null && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
             ProductionNotes.Add("PSI may not support roll out drawer boxes with side mount slieds");
         }
 
@@ -159,13 +159,17 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
         return doors;
     }
 
-    public bool ContainsDovetailDrawerBoxes() => Inside.RollOutBoxes.Any();
+    public bool ContainsDovetailDrawerBoxes() => DrawerBoxOptions is not null && Inside.RollOutBoxes.Any();
 
     public IEnumerable<DovetailDrawerBox> GetDovetailDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
+        if (DrawerBoxOptions is null) {
+            return [];
+        }
+
         if (!Inside.RollOutBoxes.Any()) {
 
-            return Enumerable.Empty<DovetailDrawerBox>();
+            return [];
 
         }
 
@@ -180,7 +184,7 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
                                 .WithProductNumber(ProductNumber)
                                 .Build();
 
-        return new DovetailDrawerBox[] { box };
+        return [ box ];
 
     }
 
@@ -226,7 +230,7 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
                     break;
             }
 
-            if (DrawerBoxOptions.SlideType == DrawerSlideType.UnderMount) {
+            if (DrawerBoxOptions is not null && DrawerBoxOptions.SlideType == DrawerSlideType.UnderMount) {
                 // supplies.Add(Supply.DrawerPull(Inside.RollOutBoxes.Qty * Qty));
             }
 
@@ -237,6 +241,10 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
     }
 
     public IEnumerable<DrawerSlide> GetDrawerSlides() {
+
+        if (DrawerBoxOptions is null) {
+            return [];
+        }
 
         List<DrawerSlide> slides = [];
 
@@ -307,7 +315,7 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
             }
         }
 
-        if (!Inside.RollOutBoxes.Positions.Any() && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
+        if (Inside.RollOutBoxes.Positions.Length == 0 && DrawerBoxOptions is not null && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
             parameters.Add("_DrawerRunType", "4");
         }
 

@@ -14,7 +14,7 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
 
     public ToeType ToeType { get; }
     public VerticalDrawerBank Drawers { get; }
-    public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
+    public CabinetDrawerBoxOptions? DrawerBoxOptions { get; }
 
     public override string GetDescription() => $"{Drawers.FaceHeights.Length} Drawer {(IsGarage ? "Garage " : "")}Cabinet";
     public override string GetSimpleDescription() => "Drawer Base Cabinet";
@@ -31,7 +31,7 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        ToeType toeType, VerticalDrawerBank drawers, CabinetDrawerBoxOptions drawerBoxOptions) {
+                        ToeType toeType, VerticalDrawerBank drawers, CabinetDrawerBoxOptions? drawerBoxOptions) {
         return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, toeType, drawers, drawerBoxOptions);
     }
 
@@ -39,7 +39,7 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        ToeType toeType, VerticalDrawerBank drawers, CabinetDrawerBoxOptions drawerBoxOptions)
+                        ToeType toeType, VerticalDrawerBank drawers, CabinetDrawerBoxOptions? drawerBoxOptions)
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (drawers.FaceHeights.Count() > 5)
@@ -87,9 +87,13 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
 
     }
 
-    public bool ContainsDovetailDrawerBoxes() => Drawers.FaceHeights.Any();
+    public bool ContainsDovetailDrawerBoxes() => DrawerBoxOptions is not null && Drawers.FaceHeights.Any();
 
     public IEnumerable<DovetailDrawerBox> GetDovetailDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
+
+        if (DrawerBoxOptions is null) {
+            return [];
+        }
 
         if (!Drawers.FaceHeights.Any()) {
             return Enumerable.Empty<DovetailDrawerBox>();
@@ -153,12 +157,12 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
 
     public IEnumerable<Supply> GetSupplies() {
 
-        List<Supply> supplies = [
+        List<Supply> supplies = [];
 
+        if (DrawerBoxOptions is not null) {
             // Supply.DrawerPull(Drawers.Qty * Qty),
-            Supply.CabinetDrawerClips(Drawers.Qty * Qty),
-
-        ];
+            supplies.Add(Supply.CabinetDrawerClips(Drawers.Qty * Qty));
+        }
 
         if (ToeType == ToeType.LegLevelers) {
 
@@ -171,6 +175,8 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
     }
 
     public IEnumerable<DrawerSlide> GetDrawerSlides() {
+
+        if (DrawerBoxOptions is null) return [];
 
         var boxDepth = DovetailDrawerBoxBuilder.GetDrawerBoxDepthFromInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType, false);
         boxDepth = Dimension.FromMillimeters(Math.Round(boxDepth.AsMillimeters()));
@@ -221,7 +227,7 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
             }
         }
 
-        if (Drawers.FaceHeights.Any() && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
+        if (Drawers.FaceHeights.Any() && DrawerBoxOptions is not null && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
             parameters.Add("_DrawerRunType", "4");
         }
 
