@@ -12,7 +12,7 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
     public Dimension DrawerFaceHeight { get; set; }
     public TrashPulloutConfiguration TrashPulloutConfiguration { get; set; }
     public ToeType ToeType { get; }
-    public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
+    public CabinetDrawerBoxOptions? DrawerBoxOptions { get; }
 
     public override string GetDescription() => TrashPulloutConfiguration switch {
         TrashPulloutConfiguration.OneCan => $"One Can Trash Pullout Cabinet",
@@ -34,7 +34,7 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, CabinetDrawerBoxOptions drawerBoxOptions, ToeType toeType)
+                        Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, CabinetDrawerBoxOptions? drawerBoxOptions, ToeType toeType)
         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
         DrawerFaceHeight = drawerFaceHeight;
         TrashPulloutConfiguration = trashPulloutConfiguration;
@@ -46,7 +46,7 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, CabinetDrawerBoxOptions drawerBoxOptions, ToeType toeType)
+                        Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, CabinetDrawerBoxOptions? drawerBoxOptions, ToeType toeType)
         => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, drawerFaceHeight, trashPulloutConfiguration, drawerBoxOptions, toeType);
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
@@ -71,7 +71,7 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
     public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
 
         if (MDFDoorOptions is null) {
-            return Enumerable.Empty<MDFDoor>();
+            return [];
         }
 
         List<MDFDoor> doors = new();
@@ -98,9 +98,13 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
 
     }
 
-    public bool ContainsDovetailDrawerBoxes() => true;
+    public bool ContainsDovetailDrawerBoxes() => DrawerBoxOptions is not null;
 
     public IEnumerable<DovetailDrawerBox> GetDovetailDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
+
+        if (DrawerBoxOptions is null) {
+            return [];
+        }
 
         var box = getBuilder().WithInnerCabinetDepth(InnerDepth, DrawerBoxOptions.SlideType)
                                 .WithInnerCabinetWidth(InnerWidth, 1, DrawerBoxOptions.SlideType)
@@ -110,7 +114,7 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
                                 .WithProductNumber(ProductNumber)
                                 .Build();
 
-        return new DovetailDrawerBox[] { box };
+        return [ box ];
 
     }
 
@@ -137,7 +141,7 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
                 break;
         }
 
-        if (DrawerBoxOptions.SlideType == DrawerSlideType.UnderMount) {
+        if (DrawerBoxOptions is not null && DrawerBoxOptions.SlideType == DrawerSlideType.UnderMount) {
             supplies.Add(Supply.CabinetDrawerClips(Qty));
         }
 
@@ -146,6 +150,10 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
     }
 
     public IEnumerable<DrawerSlide> GetDrawerSlides() {
+
+        if (DrawerBoxOptions is null) {
+            return [];
+        }
 
         List<DrawerSlide> slides = [];
 
@@ -196,7 +204,7 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
             }
         }
 
-        if (DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
+        if (DrawerBoxOptions is not null && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
             parameters.Add("_DrawerRunType", "4");
         }
 

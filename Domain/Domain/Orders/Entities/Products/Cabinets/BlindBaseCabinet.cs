@@ -16,7 +16,7 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
     public BlindSide BlindSide { get; }
     public Dimension BlindWidth { get; }
     public ToeType ToeType { get; }
-    public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
+    public CabinetDrawerBoxOptions? DrawerBoxOptions { get; }
 
     public Dimension DoorHeight => Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - (Drawers.Quantity > 0 ? Drawers.FaceHeight + DoorGaps.VerticalGap : Dimension.Zero);
 
@@ -35,7 +35,7 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, ShelfDepth shelfDepth, HorizontalDrawerBank drawers, ToeType toeType, CabinetDrawerBoxOptions drawerBoxOptions) {
+                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, ShelfDepth shelfDepth, HorizontalDrawerBank drawers, ToeType toeType, CabinetDrawerBoxOptions? drawerBoxOptions) {
         return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, blindSide, blindWidth, adjustableShelves, shelfDepth, drawers, toeType, drawerBoxOptions);
     }
 
@@ -43,7 +43,7 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, ShelfDepth shelfDepth, HorizontalDrawerBank drawers, ToeType toeType, CabinetDrawerBoxOptions drawerBoxOptions)
+                        BlindCabinetDoors doors, BlindSide blindSide, Dimension blindWidth, int adjustableShelves, ShelfDepth shelfDepth, HorizontalDrawerBank drawers, ToeType toeType, CabinetDrawerBoxOptions? drawerBoxOptions)
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         Doors = doors;
@@ -113,9 +113,11 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
 
     }
 
-    public bool ContainsDovetailDrawerBoxes() => Drawers.Any();
+    public bool ContainsDovetailDrawerBoxes() => DrawerBoxOptions is not null && Drawers.Any();
 
     public IEnumerable<DovetailDrawerBox> GetDovetailDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
+
+        if (DrawerBoxOptions is null) return [];
 
         if (!Drawers.Any()) {
             return Enumerable.Empty<DovetailDrawerBox>();
@@ -164,7 +166,7 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
 
         }
 
-        if (Drawers.Quantity > 0 && DrawerBoxOptions.SlideType == DrawerSlideType.UnderMount) {
+        if (Drawers.Quantity > 0 && DrawerBoxOptions is not null && DrawerBoxOptions.SlideType == DrawerSlideType.UnderMount) {
             supplies.Add(Supply.CabinetDrawerClips(Drawers.Quantity * Qty));
         }
 
@@ -173,6 +175,10 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
     }
 
     public IEnumerable<DrawerSlide> GetDrawerSlides() {
+
+        if (DrawerBoxOptions is null) {
+            return [];
+        }
 
         List<DrawerSlide> slides = [];
 

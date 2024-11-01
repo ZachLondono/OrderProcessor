@@ -9,6 +9,73 @@ namespace Domain.Tests.Unit.Orders.Products.CabinetDrawerboxes;
 [Collection("DrawerBoxBuilder")]
 public class TrashCabinetDrawerBoxTests {
 
+    [Fact]
+    public void ContainsDovetailDrawerBoxes_ShouldReturnFalse_WhenDrawerBoxOptionsIsNull() {
+
+        // Arrange
+        var cabinet = new TrashCabinetBuilder()
+                            .WithDrawerFaceHeight(Dimension.FromInches(5))
+                            .WithBoxOptions(null)
+                            .WithToeType(ToeType.LegLevelers)
+                            .WithQty(1)
+                            .WithWidth(Dimension.FromMillimeters(456))
+                            .WithHeight(Dimension.FromMillimeters(876))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .Build();
+
+        // Act
+        var result = cabinet.ContainsDovetailDrawerBoxes();
+
+        // Assert
+        result.Should().BeFalse();
+
+    }
+
+    [Fact]
+    public void ContainsDovetailDrawerBoxes_ShouldReturnTrue_WhenDrawerBoxOptionsIsNotNull() {
+
+        // Arrange
+        var cabinet = new TrashCabinetBuilder()
+                            .WithDrawerFaceHeight(Dimension.FromInches(5))
+                            .WithBoxOptions(new(CabinetDrawerBoxMaterial.FingerJointBirch, DrawerSlideType.UnderMount))
+                            .WithToeType(ToeType.LegLevelers)
+                            .WithQty(1)
+                            .WithWidth(Dimension.FromMillimeters(456))
+                            .WithHeight(Dimension.FromMillimeters(876))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .Build();
+
+        // Act
+        var result = cabinet.ContainsDovetailDrawerBoxes();
+
+        // Assert
+        result.Should().BeTrue();
+
+    }
+
+    [Fact]
+    public void GetDovetailDrawerBoxes_ShouldReturnEmptyCollection_WhenDrawerBoxOptionsIsNull() {
+
+        // Arrange
+        var cabinet = new TrashCabinetBuilder()
+                            .WithDrawerFaceHeight(Dimension.FromInches(5))
+                            .WithBoxOptions(null)
+                            .WithToeType(ToeType.LegLevelers)
+                            .WithQty(1)
+                            .WithWidth(Dimension.FromMillimeters(456))
+                            .WithHeight(Dimension.FromMillimeters(876))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .Build();
+
+        // Act
+        var result = cabinet.GetDovetailDrawerBoxes(() => new DovetailDrawerBoxBuilder());
+
+        // Assert
+        result.Should().BeEmpty();
+
+    }
+
+
     [Theory]
     [InlineData(1, 1)]
     [InlineData(2, 2)]

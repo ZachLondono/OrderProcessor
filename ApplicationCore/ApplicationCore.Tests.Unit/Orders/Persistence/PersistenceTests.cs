@@ -25,7 +25,7 @@ public abstract class PersistenceTests : IDisposable {
         Factory.Dispose();
     }
 
-    protected void InsertAndQueryOrderWithProduct<T>(T product) where T : IProduct {
+    protected T InsertAndQueryOrderWithProduct<T>(T product) where T : IProduct {
 
         Order order = new OrderBuilder() {
             Products = new() {
@@ -51,9 +51,13 @@ public abstract class PersistenceTests : IDisposable {
         result.OnError(e => Assert.Fail($"Handler returned error {e}"));
         foundOrder.Should().NotBeNull();
 
+        foundOrder!.Products.Should().HaveCount(1, "Previously inserted product should have been included in order.");
+
         var foundProduct = (T)foundOrder.Products.First();
         foundProduct.Should().NotBeNull();
         foundProduct.Should().BeEquivalentTo(product);
+
+        return foundProduct;
 
     }
 

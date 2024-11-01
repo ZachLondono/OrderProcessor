@@ -28,6 +28,8 @@ public static class AllmoxyXMLOrderProviderHelpers {
     public const string ONE_SHORT = "1S";
     public const string TWO_SHORT = "2S";
 
+	public const string DRAWER_BOXES_NOT_INCLUDED = "None";
+
     public static CabinetSideType GetCabinetSideType(string name) => name switch {
 		"Unfinished" => CabinetSideType.Unfinished,
 		"Finished" => CabinetSideType.Finished,

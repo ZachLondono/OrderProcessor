@@ -9,7 +9,7 @@ public class TallCabinetBuilder : CabinetBuilder<TallCabinet> {
     public TallCabinetDoors Doors { get; private set; }
     public ToeType ToeType { get; private set; }
     public TallCabinetInside Inside { get; private set; }
-    public CabinetDrawerBoxOptions BoxOptions { get; private set; }
+    public CabinetDrawerBoxOptions? BoxOptions { get; private set; }
     public bool IsGarage { get; private set; }
     public CabinetBaseNotch? BaseNotch { get; private set; }
 
@@ -35,7 +35,7 @@ public class TallCabinetBuilder : CabinetBuilder<TallCabinet> {
         return this;
     }
 
-    public TallCabinetBuilder WithBoxOptions(CabinetDrawerBoxOptions boxOptions) {
+    public TallCabinetBuilder WithBoxOptions(CabinetDrawerBoxOptions? boxOptions) {
         BoxOptions = boxOptions;
         return this;
     }

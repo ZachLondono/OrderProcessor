@@ -9,7 +9,7 @@ public class DrawerBaseCabinetBuilder : CabinetBuilder<DrawerBaseCabinet> {
 
     public ToeType ToeType { get; private set; }
     public VerticalDrawerBank Drawers { get; private set; }
-    public CabinetDrawerBoxOptions BoxOptions { get; private set; }
+    public CabinetDrawerBoxOptions? BoxOptions { get; private set; }
     public bool IsGarage { get; private set; } = false;
 
     public DrawerBaseCabinetBuilder() {
@@ -30,7 +30,7 @@ public class DrawerBaseCabinetBuilder : CabinetBuilder<DrawerBaseCabinet> {
         return this;
     }
 
-    public DrawerBaseCabinetBuilder WithBoxOptions(CabinetDrawerBoxOptions boxOptions) {
+    public DrawerBaseCabinetBuilder WithBoxOptions(CabinetDrawerBoxOptions? boxOptions) {
         BoxOptions = boxOptions;
         return this;
     }

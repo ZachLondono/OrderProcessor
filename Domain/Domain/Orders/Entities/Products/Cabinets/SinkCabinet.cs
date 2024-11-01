@@ -17,7 +17,7 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
     public int AdjustableShelves { get; }
     public ShelfDepth ShelfDepth { get; }
     public RollOutOptions RollOutBoxes { get; }
-    public CabinetDrawerBoxOptions DrawerBoxOptions { get; }
+    public CabinetDrawerBoxOptions? DrawerBoxOptions { get; }
     public bool TiltFront { get; }
     public ScoopSides? Scoops { get; }
 
@@ -40,7 +40,7 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        ToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes, CabinetDrawerBoxOptions drawerBoxOptions, bool tiltFront, ScoopSides? scoops)
+                        ToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes, CabinetDrawerBoxOptions? drawerBoxOptions, bool tiltFront, ScoopSides? scoops)
                         : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
         ToeType = toeType;
         HingeSide = hingeSide;
@@ -54,7 +54,7 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
         TiltFront = tiltFront;
         Scoops = scoops;
 
-        if (RollOutBoxes.Positions.Length > 0 && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
+        if (RollOutBoxes.Positions.Length > 0 && DrawerBoxOptions is not null && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
             ProductionNotes.Add("PSI may not support roll out drawer boxes with side mount slieds");
         }
 
@@ -64,7 +64,7 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
                         Dimension height, Dimension width, Dimension depth,
                         CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
-                        ToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes, CabinetDrawerBoxOptions drawerBoxOptions, bool tiltFront, ScoopSides? scoops)
+                        ToeType toeType, HingeSide hingeSide, int doorQty, int falseDrawerQty, Dimension drawerFaceHeight, int adjustableShelves, ShelfDepth shelfDepth, RollOutOptions rollOutBoxes, CabinetDrawerBoxOptions? drawerBoxOptions, bool tiltFront, ScoopSides? scoops)
                         => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, toeType, hingeSide, doorQty, falseDrawerQty, drawerFaceHeight, adjustableShelves, shelfDepth, rollOutBoxes, drawerBoxOptions, tiltFront, scoops);
 
     public bool ContainsDoors() => MDFDoorOptions is not null;
@@ -141,9 +141,13 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
 
     }
 
-    public bool ContainsDovetailDrawerBoxes() => RollOutBoxes.Qty != 0;
+    public bool ContainsDovetailDrawerBoxes() => DrawerBoxOptions is not null && RollOutBoxes.Qty != 0;
 
     public IEnumerable<DovetailDrawerBox> GetDovetailDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
+
+        if (DrawerBoxOptions is null) {
+            return [];
+        }
 
         if (!RollOutBoxes.Positions.Any()) {
 
@@ -162,7 +166,7 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
                                 .WithProductNumber(ProductNumber)
                                 .Build();
 
-        return new DovetailDrawerBox[] { box };
+        return [ box ];
 
     }
 
@@ -189,7 +193,7 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
 
         }
 
-        if (RollOutBoxes.Qty > 0 && DrawerBoxOptions.SlideType == DrawerSlideType.UnderMount) {
+        if (RollOutBoxes.Qty > 0 && DrawerBoxOptions is not null && DrawerBoxOptions.SlideType == DrawerSlideType.UnderMount) {
             
             supplies.Add(Supply.CabinetDrawerClips(RollOutBoxes.Qty * Qty));
 
@@ -200,6 +204,10 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
     }
 
     public IEnumerable<DrawerSlide> GetDrawerSlides() {
+
+        if (DrawerBoxOptions is null) {
+            return [];
+        }
 
         List<DrawerSlide> slides = [];
 
@@ -272,7 +280,7 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
             }
         }
 
-        if (RollOutBoxes.Positions.Any() && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
+        if (RollOutBoxes.Positions.Any() && DrawerBoxOptions is not null && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
             parameters.Add("_DrawerRunType", "4");
         }
 

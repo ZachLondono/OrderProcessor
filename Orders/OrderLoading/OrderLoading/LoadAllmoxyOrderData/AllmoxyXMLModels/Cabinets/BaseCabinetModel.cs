@@ -68,7 +68,10 @@ public class BaseCabinetModel : CabinetModelBase {
             Quantity = DrawerQty
         };
 
-        var boxOptions = new CabinetDrawerBoxOptions(AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial), AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide));
+        CabinetDrawerBoxOptions? boxOptions = null;
+        if (DrawerMaterial != AllmoxyXMLOrderProviderHelpers.DRAWER_BOXES_NOT_INCLUDED) {
+            boxOptions = new CabinetDrawerBoxOptions(AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial), AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide));
+        }
 
         BaseCabinetInside inside;
         Dimension[] rollOutBoxPositions = AllmoxyXMLOrderProviderHelpers.GetRollOutPositions(RollOuts.Pos1, RollOuts.Pos2, RollOuts.Pos3, RollOuts.Pos4, RollOuts.Pos5);

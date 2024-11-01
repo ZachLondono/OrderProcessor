@@ -77,7 +77,10 @@ public class TallCabinetModel : CabinetModelBase {
             doors = new(hingeSide);
         }
 
-        var boxOptions = new CabinetDrawerBoxOptions(AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial), AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide));
+        CabinetDrawerBoxOptions? boxOptions = null;
+        if (DrawerMaterial != AllmoxyXMLOrderProviderHelpers.DRAWER_BOXES_NOT_INCLUDED) {
+            boxOptions = new CabinetDrawerBoxOptions(AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial), AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide));
+        }
 
         CabinetBaseNotch? notch = null;
         if (BottomNotchHeight != 0 && BottomNotchDepth != 0) {

@@ -15,7 +15,7 @@ public class SinkCabinetBuilder : CabinetBuilder<SinkCabinet> {
     public int AdjustableShelves { get; private set; }
     public ShelfDepth ShelfDepth { get; private set; }
     public RollOutOptions RollOutBoxes { get; private set; }
-    public CabinetDrawerBoxOptions BoxOptions { get; private set; }
+    public CabinetDrawerBoxOptions? BoxOptions { get; private set; }
     public bool TiltFront { get; private set; }
     public ScoopSides? Scoops { get; private set; }
 
@@ -73,7 +73,7 @@ public class SinkCabinetBuilder : CabinetBuilder<SinkCabinet> {
         return this;
     }
 
-    public SinkCabinetBuilder WithBoxOptions(CabinetDrawerBoxOptions boxOptions) {
+    public SinkCabinetBuilder WithBoxOptions(CabinetDrawerBoxOptions? boxOptions) {
         BoxOptions = boxOptions;
         return this;
     }

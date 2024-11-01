@@ -10,7 +10,7 @@ public class TrashCabinetBuilder : CabinetBuilder<TrashCabinet> {
     public Dimension DrawerFaceHeight { get; private set; }
     public TrashPulloutConfiguration TrashPulloutConfiguration { get; private set; }
     public ToeType ToeType { get; private set; }
-    public CabinetDrawerBoxOptions BoxOptions { get; private set; }
+    public CabinetDrawerBoxOptions? BoxOptions { get; private set; }
 
     public TrashCabinetBuilder() {
         DrawerFaceHeight = Dimension.FromMillimeters(157);
@@ -34,7 +34,7 @@ public class TrashCabinetBuilder : CabinetBuilder<TrashCabinet> {
         return this;
     }
 
-    public TrashCabinetBuilder WithBoxOptions(CabinetDrawerBoxOptions boxOptions) {
+    public TrashCabinetBuilder WithBoxOptions(CabinetDrawerBoxOptions? boxOptions) {
         BoxOptions = boxOptions;
         return this;
     }

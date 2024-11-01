@@ -63,7 +63,10 @@ public class SinkCabinetModel : CabinetModelBase {
         bool scoopFront = true;
         RollOutBlockPosition rollOutBlocks = AllmoxyXMLOrderProviderHelpers.GetRollOutBlockPositions(RollOuts.Blocks);
 
-        var boxOptions = new CabinetDrawerBoxOptions(AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial), AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide));
+        CabinetDrawerBoxOptions? boxOptions = null;
+        if (DrawerMaterial != AllmoxyXMLOrderProviderHelpers.DRAWER_BOXES_NOT_INCLUDED) {
+            boxOptions = new CabinetDrawerBoxOptions(AllmoxyXMLOrderProviderHelpers.GetDrawerMaterial(DrawerMaterial), AllmoxyXMLOrderProviderHelpers.GetDrawerSlideType(DrawerSlide));
+        }
 
         var rollOutOptions = new RollOutOptions(rollOutBoxPositions, scoopFront, rollOutBlocks);
 
