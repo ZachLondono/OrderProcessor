@@ -82,7 +82,15 @@ public class MelamineSlabFront : IClosetProProduct {
 
 	}
 
-	public static bool TryGetNearest32MMComplientHalfOverlayHeight(Dimension input, out Dimension output, double maxErrorMM = 2) {
+	/// <summary>
+	/// If the provided height is within a specified range from a valid 32mm half overlay compliant door height, a corrected height will be outputed and true will be returned. Otherwise false will be returned.
+    /// Heights which are further than the nearest compliant height by more than the specified max error are considered to be intentionally non-compliant and therefore a compliant height is not given.
+	/// </summary>
+	/// <param name="input">The given height of the door</param>
+	/// <param name="output">The nearest 32mm half overlay compliant door height</param>
+	/// <param name="maxErrorMM">The maximum amount of deviation from a compliant height which is still considered not intentionally specifying a non-compliant height</param>
+	/// <returns></returns>
+	public static bool TryGetNearest32MMComplientHalfOverlayHeight(Dimension input, out Dimension output, double maxErrorMM = 3.1) {
 
 		var multiple = (input.AsMillimeters() - 29d) / 32d;
 
