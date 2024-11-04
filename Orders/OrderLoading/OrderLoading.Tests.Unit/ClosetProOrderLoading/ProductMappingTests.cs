@@ -13,7 +13,7 @@ public class ProductMappingTests {
 
         // Arrange
         string expectedSKU = "PC";
-        Dimension panelHeight = Dimension.FromInches(89);
+		Dimension panelHeight = Dimension.FromMillimeters(2259);
         Dimension panelDepth = Dimension.FromInches(12);
         Dimension leftDrilling = Dimension.FromInches(12);
         Dimension rightDrilling = Dimension.FromInches(12);
@@ -60,7 +60,7 @@ public class ProductMappingTests {
 
         // Arrange
         string expectedSKU = "PE";
-        Dimension panelHeight = Dimension.FromInches(89);
+        Dimension panelHeight = Dimension.FromMillimeters(2259);
         Dimension panelDepth = Dimension.FromInches(12);
         Dimension leftDrilling = Dimension.FromInches(12);
         Dimension rightDrilling = Dimension.Zero;
@@ -107,7 +107,7 @@ public class ProductMappingTests {
 
         // Arrange
         string expectedSKU = "PE";
-        Dimension panelHeight = Dimension.FromInches(89);
+        Dimension panelHeight = Dimension.FromMillimeters(2259);
         Dimension panelDepth = Dimension.FromInches(12);
         Dimension rightDrilling = Dimension.FromInches(12);
         Dimension leftDrilling = Dimension.Zero;
@@ -154,7 +154,7 @@ public class ProductMappingTests {
 
         // Arrange
         string expectedSKU = "PC";
-        Dimension panelHeight = Dimension.FromInches(89);
+        Dimension panelHeight = Dimension.FromMillimeters(2259);
         Dimension panelDepth = Dimension.FromInches(12);
         Dimension leftDrilling = Dimension.FromInches(12);
         Dimension rightDrilling = Dimension.FromInches(12);
@@ -207,7 +207,7 @@ public class ProductMappingTests {
 
         // Arrange
         string expectedSKU = "PCDT";
-        Dimension panelHeight = Dimension.FromInches(89);
+        Dimension panelHeight = Dimension.FromMillimeters(2259);
         Dimension panelDepth = Dimension.FromInches(14);
         Dimension leftDrilling = Dimension.FromInches(14);
         Dimension rightDrilling = Dimension.FromInches(12);
@@ -255,7 +255,7 @@ public class ProductMappingTests {
 
         // Arrange
         string expectedSKU = "PEH";
-        Dimension panelHeight = Dimension.FromInches(89);
+        Dimension panelHeight = Dimension.FromMillimeters(2259);
         Dimension panelDepth = Dimension.FromInches(14);
         Dimension leftDrilling = Dimension.FromInches(14);
         Dimension rightDrilling = Dimension.FromInches(0);
@@ -316,7 +316,7 @@ public class ProductMappingTests {
 
         // Arrange
         string expectedSKU = "PE";
-        Dimension panelHeight = Dimension.FromInches(89);
+		Dimension panelHeight = Dimension.FromMillimeters(2259);
         Dimension panelDepth = Dimension.FromInches(12);
         Dimension rightDrilling = Dimension.FromInches(12);
         Dimension leftDrilling = Dimension.Zero;

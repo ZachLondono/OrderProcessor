@@ -46,6 +46,10 @@ public class HutchVerticalPanel : IClosetProProduct {
 			{ "DwrPanelH", BottomHeight.AsMillimeters().ToString() },
 		};
 
+		if (!TryGetNearest32MMComplientHeight(PanelHeight, out Dimension finalHeight)) {
+			finalHeight = PanelHeight;
+		}
+
 		return new ClosetPart(Guid.NewGuid(),
 							  Qty,
 							  UnitPrice,
@@ -53,13 +57,33 @@ public class HutchVerticalPanel : IClosetProProduct {
 							  Room,
 							  sku,
 							  BottomDepth,
-							  PanelHeight,
+							  finalHeight,
 							  material,
 							  paint,
 							  EdgeBandingColor,
 							  comment,
 							  true,
 							  parameters);
+
+	}
+
+	public static bool TryGetNearest32MMComplientHeight(Dimension input, out Dimension output, double maxErrorMM = 2) {
+
+		var multiple = (input.AsMillimeters() - 19d) / 32d;
+
+		var rounded = Math.Round(multiple);
+
+		output = Dimension.FromMillimeters(rounded * 32 + 19);
+
+		var error = Math.Abs((input.AsMillimeters() - output.AsMillimeters()));
+
+		if (error > maxErrorMM) {
+
+			return false;
+
+		}
+
+		return true;
 
 	}
 
