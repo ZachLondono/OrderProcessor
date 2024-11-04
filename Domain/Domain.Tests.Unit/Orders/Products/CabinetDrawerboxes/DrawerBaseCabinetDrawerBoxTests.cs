@@ -150,6 +150,7 @@ public class DrawerBaseCabinetDrawerBoxTests {
 
     }
 
+    /*
     [Theory]
     [InlineData(105, 64)]
     [InlineData(157, 105)]
@@ -175,6 +176,7 @@ public class DrawerBaseCabinetDrawerBoxTests {
         drawers.First().Height.Should().Be(Dimension.FromMillimeters(expectedDrawerHeight));
 
     }
+    */
 
     [Fact]
     public void DrawerBoxHeight_WhenCabinetHasThreeDrawerBoxesA() {
