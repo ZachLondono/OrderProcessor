@@ -74,7 +74,7 @@ CREATE TABLE trash_cabinets_temp (
 -- Copy data to new tables
 
 INSERT INTO drawer_base_cabinets_temp SELECT * FROM drawer_base_cabinets;
-DROP drawer_base_cabinets;
+DROP TABLE drawer_base_cabinets;
 ALTER TABLE drawer_base_cabinets_temp RENAME TO drawer_base_cabinets;
 
 CREATE TRIGGER remove_drawer_base_cabinet_db_config AFTER DELETE ON drawer_base_cabinets 
@@ -85,7 +85,7 @@ END;
 
 
 INSERT INTO tall_cabinets_temp SELECT * FROM tall_cabinets;
-DROP tall_cabinets;
+DROP TABLE tall_cabinets;
 ALTER TABLE tall_cabinets_temp RENAME TO tall_cabinets;
 
 CREATE TRIGGER remove_tall_cabinet_db_config AFTER DELETE ON tall_cabinets 
@@ -96,7 +96,7 @@ END;
 
 
 INSERT INTO sink_cabinets_temp SELECT * FROM sink_cabinets;
-DROP sink_cabinets;
+DROP TABLE sink_cabinets;
 ALTER TABLE sink_cabinets_temp RENAME TO sink_cabinets;
 
 CREATE TRIGGER remove_sink_cabinet_db_config AFTER DELETE ON sink_cabinets 
@@ -107,7 +107,7 @@ END;
 
 
 INSERT INTO trash_cabinets_temp SELECT * FROM trash_cabinets;
-DROP trash_cabinets;
+DROP TABLE trash_cabinets;
 ALTER TABLE trash_cabinets_temp RENAME TO trash_cabinets;
 
 CREATE TRIGGER remove_trash_cabinet_db_config AFTER DELETE ON trash_cabinets 
