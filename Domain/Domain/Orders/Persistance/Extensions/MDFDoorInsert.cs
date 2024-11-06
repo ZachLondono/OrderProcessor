@@ -8,7 +8,7 @@ public partial class InsertOrder {
 
         private static void InsertProduct(MDFDoorProduct mdfdoor, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
-            InsertMDFConfig(mdfdoor.Id, mdfdoor, connection, trx);
+            InsertMDFConfig(mdfdoor.Id, mdfdoor.GetMDFDoorOptions(), connection, trx);
             InsertIntoProductTable(mdfdoor, orderId, connection, trx);
 
             var parameters = new {
