@@ -2,4 +2,7 @@
 
 namespace Domain.Orders.ValueObjects;
 
-public record CabinetSlabDoorMaterial(string Finish, CabinetMaterialFinishType FinishType, CabinetMaterialCore Core, string? PaintColor = null);
+public record CabinetSlabDoorMaterial(string Finish,
+									  CabinetMaterialFinishType FinishType,
+									  CabinetMaterialCore Core,
+									  string? PaintColor = null);
