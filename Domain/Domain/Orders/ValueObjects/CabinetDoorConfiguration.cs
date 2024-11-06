@@ -16,4 +16,8 @@ public class CabinetDoorConfiguration : OneOfBase<CabinetSlabDoorMaterial, MDFDo
 
 	CabinetDoorConfiguration(OneOf<CabinetSlabDoorMaterial, MDFDoorOptions, DoorsByOthers> _) : base(_) { }
 
+	public static implicit operator CabinetDoorConfiguration(CabinetSlabDoorMaterial _) => new(_);
+	public static implicit operator CabinetDoorConfiguration(MDFDoorOptions _) => new(_);
+	public static implicit operator CabinetDoorConfiguration(DoorsByOthers _) => new(_);
+
 }
