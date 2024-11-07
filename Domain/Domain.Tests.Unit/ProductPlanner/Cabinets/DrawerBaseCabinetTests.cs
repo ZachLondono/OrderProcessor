@@ -53,12 +53,11 @@ public class DrawerBaseCabinetTests {
     }
 
     [Fact]
-    public void DoorType_ShouldBeSlab_WhenSlabDoorMaterialIsNotNullAndMDFOptionsIsNull() {
+    public void DoorType_ShouldBeSlab_WhenDoorConfigurationIsSlab() {
 
         // Arrange
         var cabinet = new DrawerBaseCabinetBuilder()
-                            .WithMDFDoorOptions(null)
-                            .WithSlabDoorMaterial(new("", Domain.Orders.Enums.CabinetMaterialFinishType.Melamine, Domain.Orders.Enums.CabinetMaterialCore.ParticleBoard, null))
+                            .WithDoorConfiguration(new CabinetSlabDoorMaterial("", Domain.Orders.Enums.CabinetMaterialFinishType.Melamine, Domain.Orders.Enums.CabinetMaterialCore.ParticleBoard, null))
                             .Build();
 
         // Act
@@ -72,12 +71,11 @@ public class DrawerBaseCabinetTests {
     }
 
     [Fact]
-    public void DoorType_ShouldBeByOut_WhenSlabDoorMaterialIsNullAndMDFOptionsIsNotNull() {
+    public void DoorType_ShouldBeByOut_WhenDoorConfigurationIsMDf() {
 
         // Arrange
         var cabinet = new DrawerBaseCabinetBuilder()
-                            .WithMDFDoorOptions(new("", Dimension.Zero, "", "", "", Dimension.Zero, null))
-                            .WithSlabDoorMaterial(null)
+                            .WithDoorConfiguration(new MDFDoorOptions("", Dimension.Zero, "", "", "", Dimension.Zero, null))
                             .Build();
 
         // Act
@@ -91,12 +89,11 @@ public class DrawerBaseCabinetTests {
     }
 
     [Fact]
-    public void DoorType_ShouldBeByOut_WhenSlabDoorMaterialIsNullAndMDFOptionsIsNull() {
+    public void DoorType_ShouldBeByOut_WhenDoorConfigurationIsByOthers() {
 
         // Arrange
         var cabinet = new DrawerBaseCabinetBuilder()
-                            .WithMDFDoorOptions(null)
-                            .WithSlabDoorMaterial(null)
+                            .WithDoorConfiguration(new DoorsByOthers())
                             .Build();
 
         // Act

@@ -167,7 +167,11 @@ public class JobSummaryModelFactory {
                             BoxFinish = p.BoxMaterial.Finish,
                             FinishCore = p.FinishMaterial.Core.ToString(),
                             FinishFinish = p.FinishMaterial.Finish,
-                            Fronts = (p.SlabDoorMaterial is not null ? $"Slab - {p.SlabDoorMaterial.Finish}" : (p.MDFDoorOptions is not null ? "MDF By Royal" : "By Others")),
+                            Fronts = p.DoorConfiguration.Match(
+                                slab => $"Slab - {slab.Finish}",
+                                mdf => "MDF By Royal",
+                                byothers => "By Others"
+                            ),
                             Paint = p.FinishMaterial.PaintColor ?? "",
                             Assembled = p.Assembled
                         }, new CabinetGroupComparer())

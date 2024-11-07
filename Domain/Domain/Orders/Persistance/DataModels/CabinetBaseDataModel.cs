@@ -47,4 +47,25 @@ public abstract class CabinetDataModelBase : ProductDataModelBase {
         if (SlabDoorFinish is null) throw new InvalidOperationException("Slab door finish is missing");
         return new CabinetSlabDoorMaterial(SlabDoorFinish, SlabDoorFinishType, SlabDoorCore, SlabDoorPaint);
     }
+
+	protected CabinetDoorConfiguration GetDoorConfiguration() {
+
+		var mdfConfig = GetMDFDoorConfiguration();
+		var slabDoorMaterial = GetSlabDoorMaterial();
+
+		CabinetDoorConfiguration doorConfiguration;
+		if (mdfConfig is null && slabDoorMaterial is null) {
+			doorConfiguration = new DoorsByOthers();
+		} else if (mdfConfig is MDFDoorOptions mdf) {
+			doorConfiguration = mdf;
+		} else if (slabDoorMaterial is CabinetSlabDoorMaterial slab) {
+			doorConfiguration = slab;
+		} else {
+			throw new InvalidDataException("Invalid base cabinet door configuration in database.");
+		}
+
+		return doorConfiguration;
+
+	}
+
 }

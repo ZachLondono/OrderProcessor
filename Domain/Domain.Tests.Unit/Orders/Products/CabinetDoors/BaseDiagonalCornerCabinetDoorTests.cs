@@ -1,4 +1,5 @@
 ﻿using Domain.Orders.Builders;
+using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using FluentAssertions;
@@ -46,7 +47,7 @@ public class BaseDiagonalCornerCabinetDoorTests {
                             .WithDepth(Dimension.FromMillimeters(305))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithQty(cabinetQty)
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 
@@ -59,7 +60,7 @@ public class BaseDiagonalCornerCabinetDoorTests {
     }
 
     [Fact]
-    public void GetDoors_ShouldReturnEmpty_WhenMDFDoorOptionsIsNull() {
+    public void GetDoors_ShouldReturnEmpty_WhenMDFDoorOptionsIsByOthers() {
 
         // Arrange
         var cabinet = new BaseDiagonalCornerCabinetBuilder()
@@ -70,7 +71,31 @@ public class BaseDiagonalCornerCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(610))
                             .WithDepth(Dimension.FromMillimeters(305))
                             .WithHeight(Dimension.FromMillimeters(876))
-                            .WithMDFDoorOptions(null)
+                            .WithDoorConfiguration(new DoorsByOthers())
+                            .Build();
+
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Should().BeEmpty();
+
+    }
+
+    [Fact]
+    public void GetDoors_ShouldReturnEmpty_WhenMDFDoorOptionsIsSlab() {
+
+        // Arrange
+        var cabinet = new BaseDiagonalCornerCabinetBuilder()
+                            .WithDoorQty(1)
+                            .WithToeType(ToeType.LegLevelers)
+                            .WithRightWidth(Dimension.FromMillimeters(610))
+                            .WithRightDepth(Dimension.FromMillimeters(305))
+                            .WithWidth(Dimension.FromMillimeters(610))
+                            .WithDepth(Dimension.FromMillimeters(305))
+                            .WithHeight(Dimension.FromMillimeters(876))
+                            .WithDoorConfiguration(new CabinetSlabDoorMaterial("", CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard))
                             .Build();
 
 
@@ -96,7 +121,7 @@ public class BaseDiagonalCornerCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithDepth(Dimension.FromMillimeters(cabDepth))
                             .WithHeight(Dimension.FromMillimeters(876))
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 
@@ -123,7 +148,7 @@ public class BaseDiagonalCornerCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(610))
                             .WithDepth(Dimension.FromMillimeters(305))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 

@@ -9,8 +9,7 @@ public partial class InsertOrder {
         private static void InsertProduct(BasePieCutCornerCabinet cabinet, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             Guid? mdfConfigId = null;
-            var mdfConfig = cabinet.MDFDoorOptions;
-            if (mdfConfig is not null) {
+            if (cabinet.DoorConfiguration.TryGetMDFOptions(out var mdfConfig)) {
                 mdfConfigId = Guid.NewGuid();
                 InsertMDFConfig((Guid)mdfConfigId, mdfConfig, connection, trx);
             }

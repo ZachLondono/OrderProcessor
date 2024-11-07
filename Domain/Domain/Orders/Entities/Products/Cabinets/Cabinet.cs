@@ -19,8 +19,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
     public Dimension Depth { get; }
     public CabinetMaterial BoxMaterial { get; }
     public CabinetFinishMaterial FinishMaterial { get; }
-    public CabinetSlabDoorMaterial? SlabDoorMaterial { get; }
-    public MDFDoorOptions? MDFDoorOptions { get; init; }
+    public CabinetDoorConfiguration DoorConfiguration { get; }
     public string EdgeBandingColor { get; }
     public CabinetSideType RightSideType { get; }
     public CabinetSideType LeftSideType { get; }
@@ -34,10 +33,9 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
     public Dimension InnerWidth => Width - Construction.SideThickness * 2;
     public Dimension InnerDepth => Depth - (Construction.BackThickness + Construction.BackInset);
 
-
     public Cabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                 Dimension height, Dimension width, Dimension depth,
-                CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
+                CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetDoorConfiguration doorConfiguration, string edgeBandingColor,
                 CabinetSideType rightSideType, CabinetSideType leftSideType, string comment) {
 
         Id = id;
@@ -51,8 +49,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
         Depth = depth;
         BoxMaterial = boxMaterial;
         FinishMaterial = finishMaterial;
-        SlabDoorMaterial = slabDoorMaterial;
-        MDFDoorOptions = mdfDoorOptions;
+        DoorConfiguration = doorConfiguration;
         EdgeBandingColor = edgeBandingColor;
         RightSideType = rightSideType;
         LeftSideType = leftSideType;
@@ -61,12 +58,8 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
         //if (boxMaterial.Core == CabinetMaterialCore.Plywood && finishMaterial.Core == CabinetMaterialCore.ParticleBoard)
         //    throw new InvalidProductOptionsException("Cannot create cabinet with plywood box and particle board finished side");
 
-        if (MDFDoorOptions is null && (LeftSideType == CabinetSideType.IntegratedPanel || LeftSideType == CabinetSideType.AppliedPanel || RightSideType == CabinetSideType.IntegratedPanel || RightSideType == CabinetSideType.AppliedPanel))
+        if (DoorConfiguration.IsMDF && (LeftSideType == CabinetSideType.IntegratedPanel || LeftSideType == CabinetSideType.AppliedPanel || RightSideType == CabinetSideType.IntegratedPanel || RightSideType == CabinetSideType.AppliedPanel))
             throw new InvalidProductOptionsException("MDFDoorOptions are required when creating a cabinet side with a door");
-
-        // Right now it is valid for both SlabDoorMaterial and MDFDoorOptions to both be non-null because a cabinet can have slab doors and an applied/integrated side panel
-        // When Buy out doors are added as an option to cabinets the invariant must be maintained that a cabinet does not have both buy out doors and slab doors
-        // if (SlabDoorMaterial is not null && MDFDoorOptions is not null)
 
         Construction = boxMaterial.Core switch {
             CabinetMaterialCore.ParticleBoard => new() {
@@ -85,6 +78,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
             },
             _ => throw new InvalidProductOptionsException($"Unexpected cabinet material core type '{boxMaterial.Core}'"),
         };
+
     }
 
     public abstract IEnumerable<string> GetNotes();
@@ -107,6 +101,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
     }
 
     protected virtual Dictionary<string, PPMaterial> GetFinishMaterials() {
+
         string finishMaterial = GetFinishMaterialType(FinishMaterial.Core);
         string boxMaterial = GetFinishMaterialType(BoxMaterial.Core);
         var materials = new Dictionary<string, PPMaterial> {
@@ -118,13 +113,20 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
             ["F_SemiExposed"] = new PPMaterial(boxMaterial, BoxMaterial.Finish)
         };
 
-        if (SlabDoorMaterial is not null) {
-            string doorMaterial = GetFinishMaterialType(SlabDoorMaterial.Core);
-            materials.Add("F_Door", new PPMaterial(doorMaterial, SlabDoorMaterial.Finish));
-            materials.Add("F_DoorBack", new PPMaterial(doorMaterial, SlabDoorMaterial.Finish));
-        }
+        DoorConfiguration.Switch(
+            slab => {
+
+				string doorMaterial = GetFinishMaterialType(slab.Core);
+				materials.Add("F_Door", new PPMaterial(doorMaterial, slab.Finish));
+				materials.Add("F_DoorBack", new PPMaterial(doorMaterial, slab.Finish));
+
+            },
+            mdf => { },
+            byothers => { }
+        );
 
         return materials;
+
     }
 
     /// <summary>
@@ -160,7 +162,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
     /// Returns the ProductPlanner value for "Door/Drawer Front" Style. 
     /// 'Buyout' style means that the doors will not be cut listed buy ProductPlanner. This is for applications where the doors are being ordered from another vendor or the doors are being manufactured using some other method outside of ProductPlanner (MDF doors).
     /// </summary>
-    protected string GetDoorType() => SlabDoorMaterial is not null ? SLAB_DOOR_TYPE : BUYOUT_DOOR_TYPE;
+    protected string GetDoorType() => DoorConfiguration.IsSlab ? SLAB_DOOR_TYPE : BUYOUT_DOOR_TYPE;
 
     protected static string GetSideOption(CabinetSideType side) => side switch {
         CabinetSideType.AppliedPanel => "0",

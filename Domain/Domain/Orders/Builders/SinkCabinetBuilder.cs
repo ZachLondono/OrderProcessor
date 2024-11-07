@@ -89,7 +89,7 @@ public class SinkCabinetBuilder : CabinetBuilder<SinkCabinet> {
     }
 
     public override SinkCabinet Build() {
-        var cabinet = SinkCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, ToeType, HingeSide, DoorQty, FalseDrawerQty, DrawerFaceHeight, AdjustableShelves, ShelfDepth, RollOutBoxes, BoxOptions, TiltFront, Scoops);
+        var cabinet = SinkCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, DoorConfiguration, EdgeBandingColor, RightSideType, LeftSideType, Comment, ToeType, HingeSide, DoorQty, FalseDrawerQty, DrawerFaceHeight, AdjustableShelves, ShelfDepth, RollOutBoxes, BoxOptions, TiltFront, Scoops);
         cabinet.ProductionNotes = ProductionNotes;
         return cabinet;
     }

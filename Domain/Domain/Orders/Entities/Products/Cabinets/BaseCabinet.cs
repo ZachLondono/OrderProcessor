@@ -34,18 +34,18 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
 
     public static BaseCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetDoorConfiguration doorConfiguration, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         BaseCabinetDoors doors, ToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside, CabinetDrawerBoxOptions? drawerBoxOptions, CabinetBaseNotch? baseNotch) {
-        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, doors, toeType, drawers, inside, drawerBoxOptions, baseNotch);
+        return new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, doorConfiguration, edgeBandingColor, rightSideType, leftSideType, comment, doors, toeType, drawers, inside, drawerBoxOptions, baseNotch);
     }
 
     public BaseCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetDoorConfiguration doorConfiguration, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         BaseCabinetDoors doors, ToeType toeType, HorizontalDrawerBank drawers, BaseCabinetInside inside, CabinetDrawerBoxOptions? drawerBoxOptions, CabinetBaseNotch? baseNotch)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, doorConfiguration, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (doors.Quantity > 2 || doors.Quantity < 0)
             throw new InvalidProductOptionsException("Invalid number of doors");
@@ -89,9 +89,24 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
 
     public override IEnumerable<string> GetNotes() {
 
+        (string doorComment, string dwrComment) =  DoorConfiguration.Match(
+            slab => (
+                $"{Doors.Quantity} Slab Doors",
+                $"{Drawers.Quantity} Slab Drawer Fronts"
+            ),
+            mdf => (
+                $"{Doors.Quantity} MDF Doors",
+                $"{Drawers.Quantity} MDF Drawer Fronts"
+            ),
+            byothers => (
+                $"{Doors.Quantity} Doors, by Others",
+                $"{Drawers.Quantity} Drawer Fronts, by Others"
+            )
+        );
+
         List<string> notes = [
-            $"{Doors.Quantity} Doors",
-            $"{Drawers.Quantity} Drawer Fronts",
+            doorComment,
+            dwrComment,
             $"{Inside.AdjustableShelves} Adjustable Shelves",
             $"{Inside.VerticalDividers} Vertical Dividers",
             $"{Inside.RollOutBoxes.Qty} Interior Roll Out Boxes",
@@ -124,42 +139,42 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
 
     }
 
-    public bool ContainsDoors() => MDFDoorOptions is not null;
+    public bool ContainsDoors() => DoorConfiguration.IsMDF;
 
-    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
+    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder)
+        => DoorConfiguration.Match(
+            slab => [],
+            mdf => {
 
-        if (MDFDoorOptions is null) {
-            return Enumerable.Empty<MDFDoor>();
-        }
+                List<MDFDoor> doors = new();
 
-        List<MDFDoor> doors = new();
+                if (Doors.Quantity > 0) {
+                    Dimension width = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Doors.Quantity - 1)) / Doors.Quantity;
+                    Dimension height = DoorHeight;
+                    var door = getBuilder().WithQty(Doors.Quantity * Qty)
+                                            .WithProductNumber(ProductNumber)
+                                            .WithType(DoorType.Door)
+                                            .WithFramingBead(mdf.FramingBead)
+                                            .WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
+                                            .Build(height, width);
+                    doors.Add(door);
+                }
 
-        if (Doors.Quantity > 0) {
-            Dimension width = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Doors.Quantity - 1)) / Doors.Quantity;
-            Dimension height = DoorHeight;
-            var door = getBuilder().WithQty(Doors.Quantity * Qty)
-                                    .WithProductNumber(ProductNumber)
-                                    .WithType(DoorType.Door)
-                                    .WithFramingBead(MDFDoorOptions.FramingBead)
-                                    .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
-                                    .Build(height, width);
-            doors.Add(door);
-        }
+                if (Drawers.Quantity > 0) {
+                    Dimension drwWidth = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Drawers.Quantity - 1)) / Drawers.Quantity;
+                    var drawers = getBuilder().WithQty(Drawers.Quantity * Qty)
+                                                .WithProductNumber(ProductNumber)
+                                                .WithType(DoorType.DrawerFront)
+                                                .WithFramingBead(mdf.FramingBead)
+                                                .WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
+                                                .Build(Drawers.FaceHeight, drwWidth);
+                    doors.Add(drawers);
+                }
 
-        if (Drawers.Quantity > 0) {
-            Dimension drwWidth = (Width - 2 * DoorGaps.EdgeReveal - DoorGaps.HorizontalGap * (Drawers.Quantity - 1)) / Drawers.Quantity;
-            var drawers = getBuilder().WithQty(Drawers.Quantity * Qty)
-                                        .WithProductNumber(ProductNumber)
-                                        .WithType(DoorType.DrawerFront)
-                                        .WithFramingBead(MDFDoorOptions.FramingBead)
-                                        .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
-                                        .Build(Drawers.FaceHeight, drwWidth);
-            doors.Add(drawers);
-        }
+                return doors.ToArray();
 
-        return doors.ToArray();
-
-    }
+            },
+            byothers => []);
 
     public bool ContainsDovetailDrawerBoxes() => DrawerBoxOptions is not null && (Drawers.Any() || Inside.RollOutBoxes.Any());
 
@@ -222,24 +237,20 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
 
         }
 
-        if (MDFDoorOptions is not null || SlabDoorMaterial is not null) {
+		if (Doors.Quantity > 0) {
 
-            if (Doors.Quantity > 0) {
+			// supplies.Add(Supply.DoorPull(Doors.Quantity * Qty));
+			supplies.AddRange(Supply.StandardHinge(DoorHeight, Doors.Quantity * Qty));
 
-                // supplies.Add(Supply.DoorPull(Doors.Quantity * Qty));
-                supplies.AddRange(Supply.StandardHinge(DoorHeight, Doors.Quantity * Qty));
+		}
 
-            }
+		if (Drawers.Quantity > 0) {
 
-            if (Drawers.Quantity > 0) {
+			// supplies.Add(Supply.DrawerPull(Drawers.Quantity * Qty));
 
-                // supplies.Add(Supply.DrawerPull(Drawers.Quantity * Qty));
+		}
 
-            }
-
-        }
-
-        if (Inside.RollOutBoxes.Qty > 0) {
+		if (Inside.RollOutBoxes.Qty > 0) {
 
             switch (Inside.RollOutBoxes.Blocks) {
                 case RollOutBlockPosition.Left:

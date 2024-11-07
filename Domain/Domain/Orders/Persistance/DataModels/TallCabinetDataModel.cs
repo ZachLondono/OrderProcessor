@@ -36,6 +36,8 @@ public class TallCabinetDataModel : CabinetRollOutContainerDataModelBase, IProdu
 
         var rollOuts = GetRollOutOptions();
 
+        var doorConfiguration = GetDoorConfiguration();
+
         TallCabinetInside inside = new(UpperAdjShelfQty, LowerAdjShelfQty, UpperVertDivQty, LowerVertDivQty, rollOuts);
 
         var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
@@ -46,7 +48,7 @@ public class TallCabinetDataModel : CabinetRollOutContainerDataModelBase, IProdu
             baseNotch = new(BaseNotchHeight, BaseNotchDepth);
         }
 
-        return new TallCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
+        return new TallCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, doorConfiguration, EdgeBandColor, RightSideType, LeftSideType, Comment,
             doors, ToeType, inside, dbOptions, baseNotch) {
             IsGarage = IsGarage,
             ProductionNotes = ProductionNotes

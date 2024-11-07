@@ -17,12 +17,12 @@ public class PieCutWallCabinetDataModel : CabinetDataModelBase, IProductDataMode
 
     public IProduct MapToProduct() {
 
-        var mdfConfig = GetMDFDoorConfiguration();
+        var doorConfiguration = GetDoorConfiguration();
 
         var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
-        return new WallPieCutCornerCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
+        return new WallPieCutCornerCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, doorConfiguration, EdgeBandColor, RightSideType, LeftSideType, Comment,
             RightWidth, RightDepth, AdjShelfQty, HingeSide, DoorExtendDown) {
             ProductionNotes = ProductionNotes
         };

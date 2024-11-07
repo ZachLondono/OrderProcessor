@@ -19,14 +19,15 @@ public class WallCabinetDataModel : CabinetDataModelBase, IProductDataModel, IQu
 
     public IProduct MapToProduct() {
 
-        var mdfConfig = GetMDFDoorConfiguration();
         var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
         var doors = new WallCabinetDoors(DoorQty, HingeSide, DoorExtendDown);
         var inside = new WallCabinetInside(AdjShelfQty, VertDivQty);
 
-        return new WallCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment, doors, inside, FinishedBottom) {
+        var doorConfiguration = GetDoorConfiguration();
+
+        return new WallCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, doorConfiguration, EdgeBandColor, RightSideType, LeftSideType, Comment, doors, inside, FinishedBottom) {
             ProductionNotes = ProductionNotes,
             IsGarage = IsGarage
         };

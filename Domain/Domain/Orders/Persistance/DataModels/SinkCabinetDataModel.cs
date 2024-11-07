@@ -25,7 +25,7 @@ public class SinkCabinetDataModel : CabinetRollOutContainerDataModelBase, IProdu
     public IProduct MapToProduct() {
 
         var dbOptions = GetDrawerBoxOptions();
-        var mdfConfig = GetMDFDoorConfiguration();
+        var doorConfiguration = GetDoorConfiguration();
 
         var rollOuts = GetRollOutOptions();
 
@@ -40,7 +40,7 @@ public class SinkCabinetDataModel : CabinetRollOutContainerDataModelBase, IProdu
             scoops = new(Dimension.FromMillimeters((double)ScoopDepth), Dimension.FromMillimeters((double)ScoopFromFront), Dimension.FromMillimeters((double)ScoopFromBack));
         }
 
-        return new SinkCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
+        return new SinkCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, doorConfiguration, EdgeBandColor, RightSideType, LeftSideType, Comment,
             ToeType, HingeSide, DoorQty, FalseDrawerQty, DrawerFaceHeight, AdjShelfQty, ShelfDepth, rollOuts, dbOptions, TiltFront, scoops) {
             ProductionNotes = ProductionNotes
         };

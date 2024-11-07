@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
-    <PackageReference Include="OneOf" Version="3.0.263" />
     <PackageReference Include="RestSharp" Version="108.0.3" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.54" />
     <PackageReference Include="Blazored.Modal" Version="7.1.0" />
