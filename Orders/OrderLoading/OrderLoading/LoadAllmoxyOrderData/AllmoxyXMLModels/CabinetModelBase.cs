@@ -38,18 +38,29 @@ public abstract class CabinetModelBase : ProductOrItemModel {
 		CabinetSideType leftSideType = AllmoxyXMLOrderProviderHelpers.GetCabinetSideType(Cabinet.LeftSide);
 		CabinetSideType rightSideType = AllmoxyXMLOrderProviderHelpers.GetCabinetSideType(Cabinet.RightSide);
 
-		MDFDoorOptions? mdfOptions = null;
-		CabinetSlabDoorMaterial? slabDoorMaterial = null;
+		CabinetDoorConfiguration doorConfiguration;
 		if (Cabinet.Fronts.Type == "MDF") {
-			// TODO: if Cabinet.Fronts.Color == "Match Finish" then the finished sides must be painted
-			mdfOptions = new("MDF", Dimension.FromInches(0.75), Cabinet.Fronts.Style, "Eased", "Flat", Dimension.Zero, Cabinet.Fronts.Color);
 
 			// If the door is an MDF door the finish type cannot be a melamine or veneer that 
 			if (Cabinet.Fronts.FinishType == AllmoxyXMLOrderProviderHelpers.MELAMINE_FINISH_CODE || Cabinet.Fronts.FinishType == AllmoxyXMLOrderProviderHelpers.VENEER_FINISH_CODE) {
 				throw new InvalidOperationException("Invalid combination of door finish and door type");
 			}
+			// TODO: if Cabinet.Fronts.Color == "Match Finish" then the finished sides must be painted
+			doorConfiguration = new MDFDoorOptions("MDF", Dimension.FromInches(0.75), Cabinet.Fronts.Style, "Eased", "Flat", Dimension.Zero, Cabinet.Fronts.Color);
+
+		} else if (Cabinet.Fronts.Type == "Slab") {
+
+			var slab = GetSlabDoorMaterial(Cabinet.Fronts, boxMaterial, finishMaterial);
+			doorConfiguration = slab is not null ?  slab : new DoorsByOthers();
+
+		} else if (Cabinet.Fronts.Type == "None") {
+
+			doorConfiguration = new DoorsByOthers();
+
 		} else {
-			slabDoorMaterial = GetSlabDoorMaterial(Cabinet.Fronts, boxMaterial, finishMaterial);
+
+			throw new InvalidDataException("Invalid cabinet door configuration.");
+
 		}
 
 		string edgeBandingColor;
@@ -70,7 +81,7 @@ public abstract class CabinetModelBase : ProductOrItemModel {
 									.WithProductNumber(GetProductNumber())
 									.WithBoxMaterial(boxMaterial)
 									.WithFinishMaterial(finishMaterial)
-									.WithSlabDoorMaterial(slabDoorMaterial)
+									.WithDoorConfiguration(doorConfiguration)
 									.WithLeftSideType(leftSideType)
 									.WithRightSideType(rightSideType)
 									.WithEdgeBandingColor(edgeBandingColor)
@@ -78,7 +89,6 @@ public abstract class CabinetModelBase : ProductOrItemModel {
 									.WithHeight(Dimension.FromMillimeters(Cabinet.Height))
 									.WithDepth(Dimension.FromMillimeters(Cabinet.Depth))
 									.WithRoom(Cabinet.Room)
-									.WithMDFDoorOptions(mdfOptions)
 									.WithAssembled(Cabinet.Assembled == AllmoxyXMLOrderProviderHelpers.XML_BOOL_TRUE)
 									.WithComment(Cabinet.Comment)
 									.WithProductionNotes(Cabinet.ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList());
