@@ -33,6 +33,13 @@ public partial class InsertOrder {
 
         private static void InsertCabinet(Cabinet cabinet, Guid? mdfConfigId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
+            var slabDoorMaterial = cabinet.DoorConfiguration
+                                          .Match<CabinetSlabDoorMaterial?>(
+                slab => slab,
+                mdf => null,
+                byothers => null
+            );
+
             var parameters = new {
                 ProductId = cabinet.Id,
                 CabHeight = cabinet.Height,
@@ -45,10 +52,10 @@ public partial class InsertOrder {
                 CabFinishMaterialFinish = cabinet.FinishMaterial.Finish,
                 CabFinishMaterialFinishType = cabinet.FinishMaterial.FinishType,
                 CabFinishMaterialPaint = cabinet.FinishMaterial.PaintColor,
-                SlabDoorCore = cabinet.SlabDoorMaterial?.Core ?? null,
-                SlabDoorFinish = cabinet.SlabDoorMaterial?.Finish ?? null,
-                SlabDoorFinishType = cabinet.SlabDoorMaterial?.FinishType ?? null,
-                SlabDoorPaint = cabinet.SlabDoorMaterial?.PaintColor ?? null,
+                SlabDoorCore = slabDoorMaterial?.Core ?? null,
+                SlabDoorFinish = slabDoorMaterial?.Finish ?? null,
+                SlabDoorFinishType = slabDoorMaterial?.FinishType ?? null,
+                SlabDoorPaint = slabDoorMaterial?.PaintColor ?? null,
                 CabEdgeBandingFinish = cabinet.EdgeBandingColor,
                 CabLeftSideType = cabinet.LeftSideType,
                 CabRightSideType = cabinet.RightSideType,
