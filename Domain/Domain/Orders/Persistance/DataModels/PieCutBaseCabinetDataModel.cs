@@ -50,11 +50,6 @@ public class PieCutBaseCabinetDataModel : CabinetDataModelBase, IProductDataMode
            	    cabinets.finish_material_finish AS FinishMatFinish,
            	    cabinets.finish_material_paint AS FinishMatPaint,
                 cabinets.finish_material_finish_type AS FinishFinishType,
-                cabinets.slab_door_core IS NOT NULL AS ContainsSlabDoors,
-                cabinets.slab_door_core AS SlabDoorCore,
-                cabinets.slab_door_finish AS SlabDoorFinish,
-                cabinets.slab_door_finish_type AS SlabDoorFinishType,
-                cabinets.slab_door_paint AS SlabDoorPaint,
            	    cabinets.edge_banding_finish As EdgeBandColor,
            	    cabinets.left_side_type AS LeftSideType,
            	    cabinets.right_side_type AS RightSideType,
@@ -74,13 +69,20 @@ public class PieCutBaseCabinetDataModel : CabinetDataModelBase, IProductDataMode
            	    mdf_door_configs.thickness,
            	    mdf_door_configs.material,
            	    mdf_door_configs.panel_drop AS PanelDrop,
-           	    mdf_door_configs.paint_color AS PaintColor
+           	    mdf_door_configs.paint_color AS PaintColor,
+
+           	    cabinets.slab_door_material_id IS NOT NULL AS ContainsSlabDoors,
+                cabinet_slab_door_materials.core AS SlabDoorCore,
+                cabinet_slab_door_materials.finish AS SlabDoorFinish,
+                cabinet_slab_door_materials.finish_type AS SlabDoorFinishType,
+                cabinet_slab_door_materials.paint AS SlabDoorPaint
 
             FROM pie_cut_base_cabinets
 
                JOIN products ON pie_cut_base_cabinets.product_id = products.id
                JOIN cabinets ON cabinets.product_id = pie_cut_base_cabinets.product_id
                LEFT JOIN mdf_door_configs ON cabinets.mdf_config_id = mdf_door_configs.id
+               LEFT JOIN cabinet_slab_door_materials ON cabinets.slab_door_material_id = cabinet_slab_door_materials.id
 
             WHERE
            	    products.order_id = @OrderId;

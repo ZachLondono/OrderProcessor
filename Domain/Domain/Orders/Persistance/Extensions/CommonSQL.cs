@@ -33,9 +33,13 @@ public partial class InsertOrder {
 
         private static void InsertCabinet(Cabinet cabinet, Guid? mdfConfigId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
-            var slabDoorMaterial = cabinet.DoorConfiguration
-                                          .Match<CabinetSlabDoorMaterial?>(
-                slab => slab,
+            Guid? slabDoorMaterialId = cabinet.DoorConfiguration
+                                          .Match(
+                slab => {
+                    Guid id = Guid.NewGuid();
+                    InsertSlabDoorMaterial(id, slab, connection, trx);
+                    return (Guid?) id;
+                },
                 mdf => null,
                 byothers => null
             );
@@ -52,15 +56,12 @@ public partial class InsertOrder {
                 CabFinishMaterialFinish = cabinet.FinishMaterial.Finish,
                 CabFinishMaterialFinishType = cabinet.FinishMaterial.FinishType,
                 CabFinishMaterialPaint = cabinet.FinishMaterial.PaintColor,
-                SlabDoorCore = slabDoorMaterial?.Core ?? null,
-                SlabDoorFinish = slabDoorMaterial?.Finish ?? null,
-                SlabDoorFinishType = slabDoorMaterial?.FinishType ?? null,
-                SlabDoorPaint = slabDoorMaterial?.PaintColor ?? null,
                 CabEdgeBandingFinish = cabinet.EdgeBandingColor,
                 CabLeftSideType = cabinet.LeftSideType,
                 CabRightSideType = cabinet.RightSideType,
                 CabAssembled = cabinet.Assembled,
                 CabComment = cabinet.Comment,
+                SlabDoorMaterialId = slabDoorMaterialId,
                 MDFConfigId = mdfConfigId
             };
 
@@ -78,15 +79,12 @@ public partial class InsertOrder {
                     finish_material_finish,
                     finish_material_finish_type,
                     finish_material_paint,
-                    slab_door_core,
-                    slab_door_finish,
-                    slab_door_finish_type,
-                    slab_door_paint,
                     edge_banding_finish,
                     left_side_type,
                     right_side_type,
                     assembled,
                     comment,
+                    slab_door_material_id,
                     mdf_config_id)
                 VALUES
                     (@ProductId,
@@ -100,17 +98,40 @@ public partial class InsertOrder {
                     @CabFinishMaterialFinish,
                     @CabFinishMaterialFinishType,
                     @CabFinishMaterialPaint,
-                    @SlabDoorCore,
-                    @SlabDoorFinish,
-                    @SlabDoorFinishType,
-                    @SlabDoorPaint,
                     @CabEdgeBandingFinish,
                     @CabLeftSideType,
                     @CabRightSideType,
                     @CabAssembled,
                     @CabComment,
+                    @SlabDoorMaterialId,
                     @MDFConfigId);
                 """, parameters, trx);
+
+        }
+
+        private static void InsertSlabDoorMaterial(Guid id, CabinetSlabDoorMaterial slabMaterial, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+
+            connection.Execute(
+                """
+                INSERT INTO cabinet_slab_door_materials
+                    (id,
+                    core,
+                    finish,
+                    finish_type,
+                    paint)
+                VALUES
+                    (@Id,
+                    @Core,
+                    @Finish,
+                    @FinishType,
+                    @Paint);
+                """, new {
+                    Id = id,
+                    slabMaterial.Core,
+                    slabMaterial.Finish,
+                    slabMaterial.FinishType,
+                    Paint = slabMaterial.PaintColor
+                }, trx);
 
         }
 

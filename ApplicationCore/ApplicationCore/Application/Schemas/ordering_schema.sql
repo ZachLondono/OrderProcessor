@@ -279,6 +279,15 @@ CREATE TABLE cabinet_parts (
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
+CREATE TABLE cabinet_slab_door_materials (
+	id BLOB NOT NULL,
+	core INTEGER,
+	finish TEXT,
+	finish_type INTEGER,
+	paint TEXT,
+	PRIMARY KEY (id)
+);
+
 CREATE TABLE cabinets (
 	product_id BLOB NOT NULL,
 	height REAL NOT NULL,
@@ -291,24 +300,27 @@ CREATE TABLE cabinets (
 	finish_material_finish TEXT NOT NULL,
 	finish_material_finish_type TEXT NOT NULL,
 	finish_material_paint TEXT,
-	slab_door_core INTEGER,
-	slab_door_finish TEXT,
-	slab_door_finish_type INTEGER,
-	slab_door_paint TEXT,
 	edge_banding_finish TEXT NOT NULL,
 	left_side_type INTEGER NOT NULL,
 	right_side_type INTEGER NOT NULL,
 	assembled INTEGER NOT NULL,
 	comment TEXT NOT NULL,
+	slab_door_material_id BLOB,
 	mdf_config_id BLOB,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-	FOREIGN KEY (mdf_config_id) REFERENCES mdf_door_configs(id)
+	FOREIGN KEY (mdf_config_id) REFERENCES mdf_door_configs(id),
+	FOREIGN KEY (slab_door_material_id) REFERENCES cabinet_slab_door_materials(id)
 );
 
 CREATE TRIGGER remove_cabinet_mdf_config AFTER DELETE ON cabinets
 BEGIN
 	DELETE FROM mdf_door_configs WHERE id = OLD.mdf_config_id;
+END;
+
+CREATE TRIGGER remove_cabinet_slab_door_material AFTER DELETE ON cabinets
+BEGIN
+	DELETE FROM cabinet_slab_door_materials WHERE id = OLD.slab_door_material_id;
 END;
 
 CREATE TABLE cabinet_db_configs (
