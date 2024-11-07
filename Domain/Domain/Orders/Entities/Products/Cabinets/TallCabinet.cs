@@ -82,7 +82,7 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
         ];
 
         if (Doors.UpperQuantity > 0) {
-            notes.Add($"{Doors.LowerDoorHeight}\" Lower Door Height");
+            notes.Add($"{Doors.LowerDoorHeight.AsInches():0.00}\" Lower Door Height");
         }
 
         notes.Add($"{Inside.AdjustableShelvesLower} Adjustable Shelves, Lower");

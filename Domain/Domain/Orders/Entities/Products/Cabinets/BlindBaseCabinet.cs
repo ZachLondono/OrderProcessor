@@ -85,7 +85,7 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
             doorComment,
             dwrComment,
             $"{AdjustableShelves} Adjustable Shelves",
-            $"Blind Width: {BlindWidth.AsInches()}\"",
+            $"Blind Width: {BlindWidth.AsInches():0.00}\"",
             $"Blind Side: {BlindSide}",
             $"Lazy Susan: None"
         ];

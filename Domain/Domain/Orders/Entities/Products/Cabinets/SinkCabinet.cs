@@ -98,7 +98,7 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
 
         if (Scoops is not null) {
 
-            notes.Add($"Side Scoops {Scoops.FromFront.AsInches()}\" From Front, {Scoops.FromBack.AsInches()}\" From Back, {Scoops.Depth.AsInches()}\" Deep");
+            notes.Add($"Side Scoops {Scoops.FromFront.AsInches():0.00}\" From Front, {Scoops.FromBack.AsInches():0.00}\" From Back, {Scoops.Depth.AsInches():0.00}\" Deep");
 
         }
 

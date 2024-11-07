@@ -63,7 +63,7 @@ public class WallCabinet : GarageCabinet, IMDFDoorContainer, ISupplyContainer {
         ];
 
         if (Doors.ExtendDown > Dimension.Zero) {
-            notes.Add($"Doors extended down {Doors.ExtendDown.AsInches()}\"");
+            notes.Add($"Doors extended down {Doors.ExtendDown.AsInches():0.00}\"");
         }
 
         return notes;

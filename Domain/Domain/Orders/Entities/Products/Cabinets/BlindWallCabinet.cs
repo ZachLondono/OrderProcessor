@@ -67,12 +67,12 @@ public class BlindWallCabinet : GarageCabinet, IMDFDoorContainer, ISupplyContain
 		List<string> notes = [
             $"{Doors.Quantity} {doorType}",
             $"{AdjustableShelves} Adjustable Shelves",
-            $"Blind Width: {BlindWidth.AsInches()}\"",
+            $"Blind Width: {BlindWidth.AsInches():0.00}\"",
             $"Blind Side: {BlindSide}",
         ];
 
         if (ExtendedDoor > Dimension.Zero) {
-            notes.Add($"Doors extended down {ExtendedDoor.AsInches()}\"");
+            notes.Add($"Doors extended down {ExtendedDoor.AsInches():0.00}\"");
         }
 
         return notes;

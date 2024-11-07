@@ -106,12 +106,12 @@ public class WallPieCutCornerCabinet : Cabinet, IMDFDoorContainer, ISupplyContai
 
         List<string> notes = [
             $"{AdjustableShelves} Adjustable Shelves",
-            $"{RightWidth.AsInches()}\" Right Width",
-            $"{RightDepth.AsInches()}\" Right Depth",
+            $"{RightWidth.AsInches():0.00}\" Right Width",
+            $"{RightDepth.AsInches():0.00}\" Right Depth",
         ];
 
         if (ExtendedDoor > Dimension.Zero) {
-            notes.Add($"Doors extended down {ExtendedDoor.AsInches()}\"");
+            notes.Add($"Doors extended down {ExtendedDoor.AsInches():0.00}\"");
         }
 
         return notes;

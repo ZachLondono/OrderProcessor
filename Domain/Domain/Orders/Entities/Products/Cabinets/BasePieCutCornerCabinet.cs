@@ -54,8 +54,8 @@ public class BasePieCutCornerCabinet : Cabinet, IMDFDoorContainer, ISupplyContai
 
         return [
             $"{AdjustableShelves} Adjustable Shelves",
-            $"Right Width: {RightWidth.AsInches()}\"",
-            $"Right Depth: {RightDepth.AsInches()}\"",
+            $"Right Width: {RightWidth.AsInches():0.00}\"",
+            $"Right Depth: {RightDepth.AsInches():0.00}\"",
             DoorConfiguration.Match(
                 slab => "Slab Doors",
                 mdf => "MDF Doors",
