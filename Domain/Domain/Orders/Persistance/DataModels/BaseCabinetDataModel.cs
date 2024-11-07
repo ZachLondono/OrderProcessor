@@ -24,7 +24,7 @@ public class BaseCabinetDataModel : CabinetRollOutContainerDataModelBase, IProdu
     public IProduct MapToProduct() {
 
         var dbOptions = GetDrawerBoxOptions();
-        var mdfConfig = GetMDFDoorConfiguration();
+        var doorConfiguration = GetDoorConfiguration();
 
         BaseCabinetDoors doors = new() {
             Quantity = DoorQty,
@@ -48,7 +48,7 @@ public class BaseCabinetDataModel : CabinetRollOutContainerDataModelBase, IProdu
             baseNotch = new(BaseNotchHeight, BaseNotchDepth);
         }
 
-        return new BaseCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
+        return new BaseCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, doorConfiguration, EdgeBandColor, RightSideType, LeftSideType, Comment,
             doors, ToeType, drawers, inside, dbOptions, baseNotch) {
             IsGarage = IsGarage,
             ProductionNotes = ProductionNotes

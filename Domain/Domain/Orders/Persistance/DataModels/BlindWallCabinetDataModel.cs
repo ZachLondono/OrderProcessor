@@ -19,14 +19,14 @@ public class BlindWallCabinetDataModel : CabinetDataModelBase, IProductDataModel
 
     public IProduct MapToProduct() {
 
-        var mdfConfig = GetMDFDoorConfiguration();
+        var doorConfiguration = GetDoorConfiguration();
 
         var doors = new BlindCabinetDoors(HingeSide, DoorQty);
 
         var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
-        return new BlindWallCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
+        return new BlindWallCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, doorConfiguration, EdgeBandColor, RightSideType, LeftSideType, Comment,
             doors, BlindSide, BlindWidth, AdjShelfQty, DoorExtendDown) {
             ProductionNotes = ProductionNotes
         };

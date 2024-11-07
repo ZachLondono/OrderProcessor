@@ -16,12 +16,12 @@ public class TrashCabinetDataModel : CabinetDrawerBoxContainerDataModelBase, IPr
     public IProduct MapToProduct() {
 
         var dbOptions = GetDrawerBoxOptions();
-        var mdfConfig = GetMDFDoorConfiguration();
+        var doorConfiguration = GetDoorConfiguration();
 
         var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
-        return new TrashCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
+        return new TrashCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, doorConfiguration, EdgeBandColor, RightSideType, LeftSideType, Comment,
             DrawerFaceHeight, TrashConfig, dbOptions, ToeType) {
             ProductionNotes = ProductionNotes
         };

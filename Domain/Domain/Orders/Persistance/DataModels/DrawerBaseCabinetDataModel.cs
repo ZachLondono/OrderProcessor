@@ -15,7 +15,7 @@ public class DrawerBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBase
     public IProduct MapToProduct() {
 
         var dbOptions = GetDrawerBoxOptions();
-        var mdfConfig = GetMDFDoorConfiguration();
+        var doorConfiguration = GetDoorConfiguration();
 
         var drawers = new VerticalDrawerBank() {
             FaceHeights = FaceHeights
@@ -24,7 +24,7 @@ public class DrawerBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBase
         var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
         var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
-        return new DrawerBaseCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
+        return new DrawerBaseCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, doorConfiguration, EdgeBandColor, RightSideType, LeftSideType, Comment,
             ToeType, drawers, dbOptions) {
             IsGarage = IsGarage,
             ProductionNotes = ProductionNotes

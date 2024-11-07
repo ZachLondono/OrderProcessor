@@ -21,27 +21,27 @@ public class BlindBaseCabinetDataModel : CabinetDrawerBoxContainerDataModelBase,
 
     public IProduct MapToProduct() {
 
-        var dbOptions = GetDrawerBoxOptions();
-        var mdfConfig = GetMDFDoorConfiguration();
+		var dbOptions = GetDrawerBoxOptions();
+		var doorConfiguration = GetDoorConfiguration();
 
-        var doors = new BlindCabinetDoors(HingeSide, DoorQty);
+		var doors = new BlindCabinetDoors(HingeSide, DoorQty);
 
-        var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
-        var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
+		var boxMaterial = new CabinetMaterial(BoxMatFinish, BoxFinishType, BoxMatCore);
+		var finishMaterial = new CabinetFinishMaterial(FinishMatFinish, FinishFinishType, FinishMatCore, FinishMatPaint);
 
-        var drawers = new HorizontalDrawerBank() {
-            FaceHeight = DrawerFaceHeight,
-            Quantity = DrawerQty
-        };
+		var drawers = new HorizontalDrawerBank() {
+			FaceHeight = DrawerFaceHeight,
+			Quantity = DrawerQty
+		};
 
-        return new BlindBaseCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, GetSlabDoorMaterial(), mdfConfig, EdgeBandColor, RightSideType, LeftSideType, Comment,
-            doors, BlindSide, BlindWidth, AdjShelfQty, ShelfDepth, drawers, ToeType, dbOptions) {
-            ProductionNotes = ProductionNotes
-        };
+		return new BlindBaseCabinet(Id, Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, boxMaterial, finishMaterial, doorConfiguration, EdgeBandColor, RightSideType, LeftSideType, Comment,
+			doors, BlindSide, BlindWidth, AdjShelfQty, ShelfDepth, drawers, ToeType, dbOptions) {
+			ProductionNotes = ProductionNotes
+		};
 
-    }
+	}
 
-    public static string GetQueryByOrderId
+	public static string GetQueryByOrderId
         => """
             SELECT 
 
