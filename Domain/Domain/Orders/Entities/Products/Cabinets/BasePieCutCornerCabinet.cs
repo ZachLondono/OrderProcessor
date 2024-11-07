@@ -30,10 +30,10 @@ public class BasePieCutCornerCabinet : Cabinet, IMDFDoorContainer, ISupplyContai
 
     public BasePieCutCornerCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetDoorConfiguration doorConfiguration, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         Dimension rightWidth, Dimension rightDepth, ToeType toeType, int adjustableShelves, HingeSide hingeSide)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, doorConfiguration, edgeBandingColor, rightSideType, leftSideType, comment) {
         RightWidth = rightWidth;
         RightDepth = rightDepth;
         ToeType = toeType;
@@ -43,12 +43,12 @@ public class BasePieCutCornerCabinet : Cabinet, IMDFDoorContainer, ISupplyContai
 
     public static BasePieCutCornerCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetDoorConfiguration doorConfiguration, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         Dimension rightWidth, Dimension rightDepth, ToeType toeType, int adjustableShelves, HingeSide hingeSide)
-    => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, toeType, adjustableShelves, hingeSide);
+    => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, doorConfiguration, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, toeType, adjustableShelves, hingeSide);
 
-    public bool ContainsDoors() => MDFDoorOptions is not null;
+    public bool ContainsDoors() => DoorConfiguration.IsMDF;
 
     public override IEnumerable<string> GetNotes() {
 
@@ -56,39 +56,43 @@ public class BasePieCutCornerCabinet : Cabinet, IMDFDoorContainer, ISupplyContai
             $"{AdjustableShelves} Adjustable Shelves",
             $"Right Width: {RightWidth.AsInches()}\"",
             $"Right Depth: {RightDepth.AsInches()}\"",
+            DoorConfiguration.Match(
+                slab => "Slab Doors",
+                mdf => "MDF Doors",
+                byothers => "Doors by Others")
         ];
 
     }
 
-    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
+    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder)
+        => DoorConfiguration.Match(
+            slab => [],
+            mdf => {
 
-        if (MDFDoorOptions is null) {
-            return Enumerable.Empty<MDFDoor>();
-        }
+				Dimension height = DoorHeight;
+				Dimension doorThickness = Dimension.FromMillimeters(19);
+				Dimension bumperWidth = Dimension.FromMillimeters(3);
 
-        Dimension height = DoorHeight;
-        Dimension doorThickness = Dimension.FromMillimeters(19);
-        Dimension bumperWidth = Dimension.FromMillimeters(3);
+				Dimension leftWidth = Width - RightDepth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
+				MDFDoor leftDoor = getBuilder().WithQty(Qty)
+												.WithProductNumber(ProductNumber)
+												.WithFramingBead(mdf.FramingBead)
+												.WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
+												.Build(height, leftWidth);
 
-        Dimension leftWidth = Width - RightDepth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
-        MDFDoor leftDoor = getBuilder().WithQty(Qty)
-                                        .WithProductNumber(ProductNumber)
-                                        .WithFramingBead(MDFDoorOptions.FramingBead)
-                                        .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
-                                        .Build(height, leftWidth);
+				Dimension rightWidth = RightWidth - Depth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
+				MDFDoor rightDoor = getBuilder().WithQty(Qty)
+												.WithProductNumber(ProductNumber)
+												.WithFramingBead(mdf.FramingBead)
+												.WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
+												.Build(height, rightWidth);
 
-        Dimension rightWidth = RightWidth - Depth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
-        MDFDoor rightDoor = getBuilder().WithQty(Qty)
-                                        .WithProductNumber(ProductNumber)
-                                        .WithFramingBead(MDFDoorOptions.FramingBead)
-                                        .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
-                                        .Build(height, rightWidth);
+				return new MDFDoor[] { leftDoor, rightDoor };
 
-        return new List<MDFDoor>() { leftDoor, rightDoor };
+			},
+		    byothers => []);
 
-    }
-
-    public IEnumerable<Supply> GetSupplies() {
+	public IEnumerable<Supply> GetSupplies() {
 
         List<Supply> supplies = [
             // Supply.DoorPull(Qty),

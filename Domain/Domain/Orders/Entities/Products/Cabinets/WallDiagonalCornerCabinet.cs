@@ -32,10 +32,10 @@ public class WallDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer, ISupp
 
     public WallDiagonalCornerCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfOptions, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetDoorConfiguration doorConfiguration, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         Dimension rightWidth, Dimension rightDepth, int adjShelfQty, HingeSide hingeSide, int doorQty, Dimension extendedDoor)
-                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
+                        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, doorConfiguration, edgeBandingColor, rightSideType, leftSideType, comment) {
 
         if (leftSideType == CabinetSideType.AppliedPanel || leftSideType == CabinetSideType.AppliedPanel)
             throw new InvalidProductOptionsException("Wall cabinet cannot have applied panel sides");
@@ -53,10 +53,10 @@ public class WallDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer, ISupp
 
     public static WallDiagonalCornerCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfOptions, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetDoorConfiguration doorConfiguration, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         Dimension rightWidth, Dimension rightDepth, int adjShelfQty, HingeSide hingeSide, int doorQty, Dimension extendedDoor)
-                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfOptions, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, adjShelfQty, hingeSide, doorQty, extendedDoor);
+                        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, doorConfiguration, edgeBandingColor, rightSideType, leftSideType, comment, rightWidth, rightDepth, adjShelfQty, hingeSide, doorQty, extendedDoor);
 
     public override string GetProductSku() => DoorQty switch {
         1 => $"{(IsGarage ? "G" : "")}WC1D-M",
@@ -64,7 +64,7 @@ public class WallDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer, ISupp
         _ => $"{(IsGarage ? "G" : "")}WC1D-M"
     };
 
-    public bool ContainsDoors() => MDFDoorOptions is not null;
+    public bool ContainsDoors() => DoorConfiguration.IsMDF;
 
     public override IEnumerable<string> GetNotes() {
 
@@ -83,33 +83,34 @@ public class WallDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer, ISupp
 
     }
 
-    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
+    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder)
+        => DoorConfiguration.Match(
+            slab => [],
+			mdf => {
 
-        if (MDFDoorOptions is null) {
-            return Enumerable.Empty<MDFDoor>();
-        }
+				Dimension a = Width - RightDepth - Dimension.FromMillimeters(19);
+				Dimension b = RightWidth - Depth - Dimension.FromMillimeters(19);
 
-        Dimension a = Width - RightDepth - Dimension.FromMillimeters(19);
-        Dimension b = RightWidth - Depth - Dimension.FromMillimeters(19);
+				Dimension diagOpening = Area.Sqrt(a * a + b * b);
 
-        Dimension diagOpening = Area.Sqrt(a * a + b * b);
+				Dimension width = RoundToHalfMM(diagOpening - 2 * DoorGaps.EdgeReveal);
+				if (DoorQty == 2) {
+					width = RoundToHalfMM((width - DoorGaps.HorizontalGap) / 2);
+				}
 
-        Dimension width = RoundToHalfMM(diagOpening - 2 * DoorGaps.EdgeReveal);
-        if (DoorQty == 2) {
-            width = RoundToHalfMM((width - DoorGaps.HorizontalGap) / 2);
-        }
+				Dimension height = DoorHeight;
 
-        Dimension height = DoorHeight;
+				var door = getBuilder().WithQty(DoorQty * Qty)
+										.WithProductNumber(ProductNumber)
+										.WithFramingBead(mdf.FramingBead)
+										.WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
+										.Build(height, width);
 
-        var door = getBuilder().WithQty(DoorQty * Qty)
-                                .WithProductNumber(ProductNumber)
-                                .WithFramingBead(MDFDoorOptions.FramingBead)
-                                .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
-                                .Build(height, width);
+				return new MDFDoor[] { door };
 
-        return new List<MDFDoor>() { door };
-
-    }
+			},
+			byothers => []);
+        
 
     public IEnumerable<Supply> GetSupplies() {
 

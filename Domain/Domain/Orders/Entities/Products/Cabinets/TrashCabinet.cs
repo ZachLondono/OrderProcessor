@@ -32,10 +32,10 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
 
     public TrashCabinet(Guid id, int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetDoorConfiguration doorConfiguration, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, CabinetDrawerBoxOptions? drawerBoxOptions, ToeType toeType)
-        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment) {
+        : base(id, qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, doorConfiguration, edgeBandingColor, rightSideType, leftSideType, comment) {
         DrawerFaceHeight = drawerFaceHeight;
         TrashPulloutConfiguration = trashPulloutConfiguration;
         DrawerBoxOptions = drawerBoxOptions;
@@ -44,12 +44,12 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
 
     public static TrashCabinet Create(int qty, decimal unitPrice, int productNumber, string room, bool assembled,
                         Dimension height, Dimension width, Dimension depth,
-                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetSlabDoorMaterial? slabDoorMaterial, MDFDoorOptions? mdfDoorOptions, string edgeBandingColor,
+                        CabinetMaterial boxMaterial, CabinetFinishMaterial finishMaterial, CabinetDoorConfiguration doorConfiguration, string edgeBandingColor,
                         CabinetSideType rightSideType, CabinetSideType leftSideType, string comment,
                         Dimension drawerFaceHeight, TrashPulloutConfiguration trashPulloutConfiguration, CabinetDrawerBoxOptions? drawerBoxOptions, ToeType toeType)
-        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, slabDoorMaterial, mdfDoorOptions, edgeBandingColor, rightSideType, leftSideType, comment, drawerFaceHeight, trashPulloutConfiguration, drawerBoxOptions, toeType);
+        => new(Guid.NewGuid(), qty, unitPrice, productNumber, room, assembled, height, width, depth, boxMaterial, finishMaterial, doorConfiguration, edgeBandingColor, rightSideType, leftSideType, comment, drawerFaceHeight, trashPulloutConfiguration, drawerBoxOptions, toeType);
 
-    public bool ContainsDoors() => MDFDoorOptions is not null;
+    public bool ContainsDoors() => DoorConfiguration.IsMDF;
 
     public override IEnumerable<string> GetNotes() {
 
@@ -68,37 +68,37 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
 
     }
 
-    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder) {
+    public IEnumerable<MDFDoor> GetDoors(Func<MDFDoorBuilder> getBuilder)
+        => DoorConfiguration.Match(
+            slab => [],
+            mdf => {
 
-        if (MDFDoorOptions is null) {
-            return [];
-        }
+				List<MDFDoor> doors = [];
 
-        List<MDFDoor> doors = new();
+				Dimension width = Width - 2 * DoorGaps.EdgeReveal;
+				Dimension height = Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - DrawerFaceHeight - DoorGaps.VerticalGap;
+				var door = getBuilder().WithQty(Qty)
+										.WithProductNumber(ProductNumber)
+										.WithType(DoorType.Door)
+										.WithFramingBead(mdf.FramingBead)
+										.WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
+										.Build(height, width);
+				doors.Add(door);
 
-        Dimension width = Width - 2 * DoorGaps.EdgeReveal;
-        Dimension height = Height - ToeType.ToeHeight - DoorGaps.TopGap - DoorGaps.BottomGap - DrawerFaceHeight - DoorGaps.VerticalGap;
-        var door = getBuilder().WithQty(Qty)
-                                .WithProductNumber(ProductNumber)
-                                .WithType(DoorType.Door)
-                                .WithFramingBead(MDFDoorOptions.FramingBead)
-                                .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
-                                .Build(height, width);
-        doors.Add(door);
+				var drawers = getBuilder().WithQty(Qty)
+											.WithProductNumber(ProductNumber)
+											.WithType(DoorType.DrawerFront)
+											.WithFramingBead(mdf.FramingBead)
+											.WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
+											.Build(DrawerFaceHeight, width);
+				doors.Add(drawers);
 
-        var drawers = getBuilder().WithQty(Qty)
-                                    .WithProductNumber(ProductNumber)
-                                    .WithType(DoorType.DrawerFront)
-                                    .WithFramingBead(MDFDoorOptions.FramingBead)
-                                    .WithPaintColor(MDFDoorOptions.PaintColor == "" ? null : MDFDoorOptions.PaintColor)
-                                    .Build(DrawerFaceHeight, width);
-        doors.Add(drawers);
+				return doors;
 
-        return doors;
+			},
+			byothers => []);
 
-    }
-
-    public bool ContainsDovetailDrawerBoxes() => DrawerBoxOptions is not null;
+	public bool ContainsDovetailDrawerBoxes() => DrawerBoxOptions is not null;
 
     public IEnumerable<DovetailDrawerBox> GetDovetailDrawerBoxes(Func<DovetailDrawerBoxBuilder> getBuilder) {
 
