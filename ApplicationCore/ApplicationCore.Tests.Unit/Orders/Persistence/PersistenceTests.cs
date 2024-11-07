@@ -25,7 +25,7 @@ public abstract class PersistenceTests : IDisposable {
         Factory.Dispose();
     }
 
-    protected T InsertAndQueryOrderWithProduct<T>(T product) where T : IProduct {
+    protected async Task<T> InsertAndQueryOrderWithProduct<T>(T product) where T : IProduct {
 
         Order order = new OrderBuilder() {
             Products = new() {
@@ -33,7 +33,7 @@ public abstract class PersistenceTests : IDisposable {
             }
         }.Build();
 
-        var insertResult = Sut.Handle(new(order)).Result;
+        var insertResult = await Sut.Handle(new(order));
         insertResult.OnError(error => Assert.Fail($"Insert handler returned error {error.Title} - {error.Details}"));
         order.Should().NotBeNull();
 
@@ -41,7 +41,7 @@ public abstract class PersistenceTests : IDisposable {
         var sut = new GetOrderById.Handler(logger, Factory);
 
         // Act
-        var result = sut.Handle(new(order.Id)).Result;
+        var result = await sut.Handle(new(order.Id));
         Order? foundOrder = null;
         result.OnSuccess(o => {
             foundOrder = o;
@@ -61,7 +61,7 @@ public abstract class PersistenceTests : IDisposable {
 
     }
 
-    protected void InsertAndDeleteOrderWithProduct<T>(T product) where T : IProduct {
+    protected async Task InsertAndDeleteOrderWithProduct<T>(T product) where T : IProduct {
 
         Order order = new OrderBuilder() {
             Products = new() {
@@ -69,22 +69,22 @@ public abstract class PersistenceTests : IDisposable {
             }
         }.Build();
 
-        var insertResult = Sut.Handle(new(order)).Result;
+        var insertResult = await Sut.Handle(new(order));
         insertResult.OnError(error => Assert.Fail($"Insert handler returned error {error.Title} - {error.Details}"));
         order.Should().NotBeNull();
 
         var sut = new DeleteOrder.Handler(Factory);
 
         // Act
-        var deleteResult = sut.Handle(new(order.Id)).Result;
+        var deleteResult = await sut.Handle(new(order.Id));
 
         // Assert
         deleteResult.OnError(e => Assert.Fail("Handler returned error"));
-        EnsureAllTablesAreEmpty();
+        await EnsureAllTablesAreEmpty();
 
     }
 
-    protected Guid InsertOrderWithProduct<T>(T product) where T : IProduct {
+    protected async Task<Guid> InsertOrderWithProduct<T>(T product) where T : IProduct {
 
         Order order = new OrderBuilder() {
             Products = new() {
@@ -92,7 +92,7 @@ public abstract class PersistenceTests : IDisposable {
             }
         }.Build();
 
-        var insertResult = Sut.Handle(new(order)).Result;
+        var insertResult = await Sut.Handle(new(order));
         insertResult.OnError(error => Assert.Fail($"Insert handler returned error {error.Title} - {error.Details}"));
         order.Should().NotBeNull();
 
@@ -100,12 +100,12 @@ public abstract class PersistenceTests : IDisposable {
 
     }
 
-    protected void VerifyProductExistsInOrder<T>(Guid orderId, T product) where T : IProduct {
+    protected async Task VerifyProductExistsInOrder<T>(Guid orderId, T product) where T : IProduct {
 
         var logger = Substitute.For<ILogger<GetOrderById.Handler>>();
         var sut = new GetOrderById.Handler(logger, Factory);
 
-        var result = sut.Handle(new(orderId)).Result;
+        var result = await sut.Handle(new(orderId));
         Order? foundOrder = null;
         result.OnSuccess(o => {
             foundOrder = o;
@@ -121,8 +121,8 @@ public abstract class PersistenceTests : IDisposable {
 
     }
 
-    protected void EnsureAllTablesAreEmpty() {
-        var connection = Factory.CreateConnection().Result;
+    protected async Task EnsureAllTablesAreEmpty() {
+        var connection = await Factory.CreateConnection();
 
         var tableNames = connection.Query<string>("SELECT name FROM sqlite_master WHERE type='table';");
         tableNames.Should().NotBeEmpty("Unexpected result from query");

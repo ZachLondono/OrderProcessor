@@ -9,29 +9,29 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 public class TrashCabinetPersistenceTest : PersistenceTests {
 
     [Fact]
-    public void InsertOrderWithTrashCabinet() {
+    public async Task InsertOrderWithTrashCabinet() {
         var cabinet = new TrashCabinetBuilder()
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
             .WithHeight(Dimension.FromInches(25))
             .WithQty(1)
             .Build();
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithTrashCabinet() {
+    public async Task DeleteOrderWithTrashCabinet() {
         var cabinet = new TrashCabinetBuilder()
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
             .WithHeight(Dimension.FromInches(25))
             .WithQty(1)
             .Build();
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void InsertOrderWithBlindBaseCabinetAndDrawerBoxesByOthers() {
+    public async Task InsertOrderWithBlindBaseCabinetAndDrawerBoxesByOthers() {
 
         var cabinet = new TrashCabinetBuilder()
             .WithBoxOptions(null)
@@ -41,14 +41,14 @@ public class TrashCabinetPersistenceTest : PersistenceTests {
             .WithQty(1)
             .Build();
 
-        var cab = InsertAndQueryOrderWithProduct(cabinet);
+        var cab = await InsertAndQueryOrderWithProduct(cabinet);
 
         cab.DrawerBoxOptions.Should().BeNull();
 
     }
 
     [Fact]
-    public void InsertOrderWithBlindBaseCabinetAndDrawerBoxes() {
+    public async Task InsertOrderWithBlindBaseCabinetAndDrawerBoxes() {
 
         var cabinet = new TrashCabinetBuilder()
             .WithBoxOptions(new CabinetDrawerBoxOptions(CabinetDrawerBoxMaterial.SolidBirch, DrawerSlideType.SideMount))
@@ -58,7 +58,7 @@ public class TrashCabinetPersistenceTest : PersistenceTests {
             .WithQty(1)
             .Build();
 
-        var cab = InsertAndQueryOrderWithProduct(cabinet);
+        var cab = await InsertAndQueryOrderWithProduct(cabinet);
 
         cab.DrawerBoxOptions.Should().NotBeNull();
         cab.DrawerBoxOptions!.Material.Should().Be(CabinetDrawerBoxMaterial.SolidBirch);
@@ -67,7 +67,7 @@ public class TrashCabinetPersistenceTest : PersistenceTests {
     }
 
     [Fact]
-    public void InsertOrderWithBlindBaseCabinetAndNoMDFDoors() {
+    public async Task InsertOrderWithBlindBaseCabinetAndNoMDFDoors() {
 
         var cabinet = new TrashCabinetBuilder()
             .WithBoxOptions(null)
@@ -78,7 +78,7 @@ public class TrashCabinetPersistenceTest : PersistenceTests {
             .WithQty(1)
             .Build();
 
-        var cab = InsertAndQueryOrderWithProduct(cabinet);
+        var cab = await InsertAndQueryOrderWithProduct(cabinet);
 
         cab.DrawerBoxOptions.Should().BeNull();
         cab.DoorConfiguration.Switch(
@@ -89,7 +89,7 @@ public class TrashCabinetPersistenceTest : PersistenceTests {
     }
 
     [Fact]
-    public void InsertOrderWithTrashCabinetWithProductionNotes() {
+    public async Task InsertOrderWithTrashCabinetWithProductionNotes() {
         var cabinet = new TrashCabinetBuilder()
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
@@ -98,11 +98,11 @@ public class TrashCabinetPersistenceTest : PersistenceTests {
             .WithProductionNotes(new() { "A", "B", "C" })
             .Build();
 
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithTrashCabinetWithProductionNotes() {
+    public async Task DeleteOrderWithTrashCabinetWithProductionNotes() {
         var cabinet = new TrashCabinetBuilder()
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
@@ -111,7 +111,7 @@ public class TrashCabinetPersistenceTest : PersistenceTests {
             .WithProductionNotes(new() { "A", "B", "C" })
             .Build();
 
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
 }

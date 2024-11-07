@@ -10,7 +10,7 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 public class TallCabinetPersistenceTest : PersistenceTests {
 
     [Fact]
-    public void InsertOrderWithTallCabinet() {
+    public async Task InsertOrderWithTallCabinet() {
         var cabinet = new TallCabinetBuilder()
             .WithDoors(TallCabinetDoors.NoDoors())
             .WithInside(TallCabinetInside.Empty())
@@ -20,11 +20,11 @@ public class TallCabinetPersistenceTest : PersistenceTests {
             .WithHeight(Dimension.FromInches(25))
             .WithQty(1)
             .Build();
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithTallCabinet() {
+    public async Task DeleteOrderWithTallCabinet() {
         var cabinet = new TallCabinetBuilder()
             .WithDoors(TallCabinetDoors.NoDoors())
             .WithToeType(ToeType.NoToe)
@@ -33,11 +33,11 @@ public class TallCabinetPersistenceTest : PersistenceTests {
             .WithHeight(Dimension.FromInches(25))
             .WithQty(1)
             .Build();
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void InsertOrderWithBlindBaseCabinetAndDrawerBoxesByOthers() {
+    public async Task InsertOrderWithBlindBaseCabinetAndDrawerBoxesByOthers() {
 
         var cabinet = new TallCabinetBuilder()
             .WithBoxOptions(null)
@@ -47,14 +47,14 @@ public class TallCabinetPersistenceTest : PersistenceTests {
             .WithQty(1)
             .Build();
 
-        var cab = InsertAndQueryOrderWithProduct(cabinet);
+        var cab = await InsertAndQueryOrderWithProduct(cabinet);
 
         cab.DrawerBoxOptions.Should().BeNull();
 
     }
 
     [Fact]
-    public void InsertOrderWithBlindBaseCabinetAndDrawerBoxes() {
+    public async Task InsertOrderWithBlindBaseCabinetAndDrawerBoxes() {
 
         var cabinet = new TallCabinetBuilder()
             .WithBoxOptions(new CabinetDrawerBoxOptions(CabinetDrawerBoxMaterial.SolidBirch, DrawerSlideType.SideMount))
@@ -64,7 +64,7 @@ public class TallCabinetPersistenceTest : PersistenceTests {
             .WithQty(1)
             .Build();
 
-        var cab = InsertAndQueryOrderWithProduct(cabinet);
+        var cab = await InsertAndQueryOrderWithProduct(cabinet);
 
         cab.DrawerBoxOptions.Should().NotBeNull();
         cab.DrawerBoxOptions!.Material.Should().Be(CabinetDrawerBoxMaterial.SolidBirch);
@@ -73,7 +73,7 @@ public class TallCabinetPersistenceTest : PersistenceTests {
     }
 
     [Fact]
-    public void InsertOrderWithBlindBaseCabinetAndNoMDFDoors() {
+    public async Task InsertOrderWithBlindBaseCabinetAndNoMDFDoors() {
 
         var cabinet = new TallCabinetBuilder()
             .WithBoxOptions(null)
@@ -84,7 +84,7 @@ public class TallCabinetPersistenceTest : PersistenceTests {
             .WithQty(1)
             .Build();
 
-        var cab = InsertAndQueryOrderWithProduct(cabinet);
+        var cab = await InsertAndQueryOrderWithProduct(cabinet);
 
         cab.DrawerBoxOptions.Should().BeNull();
         cab.DoorConfiguration.Switch(
@@ -95,7 +95,7 @@ public class TallCabinetPersistenceTest : PersistenceTests {
     }
 
     [Fact]
-    public void InsertOrderWithGarageTallCabinet() {
+    public async Task InsertOrderWithGarageTallCabinet() {
         var cabinet = new TallCabinetBuilder()
             .WithIsGarage(true)
             .WithDoors(TallCabinetDoors.NoDoors())
@@ -107,11 +107,11 @@ public class TallCabinetPersistenceTest : PersistenceTests {
             .WithQty(1)
             .Build();
 
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithGarageTallCabinet() {
+    public async Task DeleteOrderWithGarageTallCabinet() {
         var cabinet = new TallCabinetBuilder()
             .WithIsGarage(true)
             .WithDoors(TallCabinetDoors.NoDoors())
@@ -123,11 +123,11 @@ public class TallCabinetPersistenceTest : PersistenceTests {
             .WithQty(1)
             .Build();
 
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void InsertOrderWithTallCabinetWithProductionNotes() {
+    public async Task InsertOrderWithTallCabinetWithProductionNotes() {
         var cabinet = new TallCabinetBuilder()
             .WithDoors(TallCabinetDoors.NoDoors())
             .WithInside(TallCabinetInside.Empty())
@@ -139,11 +139,11 @@ public class TallCabinetPersistenceTest : PersistenceTests {
             .WithProductionNotes(new() { "A", "B", "C" })
             .Build();
 
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithTallCabinetWithProductionNotes() {
+    public async Task DeleteOrderWithTallCabinetWithProductionNotes() {
         var cabinet = new TallCabinetBuilder()
             .WithDoors(TallCabinetDoors.NoDoors())
             .WithInside(TallCabinetInside.Empty())
@@ -155,7 +155,7 @@ public class TallCabinetPersistenceTest : PersistenceTests {
             .WithProductionNotes(new() { "A", "B", "C" })
             .Build();
 
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
 }

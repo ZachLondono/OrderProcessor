@@ -8,27 +8,27 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.ClosetParts;
 public class ClosetPartPersistenceTest : PersistenceTests {
 
     [Fact]
-    public void InsertOrderWithClosetPart() {
+    public async Task InsertOrderWithClosetPart() {
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
                                 "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", false, new Dictionary<string, string>() {
                                     { "Param1", "Value1"},
                                     { "Param2", "Value2"}
                                 });
-        InsertAndQueryOrderWithProduct(part);
+        await InsertAndQueryOrderWithProduct(part);
     }
 
     [Fact]
-    public void DeleteOrderWithClosetPart() {
+    public async Task DeleteOrderWithClosetPart() {
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
                                 "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", false, new Dictionary<string, string>() {
                                     { "Param1", "Value1"},
                                     { "Param2", "Value2"}
                                 });
-        InsertAndDeleteOrderWithProduct(part);
+        await InsertAndDeleteOrderWithProduct(part);
     }
 
     [Fact]
-    public void InsertOrderWithClosetPartWithProductionNotes() {
+    public async Task InsertOrderWithClosetPartWithProductionNotes() {
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
                                 "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", false, new Dictionary<string, string>() {
                                     { "Param1", "Value1"},
@@ -36,11 +36,11 @@ public class ClosetPartPersistenceTest : PersistenceTests {
                                 }) {
             ProductionNotes = new() { "A", "B", "C" }
         };
-        InsertAndQueryOrderWithProduct(part);
+        await InsertAndQueryOrderWithProduct(part);
     }
 
     [Fact]
-    public void DeleteOrderWithClosetPartWithProductionNotes() {
+    public async Task DeleteOrderWithClosetPartWithProductionNotes() {
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
                                 "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", false, new Dictionary<string, string>() {
                                     { "Param1", "Value1"},
@@ -48,23 +48,23 @@ public class ClosetPartPersistenceTest : PersistenceTests {
                                 }) {
             ProductionNotes = new() { "A", "B", "C" }
         };
-        InsertAndDeleteOrderWithProduct(part);
+        await InsertAndDeleteOrderWithProduct(part);
     }
 
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public void InsertOrderWithClosetPart_InstallCams(bool installCams) {
+    public async Task InsertOrderWithClosetPart_InstallCams(bool installCams) {
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
                                 "PC", Dimension.Zero, Dimension.Zero, new("", ClosetMaterialCore.Plywood), null, "", "", installCams, new Dictionary<string, string>() {
                                     { "Param1", "Value1"},
                                     { "Param2", "Value2"}
                                 });
-        InsertAndQueryOrderWithProduct(part);
+        await InsertAndQueryOrderWithProduct(part);
     }
 
     [Fact]
-    public void UpdateClosetPart() {
+    public async Task UpdateClosetPart() {
 
         // Arrange
         var part = new ClosetPart(Guid.NewGuid(), 1, 0M, 1, "",
@@ -73,7 +73,7 @@ public class ClosetPartPersistenceTest : PersistenceTests {
                                     { "Param2", "Value2"}
                                 });
 
-        var orderId = InsertOrderWithProduct(part);
+        var orderId = await InsertOrderWithProduct(part);
 
         part.Qty = 123;
         part.Room = "New Room Name";
@@ -82,10 +82,10 @@ public class ClosetPartPersistenceTest : PersistenceTests {
 
         // Act
         var sut = new UpdateClosetPart.Handler(Factory);
-        sut.Handle(new(part)).Wait();
+        await sut.Handle(new(part));
 
         // Assert
-        VerifyProductExistsInOrder(orderId, part);
+        await VerifyProductExistsInOrder(orderId, part);
 
     }
 

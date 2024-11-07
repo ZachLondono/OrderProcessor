@@ -19,7 +19,7 @@ public class AllmoxyClientTests {
     }
 
     [Fact]
-    public void ShouldReturnExportData_WhenOrderAndIndexAreValid() {
+    public async Task ShouldReturnExportData_WhenOrderAndIndexAreValid() {
 
         string orderNumber = "";
         int index = 0;
@@ -33,14 +33,14 @@ public class AllmoxyClientTests {
 
         _client.ExecuteAsync(Arg.Any<RestRequest>()).ReturnsForAnyArgs(Task.FromResult(response));
 
-        var export = _sut.GetExportAsync(orderNumber, index).Result;
+        var export = await _sut.GetExportAsync(orderNumber, index);
 
         export.Should().BeEquivalentTo(expectedContent);
 
     }
 
     [Fact]
-    public void ShouldThrowException_WhenOrderIsNotValid() {
+    public async Task ShouldThrowException_WhenOrderIsNotValid() {
 
         string orderNumber = "";
         int index = 0;
@@ -54,16 +54,15 @@ public class AllmoxyClientTests {
 
         _client.ExecuteAsync(Arg.Any<RestRequest>()).ReturnsForAnyArgs(Task.FromResult(response));
 
-        var action = () => _sut.GetExportAsync(orderNumber, index).Result;
-
-        action.Should()
-            .Throw<InvalidOperationException>()
-            .WithMessage("Order could not be found");
+        await _sut.Awaiting(s => s.GetExportAsync(orderNumber, index))
+                    .Should()
+                    .ThrowAsync<InvalidOperationException>()
+                    .WithMessage("Order could not be found");
 
     }
 
     [Fact]
-    public void ShouldThrowException_WhenIndexIsNotValid() {
+    public async Task ShouldThrowException_WhenIndexIsNotValid() {
 
         string orderNumber = "";
         int index = 0;
@@ -77,16 +76,15 @@ public class AllmoxyClientTests {
 
         _client.ExecuteAsync(Arg.Any<RestRequest>()).ReturnsForAnyArgs(Task.FromResult(response));
 
-        var action = () => _sut.GetExportAsync(orderNumber, index).Result;
-
-        action.Should()
-            .Throw<InvalidOperationException>()
-            .WithMessage("Export could not be found");
+        await _sut.Awaiting(s => s.GetExportAsync(orderNumber, index))
+                    .Should()
+                    .ThrowAsync<InvalidOperationException>()
+                    .WithMessage("Export could not be found");
 
     }
 
     [Fact]
-    public void ShouldThrowException_WhenCredentialsAreInvalid() {
+    public async Task ShouldThrowException_WhenCredentialsAreInvalid() {
 
         string orderNumber = "";
         int index = 0;
@@ -97,16 +95,15 @@ public class AllmoxyClientTests {
 
         _client.ExecuteAsync(Arg.Any<RestRequest>()).ReturnsForAnyArgs(Task.FromResult(response));
 
-        var action = () => _sut.GetExportAsync(orderNumber, index).Result;
-
-        action.Should()
-            .Throw<InvalidOperationException>()
-            .WithMessage("Could not log in to Allmoxy");
+        await _sut.Awaiting(s => s.GetExportAsync(orderNumber, index))
+                    .Should()
+                    .ThrowAsync<InvalidOperationException>()
+                    .WithMessage("Could not log in to Allmoxy");
 
     }
 
     [Fact]
-    public void ShouldThrowException_WhenUnexpectedResponseReturned() {
+    public async Task ShouldThrowException_WhenUnexpectedResponseReturned() {
 
         string orderNumber = "";
         int index = 0;
@@ -118,11 +115,10 @@ public class AllmoxyClientTests {
 
         _client.ExecuteAsync(Arg.Any<RestRequest>()).ReturnsForAnyArgs(Task.FromResult(response));
 
-        var action = () => _sut.GetExportAsync(orderNumber, index).Result;
-
-        action.Should()
-            .Throw<InvalidOperationException>()
-            .WithMessage($"Unexpected response from server {System.Net.HttpStatusCode.OK}");
+        await _sut.Awaiting(s => s.GetExportAsync(orderNumber, index))
+                    .Should()
+                    .ThrowAsync<InvalidOperationException>()
+                    .WithMessage($"Unexpected response from server {System.Net.HttpStatusCode.OK}");
 
     }
 
@@ -139,11 +135,10 @@ public class AllmoxyClientTests {
 
         _client.ExecuteAsync(Arg.Any<RestRequest>()).ReturnsForAnyArgs(Task.FromResult(response));
 
-        var action = () => _sut.GetExportAsync(orderNumber, index).Result;
-
-        action.Should()
-            .Throw<InvalidOperationException>()
-            .WithMessage("No data returned");
+        _sut.Awaiting(s => s.GetExportAsync(orderNumber, index))
+                    .Should()
+                    .ThrowAsync<InvalidOperationException>()
+                    .WithMessage("No data returned");
 
     }
 

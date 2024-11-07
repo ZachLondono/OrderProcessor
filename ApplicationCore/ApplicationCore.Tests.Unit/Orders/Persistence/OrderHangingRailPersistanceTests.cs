@@ -38,7 +38,7 @@ public class OrderHangingRailPersistanceTests {
         result.OnError(error => Assert.Fail("Handler returned error"));
 
         // Assert
-        var connection = Factory.CreateConnection().Result;
+        var connection = await Factory.CreateConnection();
         var repo = new OrderHangingRailRepository(connection);
         var rails = repo.GetOrderHangingRails(order.Id);
         rails.Should().ContainEquivalentOf(rail);
@@ -62,7 +62,7 @@ public class OrderHangingRailPersistanceTests {
         result2.OnError(error => Assert.Fail("Handler returned error"));
 
         // Assert
-        var connection = Factory.CreateConnection().Result;
+        var connection = await Factory.CreateConnection();
         var repo = new OrderHangingRailRepository(connection);
         var rails = repo.GetOrderHangingRails(order.Id);
         rails.Should().BeEmpty();

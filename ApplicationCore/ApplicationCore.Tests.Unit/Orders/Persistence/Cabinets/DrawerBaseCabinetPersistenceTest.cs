@@ -9,7 +9,7 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
 
     [Fact]
-    public void InsertOrderWithDrawerBaseCabinet() {
+    public async Task InsertOrderWithDrawerBaseCabinet() {
         var cabinet = new DrawerBaseCabinetBuilder()
             .WithDrawers(VerticalDrawerBank.None())
             .WithToeType(ToeType.NoToe)
@@ -18,11 +18,11 @@ public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
             .WithHeight(Dimension.FromInches(25))
             .WithQty(1)
             .Build();
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithDrawerBaseCabinet() {
+    public async Task DeleteOrderWithDrawerBaseCabinet() {
         var cabinet = new DrawerBaseCabinetBuilder()
             .WithDrawers(VerticalDrawerBank.None())
             .WithToeType(ToeType.NoToe)
@@ -31,11 +31,11 @@ public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
             .WithHeight(Dimension.FromInches(25))
             .WithQty(1)
             .Build();
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void InsertOrderWithBlindBaseCabinetAndDrawerBoxesByOthers() {
+    public async Task InsertOrderWithBlindBaseCabinetAndDrawerBoxesByOthers() {
 
         var cabinet = new DrawerBaseCabinetBuilder()
             .WithBoxOptions(null)
@@ -45,14 +45,14 @@ public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
             .WithQty(1)
             .Build();
 
-        var cab = InsertAndQueryOrderWithProduct(cabinet);
+        var cab = await InsertAndQueryOrderWithProduct(cabinet);
 
         cab.DrawerBoxOptions.Should().BeNull();
 
     }
 
     [Fact]
-    public void InsertOrderWithBlindBaseCabinetAndDrawerBoxes() {
+    public async Task InsertOrderWithBlindBaseCabinetAndDrawerBoxes() {
 
         var cabinet = new DrawerBaseCabinetBuilder()
             .WithBoxOptions(new CabinetDrawerBoxOptions(CabinetDrawerBoxMaterial.SolidBirch, DrawerSlideType.SideMount))
@@ -62,7 +62,7 @@ public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
             .WithQty(1)
             .Build();
 
-        var cab = InsertAndQueryOrderWithProduct(cabinet);
+        var cab = await InsertAndQueryOrderWithProduct(cabinet);
 
         cab.DrawerBoxOptions.Should().NotBeNull();
         cab.DrawerBoxOptions!.Material.Should().Be(CabinetDrawerBoxMaterial.SolidBirch);
@@ -71,7 +71,7 @@ public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
     }
 
     [Fact]
-    public void InsertOrderWithBlindBaseCabinetAndNoMDFDoors() {
+    public async Task InsertOrderWithBlindBaseCabinetAndNoMDFDoors() {
 
         var cabinet = new DrawerBaseCabinetBuilder()
             .WithBoxOptions(null)
@@ -82,7 +82,7 @@ public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
             .WithQty(1)
             .Build();
 
-        var cab = InsertAndQueryOrderWithProduct(cabinet);
+        var cab = await InsertAndQueryOrderWithProduct(cabinet);
 
         cab.DrawerBoxOptions.Should().BeNull();
         cab.DoorConfiguration.Switch(
@@ -93,7 +93,7 @@ public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
     }
 
     [Fact]
-    public void InsertOrderWithGarageDrawerBaseCabinet() {
+    public async Task InsertOrderWithGarageDrawerBaseCabinet() {
         var cabinet = new DrawerBaseCabinetBuilder()
             .WithIsGarage(true)
             .WithDrawers(VerticalDrawerBank.None())
@@ -104,11 +104,11 @@ public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
             .WithQty(1)
             .Build();
 
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithGarageDrawerBaseCabinet() {
+    public async Task DeleteOrderWithGarageDrawerBaseCabinet() {
         var cabinet = new DrawerBaseCabinetBuilder()
             .WithIsGarage(true)
             .WithDrawers(VerticalDrawerBank.None())
@@ -119,11 +119,11 @@ public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
             .WithQty(1)
             .Build();
 
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void InsertOrderWithDrawerBaseCabinetWithProductionNotes() {
+    public async Task InsertOrderWithDrawerBaseCabinetWithProductionNotes() {
         var cabinet = new DrawerBaseCabinetBuilder()
             .WithDrawers(VerticalDrawerBank.None())
             .WithToeType(ToeType.NoToe)
@@ -134,11 +134,11 @@ public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
             .WithProductionNotes(new() { "A", "B", "C" })
             .Build();
 
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithGarageDrawerBaseCabinetWithProductionNotes() {
+    public async Task DeleteOrderWithGarageDrawerBaseCabinetWithProductionNotes() {
         var cabinet = new DrawerBaseCabinetBuilder()
             .WithDrawers(VerticalDrawerBank.None())
             .WithToeType(ToeType.NoToe)
@@ -149,7 +149,7 @@ public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
             .WithProductionNotes(new() { "A", "B", "C" })
             .Build();
 
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
 }

@@ -38,7 +38,7 @@ public class OrderDrawerSlidesPersistanceTests {
         result.OnError(error => Assert.Fail("Handler returned error"));
 
         // Assert
-        var connection = Factory.CreateConnection().Result;
+        var connection = await Factory.CreateConnection();
         var repo = new OrderDrawerSlidesRepository(connection);
         var orderSlides = repo.GetOrderDrawerSlides(order.Id);
         orderSlides.Should().ContainEquivalentOf(slides);
@@ -62,7 +62,7 @@ public class OrderDrawerSlidesPersistanceTests {
         result2.OnError(error => Assert.Fail("Handler returned error"));
 
         // Assert
-        var connection = Factory.CreateConnection().Result;
+        var connection = await Factory.CreateConnection();
         var repo = new OrderDrawerSlidesRepository(connection);
         var orderSlides = repo.GetOrderDrawerSlides(order.Id);
         orderSlides.Should().BeEmpty();

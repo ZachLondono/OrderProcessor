@@ -25,7 +25,7 @@ public class OrderAdditionalItemsPersistenceTests {
     }
 
     [Fact]
-    public void InsertOrder_ShouldInsertRowsIntoAdditionalItemsTable() {
+    public async Task InsertOrder_ShouldInsertRowsIntoAdditionalItemsTable() {
 
         // Arrange
         var item = new AdditionalItem(Guid.NewGuid(), 1, "Test Item", 123.45M);
@@ -36,11 +36,11 @@ public class OrderAdditionalItemsPersistenceTests {
         }.Build();
 
         // Act
-        var result = _insertOrder.Handle(new(order)).Result;
+        var result = await _insertOrder.Handle(new(order));
         result.OnError(error => Assert.Fail("Handler returned error"));
 
         // Assert
-        var connection = Factory.CreateConnection().Result;
+        var connection = await Factory.CreateConnection();
         var items = connection.QuerySingle<int>("SELECT COUNT(*) FROM additional_items");
 
         items.Should().Be(1);
@@ -48,7 +48,7 @@ public class OrderAdditionalItemsPersistenceTests {
     }
 
     [Fact]
-    public void DeleteOrder_ShouldRemoveAdditionalItemsFromTable() {
+    public async Task DeleteOrder_ShouldRemoveAdditionalItemsFromTable() {
 
         // Arrange
         var item = new AdditionalItem(Guid.NewGuid(), 1, "Test Item", 123.45M);
@@ -59,14 +59,14 @@ public class OrderAdditionalItemsPersistenceTests {
         }.Build();
 
         // Act
-        var result = _insertOrder.Handle(new(order)).Result;
+        var result = await _insertOrder.Handle(new(order));
         result.OnError(error => Assert.Fail("Handler returned error"));
 
-        var deleteResult = _deleteOrder.Handle(new(order.Id)).Result;
+        var deleteResult = await _deleteOrder.Handle(new(order.Id));
         deleteResult.OnError(error => Assert.Fail("Handler returned error"));
 
         // Assert
-        var connection = Factory.CreateConnection().Result;
+        var connection = await Factory.CreateConnection();
         var items = connection.QuerySingle<int>("SELECT COUNT(*) FROM additional_items");
 
         items.Should().Be(0);
@@ -74,7 +74,7 @@ public class OrderAdditionalItemsPersistenceTests {
     }
 
     [Fact]
-    public void RemoveAdditionalItem_ShouldRemoveAdditionalItemsFromTable() {
+    public async Task RemoveAdditionalItem_ShouldRemoveAdditionalItemsFromTable() {
 
         // Arrange
         var item = new AdditionalItem(Guid.NewGuid(), 1, "Test Item", 123.45M);
@@ -85,14 +85,14 @@ public class OrderAdditionalItemsPersistenceTests {
         }.Build();
 
         // Act
-        var result = _insertOrder.Handle(new(order)).Result;
+        var result = await _insertOrder.Handle(new(order));
         result.OnError(error => Assert.Fail("Handler returned error"));
 
-        var deleteResult = _removeAdditionalItem.Handle(new(item.Id)).Result;
+        var deleteResult = await _removeAdditionalItem.Handle(new(item.Id));
         deleteResult.OnError(error => Assert.Fail("Handler returned error"));
 
         // Assert
-        var connection = Factory.CreateConnection().Result;
+        var connection = await Factory.CreateConnection();
         var items = connection.QuerySingle<int>("SELECT COUNT(*) FROM additional_items");
 
         items.Should().Be(0);

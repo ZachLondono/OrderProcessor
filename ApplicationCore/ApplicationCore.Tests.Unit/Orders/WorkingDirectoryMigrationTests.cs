@@ -14,7 +14,7 @@ public class WorkingDirectoryMigrationTests {
     }
 
     [Fact]
-    public void ShouldNotMigrate_WhenOldDirectoryDoesNotExist() {
+    public async Task ShouldNotMigrate_WhenOldDirectoryDoesNotExist() {
 
         // Arrange
         string oldDir = "path/to/existing/wd";
@@ -26,7 +26,7 @@ public class WorkingDirectoryMigrationTests {
         _fileHandler.DirectoryExists(oldDir).Returns(false);
 
         // Act
-        var result = _sut.Handle(command).Result;
+        var result = await _sut.Handle(command);
 
         // Assert
         result.IsError.Should().BeTrue();
@@ -34,7 +34,7 @@ public class WorkingDirectoryMigrationTests {
     }
 
     [Fact]
-    public void ShouldCreateDirectory_WhenNewDirectoryDoesNotExist() {
+    public async Task ShouldCreateDirectory_WhenNewDirectoryDoesNotExist() {
 
         // Arrange
         string oldDir = "path/to/existing/wd";
@@ -46,7 +46,7 @@ public class WorkingDirectoryMigrationTests {
         _fileHandler.DirectoryExists(oldDir).Returns(false);
 
         // Act
-        var result = _sut.Handle(command).Result;
+        var result = await _sut.Handle(command);
 
         _fileHandler.Received().CreateDirectory(newDir);
 
@@ -56,7 +56,7 @@ public class WorkingDirectoryMigrationTests {
     }
 
     [Fact]
-    public void ShouldNotMigrate_WhenDirectoryContainsTooManyFiles() {
+    public async Task ShouldNotMigrate_WhenDirectoryContainsTooManyFiles() {
 
         // Arrange
         string oldDir = "path/to/existing/wd";
@@ -69,7 +69,7 @@ public class WorkingDirectoryMigrationTests {
         _fileHandler.GetFiles("", "", SearchOption.AllDirectories).ReturnsForAnyArgs(new string[MigrateWorkingDirectory.Handler.MAX_FILES + 1]);
 
         // Act
-        var result = _sut.Handle(command).Result;
+        var result = await _sut.Handle(command);
 
         // Assert
         result.IsError.Should().BeTrue();
@@ -77,7 +77,7 @@ public class WorkingDirectoryMigrationTests {
     }
 
     [Fact]
-    public void ShouldCopyAllFilesToNewDirectory() {
+    public async Task ShouldCopyAllFilesToNewDirectory() {
 
         // Arrange
         string oldDir = "path/to/existing/wd";
@@ -92,7 +92,7 @@ public class WorkingDirectoryMigrationTests {
         _fileHandler.DirectoryExists(oldDir).ReturnsForAnyArgs(true);
 
         // Act
-        var result = _sut.Handle(command).Result;
+        var result = await _sut.Handle(command);
 
         // Assert
         _fileHandler.ReceivedWithAnyArgs(5).Copy("", "");
@@ -101,7 +101,7 @@ public class WorkingDirectoryMigrationTests {
     }
 
     [Fact]
-    public void ShouldMoveAllFilesToNewDirectory() {
+    public async Task ShouldMoveAllFilesToNewDirectory() {
 
         // Arrange
         string oldDir = "path/to/existing/wd";
@@ -116,7 +116,7 @@ public class WorkingDirectoryMigrationTests {
         _fileHandler.DirectoryExists(oldDir).ReturnsForAnyArgs(true);
 
         // Act
-        var result = _sut.Handle(command).Result;
+        var result = await _sut.Handle(command);
 
         // Assert
         _fileHandler.ReceivedWithAnyArgs(5).Move("", "");
@@ -125,7 +125,7 @@ public class WorkingDirectoryMigrationTests {
     }
 
     [Fact]
-    public void ShouldDeleteAllFilesInOldDirectory() {
+    public async Task ShouldDeleteAllFilesInOldDirectory() {
         // Arrange
         string oldDir = "path/to/existing/wd";
         string newDir = "path/to/new/wd";
@@ -139,7 +139,7 @@ public class WorkingDirectoryMigrationTests {
         _fileHandler.DirectoryExists(oldDir).ReturnsForAnyArgs(true);
 
         // Act
-        var result = _sut.Handle(command).Result;
+        var result = await _sut.Handle(command);
 
         // Assert
         _fileHandler.ReceivedWithAnyArgs(5).DeleteFile("");

@@ -37,7 +37,7 @@ public class OrderSuppliesPersistanceTests {
         result.OnError(error => Assert.Fail("Handler returned error"));
 
         // Assert
-        var connection = Factory.CreateConnection().Result;
+        var connection = await Factory.CreateConnection();
         var repo = new OrderSuppliesRepository(connection);
         var supplies = repo.GetOrderSupplies(order.Id);
         supplies.Should().ContainEquivalentOf(supply);
@@ -61,7 +61,7 @@ public class OrderSuppliesPersistanceTests {
         result2.OnError(error => Assert.Fail("Handler returned error"));
 
         // Assert
-        var connection = Factory.CreateConnection().Result;
+        var connection = await Factory.CreateConnection();
         var repo = new OrderSuppliesRepository(connection);
         var supplies = repo.GetOrderSupplies(order.Id);
         supplies.Should().BeEmpty();

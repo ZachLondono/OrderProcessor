@@ -8,7 +8,7 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence;
 public class OrderPersistenceTests : PersistenceTests {
 
     [Fact]
-    public void Should_Insert() {
+    public async Task Should_Insert() {
 
         // Arrange
         var order = new OrderBuilder() {
@@ -21,11 +21,11 @@ public class OrderPersistenceTests : PersistenceTests {
         }.Build();
 
         // Act
-        var insertResult = Sut.Handle(new(order)).Result;
+        var insertResult = await Sut.Handle(new(order));
         insertResult.OnError(error => Assert.Fail($"Handler returned error - {error.Title} : {error.Details}"));
 
         // Assert
-        var connection = Factory.CreateConnection().Result;
+        var connection = await Factory.CreateConnection();
         var result = connection.Query("SELECT * FROM orders;");
 
         result.Should().HaveCount(1);
@@ -46,7 +46,7 @@ public class OrderPersistenceTests : PersistenceTests {
     }
 
     [Fact]
-    public void Should_Insert_And_Select() {
+    public async Task Should_Insert_And_Select() {
 
         // Arrange
         var order = new OrderBuilder() {
@@ -59,14 +59,14 @@ public class OrderPersistenceTests : PersistenceTests {
         }.Build();
 
         // Act
-        var insertResult = Sut.Handle(new(order)).Result;
+        var insertResult = await Sut.Handle(new(order));
         insertResult.OnError(error => Assert.Fail($"Handler returned error - {error.Title} : {error.Details}"));
 
         // Assert
 
         var logger = Substitute.For<ILogger<GetOrderById.Handler>>();
         var handler = new GetOrderById.Handler(logger, Factory);
-        var getResult = handler.Handle(new(order.Id)).Result;
+        var getResult = await handler.Handle(new(order.Id));
 
         order.Should().BeEquivalentTo(getResult.Value!);
 

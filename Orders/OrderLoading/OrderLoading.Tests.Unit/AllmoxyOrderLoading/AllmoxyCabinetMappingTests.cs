@@ -28,7 +28,7 @@ public class AllmoxyCabinetMappingTests {
             Fronts = new() {
                 Color = "",
                 Style = "",
-                Type = ""
+                Type = "None"
             },
             EdgeBandColor = "",
             Assembled = "",
