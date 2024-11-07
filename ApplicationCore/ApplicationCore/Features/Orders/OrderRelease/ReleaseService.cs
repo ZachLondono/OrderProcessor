@@ -292,7 +292,10 @@ public class ReleaseService {
                                                          c.RightSideType == CabinetSideType.Finished,
                                                          c.LeftSideType == CabinetSideType.Finished,
                                                          c.Assembled,
-                                                         (c.SlabDoorMaterial is not null ? FrontsType.Slab : (c.MDFDoorOptions is not null ? FrontsType.MDF : FrontsType.None)),
+                                                         c.DoorConfiguration.Match(
+                                                             slab => FrontsType.Slab,
+                                                             mdf => FrontsType.MDF,
+                                                             byothers => FrontsType.None),
                                                          c.GetNotes().ToArray())
                                 ).ToArray();
 
