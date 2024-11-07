@@ -1,4 +1,5 @@
 ﻿using Domain.Orders.Builders;
+using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
@@ -75,21 +76,24 @@ public class BaseCabinetPersistenceTest : PersistenceTests {
     }
 
     [Fact]
-    public void InsertOrderWithBaseCabinetAndNoMDFDoors() {
+    public void InsertOrderWithBaseCabinetAndDoorsByOthers() {
 
         var cabinet = new BaseCabinetBuilder()
             .WithBoxOptions(null)
-            .WithMDFDoorOptions(null)
+            .WithDoorConfiguration(new DoorsByOthers())
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
             .WithHeight(Dimension.FromInches(25))
             .WithQty(1)
             .Build();
 
-        var cab = InsertAndQueryOrderWithProduct(cabinet);
+        var cab = InsertAndQueryOrderWithProduct<BaseCabinet>(cabinet);
 
         cab.DrawerBoxOptions.Should().BeNull();
-        cab.MDFDoorOptions.Should().BeNull();
+        cab.DoorConfiguration.Switch(
+            slab => Assert.Fail("Door configuration should be Doors By Others, but Slab was found"),
+            mdf => Assert.Fail("Door configuration should be Doors By Others, but MDF was found"),
+            byothers => { });
 
     }
 

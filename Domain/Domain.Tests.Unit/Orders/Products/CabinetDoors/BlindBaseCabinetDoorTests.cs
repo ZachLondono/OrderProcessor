@@ -1,4 +1,5 @@
 ﻿using Domain.Orders.Builders;
+using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using FluentAssertions;
@@ -49,7 +50,7 @@ public class BlindBaseCabinetDoorTests {
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(cabinetQty)
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 
@@ -62,7 +63,7 @@ public class BlindBaseCabinetDoorTests {
     }
 
     [Fact]
-    public void GetDoors_ShouldReturnEmpty_WhenMDFDoorOptionsIsNull() {
+    public void GetDoors_ShouldReturnEmpty_WhenDoorConfigurationIsByOthers() {
 
         // Arrange
         var cabinet = new BlindBaseCabinetBuilder()
@@ -75,7 +76,33 @@ public class BlindBaseCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(1067))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
-                            .WithMDFDoorOptions(null)
+                            .WithDoorConfiguration(new DoorsByOthers())
+                            .Build();
+
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Should().BeEmpty();
+
+    }
+
+    [Fact]
+    public void GetDoors_ShouldReturnEmpty_WhenDoorConfigurationIsSlab() {
+
+        // Arrange
+        var cabinet = new BlindBaseCabinetBuilder()
+                            .WithDoors(new() { Quantity = 1 })
+                            .WithDrawers(new() {
+                                Quantity = 1,
+                                FaceHeight = Dimension.FromMillimeters(157)
+                            })
+                            .WithBlindWidth(Dimension.FromMillimeters(635))
+                            .WithWidth(Dimension.FromMillimeters(1067))
+                            .WithHeight(Dimension.FromMillimeters(876))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .WithDoorConfiguration(new CabinetSlabDoorMaterial("Finish", CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard))
                             .Build();
 
 
@@ -103,7 +130,7 @@ public class BlindBaseCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 
@@ -132,7 +159,7 @@ public class BlindBaseCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 
@@ -157,7 +184,7 @@ public class BlindBaseCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(456))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 
@@ -187,7 +214,7 @@ public class BlindBaseCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(456))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 

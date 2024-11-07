@@ -1,4 +1,5 @@
 ﻿using Domain.Orders.Builders;
+using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using FluentAssertions;
@@ -45,7 +46,7 @@ public class WallDiagonalCornerCabinetDoorTests {
                             .WithDepth(Dimension.FromMillimeters(305))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithQty(cabinetQty)
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 
@@ -58,7 +59,7 @@ public class WallDiagonalCornerCabinetDoorTests {
     }
 
     [Fact]
-    public void GetDoors_ShouldReturnEmpty_WhenMDFDoorOptionsIsNull() {
+    public void GetDoors_ShouldReturnEmpty_WhenDoorConfigurationIsSlab() {
 
         // Arrange
         var cabinet = new WallDiagonalCornerCabinetBuilder()
@@ -68,7 +69,30 @@ public class WallDiagonalCornerCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(610))
                             .WithDepth(Dimension.FromMillimeters(305))
                             .WithHeight(Dimension.FromMillimeters(876))
-                            .WithMDFDoorOptions(null)
+                            .WithDoorConfiguration(new CabinetSlabDoorMaterial("Finish", CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard))
+                            .Build();
+
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Should().BeEmpty();
+
+    }
+
+    [Fact]
+    public void GetDoors_ShouldReturnEmpty_WhenDoorConfigurationIsByOthers() {
+
+        // Arrange
+        var cabinet = new WallDiagonalCornerCabinetBuilder()
+                            .WithDoorQty(1)
+                            .WithRightWidth(Dimension.FromMillimeters(610))
+                            .WithRightDepth(Dimension.FromMillimeters(305))
+                            .WithWidth(Dimension.FromMillimeters(610))
+                            .WithDepth(Dimension.FromMillimeters(305))
+                            .WithHeight(Dimension.FromMillimeters(876))
+                            .WithDoorConfiguration(new DoorsByOthers())
                             .Build();
 
 
@@ -94,7 +118,7 @@ public class WallDiagonalCornerCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithDepth(Dimension.FromMillimeters(cabDepth))
                             .WithHeight(Dimension.FromMillimeters(876))
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 
@@ -119,7 +143,7 @@ public class WallDiagonalCornerCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(610))
                             .WithDepth(Dimension.FromMillimeters(305))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 
@@ -145,7 +169,7 @@ public class WallDiagonalCornerCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(610))
                             .WithDepth(Dimension.FromMillimeters(305))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 

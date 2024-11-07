@@ -45,7 +45,7 @@ public class TallCabinetDoorTests {
                             .WithHeight(Dimension.FromMillimeters(2134))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(cabinetQty)
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 
@@ -58,7 +58,7 @@ public class TallCabinetDoorTests {
     }
 
     [Fact]
-    public void GetDoors_ShouldReturnEmpty_WhenMDFDoorOptionsIsNull() {
+    public void GetDoors_ShouldReturnEmpty_WhenDoorConfigurationIsByOthers() {
 
         // Arrange
         var cabinet = new TallCabinetBuilder()
@@ -67,7 +67,7 @@ public class TallCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(2134))
                             .WithDepth(Dimension.FromMillimeters(610))
-                            .WithMDFDoorOptions(null)
+                            .WithDoorConfiguration(new DoorsByOthers())
                             .Build();
 
 
@@ -78,6 +78,29 @@ public class TallCabinetDoorTests {
         doors.Should().BeEmpty();
 
     }
+
+    [Fact]
+    public void GetDoors_ShouldReturnEmpty_WhenDoorConfigurationIsSlab() {
+
+        // Arrange
+        var cabinet = new TallCabinetBuilder()
+                            .WithDoors(new(HingeSide.Left))
+                            .WithToeType(ToeType.LegLevelers)
+                            .WithWidth(Dimension.FromMillimeters(457))
+                            .WithHeight(Dimension.FromMillimeters(2134))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .WithDoorConfiguration(new CabinetSlabDoorMaterial("Finish", CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard))
+                            .Build();
+
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Should().BeEmpty();
+
+    }
+
 
     [Theory]
     [InlineData(2134, HingeSide.Left, 1, 2029)]
@@ -94,7 +117,7 @@ public class TallCabinetDoorTests {
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(1)
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 
@@ -122,7 +145,7 @@ public class TallCabinetDoorTests {
                             .WithHeight(Dimension.FromMillimeters(2134))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(1)
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 
@@ -151,7 +174,7 @@ public class TallCabinetDoorTests {
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(1)
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 

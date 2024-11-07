@@ -1,4 +1,5 @@
 ﻿using Domain.Orders.Builders;
+using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using FluentAssertions;
@@ -48,7 +49,7 @@ public class BaseCabinetDoorTests {
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(cabinetQty)
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
         // Act
@@ -60,7 +61,7 @@ public class BaseCabinetDoorTests {
     }
 
     [Fact]
-    public void GetDoors_ShouldReturnEmpty_WhenMDFDoorOptionsIsNull() {
+    public void GetDoors_ShouldReturnEmpty_WhenDoorConfigurationIsByOthers() {
 
         // Arrange
         var cabinet = new BaseCabinetBuilder()
@@ -72,7 +73,31 @@ public class BaseCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
-                            .WithMDFDoorOptions(null)
+                            .WithDoorConfiguration(new DoorsByOthers())
+                            .Build();
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Should().BeEmpty();
+
+    }
+
+    [Fact]
+    public void GetDoors_ShouldReturnEmpty_WhenDoorConfigurationIsSlab() {
+
+        // Arrange
+        var cabinet = new BaseCabinetBuilder()
+                            .WithDoors(new() { Quantity = 1 })
+                            .WithDrawers(new() {
+                                Quantity = 1,
+                                FaceHeight = Dimension.FromMillimeters(157)
+                            })
+                            .WithWidth(Dimension.FromMillimeters(457))
+                            .WithHeight(Dimension.FromMillimeters(876))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .WithDoorConfiguration(new CabinetSlabDoorMaterial("Finish", CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard))
                             .Build();
 
         // Act
@@ -99,7 +124,7 @@ public class BaseCabinetDoorTests {
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(2)
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
         // Act
@@ -126,7 +151,7 @@ public class BaseCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(cabWidth))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
         // Act
@@ -150,7 +175,7 @@ public class BaseCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(456))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 
@@ -179,7 +204,7 @@ public class BaseCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(456))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 

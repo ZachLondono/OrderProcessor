@@ -3,6 +3,7 @@ using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using FluentAssertions;
 using Domain.Extensions;
+using Domain.Orders.Enums;
 
 namespace Domain.Tests.Unit.Orders.Products.CabinetDoors;
 
@@ -44,7 +45,7 @@ public class TrashCabinetDoorTests {
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(cabinetQty)
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
         // Act
@@ -56,14 +57,33 @@ public class TrashCabinetDoorTests {
     }
 
     [Fact]
-    public void GetDoors_ShouldReturnEmpty_WhenMDFDoorOptionsIsNull() {
+    public void GetDoors_ShouldReturnEmpty_WhenDoorConfigurationIsSlab() {
 
         // Arrange
         var cabinet = new TrashCabinetBuilder()
                             .WithWidth(Dimension.FromMillimeters(457))
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
-                            .WithMDFDoorOptions(null)
+                            .WithDoorConfiguration(new CabinetSlabDoorMaterial("Finish", CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard))
+                            .Build();
+
+        // Act
+        var doors = cabinet.GetDoors(_doorBuilderFactory);
+
+        // Assert
+        doors.Should().BeEmpty();
+
+    }
+
+    [Fact]
+    public void GetDoors_ShouldReturnEmpty_WhenDoorConfigurationIsByOthers() {
+
+        // Arrange
+        var cabinet = new TrashCabinetBuilder()
+                            .WithWidth(Dimension.FromMillimeters(457))
+                            .WithHeight(Dimension.FromMillimeters(876))
+                            .WithDepth(Dimension.FromMillimeters(610))
+                            .WithDoorConfiguration(new DoorsByOthers())
                             .Build();
 
         // Act
@@ -85,7 +105,7 @@ public class TrashCabinetDoorTests {
                             .WithHeight(Dimension.FromMillimeters(876))
                             .WithDepth(Dimension.FromMillimeters(610))
                             .WithQty(2)
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
         // Act
@@ -109,7 +129,7 @@ public class TrashCabinetDoorTests {
                             .WithWidth(Dimension.FromMillimeters(456))
                             .WithHeight(Dimension.FromMillimeters(cabHeight))
                             .WithDepth(Dimension.FromMillimeters(610))
-                            .WithMDFDoorOptions(_mdfOptions)
+                            .WithDoorConfiguration(_mdfOptions)
                             .Build();
 
 

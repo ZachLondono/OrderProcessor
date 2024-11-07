@@ -1,7 +1,6 @@
 ﻿using Domain.Orders.Builders;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
-using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using FluentAssertions;
 
@@ -76,7 +75,7 @@ public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
 
         var cabinet = new DrawerBaseCabinetBuilder()
             .WithBoxOptions(null)
-            .WithMDFDoorOptions(null)
+            .WithDoorConfiguration(new CabinetSlabDoorMaterial("Finish", CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard))
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
             .WithHeight(Dimension.FromInches(25))
@@ -86,7 +85,10 @@ public class DrawerBaseCabinetPersistenceTest : PersistenceTests {
         var cab = InsertAndQueryOrderWithProduct(cabinet);
 
         cab.DrawerBoxOptions.Should().BeNull();
-        cab.MDFDoorOptions.Should().BeNull();
+        cab.DoorConfiguration.Switch(
+            slab => { },
+            mdf => Assert.Fail("Door configuration should have been Slab, but was MDF"),
+            byothers => Assert.Fail("Door configuration should have been Slab, but was Doors By Others"));
 
     }
 

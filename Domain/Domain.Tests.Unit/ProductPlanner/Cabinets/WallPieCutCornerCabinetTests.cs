@@ -1,5 +1,6 @@
 ﻿using Domain.Orders.Builders;
 using Domain.Orders.Entities.Products.Cabinets;
+using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using FluentAssertions;
 
@@ -8,12 +9,11 @@ namespace Domain.Tests.Unit.ProductPlanner.Cabinets;
 public class WallPieCutCornerCabinetTests {
 
     [Fact]
-    public void DoorType_ShouldBeSlab_WhenSlabDoorMaterialIsNotNullAndMDFOptionsIsNull() {
+    public void DoorType_ShouldBeSlab_WhenDoorConfigurationIsSlab() {
 
         // Arrange
         var cabinet = new WallPieCutCornerCabinetBuilder()
-                            .WithMDFDoorOptions(null)
-                            .WithSlabDoorMaterial(new("", Domain.Orders.Enums.CabinetMaterialFinishType.Melamine, Domain.Orders.Enums.CabinetMaterialCore.ParticleBoard, null))
+                            .WithDoorConfiguration(new CabinetSlabDoorMaterial("", Domain.Orders.Enums.CabinetMaterialFinishType.Melamine, Domain.Orders.Enums.CabinetMaterialCore.ParticleBoard, null))
                             .Build();
 
         // Act
@@ -27,12 +27,11 @@ public class WallPieCutCornerCabinetTests {
     }
 
     [Fact]
-    public void DoorType_ShouldBeByOut_WhenSlabDoorMaterialIsNullAndMDFOptionsIsNotNull() {
+    public void DoorType_ShouldBeByOut_WhenDoorConfigurationIsMDF() {
 
         // Arrange
         var cabinet = new WallPieCutCornerCabinetBuilder()
-                            .WithMDFDoorOptions(new("", Dimension.Zero, "", "", "", Dimension.Zero, null))
-                            .WithSlabDoorMaterial(null)
+                            .WithDoorConfiguration(new MDFDoorOptions("", Dimension.Zero, "", "", "", Dimension.Zero, null))
                             .Build();
 
         // Act
@@ -46,12 +45,11 @@ public class WallPieCutCornerCabinetTests {
     }
 
     [Fact]
-    public void DoorType_ShouldBeByOut_WhenSlabDoorMaterialIsNullAndMDFOptionsIsNull() {
+    public void DoorType_ShouldBeByOut_WhenDoorConfigurationIsByOthers() {
 
         // Arrange
         var cabinet = new WallPieCutCornerCabinetBuilder()
-                            .WithMDFDoorOptions(null)
-                            .WithSlabDoorMaterial(null)
+                            .WithDoorConfiguration(new DoorsByOthers())
                             .Build();
 
         // Act
