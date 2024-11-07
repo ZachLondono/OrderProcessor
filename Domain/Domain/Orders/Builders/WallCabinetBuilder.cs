@@ -37,7 +37,7 @@ public class WallCabinetBuilder : CabinetBuilder<WallCabinet> {
     }
 
     public override WallCabinet Build() {
-        var cabinet = WallCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, SlabDoorMaterial, MDFDoorOptions, EdgeBandingColor, RightSideType, LeftSideType, Comment, Doors, Inside, FinishBottom);
+        var cabinet = WallCabinet.Create(Qty, UnitPrice, ProductNumber, Room, Assembled, Height, Width, Depth, BoxMaterial, FinishMaterial, DoorConfiguration, EdgeBandingColor, RightSideType, LeftSideType, Comment, Doors, Inside, FinishBottom);
         cabinet.IsGarage = IsGarage;
         cabinet.ProductionNotes = ProductionNotes;
         return cabinet;

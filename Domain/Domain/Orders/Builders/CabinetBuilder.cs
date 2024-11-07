@@ -16,8 +16,7 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
     public Dimension Depth { get; private set; }
     public CabinetMaterial BoxMaterial { get; private set; }
     public CabinetFinishMaterial FinishMaterial { get; private set; }
-    public CabinetSlabDoorMaterial? SlabDoorMaterial { get; private set; }
-    public MDFDoorOptions? MDFDoorOptions { get; private set; }
+    public CabinetDoorConfiguration DoorConfiguration { get; private set; }
     public string EdgeBandingColor { get; private set; }
     public CabinetSideType LeftSideType { get; set; }
     public CabinetSideType RightSideType { get; set; }
@@ -35,8 +34,7 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
         Depth = Dimension.Zero;
         BoxMaterial = new(string.Empty, CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard);
         FinishMaterial = new(string.Empty, CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard, null);
-        SlabDoorMaterial = new(string.Empty, CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard, null);
-        MDFDoorOptions = null;
+        DoorConfiguration = new CabinetSlabDoorMaterial(string.Empty, CabinetMaterialFinishType.Melamine, CabinetMaterialCore.ParticleBoard, null);
         EdgeBandingColor = string.Empty;
         LeftSideType = CabinetSideType.Unfinished;
         RightSideType = CabinetSideType.Unfinished;
@@ -89,13 +87,8 @@ public abstract class CabinetBuilder<TCabinet> where TCabinet : Cabinet {
         return this;
     }
 
-    public CabinetBuilder<TCabinet> WithSlabDoorMaterial(CabinetSlabDoorMaterial? slabDoorMaterial) {
-        SlabDoorMaterial = slabDoorMaterial;
-        return this;
-    }
-
-    public CabinetBuilder<TCabinet> WithMDFDoorOptions(MDFDoorOptions? mdfDoorOptions) {
-        MDFDoorOptions = mdfDoorOptions;
+    public CabinetBuilder<TCabinet> WithDoorConfiguration(CabinetDoorConfiguration doorConfiguration) {
+        DoorConfiguration = doorConfiguration;
         return this;
     }
 
