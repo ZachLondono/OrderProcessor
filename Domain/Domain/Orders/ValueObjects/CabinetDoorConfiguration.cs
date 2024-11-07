@@ -1,4 +1,5 @@
 ﻿using OneOf;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Domain.Orders.ValueObjects;
 
@@ -19,5 +20,24 @@ public class CabinetDoorConfiguration : OneOfBase<CabinetSlabDoorMaterial, MDFDo
 	public static implicit operator CabinetDoorConfiguration(CabinetSlabDoorMaterial _) => new(_);
 	public static implicit operator CabinetDoorConfiguration(MDFDoorOptions _) => new(_);
 	public static implicit operator CabinetDoorConfiguration(DoorsByOthers _) => new(_);
+
+	public bool TryGetMDFOptions([NotNullWhen(true)] out MDFDoorOptions mdf) {
+
+		MDFDoorOptions? mdfOptions = Match<MDFDoorOptions?>(
+			slab => null,
+			mdfOptions => mdfOptions,
+			byothers => null
+		);
+
+		if (mdfOptions is not null) {
+			mdf = mdfOptions;
+			return true;
+		}
+
+		mdf = default!;
+
+		return false;
+
+	}
 
 }
