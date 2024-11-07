@@ -74,40 +74,18 @@
     [Parameter]
     public bool UseInches { get; set; }
 
-    public string GetDoorMaterialStyle(Cabinet cabinet) {
+    public string GetDoorMaterialStyle(Cabinet cabinet)
+        => cabinet.DoorConfiguration.Match(
+            slab => $"{slab.Finish}/{slab.FinishType}/{slab.Core}",
+            mdf => $"{mdf.Material} {mdf.FramingBead}",
+            byothers => "Buyout / By Others"
+        );
 
-        if (cabinet.SlabDoorMaterial is null && cabinet.MDFDoorOptions is null) {
-            return "N/A";
-        }
-
-        if (cabinet.SlabDoorMaterial is CabinetSlabDoorMaterial slabMaterial) {
-            return $"{slabMaterial.Finish}/{slabMaterial.FinishType}/{slabMaterial.Core}";
-        }
-
-        if (cabinet.MDFDoorOptions is MDFDoorOptions mdfDoorOptions) {
-            return $"{mdfDoorOptions.Material} {mdfDoorOptions.FramingBead}";
-        }
-
-        return "Unknown/Buyout";
-
-    }
-
-    public string GetDoorPaint(Cabinet cabinet) {
-
-        if (cabinet.SlabDoorMaterial is null && cabinet.MDFDoorOptions is null) {
-            return "N/A";
-        }
-
-        if (cabinet.SlabDoorMaterial is CabinetSlabDoorMaterial slabMaterial) {
-            return $"{slabMaterial.PaintColor ?? "N/A"}";
-        }
-
-        if (cabinet.MDFDoorOptions is MDFDoorOptions mdfDoorOptions) {
-            return $"{mdfDoorOptions.PaintColor ?? "N/A"}";
-        }
-
-        return "Unknown/Buyout";
-
-    }
+    public string GetDoorPaint(Cabinet cabinet)
+        => cabinet.DoorConfiguration.Match(
+            slab => slab.PaintColor ?? "N/A",
+            mdf => mdf.PaintColor ?? "N/A",
+            byothers => "N/A"
+        );
 
 }
