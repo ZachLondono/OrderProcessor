@@ -6,29 +6,29 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 public class BlindWallCabinetPersistenceTest : PersistenceTests {
 
     [Fact]
-    public void InsertOrderWithBlindWallCabinet() {
+    public async Task InsertOrderWithBlindWallCabinet() {
         var cabinet = new BlindWallCabinetBuilder()
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
             .WithHeight(Dimension.FromInches(25))
             .WithQty(1)
             .Build();
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithBlindWallCabinet() {
+    public async Task DeleteOrderWithBlindWallCabinet() {
         var cabinet = new BlindWallCabinetBuilder()
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
             .WithHeight(Dimension.FromInches(25))
             .WithQty(1)
             .Build();
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void InsertOrderWithBlindWallCabinetWithProductionNotes() {
+    public async Task InsertOrderWithBlindWallCabinetWithProductionNotes() {
         var cabinet = new BlindWallCabinetBuilder()
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
@@ -37,11 +37,11 @@ public class BlindWallCabinetPersistenceTest : PersistenceTests {
             .WithProductionNotes(new() { "A", "B", "C" })
             .Build();
 
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithBlindWallCabinetWithProductionNotes() {
+    public async Task DeleteOrderWithBlindWallCabinetWithProductionNotes() {
         var cabinet = new BlindWallCabinetBuilder()
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
@@ -50,7 +50,7 @@ public class BlindWallCabinetPersistenceTest : PersistenceTests {
             .WithProductionNotes(new() { "A", "B", "C" })
             .Build();
 
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
 }

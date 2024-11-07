@@ -7,7 +7,7 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 public class WallCabinetPersistenceTest : PersistenceTests {
 
     [Fact]
-    public void InsertOrderWithWallCabinet() {
+    public async Task InsertOrderWithWallCabinet() {
         var cabinet = new WallCabinetBuilder()
             .WithDoors(WallCabinetDoors.NoDoors())
             .WithInside(WallCabinetInside.Empty())
@@ -16,11 +16,11 @@ public class WallCabinetPersistenceTest : PersistenceTests {
             .WithHeight(Dimension.FromInches(25))
             .WithQty(1)
             .Build();
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithWallCabinet() {
+    public async Task DeleteOrderWithWallCabinet() {
         var cabinet = new WallCabinetBuilder()
             .WithDoors(WallCabinetDoors.NoDoors())
             .WithInside(WallCabinetInside.Empty())
@@ -29,11 +29,11 @@ public class WallCabinetPersistenceTest : PersistenceTests {
             .WithHeight(Dimension.FromInches(25))
             .WithQty(1)
             .Build();
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void InsertOrderWithGarageWallCabinet() {
+    public async Task InsertOrderWithGarageWallCabinet() {
         var cabinet = new WallCabinetBuilder()
             .WithIsGarage(true)
             .WithDoors(WallCabinetDoors.NoDoors())
@@ -43,11 +43,11 @@ public class WallCabinetPersistenceTest : PersistenceTests {
             .WithHeight(Dimension.FromInches(25))
             .WithQty(1)
             .Build();
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithGarageWallCabinet() {
+    public async Task DeleteOrderWithGarageWallCabinet() {
         var cabinet = new WallCabinetBuilder()
             .WithIsGarage(true)
             .WithDoors(WallCabinetDoors.NoDoors())
@@ -58,11 +58,11 @@ public class WallCabinetPersistenceTest : PersistenceTests {
             .WithQty(1)
             .Build();
 
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void InsertOrderWithWallCabinetWithProductionNotes() {
+    public async Task InsertOrderWithWallCabinetWithProductionNotes() {
         var cabinet = new WallCabinetBuilder()
             .WithDoors(WallCabinetDoors.NoDoors())
             .WithInside(WallCabinetInside.Empty())
@@ -72,11 +72,11 @@ public class WallCabinetPersistenceTest : PersistenceTests {
             .WithQty(1)
             .WithProductionNotes(new() { "A", "B", "C" })
             .Build();
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithWallCabinetWithProductionNotes() {
+    public async Task DeleteOrderWithWallCabinetWithProductionNotes() {
         var cabinet = new WallCabinetBuilder()
             .WithDoors(WallCabinetDoors.NoDoors())
             .WithInside(WallCabinetInside.Empty())
@@ -87,7 +87,7 @@ public class WallCabinetPersistenceTest : PersistenceTests {
             .WithProductionNotes(new() { "A", "B", "C" })
             .Build();
 
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
 }

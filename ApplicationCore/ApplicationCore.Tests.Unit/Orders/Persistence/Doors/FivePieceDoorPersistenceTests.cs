@@ -7,7 +7,7 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Doors;
 public class FivePieceDoorPersistenceTests : PersistenceTests {
 
     [Fact]
-    public void InsertOrderWithFivePieceDoor() {
+    public async Task InsertOrderWithFivePieceDoor() {
         var door = new FivePieceDoorProduct(Guid.NewGuid(),
                                             1,
                                             0M,
@@ -20,11 +20,11 @@ public class FivePieceDoorPersistenceTests : PersistenceTests {
                                             Dimension.FromInches(0.25),
                                             "MDF",
                                             DoorType.Door);
-        InsertAndQueryOrderWithProduct(door);
+        await InsertAndQueryOrderWithProduct(door);
     }
 
     [Fact]
-    public void DeleteOrderWithFivePieceDoor() {
+    public async Task DeleteOrderWithFivePieceDoor() {
         var door = new FivePieceDoorProduct(Guid.NewGuid(),
                                             1,
                                             0M,
@@ -37,11 +37,11 @@ public class FivePieceDoorPersistenceTests : PersistenceTests {
                                             Dimension.FromInches(0.25),
                                             "MDF",
                                             DoorType.Door);
-        InsertAndDeleteOrderWithProduct(door);
+        await InsertAndDeleteOrderWithProduct(door);
     }
 
     [Fact]
-    public void InsertOrderWithFivePieceDoorWithProductionNotes() {
+    public async Task InsertOrderWithFivePieceDoorWithProductionNotes() {
         var door = new FivePieceDoorProduct(Guid.NewGuid(),
                                             1,
                                             0M,
@@ -56,11 +56,11 @@ public class FivePieceDoorPersistenceTests : PersistenceTests {
                                             DoorType.Door) {
             ProductionNotes = new() { "A", "B", "C" }
         };
-        InsertAndQueryOrderWithProduct(door);
+        await InsertAndQueryOrderWithProduct(door);
     }
 
     [Fact]
-    public void DeleteOrderWithFivePieceDoorWithProductionNotes() {
+    public async Task DeleteOrderWithFivePieceDoorWithProductionNotes() {
         var door = new FivePieceDoorProduct(Guid.NewGuid(),
                                             1,
                                             0M,
@@ -75,7 +75,7 @@ public class FivePieceDoorPersistenceTests : PersistenceTests {
                                             DoorType.Door) {
             ProductionNotes = new() { "A", "B", "C" }
         };
-        InsertAndDeleteOrderWithProduct(door);
+        await InsertAndDeleteOrderWithProduct(door);
     }
 
 }

@@ -8,7 +8,7 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 public class BaseDiagonalCornerCabinetPersistenceTest : PersistenceTests {
 
     [Fact]
-    public void InsertOrderWithBaseDiagonalCornerCabinet() {
+    public async Task InsertOrderWithBaseDiagonalCornerCabinet() {
         var cabinet = new BaseDiagonalCornerCabinetBuilder()
             .WithRightWidth(Dimension.FromInches(12))
             .WithRightDepth(Dimension.FromInches(12))
@@ -21,11 +21,11 @@ public class BaseDiagonalCornerCabinetPersistenceTest : PersistenceTests {
             .WithHeight(Dimension.FromInches(25))
             .WithQty(1)
             .Build();
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithBaseDiagonalCornerCabinet() {
+    public async Task DeleteOrderWithBaseDiagonalCornerCabinet() {
         var cabinet = new BaseDiagonalCornerCabinetBuilder()
             .WithRightWidth(Dimension.FromInches(12))
             .WithRightDepth(Dimension.FromInches(12))
@@ -37,29 +37,11 @@ public class BaseDiagonalCornerCabinetPersistenceTest : PersistenceTests {
             .WithHeight(Dimension.FromInches(25))
             .WithQty(1)
             .Build();
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void InsertOrderWithGarageBaseDiagonalCornerCabinet() {
-        var cabinet = new BaseDiagonalCornerCabinetBuilder()
-            .WithIsGarage(true)
-            .WithRightWidth(Dimension.FromInches(12))
-            .WithRightDepth(Dimension.FromInches(12))
-            .WithHingeSide(HingeSide.NotApplicable)
-            .WithDoorQty(1)
-            .WithToeType(ToeType.NoToe)
-            .WithWidth(Dimension.FromInches(25))
-            .WithDepth(Dimension.FromInches(25))
-            .WithHeight(Dimension.FromInches(25))
-            .WithQty(1)
-            .Build();
-
-        InsertAndQueryOrderWithProduct(cabinet);
-    }
-
-    [Fact]
-    public void DeleteOrderWithGarageBaseDiagonalCornerCabinet() {
+    public async Task InsertOrderWithGarageBaseDiagonalCornerCabinet() {
         var cabinet = new BaseDiagonalCornerCabinetBuilder()
             .WithIsGarage(true)
             .WithRightWidth(Dimension.FromInches(12))
@@ -73,11 +55,29 @@ public class BaseDiagonalCornerCabinetPersistenceTest : PersistenceTests {
             .WithQty(1)
             .Build();
 
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void InsertOrderWithBaseDiagonalCornerCabinetWithProductionNotes() {
+    public async Task DeleteOrderWithGarageBaseDiagonalCornerCabinet() {
+        var cabinet = new BaseDiagonalCornerCabinetBuilder()
+            .WithIsGarage(true)
+            .WithRightWidth(Dimension.FromInches(12))
+            .WithRightDepth(Dimension.FromInches(12))
+            .WithHingeSide(HingeSide.NotApplicable)
+            .WithDoorQty(1)
+            .WithToeType(ToeType.NoToe)
+            .WithWidth(Dimension.FromInches(25))
+            .WithDepth(Dimension.FromInches(25))
+            .WithHeight(Dimension.FromInches(25))
+            .WithQty(1)
+            .Build();
+
+        await InsertAndDeleteOrderWithProduct(cabinet);
+    }
+
+    [Fact]
+    public async Task InsertOrderWithBaseDiagonalCornerCabinetWithProductionNotes() {
         var cabinet = new BaseDiagonalCornerCabinetBuilder()
             .WithRightWidth(Dimension.FromInches(12))
             .WithRightDepth(Dimension.FromInches(12))
@@ -91,11 +91,11 @@ public class BaseDiagonalCornerCabinetPersistenceTest : PersistenceTests {
             .WithProductionNotes(new() { "A", "B", "C" })
             .Build();
 
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithGarageBaseDiagonalCornerCabinetWithProductionNotes() {
+    public async Task DeleteOrderWithGarageBaseDiagonalCornerCabinetWithProductionNotes() {
         var cabinet = new BaseDiagonalCornerCabinetBuilder()
             .WithRightWidth(Dimension.FromInches(12))
             .WithRightDepth(Dimension.FromInches(12))
@@ -109,7 +109,7 @@ public class BaseDiagonalCornerCabinetPersistenceTest : PersistenceTests {
             .WithProductionNotes(new() { "A", "B", "C" })
             .Build();
 
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
 }

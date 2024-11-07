@@ -6,29 +6,29 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.Cabinets;
 public class WallPieCutCornerCabinetCabinetPersistenceTest : PersistenceTests {
 
     [Fact]
-    public void InsertOrderWithWallPieCutCornerCabinet() {
+    public async Task InsertOrderWithWallPieCutCornerCabinet() {
         var cabinet = new WallPieCutCornerCabinetBuilder()
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
             .WithHeight(Dimension.FromInches(25))
             .WithQty(1)
             .Build();
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithWallPieCutCabinet() {
+    public async Task DeleteOrderWithWallPieCutCabinet() {
         var cabinet = new WallPieCutCornerCabinetBuilder()
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
             .WithHeight(Dimension.FromInches(25))
             .WithQty(1)
             .Build();
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void InsertOrderWithWallPieCutCabinetWithProductionNotes() {
+    public async Task InsertOrderWithWallPieCutCabinetWithProductionNotes() {
         var cabinet = new WallPieCutCornerCabinetBuilder()
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
@@ -37,11 +37,11 @@ public class WallPieCutCornerCabinetCabinetPersistenceTest : PersistenceTests {
             .WithProductionNotes(new() { "A", "B", "C" })
             .Build();
 
-        InsertAndQueryOrderWithProduct(cabinet);
+        await InsertAndQueryOrderWithProduct(cabinet);
     }
 
     [Fact]
-    public void DeleteOrderWithWallPieCutCabinetWithProductionNotes() {
+    public async Task DeleteOrderWithWallPieCutCabinetWithProductionNotes() {
         var cabinet = new WallPieCutCornerCabinetBuilder()
             .WithWidth(Dimension.FromInches(25))
             .WithDepth(Dimension.FromInches(25))
@@ -50,7 +50,7 @@ public class WallPieCutCornerCabinetCabinetPersistenceTest : PersistenceTests {
             .WithProductionNotes(new() { "A", "B", "C" })
             .Build();
 
-        InsertAndDeleteOrderWithProduct(cabinet);
+        await InsertAndDeleteOrderWithProduct(cabinet);
     }
 
 }

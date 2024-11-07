@@ -5,7 +5,7 @@ namespace ApplicationCore.Tests.Unit.Orders.Persistence.ClosetParts;
 public class CustomVerticalPanelPersistenceTests : PersistenceTests {
 
     [Fact]
-    public void InsertOrderWithCustomVerticalPanel() {
+    public async Task InsertOrderWithCustomVerticalPanel() {
         var part = new CustomVPBuilder() {
             Width = Dimension.FromMillimeters(400),
             Length = Dimension.FromMillimeters(2000),
@@ -20,11 +20,11 @@ public class CustomVerticalPanelPersistenceTests : PersistenceTests {
             LEDChannelDepth = Dimension.FromMillimeters(8),
         }.Build();
 
-        InsertAndQueryOrderWithProduct(part);
+        await InsertAndQueryOrderWithProduct(part);
     }
 
     [Fact]
-    public void DeleteOrderWithCustomVerticalPanel() {
+    public async Task DeleteOrderWithCustomVerticalPanel() {
         var part = new CustomVPBuilder() {
             Width = Dimension.FromMillimeters(400),
             Length = Dimension.FromMillimeters(2000),
@@ -39,11 +39,11 @@ public class CustomVerticalPanelPersistenceTests : PersistenceTests {
             LEDChannelDepth = Dimension.FromMillimeters(8),
         }.Build();
 
-        InsertAndDeleteOrderWithProduct(part);
+        await InsertAndDeleteOrderWithProduct(part);
     }
 
     [Fact]
-    public void InsertOrderWithCustomVerticalPanelWithProductionNotes() {
+    public async Task InsertOrderWithCustomVerticalPanelWithProductionNotes() {
         var part = new CustomVPBuilder() {
             Width = Dimension.FromMillimeters(400),
             Length = Dimension.FromMillimeters(2000),
@@ -60,11 +60,11 @@ public class CustomVerticalPanelPersistenceTests : PersistenceTests {
 
         part.ProductionNotes = new() { "A", "B", "C" };
 
-        InsertAndQueryOrderWithProduct(part);
+        await InsertAndQueryOrderWithProduct(part);
     }
 
     [Fact]
-    public void DeleteOrderWithCustomVerticalPanelWithProductionNotes() {
+    public async Task DeleteOrderWithCustomVerticalPanelWithProductionNotes() {
         var part = new CustomVPBuilder() {
             Width = Dimension.FromMillimeters(400),
             Length = Dimension.FromMillimeters(2000),
@@ -81,7 +81,7 @@ public class CustomVerticalPanelPersistenceTests : PersistenceTests {
 
         part.ProductionNotes = new() { "A", "B", "C" };
 
-        InsertAndDeleteOrderWithProduct(part);
+        await InsertAndDeleteOrderWithProduct(part);
     }
 
 }
