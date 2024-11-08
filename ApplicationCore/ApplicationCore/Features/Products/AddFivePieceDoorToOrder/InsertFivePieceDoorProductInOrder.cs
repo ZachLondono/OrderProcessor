@@ -2,6 +2,7 @@
 using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.Enums;
 using Domain.Orders.Persistance;
+using Domain.Orders.Persistance.Products;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
@@ -42,7 +43,7 @@ public class InsertFivePieceDoorProductInOrder {
                     frameThickness, panelThickness, data.Material,
                     DoorType.Door);
 
-                InsertOrder.Handler.InsertProduct(door, command.OrderId, connection, trx);
+                ProductsPersistance.InsertProduct(door, command.OrderId, connection, trx);
 
                 trx.Commit();
 

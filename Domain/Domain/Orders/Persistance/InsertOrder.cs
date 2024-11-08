@@ -5,6 +5,7 @@ using Domain.Orders.Entities.Products;
 using Domain.Infrastructure.Bus;
 using Domain.Orders.Persistance.Repositories;
 using Domain.Infrastructure.Data;
+using Domain.Orders.Persistance.Products;
 
 namespace Domain.Orders.Persistance;
 
@@ -190,14 +191,10 @@ public partial class InsertOrder {
 
             foreach (var product in products) {
 
-                InsertProduct((dynamic)product, orderId, connection, trx);
+                ProductsPersistance.InsertProduct((dynamic)product, orderId, connection, trx);
 
             }
 
-        }
-
-        private void InsertProduct(object unknown, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
-            _logger.LogCritical("No insert method for product type {Type}", unknown.GetType());
         }
 
         private static bool InsertHardware(Hardware hardware, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {

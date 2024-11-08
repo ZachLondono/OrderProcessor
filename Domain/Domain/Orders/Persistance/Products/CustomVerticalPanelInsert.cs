@@ -2,41 +2,40 @@
 using Domain.Orders.Entities.Products.Closets;
 using Domain.Infrastructure.Data;
 
-namespace Domain.Orders.Persistance;
+namespace Domain.Orders.Persistance.Products;
 
-public partial class InsertOrder {
-    public partial class Handler {
+public static partial class ProductsPersistance {
 
-        private static void InsertProduct(CustomDrilledVerticalPanel verticalPanel, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+    public static void InsertProduct(CustomDrilledVerticalPanel verticalPanel, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
-            InsertIntoProductTable(verticalPanel, orderId, connection, trx);
+        InsertIntoProductTable(verticalPanel, orderId, connection, trx);
 
-            var parameters = new {
-                ProductId = verticalPanel.Id,
-                Sku = verticalPanel.SKU,
-                Width = verticalPanel.Width,
-                Length = verticalPanel.Length,
-                MaterialFinish = verticalPanel.Material.Finish,
-                MaterialCore = verticalPanel.Material.Core,
-                PaintColor = verticalPanel.Paint?.Color ?? null,
-                PaintedSide = verticalPanel.Paint?.Side ?? PaintedSide.None,
-                EdgeBandingFinish = verticalPanel.EdgeBandingColor,
-                Comment = verticalPanel.Comment,
-                DrillingType = verticalPanel.DrillingType,
-                ExtendBack = verticalPanel.ExtendBack,
-                ExtendFront = verticalPanel.ExtendFront,
-                HoleDimFromBottom = verticalPanel.HoleDimensionFromBottom,
-                HoleDimFromTop = verticalPanel.HoleDimensionFromTop,
-                TransHoleDimFromBottom = verticalPanel.TransitionHoleDimensionFromBottom,
-                TransHoleDimFromTop = verticalPanel.TransitionHoleDimensionFromTop,
-                BottomNotchDepth = verticalPanel.BottomNotchDepth,
-                BottomNotchHeight = verticalPanel.BottomNotchHeight,
-                LEDChannelOffFront = verticalPanel.LEDChannelOffFront,
-                LEDChannelWidth = verticalPanel.LEDChannelWidth,
-                LEDChannelDepth = verticalPanel.LEDChannelDepth
-            };
+        var parameters = new {
+            ProductId = verticalPanel.Id,
+            Sku = verticalPanel.SKU,
+            Width = verticalPanel.Width,
+            Length = verticalPanel.Length,
+            MaterialFinish = verticalPanel.Material.Finish,
+            MaterialCore = verticalPanel.Material.Core,
+            PaintColor = verticalPanel.Paint?.Color ?? null,
+            PaintedSide = verticalPanel.Paint?.Side ?? PaintedSide.None,
+            EdgeBandingFinish = verticalPanel.EdgeBandingColor,
+            Comment = verticalPanel.Comment,
+            DrillingType = verticalPanel.DrillingType,
+            ExtendBack = verticalPanel.ExtendBack,
+            ExtendFront = verticalPanel.ExtendFront,
+            HoleDimFromBottom = verticalPanel.HoleDimensionFromBottom,
+            HoleDimFromTop = verticalPanel.HoleDimensionFromTop,
+            TransHoleDimFromBottom = verticalPanel.TransitionHoleDimensionFromBottom,
+            TransHoleDimFromTop = verticalPanel.TransitionHoleDimensionFromTop,
+            BottomNotchDepth = verticalPanel.BottomNotchDepth,
+            BottomNotchHeight = verticalPanel.BottomNotchHeight,
+            LEDChannelOffFront = verticalPanel.LEDChannelOffFront,
+            LEDChannelWidth = verticalPanel.LEDChannelWidth,
+            LEDChannelDepth = verticalPanel.LEDChannelDepth
+        };
 
-            connection.Execute("""
+        connection.Execute("""
                     INSERT INTO custom_drilled_vertical_panels
                         (product_id,
                         width,
@@ -83,7 +82,6 @@ public partial class InsertOrder {
                         @LEDChannelDepth);
                     """, parameters, trx);
 
-        }
-
     }
+
 }

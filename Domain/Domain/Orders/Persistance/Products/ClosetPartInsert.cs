@@ -2,31 +2,30 @@
 using Domain.Orders.Entities.Products.Closets;
 using Domain.Infrastructure.Data;
 
-namespace Domain.Orders.Persistance;
+namespace Domain.Orders.Persistance.Products;
 
-public partial class InsertOrder {
-    public partial class Handler {
+public static partial class ProductsPersistance {
 
-        private static void InsertProduct(ClosetPart closetPart, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+    public static void InsertProduct(ClosetPart closetPart, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
-            InsertIntoProductTable(closetPart, orderId, connection, trx);
+        InsertIntoProductTable(closetPart, orderId, connection, trx);
 
-            var parameters = new {
-                ProductId = closetPart.Id,
-                Sku = closetPart.SKU,
-                Width = closetPart.Width,
-                Length = closetPart.Length,
-                MaterialFinish = closetPart.Material.Finish,
-                MaterialCore = closetPart.Material.Core,
-                PaintColor = closetPart.Paint?.Color ?? null,
-                PaintedSide = closetPart.Paint?.Side ?? PaintedSide.None,
-                EdgeBandingFinish = closetPart.EdgeBandingColor,
-                Comment = closetPart.Comment,
-                InstallCams = closetPart.InstallCams,
-                Parameters = (IDictionary<string, string>)closetPart.Parameters
-            };
+        var parameters = new {
+            ProductId = closetPart.Id,
+            Sku = closetPart.SKU,
+            Width = closetPart.Width,
+            Length = closetPart.Length,
+            MaterialFinish = closetPart.Material.Finish,
+            MaterialCore = closetPart.Material.Core,
+            PaintColor = closetPart.Paint?.Color ?? null,
+            PaintedSide = closetPart.Paint?.Side ?? PaintedSide.None,
+            EdgeBandingFinish = closetPart.EdgeBandingColor,
+            Comment = closetPart.Comment,
+            InstallCams = closetPart.InstallCams,
+            Parameters = (IDictionary<string, string>)closetPart.Parameters
+        };
 
-            connection.Execute("""
+        connection.Execute("""
                     INSERT INTO closet_parts
                         (product_id,
                         sku,
@@ -55,9 +54,8 @@ public partial class InsertOrder {
                         @Parameters);
                     """, parameters, trx);
 
-        }
-
     }
+
 }
 
 
