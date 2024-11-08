@@ -6,7 +6,7 @@ namespace Domain.Orders.Persistance;
 public partial class InsertOrder {
     public partial class Handler {
 
-        private static void InsertProduct(FivePieceDoorProduct door, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+        public static void InsertProduct(FivePieceDoorProduct door, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
             InsertFivePieceDoorConfig(door.Id, door, connection, trx);
             InsertIntoProductTable(door, orderId, connection, trx);
