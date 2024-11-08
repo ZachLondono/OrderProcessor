@@ -1,4 +1,6 @@
-﻿CREATE TABLE cabinet_slab_door_materials (
+﻿-- WARNING - This script will delete all slab door settings from all cabinets
+
+CREATE TABLE cabinet_slab_door_materials (
 	id BLOB NOT NULL,
 	core INTEGER,
 	finish TEXT,
@@ -32,7 +34,27 @@ CREATE TABLE cabinets_temp (
 	FOREIGN KEY (slab_door_material_id) REFERENCES cabinet_slab_door_materials(id)
 );
 
-INSERT INTO cabinets_temp SELECT * FROM cabinets;
+INSERT INTO cabinets_temp
+SELECT
+	product_id,
+	height,
+	width,
+	depth,
+	box_material_core,
+	box_material_finish,
+	box_material_finish_type,
+	finish_material_core,
+	finish_material_finish,
+	finish_material_finish_type,
+	finish_material_paint,
+	edge_banding_finish,
+	left_side_type,
+	right_side_type,
+	assembled,
+	comment,
+	NULL,
+	mdf_config_id
+FROM cabinets;
 DROP TABLE cabinets;
 ALTER TABLE cabinets_temp RENAME TO cabinets;
 
