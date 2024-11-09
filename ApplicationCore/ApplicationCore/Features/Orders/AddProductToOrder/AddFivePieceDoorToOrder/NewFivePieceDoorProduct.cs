@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.Products.AddFivePieceDoorToOrder;
+﻿namespace ApplicationCore.Features.Orders.AddProductToOrder.AddFivePieceDoorToOrder;
 
 public class NewFivePieceDoorProduct {
 

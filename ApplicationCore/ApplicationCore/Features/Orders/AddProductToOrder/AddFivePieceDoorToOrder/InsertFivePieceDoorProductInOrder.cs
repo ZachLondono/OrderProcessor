@@ -6,7 +6,7 @@ using Domain.Orders.Persistance.Products;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 
-namespace ApplicationCore.Features.Products.AddFivePieceDoorToOrder;
+namespace ApplicationCore.Features.Orders.AddProductToOrder.AddFivePieceDoorToOrder;
 
 public class InsertFivePieceDoorProductInOrder {
 
@@ -49,7 +49,7 @@ public class InsertFivePieceDoorProductInOrder {
 
                 return door;
 
-            } catch(Exception e) {
+            } catch (Exception e) {
 
                 trx.Rollback();
 

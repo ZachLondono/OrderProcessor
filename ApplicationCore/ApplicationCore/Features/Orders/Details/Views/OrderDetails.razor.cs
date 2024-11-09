@@ -7,7 +7,7 @@ using Blazored.Modal.Services;
 using Domain.Orders.Entities.Products;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
-using ApplicationCore.Features.Products.AddFivePieceDoorToOrder;
+using ApplicationCore.Features.Orders.AddProductToOrder;
 
 namespace ApplicationCore.Features.Orders.Details.Views;
 
@@ -94,23 +94,15 @@ public partial class OrderDetails {
         _useInches = !_useInches;
     }
 
-    private async Task ShowAddFivePieceDoorForm() {
+    private async Task AddNewProduct() {
 
-        var instance = Modal.Show<AddFivePieceDoorForm>(
-            "Add 5-Piece Door",
+        var instance = Modal.Show<AddProductForm>(
+            "Add Product",
             new ModalParameters() {
                 { "OrderId", OrderId }
             });
 
-        var result = await instance.Result;
-
-        if (result.Confirmed) {
-
-            // Resetting order id parameter to force it to reload... doesn't seem like a good idea.
-            // Should create an order model that can be used here so we can just add the new product to the products property
-            OrderId = OrderId;
-
-        }
+        _ = await instance.Result;
 
     }
 

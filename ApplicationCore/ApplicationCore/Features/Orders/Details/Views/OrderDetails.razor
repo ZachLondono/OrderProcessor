@@ -1,5 +1,4 @@
-﻿@using ApplicationCore.Features.Products.AddFivePieceDoorToOrder
-@using Domain.Companies;
+﻿@using Domain.Companies;
 @using ApplicationCore.Features.Orders.Details;
 @using ApplicationCore.Features.Orders.OrderExport;
 @using Domain.Orders
@@ -272,10 +271,7 @@
             <button disabled="@_useInches" @onclick="ToggleUnits" class="bg-slate-100 disabled:bg-black disabled:text-white px-3.5 py-1 rounded-r-none rounded-l-md w-14 transition ease-in-out duration-300">in</button><!--
             --><button disabled="@(!_useInches)" @onclick="ToggleUnits" class="bg-slate-100 disabled:bg-black disabled:text-white px-3.5 py-1 rounded-l-none rounded-r-md w-14 transition ease-in-out duration-300">mm</button>
 
-            <Button Color="ButtonColor.Secondary"
-                    OnClickAsync="ShowAddFivePieceDoorForm">
-                Add 5-Piece Door
-            </Button>
+            <Button Style="ButtonStyle.Text" OnClickAsync="AddNewProduct" Color="ButtonColor.Primary">+ Add</Button>
 
         </div>
 
