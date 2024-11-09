@@ -1,101 +1,79 @@
 ﻿@using Domain.Components
 @using Domain.Infrastructure.Bus
+@using Domain.Orders.Entities.Products.Doors
 @using Domain.ValueObjects
 @using MediatR
 @using static Domain.Components.Button
 
-@if (_error is not null) {
-    <p class="text-red-600">@_error</p>   
-}
+<NewProductForm Model="Model"
+                TProduct="FivePieceDoorProduct"
+                TProductModel="NewFivePieceDoorProduct"
+                OnFormSubmit="AddFivePieceDoorToOrder">
 
-@if (_isLoading) {
-
-    <div class="text-center">
-
-        <div class="flex justify-center mt-5">
-            <svg class="animate-spin h-12 w-12 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-        </div>
-
-        <div class="my-5 text-gray-500 text-lg">Creating Product</div>
-
+    <div>
+        <label>
+            Qty
+            <InputNumber @bind-Value="Model.Qty" />
+        </label>
     </div>
 
-} else {
+    <div>
+        <label>
+            Unit Price
+            <InputNumber @bind-Value="Model.UnitPrice" />
+        </label>
+    </div>
 
-    <EditForm Model="Model">
-    
-        <div>
-            <label>
-                Qty
-                <InputNumber @bind-Value="Model.Qty" />
-            </label>
-        </div>
-    
-        <div>
-            <label>
-                Unit Price
-                <InputNumber @bind-Value="Model.UnitPrice" />
-            </label>
-        </div>
-    
-        <div>
-            <label>
-                Product Number
-                <InputNumber @bind-Value="Model.ProductNumber" />
-            </label>
-        </div>
-    
-        <div>
-            <label>
-                Room
-                <InputText @bind-Value="Model.Room" />
-            </label>
-        </div>
-    
-        <div>
-            <label>
-                Width
-                <InputNumber @bind-Value="Model.Width" />
-            </label>
-        </div>
-    
-        <div>
-            <label>
-                Height
-                <InputNumber @bind-Value="Model.Height" />
-            </label>
-        </div>
-    
-        <div>
-            <label>
-                Stiles
-                <InputNumber @bind-Value="Model.Stiles" />
-            </label>
-        </div>
-    
-        <div>
-            <label>
-                Rails
-                <InputNumber @bind-Value="Model.Rails" />
-            </label>
-        </div>
-    
-        <div>
-            <label>
-                Material
-                <InputText @bind-Value="Model.Material" />
-            </label>
-        </div>
-    
-        <Button Type="submit" Color="ButtonColor.Primary" OnClickAsync="AddProductToOrder" Disabled="@_isLoading">Add</Button>
-        <Button Color="ButtonColor.Danger" OnClickAsync="Cancel" Disabled="@_isLoading">Cancel</Button>
-    
-    </EditForm>
-    
-}
+    <div>
+        <label>
+            Product Number
+            <InputNumber @bind-Value="Model.ProductNumber" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Room
+            <InputText @bind-Value="Model.Room" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Width
+            <InputNumber @bind-Value="Model.Width" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Height
+            <InputNumber @bind-Value="Model.Height" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Stiles
+            <InputNumber @bind-Value="Model.Stiles" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Rails
+            <InputNumber @bind-Value="Model.Rails" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Material
+            <InputText @bind-Value="Model.Material" />
+        </label>
+    </div>
+
+</NewProductForm>
 
 @code {
 
@@ -106,48 +84,9 @@
     [EditorRequired]
     public Guid OrderId { get; set; }
 
-    [Parameter]
-    public string Room { get; set; } = string.Empty;
+    public NewFivePieceDoorProduct Model { get; set; } = new();
 
-    [CascadingParameter]
-    public BlazoredModalInstance ModalInstance { get; set; } = default!;
-
-    private NewFivePieceDoorProduct Model { get; } = new();
-
-    private string? _error = null;
-    private bool _isLoading = false;
-
-    protected override void OnInitialized() {
-
-        if (Room is not null) {
-            Model.Room = Room;
-        }
-
-        base.OnInitialized();
-
-    }
-
-    public Task Cancel() => ModalInstance.CancelAsync();
-
-    public async Task AddProductToOrder() {
-
-        _error = null;
-        _isLoading = true;
-        await InvokeAsync(StateHasChanged);
-
-        var result = await Task.Run(() => Bus.Send(new InsertFivePieceDoorProductInOrder.Command(OrderId, Model)));
-
-        await result.Match(
-            door => ModalInstance.CloseAsync(ModalResult.Ok(door)),
-            error => {
-                _error = error.Title;
-                return Task.CompletedTask;
-            }
-        );
-
-        _isLoading = false;
-        await InvokeAsync(StateHasChanged);
-
-    }
+    public Task<Response<FivePieceDoorProduct>> AddFivePieceDoorToOrder()
+        => Bus.Send(new InsertFivePieceDoorProductInOrder.Command(OrderId, Model));
 
 }

@@ -1,0 +1,96 @@
+﻿@typeparam TProduct
+@typeparam TProductModel
+@using Domain.Components
+@using Domain.Infrastructure.Bus
+@using static Domain.Components.Button
+
+@if (_error is not null) {
+    <p class="text-red-600">@_error</p>   
+}
+
+@if (_isLoading) {
+    
+    <div class="text-center">
+
+        <div class="flex justify-center mt-5">
+            <svg class="animate-spin h-12 w-12 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </div>
+
+        <div class="my-5 text-gray-500 text-lg">Creating Product</div>
+
+    </div>
+
+} else {
+
+    <EditForm Model="Model">
+
+        @ChildContent
+
+        <Button Type="submit" Color="ButtonColor.Primary" OnClickAsync="AddProductToOrder" Disabled="@_isLoading">Add</Button>
+        <Button Color="ButtonColor.Danger" OnClickAsync="Cancel" Disabled="@_isLoading">Cancel</Button>
+
+    </EditForm>
+    
+}
+
+@code {
+
+    [Parameter]
+    [EditorRequired]
+    public Func<Task<Response<TProduct>>> OnFormSubmit { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = default!;
+
+    [Parameter]
+    public TProductModel Model { get; set; } = default!;
+
+    [CascadingParameter]
+    public BlazoredModalInstance ModalInstance { get; set; } = default!;
+
+    private string? _error = null;
+    private bool _isLoading = false;
+
+    public Task Cancel() => ModalInstance.CancelAsync();
+
+    public async Task AddProductToOrder() {
+
+        if (OnFormSubmit is null) {
+            _error = "Unable to create new product.";
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        _error = null;
+        _isLoading = true;
+        await InvokeAsync(StateHasChanged);
+
+        try {
+
+            var result = await Task.Run(OnFormSubmit);
+
+            await result.Match(
+                product => ModalInstance.CloseAsync(ModalResult.Ok(product)),
+                error => {
+                    _error = error.Title;
+                    return Task.CompletedTask;
+                }
+            );
+
+            _isLoading = false;
+            await InvokeAsync(StateHasChanged);
+
+        } catch (Exception ex) {
+
+            _error = ex.Message;
+            _isLoading = false;
+            await InvokeAsync(StateHasChanged);
+            
+        }
+
+    }
+
+}
