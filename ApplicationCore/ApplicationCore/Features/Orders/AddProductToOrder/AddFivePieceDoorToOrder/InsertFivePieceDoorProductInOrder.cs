@@ -49,13 +49,13 @@ public class InsertFivePieceDoorProductInOrder {
 
                 return door;
 
-            } catch (Exception e) {
+            } catch (Exception ex) {
 
                 trx.Rollback();
 
                 return new Error() {
                     Title = "Failed to Add Five Piece Door to Order",
-                    Details = e.Message
+                    Details = ex.Message
                 };
 
             } finally {
