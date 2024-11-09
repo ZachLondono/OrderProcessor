@@ -25,14 +25,21 @@
 
 } else {
 
-    <EditForm Model="Model">
+    @if (EditContext is null) {
 
-        @ChildContent
+        <EditForm Model="Model" OnValidSubmit="AddProductToOrder">
+            @ChildContent
+            <Button Type="submit" Color="ButtonColor.Primary" Disabled="@_isLoading">Add</Button>
+        </EditForm>
 
-        <Button Type="submit" Color="ButtonColor.Primary" OnClickAsync="AddProductToOrder" Disabled="@_isLoading">Add</Button>
-        <Button Color="ButtonColor.Danger" OnClickAsync="Cancel" Disabled="@_isLoading">Cancel</Button>
+    } else {
+        
+        <EditForm EditContext="EditContext" OnValidSubmit="AddProductToOrder">
+            @ChildContent
+            <Button Type="submit" Color="ButtonColor.Primary" Disabled="@_isLoading">Add</Button>
+        </EditForm>
 
-    </EditForm>
+    }
     
 }
 
@@ -50,6 +57,9 @@
 
     [CascadingParameter]
     public BlazoredModalInstance ModalInstance { get; set; } = default!;
+
+    [Parameter]
+    public EditContext? EditContext { get; set; }
 
     private string? _error = null;
     private bool _isLoading = false;
