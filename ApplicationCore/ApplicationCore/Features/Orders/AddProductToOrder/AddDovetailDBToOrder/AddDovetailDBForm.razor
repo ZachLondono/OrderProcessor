@@ -8,103 +8,121 @@
     <p class="text-red-600">@_error</p>   
 }
 
-<EditForm Model="Model">
+@if (_isLoading) {
 
-    <div>
-        <label>
-            Qty
-            <InputNumber @bind-Value="Model.Qty" />
-        </label>
+    <div class="text-center">
+
+        <div class="flex justify-center mt-5">
+            <svg class="animate-spin h-12 w-12 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </div>
+
+        <div class="my-5 text-gray-500 text-lg">Creating Product</div>
+
     </div>
+} else {
 
-    <div>
-        <label>
-            Unit Price
-            <InputNumber @bind-Value="Model.UnitPrice" />
-        </label>
-    </div>
+    <EditForm Model="Model">
 
-    <div>
-        <label>
-            Product Number
-            <InputNumber @bind-Value="Model.ProductNumber" />
-        </label>
-    </div>
+        <div>
+            <label>
+                Qty
+                <InputNumber @bind-Value="Model.Qty" />
+            </label>
+        </div>
 
-    <div>
-        <label>
-            Room
-            <InputText @bind-Value="Model.Room" />
-        </label>
-    </div>
+        <div>
+            <label>
+                Unit Price
+                <InputNumber @bind-Value="Model.UnitPrice" />
+            </label>
+        </div>
 
-    <div>
-        <label>
-            Width
-            <InputNumber @bind-Value="Model.Width" />
-        </label>
-    </div>
+        <div>
+            <label>
+                Product Number
+                <InputNumber @bind-Value="Model.ProductNumber" />
+            </label>
+        </div>
 
-    <div>
-        <label>
-            Height
-            <InputNumber @bind-Value="Model.Height" />
-        </label>
-    </div>
+        <div>
+            <label>
+                Room
+                <InputText @bind-Value="Model.Room" />
+            </label>
+        </div>
 
-    <div>
-        <label>
-            Depth
-            <InputNumber @bind-Value="Model.Depth" />
-        </label>
-    </div>
+        <div>
+            <label>
+                Width
+                <InputNumber @bind-Value="Model.Width" />
+            </label>
+        </div>
 
-    <div>
-        <label>
-            Box Material
-            <InputText @bind-Value="Model.BoxMaterial" />
-        </label>
-    </div>
+        <div>
+            <label>
+                Height
+                <InputNumber @bind-Value="Model.Height" />
+            </label>
+        </div>
 
-    <div>
-        <label>
-            Bottom Material
-            <InputText @bind-Value="Model.BottomMaterial" />
-        </label>
-    </div>
+        <div>
+            <label>
+                Depth
+                <InputNumber @bind-Value="Model.Depth" />
+            </label>
+        </div>
 
-    <div>
-        <label>
-            Notches
-            <InputText @bind-Value="Model.Notches" />
-        </label>
-    </div>
+        <div>
+            <label>
+                Box Material
+                <InputText @bind-Value="Model.BoxMaterial" />
+            </label>
+        </div>
 
-    <div>
-        <label>
-            Clips
-            <InputText @bind-Value="Model.Clips" />
-        </label>
-    </div>
+        <div>
+            <label>
+                Bottom Material
+                <InputText @bind-Value="Model.BottomMaterial" />
+            </label>
+        </div>
 
-    <div>
-        <label>
-            Accessory
-            <InputText @bind-Value="Model.Accessory" />
-        </label>
-    </div>
+        <div>
+            <label>
+                Notches
+                <InputText @bind-Value="Model.Notches" />
+            </label>
+        </div>
 
-    <div>
-        <label>
-            Note
-            <InputText @bind-Value="Model.Note" />
-        </label>
-    </div>
+        <div>
+            <label>
+                Clips
+                <InputText @bind-Value="Model.Clips" />
+            </label>
+        </div>
 
-    <Button Type="submit" Color="ButtonColor.Primary" OnClickAsync="AddProductToOrder">Add</Button>
-    <Button Color="ButtonColor.Danger" OnClickAsync="Cancel">Cancel</Button>
+        <div>
+            <label>
+                Accessory
+                <InputText @bind-Value="Model.Accessory" />
+            </label>
+        </div>
 
-</EditForm>
+        <div>
+            <label>
+                Note
+                <InputText @bind-Value="Model.Note" />
+            </label>
+        </div>
+
+        <Button Type="submit" Color="ButtonColor.Primary" OnClickAsync="AddProductToOrder" Disabled="@_isLoading">Add</Button>
+        <Button Color="ButtonColor.Danger" OnClickAsync="Cancel" Disabled="@_isLoading">Cancel</Button>
+
+    </EditForm>
+
+}
 
 @code {
 
@@ -124,6 +142,7 @@
     private NewDovetailDB Model { get; } = new();
 
     private string? _error = null;
+    private bool _isLoading = false;
 
     protected override void OnInitialized() {
 
@@ -140,8 +159,10 @@
     public async Task AddProductToOrder() {
 
         _error = null;
+        _isLoading = true;
+        await InvokeAsync(StateHasChanged);
 
-        var result = await Bus.Send(new InsertDovetailDBProductInOrder.Command(OrderId, Model));
+        var result = await Task.Run(() => Bus.Send(new InsertDovetailDBProductInOrder.Command(OrderId, Model)));
 
         await result.Match(
             door => ModalInstance.CloseAsync(ModalResult.Ok(door)),
@@ -150,6 +171,9 @@
                 return Task.CompletedTask;
             }
         );
+
+        _isLoading = false;
+        await InvokeAsync(StateHasChanged);
 
     }
 
