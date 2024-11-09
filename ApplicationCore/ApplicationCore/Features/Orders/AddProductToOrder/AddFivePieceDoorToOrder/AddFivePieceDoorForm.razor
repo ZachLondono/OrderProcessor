@@ -8,69 +8,97 @@
 <NewProductForm Model="Model"
                 TProduct="FivePieceDoorProduct"
                 TProductModel="NewFivePieceDoorProduct"
-                OnFormSubmit="AddFivePieceDoorToOrder">
+                OnFormSubmit="AddFivePieceDoorToOrder"
+                EditContext="_editContext">
 
     <div>
-        <label>
+        <label class="block text-sm font-medium text-gray-700">
             Qty
-            <InputNumber @bind-Value="Model.Qty" />
+            <InputNumber @bind-Value="Model.Qty" class="input-text" />
         </label>
+        <span class="font-bold text-red-600">
+            <ValidationMessage For="() => Model.Qty" />
+        </span>
     </div>
 
     <div>
-        <label>
+        <label class="block text-sm font-medium text-gray-700">
             Unit Price
-            <InputNumber @bind-Value="Model.UnitPrice" />
+            <InputNumber @bind-Value="Model.UnitPrice" class="input-text"  />
         </label>
+        <span class="font-bold text-red-600">
+            <ValidationMessage For="() => Model.UnitPrice" />
+        </span>
     </div>
 
     <div>
-        <label>
+        <label class="block text-sm font-medium text-gray-700">
             Product Number
-            <InputNumber @bind-Value="Model.ProductNumber" />
+            <InputNumber @bind-Value="Model.ProductNumber" class="input-text"  />
         </label>
+        <span class="font-bold text-red-600">
+            <ValidationMessage For="() => Model.ProductNumber" />
+        </span>
     </div>
 
     <div>
-        <label>
+        <label class="block text-sm font-medium text-gray-700">
             Room
-            <InputText @bind-Value="Model.Room" />
+            <InputText @bind-Value="Model.Room" class="input-text"  />
         </label>
+        <span class="font-bold text-red-600">
+            <ValidationMessage For="() => Model.Room" />
+        </span>
     </div>
 
     <div>
-        <label>
+        <label class="block text-sm font-medium text-gray-700">
             Width
-            <InputNumber @bind-Value="Model.Width" />
+            <InputNumber @bind-Value="Model.Width" class="input-text"  />
         </label>
+        <span class="font-bold text-red-600">
+            <ValidationMessage For="() => Model.Width" />
+        </span>
     </div>
 
     <div>
-        <label>
+        <label class="block text-sm font-medium text-gray-700">
             Height
-            <InputNumber @bind-Value="Model.Height" />
+            <InputNumber @bind-Value="Model.Height" class="input-text"  />
         </label>
+        <span class="font-bold text-red-600">
+            <ValidationMessage For="() => Model.Height" />
+        </span>
     </div>
 
     <div>
-        <label>
+        <label class="block text-sm font-medium text-gray-700">
             Stiles
-            <InputNumber @bind-Value="Model.Stiles" />
+            <InputNumber @bind-Value="Model.Stiles" class="input-text"  />
         </label>
+        <span class="font-bold text-red-600">
+            <ValidationMessage For="() => Model.Stiles" />
+        </span>
     </div>
 
     <div>
-        <label>
+        <label class="block text-sm font-medium text-gray-700">
             Rails
-            <InputNumber @bind-Value="Model.Rails" />
+            <InputNumber @bind-Value="Model.Rails" class="input-text"  />
         </label>
+        <span class="font-bold text-red-600">
+            <ValidationMessage For="() => Model.Rails" />
+        </span>
     </div>
 
     <div>
-        <label>
+        <label class="block text-sm font-medium text-gray-700">
             Material
-            <InputText @bind-Value="Model.Material" />
+            <InputText @bind-Value="Model.Material" class="input-text"  />
         </label>
+        <span class="font-bold text-red-600">
+            <ValidationMessage For="() => Model.Material" />
+        </span>
     </div>
 
 </NewProductForm>
@@ -85,6 +113,47 @@
     public Guid OrderId { get; set; }
 
     public NewFivePieceDoorProduct Model { get; set; } = new();
+
+    private EditContext? _editContext;
+    private ValidationMessageStore? _messageStore;
+
+    protected override void OnInitialized() {
+
+        _editContext = new(Model);
+        _editContext.OnValidationRequested += HandleValidationRequested;
+        _messageStore = new(_editContext);
+
+    }
+
+    private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs args) {
+
+        _messageStore?.Clear();
+
+        if (Model.Qty <= 0) {
+            _messageStore?.Add(() => Model.Qty, "Quantity must be greator than zero.");
+        }
+
+        if (string.IsNullOrWhiteSpace(Model.Material)) {
+            _messageStore?.Add(() => Model.Material, "Must specify material.");
+        }
+
+        if (Model.Width <= 0) {
+            _messageStore?.Add(() => Model.Width, "Width must be greator than zero.");
+        }
+
+        if (Model.Height <= 0) {
+            _messageStore?.Add(() => Model.Height, "Height must be greator than zero.");
+        }
+
+        if (Model.Rails <= 0) {
+            _messageStore?.Add(() => Model.Rails, "Rails must be greator than zero.");
+        }
+
+        if (Model.Stiles <= 0) {
+            _messageStore?.Add(() => Model.Stiles, "Stiles must be greator than zero.");
+        }
+
+    }
 
     public Task<Response<FivePieceDoorProduct>> AddFivePieceDoorToOrder()
         => Bus.Send(new InsertFivePieceDoorProductInOrder.Command(OrderId, Model));
