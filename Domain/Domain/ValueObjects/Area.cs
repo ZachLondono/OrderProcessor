@@ -1,6 +1,6 @@
 ﻿namespace Domain.ValueObjects;
 
-public class Area {
+public readonly struct Area {
 
     private readonly double _sqr_mm;
 
