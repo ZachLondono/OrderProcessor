@@ -1,30 +1,29 @@
 ﻿using Domain.Infrastructure.Data;
 using Domain.Orders.Entities.Products.Doors;
 
-namespace Domain.Orders.Persistance;
+namespace Domain.Orders.Persistance.Products;
 
-public partial class InsertOrder {
-    public partial class Handler {
+public static partial class ProductsPersistance {
 
-        private static void InsertProduct(MDFDoorProduct mdfdoor, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+    public static void InsertProduct(MDFDoorProduct mdfdoor, Guid orderId, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
 
-            InsertMDFConfig(mdfdoor.Id, mdfdoor.GetMDFDoorOptions(), connection, trx);
-            InsertIntoProductTable(mdfdoor, orderId, connection, trx);
+        InsertMDFConfig(mdfdoor.Id, mdfdoor.GetMDFDoorOptions(), connection, trx);
+        InsertIntoProductTable(mdfdoor, orderId, connection, trx);
 
-            var parameters = new {
-                ProductId = mdfdoor.Id,
-                mdfdoor.Note,
-                mdfdoor.Height,
-                mdfdoor.Width,
-                mdfdoor.Type,
-                mdfdoor.FrameSize.TopRail,
-                mdfdoor.FrameSize.BottomRail,
-                mdfdoor.FrameSize.LeftStile,
-                mdfdoor.FrameSize.RightStile,
-                mdfdoor.Orientation
-            };
+        var parameters = new {
+            ProductId = mdfdoor.Id,
+            mdfdoor.Note,
+            mdfdoor.Height,
+            mdfdoor.Width,
+            mdfdoor.Type,
+            mdfdoor.FrameSize.TopRail,
+            mdfdoor.FrameSize.BottomRail,
+            mdfdoor.FrameSize.LeftStile,
+            mdfdoor.FrameSize.RightStile,
+            mdfdoor.Orientation
+        };
 
-            connection.Execute("""
+        connection.Execute("""
                     INSERT INTO mdf_door_products
                         (product_id,
                         note,
@@ -49,9 +48,9 @@ public partial class InsertOrder {
                         @Orientation);
                     """, parameters, trx);
 
-            if (mdfdoor.AdditionalOpenings.Any()) {
-                foreach (var opening in mdfdoor.AdditionalOpenings) {
-                    connection.Execute("""
+        if (mdfdoor.AdditionalOpenings.Any()) {
+            foreach (var opening in mdfdoor.AdditionalOpenings) {
+                connection.Execute("""
                         INSERT INTO mdf_door_openings 
                             (id,
                             product_id,
@@ -63,14 +62,12 @@ public partial class InsertOrder {
                             @Opening,
                             @Rail);
                        """, new {
-                        Id = Guid.NewGuid(),
-                        ProductId = mdfdoor.Id,
-                        Opening = opening.OpeningHeight,
-                        Rail = opening.RailWidth
-                    }, trx);
-                }
+                    Id = Guid.NewGuid(),
+                    ProductId = mdfdoor.Id,
+                    Opening = opening.OpeningHeight,
+                    Rail = opening.RailWidth
+                }, trx);
             }
-
         }
 
     }

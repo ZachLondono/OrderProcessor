@@ -1,0 +1,65 @@
+﻿@using ApplicationCore.Features.Orders.AddProductToOrder.AddDovetailDBToOrder
+@using ApplicationCore.Features.Orders.AddProductToOrder.AddFivePieceDoorToOrder
+@using Domain.Components
+
+<div>
+
+    <div>
+        <Button OnClickAsync="OpenFivePieceDoorForm">5-Piece Door</Button>
+    </div>
+
+    <div>
+        <Button OnClickAsync="OpenDovetailDrawerBoxForm">Dovetail Drawer Box</Button>
+    </div>
+
+</div>
+
+@code {
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = default!;
+
+    [CascadingParameter]
+    public IModalService ModalService { get; set; } = default!;
+
+    [Parameter]
+    [EditorRequired]
+    public Guid OrderId { get; set; } = default!;
+
+    private async Task OpenFivePieceDoorForm() {
+
+        var instance = ModalService.Show<AddFivePieceDoorForm>(
+                    "Add 5-Piece Door",
+                    new ModalParameters() {
+                        { "OrderId", OrderId }
+                    });
+
+        var result = await instance.Result;
+
+        if (result.Confirmed) {
+
+            // Event callback to show newly added product on order details page
+
+        }
+
+    }
+
+    private async Task OpenDovetailDrawerBoxForm() {
+
+        var instance = ModalService.Show<AddDovetailDBForm>(
+                    "Add Dovetail Drawer Box",
+                    new ModalParameters() {
+                        { "OrderId", OrderId }
+                    });
+
+        var result = await instance.Result;
+
+        if (result.Confirmed) {
+
+            // Event callback to show newly added product on order details page
+
+        }
+
+    }
+
+}

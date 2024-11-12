@@ -7,6 +7,7 @@ using Blazored.Modal.Services;
 using Domain.Orders.Entities.Products;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
+using ApplicationCore.Features.Orders.AddProductToOrder;
 
 namespace ApplicationCore.Features.Orders.Details.Views;
 
@@ -91,6 +92,18 @@ public partial class OrderDetails {
 
     private void ToggleUnits() {
         _useInches = !_useInches;
+    }
+
+    private async Task AddNewProduct() {
+
+        var instance = Modal.Show<AddProductForm>(
+            "Add Product",
+            new ModalParameters() {
+                { "OrderId", OrderId }
+            });
+
+        _ = await instance.Result;
+
     }
 
     private async Task SaveNoteAsync() {

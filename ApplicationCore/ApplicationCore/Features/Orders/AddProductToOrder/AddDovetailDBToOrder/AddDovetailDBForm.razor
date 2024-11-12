@@ -1,0 +1,120 @@
+﻿@using Domain.Components
+@using Domain.Infrastructure.Bus
+@using Domain.Orders.Entities.Products.DrawerBoxes
+@using Domain.ValueObjects
+@using MediatR
+@using static Domain.Components.Button
+
+<NewProductForm Model="Model"
+                TProduct="DovetailDrawerBoxProduct"
+                TProductModel="NewDovetailDB"
+                OnFormSubmit="AddDoveatilDBToOrder">
+
+    <div>
+        <label>
+            Qty
+            <InputNumber @bind-Value="Model.Qty" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Unit Price
+            <InputNumber @bind-Value="Model.UnitPrice" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Product Number
+            <InputNumber @bind-Value="Model.ProductNumber" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Room
+            <InputText @bind-Value="Model.Room" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Width
+            <InputNumber @bind-Value="Model.Width" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Height
+            <InputNumber @bind-Value="Model.Height" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Depth
+            <InputNumber @bind-Value="Model.Depth" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Box Material
+            <InputText @bind-Value="Model.BoxMaterial" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Bottom Material
+            <InputText @bind-Value="Model.BottomMaterial" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Notches
+            <InputText @bind-Value="Model.Notches" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Clips
+            <InputText @bind-Value="Model.Clips" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Accessory
+            <InputText @bind-Value="Model.Accessory" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Note
+            <InputText @bind-Value="Model.Note" />
+        </label>
+    </div>
+
+</NewProductForm>
+
+@code {
+
+    [Inject]
+    public IBus Bus { get; set; } = default!;
+
+    [Parameter]
+    [EditorRequired]
+    public Guid OrderId { get; set; }
+
+    private NewDovetailDB Model { get; } = new();
+
+    public Task<Response<DovetailDrawerBoxProduct>> AddDoveatilDBToOrder()
+        => Bus.Send(new InsertDovetailDBProductInOrder.Command(OrderId, Model));
+
+}
