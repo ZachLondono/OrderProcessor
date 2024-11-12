@@ -11,45 +11,50 @@
                 OnFormSubmit="AddFivePieceDoorToOrder"
                 EditContext="_editContext">
 
-    <div>
-        <label class="block text-sm font-medium text-gray-700">
-            Qty
-            <InputNumber @bind-Value="Model.Qty" class="input-text" />
-        </label>
-        <span class="font-bold text-red-600">
-            <ValidationMessage For="() => Model.Qty" />
-        </span>
-    </div>
 
-    <div>
-        <label class="block text-sm font-medium text-gray-700">
-            Unit Price
-            <InputNumber @bind-Value="Model.UnitPrice" class="input-text"  />
-        </label>
-        <span class="font-bold text-red-600">
-            <ValidationMessage For="() => Model.UnitPrice" />
-        </span>
-    </div>
+    <table>
+        <tr>
+            <th>
+                <label class="block text-sm font-medium text-gray-700">
+                    Qty
+                    <InputNumber @bind-Value="Model.Qty" class="input-text" />
+                </label>
+                <span class="font-bold text-red-600">
+                    <ValidationMessage For="() => Model.Qty" />
+                </span>
+            </th>
+            <th>
+                <label class="block text-sm font-medium text-gray-700">
+                    Unit Price
+                    <InputNumber @bind-Value="Model.UnitPrice" class="input-text"  />
+                </label>
+                <span class="font-bold text-red-600">
+                    <ValidationMessage For="() => Model.UnitPrice" />
+                </span>
+            </th>
+        </tr>
 
-    <div>
-        <label class="block text-sm font-medium text-gray-700">
-            Product Number
-            <InputNumber @bind-Value="Model.ProductNumber" class="input-text"  />
-        </label>
-        <span class="font-bold text-red-600">
-            <ValidationMessage For="() => Model.ProductNumber" />
-        </span>
-    </div>
-
-    <div>
-        <label class="block text-sm font-medium text-gray-700">
-            Room
-            <InputText @bind-Value="Model.Room" class="input-text"  />
-        </label>
-        <span class="font-bold text-red-600">
-            <ValidationMessage For="() => Model.Room" />
-        </span>
-    </div>
+        <tr>
+            <th>
+                <label class="block text-sm font-medium text-gray-700">
+                    Product Number
+                    <InputNumber @bind-Value="Model.ProductNumber" class="input-text"  />
+                </label>
+                <span class="font-bold text-red-600">
+                    <ValidationMessage For="() => Model.ProductNumber" />
+                </span>
+            </th>
+            <th>
+                <label class="block text-sm font-medium text-gray-700">
+                    Room
+                    <InputText @bind-Value="Model.Room" class="input-text" />
+                </label>
+                <span class="font-bold text-red-600">
+                    <ValidationMessage For="() => Model.Room" />
+                </span>
+            </th>
+        </tr>
+    </table>
 
     <div>
         <label class="block text-sm font-medium text-gray-700">
