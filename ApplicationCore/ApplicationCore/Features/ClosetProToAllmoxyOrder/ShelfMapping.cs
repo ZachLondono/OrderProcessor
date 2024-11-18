@@ -116,6 +116,7 @@ public partial class ClosetProToAllmoxyMapper {
             PanelFinish = PanelFinish.NONE,
             DoubleCams = useDoubleCams,
             EdgeBandFrontAndBack = false,
+            InstallCams = true,
             Qty = shelf.Qty,
             Width = shelf.Width.AsInches(),
             Depth = shelf.Depth.AsInches(),

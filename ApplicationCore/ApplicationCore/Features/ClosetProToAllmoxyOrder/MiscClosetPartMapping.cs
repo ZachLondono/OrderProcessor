@@ -36,6 +36,7 @@ public partial class ClosetProToAllmoxyMapper {
             BandingColor = bandingColor,
             Cams = Cams.SINGLE_CAM,
             PanelFinish = PanelFinish.NONE,
+            InstallCams = true,
             Qty = part.Qty,
             Width = part.Width.AsInches(),
             Length = part.Length.AsInches(),
