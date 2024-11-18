@@ -20,7 +20,19 @@ public class MelamineSlabFront : IClosetProProduct {
 	public required DoorType Type { get; init; }
 	public required Dimension? HardwareSpread { get; init; }
 
-	public IProduct ToProduct() {
+	public Dimension GetActualHeight() {
+
+        if (TryGetNearest32MMComplientHalfOverlayHeight(Height, out Dimension actualHeight)) {
+
+			return actualHeight;
+
+        }
+
+		return Height;
+
+    }
+
+    public IProduct ToProduct() {
 
 		ClosetMaterial material = new(Color, ClosetMaterialCore.ParticleBoard);
 		ClosetPaint? paint = null;
