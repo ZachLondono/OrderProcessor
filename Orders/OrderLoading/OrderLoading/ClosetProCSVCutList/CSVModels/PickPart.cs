@@ -2,7 +2,7 @@
 
 public class PickPart {
 	public string Type { get; set; } = string.Empty;
-	public string Name { get; set; } = string.Empty;
+	public string PartName { get; set; } = string.Empty;
 	public string ExportName { get; set; } = string.Empty;
 	public string Color { get; set; } = string.Empty;
 	public double Height { get; set; }

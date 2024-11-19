@@ -30,6 +30,6 @@ public class Part {
 	public string UnitR { get; set; } = string.Empty;
 	public int PartNum { get; set; }
 
-	public List<PartInfo> InfoRecords = new();
+	public List<Part> InfoRecords = [];
 
 }
