@@ -4,6 +4,7 @@ using Domain.Orders.Builders;
 using Domain.Extensions;
 using Domain.ValueObjects;
 using Domain.Orders.Entities.Hardware;
+using OrderLoading.ClosetProCSVCutList.Products.Verticals;
 
 namespace OrderLoading.ClosetProCSVCutList;
 
@@ -23,7 +24,56 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 			products = GroupProducts(products);
 		}
 
-		return products.ToList();
+		var productsList = products.ToList();
+
+		FixCornerShelfSupportDepth(productsList);
+
+		return productsList;
+
+	}
+
+	private static void FixCornerShelfSupportDepth(List<IClosetProProduct> parts) {
+
+		List<IClosetProProduct> partsToRemove = [];
+		List<IClosetProProduct> partsToAdd = [];
+
+		VerticalPanel? lastVertical = null;
+		foreach (var part in parts) {
+
+			if (part is CornerShelf cs && lastVertical is not null) {
+
+				partsToRemove.Add(lastVertical);
+				partsToAdd.Add(new VerticalPanel() {
+                    Qty = lastVertical.Qty,
+                    Color = lastVertical.Color,
+					EdgeBandingColor = lastVertical.EdgeBandingColor,
+					Room = lastVertical.Room,
+					UnitPrice = lastVertical.UnitPrice,
+					PartNumber = lastVertical.PartNumber,
+                    Height = lastVertical.Height,
+                    Depth = cs.ProductWidth,
+					Drilling = lastVertical.Drilling,
+					WallHung = lastVertical.WallHung,
+					ExtendBack = lastVertical.ExtendBack,
+					HasBottomRadius = lastVertical.HasBottomRadius,
+					BaseNotch = lastVertical.BaseNotch
+                });
+
+				lastVertical = null;
+				continue;
+
+			}
+
+			if (part is VerticalPanel vp && vp.Depth == Dimension.FromInches(6)) {
+
+				lastVertical = vp;
+
+			}
+
+		}
+
+		partsToRemove.ForEach(p => parts.Remove(p));
+		parts.AddRange(partsToAdd);
 
 	}
 
@@ -249,7 +299,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 		var pull = pulls[0];
 
-        if (frontHardwareSpreads.TryGetValue(pull.Name, out Dimension spread)) {
+        if (frontHardwareSpreads.TryGetValue(pull.PartName, out Dimension spread)) {
 			return spread;
 		}
 
@@ -268,7 +318,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 			items.Add(new() {
 				Qty = item.Quantity,
-				Name = item.Name,
+				Name = item.PartName,
 				UnitPrice = cost
 			});
 
@@ -300,7 +350,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 	}
 
-	public static (HangingRail[], Supply[]) GetHangingRailsFromBuyOutParts(IEnumerable<BuyOutPart> parts) {
+	public static (HangingRail[], Supply[]) GetHangingRailsFromParts(IEnumerable<Part> parts) {
 
 		List<HangingRail> rails = [];
 
@@ -336,7 +386,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 	}
 
-	public static List<Supply> GetHangingRailBracketsFromBuyOutParts(IEnumerable<BuyOutPart> parts) {
+	public static List<Supply> GetHangingRailBracketsFromPickParts(IEnumerable<PickPart> parts) {
 
 		List<Supply> supplies = [];
 
@@ -351,28 +401,6 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
         }
 
         return supplies;
-
-	}
-
-	public static List<OtherPart> MapBuyOutPartsToItems(IEnumerable<BuyOutPart> parts) {
-
-		List<OtherPart> items = [];
-
-		foreach (var part in parts) {
-
-			if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
-				unitPrice = 0M;
-			}
-
-            items.Add(new() {
-                Qty = part.Quantity,
-                Name = part.PartName,
-                UnitPrice = (unitPrice / (decimal)part.Quantity)
-            });
-
-        }
-
-        return items;
 
 	}
 
