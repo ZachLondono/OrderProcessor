@@ -33,8 +33,8 @@ public class DovetailDrawerBox : IComponent, IDrawerSlideContainer, ISupplyConta
 
         string accComment = DrawerBoxOptions.Accessory.Equals("None") ? "" : DrawerBoxOptions.Accessory;
         string logoComment = DrawerBoxOptions.Logo switch {
-            LogoPosition.Inside => "Logo-Inside",
-            LogoPosition.Outside => "Logo-Outside",
+            LogoPosition.Inside => "yes-in",
+            LogoPosition.Outside => "yes-out",
             LogoPosition.None or _ => "",
         };
 
