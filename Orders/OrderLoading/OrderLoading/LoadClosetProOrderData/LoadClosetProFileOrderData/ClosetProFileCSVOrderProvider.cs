@@ -1,9 +1,9 @@
 ﻿using OrderLoading.ClosetProCSVCutList;
 using Domain.Companies;
-using Domain.Orders.Builders;
 using Microsoft.Extensions.Logging;
 using Domain.Orders.Persistance;
 using Domain.Services;
+using OrderLoading.ClosetProCSVCutList.PartList;
 
 namespace OrderLoading.LoadClosetProOrderData.LoadClosetProFileOrderData;
 
@@ -11,10 +11,10 @@ public class ClosetProFileCSVOrderProvider : ClosetProCSVOrderProvider {
 
 	private readonly IFileReader _fileReader;
 
-	public ClosetProFileCSVOrderProvider(ILogger<ClosetProCSVOrderProvider> logger, ClosetProCSVReader reader, ClosetProPartMapper partMapper,
+	public ClosetProFileCSVOrderProvider(ILogger<ClosetProCSVOrderProvider> logger, ClosetProCSVReader reader, PartListProcessor partListProcessor,
 										IFileReader fileReader, IOrderingDbConnectionFactory dbConnectionFactory,
-										CompanyDirectory.GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, CompanyDirectory.InsertCustomerAsync insertCustomerAsync, CompanyDirectory.GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync, ComponentBuilderFactory componentBuilderFactory)
-									 : base(logger, reader, partMapper, fileReader, dbConnectionFactory, getCustomerIdByNameIdAsync, insertCustomerAsync, getCustomerOrderPrefixByIdAsync, getCustomerByIdAsync, getCustomerWorkingDirectoryRootByIdAsync, componentBuilderFactory) {
+										CompanyDirectory.GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, CompanyDirectory.InsertCustomerAsync insertCustomerAsync, CompanyDirectory.GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync)
+									 : base(logger, reader, partListProcessor, fileReader, dbConnectionFactory, getCustomerIdByNameIdAsync, insertCustomerAsync, getCustomerOrderPrefixByIdAsync, getCustomerByIdAsync, getCustomerWorkingDirectoryRootByIdAsync) {
 		_fileReader = fileReader;
 	}
 

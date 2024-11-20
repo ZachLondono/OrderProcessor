@@ -350,42 +350,6 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 	}
 
-	public static (HangingRail[], Supply[]) GetHangingRailsFromParts(IEnumerable<Part> parts) {
-
-		List<HangingRail> rails = [];
-
-		foreach (var part in parts) {
-
-            if (part.PartName != "Hang Rod") {
-                continue;
-            }
-
-			double adjLength = part.Width - 0.25;
-            Dimension length = Dimension.FromMillimeters(Math.Round(Dimension.FromInches(adjLength).AsMillimeters()));
-            rails.Add(new HangingRail(Guid.NewGuid(), part.Quantity, length, part.Color));
-
-        }
-
-		var groupedRails = rails.GroupBy(r => (r.Length, r.Finish))
-					.Select(g => new HangingRail(Guid.NewGuid(), g.Sum(r => r.Qty), g.Key.Length, g.Key.Finish))
-					.ToList();
-
-		Supply[] supplies = [];
-        if (rails.Count != 0) {
-
-			var totalQty = rails.Sum(r => r.Qty);
-
-			supplies = [
-				Supply.RodMountingBracketOpen(totalQty),
-				Supply.RodMountingBracketClosed(totalQty),
-			];
-
-		}
-
-        return (groupedRails.ToArray(), supplies);
-
-	}
-
 	public static List<Supply> GetHangingRailBracketsFromPickParts(IEnumerable<PickPart> parts) {
 
 		List<Supply> supplies = [];
