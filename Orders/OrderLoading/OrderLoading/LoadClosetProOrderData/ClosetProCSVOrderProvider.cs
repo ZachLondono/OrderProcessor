@@ -163,6 +163,4 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 		return decimal.TryParse(text.Replace("$", ""), out value);
 	}
 
-	public record FrontHardware(string Name, Dimension Spread);
-
 }
