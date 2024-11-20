@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using OrderLoading.LoadClosetProOrderData;
+using OrderLoading.ClosetProCSVCutList.Header;
 
 namespace OrderLoading.Tests.Unit.ClosetProOrderLoading;
 
@@ -11,7 +11,7 @@ public class OrderProviderTests {
         string input = "1-Order Name";
         string expectedOutput = "Order Name";
 
-        string output = ClosetProCSVOrderProvider.GetOrderName(input);
+        string output = OrderHeaderProcessor.GetOrderName(input);
 
         output.Should().Be(expectedOutput);
 
