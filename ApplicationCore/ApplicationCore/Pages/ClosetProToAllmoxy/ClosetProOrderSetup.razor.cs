@@ -1,9 +1,8 @@
 ﻿using ApplicationCore.Features.AllmoxyOrderExport;
 using ApplicationCore.Features.AllmoxyOrderExport.Products;
 using ApplicationCore.Features.ClosetProToAllmoxyOrder.Models;
-using ApplicationCore.Shared.Services;
 using Domain.Services;
-using OrderLoading.ClosetProCSVCutList;
+using OrderLoading.ClosetProCSVCutList.PickList;
 using OrderLoading.ClosetProCSVCutList.Products;
 using System.Diagnostics;
 
@@ -71,8 +70,7 @@ public partial class ClosetProOrderSetup {
 
         var order = await Reader.ReadCSVData(csvData);
 
-        // TODO: need hardware list here
-        var hardwareSpread = ClosetProPartMapper.GetHardwareSpread(order.PickList, []);
+        var hardwareSpread = PickListProcessor.GetHardwareSpread(order.PickList, []);
         CPPartMapper.GroupLikeProducts = _loadingSettings.GroupLikeProducts;
         CPPartMapper.RoomNamingStrategy = _loadingSettings.RoomNamingStrategy;
         ClosetProProducts = CPPartMapper.MapPartsToProducts(order.Parts, hardwareSpread);

@@ -3,7 +3,6 @@ using OrderLoading.ClosetProCSVCutList.Products;
 using Domain.Orders.Builders;
 using Domain.Extensions;
 using Domain.ValueObjects;
-using Domain.Orders.Entities.Hardware;
 using OrderLoading.ClosetProCSVCutList.Products.Verticals;
 
 namespace OrderLoading.ClosetProCSVCutList;
@@ -290,23 +289,6 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 	}
 
-	public static Dimension GetHardwareSpread(IEnumerable<PickPart> parts, Dictionary<string, Dimension> frontHardwareSpreads) {
-
-		var pulls = parts.Where(p => p.Type == "Pull/Knob").ToArray();
-
-        // TODO: check pick list for "Pull/Knob" part types, if there is only one then the drilling spacing for drawer fronts can be inferred from that, if there are multiple then spacing cannot be inferred 
-		if (pulls.Length != 1) return Dimension.Zero;
-
-		var pull = pulls[0];
-
-        if (frontHardwareSpreads.TryGetValue(pull.PartName, out Dimension spread)) {
-			return spread;
-		}
-
-		return Dimension.Zero;
-
-	}
-
 	public static List<OtherPart> MapPickListToItems(IEnumerable<PickPart> parts) {
 
 		List<OtherPart> items = [];
@@ -347,24 +329,6 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 		}
 
 		return items;
-
-	}
-
-	public static List<Supply> GetHangingRailBracketsFromPickParts(IEnumerable<PickPart> parts) {
-
-		List<Supply> supplies = [];
-
-		foreach (var part in parts) {
-
-			if (part.PartName == "Left Rod End") {
-				supplies.Add(Supply.RodMountingBracketOpen(part.Quantity));
-			} else if (part.PartName == "Right Rod End") {
-				supplies.Add(Supply.RodMountingBracketOpen(part.Quantity));
-			}
-
-        }
-
-        return supplies;
 
 	}
 

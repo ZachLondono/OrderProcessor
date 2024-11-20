@@ -5,12 +5,12 @@ using Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 using static Domain.Companies.CompanyDirectory;
 using CompanyCustomer = Domain.Companies.Entities.Customer;
-using Domain.Orders.Entities.Products;
 using Domain.Orders.Persistance;
 using Domain.Services;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Hardware;
 using OrderLoading.ClosetProCSVCutList.PartList;
+using OrderLoading.ClosetProCSVCutList.PickList;
 
 namespace OrderLoading.LoadClosetProOrderData;
 
@@ -68,16 +68,13 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
         string? workingDirectoryRoot = await GetWorkingDirectoryRoot(settings.CustomWorkingDirectoryRoot, customer);
         string workingDirectory = await CreateWorkingDirectory(csvData, info.Header.DesignerCompany, orderName, orderNumber, workingDirectoryRoot);
 
-        // TODO: need hardware list here
-        Dimension hardwareSpread = ClosetProPartMapper.GetHardwareSpread(info.PickList, []);
+		var pickList = PickListProcessor.ParsePickList(info.PickList);
+		var partList = _partListProcessor.ParsePartList(customer.ClosetProSettings, info.Parts, pickList.HardwareSpread);
 
-		var partList = _partListProcessor.ParsePartList(customer.ClosetProSettings, info.Parts, hardwareSpread);
-
-        var hangRailBrackets = ClosetProPartMapper.GetHangingRailBracketsFromPickParts(info.PickList).ToArray();
-
-		var supplies = new List<Supply>(); 
-        supplies.AddRange(hangRailBrackets);
-        supplies.AddRange(partList.Supplies);
+		IEnumerable<Supply> supplies = [
+			.. pickList.Supplies,
+			.. partList.Supplies
+		];
 
         var suppliesArray = supplies.Where(s => s.Qty != 0).ToArray();
         Hardware hardware = new(suppliesArray, partList.DrawerSlides, partList.HangingRails);
