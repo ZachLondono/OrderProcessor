@@ -11,6 +11,7 @@ using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Hardware;
 using OrderLoading.ClosetProCSVCutList.PartList;
 using OrderLoading.ClosetProCSVCutList.PickList;
+using OrderLoading.ClosetProCSVCutList.Header;
 
 namespace OrderLoading.LoadClosetProOrderData;
 
@@ -18,28 +19,16 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 	public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
 
-	private readonly ILogger<ClosetProCSVOrderProvider> _logger;
 	private readonly ClosetProCSVReader _reader;
 	private readonly PartListProcessor _partListProcessor;
-	private readonly IFileReader _fileReader;
-	private readonly IOrderingDbConnectionFactory _dbConnectionFactory;
-	private readonly GetCustomerIdByNameAsync _getCustomerIdByNameAsync;
-	private readonly GetCustomerOrderPrefixByIdAsync _getCustomerOrderPrefixByIdAsync;
-	private readonly GetCustomerWorkingDirectoryRootByIdAsync _getCustomerWorkingDirectoryRootByIdAsync;
-	private readonly InsertCustomerAsync _insertCustomerAsync;
-	private readonly GetCustomerByIdAsync _getCustomerByIdAsync;
+    private readonly OrderHeaderProcessor _orderHeaderProcessor;
+    private readonly IFileReader _fileReader;
 
-	public ClosetProCSVOrderProvider(ILogger<ClosetProCSVOrderProvider> logger, ClosetProCSVReader reader, PartListProcessor partListProcessor, IFileReader fileReader, IOrderingDbConnectionFactory dbConnectionFactory, GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, InsertCustomerAsync insertCustomerAsync, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerByIdAsync getCustomerByIdAsync, GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync) {
-		_logger = logger;
+	public ClosetProCSVOrderProvider(ClosetProCSVReader reader, PartListProcessor partListProcessor, OrderHeaderProcessor orderHeaderProcessor, IFileReader fileReader) {
 		_reader = reader;
-		_fileReader = fileReader;
 		_partListProcessor = partListProcessor;
-		_dbConnectionFactory = dbConnectionFactory;
-		_getCustomerIdByNameAsync = getCustomerIdByNameIdAsync;
-		_insertCustomerAsync = insertCustomerAsync;
-		_getCustomerOrderPrefixByIdAsync = getCustomerOrderPrefixByIdAsync;
-		_getCustomerByIdAsync = getCustomerByIdAsync;
-		_getCustomerWorkingDirectoryRootByIdAsync = getCustomerWorkingDirectoryRootByIdAsync;
+        _orderHeaderProcessor = orderHeaderProcessor;
+        _fileReader = fileReader;
 	}
 
 	protected abstract Task<string?> GetCSVDataFromSourceAsync(string source);
@@ -60,21 +49,17 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
         // TODO: get this info from a configuration file
         var vendorId = Guid.Parse("a81d759d-5b6c-4053-8cec-55a6c94d609e");
-        string designerName = info.Header.GetDesignerName();
-        var customer = await GetOrCreateCustomer(info.Header.DesignerCompany, designerName);
 
-        string orderNumber = await GetOrderNumber(settings.CustomOrderNumber, customer);
-        string orderName = GetOrderName(info.Header.OrderName);
-        string? workingDirectoryRoot = await GetWorkingDirectoryRoot(settings.CustomWorkingDirectoryRoot, customer);
-        string workingDirectory = await CreateWorkingDirectory(csvData, info.Header.DesignerCompany, orderName, orderNumber, workingDirectoryRoot);
+        var header = await _orderHeaderProcessor.ParseOrderHeader(info.Header, settings);
+        var pickList = PickListProcessor.ParsePickList(info.PickList);
+        var partList = _partListProcessor.ParsePartList(header.Customer.ClosetProSettings, info.Parts, pickList.HardwareSpread);
 
-		var pickList = PickListProcessor.ParsePickList(info.PickList);
-		var partList = _partListProcessor.ParsePartList(customer.ClosetProSettings, info.Parts, pickList.HardwareSpread);
+        await WriteIncomingDataToWorkignDirectory(csvData, header.WorkingDirectory);
 
-		IEnumerable<Supply> supplies = [
-			.. pickList.Supplies,
-			.. partList.Supplies
-		];
+        IEnumerable<Supply> supplies = [
+            .. pickList.Supplies,
+            .. partList.Supplies
+        ];
 
         var suppliesArray = supplies.Where(s => s.Qty != 0).ToArray();
         Hardware hardware = new(suppliesArray, partList.DrawerSlides, partList.HangingRails);
@@ -83,10 +68,10 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
         return new OrderData() {
             VendorId = vendorId,
-            CustomerId = customer.Id,
-            Name = orderName,
-            Number = orderNumber,
-            WorkingDirectory = workingDirectory,
+            CustomerId = header.Customer.Id,
+            Name = header.OrderName,
+            Number = header.OrderNumber,
+            WorkingDirectory = header.WorkingDirectory,
             Products = partList.Products.ToList(),
             AdditionalItems = additionalItems,
 
@@ -103,7 +88,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
                 Address = new()
             },
             Shipping = new() {
-                Contact = designerName,
+                Contact = "",
                 Address = new(),
                 Method = "Pick Up",
                 PhoneNumber = "",
@@ -114,67 +99,16 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
     }
 
-    private static OrderLoadingSettings GetOrderLoadingSettings(string sourceObj) {
-        var sourceObjParts = sourceObj.Split('*');
+    private async Task WriteIncomingDataToWorkignDirectory(string? csvData, string workingDirectory) {
 
-        if (sourceObjParts.Length != 3) {
-            throw new InvalidOperationException("Invalid data source");
+        if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDir) && incomingDir is not null) {
+            string dataFile = _fileReader.GetAvailableFileName(incomingDir, "Incoming", ".csv");
+            await File.WriteAllTextAsync(dataFile, csvData);
         }
-
-        string source = sourceObjParts[0];
-        string? customOrderNumber = string.IsNullOrWhiteSpace(sourceObjParts[1]) ? null : sourceObjParts[1];
-        string? customWorkingDirectoryRoot = string.IsNullOrWhiteSpace(sourceObjParts[2]) ? null : sourceObjParts[2];
-        var settings = new OrderLoadingSettings(source, customOrderNumber, customWorkingDirectoryRoot);
-        return settings;
-    }
-
-    private async Task<string> GetOrderNumber(string? customOrderNumber, CompanyCustomer customer) {
-        string orderNumber;
-        if (customOrderNumber is null && string.IsNullOrWhiteSpace(customOrderNumber)) {
-            orderNumber = await GetNextOrderNumber(customer.Id);
-            var orderNumberPrefix = await _getCustomerOrderPrefixByIdAsync(customer.Id) ?? "";
-            orderNumber = $"{orderNumberPrefix}{orderNumber}";
-        } else {
-            orderNumber = customOrderNumber;
-        }
-
-        return orderNumber;
-    }
-
-    public static string GetOrderName(string orderName) {
-        int start = orderName.IndexOf('-');
-        if (start != -1) {
-            orderName = orderName[(start + 1)..];
-        }
-		return orderName;
-    }
-
-    private async Task<string> CreateWorkingDirectory(string csvData, string company, string orderName, string orderNumber, string? customerWorkingDirectoryRoot) {
-
-		string cpDefaultWorkingDirectory = @"R:\Job Scans\ClosetProSoftware"; // TODO: Get base directory from configuration file
-		string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? cpDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {company} - {orderName}", ' '));
-
-		if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDir) && incomingDir is not null) {
-			string dataFile = _fileReader.GetAvailableFileName(incomingDir, "Incoming", ".csv");
-			await File.WriteAllTextAsync(dataFile, csvData);
-		}
-
-		return workingDirectory;
-	}
-
-    private async Task<string?> GetWorkingDirectoryRoot(string? customWorkingDirectoryRoot, CompanyCustomer customer) {
-        string? workingDirectoryRoot;
-        if (customWorkingDirectoryRoot is null) {
-            workingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customer.Id);
-        } else {
-            workingDirectoryRoot = customWorkingDirectoryRoot;
-        }
-
-        return workingDirectoryRoot;
 
     }
 
-	private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
+    private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
 
 		workingDirectory = workingDirectory.Trim();
 
@@ -200,76 +134,6 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 	}
 
-	private async Task<string> GetNextOrderNumber(Guid customerId) {
-
-		using var connection = await _dbConnectionFactory.CreateConnection();
-
-		connection.Open();
-		var trx = connection.BeginTransaction();
-
-		try {
-
-			var newNumber = connection.QuerySingleOrDefault<int?>("SELECT number FROM order_numbers WHERE customer_id = @CustomerId;", new {
-				CustomerId = customerId
-			});
-
-			if (newNumber is null) {
-				int initialNumber = 1;
-				connection.Execute("INSERT INTO order_numbers (customer_id, number) VALUES (@CustomerId, @InitialNumber);", new {
-					CustomerId = customerId,
-					InitialNumber = initialNumber
-				}, trx);
-				newNumber = initialNumber;
-			}
-
-			connection.Execute("UPDATE order_numbers SET number = @IncrementedValue WHERE customer_id = @CustomerId", new {
-				CustomerId = customerId,
-				IncrementedValue = newNumber + 1
-			});
-
-			trx.Commit();
-
-			return newNumber?.ToString() ?? "0";
-
-		} catch {
-			trx.Rollback();
-			throw;
-		} finally {
-			connection.Close();
-		}
-
-	}
-
-	private async Task<CompanyCustomer> GetOrCreateCustomer(string designerCompanyName, string designerName) {
-
-		Guid? customerId = await _getCustomerIdByNameAsync(designerCompanyName);
-
-		if (customerId is Guid id) {
-
-			var customer = await _getCustomerByIdAsync(id);
-			if (customer is null) {
-				throw new InvalidOperationException("Unable to load customer information");
-			}
-			return customer;
-
-		} else {
-
-			var contact = new Contact() {
-				Name = designerName,
-				Email = null,
-				Phone = null
-			};
-
-			var newCustomer = CompanyCustomer.Create(designerCompanyName, "Pick Up", contact, new(), contact, new());
-
-			await _insertCustomerAsync(newCustomer);
-
-			return newCustomer;
-
-		}
-
-	}
-
 	private static string? CreateSubDirectories(string workingDirectory) {
 		var cutListDir = Path.Combine(workingDirectory, "CUTLIST");
 		_ = Directory.CreateDirectory(cutListDir);
@@ -281,12 +145,24 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 		return Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
 	}
 
+    private static OrderLoadingSettings GetOrderLoadingSettings(string sourceObj) {
+        var sourceObjParts = sourceObj.Split('*');
+
+        if (sourceObjParts.Length != 3) {
+            throw new InvalidOperationException("Invalid data source");
+        }
+
+        string source = sourceObjParts[0];
+        string? customOrderNumber = string.IsNullOrWhiteSpace(sourceObjParts[1]) ? null : sourceObjParts[1];
+        string? customWorkingDirectoryRoot = string.IsNullOrWhiteSpace(sourceObjParts[2]) ? null : sourceObjParts[2];
+        var settings = new OrderLoadingSettings(source, customOrderNumber, customWorkingDirectoryRoot);
+        return settings;
+    }
+
 	public static bool TryParseMoneyString(string text, out decimal value) {
 		return decimal.TryParse(text.Replace("$", ""), out value);
 	}
 
 	public record FrontHardware(string Name, Dimension Spread);
-
-	private record OrderLoadingSettings(string FilePath, string? CustomOrderNumber, string? CustomWorkingDirectoryRoot);
 
 }

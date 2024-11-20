@@ -1,9 +1,7 @@
 ﻿using OrderLoading.ClosetProCSVCutList;
-using Domain.Companies;
-using Microsoft.Extensions.Logging;
-using Domain.Orders.Persistance;
 using Domain.Services;
 using OrderLoading.ClosetProCSVCutList.PartList;
+using OrderLoading.ClosetProCSVCutList.Header;
 
 namespace OrderLoading.LoadClosetProOrderData.LoadClosetProWebOrderData;
 
@@ -11,8 +9,8 @@ public class ClosetProWebCSVOrderProvider : ClosetProCSVOrderProvider {
 
 	private readonly ClosetProClientFactory _factory;
 
-	public ClosetProWebCSVOrderProvider(ILogger<ClosetProCSVOrderProvider> logger, ClosetProCSVReader reader, PartListProcessor partListProcessor, IFileReader fileReader, IOrderingDbConnectionFactory dbConnectionFactory, CompanyDirectory.GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, CompanyDirectory.InsertCustomerAsync insertCustomerAsync, CompanyDirectory.GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, ClosetProClientFactory factory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync)
-		: base(logger, reader, partListProcessor, fileReader, dbConnectionFactory, getCustomerIdByNameIdAsync, insertCustomerAsync, getCustomerOrderPrefixByIdAsync, getCustomerByIdAsync, getCustomerWorkingDirectoryRootByIdAsync) {
+	public ClosetProWebCSVOrderProvider(ClosetProCSVReader reader, PartListProcessor partListProcessor, OrderHeaderProcessor orderHeaderProcessor, IFileReader fileReader, ClosetProClientFactory factory)
+		: base(reader, partListProcessor, orderHeaderProcessor, fileReader) {
 		_factory = factory;
 	}
 

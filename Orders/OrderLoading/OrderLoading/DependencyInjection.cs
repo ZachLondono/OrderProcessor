@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OrderLoading.ClosetProCSVCutList;
+using OrderLoading.ClosetProCSVCutList.Header;
 using OrderLoading.ClosetProCSVCutList.PartList;
 using OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 using OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyFileOrderData;
@@ -31,6 +32,7 @@ public static class DependencyInjection {
 						.AddTransient<ClosetProCSVReader>()
 						.AddTransient<ClosetProPartMapper>()
 						.AddTransient<PartListProcessor>()
+						.AddTransient<OrderHeaderProcessor>()
 						.AddTransient<ClosetProClientFactory>()
 						.AddTransient<DoweledDBSpreadsheetOrderProvider>()
 						.AddTransient<ClosetSpreadsheetOrderProvider>()
