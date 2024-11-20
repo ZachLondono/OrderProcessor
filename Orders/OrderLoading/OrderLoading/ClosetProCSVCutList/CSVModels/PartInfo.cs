@@ -1,6 +1,6 @@
 ﻿namespace OrderLoading.ClosetProCSVCutList.CSVModels;
 
-public class Part {
+public class PartInfo {
 
 	public int WallNum { get; set; }
 	public int SectionNum { get; set; }
@@ -29,8 +29,6 @@ public class Part {
 	public string PartCost { get; set; } = string.Empty;
 	public string UnitL { get; set; } = string.Empty;
 	public string UnitR { get; set; } = string.Empty;
-	public int PartNum { get; set; }
-
-	public List<PartInfo> InfoRecords = [];
+	public string PartNum { get; set; }
 
 }

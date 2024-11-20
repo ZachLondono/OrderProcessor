@@ -45,7 +45,11 @@ public class ClosetProCSVReader {
 
             }
 
-            section = GetCurrentSection(section, csv.GetField(0));
+            section = GetCurrentSection(section, csv.GetField(0), out bool isData);
+
+            if (!isData) {
+                continue;
+            }
 
             try {
 
@@ -54,37 +58,30 @@ public class ClosetProCSVReader {
                     case CutListSection.Parts:
 
                         string partNum = csv.GetField(27) ?? "";
-                        if (csv.GetRecord<Part>() is Part part) {
 
-                            if (string.IsNullOrWhiteSpace(partNum)) {
-                                parts.Last()?.InfoRecords.Add(part);
-                            } else {
-                                parts.Add(part);
-                            }
-
-                            break;
-
+                        if (string.IsNullOrWhiteSpace(partNum) && csv.GetRecord<PartInfo>() is PartInfo info) {
+                            parts.Last()?.InfoRecords.Add(info);
+                        } else if (csv.GetRecord<Part>() is Part part) {
+                            parts.Add(part);
                         }
 
-                        throw new InvalidDataException("Failed to Parse Part");
+                        break;
 
                     case CutListSection.PickList:
 
                         if (csv.GetRecord<PickPart>() is PickPart pickPart) {
                             pickList.Add(pickPart);
-                            break;
                         }
 
-                        throw new InvalidDataException("Failed to Parse Pick List Part");
+                        break;
 
                     case CutListSection.Accessories:
 
                         if (csv.GetRecord<Accessory>() is Accessory accessory) {
                             accessories.Add(accessory);
-                            break;
                         }
 
-                        throw new InvalidDataException("Failed to Parse Accessory");
+                        break;
 
                 }
 
@@ -98,25 +95,35 @@ public class ClosetProCSVReader {
 
 	}
 
-    private static CutListSection GetCurrentSection(CutListSection previosSection, string? field) {
-        return field switch {
+    private static CutListSection GetCurrentSection(CutListSection previosSection, string? field, out bool isData) {
+        switch (field) {
 
-            "" or
-            "Subtotal" or
-            "Total" or                  // End of cut list
-            "Applied Tax Rate" or
-            "Base Shipping Costs" or
-            "Grand Total" or            // End of data
-            "Wall #" or
-            "Part Type" => previosSection,
+            case "Cut List":
+                isData = false;
+                return CutListSection.Parts;
 
-            "Cut List" => CutListSection.Parts,
+            case "Pick List":
+                isData = false;
+                return CutListSection.PickList;
 
-            "Pick List" => CutListSection.PickList,
+            case "Accessories":
+                isData = false;
+                return CutListSection.Accessories;
 
-            "Accessories" => CutListSection.Accessories,
+            case "":
+            case "Subtotal":
+            case "Total":                  // End of cut list
+            case "Applied Tax Rate":
+            case "Base Shipping Costs":
+            case "Grand Total":            // End of data
+            case "Wall #":
+            case "Part Type":
+                isData = false;
+                return previosSection;
 
-            _ => throw new InvalidDataException("Unexpected CSV cut list format")
+            default:
+                isData = true;
+                return previosSection;
 
         };
     }
@@ -124,8 +131,7 @@ public class ClosetProCSVReader {
     public enum CutListSection {
 		Parts,
 		PickList,
-		Accessories,
-		Skip
+		Accessories
 	}
 
 }
