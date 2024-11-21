@@ -19,6 +19,7 @@ using Domain.Services;
 using Domain.Extensions;
 using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Entities.Products.Closets;
+using Domain.Services.WorkingDirectory;
 
 namespace OrderLoading.LoadAllmoxyOrderData;
 
@@ -136,10 +137,8 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 		string? customerWorkingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customerId);
 		string allmoxyDefaultWorkingDirectory = @"R:\Job Scans\Allmoxy"; // TODO: Get base directory from configuration file
 		string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? allmoxyDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{number} - {data.Customer.Company} - {data.Name}", ' '));
-		if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDir) && incomingDir is not null) {
-			string dataFile = _fileReader.GetAvailableFileName(incomingDir, "Incoming", ".xml");
-			await File.WriteAllTextAsync(dataFile, exportXML);
-		}
+		var wdStructure = WorkingDirectoryStructure.Create(workingDirectory, true);
+		await wdStructure.WriteAllTextToIncomingAsync("Allmoxy Export.xml", exportXML, false);
 
 		DateTime? dueDate = null;
 		if (DateTime.TryParse(data.Shipping.Date, out DateTime parsedDate)) {
@@ -186,43 +185,6 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 
 		return order;
 
-	}
-
-	private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
-
-		workingDirectory = workingDirectory.Trim();
-
-		try {
-
-			if (Directory.Exists(workingDirectory)) {
-				incomingDirectory = CreateSubDirectories(workingDirectory);
-				return true;
-			} else if (Directory.CreateDirectory(workingDirectory).Exists) {
-				incomingDirectory = CreateSubDirectories(workingDirectory);
-				return true;
-			} else {
-				incomingDirectory = null;
-				return false;
-			}
-
-		} catch (Exception ex) {
-			incomingDirectory = null;
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
-		}
-
-		return false;
-
-	}
-
-	private static string? CreateSubDirectories(string workingDirectory) {
-		var cutListDir = Path.Combine(workingDirectory, "CUTLIST");
-		_ = Directory.CreateDirectory(cutListDir);
-
-		var ordersDir = Path.Combine(workingDirectory, "orders");
-		_ = Directory.CreateDirectory(ordersDir);
-
-		var incomingDir = Path.Combine(workingDirectory, "incoming");
-		return Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
 	}
 
 	private async Task<Guid> CreateCustomerIfNotExists(OrderModel data, string customerName) {

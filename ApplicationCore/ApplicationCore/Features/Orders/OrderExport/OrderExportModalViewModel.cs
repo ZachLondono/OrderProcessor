@@ -3,6 +3,7 @@ using Domain.Orders;
 using Domain.Orders.Entities;
 using Blazored.Modal;
 using Domain.ProductPlanner;
+using Domain.Services.WorkingDirectory;
 
 namespace ApplicationCore.Features.Orders.OrderExport;
 
@@ -64,7 +65,7 @@ internal class OrderExportModalViewModel {
             GenerateCSV = containsCNC,
             CsvJobName = $"{order.Number} - {order.Name}",
             ExtJobName = $"{order.Number} - {order.Name}",
-            OutputDirectory = Path.Combine(order.WorkingDirectory, "orders")
+            OutputDirectory = WorkingDirectoryStructure.Create(order.WorkingDirectory).OrdersDirectory
         };
 
     }

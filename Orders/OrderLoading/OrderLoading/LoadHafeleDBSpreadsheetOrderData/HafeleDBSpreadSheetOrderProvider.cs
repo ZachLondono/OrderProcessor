@@ -13,6 +13,7 @@ using Companies.Customers.Queries;
 using Companies.Customers.Commands;
 using Companies.Vendors.Queries;
 using Domain.Services;
+using Domain.Services.WorkingDirectory;
 
 namespace OrderLoading.LoadHafeleDBSpreadsheetOrderData;
 
@@ -74,14 +75,10 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 				return null;
 			}
 
-			var (orderData, incomingDirectory) = await MapWorkbookDataToOrderData(data);
+			var orderData = await MapWorkbookDataToOrderData(data);
 
-			if (incomingDirectory is not null) {
-				var fileName = Path.GetFileNameWithoutExtension(source);
-				var ext = Path.GetExtension(source);
-				var newFileName = _fileReader.GetAvailableFileName(incomingDirectory, fileName, ext);
-				File.Copy(source, newFileName);
-			}
+			var workingDirectory = WorkingDirectoryStructure.Create(orderData.WorkingDirectory, true);
+			workingDirectory.CopyFileToIncoming(source, false);
 
 			return orderData;
 
@@ -111,7 +108,7 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 
 	}
 
-	public async Task<(OrderData, string?)> MapWorkbookDataToOrderData(WorkbookOrderData workbookData) {
+	public async Task<OrderData> MapWorkbookDataToOrderData(WorkbookOrderData workbookData) {
 
 		bool metric = workbookData.GlobalDrawerSpecs.Units.Equals("millimeters", StringComparison.InvariantCultureIgnoreCase);
 
@@ -135,9 +132,6 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 		var billing = await GetVendorBillingInfo(_settings.VendorId);
 
 		string workingDirectory = Path.Combine(_settings.WorkingDirectoryRoot.Replace('/', '\\'), $"{workbookData.OrderDetails.HafelePO} - {workbookData.OrderDetails.JobName} - {workbookData.ContactInformation.Company}");
-		if (!TryToCreateWorkingDirectory(workingDirectory, out string? incomingDirectory)) {
-			incomingDirectory = null;
-		}
 
 		bool rush = workbookData.OrderDetails.ProductionTime.Contains("rush", StringComparison.InvariantCultureIgnoreCase);
 
@@ -168,7 +162,7 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 			Hardware = Hardware.None()
 		};
 
-		return (orderData, incomingDirectory);
+		return orderData;
 
 	}
 
@@ -294,43 +288,6 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 
 			});
 
-	}
-
-	private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
-
-		workingDirectory = workingDirectory.Trim();
-
-		try {
-
-			if (Directory.Exists(workingDirectory)) {
-				incomingDirectory = CreateSubDirectories(workingDirectory);
-				return true;
-			} else if (Directory.CreateDirectory(workingDirectory).Exists) {
-				incomingDirectory = CreateSubDirectories(workingDirectory);
-				return true;
-			} else {
-				incomingDirectory = null;
-				return false;
-			}
-
-		} catch (Exception ex) {
-			incomingDirectory = null;
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
-		}
-
-		return false;
-
-	}
-
-	private static string? CreateSubDirectories(string workingDirectory) {
-		var cutListDir = Path.Combine(workingDirectory, "CUTLIST");
-		_ = Directory.CreateDirectory(cutListDir);
-
-		var ordersDir = Path.Combine(workingDirectory, "orders");
-		_ = Directory.CreateDirectory(ordersDir);
-
-		var incomingDir = Path.Combine(workingDirectory, "incoming");
-		return Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
 	}
 
 }

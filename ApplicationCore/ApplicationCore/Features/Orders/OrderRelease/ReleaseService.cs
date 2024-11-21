@@ -32,6 +32,7 @@ using OrderExporting.HardwareList;
 using OrderExporting.CabinetList;
 using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.Enums;
+using Domain.Services.WorkingDirectory;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -561,7 +562,7 @@ public class ReleaseService {
                                  .OfType<FivePieceDoorProduct>()
                                  .GroupBy(d => d.Material);
 
-            var outputDirectory = Path.Combine(order.WorkingDirectory, "CUTLIST");
+            var outputDirectory = WorkingDirectoryStructure.Create(order.WorkingDirectory).CutListDirectory;
             var cutListResults = await Task.Run(() =>
                     matGroups.Select(group => new FivePieceCutList() {
                         CustomerName = customerName,
@@ -729,7 +730,7 @@ public class ReleaseService {
 
         foreach (var order in orders) {
 
-            var outputDirectory = Path.Combine(order.WorkingDirectory, "CUTLIST");
+            var outputDirectory = WorkingDirectoryStructure.Create(order.WorkingDirectory).CutListDirectory;
             var cutListResults = await Task.Run(() =>
                 order.Products
                     .OfType<DoweledDrawerBoxProduct>()

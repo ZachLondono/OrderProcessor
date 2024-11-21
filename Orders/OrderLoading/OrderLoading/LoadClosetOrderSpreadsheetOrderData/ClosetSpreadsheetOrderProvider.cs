@@ -11,6 +11,7 @@ using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.Entities.Products.DrawerBoxes;
 using Domain.Orders.Persistance;
 using Domain.Services;
+using Domain.Services.WorkingDirectory;
 
 namespace OrderLoading.LoadClosetOrderSpreadsheetOrderData;
 
@@ -103,14 +104,8 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 				return null;
 			}
 			string workingDirectory = Path.Combine(workingDirectoryRoot, _fileReader.RemoveInvalidPathCharacters($"{orderNumber} {cover.JobName}", ' '));
-			if (!TryToCreateWorkingDirectory(workingDirectory, out string? incomingDirectory)) {
-				OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not create working directory");
-				return null;
-			}
-			if (incomingDirectory is not null) {
-				string fileName = Path.GetFileName(source);
-				File.Copy(source, Path.Combine(incomingDirectory, fileName));
-			}
+			var wdStructure = WorkingDirectoryStructure.Create(workingDirectory, true);
+			wdStructure.CopyFileToIncoming(source, false);
 
 			var closetParts = LoadItemsFromWorksheet<ClosetPart>(closetPartSheet);
 			var cornerShelves = LoadItemsFromWorksheet<CornerShelf>(cornerShelfSheet);
@@ -432,43 +427,6 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 			return false;
 		}
 		return true;
-	}
-
-	private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
-
-		workingDirectory = workingDirectory.Trim();
-
-		try {
-
-			if (Directory.Exists(workingDirectory)) {
-				incomingDirectory = CreateSubDirectories(workingDirectory);
-				return true;
-			} else if (Directory.CreateDirectory(workingDirectory).Exists) {
-				incomingDirectory = CreateSubDirectories(workingDirectory);
-				return true;
-			} else {
-				incomingDirectory = null;
-				return false;
-			}
-
-		} catch (Exception ex) {
-			incomingDirectory = null;
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
-		}
-
-		return false;
-
-	}
-
-	private static string? CreateSubDirectories(string workingDirectory) {
-		var cutListDir = Path.Combine(workingDirectory, "CUTLIST");
-		_ = Directory.CreateDirectory(cutListDir);
-
-		var ordersDir = Path.Combine(workingDirectory, "orders");
-		_ = Directory.CreateDirectory(ordersDir);
-
-		var incomingDir = Path.Combine(workingDirectory, "incoming");
-		return Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
 	}
 
 	private async Task<string> GetNextOrderNumber(Guid customerId) {

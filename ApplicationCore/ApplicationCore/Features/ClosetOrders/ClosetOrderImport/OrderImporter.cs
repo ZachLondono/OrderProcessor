@@ -1,4 +1,5 @@
-﻿using Outlook = Microsoft.Office.Interop.Outlook;
+﻿using Domain.Services.WorkingDirectory;
+using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace ApplicationCore.Features.ClosetOrders.ClosetOrderImport;
 
@@ -25,11 +26,8 @@ public class OrderImporter {
             return null;
         }
 
-        var structure = ClosetOrderDirectoryStructure.BuildOrderDirectoryStructure(workingDirectoryRoot, order.Number, order.Name);
-
-        if (order.Attachments.Length == 0) {
-            return structure.WorkingDirectory;
-        }
+        var structure = WorkingDirectoryStructure.Create(Path.Combine(workingDirectoryRoot, $"{order.Number} {order.Name}"), true);
+        var copier = new ClosetOrderFileCopier(order.Number, structure);
 
         foreach (var orderAttachment in order.Attachments) {
 
@@ -43,20 +41,13 @@ public class OrderImporter {
                 continue;
             }
 
-            ImportOrderFile(structure, attachment, orderAttachment.CopyToOrders);
+            var filePath = Path.Combine(structure.IncomingDirectory, attachment.FileName);
+            attachment.SaveAsFile(filePath);
+            if (orderAttachment.CopyToOrders) copier.AddFileToOrders(filePath);
 
         }
 
-        return structure.WorkingDirectory;
-
-    }
-
-    private static void ImportOrderFile(ClosetOrderDirectoryStructure structure, Outlook.Attachment attachment, bool copyToOrders) {
-
-        var savePath = Path.Combine(structure.IncomingDirectory, attachment.FileName);
-        attachment.SaveAsFile(savePath);
-
-        if (copyToOrders) _ = structure.AddFileToOrders(savePath);
+        return structure.RootDirectory;
 
     }
 

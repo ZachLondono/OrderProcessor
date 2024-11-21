@@ -11,6 +11,7 @@ using Domain.Orders.Entities.Products;
 using Domain.Services;
 using Domain.Orders.ValueObjects;
 using Address = Domain.Companies.ValueObjects.Address;
+using Domain.Services.WorkingDirectory;
 
 namespace OrderLoading.LoadDoweledDBSpreadsheetOrderData;
 
@@ -238,49 +239,11 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 			return string.Empty;
 		}
 		string workingDirectory = Path.Combine((customerWorkingDirectory ?? _options.DefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {customerName} - {orderName}", ' '));
-		if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDirectory) && incomingDirectory is not null) {
-			string dataFile = _fileReader.GetAvailableFileName(incomingDirectory, "Incoming", Path.GetExtension(source));
-			File.Copy(source, dataFile);
-		}
+
+        var wdStructure = WorkingDirectoryStructure.Create(workingDirectory, true);
+        wdStructure.CopyFileToIncoming(source, false);
 
 		return workingDirectory;
-	}
-
-	private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
-
-		workingDirectory = workingDirectory.Trim();
-
-		try {
-
-			if (Directory.Exists(workingDirectory)) {
-				incomingDirectory = CreateSubDirectories(workingDirectory);
-				return true;
-			} else if (Directory.CreateDirectory(workingDirectory).Exists) {
-				incomingDirectory = CreateSubDirectories(workingDirectory);
-				return true;
-			} else {
-				incomingDirectory = null;
-				return false;
-			}
-
-		} catch (Exception ex) {
-			incomingDirectory = null;
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
-		}
-
-		return false;
-
-	}
-
-	private static string? CreateSubDirectories(string workingDirectory) {
-		var cutListDir = Path.Combine(workingDirectory, "CUTLIST");
-		_ = Directory.CreateDirectory(cutListDir);
-
-		var ordersDir = Path.Combine(workingDirectory, "orders");
-		_ = Directory.CreateDirectory(ordersDir);
-
-		var incomingDir = Path.Combine(workingDirectory, "incoming");
-		return Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
 	}
 
 }

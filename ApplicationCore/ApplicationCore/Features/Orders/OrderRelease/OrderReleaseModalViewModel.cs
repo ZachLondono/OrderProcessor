@@ -8,6 +8,7 @@ using Domain.Orders.Entities.Products.DrawerBoxes;
 using Domain.Infrastructure.Bus;
 using Domain.Orders.Entities.Products.Closets;
 using Domain.Orders.Entities.Products.Cabinets;
+using Domain.Services.WorkingDirectory;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -119,7 +120,7 @@ public class OrderReleaseModalViewModel {
             invoiceEmailRecipients = customerInvoiceRecipients;
         }
 
-        string workingDirectories = string.Join(';', orders.Select(o => o.WorkingDirectory).Where(s => !string.IsNullOrEmpty(s)).Where(Directory.Exists).Select(wd => Path.Combine(wd, "CUTLIST")));
+        string workingDirectories = string.Join(';', orders.Select(o => o.WorkingDirectory).Where(s => !string.IsNullOrEmpty(s)).Where(Directory.Exists).Select(wd => WorkingDirectoryStructure.Create(wd).CutListDirectory));
 
         string releaseDirectory = @"X:\_CUTLISTS  Incoming";
         if (!Directory.Exists(releaseDirectory)) {
