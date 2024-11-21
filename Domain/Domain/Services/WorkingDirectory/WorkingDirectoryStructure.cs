@@ -66,6 +66,36 @@ public record WorkingDirectoryStructure {
 
     }
 
+    public Task WriteAllTextToRootAsync(string fileName, string content, bool overwrite = false)
+        => WriteAllTextAsync(RootDirectory, fileName, content, overwrite);
+
+    public Task WriteAllTextToIncomingAsync(string fileName, string content, bool overwrite = false)
+        => WriteAllTextAsync(IncomingDirectory, fileName, content, overwrite);
+
+    public Task WriteAllTextToCutListAsync(string fileName, string content, bool overwrite = false)
+        => WriteAllTextAsync(CutListDirectory, fileName, content, overwrite);
+
+    public Task WriteAllTextToOrdersAsync(string fileName, string content, bool overwrite = false)
+        => WriteAllTextAsync(OrdersDirectory, fileName, content, overwrite);
+
+    private async Task WriteAllTextAsync(string directory, string fileName, string content, bool overwrite = false) {
+
+        var path = Path.Combine(RootDirectory, fileName);
+
+        if (!overwrite) {
+            int counter = 1;
+            var extension = Path.GetExtension(path);
+            var fileNameWithOutExt = Path.GetFileNameWithoutExtension(path);
+            while (File.Exists(path)) {
+                path = Path.Combine(directory, $"{fileNameWithOutExt} ({counter++}){extension}");
+            }
+        }
+
+        await File.WriteAllTextAsync(path, content);
+
+
+    }
+
     public static WorkingDirectoryStructure Create(string workingDirectory, bool createDirectories = false) {
 
         if (createDirectories && !File.Exists(workingDirectory)) {
