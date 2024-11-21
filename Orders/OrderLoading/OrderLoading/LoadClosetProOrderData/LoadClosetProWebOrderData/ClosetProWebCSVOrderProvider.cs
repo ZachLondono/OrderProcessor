@@ -1,5 +1,4 @@
 ﻿using OrderLoading.ClosetProCSVCutList;
-using Domain.Services;
 using OrderLoading.ClosetProCSVCutList.PartList;
 using OrderLoading.ClosetProCSVCutList.Header;
 
@@ -9,8 +8,8 @@ public class ClosetProWebCSVOrderProvider : ClosetProCSVOrderProvider {
 
 	private readonly ClosetProClientFactory _factory;
 
-	public ClosetProWebCSVOrderProvider(ClosetProCSVReader reader, PartListProcessor partListProcessor, OrderHeaderProcessor orderHeaderProcessor, IFileReader fileReader, ClosetProClientFactory factory)
-		: base(reader, partListProcessor, orderHeaderProcessor, fileReader) {
+	public ClosetProWebCSVOrderProvider(ClosetProCSVReader reader, PartListProcessor partListProcessor, OrderHeaderProcessor orderHeaderProcessor, ClosetProClientFactory factory)
+		: base(reader, partListProcessor, orderHeaderProcessor) {
 		_factory = factory;
 	}
 

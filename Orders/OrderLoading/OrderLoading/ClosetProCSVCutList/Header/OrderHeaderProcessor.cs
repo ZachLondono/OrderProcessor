@@ -107,7 +107,7 @@ public class OrderHeaderProcessor {
 		string cpDefaultWorkingDirectory = @"R:\Job Scans\ClosetProSoftware"; // TODO: Get base directory from configuration file
 		string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? cpDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {company} - {orderName}", ' '));
 
-		return workingDirectory;
+		return workingDirectory.Trim();
 	}
 
     private async Task<string?> GetWorkingDirectoryRoot(string? customWorkingDirectoryRoot, Customer customer) {

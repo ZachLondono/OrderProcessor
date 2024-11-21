@@ -11,7 +11,7 @@ public class ClosetProFileCSVOrderProvider : ClosetProCSVOrderProvider {
 
 	public ClosetProFileCSVOrderProvider(ClosetProCSVReader reader, PartListProcessor partListProcessor, OrderHeaderProcessor orderHeaderProcessor,
 										IFileReader fileReader)
-									 : base(reader, partListProcessor, orderHeaderProcessor, fileReader) {
+									 : base(reader, partListProcessor, orderHeaderProcessor) {
 		_fileReader = fileReader;
 	}
 

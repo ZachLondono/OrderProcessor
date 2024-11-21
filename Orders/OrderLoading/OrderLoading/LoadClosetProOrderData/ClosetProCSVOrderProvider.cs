@@ -3,8 +3,6 @@ using Domain.Companies.ValueObjects;
 using Domain.Orders.Entities;
 using Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
-using static Domain.Companies.CompanyDirectory;
-using CompanyCustomer = Domain.Companies.Entities.Customer;
 using Domain.Orders.Persistance;
 using Domain.Services;
 using Domain.Orders.ValueObjects;
@@ -12,6 +10,7 @@ using Domain.Orders.Entities.Hardware;
 using OrderLoading.ClosetProCSVCutList.PartList;
 using OrderLoading.ClosetProCSVCutList.PickList;
 using OrderLoading.ClosetProCSVCutList.Header;
+using Domain.Services.WorkingDirectory;
 
 namespace OrderLoading.LoadClosetProOrderData;
 
@@ -22,13 +21,11 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 	private readonly ClosetProCSVReader _reader;
 	private readonly PartListProcessor _partListProcessor;
     private readonly OrderHeaderProcessor _orderHeaderProcessor;
-    private readonly IFileReader _fileReader;
 
-	public ClosetProCSVOrderProvider(ClosetProCSVReader reader, PartListProcessor partListProcessor, OrderHeaderProcessor orderHeaderProcessor, IFileReader fileReader) {
+	public ClosetProCSVOrderProvider(ClosetProCSVReader reader, PartListProcessor partListProcessor, OrderHeaderProcessor orderHeaderProcessor) {
 		_reader = reader;
 		_partListProcessor = partListProcessor;
         _orderHeaderProcessor = orderHeaderProcessor;
-        _fileReader = fileReader;
 	}
 
 	protected abstract Task<string?> GetCSVDataFromSourceAsync(string source);
@@ -54,7 +51,8 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
         var pickList = PickListProcessor.ParsePickList(info.PickList);
         var partList = _partListProcessor.ParsePartList(header.Customer.ClosetProSettings, info.Parts, pickList.HardwareSpread);
 
-        await WriteIncomingDataToWorkignDirectory(csvData, header.WorkingDirectory);
+        var workingDirectory = WorkingDirectoryStructure.Create(header.WorkingDirectory, true);
+        await workingDirectory.WriteAllTextToIncomingAsync("Closet Pro Cut List.csv", csvData, false);
 
         IEnumerable<Supply> supplies = [
             .. pickList.Supplies,
@@ -98,52 +96,6 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
         };
 
     }
-
-    private async Task WriteIncomingDataToWorkignDirectory(string? csvData, string workingDirectory) {
-
-        if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDir) && incomingDir is not null) {
-            string dataFile = _fileReader.GetAvailableFileName(incomingDir, "Incoming", ".csv");
-            await File.WriteAllTextAsync(dataFile, csvData);
-        }
-
-    }
-
-    private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
-
-		workingDirectory = workingDirectory.Trim();
-
-		try {
-
-			if (Directory.Exists(workingDirectory)) {
-				incomingDirectory = CreateSubDirectories(workingDirectory);
-				return true;
-			} else if (Directory.CreateDirectory(workingDirectory).Exists) {
-				incomingDirectory = CreateSubDirectories(workingDirectory);
-				return true;
-			} else {
-				incomingDirectory = null;
-				return false;
-			}
-
-		} catch (Exception ex) {
-			incomingDirectory = null;
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
-		}
-
-		return false;
-
-	}
-
-	private static string? CreateSubDirectories(string workingDirectory) {
-		var cutListDir = Path.Combine(workingDirectory, "CUTLIST");
-		_ = Directory.CreateDirectory(cutListDir);
-
-		var ordersDir = Path.Combine(workingDirectory, "orders");
-		_ = Directory.CreateDirectory(ordersDir);
-
-		var incomingDir = Path.Combine(workingDirectory, "incoming");
-		return Directory.CreateDirectory(incomingDir).Exists ? incomingDir : null;
-	}
 
     private static OrderLoadingSettings GetOrderLoadingSettings(string sourceObj) {
         var sourceObjParts = sourceObj.Split('*');
