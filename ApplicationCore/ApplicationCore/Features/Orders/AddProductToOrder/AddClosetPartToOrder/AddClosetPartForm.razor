@@ -1,0 +1,139 @@
+﻿@using Domain.Components
+@using Domain.Infrastructure.Bus
+@using Domain.Orders.Entities.Products.Closets
+@using Domain.Orders.Enums
+@using static Domain.Components.Button
+
+<NewProductForm Model="Model"
+TProduct="ClosetPart"
+TProductModel="NewClosetPart"
+OnFormSubmit="AddClosetPartToOrder">
+
+    <div>
+        <label>
+            Qty
+            <InputNumber @bind-Value="Model.Qty" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Unit Price
+            <InputNumber @bind-Value="Model.UnitPrice" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Product Number
+            <InputNumber @bind-Value="Model.ProductNumber" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Room
+            <InputText @bind-Value="Model.Room" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Width
+            <InputNumber @bind-Value="Model.Width" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Length
+            <InputNumber @bind-Value="Model.Length" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Sku
+            <InputText @bind-Value="Model.Sku" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Material Finish
+            <InputText @bind-Value="Model.MaterialFinish" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Material Core
+            <InputSelect @bind-Value="Model.MaterialCore">
+                <option selected value="@ClosetMaterialCore.ParticleBoard">Particle Board</option>
+                <option selected value="@ClosetMaterialCore.Plywood">Plywood</option>
+            </InputSelect>
+
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Edge Banding
+            <InputText @bind-Value="Model.EdgeBandingColor" />
+        </label>
+    </div>
+
+    <div>
+        <label>
+            <InputCheckbox @bind-Value="Model.InstallCams" />
+            Install Cams
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Comment
+            <InputText @bind-Value="Model.Comment" />
+        </label>
+    </div>
+
+    <div>
+        <div>
+            <span>Parameters</span>
+            @foreach (var parameter in Model.Parameters) {
+                <div>
+                    <InputText @bind-Value="parameter.Name"/> <InputText @bind-Value="parameter.Value"/>
+                    <Button Style="ButtonStyle.Outline" Color="ButtonColor.Secondary" OnClick="() => RemoveParameter(parameter)">X</Button>
+                </div>
+            }
+        </div>
+        <Button Style="ButtonStyle.Text" Color="ButtonColor.Primary" OnClick="AddParameter">+ Add Parameter</Button>
+    </div>
+
+</NewProductForm>
+
+@code {
+
+    [Inject]
+    public IBus Bus { get; set; } = default!;
+
+    [EditorRequired]
+    [Parameter]
+    public Guid OrderId { get; set; }
+
+    public NewClosetPart Model { get; init; } = new();
+
+    private Task<Response<ClosetPart>> AddClosetPartToOrder()
+        => Bus.Send(new InsertClosetPartInOrder.Command(OrderId, Model));
+
+    public void AddParameter() {
+        Model.Parameters.Add(new());
+        StateHasChanged();
+    }
+
+    public void RemoveParameter(Parameter parameter) {
+        Model.Parameters.Remove(parameter);
+        StateHasChanged();
+    }
+
+}
