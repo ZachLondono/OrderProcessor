@@ -41,7 +41,7 @@ public class InsertDovetailDBProductInOrder {
                 trx.Rollback();
 
                 return new Error() {
-                    Title = "Failed to Add Five Piece Door to Order",
+                    Title = "Failed to Add Dovetail Drawer Box to Order",
                     Details = ex.Message
                 };
 
