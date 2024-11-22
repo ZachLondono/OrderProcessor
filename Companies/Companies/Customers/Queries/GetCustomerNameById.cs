@@ -19,7 +19,7 @@ public class GetCustomerNameById {
 
             using var connection = await _factory.CreateConnection();
 
-            var name = await Task.Run(() => connection.QuerySingle<string>("SELECT name FROM customers WHERE id = @CustomerId;", query));
+            var name = await Task.Run(() => connection.QuerySingleOrDefault<string>("SELECT name FROM customers WHERE id = @CustomerId;", query));
 
             return name ?? "";
 
