@@ -57,6 +57,8 @@ public class OrderReleaseModalViewModel {
 
     public bool DoAnyOrdersContainCabinets { get; private set; }
 
+    public bool DoAnyOrdersContainHardware { get; private set; }
+
     private bool _isLoadingOrders = true;
     private bool _isLoadingConfiguration = false;
     private bool _isReportLoadingFiles = false;
@@ -141,6 +143,7 @@ public class OrderReleaseModalViewModel {
         DoAnyOrdersContainDoweledDrawerBoxes = orders.Any(order => order.Products.Any(p => p is DoweledDrawerBoxProduct));
         DoAnyOrdersContainCNCParts = orders.Any(order => order.Products.OfType<ICNCPartContainer>().Any(p => p.ContainsCNCParts()));
         DoAnyOrdersContainCabinets = orders.Any(order => order.Products.OfType<Cabinet>().Any());
+        DoAnyOrdersContainHardware = orders.Any(order => order.Hardware.Supplies.Any() || order.Hardware.DrawerSlides.Any() || order.Hardware.HangingRails.Any());
 
         bool installCams = orders.Any(o => o.Products.OfType<ClosetPart>().Any(c => c.InstallCams));
 
@@ -159,7 +162,7 @@ public class OrderReleaseModalViewModel {
             Generate5PieceCutList = DoAnyOrdersContainFivePieceDoors,
             GenerateDoweledDrawerBoxCutList = DoAnyOrdersContainDoweledDrawerBoxes,
             GenerateCabinetList = DoAnyOrdersContainCabinets,
-            GenerateHardwareList = false,
+            GenerateHardwareList = DoAnyOrdersContainHardware,
             IncludeDovetailDBPackingList = DoAnyOrdersContainDovetailDBs,
             ReleaseFileName = $"{orderNumbers} CUTLIST",
             ReleaseOutputDirectory = releaseDirectory,
