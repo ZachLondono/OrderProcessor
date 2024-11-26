@@ -5,6 +5,7 @@ using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.Entities.Products.Closets;
 using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.Entities.Products.DrawerBoxes;
+using Domain.Orders.Enums;
 
 namespace OrderExporting.PackingList;
 
@@ -113,7 +114,19 @@ public class PackingListModelFactory {
                                 Qty = c.Qty,
                                 Length = c.Length,
                                 Width = c.Width,
-                                Finish = c.Finish
+                                Finish = c.Finish,
+                                FinishedEdges = c.EdgeBanding switch {
+                                   EdgeBandingSides.None => "None",
+                                   EdgeBandingSides.All => "All",
+                                   EdgeBandingSides.OneLong => "1L",
+                                   EdgeBandingSides.TwoLong => "2L",
+                                   EdgeBandingSides.OneShort => "1S",
+                                   EdgeBandingSides.TwoShort => "2S",
+                                   EdgeBandingSides.TwoLongOneShort => "2L1S",
+                                   EdgeBandingSides.OneLongOneShort => "1L1S",
+                                   EdgeBandingSides.OneLongTwoShort => "1L2S",
+                                   _ => "???"
+                                }
                             })
                             .ToList(),
             AdditionalItems = order.AdditionalItems

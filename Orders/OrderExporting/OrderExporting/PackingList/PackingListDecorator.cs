@@ -857,6 +857,7 @@ public class PackingListDecorator(PackingList packingList) : IDocumentDecorator 
                         column.RelativeColumn();
                         column.ConstantColumn(40);
                         column.ConstantColumn(40);
+                        column.ConstantColumn(40);
                     });
 
                     table.Header(header => {
@@ -867,6 +868,7 @@ public class PackingListDecorator(PackingList packingList) : IDocumentDecorator 
                         header.Cell().Element(headerCellStyle).Text("Finish");
                         header.Cell().Element(headerCellStyle).Text("Width");
                         header.Cell().Element(headerCellStyle).Text("Length");
+                        header.Cell().Element(headerCellStyle).Text("Edges");
 
                     });
 
@@ -877,6 +879,7 @@ public class PackingListDecorator(PackingList packingList) : IDocumentDecorator 
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Finish);
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Width.AsMillimeters().ToString("0"));
                         table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.Length.AsMillimeters().ToString("0"));
+                        table.Cell().Element(defaultCellStyle).AlignLeft().PaddingLeft(5).Text(item.FinishedEdges);
                     }
 
                 });

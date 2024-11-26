@@ -14,4 +14,6 @@ public class CounterTopItem {
 
     public Dimension Length { get; set; }
 
+    public string FinishedEdges { get; set; } = string.Empty;
+
 }
