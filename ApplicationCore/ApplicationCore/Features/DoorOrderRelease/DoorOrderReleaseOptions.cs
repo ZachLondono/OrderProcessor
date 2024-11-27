@@ -17,6 +17,7 @@ public class DoorOrderReleaseOptions {
     public bool IncludeCover { get; set; }
     public bool IncludePackingList { get; set; }
     public bool IncludeInvoice { get; set; }
+    public bool IncludeOrderForm { get; set; }
 
     //public bool SendInvoiceEmail { get; set; }
 

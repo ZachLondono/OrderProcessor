@@ -235,7 +235,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
                 }
 
                 if (options.IncludeCover || options.IncludePackingList || options.IncludeInvoice) {
-                    workbookPdfTmpFilePath = GeneratePDFFromWorkbook(workbook, worksheets, options.IncludeCover, options.IncludePackingList, options.IncludeInvoice);
+                    workbookPdfTmpFilePath = GeneratePDFFromWorkbook(workbook, worksheets, options.IncludeCover, options.IncludePackingList, options.IncludeInvoice, options.IncludeOrderForm);
                 }
 
                 UpdateReleaseDateOnWorkbook(worksheets);
@@ -501,7 +501,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         return jobData;
     }
 
-    private static string? GeneratePDFFromWorkbook(Workbook workbook, Sheets worksheets, bool cover, bool packingList, bool invoice) {
+    private static string? GeneratePDFFromWorkbook(Workbook workbook, Sheets worksheets, bool cover, bool packingList, bool invoice, bool orderForm) {
 
         var PDFSheetNames = new List<string>();
         if (cover) {
@@ -517,6 +517,12 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         if (invoice) {
             const string sheetName = "MDF Invoice";
             SetPrintArea(worksheets, sheetName, "E");
+            PDFSheetNames.Add(sheetName);
+        }
+        if (orderForm) {
+            const string sheetName = "MDF Order Form";
+            Worksheet worksheet = worksheets[sheetName];
+            worksheet.PageSetup.PrintArea = $"A1:G45";
             PDFSheetNames.Add(sheetName);
         }
 
