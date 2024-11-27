@@ -140,6 +140,12 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         }
 
+        if (options.PrintFile) {
+            foreach (var doc in documents) {
+                await PrintDocument(doc);
+            }
+        }
+
         string? mergedFilePath = await MergeReleasePDF(options, workbookPdfTmpFilePath, [.. documents]);
 
         if (mergedFilePath is null || !File.Exists(mergedFilePath)) {
@@ -148,19 +154,6 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         } else {
 
             PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, mergedFilePath));
-
-            if (options.PrintFile) {
-
-                new Process() {
-                    StartInfo = new ProcessStartInfo() {
-                        CreateNoWindow = true,
-                        Verb = "print",
-                        UseShellExecute = true,
-                        FileName = mergedFilePath
-                    }
-                }.Start();
-
-            }
 
         }
 
@@ -192,6 +185,26 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
                 PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Error, $"Failed to post order to online tracker. - {ex.Message}"));
             }
         }
+
+    }
+
+    private async Task PrintDocument(Document document) {
+
+        var data = document.GeneratePdf();
+        var file = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".pdf");
+
+        await File.WriteAllBytesAsync(file, data);
+
+        new Process() {
+            StartInfo = new ProcessStartInfo() {
+                CreateNoWindow = true,
+                Verb = "print",
+                UseShellExecute = true,
+                FileName = file
+            }
+        }.Start();
+
+        File.Delete(file);
 
     }
 
@@ -234,8 +247,8 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
                 }
 
-                if (options.IncludeCover || options.IncludePackingList || options.IncludeInvoice) {
-                    workbookPdfTmpFilePath = GeneratePDFFromWorkbook(workbook, worksheets, options.IncludeCover, options.IncludePackingList, options.IncludeInvoice, options.IncludeOrderForm);
+                if (options.IncludeCover || options.IncludePackingList || options.IncludeInvoice || options.IncludeOrderForm) {
+                    workbookPdfTmpFilePath = GeneratePDFFromWorkbook(workbook, worksheets, options.IncludeCover, options.IncludePackingList, options.IncludeInvoice, options.IncludeOrderForm, options.PrintFile);
                 }
 
                 UpdateReleaseDateOnWorkbook(worksheets);
@@ -501,28 +514,38 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         return jobData;
     }
 
-    private static string? GeneratePDFFromWorkbook(Workbook workbook, Sheets worksheets, bool cover, bool packingList, bool invoice, bool orderForm) {
+    private static string? GeneratePDFFromWorkbook(Workbook workbook, Sheets worksheets, bool cover, bool packingList, bool invoice, bool orderForm, bool print) {
 
         var PDFSheetNames = new List<string>();
         if (cover) {
             const string sheetName = "MDF Cover Sheet";
             SetPrintArea(worksheets, sheetName, "J");
             PDFSheetNames.Add(sheetName);
+
+            if (print) ((Worksheet)worksheets[sheetName]).PrintOutEx();
         }
         if (packingList) {
             const string sheetName = "MDF Packing List";
             SetPrintArea(worksheets, sheetName, "E");
             PDFSheetNames.Add(sheetName);
+
+            if (print) ((Worksheet)worksheets[sheetName]).PrintOutEx(Copies: 2);
         }
         if (invoice) {
             const string sheetName = "MDF Invoice";
             SetPrintArea(worksheets, sheetName, "E");
             PDFSheetNames.Add(sheetName);
+
+            if (print) ((Worksheet)worksheets[sheetName]).PrintOutEx();
         }
         if (orderForm) {
             const string sheetName = "MDF Order Form";
             Worksheet worksheet = worksheets[sheetName];
-            worksheet.PageSetup.PrintArea = $"A1:G45";
+            if (print) {
+                worksheet.PageSetup.PrintArea = "A1:G86";
+                ((Worksheet)worksheets[sheetName]).PrintOutEx(Copies: 2);
+            }
+            worksheet.PageSetup.PrintArea = "A1:G45";
             PDFSheetNames.Add(sheetName);
         }
 
