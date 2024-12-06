@@ -429,8 +429,10 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             // Could not get export file path from workbook
         }
 
-        var dataSheet = worksheets["MDF Door Data"];
-        var exportDirectory = dataSheet.Range["ExportFile"].Value2;
+        string exportDirectory = string.Empty;
+        if (TryGetSheet(worksheets, "MDF Door Data", out Worksheet dataSheet)) {
+             exportDirectory = dataSheet.Range["ExportFile"].Value2;
+        }
 
         return Path.Combine(exportDirectory, $"{doorOrder.OrderNumber} - DoorTokens.csv");
 
@@ -522,30 +524,31 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             SetPrintArea(worksheets, sheetName, "J");
             PDFSheetNames.Add(sheetName);
 
-            if (print) ((Worksheet)worksheets[sheetName]).PrintOutEx();
+            if (print && TryGetSheet(worksheets, sheetName, out Worksheet sheet)) sheet.PrintOutEx();
         }
         if (packingList) {
             const string sheetName = "MDF Packing List";
             SetPrintArea(worksheets, sheetName, "E");
             PDFSheetNames.Add(sheetName);
 
-            if (print) ((Worksheet)worksheets[sheetName]).PrintOutEx(Copies: 2);
+            if (print && TryGetSheet(worksheets, sheetName, out Worksheet sheet)) sheet.PrintOutEx(Copies: 2);
         }
         if (invoice) {
             const string sheetName = "MDF Invoice";
             SetPrintArea(worksheets, sheetName, "E");
             PDFSheetNames.Add(sheetName);
 
-            if (print) ((Worksheet)worksheets[sheetName]).PrintOutEx();
+            if (print && TryGetSheet(worksheets, sheetName, out Worksheet sheet)) sheet.PrintOutEx();
         }
         if (orderForm) {
             const string sheetName = "MDF Order Form";
-            Worksheet worksheet = worksheets[sheetName];
-            if (print) {
-                worksheet.PageSetup.PrintArea = "A1:G86";
-                ((Worksheet)worksheets[sheetName]).PrintOutEx(Copies: 2);
+            if (TryGetSheet(worksheets, sheetName, out Worksheet sheet)) {
+                if (print) {
+                    sheet.PageSetup.PrintArea = "A1:G86";
+                    sheet.PrintOutEx(Copies: 2);
+                }
+                sheet.PageSetup.PrintArea = "A1:G45";
             }
-            worksheet.PageSetup.PrintArea = "A1:G45";
             PDFSheetNames.Add(sheetName);
         }
 
@@ -555,7 +558,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         var tmpFileName = Path.GetTempPath() + Guid.NewGuid().ToString() + ".pdf";
 
-        string[] sheetsToSelect = [.. PDFSheetNames];
+        var sheetsToSelect = GetSheetNamesToSelect(worksheets, PDFSheetNames);
         worksheets[sheetsToSelect].Select();
 
         Worksheet activeSheet = workbook.ActiveSheet;
@@ -567,10 +570,30 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
     }
 
+    private static string[] GetSheetNamesToSelect(Sheets worksheets, List<string> PDFSheetNames) {
+        List<string> sheetsToSelect = [];
+        var enumerator = worksheets.GetEnumerator();
+        while (enumerator.MoveNext()) {
+            string? foundItem = null;
+            foreach (var sheetName in PDFSheetNames) {
+                if (((Worksheet)enumerator.Current).Name.Equals(sheetName)) {
+                    foundItem = sheetName;
+                    sheetsToSelect.Add(sheetName);
+                    break;
+                }
+            }
+            if (foundItem is not null) PDFSheetNames.Remove(foundItem);
+        }
+        return sheetsToSelect.ToArray();
+    }
+
     private static void SetPrintArea(Sheets worksheets, string sheetName, string lastCol) {
 
+        if (!TryGetSheet(worksheets, sheetName, out Worksheet worksheet)) {
+            return;
+        }
+
         const int maxRow = 210;
-        Worksheet worksheet = worksheets[sheetName];
         int lastRow = 1;
 
         for (int currentRow = 1; currentRow <= maxRow; currentRow++) {
@@ -587,13 +610,36 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
     }
 
+    private static bool TryGetSheet(Sheets worksheets, object index, out Worksheet sheet) {
+
+        try {
+
+            sheet = worksheets[index];
+            return true;
+
+        } catch {
+
+            sheet = null;
+            return false;
+
+        }
+
+    }
+
     private static void UpdateReleaseDateOnWorkbook(Sheets worksheets) {
 
-        var orderSheet = worksheets["MDF"];
+        if (!TryGetSheet(worksheets, "MDF", out Worksheet orderSheet)) {
+            return;
+        }
+
+        try {
 
         var rng = orderSheet.Range["ReleasedDate"];
-
         rng.Value2 = DateTime.Today.ToShortDateString();
+
+        } catch {
+
+        }
 
     }
 
@@ -601,7 +647,9 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         try {
 
-            var sheet = worksheets[sheetName];
+            if (!TryGetSheet(worksheets, sheetName, out Worksheet sheet)) {
+                return DateTime.Today;
+            }
 
             var rng = sheet.Range[rangeName];
 
