@@ -195,16 +195,19 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
         await File.WriteAllBytesAsync(file, data);
 
-        new Process() {
+        var proc = new Process() {
             StartInfo = new ProcessStartInfo() {
                 CreateNoWindow = true,
                 Verb = "print",
                 UseShellExecute = true,
                 FileName = file
             }
-        }.Start();
+        };
 
-        File.Delete(file);
+        if (proc.Start()) {
+            PublishProgressMessage?.Invoke(new(ProgressLogMessageType.Info, "Printing CNC cutlist"));
+             _ = proc.WaitForExitAsync().ContinueWith(t => File.Delete(file));
+        }
 
     }
 
