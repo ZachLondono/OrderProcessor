@@ -89,7 +89,13 @@ public class CSVOrderWriter() {
                 csv.WriteRecord(customHeightPanel);
             } else if (product is FloorMountedHutchPanels hutchPanel) {
                 csv.WriteRecord(hutchPanel);
-            } else {
+            } else if (product is WallMountedPanels wallMountedPanel) {
+                csv.WriteRecord(wallMountedPanel);
+            } else if (product is WallMountedHutchPanels wallMountedHutchPanel) {
+                csv.WriteRecord(wallMountedHutchPanel);
+            } else if (product is WallMountedTransitionPanels wallMountedTransitionPanel) {
+                csv.WriteRecord(wallMountedTransitionPanel);
+            }else {
 
                 throw new InvalidOperationException($"Unexpected allmoxy product {product.GetType()}");
 
