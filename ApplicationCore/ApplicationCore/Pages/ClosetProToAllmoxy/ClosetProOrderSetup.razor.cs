@@ -1,7 +1,6 @@
 ﻿using ApplicationCore.Features.AllmoxyOrderExport;
 using ApplicationCore.Features.AllmoxyOrderExport.Products;
 using ApplicationCore.Features.ClosetProToAllmoxyOrder.Models;
-using ApplicationCore.Shared.Services;
 using Domain.Services;
 using OrderLoading.ClosetProCSVCutList;
 using OrderLoading.ClosetProCSVCutList.Products;
@@ -87,6 +86,7 @@ public partial class ClosetProOrderSetup {
         }
 
         _isLoading = true;
+        StateHasChanged();
 
         try {
 

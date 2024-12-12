@@ -19,16 +19,15 @@
     }
 </style>
 
-@if (_isLoading) {
-    <span>Loading...</span>
-}
 
 @if (!string.IsNullOrWhiteSpace(_error)) {
     <span class="text-red">@_error</span>
 }
 
 
-@if (!_isFileSelected) {
+@if (_isLoading) {
+    <span>Loading...</span>
+} else if (!_isFileSelected) {
 
     <h3 class="font-semibold text-lg mb-6">Select Closet Order File</h3>
 
