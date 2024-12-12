@@ -23,7 +23,7 @@
     <span>Loading...</span>
 }
 
-@if (string.IsNullOrWhiteSpace(_error)) {
+@if (!string.IsNullOrWhiteSpace(_error)) {
     <span class="text-red">@_error</span>
 }
 
