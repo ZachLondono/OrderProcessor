@@ -2,6 +2,7 @@
 using OrderExporting.CabinetList;
 using OrderExporting.CNC.Programs.Job;
 using OrderExporting.CNC.ReleasePDF;
+using OrderExporting.CounterTops;
 using OrderExporting.DovetailDBPackingList;
 using OrderExporting.HardwareList;
 using OrderExporting.Invoice;
@@ -15,7 +16,7 @@ namespace ApplicationCore.Shared.Services;
 
 public class ReleasePDFBuilder(CNCReleaseDecoratorFactory cncReleaseDecoratorFactory) {
 
-    private readonly List<OneOf<ReleasedJob, ExistingPDF, JobSummary, Invoice, PackingList, DovetailDrawerBoxPackingList, Hardware, CabinetList>> _segments = [];
+    private readonly List<OneOf<ReleasedJob, ExistingPDF, JobSummary, Invoice, PackingList, DovetailDrawerBoxPackingList, Hardware, CabinetList, CounterTopList>> _segments = [];
     private readonly CNCReleaseDecoratorFactory _cncReleaseDecoratorFactory = cncReleaseDecoratorFactory;
 
     public void AddReleasedJob(ReleasedJob job) => AddReleasedJob(job, _segments.Count);
@@ -41,6 +42,9 @@ public class ReleasePDFBuilder(CNCReleaseDecoratorFactory cncReleaseDecoratorFac
 
     public void AddCabinetList(CabinetList cabinetList) => AddCabinetList(cabinetList, _segments.Count);
     public void AddCabinetList(CabinetList cabinetList, int position) => _segments.Insert(position, cabinetList);
+
+    public void AddCounterTopList(CounterTopList counterTopList) => AddCounterTopList(counterTopList, _segments.Count);
+    public void AddCounterTopList(CounterTopList counterTopList, int position) => _segments.Insert(position, counterTopList);
 
     public void Clear() => _segments.Clear();
 
@@ -86,6 +90,13 @@ public class ReleasePDFBuilder(CNCReleaseDecoratorFactory cncReleaseDecoratorFac
                 },
                 cabinetList => {
                     var decorator = new CabinetListDecorator(cabinetList);
+                    accumulator.AddDecorator(decorator);
+                    return Task.CompletedTask;
+                },
+                counterTopList => {
+                    var decorator = new CounterTopListDecorator() {
+                        CounterTopList = counterTopList
+                    };
                     accumulator.AddDecorator(decorator);
                     return Task.CompletedTask;
                 }

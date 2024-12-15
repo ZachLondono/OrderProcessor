@@ -32,6 +32,8 @@ public class ReleaseConfiguration {
 
     public bool GenerateCabinetList { get; set; }
 
+    public bool GenerateCounterTopList { get; set; }
+
     public bool GenerateHardwareList { get; set; }
 
     public bool GenerateJobSummary { get; set; }
@@ -68,6 +70,6 @@ public class ReleaseConfiguration {
     public bool SendDovetailDBEmail { get; set; }
     public string? DovetailDBEmailRecipients { get; set; }
 
-    public bool AreMainPDFOptionsEnabled => (GenerateJobSummary || GeneratePackingList || GenerateCNCRelease || GenerateCNCGCode || GenerateDoweledDrawerBoxCutList || Generate5PieceCutList || IncludeDovetailDBPackingList || GenerateHardwareList);
+    public bool AreMainPDFOptionsEnabled => (GenerateJobSummary || GeneratePackingList || GenerateCNCRelease || GenerateCNCGCode || GenerateDoweledDrawerBoxCutList || Generate5PieceCutList || IncludeDovetailDBPackingList || GenerateHardwareList || GenerateCounterTopList);
 
 }

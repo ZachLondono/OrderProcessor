@@ -8,6 +8,7 @@ using Domain.Orders.Entities.Products.DrawerBoxes;
 using Domain.Infrastructure.Bus;
 using Domain.Orders.Entities.Products.Closets;
 using Domain.Orders.Entities.Products.Cabinets;
+using Domain.Orders.Entities.Products;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -56,6 +57,8 @@ public class OrderReleaseModalViewModel {
     public bool DoAnyOrdersContainCNCParts { get; private set; }
 
     public bool DoAnyOrdersContainCabinets { get; private set; }
+
+    public bool DoAnyOrdersContainCounterTops { get; private set; }
 
     public bool DoAnyOrdersContainHardware { get; private set; }
 
@@ -143,6 +146,7 @@ public class OrderReleaseModalViewModel {
         DoAnyOrdersContainDoweledDrawerBoxes = orders.Any(order => order.Products.Any(p => p is DoweledDrawerBoxProduct));
         DoAnyOrdersContainCNCParts = orders.Any(order => order.Products.OfType<ICNCPartContainer>().Any(p => p.ContainsCNCParts()));
         DoAnyOrdersContainCabinets = orders.Any(order => order.Products.OfType<Cabinet>().Any());
+        DoAnyOrdersContainCounterTops = orders.Any(order => order.Products.OfType<CounterTop>().Any());
         DoAnyOrdersContainHardware = orders.Any(order => order.Hardware.Supplies.Any() || order.Hardware.DrawerSlides.Any() || order.Hardware.HangingRails.Any());
 
         bool installCams = orders.Any(o => o.Products.OfType<ClosetPart>().Any(c => c.InstallCams));
@@ -162,6 +166,7 @@ public class OrderReleaseModalViewModel {
             Generate5PieceCutList = DoAnyOrdersContainFivePieceDoors,
             GenerateDoweledDrawerBoxCutList = DoAnyOrdersContainDoweledDrawerBoxes,
             GenerateCabinetList = DoAnyOrdersContainCabinets,
+            GenerateCounterTopList = DoAnyOrdersContainCounterTops,
             GenerateHardwareList = DoAnyOrdersContainHardware,
             IncludeDovetailDBPackingList = DoAnyOrdersContainDovetailDBs,
             ReleaseFileName = $"{orderNumbers} CUTLIST",

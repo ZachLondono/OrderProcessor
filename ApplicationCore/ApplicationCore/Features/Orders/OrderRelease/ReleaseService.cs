@@ -32,6 +32,7 @@ using OrderExporting.HardwareList;
 using OrderExporting.CabinetList;
 using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.Enums;
+using OrderExporting.CounterTops;
 
 namespace ApplicationCore.Features.Orders.OrderRelease;
 
@@ -197,6 +198,7 @@ public class ReleaseService {
         models.Select(m => m.JobSummary).OfType<JobSummary>().ForEach(m => _releasePDFBuilder.AddJobSummary(m));
         models.Select(m => m.PackingList).OfType<PackingList>().ForEach(m => _releasePDFBuilder.AddPackingList(m));
         models.Select(m => m.CabinetList).OfType<CabinetList>().ForEach(m => _releasePDFBuilder.AddCabinetList(m));
+        models.Select(m => m.CounterTopList).OfType<CounterTopList>().ForEach(m => _releasePDFBuilder.AddCounterTopList(m));
         models.Select(m => m.DovetailDBPackingList).OfType<DovetailDrawerBoxPackingList>().ForEach(m => _releasePDFBuilder.AddDovetailDBPackingList(m));
         models.Select(m => m.HardwareList).OfType<Hardware>().ForEach(m => _releasePDFBuilder.AddHardwareList(m));
         models.Select(m => m.Invoice).OfType<Invoice>().ForEach(m => _releasePDFBuilder.AddInvoice(m));
@@ -300,6 +302,63 @@ public class ReleaseService {
                                 ).ToArray();
 
             models.CabinetList = new CabinetList($"{order.Number} - {order.Name}", cabinets);
+
+        }
+
+        if (configuration.GenerateCounterTopList) {
+
+            var counterTops = order.Products
+                                        .OfType<Domain.Orders.Entities.Products.CounterTop>()
+                                        .Select(c => {
+
+                                            bool left = c.EdgeBanding switch {
+                                                EdgeBandingSides.All or
+                                                EdgeBandingSides.OneShort or
+                                                EdgeBandingSides.TwoShort or
+                                                EdgeBandingSides.OneLongOneShort or
+                                                EdgeBandingSides.OneLongTwoShort or
+                                                EdgeBandingSides.TwoLongOneShort => true,
+                                                _ => false
+                                            };
+
+                                            bool right = c.EdgeBanding switch {
+                                                EdgeBandingSides.All or
+                                                EdgeBandingSides.TwoShort or
+                                                EdgeBandingSides.OneLongTwoShort => true,
+                                                _ => false
+                                            };
+
+                                            bool top = c.EdgeBanding switch {
+                                                EdgeBandingSides.All or
+                                                EdgeBandingSides.OneLong or
+                                                EdgeBandingSides.TwoLong or
+                                                EdgeBandingSides.OneLongOneShort or
+                                                EdgeBandingSides.OneLongTwoShort or
+                                                EdgeBandingSides.TwoLongOneShort => true,
+                                                _ => false
+                                            };
+
+                                            bool bottom = c.EdgeBanding switch {
+                                                EdgeBandingSides.All or
+                                                EdgeBandingSides.TwoLong or
+                                                EdgeBandingSides.TwoLongOneShort => true,
+                                                _ => false
+                                            };
+
+                                            return new CounterTop() {
+                                                Width = c.Width < c.Length ? c.Width : c.Length,
+                                                Length = c.Width < c.Length ? c.Length : c.Width,
+                                                Finish = c.Finish,
+                                                FinishedLeft = left,
+                                                FinishedTop = top,
+                                                FinishedBottom = bottom,
+                                                FinishedRight = right
+                                            };
+
+                                        })
+                                        .ToArray();
+
+            models.CounterTopList = new CounterTopList($"{order.Number} - {order.Name}", counterTops);
 
         }
 
@@ -1045,6 +1104,7 @@ public class ReleaseService {
         public JobSummary? JobSummary { get; set; } = null;
         public PackingList? PackingList { get; set; } = null;
         public CabinetList? CabinetList { get; set; } = null;
+        public CounterTopList? CounterTopList { get; set; } = null;
         public DovetailDrawerBoxPackingList? DovetailDBPackingList { get; set; } = null;
         public Hardware? HardwareList { get; set; } = null;
         public Invoice? Invoice { get; set; } = null;

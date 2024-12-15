@@ -128,6 +128,13 @@
                 <br />
             }
 
+            @if (DataContext.DoAnyOrdersContainCounterTops) {
+                <CheckBox @bind-IsChecked="DataContext.Configuration.GenerateCounterTopList">
+                    <span class="text-gray-700">Counter Top List</span>
+                </CheckBox>
+                <br />
+            }
+
             @if (DataContext.DoAnyOrdersContainHardware) {
                 <CheckBox @bind-IsChecked="DataContext.Configuration.GenerateHardwareList">
                     <span class="text-gray-700">Hardware List</span>
