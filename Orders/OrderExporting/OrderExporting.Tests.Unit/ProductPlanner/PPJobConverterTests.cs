@@ -205,6 +205,30 @@ public class PPJobConverterTests {
 
     }
 
+    [Fact]
+    public void ConvertOrder_ShouldCreateVariableOverride_WhenProductsContainOverrideParametersAndProductHasRoomName() {
+
+        // Arrange
+        var products = new List<PPProduct>() {
+            CreateProduct(room:"Room Name", overrideParameters: new(){
+                { "Key1", "Value1" }
+            })
+        };
+
+        var job = new PPJob("Job Name", DateTime.Now, "", products);
+
+        // Act
+        _sut.ConvertOrder(job, "Lvl1");
+
+        // Assert
+        _writer.Received(1).AddRecord(Arg.Is<JobDescriptor>(j => j.Job == "Job Name"));
+        _writer.ReceivedWithAnyArgs(2).AddRecord(Arg.Any<LevelVariableOverride>());
+        _writer.Received(1).AddRecord(Arg.Is<LevelVariableOverride>(v => v.Parameters["Key1"] == "Value1"));
+        _writer.ReceivedWithAnyArgs(1).AddRecord(Arg.Any<LevelDescriptor>());
+        _writer.ReceivedWithAnyArgs(products.Count).AddRecord(Arg.Any<ProductRecord>());
+
+    }
+
     private static PPProduct CreateProduct(string room = "", string name = "", string catalog = "", string materialType = "", string doorType = "", string hardwareType = "", Dictionary<string, string>? overrideParameters = null)
         => new(Guid.NewGuid(), 1, room, name, 1, catalog, materialType, doorType, hardwareType, "", new Dictionary<string, PPMaterial>(), new Dictionary<string, PPMaterial>(), new Dictionary<string, string>(), overrideParameters ?? new(), new Dictionary<string, string>());
 
