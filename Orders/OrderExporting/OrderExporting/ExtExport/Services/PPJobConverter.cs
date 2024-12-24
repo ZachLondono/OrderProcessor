@@ -105,6 +105,7 @@ public class PPJobConverter {
                 // If there is only one group in the level, add it directly to this level rather than creating sub levels
 
                 AddMaterialVariablesToWriter(firstGroup.Key, level.LevelId);
+                AddVariableOverridesToWriter(firstGroup.Key, level.LevelId);
 
                 foreach (var product in firstGroup.Products) {
                     AddProductToWriter(product, jobId + roomIdx);
