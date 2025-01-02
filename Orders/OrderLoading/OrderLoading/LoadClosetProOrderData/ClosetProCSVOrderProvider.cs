@@ -465,6 +465,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 			if (part is CornerShelf cs && lastVertical is not null) {
 
+                // Replace the last vertical with a new vertical with the correct depth (depth taken from the corner shelf 'Product Width')
 				partsToRemove.Add(lastVertical);
 				partsToAdd.Add(new VerticalPanel() {
                     Qty = lastVertical.Qty,
