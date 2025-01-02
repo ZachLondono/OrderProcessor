@@ -100,6 +100,7 @@ public class SaveActiveDrawingToProduct {
             exportResponse.OnError(e => error = e);
 
             if (error is not null) {
+                File.Delete(tmpPath);
                 return error!;
             }
 
