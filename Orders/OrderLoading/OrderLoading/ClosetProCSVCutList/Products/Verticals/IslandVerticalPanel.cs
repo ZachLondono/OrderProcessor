@@ -24,7 +24,7 @@ public class IslandVerticalPanel : IClosetProProduct {
 	public IProduct ToProduct() {
 
 		if (LEDChannel != VerticalPanelLEDChannel.None) {
-            throw new NotSupportedException("LED Channels are not supported.");
+            throw new NotSupportedException("LED Channels are not supported on island panels.");
         }
 
 		var row1Holes = Side1Depth - Dimension.FromMillimeters(37);

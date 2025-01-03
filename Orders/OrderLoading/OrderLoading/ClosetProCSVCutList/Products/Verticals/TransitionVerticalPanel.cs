@@ -28,7 +28,7 @@ public class TransitionVerticalPanel : IClosetProProduct {
 	public IProduct ToProduct(Dimension verticalPanelBottomRadius) {
 
 		if (LEDChannel != VerticalPanelLEDChannel.None) {
-            throw new NotSupportedException("LED Channels are not supported.");
+            throw new NotSupportedException("LED Channels are not supported on transition panels.");
         }
 
 		string sku = "PCDT"; // TODO: add option to do two sided machining
