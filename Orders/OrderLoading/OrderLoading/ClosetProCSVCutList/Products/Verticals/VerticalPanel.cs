@@ -22,10 +22,15 @@ public class VerticalPanel : IClosetProProduct {
 	public required bool ExtendBack { get; init; }
 	public required bool HasBottomRadius { get; init; }
 	public required BaseNotch BaseNotch { get; init; }
+	public required VerticalPanelLEDChannel LEDChannel { get; init; }
 
-	public IProduct ToProduct(Dimension verticalPanelBottomRadius) {
+    public IProduct ToProduct(Dimension verticalPanelBottomRadius) {
 
-		string sku = Drilling == VerticalPanelDrilling.DrilledThrough ? "PC" : "PE";
+		if (LEDChannel != VerticalPanelLEDChannel.None) {
+            throw new NotSupportedException("LED Channels are not supported.");
+        }
+
+        string sku = Drilling == VerticalPanelDrilling.DrilledThrough ? "PC" : "PE";
 
 		ClosetPaint? paint = null;
 		string comment = string.Empty;
