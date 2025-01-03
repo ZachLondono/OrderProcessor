@@ -29,7 +29,7 @@ public class HutchVerticalPanel : IClosetProProduct {
 	public IProduct ToProduct(Dimension verticalPanelBottomRadius) {
 
 		if (LEDChannel != VerticalPanelLEDChannel.None) {
-            throw new NotSupportedException("LED Channels are not supported.");
+            throw new NotSupportedException("LED Channels are not supported hutch panels.");
         }
 
 		string sku = Drilling == VerticalPanelDrilling.DrilledThrough ? "PCH" : "PEH";
