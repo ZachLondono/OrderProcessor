@@ -26,11 +26,7 @@ public class VerticalPanel : IClosetProProduct {
 
     public IProduct ToProduct(Dimension verticalPanelBottomRadius) {
 
-		if (LEDChannel != VerticalPanelLEDChannel.None) {
-            throw new NotSupportedException("LED Channels are not supported.");
-        }
-
-        string sku = Drilling == VerticalPanelDrilling.DrilledThrough ? "PC" : "PE";
+        string sku = GetSKU();
 
 		ClosetPaint? paint = null;
 		string comment = string.Empty;
@@ -68,7 +64,34 @@ public class VerticalPanel : IClosetProProduct {
 
 	}
 
-	public static bool TryGetNearest32MMComplientHeight(Dimension input, out Dimension output, double maxErrorMM = 2) {
+	private string GetSKU() {
+
+        if (Drilling == VerticalPanelDrilling.DrilledThrough) {
+
+			if (LEDChannel != VerticalPanelLEDChannel.None) {
+				throw new NotSupportedException("Vertical center panels with LED channels are not supported.");
+			}
+
+            return "PC";
+
+        }
+
+		if (LEDChannel == VerticalPanelLEDChannel.None) {
+			return "PE";
+		}
+
+		if (LEDChannel == VerticalPanelLEDChannel.Both) {
+			throw new NotSupportedException("Vertical panels with LED channels on both sides are not supported");
+		} else if (LEDChannel == VerticalPanelLEDChannel.Left && Drilling == VerticalPanelDrilling.FinishedLeft
+					|| LEDChannel == VerticalPanelLEDChannel.Right && Drilling == VerticalPanelDrilling.FinishedRight) {
+			throw new NotSupportedException("Vertical panels with LED channels on finished sides are not supported");
+		}
+
+		return "PE-LED";
+
+    }
+
+    public static bool TryGetNearest32MMComplientHeight(Dimension input, out Dimension output, double maxErrorMM = 2) {
 
 		var multiple = (input.AsMillimeters() - 19d) / 32d;
 
