@@ -19,8 +19,13 @@ public class IslandVerticalPanel : IClosetProProduct {
 	public required Dimension PanelDepth { get; init; }
 	public required Dimension Side1Depth { get; init; }
 	public required VerticalPanelDrilling Drilling { get; init; }
+	public required VerticalPanelLEDChannel LEDChannel { get; init; }
 
 	public IProduct ToProduct() {
+
+		if (LEDChannel != VerticalPanelLEDChannel.None) {
+            throw new NotSupportedException("LED Channels are not supported.");
+        }
 
 		var row1Holes = Side1Depth - Dimension.FromMillimeters(37);
 
