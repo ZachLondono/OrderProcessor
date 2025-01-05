@@ -258,7 +258,12 @@ public class VerticalPanelStripLightingTests {
             UnitL = "",
             UnitR = "",
             PartNum = 1,
-            InfoRecords = []
+            InfoRecords = new() {
+                new() {
+                    PartName = "Edge Banding",
+                    Color = "White" 
+                }
+            }
         };
     }
 
@@ -292,7 +297,12 @@ public class VerticalPanelStripLightingTests {
             UnitL = "",
             UnitR = "",
             PartNum = 1,
-            InfoRecords = []
+            InfoRecords = new() {
+                new() {
+                    PartName = "Edge Banding",
+                    Color = "White" 
+                }
+            }
         };
     }
 
@@ -365,7 +375,12 @@ public class VerticalPanelStripLightingTests {
             UnitL = "",
             UnitR = "",
             PartNum = 1,
-            InfoRecords = []
+            InfoRecords = new() {
+                new() {
+                    PartName = "Edge Banding",
+                    Color = "White" 
+                }
+            }
         };
     }
 
