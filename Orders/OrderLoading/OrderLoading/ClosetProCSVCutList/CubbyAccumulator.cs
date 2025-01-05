@@ -166,8 +166,9 @@ public class CubbyAccumulator {
 				Width = shelfWidth,
 				Depth = Dimension.FromInches(p.Depth),
 				Type = ShelfType.Fixed,
-				ExtendBack = false
-			};
+                ExtendBack = false,
+                LEDChannel = false
+            };
 
 		}).ToArray();
 

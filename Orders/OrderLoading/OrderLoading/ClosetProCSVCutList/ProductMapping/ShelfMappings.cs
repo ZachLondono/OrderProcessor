@@ -83,7 +83,8 @@ public partial class ClosetProPartMapper {
 			Width = width,
 			Depth = depth,
 			Type = ShelfType.RollOut, 
-			ExtendBack = false 
+			ExtendBack = false,
+			LEDChannel = false
 		};
 
 	}
@@ -118,7 +119,8 @@ public partial class ClosetProPartMapper {
 			Width = width,
 			Depth = depth,
 			Type = type,
-			ExtendBack = extendBack
+			ExtendBack = extendBack,
+			LEDChannel = false
 		};
 
 	}

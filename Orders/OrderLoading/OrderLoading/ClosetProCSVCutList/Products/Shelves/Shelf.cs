@@ -20,8 +20,13 @@ public class Shelf : IClosetProProduct {
 	public required Dimension Depth { get; init; }
 	public required ShelfType Type { get; init; }
 	public required bool ExtendBack { get; init; }
+	public required bool LEDChannel { get; init; }
 
 	public IProduct ToProduct(ClosetProSettings settings) {
+
+		if (Type != ShelfType.Fixed && LEDChannel) {
+			throw new NotSupportedException($"LED channels are not supported for {Type}");
+		}
 
 		string sku = Type switch {
 			ShelfType.Adjustable => settings.AdjustableShelfSKU,
