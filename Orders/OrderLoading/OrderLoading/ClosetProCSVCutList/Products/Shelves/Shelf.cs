@@ -24,7 +24,7 @@ public class Shelf : IClosetProProduct {
 
 	public IProduct ToProduct(ClosetProSettings settings) {
 
-		if (/*Type != ShelfType.Fixed && */LEDChannel) {
+		if (Type != ShelfType.Fixed && Type != ShelfType.Adjustable && LEDChannel) {
 			throw new NotSupportedException($"LED channels are not supported for {Type}");
 		}
 
@@ -34,6 +34,10 @@ public class Shelf : IClosetProProduct {
 			ShelfType.Shoe => GetShoeShelfSku(),
 			_ => throw new InvalidOperationException("Unexpected shelf type")
 		};
+
+		if (LEDChannel) {
+			sku += "-LED";
+        }
 
 		ClosetMaterial material = new(Color, ClosetMaterialCore.ParticleBoard);
 		ClosetPaint? paint = null;
