@@ -53,7 +53,17 @@ public class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory {
             } else {
 
                 try {
+
+                    var dir = Path.GetDirectoryName(_dataSource);
+                    if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) {
+                        var info = Directory.CreateDirectory(dir);
+                        if (!info.Exists) {
+                            throw new InvalidDataException($"Failed to create data directory for data source '{dataSource}'");
+                        }
+                    }
+
                     await InitializeDatabase(connection);
+
                 } catch (Exception ex) {
                     throw new DataBaseInitializationException(ex);
                 }
