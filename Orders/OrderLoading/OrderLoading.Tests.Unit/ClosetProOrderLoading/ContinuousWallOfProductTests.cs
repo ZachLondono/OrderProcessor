@@ -43,6 +43,27 @@ public class ContinuousWallOfProductTests {
     }
 
     [Fact]
+    public void LEDStripSection() {
+
+        // Arrange
+        List<Part> parts = [
+            CreateVerticalPanelPart(80, 12, "White", 1, 1, "R"),
+            CreateVerticalPanelPart(80, 12, "Black", 1, 2, "B"),
+            CreateVerticalPanelPart(80, 14, "Gold", 2, 1, "L"),
+            CreateFixedShelfPart(80, 14, "Red", 2, 1, partTypeSuffix:" with Strip"),
+            CreateAdjustableShelfPart(80, 14, "Blue", 2, 1),
+        ];
+
+        // Act 
+        var products = _sut.MapPartsToProducts(parts, Dimension.Zero);
+
+        // Assert
+        products.OfType<VerticalPanel>().Should().HaveCount(3);
+        products.OfType<Shelf>().Should().HaveCount(2);
+
+    }
+
+    [Fact]
     public void CubbySection() {
 
         // Arrange
@@ -175,7 +196,7 @@ public class ContinuousWallOfProductTests {
 
     }
 
-    private Part CreateVerticalPanelPart(double height, double depth, string materialColor, int wall, int section) {
+    private Part CreateVerticalPanelPart(double height, double depth, string materialColor, int wall, int section, string cornerShelfSizes = "") {
         return new Part() {
             Depth = depth,
             Height = height,
@@ -188,6 +209,7 @@ public class ContinuousWallOfProductTests {
             VertHand = "T",
             WallNum = wall,
             SectionNum = section,
+            CornerShelfSizes = cornerShelfSizes,
             InfoRecords = new() {
                 new() {
                     PartName = "Edge Banding",
@@ -197,14 +219,14 @@ public class ContinuousWallOfProductTests {
         };
     }
 
-    private Part CreateFixedShelfPart(double width, double depth, string materialColor, int wall, int section, string partTypePrefix = "") {
+    private Part CreateFixedShelfPart(double width, double depth, string materialColor, int wall, int section, string partTypePrefix = "", string partTypeSuffix = "") {
         return new Part() {
             Depth = depth,
             Width = width,
             Color = materialColor,
             PartCost = "123.45",
             Quantity = 1,
-            PartName = $"{partTypePrefix}Fixed Shelf",
+            PartName = $"{partTypePrefix}Fixed Shelf{partTypeSuffix}",
             ExportName = "FixedShelf",
             WallNum = wall,
             SectionNum = section,

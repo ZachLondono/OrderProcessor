@@ -59,6 +59,8 @@ public partial class ClosetProPartMapper {
 
 		var transitionDepth = Dimension.FromInches(double.Min(leftDrilling, rightDrilling));
 
+		var ledChannel = ParseLEDChannelSide(part.CornerShelfSizes); 
+
 		return new() {
 			Qty = part.Quantity,
 			PartNumber = part.PartNum,
@@ -75,6 +77,7 @@ public partial class ClosetProPartMapper {
 			WallHung = isWallMount,               // Closet pro does not support wall hung hutch panels, at this time
 			HasBottomRadius = hasRadiusBottom,
 			Drilling = finLeft ? VerticalPanelDrilling.FinishedLeft : finRight ? VerticalPanelDrilling.FinishedRight : VerticalPanelDrilling.DrilledThrough,
+			LEDChannel = ledChannel
 		};
 
 	}
@@ -109,6 +112,8 @@ public partial class ClosetProPartMapper {
 
 		var transitionDepth = Dimension.FromInches(double.Min(leftDrilling, rightDrilling));
 
+		var ledChannel = ParseLEDChannelSide(part.CornerShelfSizes); 
+
 		return new() {
 			Qty = part.Quantity,
 			PartNumber = part.PartNum,
@@ -126,6 +131,8 @@ public partial class ClosetProPartMapper {
 			WallHung = isWallMount,               // Closet pro does not support wall hung hutch panels, at this time
 			HasBottomRadius = hasRadiusBottom,
 			Drilling = finLeft ? VerticalPanelDrilling.FinishedLeft : finRight ? VerticalPanelDrilling.FinishedRight : VerticalPanelDrilling.DrilledThrough,
+
+			LEDChannel = ledChannel
 		};
 
 	}
@@ -157,6 +164,8 @@ public partial class ClosetProPartMapper {
 
 		Dimension side1Depth = (finLeft ? rightDrilling : leftDrilling);
 
+		var ledChannel = ParseLEDChannelSide(part.CornerShelfSizes); 
+
 		return new() {
 			Qty = part.Quantity,
 			PartNumber = part.PartNum,
@@ -169,6 +178,8 @@ public partial class ClosetProPartMapper {
 			PanelDepth = panelDepth,
 			Side1Depth = side1Depth,
 			Drilling = finLeft ? VerticalPanelDrilling.FinishedLeft : finRight ? VerticalPanelDrilling.FinishedRight : VerticalPanelDrilling.DrilledThrough,
+
+			LEDChannel = ledChannel
 		};
 
 	}
@@ -224,6 +235,8 @@ public partial class ClosetProPartMapper {
 
 		bool isWallMount = part.ExportName.Contains("WM");
 
+		var ledChannel = ParseLEDChannelSide(part.CornerShelfSizes); 
+
 		return new HutchVerticalPanel() {
 			Qty = part.Quantity,
 			PartNumber = part.PartNum,
@@ -242,8 +255,20 @@ public partial class ClosetProPartMapper {
 			WallHung = isWallMount,               // Closet pro does not support wall hung hutch panels, at this time
 			HasBottomRadius = false,
 			Drilling = finLeft ? VerticalPanelDrilling.FinishedLeft : finRight ? VerticalPanelDrilling.FinishedRight : VerticalPanelDrilling.DrilledThrough,
+
+			LEDChannel = ledChannel
 		};
 
 	}
+
+	private static VerticalPanelLEDChannel ParseLEDChannelSide(string cornerShelfSizes) {
+        return cornerShelfSizes switch {
+            "" => VerticalPanelLEDChannel.None,
+            "L" => VerticalPanelLEDChannel.Left,
+            "R" => VerticalPanelLEDChannel.Right,
+            "B" => VerticalPanelLEDChannel.Both,
+            _ => throw new InvalidOperationException($"Unexpected value for corner shelf sizes '{cornerShelfSizes}'. Expected this property to contain LED channel position.")
+        };
+    }
 
 }

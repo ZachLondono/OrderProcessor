@@ -465,7 +465,8 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 			if (part is CornerShelf cs && lastVertical is not null) {
 
-				partsToRemove.Add(lastVertical);
+                // Replace the last vertical with a new vertical with the correct depth (depth taken from the corner shelf 'Product Width')
+                partsToRemove.Add(lastVertical);
 				partsToAdd.Add(new VerticalPanel() {
                     Qty = lastVertical.Qty,
                     Color = lastVertical.Color,
@@ -479,7 +480,8 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 					WallHung = lastVertical.WallHung,
 					ExtendBack = lastVertical.ExtendBack,
 					HasBottomRadius = lastVertical.HasBottomRadius,
-					BaseNotch = lastVertical.BaseNotch
+					BaseNotch = lastVertical.BaseNotch,
+					LEDChannel = VerticalPanelLEDChannel.None
                 });
 
 				lastVertical = null;

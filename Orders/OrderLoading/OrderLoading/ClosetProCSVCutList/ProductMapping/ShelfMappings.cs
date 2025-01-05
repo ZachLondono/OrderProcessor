@@ -83,7 +83,8 @@ public partial class ClosetProPartMapper {
 			Width = width,
 			Depth = depth,
 			Type = ShelfType.RollOut, 
-			ExtendBack = false 
+			ExtendBack = false,
+			LEDChannel = false
 		};
 
 	}
@@ -107,6 +108,11 @@ public partial class ClosetProPartMapper {
 								.Select(i => i.Color)
 								.FirstOrDefault() ?? part.Color;
 
+		bool ledChannel = part.PartName.Contains("with Strip");
+		if (ledChannel && part.PartName.StartsWith("Bottom")) {
+			throw new UnsupportedDesignException("Bottom fixed shelves with LED channels are not supported");
+        }
+
 		return new Shelf() {
 			Qty = part.Quantity,
 			UnitPrice = unitPrice,
@@ -118,7 +124,8 @@ public partial class ClosetProPartMapper {
 			Width = width,
 			Depth = depth,
 			Type = type,
-			ExtendBack = extendBack
+			ExtendBack = extendBack,
+			LEDChannel = ledChannel
 		};
 
 	}

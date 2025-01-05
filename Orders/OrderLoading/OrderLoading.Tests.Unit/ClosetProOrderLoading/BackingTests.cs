@@ -18,17 +18,20 @@ public class BackingTests {
     }
 
     [Theory]
-    [InlineData("")]
-    [InlineData("Bottom ")]
-    [InlineData("Top ")]
-    public void MapPartsToProducts_ShouldEnableExtendBackForFullDepthFixedShelves_WhenWallHasBackPanel(string prefix) {
+    [InlineData("", "")]
+    [InlineData("Bottom ", "")]
+    [InlineData("Top ", "")]
+    [InlineData("", " with Strip")]
+    [InlineData("Bottom ", " with Strip")]
+    [InlineData("Top ", " with Strip")]
+    public void MapPartsToProducts_ShouldEnableExtendBackForFullDepthFixedShelves_WhenWallHasBackPanel(string prefix, string suffix) {
 
         // Arrange
         List<Part> parts = [
 
             CreateVerticalPanelPart(80, 12, "White", 1, 1),
 
-            CreateFixedShelfPart(30, 12, "White", 1, 1, prefix),
+            CreateFixedShelfPart(30, 12, "White", 1, 1, prefix, suffix),
 
             CreateBackingPart(40, 30, "White", 1, 2),
 
@@ -38,6 +41,7 @@ public class BackingTests {
         var products = _sut.MapPartsToProducts(parts, Dimension.Zero);
 
         // Assert
+        products.OfType<Shelf>().Should().HaveCount(1);
         products.OfType<Shelf>()
             .Should()
             .AllSatisfy(s =>
@@ -47,10 +51,13 @@ public class BackingTests {
     }
 
     [Theory]
-    [InlineData("")]
-    [InlineData("Bottom ")]
-    [InlineData("Top ")]
-    public void MapPartsToProducts_ShouldNotEnableExtendBackForPartialDepthFixedShelves_WhenWallHasBackPanel(string prefix) {
+    [InlineData("", "")]
+    [InlineData("Bottom ", "")]
+    [InlineData("Top ", "")]
+    [InlineData("", " with Strip")]
+    [InlineData("Bottom ", " with Strip")]
+    [InlineData("Top ", " with Strip")]
+    public void MapPartsToProducts_ShouldNotEnableExtendBackForPartialDepthFixedShelves_WhenWallHasBackPanel(string prefix, string suffix) {
 
         // Arrange
         List<Part> parts = [
@@ -67,6 +74,7 @@ public class BackingTests {
         var products = _sut.MapPartsToProducts(parts, Dimension.Zero);
 
         // Assert
+        products.OfType<Shelf>().Should().HaveCount(1);
         products.OfType<Shelf>()
             .Should()
             .AllSatisfy(s =>
@@ -93,6 +101,7 @@ public class BackingTests {
         var products = _sut.MapPartsToProducts(parts, Dimension.Zero);
 
         // Assert
+        products.OfType<Shelf>().Should().HaveCount(1);
         products.OfType<Shelf>()
             .Should()
             .AllSatisfy(s =>
@@ -119,6 +128,7 @@ public class BackingTests {
         var products = _sut.MapPartsToProducts(parts, Dimension.Zero);
 
         // Assert
+        products.OfType<Shelf>().Should().HaveCount(1);
         products.OfType<Shelf>()
             .Should()
             .AllSatisfy(s =>
@@ -247,14 +257,14 @@ public class BackingTests {
         };
     }
 
-    private static Part CreateFixedShelfPart(double width, double depth, string materialColor, int wall, int section, string partTypePrefix = "") {
+    private static Part CreateFixedShelfPart(double width, double depth, string materialColor, int wall, int section, string partTypePrefix = "", string partTypeSuffix = "") {
         return new Part() {
             Depth = depth,
             Width = width,
             Color = materialColor,
             PartCost = "123.45",
             Quantity = 1,
-            PartName = $"{partTypePrefix}Fixed Shelf",
+            PartName = $"{partTypePrefix}Fixed Shelf{partTypeSuffix}",
             ExportName = "FixedShelf",
             WallNum = wall,
             SectionNum = section,
