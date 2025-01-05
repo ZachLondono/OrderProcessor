@@ -39,6 +39,11 @@ public static class Extensions {
 
         var localConfigParentDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
+        var info = Directory.CreateDirectory(_configDirectory);
+        if (!info.Exists) {
+            logVerbose($"Failed to create configuration directory '{localConfigParentDir}'");
+        }
+
         foreach (var fileName in _configFiles) {
 
             var finalPath = Path.Combine(_configDirectory, fileName);
