@@ -24,7 +24,7 @@ public class Shelf : IClosetProProduct {
 
 	public IProduct ToProduct(ClosetProSettings settings) {
 
-		if (Type != ShelfType.Fixed && LEDChannel) {
+		if (/*Type != ShelfType.Fixed && */LEDChannel) {
 			throw new NotSupportedException($"LED channels are not supported for {Type}");
 		}
 

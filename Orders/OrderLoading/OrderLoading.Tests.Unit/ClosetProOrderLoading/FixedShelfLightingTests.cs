@@ -17,12 +17,45 @@ public class FixedShelfLightingTests {
 
     }
 
-    private Part CreateFixedShelfPart() {
+    [Fact]
+    public void FixedShelfWithLED() {
+
+        var part = CreateFixedShelfPart(partNameSuffix: " with Strip");
+
+        var shelf = ClosetProPartMapper.CreateFixedShelf(part, false, false, RoomNamingStrategy.None);
+
+        shelf.LEDChannel.Should().BeTrue();
+
+    }
+
+    [Fact]
+    public void TopFixedShelfWithLED() {
+
+        var part = CreateFixedShelfPart(partNamePrefix: "Top ", partNameSuffix: " with Strip");
+
+        var shelf = ClosetProPartMapper.CreateFixedShelf(part, false, false, RoomNamingStrategy.None);
+
+        shelf.LEDChannel.Should().BeTrue();
+
+    }
+
+    [Fact]
+    public void BottomFixedShelfWithLED() {
+
+        var part = CreateFixedShelfPart(partNamePrefix: "Bottom ", partNameSuffix: " with Strip");
+
+        var action = () => ClosetProPartMapper.CreateFixedShelf(part, false, false, RoomNamingStrategy.None);
+
+        action.Should().Throw<UnsupportedDesignException>();
+
+    }
+
+    private Part CreateFixedShelfPart(string partNamePrefix = "", string partNameSuffix = "") {
         return new Part() {
             WallNum = 1,
             SectionNum = 1,
             PartType = "Material",
-            PartName = "Fixed Shelf",
+            PartName = $"{partNamePrefix}Fixed Shelf{partNameSuffix}",
             ExportName = "FixedShelf",
             Color = "White",
             Height = 0.75,

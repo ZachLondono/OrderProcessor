@@ -108,6 +108,11 @@ public partial class ClosetProPartMapper {
 								.Select(i => i.Color)
 								.FirstOrDefault() ?? part.Color;
 
+		bool ledChannel = part.PartName.Contains("with Strip");
+		if (ledChannel && part.PartName.StartsWith("Bottom")) {
+			throw new UnsupportedDesignException("Bottom fixed shelves with LED channels are not supported");
+        }
+
 		return new Shelf() {
 			Qty = part.Quantity,
 			UnitPrice = unitPrice,
@@ -120,7 +125,7 @@ public partial class ClosetProPartMapper {
 			Depth = depth,
 			Type = type,
 			ExtendBack = extendBack,
-			LEDChannel = false
+			LEDChannel = ledChannel
 		};
 
 	}
