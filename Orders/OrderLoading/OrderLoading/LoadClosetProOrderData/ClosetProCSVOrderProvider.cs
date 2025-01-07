@@ -92,6 +92,9 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
             new(Guid.NewGuid(), 1, "Included Hardware", hardwarePrice)
         };
 
+        var glassParts = ClosetProPartMapper.GetBuyOutGlassParts(info.BuyOutParts);
+        additionalItems.AddRange(glassParts);
+
         // TODO: need hardware list here
         Dimension hardwareSpread = ClosetProPartMapper.GetHardwareSpread(info.PickList, []);
 
@@ -129,7 +132,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
         supplies.AddRange(hangRailSupplies);
         supplies.AddRange(slideSupplies);
 
-		var suppliesArray = supplies.Where(s => s.Qty != 0).ToArray();
+        var suppliesArray = supplies.Where(s => s.Qty != 0).ToArray();
         Hardware hardware = new(suppliesArray, slides, hangRails);
 
         return new OrderData() {

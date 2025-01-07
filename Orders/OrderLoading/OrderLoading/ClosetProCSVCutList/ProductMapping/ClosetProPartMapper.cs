@@ -4,6 +4,7 @@ using Domain.Orders.Builders;
 using Domain.Extensions;
 using Domain.ValueObjects;
 using Domain.Orders.Entities.Hardware;
+using Domain.Orders.Entities;
 
 namespace OrderLoading.ClosetProCSVCutList;
 
@@ -416,6 +417,22 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 		return dimensions;
 
 	}
+
+    public static IEnumerable<AdditionalItem> GetBuyOutGlassParts(IEnumerable<BuyOutPart> buyOutParts) {
+        return buyOutParts.Where(p => p.PartType == "Glass").Select(p => {
+            if (!ClosetProPartMapper.TryParseMoneyString(p.PartCost, out decimal totalCost)) {
+                totalCost = 0;
+            }
+
+			string name = p.ExportName switch {
+				"GlassShelf" => $"Glass Shelf 1 Long Edge Polished",
+				_ => p.PartName
+			};
+
+            return AdditionalItem.Create(p.Quantity, $"{p.Color} {name} - {p.Height}x{p.Width}x{p.Depth}", totalCost / p.Quantity);
+        });
+    }
+
 
 	private static IEnumerable<IClosetProProduct> GroupProducts(IEnumerable<IClosetProProduct> products) {
 
