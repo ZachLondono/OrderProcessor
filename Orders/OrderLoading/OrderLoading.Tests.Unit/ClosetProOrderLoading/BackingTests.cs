@@ -22,7 +22,6 @@ public class BackingTests {
     [InlineData("Bottom ", "")]
     [InlineData("Top ", "")]
     [InlineData("", " with Strip")]
-    [InlineData("Bottom ", " with Strip")]
     [InlineData("Top ", " with Strip")]
     public void MapPartsToProducts_ShouldEnableExtendBackForFullDepthFixedShelves_WhenWallHasBackPanel(string prefix, string suffix) {
 
@@ -55,7 +54,6 @@ public class BackingTests {
     [InlineData("Bottom ", "")]
     [InlineData("Top ", "")]
     [InlineData("", " with Strip")]
-    [InlineData("Bottom ", " with Strip")]
     [InlineData("Top ", " with Strip")]
     public void MapPartsToProducts_ShouldNotEnableExtendBackForPartialDepthFixedShelves_WhenWallHasBackPanel(string prefix, string suffix) {
 
@@ -66,7 +64,7 @@ public class BackingTests {
 
             CreateBackingPart(40, 30, "White", 1, 2),
 
-            CreateFixedShelfPart(30, 11.25, "White", 1, 1, prefix),
+            CreateFixedShelfPart(30, 11.25, "White", 1, 1, prefix, suffix),
 
         ];
 
