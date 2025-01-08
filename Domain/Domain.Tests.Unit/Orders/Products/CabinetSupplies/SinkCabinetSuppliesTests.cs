@@ -1,5 +1,7 @@
 ﻿using Domain.Orders.Builders;
 using Domain.Orders.Entities.Hardware;
+using Domain.Orders.Enums;
+using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using FluentAssertions;
 
@@ -113,6 +115,51 @@ public class SinkCabinetSuppliesTests {
         foreach (var supply in expectedSupplies) {
             supplies.Should().Contain(s => SupplyComparer.Compare(s, supply));
         }
+
+    }
+
+    [Theory]
+    [InlineData(RollOutBlockPosition.Left, 4)]
+    [InlineData(RollOutBlockPosition.Right, 4)]
+    [InlineData(RollOutBlockPosition.Both, 8)]
+    public void Should_IncludePullOutBlocks_WhenRollOutBoxesAreEnabledWithBlocks(RollOutBlockPosition blockPositions, int expectedQty) {
+        
+        // Arrange
+        var cabinet = _builder.WithRollOutBoxes(new RollOutOptions([Dimension.FromMillimeters(19)], true, blockPositions))
+                                .WithWidth(Dimension.FromMillimeters(500))
+                                .WithHeight(Dimension.FromMillimeters(500))
+                                .WithDepth(Dimension.FromMillimeters(500))
+                                .WithQty(2)
+                                .Build();
+
+        Supply expectedSupply = Supply.PullOutBlock(expectedQty);
+
+        // Act
+        var supplies = cabinet.GetSupplies();
+        
+        // Assert
+        supplies.Should().Contain(s => SupplyComparer.Compare(s, expectedSupply));
+
+    }
+
+    [Fact]
+    public void Should_NotIncludePullOutBlocks_WhenRollOutBoxesAreEnabledWithoutBlocks() {
+        
+        // Arrange
+        var cabinet = _builder.WithRollOutBoxes(new RollOutOptions([Dimension.FromMillimeters(19)], true, RollOutBlockPosition.None))
+                                .WithWidth(Dimension.FromMillimeters(500))
+                                .WithHeight(Dimension.FromMillimeters(500))
+                                .WithDepth(Dimension.FromMillimeters(500))
+                                .WithQty(2)
+                                .Build();
+
+        Supply expectedSupply = Supply.PullOutBlock(0);
+
+        // Act
+        var supplies = cabinet.GetSupplies();
+        
+        // Assert
+        supplies.Where(s => s.Description.Equals(expectedSupply.Description)).Should().BeEmpty();
 
     }
 

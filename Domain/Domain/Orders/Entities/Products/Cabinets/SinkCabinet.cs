@@ -197,6 +197,16 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
             
             supplies.Add(Supply.CabinetDrawerClips(RollOutBoxes.Qty * Qty));
 
+            switch (RollOutBoxes.Blocks) {
+                case RollOutBlockPosition.Both:
+                    supplies.Add(Supply.PullOutBlock(RollOutBoxes.Qty * 4 * Qty));
+                    break;
+                case RollOutBlockPosition.Left:
+                case RollOutBlockPosition.Right:
+                    supplies.Add(Supply.PullOutBlock(RollOutBoxes.Qty * 2 * Qty));
+                    break;
+            }
+
         }
 
         return supplies;
