@@ -30,35 +30,22 @@ public record Supply(Guid Id, int Qty, string Description) {
 
     public static IEnumerable<Supply> StandardHinge(int qty) => new Supply[2] { new(Guid.NewGuid(), qty, "Hinge, 125"), new(Guid.NewGuid(), qty, "Hinge Plate") };
 
-    public static IEnumerable<Supply> StandardHinge(Dimension doorHeight, int doorQty) {
-
-        int hingeQty = doorHeight.AsMillimeters() switch {
-            > FOUR_HINGE_MAX => 5,
-            > THREE_HINGE_MAX => 4,
-            > TWO_HINGE_MAX => 3,
-            _ => 2
-        };
-
-        return StandardHinge(doorQty * hingeQty);
-
-    }
+    public static IEnumerable<Supply> StandardHinge(Dimension doorHeight, int doorQty) => StandardHinge(doorQty * GetHingeQty(doorHeight));
 
     public static IEnumerable<Supply> BlindCornerHinge(int qty) => new Supply[2] { new(Guid.NewGuid(), qty, "Hinge, Blind Corner"), new(Guid.NewGuid(), qty, "Hinge Plate") };
 
+    public static IEnumerable<Supply> BlindCornerHinge(Dimension doorHeight, int doorQty) => BlindCornerHinge(doorQty * GetHingeQty(doorHeight));
+
     public static IEnumerable<Supply> CrossCornerHinge(int qty) => new Supply[2] { new(Guid.NewGuid(), qty, "Hinge, Cross Corner"), new(Guid.NewGuid(), qty, "Hinge Plate") };
 
-    public static IEnumerable<Supply> CrossCornerHinge(Dimension doorHeight, int doorQty) {
+    public static IEnumerable<Supply> CrossCornerHinge(Dimension doorHeight, int doorQty) => CrossCornerHinge(doorQty * GetHingeQty(doorHeight));
 
-        int hingeQty = doorHeight.AsMillimeters() switch {
-            > FOUR_HINGE_MAX => 5,
-            > THREE_HINGE_MAX => 4,
-            > TWO_HINGE_MAX => 3,
-            _ => 2
-        };
-
-        return CrossCornerHinge(doorQty * hingeQty);
-
-    }
+    private static int GetHingeQty(Dimension doorHeight) => doorHeight.AsMillimeters() switch {
+        > FOUR_HINGE_MAX => 5,
+        > THREE_HINGE_MAX => 4,
+        > TWO_HINGE_MAX => 3,
+        _ => 2
+    };
 
     public static Supply PullOutBlock(int qty) => new(Guid.NewGuid(), qty, "1\" Pullout Block");
 

@@ -153,10 +153,7 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
 
     public IEnumerable<Supply> GetSupplies() {
 
-        List<Supply> supplies = [
-            // Supply.DoorPull(Doors.Quantity * Qty),
-            .. Supply.StandardHinge(DoorHeight, Qty)
-        ];
+        List<Supply> supplies = [];
 
         if (AdjustableShelves > 0) {
 
@@ -164,8 +161,24 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
 
         }
 
-        if (Doors.Quantity == 2) {
-            supplies.AddRange(Supply.BlindCornerHinge(2 * Qty));
+        if (Doors.Quantity > 0) {
+
+            if ((BlindSide == BlindSide.Left && Doors.HingeSide == HingeSide.Left)
+                || (BlindSide == BlindSide.Right && Doors.HingeSide == HingeSide.Right)) {
+
+                supplies.AddRange(Supply.BlindCornerHinge(DoorHeight, Qty));
+
+            } else if (Doors.HingeSide == HingeSide.NotApplicable) {
+
+                supplies.AddRange(Supply.BlindCornerHinge(DoorHeight, Qty));
+                supplies.AddRange(Supply.StandardHinge(DoorHeight, Qty));
+
+            } else {
+
+                supplies.AddRange(Supply.StandardHinge(DoorHeight, Qty));
+
+            }
+
         }
 
         if (Drawers.Quantity > 0) {
