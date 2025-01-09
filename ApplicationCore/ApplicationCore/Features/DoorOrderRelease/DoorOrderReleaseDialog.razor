@@ -1,10 +1,12 @@
 ﻿@using ApplicationCore.Features.OpenDoorOrders
+@using ApplicationCore.Shared.Settings
 @using Domain.Infrastructure.Bus
 @using Domain.Components
 @using Domain.Components.ProgressModal
 @using ApplicationCore.Shared.Services
 @using Domain.Services
 @using ApplicationCore.Features.GetJobCutListDirectory
+@using Microsoft.Extensions.Options
 
 @if (_errorMessage is not null) {
     <span class="font-semibold text-red-600">@_errorMessage</span>
@@ -164,6 +166,9 @@
     [Inject]
     public IFilePicker? FilePicker { get; set; }
 
+    [Inject]
+    public IOptions<MDFReleaseSettings> Settings { get; set; } = default!;
+
     public DoorOrderReleaseOptions Model { get; set; } = new();
 
     private string? _errorMessage = null;
@@ -172,18 +177,11 @@
 
         if (Order is null || Bus is null) return;
 
-        string outputDirectory = @"R:\Door Orders\Door Programs";
+        var settings = Settings.Value;
+
+        string outputDirectory = settings.DefaultOutputDirectory;
         var outputDirResult = await Bus.Send(new GetJobOrderCutListDirectory.Query(Order.OrderFileDirectory, outputDirectory));
         outputDirResult.OnSuccess(dir => outputDirectory = dir);
-
-        bool includeInvoice = false;
-        bool includeOrderForm = false;
-        string emailRecipients = "maciej@royalcabinet.com";
-        if (!Order.Vendor.ToLowerInvariant().Contains("royal")) {
-            emailRecipients += ";toya@royalcabinet.com";
-            includeInvoice = true;
-            includeOrderForm = true; 
-        }
 
         Model = new DoorOrderReleaseOptions() {
 
@@ -196,20 +194,30 @@
                 AddExistingCSVTokens = false,
                 CSVTokenFilePath = "",
 
-                IncludeCover = true,
-                IncludePackingList = true,
-                IncludeInvoice = includeInvoice,
-                IncludeOrderForm = includeOrderForm,
+                IncludeCover = false,
+                IncludePackingList = false,
+                IncludeInvoice = false,
+                IncludeOrderForm = false,
 
 				FileName = $"{Order.OrderNumber} - MDF Door Cut List",
 				OutputDirectory = outputDirectory,
 
 				SendEmail = true,
-				EmailRecipients = emailRecipients,
+				EmailRecipients = "",
 
                 PrintFile = true
 
 			};
+
+        if (settings.ReleaseProfilesByVendor.TryGetValue(Order.Vendor, out var profile)) {
+            Model.IncludeCover = profile.IncludeCover;
+            Model.IncludePackingList = profile.IncludePackingList;
+            Model.IncludeInvoice = profile.IncludeInvoice;
+            Model.IncludeOrderForm = profile.IncludeOrderForm;
+            Model.SendEmail = profile.EmailRecipients.Length != 0;
+            Model.EmailRecipients = string.Join(';', profile.EmailRecipients);
+            Model.PrintFile = profile.Print;
+        }
 
         StateHasChanged();
 
@@ -240,7 +248,7 @@
     private void ChooseReportFile()
         => FilePicker!.PickFile(new() {
                 Title = "Select CADCode WS Report File",
-                InitialDirectory = @"Y:\CADCode\Reports",
+                InitialDirectory = Settings.Value.WSXMLReportDirectory,
                 Filter = new("CADCode WS Report", "xml"),
             }, (fileName) => {
             Model.WSXMLReportFilePath = fileName;
@@ -250,7 +258,7 @@
     private void ChooseCSVTokenFile()
         => FilePicker!.PickFile(new() {
                 Title = "Select CADCode CSV Token File",
-                InitialDirectory = @"R:\Door Orders\CC Input",
+                InitialDirectory = Settings.Value.CSVFileDirectory,
                 Filter = new("CADCode CSV Token File", "csv"),
             }, (fileName) => {
             Model.CSVTokenFilePath = fileName;
