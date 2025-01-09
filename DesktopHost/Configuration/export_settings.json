@@ -1,0 +1,10 @@
+{
+
+  "ExportSettings": {
+    "DovetailTemplateFilePath": "R:\\DB ORDERS\\DrawerBoxProcessor allmoxy-hafele-richelieu-royal.xlsm",
+    "MDFDoorTemplateFilePath": "R:\\Forms\\_Door Order 2024, 2.101.xlsm",
+    "EXTOutputDirectory": "C:\\CP3\\CPDATA",
+    "CSVOutputDirectory": "R:\\Door Orders\\CC Input"
+  }
+
+}

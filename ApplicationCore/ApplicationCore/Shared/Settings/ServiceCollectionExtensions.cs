@@ -27,6 +27,7 @@ public static class Extensions {
             "doweled_drawer_boxes.json",
             "hafele_db_order.json",
             "cnc_settings.json",
+            "export_settings.json",
             "data.json",
 #if DEBUG
             "data.Development.json"
@@ -84,7 +85,7 @@ public static class Extensions {
         services.ConfigureWritable<ToolConfiguration>(configuration.GetRequiredSection("tools"), Path.Combine(_configDirectory, "tools.json"));
         services.ConfigureWritable<EmailSettings>(configuration.GetRequiredSection("Email"), Path.Combine(_configDirectory, "email.json"));
         services.ConfigureWritable<ScheduleSettings>(configuration.GetRequiredSection("schedule"), Path.Combine(_configDirectory, "schedule.json"));
-        services.ConfigureWritable<ExportSettings>(configuration.GetRequiredSection("ExportSettings"));
+        services.ConfigureWritable<ExportSettings>(configuration.GetRequiredSection("ExportSettings"), Path.Combine(_configDirectory, "export_settings.json"));
         services.Configure<PDFConfiguration>(configuration.GetRequiredSection("ReleasePDFConfig"));
 
         return services;
