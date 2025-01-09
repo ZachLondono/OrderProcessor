@@ -36,22 +36,14 @@
             <InputText @bind-Value="_settings.DovetailTemplateFilePath" class="input-text w-full" />
         </div>
 
-        @if (_allowSaving) {
-            <div class="my-5">
-                <Button type="submit" Color="ButtonColor.Primary">Save</Button>
-            </div>
-        }
+        <div class="my-5">
+            <Button type="submit" Color="ButtonColor.Primary">Save</Button>
+        </div>
 
     </EditForm>
 
 }
 @code {
-
-    #if DEBUG
-    private readonly bool _allowSaving = true;
-#else 
-    private readonly bool _allowSaving = false;
-#endif
 
     private Error? _error = null;
 
