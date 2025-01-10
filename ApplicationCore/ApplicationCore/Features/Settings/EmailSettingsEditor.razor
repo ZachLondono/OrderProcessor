@@ -154,7 +154,11 @@
             Host = settings.Host;
             Port = settings.Port;
             BccRecipients = settings.BccRecipients;
-            ClearTextPassword = UserDataProtection.Unprotect(settings.ProtectedPassword);
+            try {
+                ClearTextPassword = UserDataProtection.Unprotect(settings.ProtectedPassword);
+            } catch {
+                ClearTextPassword = "";
+            }
         }
 
         public EmailSettings ToEmailSettings() {
