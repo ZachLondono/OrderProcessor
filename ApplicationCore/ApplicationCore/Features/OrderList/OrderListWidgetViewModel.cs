@@ -101,49 +101,58 @@ public class OrderListWidgetViewModel {
         IsLoading = true;
         HasError = false;
 
-        var countResponse = await _bus.Send(new GetOrderCount.Query(customerId, vendorId, searchTerm));
-        countResponse.OnSuccess(
-            totalOrders => {
-                TotalOrderCount = totalOrders;
-                PageCount = (int)Math.Ceiling(totalOrders / (float)PageSize);
-            });
+        try {
 
-        var response = await _bus.Send(new GetOrderList.Query(customerId, vendorId, searchTerm, Page, PageSize));
-        response.Match(
-            orders => {
-                Orders = orders;
-            },
-            errors => {
-                ErrorMessage = errors.Title;
-            }
-        );
+            var countResponse = await _bus.Send(new GetOrderCount.Query(customerId, vendorId, searchTerm));
+            countResponse.OnSuccess(
+                totalOrders => {
+                    TotalOrderCount = totalOrders;
+                    PageCount = (int)Math.Ceiling(totalOrders / (float)PageSize);
+                });
 
-        if (Orders is null) {
-            IsLoading = false;
-            return;
-        }
+            var response = await _bus.Send(new GetOrderList.Query(customerId, vendorId, searchTerm, Page, PageSize));
+            response.Match(
+                orders => {
+                    Orders = orders;
+                },
+                errors => {
+                    ErrorMessage = errors.Title;
+                }
+            );
 
-        Dictionary<Guid, string> customerNames = new();
-        Dictionary<Guid, string> vendorNames = new();
-        foreach (var order in Orders) {
-
-            if (order is null) {
-                continue;
+            if (Orders is null) {
+                IsLoading = false;
+                return;
             }
 
-            if (vendorNames.TryGetValue(order.VendorId, out string? vendorName)) {
-                order.VendorName = vendorName ?? "";
-            } else {
-                order.VendorName = await _getVendorNameById(order.VendorId) ?? "";
-                vendorNames[order.VendorId] = order.VendorName;
+            Dictionary<Guid, string> customerNames = [];
+            Dictionary<Guid, string> vendorNames = [];
+            foreach (var order in Orders) {
+
+                if (order is null) {
+                    continue;
+                }
+
+                if (vendorNames.TryGetValue(order.VendorId, out string? vendorName)) {
+                    order.VendorName = vendorName ?? "";
+                } else {
+                    order.VendorName = await _getVendorNameById(order.VendorId) ?? "";
+                    vendorNames[order.VendorId] = order.VendorName;
+                }
+
+                if (customerNames.TryGetValue(order.CustomerId, out string? customerName)) {
+                    order.CustomerName = customerName ?? "";
+                } else {
+                    order.CustomerName = await _getCustomerNameById(order.CustomerId) ?? "";
+                    customerNames[order.CustomerId] = order.CustomerName;
+                }
+
             }
 
-            if (customerNames.TryGetValue(order.CustomerId, out string? customerName)) {
-                order.CustomerName = customerName ?? "";
-            } else {
-                order.CustomerName = await _getCustomerNameById(order.CustomerId) ?? "";
-                customerNames[order.CustomerId] = order.CustomerName;
-            }
+        } catch (Exception ex) {
+
+            ErrorMessage = ex.Message;
+            _logger.LogError(ex, "Exception thrown while trying to load order list");
 
         }
 
