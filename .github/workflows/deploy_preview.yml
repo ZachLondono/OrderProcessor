@@ -50,7 +50,12 @@ jobs:
       run: dotnet nuget add source --username ZachLondono --password ${{ secrets.NUGET_PASSWORD }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ZachLondono/index.json"
 
     - name: Run Unit Tests
-      run: dotnet test
+      run: |
+          dotnet test .\ApplicationCore\ApplicationCore.Tests\ApplicationCore.Tests.csproj
+          dotnet test .\DesktopHost\DesktopHost.Tests\DesktopHost.Tests.csproj
+          dotnet test .\Companies\Companies.Tests\Companies.Tests.csproj
+          dotnet test .\Orders\OrdersLoading\Orders.OrdersLoading.Tests\Orders.OrdersLoading.Tests.csproj
+          dotnet test .\Orders\OrdersExporting\Orders.OrdersExporting.Tests\Orders.OrdersExporting.Tests.csproj
     
     - name: Create directory for output
       run: mkdir ${{ github.workspace }}\${{ env.ReleaseChannel }}
