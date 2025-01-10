@@ -1,0 +1,214 @@
+﻿@using ApplicationCore.Shared.Settings
+@using Domain.Components
+@using Domain.Infrastructure.Bus
+@using Domain.Infrastructure.Settings
+@using Microsoft.Extensions.Logging
+@using static Domain.Components.Button
+
+@if (_error is not null) {
+
+    <div class="text-red-600">
+        <h3>@_error.Title</h3>
+        <span>@_error.Details</span>
+    </div>
+
+} else if (_settings is not null) {
+
+    <EditForm Model="_settings" OnValidSubmit="SaveChanges">
+
+        <div>
+            <label>Default Output Directory</label>
+            <InputText @bind-Value="_settings.DefaultOutputDirectory" class="input-text w-full" />
+        </div>
+
+        <div>
+            <label>CSV Input Directory</label>
+            <InputText @bind-Value="_settings.CSVFileDirectory" class="input-text w-full" />
+        </div>
+
+        <div>
+            <label>WSXML Report Directory</label>
+            <InputText @bind-Value="_settings.WSXMLReportDirectory" class="input-text w-full" />
+        </div>
+
+        <section class="pl-5">
+
+            @foreach(var profile in _profiles) {
+                <div class="border border-gray-700 rounded-md my-5 p-5">
+
+                    <div class="mb-5">
+                        <label>Vendor
+                            <InputText @bind-Value="profile.Vendor" class="input-text w-48" />
+                        </label>
+                        <div class="float-right">
+                            <Button OnClick="() => DeleteProfile(profile)" Color="ButtonColor.Danger" Style="ButtonStyle.Outline" Size="ButtonSize.Small">X</Button>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label>Email Recipients:</label>
+                        @foreach (var email in profile.EmailRecipients) {
+                            <div>
+                                <InputText @bind-Value="email.Email" class="input-text w-48" />
+                                <Button OnClick="() => DeleteEmailFromProfile(profile, email)" Color="ButtonColor.Danger" Style="ButtonStyle.Outline" Size="ButtonSize.Small">X</Button>
+                            </div>
+                        }
+                        <Button OnClick="() => AddEmailToProfile(profile)" Color="ButtonColor.Secondary" Style="ButtonStyle.Text" Size="ButtonSize.Small">+ Add Email</Button>
+                    </div>
+
+                    <div>
+                        <CheckBox @bind-IsChecked="profile.IncludeCover">
+                            Include Cover 
+                        </CheckBox>
+                        <br />
+                        <CheckBox @bind-IsChecked="profile.IncludePackingList">
+                            Packing List
+                        </CheckBox>
+                        <br />
+                        <CheckBox @bind-IsChecked="profile.IncludeInvoice">
+                            Invoice
+                        </CheckBox>
+                        <br />
+                        <CheckBox @bind-IsChecked="profile.IncludeOrderForm">
+                            Order Form
+                        </CheckBox>
+                        <br />
+                        <CheckBox @bind-IsChecked="profile.Print">
+                            Print
+                        </CheckBox>
+                    </div>
+                </div>
+            }
+
+            <Button OnClick="AddProfile" Color="ButtonColor.Secondary" Style="ButtonStyle.Text" Size="ButtonSize.Small">+ Add Profile</Button>
+
+        </section>
+
+        <div class="my-5">
+            <Button type="submit" Color="ButtonColor.Primary">Save</Button>
+        </div>
+
+    </EditForm>
+
+}
+
+@code {
+
+    private Error? _error = null;
+
+    private MDFReleaseSettings? _settings = null;
+    private List<MDFProfileEditModel> _profiles = [];
+
+    [Inject]
+    public IWritableOptions<MDFReleaseSettings>? Options { get; set; }
+
+    [Inject]
+    public ILogger<MDFReleaseSettingsEditor>? Logger { get; set; }
+
+    protected override void OnInitialized() {
+
+        if (Options is null) return;
+
+        try {
+            _settings = Options.Value;
+            _profiles = _settings.ReleaseProfilesByVendor.Select(p => 
+                new MDFProfileEditModel() {
+                    Vendor = p.Key,
+                    EmailRecipients = p.Value.EmailRecipients.Select(e => new EmailRecipient(e)).ToList(),
+                    IncludeCover = p.Value.IncludeCover,
+                    IncludeInvoice = p.Value.IncludeInvoice,
+                    IncludeOrderForm = p.Value.IncludeOrderForm,
+                    IncludePackingList = p.Value.IncludePackingList,
+                    Print = p.Value.Print
+                }
+            ).ToList();
+        } catch (Exception ex) {
+            Logger?.LogError(ex, "Exception thrown while trying to load mdf release settings.");
+        }
+
+        if (_settings is null) {
+
+            _error = new() {
+                Title = "Error",
+                Details = "Settings could not be loaded"
+            };
+
+        } else {
+            _error = null;
+        }
+
+    }
+
+    private void SaveChanges() {
+
+        if (Options is null || _settings is null) return;
+
+        try {
+
+
+            Options.Update(s => {
+                s.DefaultOutputDirectory = _settings.DefaultOutputDirectory;
+                s.CSVFileDirectory = _settings.CSVFileDirectory;
+                s.WSXMLReportDirectory = _settings.WSXMLReportDirectory;
+                s.ReleaseProfilesByVendor = _profiles.ToDictionary(p => p.Vendor, p => new MDFReleaseProfile() {
+                    EmailRecipients = p.EmailRecipients.Select(e => e.Email).ToArray(),
+                    IncludeCover = p.IncludeCover,
+                    IncludeInvoice = p.IncludeInvoice,
+                    IncludeOrderForm = p.IncludeOrderForm,
+                    IncludePackingList = p.IncludePackingList,
+                    Print = p.Print
+                });
+            });
+
+            _error = null;
+
+        } catch (Exception ex) {
+
+            Logger?.LogError(ex, "Exception thrown while trying to save MDF release settings.");
+
+            _error = new() {
+                Title = "Error",
+                Details = "Changes could not be saved"
+            };
+
+        }
+
+    }
+
+    private void AddProfile() {
+        _profiles.Add(new MDFProfileEditModel());
+        StateHasChanged();
+    }
+
+    private void DeleteProfile(MDFProfileEditModel profile) {
+        _profiles.Remove(profile);
+        StateHasChanged();
+    }
+
+    private void AddEmailToProfile(MDFProfileEditModel profile) {
+        profile.EmailRecipients.Add(new(string.Empty));
+        StateHasChanged();
+    }
+
+    private void DeleteEmailFromProfile(MDFProfileEditModel profile, EmailRecipient email) {
+        profile.EmailRecipients.Remove(email);
+        StateHasChanged();
+    }
+
+    class MDFProfileEditModel {
+
+        public string Vendor { get; set; } = string.Empty;
+        public List<EmailRecipient> EmailRecipients { get; set; } = [];
+        public bool IncludeCover { get; set; } = false;
+        public bool IncludePackingList { get; set; } = false;
+        public bool IncludeInvoice { get; set; } = false;
+        public bool IncludeOrderForm { get; set; } = false;
+        public bool Print { get; set; } = false;
+
+    }
+
+    class EmailRecipient(string email) {
+        public string Email { get; set; } = email;
+    }
+
+}

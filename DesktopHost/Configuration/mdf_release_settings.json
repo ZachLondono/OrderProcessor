@@ -1,0 +1,29 @@
+{
+
+  "MDFReleaseSettings": {
+    "DefaultOutputDirectory": "R:\\Door Orders\\Door Programs",
+    "WSXMLReportDirectory": "Y:\\CADCode\\Reports",
+    "CSVFileDirectory": "R:\\Door Orders\\CC Input",
+
+    "ReleaseProfilesByVendor": {
+      "Metro Cabinet Parts": {
+        "EmailRecipients": [ "maciej@royalcabinet.com", "toya@royalcabinet.com" ],
+        "IncludeCover": true,
+        "IncludePackingList": true,
+        "IncludeInvoice": true,
+        "IncludeOrderForm": true,
+        "Print": true
+      },
+      "Royal Cabinet Company": {
+        "EmailRecipients": [ "maciej@royalcabinet.com" ],
+        "IncludeCover": true,
+        "IncludePackingList": true,
+        "IncludeInvoice": false,
+        "IncludeOrderForm": false,
+        "Print": true
+      }
+    }
+
+  }
+
+}
