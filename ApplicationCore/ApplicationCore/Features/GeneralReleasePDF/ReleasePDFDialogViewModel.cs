@@ -66,11 +66,19 @@ internal class ReleasePDFDialogViewModel {
 
     public void FindMostRecentReport() {
 
-        Model.ReportFilePath = new DirectoryInfo(@"Y:\CADCode\Reports")
-            .GetFiles()
-            .OrderByDescending(f => f.LastWriteTime)
-            .FirstOrDefault(f => f.Extension == ".xml")
-            ?.FullName ?? string.Empty;
+        var directory = @"Y:\CADCode\Reports";
+        var dirInfo = new DirectoryInfo(directory);
+
+        if (!dirInfo.Exists) {
+            // If the reports directory does not exist, don't attempt to find a report
+            return;
+        }
+
+        Model.ReportFilePath = dirInfo
+                                    .GetFiles()
+                                    .OrderByDescending(f => f.LastWriteTime)
+                                    .FirstOrDefault(f => f.Extension == ".xml")
+                                    ?.FullName ?? string.Empty;
 
     }
 
