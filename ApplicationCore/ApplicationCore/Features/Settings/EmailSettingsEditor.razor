@@ -1,19 +1,20 @@
 ﻿@using Domain.Infrastructure.Bus
 @using ApplicationCore.Shared.Settings
+@using Domain.Services
 @using Microsoft.Extensions.Logging
 @using Domain.Infrastructure.Settings;
 @using Domain.Components
 @using static Domain.Components.Button;
 
 @if (_error is not null) {
-    
+
     <div class="text-red-600">
         <h3>@_error.Title</h3>
         <span>@_error.Details</span>
     </div>
 
 } else if (_settings is not null) {
-    
+
     <EditForm Model="_settings" OnValidSubmit="SaveChanges">
 
         <div>
@@ -27,8 +28,8 @@
         </div>
 
         <div>
-            <label>Protected Password</label>
-            <InputText @bind-Value="_settings.ProtectedPassword" class="input-text w-full" />
+            <label>Password</label>
+            <InputText @bind-Value="_settings.ClearTextPassword" class="input-text w-full" type="password" />
         </div>
 
         <hr class="my-5"/>
@@ -46,8 +47,11 @@
         <hr class="my-5"/>
 
         <div>
-            <label>Bcc Recipients</label>
-            <InputText @bind-Value="_settings.BccRecipients" class="input-text w-full" />
+            <label>
+                Bcc Recipients
+                <p><small>A blind carbon copy will be sent for each recipient for every email sent. Separate multiple recipients with a semicolon</small></p>
+                <InputText @bind-Value="_settings.BccRecipients" class="input-text w-full" />
+            </label>
         </div>
 
         <div class="my-5">
@@ -66,7 +70,7 @@
 
     private Error? _error = null;
 
-    private EmailSettings? _settings = null;
+    private EmailSettingsEditModel? _settings = null;
 
     private string? _message = null;
 
@@ -81,7 +85,7 @@
         if (Options is null) return;
 
         try {
-            _settings = Options.Value;
+            _settings = new(Options.Value);
         } catch (Exception ex) {
             Logger?.LogError(ex, "Exception thrown while trying to load email settings.");
         }
@@ -108,12 +112,13 @@
             _message = null;
 
             Options.Update(settings => {
-                settings.Port = _settings.Port;
-                settings.Host = _settings.Host;
-                settings.SenderName = _settings.SenderName;
-                settings.SenderEmail = _settings.SenderEmail;
-                settings.ProtectedPassword = _settings.ProtectedPassword;
-                settings.BccRecipients = _settings.BccRecipients;
+                var update = _settings.ToEmailSettings();
+                settings.Port = update.Port;
+                settings.Host = update.Host;
+                settings.SenderName = update.SenderName;
+                settings.SenderEmail = update.SenderEmail;
+                settings.ProtectedPassword = update.ProtectedPassword;
+                settings.BccRecipients = update.BccRecipients;
             });
 
             _error = null;
@@ -128,6 +133,39 @@
                 Details = "Changes could not be saved"
             };
 
+        }
+
+    }
+
+    class EmailSettingsEditModel {
+
+        public string SenderName { get; set; } = string.Empty;
+        public string SenderEmail { get; set; } = string.Empty;
+        public string ClearTextPassword { get; set; } = "";
+        public string Host { get; set; } = string.Empty;
+        public int Port { get; set; }
+        public string BccRecipients { get; set; } = string.Empty;
+
+        public string ProtectedPassword => UserDataProtection.Protect(ClearTextPassword);
+
+        public EmailSettingsEditModel(EmailSettings settings) {
+            SenderName = settings.SenderName;
+            SenderEmail = settings.SenderEmail;
+            Host = settings.Host;
+            Port = settings.Port;
+            BccRecipients = settings.BccRecipients;
+            ClearTextPassword = UserDataProtection.Unprotect(settings.ProtectedPassword);
+        }
+
+        public EmailSettings ToEmailSettings() {
+            return new() {
+                SenderName = SenderName,
+                SenderEmail = SenderEmail,
+                Host = Host,
+                Port = Port,
+                BccRecipients = BccRecipients,
+                ProtectedPassword = ProtectedPassword
+            };
         }
 
     }
