@@ -1,11 +1,13 @@
 using ApplicationCore.Features.ClosetOrders.ClosetOrderSelector;
 using ApplicationCore.Features.GetJobCutListDirectory;
+using ApplicationCore.Shared.Settings;
 using Blazored.Modal;
 using Blazored.Modal.Services;
 using Domain.Components.ProgressModal;
 using Domain.Infrastructure.Bus;
 using Domain.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.ClosetOrders.ClosetOrderRelease;
 
@@ -29,12 +31,8 @@ public partial class ClosetOrderReleaseDialog {
     [Inject]
     public IFilePicker? FilePicker { get; set; }
 
-    private static Dictionary<string, CustomerEmailSettings> _customerEmails = new() {
-        { "Closets by Glinsky", new("cbg57c@aol.com;aglin65@aol.com", "cbg57c@aol.com;aglin65@aol.com") },
-        { "Tailored Living - TLMid", new("tkerekes@tailoredcloset.com;lkerekes@tailoredcloset.com", "tkerekes@tailoredcloset.com;lkerekes@tailoredcloset.com") },
-        { "Tailored Living - TC", new("tcolumbia@tailoredcloset.com", "tcolumbia@tailoredcloset.com") },
-        { "Tailored Living - TS", new("sjclosetsandgarages@gmail.com", "sjclosetsandgarages@gmail.com;rnieves@scafidicranston.com") },
-    };
+    [Inject]
+    public IOptions<ClosetReleaseSettings> Options { get; set; }
 
     public ClosetOrderReleaseOptions Model { get; set; } = new();
 
@@ -44,7 +42,9 @@ public partial class ClosetOrderReleaseDialog {
 
         if (Order is null || Bus is null) return;
 
-        string outputDirectory = @"X:\_CUTLISTS  Incoming";
+        var settings = Options.Value;
+
+        string outputDirectory = settings.CutListOutputDirectory;
 
         var outputDirResult = await Bus.Send(new GetJobOrderCutListDirectory.Query(Order.OrderFileDirectory, ""));
         outputDirResult.OnSuccess(dir => {
@@ -52,16 +52,23 @@ public partial class ClosetOrderReleaseDialog {
             outputDirectory += ";" + dir;
         });
 
-        string emailRecipients = "maciej@royalcabinet.com;purchasing@royalcabinet.com";
-        string dovetailEmailRecipients = "dovetail@royalcabinet.com";
+
+        string emailRecipients = string.Join(';', settings.ReleaseEmailRecipients);
+        string dovetailEmailRecipients = string.Join(';', settings.DovetailDBReleaseEmailRecipients);
 
         string acknowledgmentEmailRecipeints = string.Empty;
-        string invoiceEmailRecipeints = "accounting@royalcabinet.com";
+        string invoiceEmailRecipeints = string.Join(';', settings.InvoiceEmailRecipients);
 
-        if (_customerEmails.TryGetValue(Order.Customer, out var emailSettings)) {
-            acknowledgmentEmailRecipeints = emailSettings.AcknowledmentEmailRecipients;
-            if (!string.IsNullOrWhiteSpace(emailSettings.InvoiceEmailRecipients)) {
-                invoiceEmailRecipeints = emailSettings.InvoiceEmailRecipients + ";" + invoiceEmailRecipeints;
+        bool includeCover = true;
+        bool includePackingList = true;
+        bool includeSummary = false;
+        if (settings.ReleaseProfilesByCustomer.TryGetValue(Order.Customer, out var customerProfile)) {
+            includeCover = customerProfile.IncludeCover;
+            includePackingList = customerProfile.IncludePackingList;
+            includeSummary = customerProfile.IncludeSummary;
+            acknowledgmentEmailRecipeints = string.Join(';', customerProfile.AcknowledgementEmailRecipients);
+            if (customerProfile.InvoiceEmailRecipients.Length > 0) {
+                invoiceEmailRecipeints = string.Join(';', customerProfile.InvoiceEmailRecipients) + ";" + invoiceEmailRecipeints;
             }
         }
 
@@ -77,15 +84,15 @@ public partial class ClosetOrderReleaseDialog {
             FileName = $"{Order.OrderNumber} - Closet Cut List",
             OutputDirectory = outputDirectory,
 
-            IncludeCover = true,
-            IncludePackingList = true,
+            IncludeCover = includeCover,
+            IncludePackingList = includePackingList,
             IncludePartList = false,
             IncludeDBList = Order.ContainsDovetailBoxes,
             IncludeMDFList = Order.ContainsMDFFronts,
             IncludeOthersList = Order.ContainsOther,
-            IncludeSummary = false,
+            IncludeSummary = includeSummary,
 
-            SendEmail = true,
+            SendEmail = !string.IsNullOrWhiteSpace(emailRecipients),
             PreviewEmail = false,
             EmailRecipients = emailRecipients,
 
@@ -146,11 +153,11 @@ public partial class ClosetOrderReleaseDialog {
 
     }
 
-    private static async Task<string?> GetReportFile(string number) {
+    private async Task<string?> GetReportFile(string number) {
         return await Task.Run(() => {
             try {
 
-                var files = Directory.GetFiles(@"Y:\CADCode\Reports\", $"{number}*.xml");
+                var files = Directory.GetFiles(Options.Value.WSXMLReportDirectory, $"{number}*.xml");
                 return files.OrderByDescending(file => new FileInfo(file).LastWriteTime)
                             .FirstOrDefault();
 
@@ -163,7 +170,7 @@ public partial class ClosetOrderReleaseDialog {
     private void ChooseReportFile()
         => FilePicker!.PickFile(new() {
             Title = "Select CADCode WS Report File",
-            InitialDirectory = @"Y:\CADCode\Reports",
+            InitialDirectory = Options.Value.WSXMLReportDirectory,
             Filter = new("CADCode WS Report", "xml"),
         }, (fileName) => {
             Model.WSXMLReportFilePath = fileName;
@@ -182,10 +189,10 @@ public partial class ClosetOrderReleaseDialog {
         var actionRunner = ActionRunnerFactory.CreateActionRunner(Order, Model);
 
         var parameters = new ModalParameters() {
-        { "ActionRunner",  actionRunner },
-        { "InProgressTitle", "Releasing Order..." },
-        { "CompleteTitle", "Release Complete" }
-    };
+            { "ActionRunner",  actionRunner },
+            { "InProgressTitle", "Releasing Order..." },
+            { "CompleteTitle", "Release Complete" }
+        };
 
         var options = new ModalOptions() {
             HideHeader = true,
