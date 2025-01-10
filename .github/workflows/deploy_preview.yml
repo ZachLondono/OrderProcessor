@@ -25,6 +25,21 @@ jobs:
       uses: actions/checkout@v3
       with:
        fetch-depth: 0 # Needed for nbgv
+
+    - name: Use .NET Core SDK 9.x
+      uses: actions/setup-dotnet@v3
+      with:
+       dotnet-version: 9.x
+
+    - name: Add Github Nuget Source
+      run: dotnet nuget add source --username ZachLondono --password ${{ secrets.NUGET_PASSWORD }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ZachLondono/index.json"
+
+    - name: Run Unit Tests
+      run: |
+          dotnet test .\ApplicationCore\ApplicationCore.Tests.Unit\ApplicationCore.Tests.Unit.csproj
+          dotnet test .\Companies\Companies.Tests.Unit\Companies.Tests.Unit.csproj
+          dotnet test .\Orders\OrderLoading\OrderLoading.Tests.Unit\OrderLoading.Tests.Unit.csproj
+          dotnet test .\Orders\OrderExporting\OrderExporting.Tests.Unit\OrderExporting.Tests.Unit.csproj
     
     - name: Setup NerdBank.GitVersion
       uses: dotnet/nbgv@master
@@ -40,22 +55,6 @@ jobs:
 
     - name: Install Tailwindcss
       run: npm install -D tailwindcss
-
-    - name: Use .NET Core SDK 9.x
-      uses: actions/setup-dotnet@v3
-      with:
-       dotnet-version: 9.x
-
-    - name: Add Github Nuget Source
-      run: dotnet nuget add source --username ZachLondono --password ${{ secrets.NUGET_PASSWORD }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ZachLondono/index.json"
-
-    - name: Run Unit Tests
-      run: |
-          dotnet test .\ApplicationCore\ApplicationCore.Tests.Unit\ApplicationCore.Tests.Unit.csproj
-          dotnet test .\DesktopHost\DesktopHost.Tests.Unit\DesktopHost.Tests.Unit.csproj
-          dotnet test .\Companies\Companies.Tests.Unit\Companies.Tests.Unit.csproj
-          dotnet test .\Orders\OrdersLoading\Orders.OrdersLoading.Tests.Unit\Orders.OrdersLoading.Tests.Unit.csproj
-          dotnet test .\Orders\OrdersExporting\Orders.OrdersExporting.Tests.Unit\Orders.OrdersExporting.Tests.Unit.csproj
     
     - name: Create directory for output
       run: mkdir ${{ github.workspace }}\${{ env.ReleaseChannel }}
