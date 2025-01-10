@@ -254,10 +254,9 @@
 
 	private async Task OpenClosetOrdersDialog() {
 
-		var dialog = Modal.Show<ClosetOrderActionSelector>("", new ModalOptions() {
+		var dialog = Modal.Show<ClosetOrderActionSelector>("Closet Orders", new ModalOptions() {
 			Size = ModalSize.Automatic,
-			HideHeader = true,
-			DisableBackgroundCancel = true
+			DisableBackgroundCancel = true,
 		});
 
 		_ = await dialog.Result;
