@@ -1,4 +1,5 @@
 ﻿using Domain.Infrastructure.Bus;
+using Microsoft.Extensions.Logging;
 
 namespace Companies.Customers.List;
 
@@ -34,9 +35,11 @@ public class CustomerListViewModel {
     }
 
     private readonly IBus _bus;
+    private ILogger<CustomerListViewModel> _logger;
 
-    public CustomerListViewModel(IBus bus) {
+    public CustomerListViewModel(IBus bus, ILogger<CustomerListViewModel> logger) {
         _bus = bus;
+        _logger = logger;
     }
 
     public async Task LoadCustomers() {
@@ -56,9 +59,11 @@ public class CustomerListViewModel {
         } catch (Exception ex) {
 
             Error = new() {
-                Title = $"Exception was thrown while loading customer list",
-                Details = $"{ex.Message}<br><br>{ex.StackTrace}"
+                Title = $"Error Loading Customer List.",
+                Details = ex.Message
             };
+
+            _logger.LogError(ex, "Exception thrown while trying to load customer list");
 
         }
 

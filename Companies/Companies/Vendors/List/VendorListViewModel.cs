@@ -1,4 +1,5 @@
 ﻿using Domain.Infrastructure.Bus;
+using Microsoft.Extensions.Logging;
 
 namespace Companies.Vendors.List;
 
@@ -34,9 +35,11 @@ public class VendorListViewModel {
     }
 
     private readonly IBus _bus;
+    private readonly ILogger<VendorListViewModel> _logger;
 
-    public VendorListViewModel(IBus bus) {
+    public VendorListViewModel(IBus bus, ILogger<VendorListViewModel> logger) {
         _bus = bus;
+        _logger = logger;
     }
 
     public async Task LoadVendors() {
@@ -56,9 +59,11 @@ public class VendorListViewModel {
         } catch (Exception ex) {
 
             Error = new() {
-                Title = $"Exception was thrown while loading vendor list",
-                Details = $"{ex.Message}<br><br>{ex.StackTrace}"
+                Title = $"Error Loading Vendor List",
+                Details = ex.Message
             };
+
+            _logger.LogError(ex, "Exception was thrown while loading vendor list");
 
         }
 
