@@ -97,8 +97,6 @@ jobs:
     
     - name: Build Appx Package
       run: |
-       dotnet restore .\${{ env.ApplicationName }}\${{ env.ApplicationName }}.csproj
-       msbuild /t:restore .\${{ env.WapProjectName }}\${{ env.WapProjectName }}.wapproj
        msbuild '.\${{ env.WapProjectName }}\${{ env.WapProjectName }}.wapproj' `
                /p:VersionNumber=${{ steps.nbgv.outputs.SimpleVersion }}.0 `
                /p:configuration='${{ env.BuildConfiguration }}' `
