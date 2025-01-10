@@ -51,11 +51,11 @@ jobs:
 
     - name: Run Unit Tests
       run: |
-          dotnet test .\ApplicationCore\ApplicationCore.Tests\ApplicationCore.Tests.csproj
-          dotnet test .\DesktopHost\DesktopHost.Tests\DesktopHost.Tests.csproj
-          dotnet test .\Companies\Companies.Tests\Companies.Tests.csproj
-          dotnet test .\Orders\OrdersLoading\Orders.OrdersLoading.Tests\Orders.OrdersLoading.Tests.csproj
-          dotnet test .\Orders\OrdersExporting\Orders.OrdersExporting.Tests\Orders.OrdersExporting.Tests.csproj
+          dotnet test .\ApplicationCore\ApplicationCore.Tests.Unit\ApplicationCore.Tests.Unit.csproj
+          dotnet test .\DesktopHost\DesktopHost.Tests.Unit\DesktopHost.Tests.Unit.csproj
+          dotnet test .\Companies\Companies.Tests.Unit\Companies.Tests.Unit.csproj
+          dotnet test .\Orders\OrdersLoading\Orders.OrdersLoading.Tests.Unit\Orders.OrdersLoading.Tests.Unit.csproj
+          dotnet test .\Orders\OrdersExporting\Orders.OrdersExporting.Tests.Unit\Orders.OrdersExporting.Tests.Unit.csproj
     
     - name: Create directory for output
       run: mkdir ${{ github.workspace }}\${{ env.ReleaseChannel }}
