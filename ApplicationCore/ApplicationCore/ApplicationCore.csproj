@@ -8,6 +8,10 @@
     <RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);WFAC010</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="BricscadApp">
       <HintPath>..\..\Dependencies\BricscadApp.dll</HintPath>
