@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MediatR;
 using System;
 using System.Windows;
 using ApplicationCore.Shared.Services;
@@ -15,8 +14,6 @@ using System.Windows.Interop;
 using System.Linq;
 using Serilog.Events;
 using ApplicationCore;
-using ApplicationCore.Features.CustomizationScriptManager;
-using DesktopHost.ScriptEditor;
 using ApplicationCore.Shared;
 using Domain.Services;
 
@@ -98,7 +95,6 @@ public partial class App : Application {
                             .AddApplicationCoreServices(configuration)
                             .AddSingleton<IFilePicker, FilePicker>()
                             .AddSingleton<IMessageBoxService, WPFMessageBox>()
-                            .AddTransient<IScriptEditorOpener, ScriptEditorOpener>()
                             .AddTransient<IWindowFocuser, WPFWindowFocuser>()
                             .AddSingleton(configuration)
                             .AddLogging(builder => builder.ClearProviders().AddSerilog())

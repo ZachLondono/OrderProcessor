@@ -2,7 +2,6 @@
 using ApplicationCore.Features.ClosetOrders.ClosetOrderSelector;
 using ApplicationCore.Features.ClosetProToAllmoxyOrder;
 using ApplicationCore.Features.CreateOrderRelationship;
-using ApplicationCore.Features.CustomizationScripts.ViewModels;
 using ApplicationCore.Features.DataFilePaths;
 using ApplicationCore.Features.DeleteOrder;
 using ApplicationCore.Features.DoorOrderRelease;
@@ -95,7 +94,6 @@ public static class DependencyInjection {
                 .OrderDetailsViewModels()
                 .ProductEditorViewModels()
                 .SettingsViewModels()
-                .CustomizationScriptsManagerViewModels()
                 .AddTransient<CustomerAllmoxyIdViewModel>()
                 .AddTransient<CreateOrderRelationshipsViewModel>()
                 .AddTransient<ClosetOrderSelectorViewModel>()
@@ -140,14 +138,6 @@ public static class DependencyInjection {
 
         return services
                 .AddTransient<ToolFileEditorViewModel>();
-
-    }
-
-    public static IServiceCollection CustomizationScriptsManagerViewModels(this IServiceCollection services) {
-
-        return services
-                .AddTransient<CustomizationScriptManagerViewModel>()
-                .AddTransient<AddNewScriptViewModel>();
 
     }
 
