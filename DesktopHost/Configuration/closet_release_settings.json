@@ -1,0 +1,49 @@
+{
+
+  "ClosetReleaseSettings": {
+
+    "CutListOutputDirectory": "X:\\_CUTLISTS  Incoming",
+    "WSXMLReportDirectory": "Y:\\CADCode\\Reports",
+    "ReleaseEmailRecipients": [ "maciej@royalcabinet.com", "purchasing@royalcabinet.com" ]
+    "DovetailDBReleaseEmailRecipients": [ "dovetail@royalcabinet.com" ],
+    "InvoiceEmailRecipients": [ "accounting@royalcabinet.com" ],
+
+    "CustomerProfiles": {
+
+      "Closets by Glinsky": {
+        "AcknowledgementEmailRecipients": [ "cbg57c@aol.com", "aglin65@aol.com" ],
+        "InvoiceEmailRecipients": [ "cbg57c@aol.com", "aglin65@aol.com" ],
+        "IncludeCover":  true,
+        "IncludePackingList":  true,
+        "IncludeSummary": false 
+      },
+
+      "Tailored Living - TLMid": {
+        "AcknowledgementEmailRecipients": [ "tkerekes@tailoredcloset.com", "lkerekes@tailoredcloset.com" ],
+        "InvoiceEmailRecipients": [ "tkerekes@tailoredcloset.com", "lkerekes@tailoredcloset.com" ],
+        "IncludeCover":  true,
+        "IncludePackingList":  true,
+        "IncludeSummary": false 
+      },
+
+      "Tailored Living - TC": {
+        "AcknowledgementEmailRecipients": [ "tcolumbia@tailoredcloset.com" ],
+        "InvoiceEmailRecipients": [ "tcolumbia@tailoredcloset.com" ],
+        "IncludeCover":  true,
+        "IncludePackingList":  true,
+        "IncludeSummary": false
+      },
+
+      "Tailored Living - TS": {
+        "AcknowledgementEmailRecipients": [ "sjclosetsandgarages@gmail.com" ],
+        "InvoiceEmailRecipients": [ "sjclosetsandgarages@gmail.com" ],
+        "IncludeCover":  true,
+        "IncludePackingList":  true,
+        "IncludeSummary": false
+      }
+
+    }
+
+  }
+
+}
