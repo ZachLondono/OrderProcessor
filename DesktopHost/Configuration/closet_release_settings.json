@@ -4,11 +4,11 @@
 
     "CutListOutputDirectory": "X:\\_CUTLISTS  Incoming",
     "WSXMLReportDirectory": "Y:\\CADCode\\Reports",
-    "ReleaseEmailRecipients": [ "maciej@royalcabinet.com", "purchasing@royalcabinet.com" ]
+    "ReleaseEmailRecipients": [ "maciej@royalcabinet.com", "purchasing@royalcabinet.com" ],
     "DovetailDBReleaseEmailRecipients": [ "dovetail@royalcabinet.com" ],
     "InvoiceEmailRecipients": [ "accounting@royalcabinet.com" ],
 
-    "CustomerProfiles": {
+    "ReleaseProfilesByCustomer": {
 
       "Closets by Glinsky": {
         "AcknowledgementEmailRecipients": [ "cbg57c@aol.com", "aglin65@aol.com" ],
