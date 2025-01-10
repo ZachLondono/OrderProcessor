@@ -45,6 +45,11 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
        dotnet-version: 9.x
+
+    - name: Run Unit Tests
+      run: |
+       dotnet nuget add source --username ZachLondono --password ${{ secrets.NUGET_PASSWORD }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ZachLondono/index.json"
+       dotnet test
     
     - name: Create directory for output
       run: mkdir ${{ github.workspace }}\${{ env.ReleaseChannel }}
