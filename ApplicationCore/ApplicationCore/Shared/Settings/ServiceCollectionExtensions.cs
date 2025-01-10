@@ -29,6 +29,7 @@ public static class Extensions {
             "cnc_settings.json",
             "export_settings.json",
             "mdf_release_settings.json",
+            "closet_release_settings.json",
             "data.json",
 #if DEBUG
             "data.Development.json"
@@ -88,6 +89,7 @@ public static class Extensions {
         services.ConfigureWritable<ScheduleSettings>(configuration.GetRequiredSection("schedule"), Path.Combine(_configDirectory, "schedule.json"));
         services.ConfigureWritable<ExportSettings>(configuration.GetRequiredSection("ExportSettings"), Path.Combine(_configDirectory, "export_settings.json"));
         services.ConfigureWritable<MDFReleaseSettings>(configuration.GetRequiredSection("MDFReleaseSettings"), Path.Combine(_configDirectory, "mdf_release_settings.json"));
+        services.ConfigureWritable<ClosetReleaseSettings>(configuration.GetRequiredSection("ClosetReleaseSettings"), Path.Combine(_configDirectory, "closet_release_settings.json"));
         services.Configure<PDFConfiguration>(configuration.GetRequiredSection("ReleasePDFConfig"));
 
         return services;
