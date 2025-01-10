@@ -27,6 +27,21 @@ jobs:
     - name: Setup NerdBank.GitVersion
       uses: dotnet/nbgv@master
       id: nbgv
+
+    - name: Use .NET Core SDK 9.x
+      uses: actions/setup-dotnet@v3
+      with:
+       dotnet-version: 9.x
+
+    - name: Add Github Nuget Source
+      run: dotnet nuget add source --username ZachLondono --password ${{ secrets.NUGET_PASSWORD }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ZachLondono/index.json"
+
+    - name: Run Unit Tests
+      run: |
+          dotnet test .\ApplicationCore\ApplicationCore.Tests.Unit\ApplicationCore.Tests.Unit.csproj
+          dotnet test .\Companies\Companies.Tests.Unit\Companies.Tests.Unit.csproj
+          dotnet test .\Orders\OrderLoading\OrderLoading.Tests.Unit\OrderLoading.Tests.Unit.csproj
+          dotnet test .\Orders\OrderExporting\OrderExporting.Tests.Unit\OrderExporting.Tests.Unit.csproj
     
     - name: Setup msbuild
       uses: microsoft/setup-msbuild@v1.1
@@ -38,11 +53,6 @@ jobs:
 
     - name: Install Tailwindcss
       run: npm install -D tailwindcss
-
-    - name: Use .NET Core SDK 9.x
-      uses: actions/setup-dotnet@v3
-      with:
-       dotnet-version: 9.x
     
     - name: Create directory for output
       run: mkdir ${{ github.workspace }}\${{ env.ReleaseChannel }}
@@ -75,19 +85,14 @@ jobs:
        Out-File -FilePath ".\${{ env.ApplicationName }}\Configuration\credentials.json" -InputObject $creds
       shell: pwsh
 
-    # - name: Version schema
-    #   run: |
-    #     $schemaVersion = (git log --pretty=format:%s .\${{ env.ApplicationName }}\Schemas\test_schema.sql).Length
-    #     echo "Setting schema version to $($schemaVersion)"
-    #     .\${{ env.ApplicationName }}\Schemas\GenerateSchemaVersionSourceFile.ps1 TestSchemaVersion $schemaVersion
-    #     cat .\${{ env.ApplicationName }}\Schemas\TestSchemaVersion.cs
-    #   shell: pwsh
+    - name: Restore csproj
+      run: dotnet restore .\${{ env.ApplicationName }}\${{ env.ApplicationName }}.csproj
+
+    - name: Restore wapproj
+      run: msbuild /t:restore .\${{ env.WapProjectName }}\${{ env.WapProjectName }}.wapproj
     
     - name: Build Appx Package
       run: |
-       dotnet nuget add source --username ZachLondono --password ${{ secrets.NUGET_PASSWORD }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ZachLondono/index.json"
-       dotnet restore .\${{ env.ApplicationName }}\${{ env.ApplicationName }}.csproj
-       msbuild /t:restore .\${{ env.WapProjectName }}\${{ env.WapProjectName }}.wapproj
        msbuild '.\${{ env.WapProjectName }}\${{ env.WapProjectName }}.wapproj' `
                /p:VersionNumber=${{ steps.nbgv.outputs.SimpleVersion }}.0 `
                /p:configuration='${{ env.BuildConfiguration }}' `
