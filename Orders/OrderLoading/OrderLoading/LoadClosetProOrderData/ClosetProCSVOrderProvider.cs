@@ -340,7 +340,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 		string cpDefaultWorkingDirectory = @"R:\Job Scans\ClosetProSoftware"; // TODO: Get base directory from configuration file
 		string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? cpDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {company} - {orderName}", ' '));
 		if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDir) && incomingDir is not null) {
-			string dataFile = _fileReader.GetAvailableFileName(incomingDir, "Incoming", ".csv");
+			string dataFile = _fileReader.GetAvailableFileName(incomingDir, $"{orderNumber} - Incoming", ".csv");
 			await File.WriteAllTextAsync(dataFile, csvData);
 		}
 
