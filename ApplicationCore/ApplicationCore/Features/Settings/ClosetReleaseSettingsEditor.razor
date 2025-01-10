@@ -1,0 +1,335 @@
+﻿@using ApplicationCore.Shared.Settings
+@using Domain.Components
+@using Domain.Infrastructure.Bus
+@using Domain.Infrastructure.Settings
+@using Microsoft.Extensions.Logging
+@using static Domain.Components.Button
+
+@if (_error is not null) {
+
+    <div class="text-red-600">
+        <h3>@_error.Title</h3>
+        <span>@_error.Details</span>
+    </div>
+
+} else if (_settings is not null) {
+
+    <EditForm Model="_settings" OnValidSubmit="SaveChanges">
+
+        <div>
+            <label>Cut List Output Directory</label>
+            <InputText @bind-Value="_settings.CutListOutputDirectory" class="input-text w-full" />
+        </div>
+
+        <div>
+            <label>WSXML Report Directory</label>
+            <InputText @bind-Value="_settings.WSXMLReportDirectory" class="input-text w-full" />
+        </div>
+
+
+        <section class="mt-5">
+
+            <div class="mb-5">
+                <label>Release Email Recipient</label>
+                @foreach (var email in _settings.ReleaseEmailRecipients) {
+                    <div>
+                        <InputText @bind-Value="email.Address" class="input-text w-96" />
+                        <Button OnClick="() => RemoveReleaseEmail(email)" Color="ButtonColor.Danger" Style="ButtonStyle.Outline" Size="ButtonSize.Small">X</Button>
+                    </div>
+                }
+                <Button OnClick="AddReleaseEmail" Color="ButtonColor.Secondary" Style="ButtonStyle.Text" Size="ButtonSize.Small">+ Add Email</Button>
+            </div>
+
+            <div class="mb-5">
+                <label>Dovetail DB Release Email Recipient</label>
+                @foreach (var email in _settings.DovetailDBReleaseEmailRecipients) {
+                    <div>
+                        <InputText @bind-Value="email.Address" class="input-text w-96" />
+                        <Button OnClick="() => RemoveDovetailDBReleaseEmail(email)" Color="ButtonColor.Danger" Style="ButtonStyle.Outline" Size="ButtonSize.Small">X</Button>
+                    </div>
+                }
+                <Button OnClick="AddDovetailDBReleaseEmail" Color="ButtonColor.Secondary" Style="ButtonStyle.Text" Size="ButtonSize.Small">+ Add Email</Button>
+            </div>
+
+            <div class="mb-5">
+                <label>Invoice Email Recipient</label>
+                @foreach (var email in _settings.InvoiceEmailRecipients) {
+                    <div>
+                        <InputText @bind-Value="email.Address" class="input-text w-96" />
+                        <Button OnClick="() => RemoveInvoiceEmail(email)" Color="ButtonColor.Danger" Style="ButtonStyle.Outline" Size="ButtonSize.Small">X</Button>
+                    </div>
+                }
+                <Button OnClick="AddInvoiceEmail" Color="ButtonColor.Secondary" Style="ButtonStyle.Text" Size="ButtonSize.Small">+ Add Email</Button>
+            </div>
+
+        </section>
+
+        <section class="pl-5">
+
+            @foreach (var profile in _settings.Profiles)
+            {
+                <div class="border border-gray-700 rounded-md my-5 p-5">
+
+                    <div class="mb-5">
+                        <label>
+                            Customer
+                            <InputText @bind-Value="profile.Customer" class="input-text w-96" />
+                        </label>
+                        <div class="float-right">
+                            <Button OnClick="() => DeleteProfile(profile)" Color="ButtonColor.Danger" Style="ButtonStyle.Outline" Size="ButtonSize.Small">X</Button>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label>Acknowledgement Email Recipients:</label>
+                        @foreach (var email in profile.AcknowledgementEmailRecipients) {
+                            <div>
+                                <InputText @bind-Value="email.Address" class="input-text w-96" />
+                                <Button OnClick="() => RemoveAcknowledgementEmail(profile,email)" Color="ButtonColor.Danger" Style="ButtonStyle.Outline" Size="ButtonSize.Small">X</Button>
+                            </div>
+                        }
+                        <Button OnClick="() => AddAcknowledgementEmail(profile)" Color="ButtonColor.Secondary" Style="ButtonStyle.Text" Size="ButtonSize.Small">+ Add Email</Button>
+                    </div>
+
+                    <div class="mb-5">
+                        <label>Invoice Email Recipients:</label>
+                        @foreach (var email in profile.InvoiceEmailRecipients) {
+                            <div>
+                                <InputText @bind-Value="email.Address" class="input-text w-96" />
+                                <Button OnClick="() => RemoveProfileInvoiceEmail(profile, email)" Color="ButtonColor.Danger" Style="ButtonStyle.Outline" Size="ButtonSize.Small">X</Button>
+                            </div>
+                        }
+                        <Button OnClick="() => AddProfileInvoiceEmail(profile)" Color="ButtonColor.Secondary" Style="ButtonStyle.Text" Size="ButtonSize.Small">+ Add Email</Button>
+                    </div>
+
+                    <div>
+                        <CheckBox @bind-IsChecked="profile.IncludeCover">
+                            Include Cover
+                        </CheckBox>
+                        <br />
+                        <CheckBox @bind-IsChecked="profile.IncludePackingList">
+                            Include Packing List
+                        </CheckBox>
+                        <br />
+                        <CheckBox @bind-IsChecked="profile.IncludeSummary">
+                            Include Summary
+                        </CheckBox>
+                    </div>
+
+                </div>
+            }
+
+
+            <Button OnClick="AddProfile" Color="ButtonColor.Secondary" Style="ButtonStyle.Text" Size="ButtonSize.Small">+ Add Profile</Button>
+
+        </section>
+
+        <div class="my-5">
+            <Button type="submit" Color="ButtonColor.Primary">Save</Button>
+        </div>
+
+    </EditForm>
+
+}
+
+@code {
+
+    private Error? _error = null;
+
+    private ClosetReleaseSettingsEditModel? _settings = null;
+
+    [Inject]
+    public IWritableOptions<ClosetReleaseSettings>? Options { get; set; }
+
+    [Inject]
+    public ILogger<ClosetReleaseSettingsEditor>? Logger { get; set; }
+
+    protected override void OnInitialized() {
+
+        if (Options is null) return;
+
+        try {
+
+            _settings = new(Options.Value);
+
+        } catch (Exception ex) {
+            Logger?.LogError(ex, "Exception thrown while trying to load closet order release settings.");
+        }
+
+        if (_settings is null) {
+
+            _error = new() {
+                Title = "Error",
+                Details = "Settings could not be loaded"
+            };
+
+        } else{
+            _error = null;
+        }
+
+    }
+
+    private void SaveChanges() {
+
+        if (Options is null || _settings is null) return;
+
+        try {
+
+            var update = _settings.ToSettings();
+            Options.Update(s => {
+                s.WSXMLReportDirectory = update.WSXMLReportDirectory;
+                s.CutListOutputDirectory = update.CutListOutputDirectory;
+                s.ReleaseEmailRecipients = update.ReleaseEmailRecipients;
+                s.DovetailDBReleaseEmailRecipients = update.DovetailDBReleaseEmailRecipients;
+                s.InvoiceEmailRecipients = update.InvoiceEmailRecipients;
+                s.ReleaseProfilesByCustomer = update.ReleaseProfilesByCustomer;
+            });
+
+            _error = null;
+
+        } catch (Exception ex) {
+
+            Logger?.LogError(ex, "Exception thrown while trying to save closet order release settings.");
+
+            _error = new() {
+                Title = "Error",
+                Details = "Changes could not be saved"
+            };
+
+        }
+    }
+
+    private void RemoveReleaseEmail(Email email) {
+        _settings!.ReleaseEmailRecipients.Remove(email);
+        StateHasChanged();
+    }
+
+    private void AddReleaseEmail() {
+        _settings!.ReleaseEmailRecipients.Add(new(""));
+        StateHasChanged();
+    }
+
+    private void RemoveDovetailDBReleaseEmail(Email email) {
+        _settings!.DovetailDBReleaseEmailRecipients.Remove(email);
+        StateHasChanged();
+    }
+
+    private void AddDovetailDBReleaseEmail() {
+        _settings!.DovetailDBReleaseEmailRecipients.Add(new(""));
+        StateHasChanged();
+    }
+
+    private void RemoveInvoiceEmail(Email email) {
+        _settings!.InvoiceEmailRecipients.Remove(email);
+        StateHasChanged();
+    }
+
+    private void AddInvoiceEmail() {
+        _settings!.InvoiceEmailRecipients.Add(new(""));
+        StateHasChanged();
+    }
+
+    private void AddProfile() {
+        _settings!.Profiles.Add(new());
+        StateHasChanged();
+    }
+
+    private void DeleteProfile(ReleaseProfileEditModel profile) {
+        _settings!.Profiles.Remove(profile);
+        StateHasChanged();
+    }
+
+    private void AddAcknowledgementEmail(ReleaseProfileEditModel profile) {
+        profile.AcknowledgementEmailRecipients.Add(new(""));
+        StateHasChanged();
+    }
+
+    private void RemoveAcknowledgementEmail(ReleaseProfileEditModel profile, Email email) {
+        profile.AcknowledgementEmailRecipients.Remove(email);
+        StateHasChanged();
+    }
+
+    private void AddProfileInvoiceEmail(ReleaseProfileEditModel profile) {
+        profile.InvoiceEmailRecipients.Add(new(""));
+        StateHasChanged();
+    }
+
+    private void RemoveProfileInvoiceEmail(ReleaseProfileEditModel profile, Email email) {
+        profile.InvoiceEmailRecipients.Remove(email);
+        StateHasChanged();
+    }
+
+
+    class ClosetReleaseSettingsEditModel {
+
+        public string CutListOutputDirectory { get; set; } = string.Empty;
+        public string WSXMLReportDirectory { get; set; } = string.Empty;
+        public List<Email> ReleaseEmailRecipients { get; set; } = [];
+        public List<Email> DovetailDBReleaseEmailRecipients { get; set; } = [];
+        public List<Email> InvoiceEmailRecipients { get; set; } = [];
+
+        public List<ReleaseProfileEditModel> Profiles { get; set; } = [];
+
+        public ClosetReleaseSettingsEditModel(ClosetReleaseSettings settings) {
+            CutListOutputDirectory = settings.CutListOutputDirectory;
+            WSXMLReportDirectory = settings.WSXMLReportDirectory;
+            ReleaseEmailRecipients = settings.ReleaseEmailRecipients.Select(e => new Email(e)).ToList();
+            DovetailDBReleaseEmailRecipients = settings.DovetailDBReleaseEmailRecipients.Select(e => new Email(e)).ToList();
+            InvoiceEmailRecipients = settings.InvoiceEmailRecipients.Select(e => new Email(e)).ToList();
+            Profiles = settings.ReleaseProfilesByCustomer.Select(p =>
+                new ReleaseProfileEditModel(p.Key, p.Value)
+            ).ToList();
+        }
+
+        public ClosetReleaseSettings ToSettings() {
+
+            return new(){
+               CutListOutputDirectory = CutListOutputDirectory,
+               WSXMLReportDirectory = WSXMLReportDirectory,
+               ReleaseEmailRecipients = ReleaseEmailRecipients.Select(e => e.Address).ToArray(),
+               DovetailDBReleaseEmailRecipients = DovetailDBReleaseEmailRecipients.Select(e => e.Address).ToArray(),
+               InvoiceEmailRecipients = InvoiceEmailRecipients.Select(e => e.Address).ToArray(),
+               ReleaseProfilesByCustomer = Profiles.ToDictionary(
+                                                p => p.Customer,
+                                                p => p.ToProfile())
+            };
+
+        }
+
+    }
+
+    class ReleaseProfileEditModel {
+
+        public string Customer { get; set; } = string.Empty;
+        public List<Email> AcknowledgementEmailRecipients { get; set; } = [];
+        public List<Email> InvoiceEmailRecipients { get; set; } = [];
+        public bool IncludeCover { get; set; } = false;
+        public bool IncludePackingList { get; set; } = false;
+        public bool IncludeSummary { get; set; } = false;
+
+        public ReleaseProfileEditModel(string customer, ClosetReleaseProfile profile) {
+            Customer = customer;
+            AcknowledgementEmailRecipients = profile.AcknowledgementEmailRecipients.Select(e => new Email(e)).ToList();
+            InvoiceEmailRecipients = profile.InvoiceEmailRecipients.Select(e => new Email(e)).ToList();
+            IncludeCover = profile.IncludeCover;
+            IncludePackingList = profile.IncludePackingList;
+            IncludeSummary = profile.IncludeSummary;
+        }
+
+        public ReleaseProfileEditModel() { }
+
+        public ClosetReleaseProfile ToProfile() => new ClosetReleaseProfile() {
+            AcknowledgementEmailRecipients = AcknowledgementEmailRecipients.Select(e => e.Address).ToArray(),
+            InvoiceEmailRecipients = InvoiceEmailRecipients.Select(e => e.Address).ToArray(),
+            IncludeCover = IncludeCover,
+            IncludePackingList = IncludePackingList,
+            IncludeSummary = IncludeSummary
+        };
+
+    }
+
+    class Email(string address) {
+        public string Address { get; set; } = address;
+    }
+
+}
