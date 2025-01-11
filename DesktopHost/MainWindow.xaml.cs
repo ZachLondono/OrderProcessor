@@ -12,7 +12,7 @@ public partial class MainWindow : Window {
 
         blazorWebView.UrlLoading +=
                     (sender, urlLoadingEventArgs) => {
-                        if (urlLoadingEventArgs.Url.Host != "0.0.0.0") {
+                        if (urlLoadingEventArgs.Url.Host != "0.0.0.1") {
                             urlLoadingEventArgs.UrlLoadingStrategy = UrlLoadingStrategy.OpenExternally;
                         }
                     };
