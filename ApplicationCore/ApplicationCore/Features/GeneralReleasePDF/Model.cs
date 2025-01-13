@@ -19,8 +19,8 @@ internal class Model {
     public string OutputDirectory { get; set; } = string.Empty;
     public bool SendEmail { get; set; } = false;
     public string EmailRecipients { get; set; } = string.Empty;
-
     public bool AttachAdditionalFiles { get; set; } = false;
     public List<string> AdditionalFilePaths { get; set; } = [];
+    public bool Print { get; set; }
 
 }

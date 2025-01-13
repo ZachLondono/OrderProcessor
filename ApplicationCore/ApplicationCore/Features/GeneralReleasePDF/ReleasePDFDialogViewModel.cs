@@ -12,6 +12,7 @@ using UglyToad.PdfPig.Writer;
 using Microsoft.Extensions.Logging;
 using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
 
 namespace ApplicationCore.Features.GeneralReleasePDF;
 
@@ -73,7 +74,7 @@ internal class ReleasePDFDialogViewModel {
         Model.OutputDirectory = Settings.DefaultOutputDirectory;
         Model.SendEmail = Settings.SendEmail;
         Model.EmailRecipients = string.Empty; 
-        //Model.Print = Settings.Print;
+        Model.Print = Settings.Print;
 
         FindMostRecentReport();
 
@@ -150,49 +151,59 @@ internal class ReleasePDFDialogViewModel {
                 Error = "No data read from file";
                 GeneratedFiles = [];
                 _logger.LogError("No job data was read from WSXML report {WSXMLFilePath}", Model.ReportFilePath);
-
-            } else {
-
-                await Task.Run(() => {
-
-                    _cncReleaseDecorator.AddData(job);
-
-                    byte[] fileData = [];
-
-                    var doc = Document.Create(_cncReleaseDecorator.Decorate);
-                    fileData = doc.GeneratePdf();
-
-                    if (Model.AdditionalFilePaths.Count != 0) {
-
-                        List<byte[]> components = [ fileData ];
-
-                        foreach (var path in Model.AdditionalFilePaths) {
-                            var bytes = File.ReadAllBytes(path);
-                            components.Add(bytes);
-                        }
-
-                        fileData = PdfMerger.Merge(components);
-                    
-                    }
-
-                    foreach (var directory in outputDirectories) {
-                        var outputFilePath = _fileReader.GetAvailableFileName(directory, Model.FileName, "pdf");
-                        File.WriteAllBytes(outputFilePath, fileData);
-                        GeneratedFiles.Add(outputFilePath);
-                    }
-
-                });
-
-                if (Model.SendEmail && !string.IsNullOrWhiteSpace(Model.EmailRecipients) && GeneratedFiles.Count != 0) {
-                    try {
-                        await SendReleaseEmail(job, GeneratedFiles.First(), Model.EmailRecipients);
-                    } catch (Exception ex) {
-                        Error = "Failed to send release email";
-                        _logger.LogError(ex, "Exception thrown while attempting to send release email");
-                    }
-                }
+                IsGeneratingPDF = false;
+                return;
 
             }
+
+            await Task.Run(() => {
+
+                _cncReleaseDecorator.AddData(job);
+
+                byte[] fileData = [];
+
+                var doc = Document.Create(_cncReleaseDecorator.Decorate);
+                fileData = doc.GeneratePdf();
+
+                if (Model.AdditionalFilePaths.Count != 0) {
+
+                    List<byte[]> components = [fileData];
+
+                    foreach (var path in Model.AdditionalFilePaths) {
+                        var bytes = File.ReadAllBytes(path);
+                        components.Add(bytes);
+                    }
+
+                    fileData = PdfMerger.Merge(components);
+
+                }
+
+                foreach (var directory in outputDirectories) {
+                    var outputFilePath = _fileReader.GetAvailableFileName(directory, Model.FileName, "pdf");
+                    File.WriteAllBytes(outputFilePath, fileData);
+                    GeneratedFiles.Add(outputFilePath);
+                }
+
+            });
+
+            if (Model.SendEmail && !string.IsNullOrWhiteSpace(Model.EmailRecipients) && GeneratedFiles.Count != 0) {
+                try {
+                    await SendReleaseEmail(job, GeneratedFiles.First(), Model.EmailRecipients);
+                } catch (Exception ex) {
+                    Error = "Failed to send release email";
+                    _logger.LogError(ex, "Exception thrown while attempting to send release email");
+                }
+            }
+
+            if (Model.Print && GeneratedFiles.Count != 0) {
+                try {
+                    Print(GeneratedFiles.First());
+                } catch (Exception ex) {
+                    Error = "Failed to print pdf";
+                    _logger.LogError(ex, "Exception thrown while attempting to print cnc release pdf");
+                }
+            }
+
         } catch (Exception ex) {
             Error = "Failed to generate pdf";
             GeneratedFiles = [];
@@ -228,6 +239,21 @@ internal class ReleasePDFDialogViewModel {
         builder.Attachments.Add(filePath);
         message.Body = builder.ToMessageBody();
         await _emailService.SendMessageAsync(message);
+    }
+
+    private static void Print(string filePath) {
+
+        var proc = new Process() {
+            StartInfo = new ProcessStartInfo() {
+                CreateNoWindow = true,
+                Verb = "print",
+                UseShellExecute = true,
+                FileName = filePath
+            }
+        };
+
+        proc.Start();
+
     }
 
 }
