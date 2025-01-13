@@ -9,6 +9,7 @@ using OrderExporting.CNC.Programs.WorkOrderReleaseEmail;
 using OrderExporting.CNC.Programs.Job;
 using OrderExporting.CNC.Programs.WSXML.Report;
 using UglyToad.PdfPig.Writer;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.GeneralReleasePDF;
 
@@ -45,12 +46,14 @@ internal class ReleasePDFDialogViewModel {
         }
     }
 
+    private readonly ILogger<ReleasePDFDialogViewModel> _logger;
     private readonly ICNCReleaseDecorator _cncReleaseDecorator;
     private readonly IFileReader _fileReader;
     private readonly IEmailService _emailService;
     private readonly IWSXMLParser _wsxmlParser;
 
-    public ReleasePDFDialogViewModel(ICNCReleaseDecorator cncReleaseDecorator, IFileReader fileReader, IEmailService emailService, IWSXMLParser wsxmlParser) {
+    public ReleasePDFDialogViewModel(ILogger<ReleasePDFDialogViewModel> logger, ICNCReleaseDecorator cncReleaseDecorator, IFileReader fileReader, IEmailService emailService, IWSXMLParser wsxmlParser) {
+        _logger = logger;
         _cncReleaseDecorator = cncReleaseDecorator;
         _fileReader = fileReader;
         _emailService = emailService;
@@ -62,7 +65,7 @@ internal class ReleasePDFDialogViewModel {
         Model = new() {
             OutputDirectory = @"R:\Door Orders\Door Programs"
         };
-        GeneratedFiles = new();
+        GeneratedFiles = [];
     }
 
     public void FindMostRecentReport() {
@@ -111,7 +114,7 @@ internal class ReleasePDFDialogViewModel {
 
         foreach (var directory in outputDirectories) {
             if (!Directory.Exists(directory)) {
-                Error = "Output directory does not exist";
+                Error = $"Output directory does not exist or cannot be accessed - '{directory}'";
                 return;
             }
         }
@@ -132,7 +135,8 @@ internal class ReleasePDFDialogViewModel {
             if (job is null) {
 
                 Error = "No data read from file";
-                GeneratedFiles = new();
+                GeneratedFiles = [];
+                _logger.LogError("No job data was read from WSXML report {WSXMLFilePath}", Model.ReportFilePath);
 
             } else {
 
@@ -166,18 +170,20 @@ internal class ReleasePDFDialogViewModel {
 
                 });
 
-                if (Model.SendEmail && !string.IsNullOrWhiteSpace(Model.EmailRecipients) && GeneratedFiles.Any()) {
+                if (Model.SendEmail && !string.IsNullOrWhiteSpace(Model.EmailRecipients) && GeneratedFiles.Count != 0) {
                     try {
                         await SendReleaseEmail(job, GeneratedFiles.First(), Model.EmailRecipients);
-                    } catch {
+                    } catch (Exception ex) {
                         Error = "Failed to send release email";
+                        _logger.LogError(ex, "Exception thrown while attempting to send release email");
                     }
                 }
 
             }
-        } catch {
+        } catch (Exception ex) {
             Error = "Failed to generate pdf";
-            GeneratedFiles = new();
+            GeneratedFiles = [];
+            _logger.LogError(ex, "Exception thrown while attempting to generate cnc release pdf");
         }
 
         IsGeneratingPDF = false;
