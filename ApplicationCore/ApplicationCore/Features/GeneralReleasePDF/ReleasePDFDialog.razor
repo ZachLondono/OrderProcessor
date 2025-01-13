@@ -84,7 +84,30 @@
                 <span class="font-semibold">Send Email</span>
             </CheckBox>
             @if (DataContext.Model.SendEmail) {
-                <InputText @bind-Value="DataContext.Model.EmailRecipients" class="input-text w-full" placeholder="example@email.com" />
+                <InputText @bind-Value="DataContext.Model.EmailRecipients" class="mb-3 input-text w-full" placeholder="example@email.com" />
+            }
+        </div>
+
+        <div>
+            <CheckBox @bind-IsChecked="DataContext.Model.AttachAdditionalFiles">
+                <span class="font-semibold">Additional Files</span>
+            </CheckBox>
+            @if (DataContext.Model.AttachAdditionalFiles) {
+                     <div class="mt-3 ml-3">
+                        <div>
+                            <Button OnClick="ChooseAdditionalFile" Color="Button.ButtonColor.Secondary">+ Add File</Button>
+                        </div>
+
+                        @if (DataContext.Model.AdditionalFilePaths.Any()) {
+                            foreach (var file in DataContext.Model.AdditionalFilePaths) {
+                                <div class="text-sm">
+                                    <Button OnClick="@(() => RemoveAdditionalFile(file))">X</Button>@TruncateString(file)
+                                </div>
+                            }
+                        } else {
+                            <div class="text-sm">No File Selected</div>
+                        }
+                    </div>                           
             }
         </div>
     
@@ -168,6 +191,29 @@
         } catch (Exception ex) {
             Debug.WriteLine(ex);
         }
+
+    }
+
+    public void ChooseAdditionalFile() 
+        => FilePicker.PickFiles(new() {
+            Title = "Select Additional File to Attach",
+            Filter = new("PDF File", "pdf")
+        }, (fileNames) => {
+            DataContext.Model.AdditionalFilePaths.AddRange(fileNames);
+            InvokeAsync(StateHasChanged);
+        });
+
+
+    public void RemoveAdditionalFile(string filePath) {
+        DataContext.Model.AdditionalFilePaths.Remove(filePath);
+        StateHasChanged();
+    }
+
+    private string TruncateString(string value) {
+
+        if (value.Length < 50) return value;
+
+        return $"...{value[(value.Length - 27)..]}";
 
     }
 

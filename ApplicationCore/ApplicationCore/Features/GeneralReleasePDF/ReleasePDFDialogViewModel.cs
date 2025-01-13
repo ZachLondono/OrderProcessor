@@ -8,6 +8,7 @@ using OrderExporting.CNC.Programs.WSXML;
 using OrderExporting.CNC.Programs.WorkOrderReleaseEmail;
 using OrderExporting.CNC.Programs.Job;
 using OrderExporting.CNC.Programs.WSXML.Report;
+using UglyToad.PdfPig.Writer;
 
 namespace ApplicationCore.Features.GeneralReleasePDF;
 
@@ -139,11 +140,27 @@ internal class ReleasePDFDialogViewModel {
 
                     _cncReleaseDecorator.AddData(job);
 
+                    byte[] fileData = [];
+
                     var doc = Document.Create(_cncReleaseDecorator.Decorate);
+                    fileData = doc.GeneratePdf();
+
+                    if (Model.AdditionalFilePaths.Count != 0) {
+
+                        List<byte[]> components = [ fileData ];
+
+                        foreach (var path in Model.AdditionalFilePaths) {
+                            var bytes = File.ReadAllBytes(path);
+                            components.Add(bytes);
+                        }
+
+                        fileData = PdfMerger.Merge(components);
+                    
+                    }
 
                     foreach (var directory in outputDirectories) {
                         var outputFilePath = _fileReader.GetAvailableFileName(directory, Model.FileName, "pdf");
-                        doc.GeneratePdf(outputFilePath);
+                        File.WriteAllBytes(outputFilePath, fileData);
                         GeneratedFiles.Add(outputFilePath);
                     }
 

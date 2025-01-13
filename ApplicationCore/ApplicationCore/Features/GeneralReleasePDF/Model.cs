@@ -20,4 +20,7 @@ internal class Model {
     public bool SendEmail { get; set; } = false;
     public string EmailRecipients { get; set; } = string.Empty;
 
+    public bool AttachAdditionalFiles { get; set; } = false;
+    public List<string> AdditionalFilePaths { get; set; } = [];
+
 }
