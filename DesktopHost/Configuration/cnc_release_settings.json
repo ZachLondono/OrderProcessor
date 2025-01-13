@@ -1,0 +1,12 @@
+{
+
+  "CNCReleaseSettings": {
+
+    "WSXMLReportsDirectory": "Y:\\CADCode\\Reports",
+    "DefaultOutputDirectory": "R:\\Door Orders\\Door Programs",
+    "Print": false,
+    "SendEmail": false
+
+  }
+
+}

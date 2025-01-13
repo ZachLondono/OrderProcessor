@@ -1,0 +1,117 @@
+﻿@using ApplicationCore.Shared.Settings
+@using Domain.Components
+@using Domain.Infrastructure.Bus
+@using Domain.Infrastructure.Settings
+@using Microsoft.Extensions.Logging
+@using static Domain.Components.Button
+
+
+@if (_error is not null) {
+
+    <div class="text-red-600">
+        <h3>@_error.Title</h3>
+        <span>@_error.Details</span>
+    </div>
+
+} else if (_settings is not null) {
+
+
+    <EditForm Model="_settings" OnValidSubmit="SaveChanges">
+
+        <div class="mb-3">
+            <label>Cut List Output Directory</label>
+            <InputText @bind-Value="_settings.DefaultOutputDirectory" class="input-text w-full" />
+        </div>
+
+        <div class="mb-3">
+            <label>WSXML Report Directory</label>
+            <InputText @bind-Value="_settings.WSXMLReportsDirectory" class="input-text w-full" />
+        </div>
+
+        <div class="mb-3">
+            <CheckBox @bind-IsChecked="_settings.Print">
+                Print
+            </CheckBox>
+        </div>
+
+        <div class="mb-3">
+            <CheckBox @bind-IsChecked="_settings.SendEmail">
+                Send Email
+            </CheckBox>
+            <!-- TODO: add option to specify email recipients -->
+        </div>
+
+        <div class="my-5">
+            <Button type="submit" Color="ButtonColor.Primary">Save</Button>
+        </div>
+
+    </EditForm>
+
+}
+
+
+@code {
+
+    private Error? _error = null;
+
+    private CNCReleaseSettings? _settings = null;
+
+    [Inject]
+    public IWritableOptions<CNCReleaseSettings>? Options { get; set; }
+
+    [Inject]
+    public ILogger<CNCReleaseSettingsEditor>? Logger { get; set; }
+
+    protected override void OnInitialized() {
+
+        if (Options is null) return;
+
+        try {
+
+            _settings = Options.Value;
+
+        } catch (Exception ex) {
+            Logger?.LogError(ex, "Exception thrown while trying to load cnc order release settings.");
+        }
+
+        if (_settings is null) {
+
+            _error = new() {
+                Title = "Error",
+                Details = "Settings could not be loaded"
+            };
+
+        } else{
+            _error = null;
+        }
+
+    }
+
+    private void SaveChanges() {
+
+        if (Options is null || _settings is null) return;
+
+        try {
+
+            Options.Update(s => {
+                s.WSXMLReportsDirectory = _settings.WSXMLReportsDirectory;
+                s.DefaultOutputDirectory = _settings.DefaultOutputDirectory;
+                s.Print = _settings.Print;
+                s.SendEmail = _settings.SendEmail;
+            });
+
+            _error = null;
+
+        } catch (Exception ex) {
+
+            Logger?.LogError(ex, "Exception thrown while trying to save cnc order release settings.");
+
+            _error = new() {
+                Title = "Error",
+                Details = "Changes could not be saved"
+            };
+
+        }
+    }
+
+}
