@@ -38,7 +38,7 @@
     </div>
 
     <div class="my-5 text-center">
-        <Button OnClick="InitializeModel">Generate Another PDF</Button>
+        <Button OnClick="DataContext.InitializeModel">Generate Another PDF</Button>
     </div>
 
 } else {
@@ -113,7 +113,7 @@
     
         <div class="my-5 text-center">
             <Button OnClickAsync="DataContext.GeneratePDF" Color="Button.ButtonColor.Primary" class="mt-3">Generate PDF</Button>
-            <Button OnClick="InitializeModel" Color="Button.ButtonColor.Secondary" class="mt-3">Refresh</Button>
+            <Button OnClick="DataContext.InitializeModel" Color="Button.ButtonColor.Secondary" class="mt-3">Refresh</Button>
         </div>
     
     </EditForm>
@@ -122,56 +122,16 @@
 
 @code {
 
-    [Parameter]
-    public string? ReportFilePath { get; init; } = null;
-
-    [Parameter]
-    public string? CustomerName { get; init; } = null;
-
-    [Parameter]
-    public string? VendorName { get; init; } = null;
-
-    [Parameter]
-    public string? OutputDirectory { get; init; } = null;
-
-    [Parameter]
-    public string? FileName { get; init; } = null;
-
-    [Parameter]
-    public bool? SendEmail { get; init; } = false;
-
-    [Parameter]
-    public string? EmailRecipients { get; init; } = null;
-
     protected override void OnInitialized() {
         base.OnInitialized();
         DataContext.OnPropertyChanged += StateHasChanged;
-
-        InitializeModel();
-    }
-
-    private void InitializeModel() {
-
-        DataContext.Reset();
-
-        if (ReportFilePath is not null && File.Exists(ReportFilePath)) {
-            DataContext.Model.ReportFilePath = ReportFilePath ?? string.Empty;
-        }
-        DataContext.Model.CustomerName = CustomerName ?? string.Empty;
-        DataContext.Model.VendorName = VendorName ?? string.Empty;
-        DataContext.Model.FileName = FileName ?? string.Empty;
-        DataContext.Model.OutputDirectory = OutputDirectory ?? DataContext.Model.OutputDirectory;
-        DataContext.Model.EmailRecipients = EmailRecipients ?? DataContext.Model.EmailRecipients;
-        DataContext.Model.SendEmail = SendEmail ?? DataContext.Model.SendEmail;
-
-        DataContext.FindMostRecentReport();
-
+        DataContext.InitializeModel();
     }
 
     private void ChooseReportFile()
         => FilePicker.PickFile(new() {
             Title = "Select CADCode WS Report File",
-            InitialDirectory = @"Y:\CADCode\Reports", 
+            InitialDirectory = DataContext.Settings.WSXMLReportsDirectory, 
             Filter = new("CADCode WS Report", "xml"),
         }, (fileName) => {
             DataContext.Model.ReportFilePath = fileName;

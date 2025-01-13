@@ -10,6 +10,8 @@ using OrderExporting.CNC.Programs.Job;
 using OrderExporting.CNC.Programs.WSXML.Report;
 using UglyToad.PdfPig.Writer;
 using Microsoft.Extensions.Logging;
+using ApplicationCore.Shared.Settings;
+using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.GeneralReleasePDF;
 
@@ -46,31 +48,42 @@ internal class ReleasePDFDialogViewModel {
         }
     }
 
+    public CNCReleaseSettings Settings { get; init; }
+
     private readonly ILogger<ReleasePDFDialogViewModel> _logger;
     private readonly ICNCReleaseDecorator _cncReleaseDecorator;
     private readonly IFileReader _fileReader;
     private readonly IEmailService _emailService;
     private readonly IWSXMLParser _wsxmlParser;
 
-    public ReleasePDFDialogViewModel(ILogger<ReleasePDFDialogViewModel> logger, ICNCReleaseDecorator cncReleaseDecorator, IFileReader fileReader, IEmailService emailService, IWSXMLParser wsxmlParser) {
+    public ReleasePDFDialogViewModel(ILogger<ReleasePDFDialogViewModel> logger, ICNCReleaseDecorator cncReleaseDecorator, IFileReader fileReader, IEmailService emailService, IWSXMLParser wsxmlParser, IOptions<CNCReleaseSettings> settings) {
         _logger = logger;
         _cncReleaseDecorator = cncReleaseDecorator;
         _fileReader = fileReader;
         _emailService = emailService;
-        Model.OutputDirectory = @"R:\Door Orders\Door Programs";
         _wsxmlParser = wsxmlParser;
+        Settings = settings.Value;
     }
 
-    public void Reset() {
-        Model = new() {
-            OutputDirectory = @"R:\Door Orders\Door Programs"
-        };
+    public void InitializeModel() {
+
+        Model.CustomerName = string.Empty;
+        Model.VendorName = string.Empty;
+        Model.FileName = string.Empty;
+        Model.OutputDirectory = Settings.DefaultOutputDirectory;
+        Model.SendEmail = Settings.SendEmail;
+        Model.EmailRecipients = string.Empty; 
+        //Model.Print = Settings.Print;
+
+        FindMostRecentReport();
+
         GeneratedFiles = [];
+
     }
 
     public void FindMostRecentReport() {
 
-        var directory = @"Y:\CADCode\Reports";
+        var directory = Settings.WSXMLReportsDirectory;
         var dirInfo = new DirectoryInfo(directory);
 
         if (!dirInfo.Exists) {
