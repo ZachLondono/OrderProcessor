@@ -6,15 +6,18 @@ using OrderExporting.CNC.Programs.Domain;
 using OrderExporting.CNC.Programs.Job;
 using OrderExporting.CNC.Programs.WSXML.Report;
 using ApplicationCore.Shared.Settings.Tools;
+using OrderExporting.CNC.Settings;
 
 namespace OrderExporting.CNC.Programs.WSXML;
 
 public partial class WSXMLParser : IWSXMLParser {
 
     private readonly ToolConfiguration _toolConfiguration;
+    private readonly CNCSettings _cncSettings;
 
-    public WSXMLParser(IOptions<ToolConfiguration> toolConfiguration) {
+    public WSXMLParser(IOptions<ToolConfiguration> toolConfiguration, IOptions<CNCSettings> cncSettings) {
         _toolConfiguration = toolConfiguration.Value;
+        _cncSettings = cncSettings.Value;
     }
 
     public static WSXMLReport? ParseWSXMLReport(string reportFilePath) {
@@ -106,11 +109,21 @@ public partial class WSXMLParser : IWSXMLParser {
 
         List<MachineRelease> releases = report.PatternSchedules
                                                 .GroupBy(sched => GetMachineName(sched.Name))
-                                                .Select(group => new MachineRelease() {
-                                                    MachineName = group.Key,
-                                                    ToolTable = CreateMachineToolTable(group.Key, _toolConfiguration.MachineToolMaps, allToolNames),
-                                                    MachineTableOrientation = GetTableOrientationFromMachineName(group.Key),
-                                                    Programs = group.SelectMany(group => group.Patterns)
+                                                .Select(group => {
+                                                    
+                                                    var machineName = group.Key;
+                                                    string imageDirectory = "";
+                                                    TableOrientation orientation = TableOrientation.Standard;
+                                                    if (_cncSettings.MachineSettings.TryGetValue(machineName, out var machineSettings)) {
+                                                        orientation = machineSettings.IsTableRotated ? TableOrientation.Rotated: TableOrientation.Standard;
+                                                        imageDirectory = machineSettings.PictureOutputDirectory;
+                                                    }
+
+                                                    return new MachineRelease() {
+                                                        MachineName = machineName,
+                                                        ToolTable = CreateMachineToolTable(machineName, _toolConfiguration.MachineToolMaps, allToolNames),
+                                                        MachineTableOrientation = orientation,
+                                                        Programs = group.SelectMany(group => group.Patterns)
                                                                     .Select(pattern => {
 
                                                                         var material = report.Materials[pattern.MaterialId];
@@ -128,7 +141,7 @@ public partial class WSXMLParser : IWSXMLParser {
                                                                         return new ReleasedProgram() {
                                                                             Name = pattern.Name,
                                                                             HasFace6 = false,
-                                                                            ImagePath = $"y:\\CADCode\\pix\\{GetImageFileName(pattern.Name)}.wmf",
+                                                                            ImagePath = Path.Combine(imageDirectory, $"{GetImageFileName(pattern.Name)}.wmf"),
                                                                             Material = new() {
                                                                                 IsGrained = false,
                                                                                 Yield = yield,
@@ -177,6 +190,7 @@ public partial class WSXMLParser : IWSXMLParser {
                                                                                             .ToList()
                                                                         };
                                                                     })
+                                                    };
                                                 }).ToList();
 
         var singleParts = report.Items
@@ -288,11 +302,6 @@ public partial class WSXMLParser : IWSXMLParser {
         return "UNKNOWN";
 
     }
-
-    private static TableOrientation GetTableOrientationFromMachineName(string machineName) => machineName switch {
-        "OMNITECH" => TableOrientation.Rotated,
-        _ => TableOrientation.Standard
-    };
 
     private static string GetImageFileName(string patternName) {
 
