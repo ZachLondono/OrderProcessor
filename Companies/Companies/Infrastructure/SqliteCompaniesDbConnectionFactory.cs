@@ -44,7 +44,7 @@ public class SqliteCompaniesDbConnectionFactory : ICompaniesDbConnectionFactory 
 
                 int dbVersion = await GetDatabaseVersionAsync(connection);
                 if (dbVersion != DB_VERSION) {
-                    throw new IncompatibleDatabaseVersion(dbVersion);
+                    throw new IncompatibleDatabaseVersion(dbVersion, DB_VERSION);
                 }
 
             } else {

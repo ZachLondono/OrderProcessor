@@ -47,7 +47,7 @@ public class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory {
                 int dbVersion = GetDatabaseVersion(connection);
                 if (dbVersion != DB_VERSION) {
                     semaphore.Release();
-                    throw new IncompatibleDatabaseVersion(dbVersion);
+                    throw new IncompatibleDatabaseVersion(dbVersion, DB_VERSION);
                 }
 
             } else {
