@@ -31,7 +31,12 @@ public class MiscellaneousClosetPart : IClosetProProduct {
 			_ => throw new InvalidOperationException("Unexpected miscellaneous closet part type")
 		};
 
-		var material = new ClosetMaterial(Color, ClosetMaterialCore.ParticleBoard);
+		Dimension finalWidth = Width;
+        if (Type == MiscellaneousType.ToeKick && !TryGetNearest32MMComplientToeKickHeight(Width, out finalWidth)) {
+            finalWidth = Width;
+        }
+
+        var material = new ClosetMaterial(Color, ClosetMaterialCore.ParticleBoard);
 
 		return new ClosetPart(Guid.NewGuid(),
 							  Qty,
@@ -39,7 +44,7 @@ public class MiscellaneousClosetPart : IClosetProProduct {
 							  PartNumber,
 							  Room,
 							  sku,
-							  Width,
+							  finalWidth,
 							  Length,
 							  material,
 							  null,
@@ -49,5 +54,25 @@ public class MiscellaneousClosetPart : IClosetProProduct {
 							  new Dictionary<string, string>());
 
 	}
+
+    public static bool TryGetNearest32MMComplientToeKickHeight(Dimension input, out Dimension output, double maxErrorMM = 2) {
+
+        var multiple = input.AsMillimeters() / 32d;
+
+        var rounded = Math.Round(multiple);
+
+        output = Dimension.FromMillimeters(rounded * 32);
+
+        var error = Math.Abs((input.AsMillimeters() - output.AsMillimeters()));
+
+        if (error > maxErrorMM) {
+
+            return false;
+
+        }
+
+        return true;
+
+    }
 
 }
