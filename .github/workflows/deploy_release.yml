@@ -52,7 +52,7 @@ jobs:
         node-version: 18
 
     - name: Install Tailwindcss
-      run: npm install -D tailwindcss
+      run: npm install -D tailwindcss@3.4.17
     
     - name: Create directory for output
       run: mkdir ${{ github.workspace }}\${{ env.ReleaseChannel }}
