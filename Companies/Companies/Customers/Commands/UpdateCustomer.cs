@@ -118,7 +118,8 @@ public class UpdateCustomer {
                     diagonal_fixed_shelf_sku = @DiagonalFixedShelfSKU,
                     diagonal_adjustable_shelf_sku = @DiagonalAdjustableShelfSKU,
                     doweled_drawer_box_material_finish = @DoweledDrawerBoxMaterialFinish,
-                    vertical_panel_bottom_radius = @VerticalPanelBottomRadius
+                    vertical_panel_bottom_radius = @VerticalPanelBottomRadius,
+                    use_two_sided_transition_panels = @UseTwoSidedTransitionPanels
                 WHERE id = (SELECT closet_pro_settings_id FROM customers WHERE id = @CustomerId);
                 """, new {
                     CustomerId = customerId,
@@ -131,7 +132,8 @@ public class UpdateCustomer {
                     settings.DiagonalFixedShelfSKU,
                     settings.DiagonalAdjustableShelfSKU,
                     settings.DoweledDrawerBoxMaterialFinish,
-                    settings.VerticalPanelBottomRadius
+                    settings.VerticalPanelBottomRadius,
+                    settings.UseTwoSidedTransitionPanels
                 }, trx);
 
         }

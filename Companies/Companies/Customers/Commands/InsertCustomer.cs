@@ -203,9 +203,10 @@ public class InsertCustomer {
             int rows = connection.Execute(
                 """
                 INSERT INTO closet_pro_settings
-                    (id, toe_kick_sku, adjustable_shelf_sku, fixed_shelf_sku, l_fixed_shelf_sku, l_adjustable_shelf_sku, l_shelf_radius, diagonal_fixed_shelf_sku, diagonal_adjustable_shelf_sku, doweled_drawer_box_material_finish, vertical_panel_bottom_radius)
+                    (id, toe_kick_sku, adjustable_shelf_sku, fixed_shelf_sku, l_fixed_shelf_sku, l_adjustable_shelf_sku, l_shelf_radius, diagonal_fixed_shelf_sku, diagonal_adjustable_shelf_sku, doweled_drawer_box_material_finish, vertical_panel_bottom_radius, use_two_sided_transition_panels)
                 VALUES
-                    (@Id, @ToeKickSKU, @AdjustableShelfSKU, @FixedShelfSKU, @LFixedShelfSKU, @LAdjustableShelfSKU, @LShelfRadius, @DiagonalFixedShelfSKU, @DiagonalAdjustableShelfSKU, @DoweledDrawerBoxMaterialFinish, @VerticalPanelBottomRadius);
+                    (@Id, @ToeKickSKU, @AdjustableShelfSKU, @FixedShelfSKU, @LFixedShelfSKU, @LAdjustableShelfSKU, @LShelfRadius, @DiagonalFixedShelfSKU, @DiagonalAdjustableShelfSKU, @DoweledDrawerBoxMaterialFinish, @VerticalPanelBottomRadius, @UseTwoSidedTransitionPanels);
+
                 """,
                 new {
                     Id = id,
@@ -218,7 +219,8 @@ public class InsertCustomer {
                     settings.DiagonalFixedShelfSKU,
                     settings.DiagonalAdjustableShelfSKU,
                     settings.DoweledDrawerBoxMaterialFinish,
-                    settings.VerticalPanelBottomRadius
+                    settings.VerticalPanelBottomRadius,
+                    settings.UseTwoSidedTransitionPanels
                 }, trx);
 
             if (rows != 1) {

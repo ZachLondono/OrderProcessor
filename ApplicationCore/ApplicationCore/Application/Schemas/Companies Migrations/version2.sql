@@ -1,0 +1,1 @@
+﻿ALTER TABLE closet_pro_settings ADD use_two_sided_transition_panels INTEGER NOT NULL DEFAULT 0;

@@ -64,7 +64,8 @@ public class GetCustomerById {
                     closet_pro_settings.diagonal_fixed_shelf_sku AS CPDiagonalFixedShelfSKU,
                     closet_pro_settings.diagonal_adjustable_shelf_sku AS CPDiagonalAdjustableShelfSKU,
                     closet_pro_settings.doweled_drawer_box_material_finish AS CPDoweledDrawerBoxMaterialFinish,
-                    closet_pro_settings.vertical_panel_bottom_radius AS CPVerticalPanelBottomRadius
+                    closet_pro_settings.vertical_panel_bottom_radius AS CPVerticalPanelBottomRadius,
+                    closet_pro_settings.use_two_sided_transition_panels AS CPUseTwoSidedTransitionPanels
 
                 FROM customers
                     
@@ -131,6 +132,7 @@ public class GetCustomerById {
             public string CPDiagonalAdjustableShelfSKU { get; set; } = string.Empty;
             public string CPDoweledDrawerBoxMaterialFinish { get; set; } = string.Empty;
             public Dimension CPVerticalPanelBottomRadius { get; set; } = Dimension.Zero;
+            public bool CPUseTwoSidedTransitionPanels { get; set; } = false;
 
             public Customer AsCustomer() {
 
@@ -176,7 +178,8 @@ public class GetCustomerById {
                     DiagonalFixedShelfSKU = CPDiagonalFixedShelfSKU,
                     DiagonalAdjustableShelfSKU = CPDiagonalAdjustableShelfSKU,
                     DoweledDrawerBoxMaterialFinish = CPDoweledDrawerBoxMaterialFinish,
-                    VerticalPanelBottomRadius = CPVerticalPanelBottomRadius
+                    VerticalPanelBottomRadius = CPVerticalPanelBottomRadius,
+                    UseTwoSidedTransitionPanels = CPUseTwoSidedTransitionPanels
                 };
 
                 return new Customer(Id, Name, ShippingMethod, shippingContact, shippingAddress, billingContact, billingAddress, OrderNumberPrefix, closetProSettings, WorkingDirectoryRoot);

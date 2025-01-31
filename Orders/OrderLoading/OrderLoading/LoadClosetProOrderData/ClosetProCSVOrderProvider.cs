@@ -216,7 +216,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 		} else if (product is TransitionVerticalPanel transition) {
 
-			return transition.ToProduct(settings.VerticalPanelBottomRadius);
+			return transition.ToProduct(settings.VerticalPanelBottomRadius, settings.UseTwoSidedTransitionPanels);
 
 		} else if (product is VerticalPanel vertical) {
 

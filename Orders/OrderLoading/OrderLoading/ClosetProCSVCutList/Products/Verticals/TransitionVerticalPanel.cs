@@ -25,13 +25,13 @@ public class TransitionVerticalPanel : IClosetProProduct {
 	public required BaseNotch BaseNotch { get; init; }
 	public required VerticalPanelLEDChannel LEDChannel { get; init; }
 
-	public IProduct ToProduct(Dimension verticalPanelBottomRadius) {
+	public IProduct ToProduct(Dimension verticalPanelBottomRadius, bool useTwoSidedDrilling) {
 
 		if (LEDChannel != VerticalPanelLEDChannel.None) {
             throw new NotSupportedException("LED Channels are not supported on transition panels.");
         }
 
-		string sku = "PCDT"; // TODO: add option to do two sided machining
+		string sku = useTwoSidedDrilling ? "PCDD" : "PCDT";
 
 		ClosetPaint? paint = null;
 		string comment = string.Empty;
@@ -46,8 +46,13 @@ public class TransitionVerticalPanel : IClosetProProduct {
 			{ "BottomNotchH", BaseNotch.Height.AsMillimeters().ToString() },
 			{ "WallMount", WallHung ? "1" : "0" },                          // TODO: add option to settings to include wall mounting bracket on wall hung panels
             { "BottomRadius", HasBottomRadius ? verticalPanelBottomRadius.AsMillimeters().ToString() : "0" },
-			{ "MiddleHoles", (TransitionDepth - Dimension.FromMillimeters(37)).AsMillimeters().ToString() }
 		};
+
+		if (useTwoSidedDrilling) {
+			parameters.Add("FrontHoles", (TransitionDepth - Dimension.FromMillimeters(37)).AsMillimeters().ToString());
+		} else {
+			parameters.Add("MiddleHoles", (TransitionDepth - Dimension.FromMillimeters(37)).AsMillimeters().ToString());
+		}
 
 		if (!TryGetNearest32MMComplientHeight(Height, out Dimension finalHeight)) {
 			finalHeight = Height;

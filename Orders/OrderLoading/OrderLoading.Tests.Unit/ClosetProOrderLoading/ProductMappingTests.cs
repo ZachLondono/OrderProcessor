@@ -203,7 +203,7 @@ public class ProductMappingTests {
     }
 
     [Fact]
-    public void FloorMountedTransitionPart() {
+    public void FloorMountedTransitionPart_OneSided() {
 
         // Arrange
         string expectedSKU = "PCDT";
@@ -235,7 +235,7 @@ public class ProductMappingTests {
 
         // Act
         var vp = ClosetProPartMapper.CreateTransitionVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
-        var product = vp.ToProduct(Dimension.Zero);
+        var product = vp.ToProduct(Dimension.Zero, false);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -247,6 +247,56 @@ public class ProductMappingTests {
         closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("FINRIGHT", "1"));
         closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("WallMount", "0"));
         closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("MiddleHoles", (rightDrilling - Dimension.FromMillimeters(37)).AsMillimeters().ToString()));
+        closetPart.Parameters.Should().NotContainKey("FrontHoles");
+
+    }
+    
+    [Fact]
+    public void FloorMountedTransitionPart_TwoSided() {
+
+        // Arrange
+        string expectedSKU = "PCDD";
+        Dimension panelHeight = Dimension.FromMillimeters(2259);
+        Dimension panelDepth = Dimension.FromInches(14);
+        Dimension leftDrilling = Dimension.FromInches(14);
+        Dimension rightDrilling = Dimension.FromInches(12);
+
+        var part = new Part() {
+            Depth = panelDepth.AsInches(),
+            Height = panelHeight.AsInches(),
+            Color = "White",
+            PartCost = "123.45",
+            Quantity = 123,
+            VertDrillL = leftDrilling.AsInches(),
+            VertDrillR = rightDrilling.AsInches(),
+            ExportName = "CPS FM Vert",
+            VertHand = "T",
+            InfoRecords = new() {
+                new() {
+                    PartName = "Edge Banding",
+                    Color = "RED"
+                }
+            }
+        };
+        var helper = new PartHelper() {
+            Part = part
+        };
+
+        // Act
+        var vp = ClosetProPartMapper.CreateTransitionVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
+        var product = vp.ToProduct(Dimension.Zero, true);
+
+        // Assert
+        var closetPart = helper.CompareToProduct(product);
+        closetPart.SKU.Should().Be(expectedSKU);
+        closetPart.Width.Should().Be(panelDepth);
+        closetPart.Length.Should().Be(panelHeight);
+        closetPart.EdgeBandingColor.Should().Be("RED");
+        closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("FINLEFT", "0"));
+        closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("FINRIGHT", "1"));
+        closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("WallMount", "0"));
+        closetPart.Parameters.Should().Contain(new KeyValuePair<string, string>("FrontHoles", (rightDrilling - Dimension.FromMillimeters(37)).AsMillimeters().ToString()));
+        closetPart.Parameters.Should().NotContainKey("MiddleHoles");
 
     }
 

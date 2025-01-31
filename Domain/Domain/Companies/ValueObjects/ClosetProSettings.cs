@@ -20,6 +20,8 @@ public record ClosetProSettings {
 
     public Dimension VerticalPanelBottomRadius { get; set; } = Dimension.FromMillimeters(0);
 
+    public bool UseTwoSidedTransitionPanels { get; set; } = false;
+
     //public string DividerShelfDrillingType { get; set; } = "";
     //public string DividerPanelDrillingType { get; set; } = "";
 
