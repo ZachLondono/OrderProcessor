@@ -127,11 +127,13 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
         (HangingRail[] hangRails, Supply[] hangRailSupplies) = ClosetProPartMapper.GetHangingRailsFromBuyOutParts(info.BuyOutParts);
         (DrawerSlide[] slides, Supply[] slideSupplies) = GetDrawerSlides(products);
+		var hinges = ClosetProPartMapper.GetHingesFromPickList(info.PickList); 
         var hangRailBrackets = ClosetProPartMapper.GetHangingRailBracketsFromBuyOutParts(info.BuyOutParts).ToArray();
         var supplies = GetSupplies(cpProducts, includeCams, includeShelfPins);
         supplies.AddRange(hangRailBrackets);
         supplies.AddRange(hangRailSupplies);
         supplies.AddRange(slideSupplies);
+		supplies.AddRange(hinges);
 
         var suppliesArray = supplies.Where(s => s.Qty != 0).ToArray();
         Hardware hardware = new(suppliesArray, slides, hangRails);

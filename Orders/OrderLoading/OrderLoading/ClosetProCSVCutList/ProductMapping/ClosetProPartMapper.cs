@@ -336,6 +336,14 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 	}
 
+	public static Supply[] GetHingesFromPickList(IEnumerable<PickPart> pickList)
+		=> pickList.Where(p => p.Type.StartsWith("Hinge", StringComparison.InvariantCultureIgnoreCase)
+								&& !p.Name.Equals("User Provided", StringComparison.InvariantCultureIgnoreCase)
+								&& !p.Name.Equals("Dealer Provided", StringComparison.InvariantCultureIgnoreCase)
+								&& p.Quantity > 0)
+					.SelectMany(p => new Supply[] { new(Guid.NewGuid(), p.Quantity, p.Name), new(Guid.NewGuid(), p.Quantity, "Hinge Plate") })
+					.ToArray();
+
 	public static List<Supply> GetHangingRailBracketsFromBuyOutParts(IEnumerable<BuyOutPart> parts) {
 
 		List<Supply> supplies = [];
