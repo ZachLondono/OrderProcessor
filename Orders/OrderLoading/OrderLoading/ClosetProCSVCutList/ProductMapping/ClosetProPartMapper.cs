@@ -154,9 +154,8 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 			"VP-Hutch" => CreateHutchVerticalPanel(part, wallHasBacking, strategy),
 
-			"AdjustableShelf" => CreateAdjustableShelfFromPart(part, wallHasBacking, false, strategy),
-
-			"rollouttray" => CreateAdjustableShelfFromPart(part, wallHasBacking, false, strategy),
+			"AdjustableShelf" or "rollouttray"
+				=> CreateAdjustableShelfFromPart(part, wallHasBacking, false, strategy),
 
 			"ShoeShelf" => CreateShoeShelf(part, false, wallHasBacking, strategy),
 

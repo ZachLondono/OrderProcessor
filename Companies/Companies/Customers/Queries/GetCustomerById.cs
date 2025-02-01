@@ -1,6 +1,5 @@
 ﻿using Domain.Companies.Entities;
 using Domain.Companies.ValueObjects;
-using Dapper;
 using Domain.ValueObjects;
 using Domain.Infrastructure.Bus;
 using Companies.Infrastructure;
@@ -65,7 +64,8 @@ public class GetCustomerById {
                     closet_pro_settings.diagonal_adjustable_shelf_sku AS CPDiagonalAdjustableShelfSKU,
                     closet_pro_settings.doweled_drawer_box_material_finish AS CPDoweledDrawerBoxMaterialFinish,
                     closet_pro_settings.vertical_panel_bottom_radius AS CPVerticalPanelBottomRadius,
-                    closet_pro_settings.use_two_sided_transition_panels AS CPUseTwoSidedTransitionPanels
+                    closet_pro_settings.use_two_sided_transition_panels AS CPUseTwoSidedTransitionPanels,
+                    closet_pro_settings.triple_drilling_minimum_depth AS CPTripleDrillingMinDepth
 
                 FROM customers
                     
@@ -133,6 +133,7 @@ public class GetCustomerById {
             public string CPDoweledDrawerBoxMaterialFinish { get; set; } = string.Empty;
             public Dimension CPVerticalPanelBottomRadius { get; set; } = Dimension.Zero;
             public bool CPUseTwoSidedTransitionPanels { get; set; } = false;
+            public Dimension CPTripleDrillingMinDepth { get; set; } = Dimension.Zero;
 
             public Customer AsCustomer() {
 
@@ -179,7 +180,8 @@ public class GetCustomerById {
                     DiagonalAdjustableShelfSKU = CPDiagonalAdjustableShelfSKU,
                     DoweledDrawerBoxMaterialFinish = CPDoweledDrawerBoxMaterialFinish,
                     VerticalPanelBottomRadius = CPVerticalPanelBottomRadius,
-                    UseTwoSidedTransitionPanels = CPUseTwoSidedTransitionPanels
+                    UseTwoSidedTransitionPanels = CPUseTwoSidedTransitionPanels,
+                    TripleDrillingMinDepth = CPTripleDrillingMinDepth
                 };
 
                 return new Customer(Id, Name, ShippingMethod, shippingContact, shippingAddress, billingContact, billingAddress, OrderNumberPrefix, closetProSettings, WorkingDirectoryRoot);

@@ -46,7 +46,7 @@ public class CornerShelf : IClosetProProduct {
 			_ => throw new InvalidOperationException("Unexpected corner shelf type")
 		};
 
-		return new ClosetPart(Guid.NewGuid(),
+		var part = new ClosetPart(Guid.NewGuid(),
 							  Qty,
 							  UnitPrice,
 							  PartNumber,
@@ -60,6 +60,13 @@ public class CornerShelf : IClosetProProduct {
 							  comment,
 							  true,
 							  parameters);
+
+		if ((Type == CornerShelfType.LFixed || Type == CornerShelfType.DiagonalFixed)
+			&& settings.TripleDrillingMinDepth != Dimension.Zero && (ProductWidth >= settings.TripleDrillingMinDepth || RightWidth >= settings.TripleDrillingMinDepth)) {
+            part.ProductionNotes.Add("Add centered third line of drilling.");
+        }
+
+		return part;
 
 	}
 

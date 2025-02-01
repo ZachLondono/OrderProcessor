@@ -22,6 +22,8 @@ public record ClosetProSettings {
 
     public bool UseTwoSidedTransitionPanels { get; set; } = false;
 
+    public Dimension TripleDrillingMinDepth { get; set; }
+
     //public string DividerShelfDrillingType { get; set; } = "";
     //public string DividerPanelDrillingType { get; set; } = "";
 

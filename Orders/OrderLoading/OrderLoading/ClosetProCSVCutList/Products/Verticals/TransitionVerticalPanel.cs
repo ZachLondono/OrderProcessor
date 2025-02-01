@@ -25,7 +25,7 @@ public class TransitionVerticalPanel : IClosetProProduct {
 	public required BaseNotch BaseNotch { get; init; }
 	public required VerticalPanelLEDChannel LEDChannel { get; init; }
 
-	public IProduct ToProduct(Dimension verticalPanelBottomRadius, bool useTwoSidedDrilling) {
+	public IProduct ToProduct(Dimension verticalPanelBottomRadius, bool useTwoSidedDrilling, Dimension tripleDrillingMinDepth) {
 
 		if (LEDChannel != VerticalPanelLEDChannel.None) {
             throw new NotSupportedException("LED Channels are not supported on transition panels.");
@@ -58,7 +58,7 @@ public class TransitionVerticalPanel : IClosetProProduct {
 			finalHeight = Height;
 		}
 
-		return new ClosetPart(Guid.NewGuid(),
+		var part = new ClosetPart(Guid.NewGuid(),
 							  Qty,
 							  UnitPrice,
 							  PartNumber,
@@ -73,7 +73,13 @@ public class TransitionVerticalPanel : IClosetProProduct {
 							  true,
 							  parameters);
 
-	}
+		if (tripleDrillingMinDepth != Dimension.Zero && Depth >= tripleDrillingMinDepth) {
+            part.ProductionNotes.Add("Add centered third line of drilling.");
+        }
+
+		return part;
+
+    }
 
 	public static bool TryGetNearest32MMComplientHeight(Dimension input, out Dimension output, double maxErrorMM = 2) {
 

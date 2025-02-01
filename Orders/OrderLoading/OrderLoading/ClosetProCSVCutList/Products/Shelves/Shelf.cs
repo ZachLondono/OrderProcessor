@@ -67,6 +67,11 @@ public class Shelf : IClosetProProduct {
 			part.ProductionNotes.Add("Verify that any drilling on this full depth shelf part correctly lines up with it's vertical panel. Some PSI products do not support the 'ExtendBack' parameter.");
 		}
 
+		if ((Type == ShelfType.Fixed || (Type == ShelfType.Adjustable && settings.AdjustableShelfSKU.StartsWith("SA5")))
+			&& settings.TripleDrillingMinDepth != Dimension.Zero && Depth >= settings.TripleDrillingMinDepth) {
+            part.ProductionNotes.Add("Add centered third line of drilling.");
+        }
+
 		return part;
 
 	}

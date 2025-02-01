@@ -193,7 +193,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 		} else if (product is HutchVerticalPanel hutch) {
 
-			return hutch.ToProduct(settings.VerticalPanelBottomRadius);
+			return hutch.ToProduct(settings.VerticalPanelBottomRadius, settings.TripleDrillingMinDepth);
 
 		} else if (product is IslandVerticalPanel island) {
 
@@ -217,11 +217,11 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 		} else if (product is TransitionVerticalPanel transition) {
 
-			return transition.ToProduct(settings.VerticalPanelBottomRadius, settings.UseTwoSidedTransitionPanels);
+			return transition.ToProduct(settings.VerticalPanelBottomRadius, settings.UseTwoSidedTransitionPanels, settings.TripleDrillingMinDepth);
 
 		} else if (product is VerticalPanel vertical) {
 
-			return vertical.ToProduct(settings.VerticalPanelBottomRadius);
+			return vertical.ToProduct(settings.VerticalPanelBottomRadius, settings.TripleDrillingMinDepth);
 
 		} else if (product is ZargenDrawerBox zargen) {
 

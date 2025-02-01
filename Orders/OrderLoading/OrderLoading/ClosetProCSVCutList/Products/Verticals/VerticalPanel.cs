@@ -24,7 +24,7 @@ public class VerticalPanel : IClosetProProduct {
 	public required BaseNotch BaseNotch { get; init; }
 	public required VerticalPanelLEDChannel LEDChannel { get; init; }
 
-    public IProduct ToProduct(Dimension verticalPanelBottomRadius) {
+    public IProduct ToProduct(Dimension verticalPanelBottomRadius, Dimension tripleDrillingMinDepth) {
 
         string sku = GetSKU();
 
@@ -47,7 +47,7 @@ public class VerticalPanel : IClosetProProduct {
 			finalHeight = Height;
 		}
 
-		return new ClosetPart(Guid.NewGuid(),
+		var part = new ClosetPart(Guid.NewGuid(),
 							  Qty,
 							  UnitPrice,
 							  PartNumber,
@@ -61,6 +61,12 @@ public class VerticalPanel : IClosetProProduct {
 							  comment,
 							  true,
 							  parameters);
+
+		if (tripleDrillingMinDepth != Dimension.Zero && Depth >= tripleDrillingMinDepth) {
+            part.ProductionNotes.Add("Add centered third line of drilling.");
+        }
+
+		return part;
 
 	}
 
