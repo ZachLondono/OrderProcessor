@@ -161,7 +161,7 @@
 
                     <div>
                         <label for="triple_drilling_depth" class="block text-sm font-medium text-gray-700">Triple Drilling Minimum Depth</label>
-                        <input type="number" step="any" id="triple_drilling_depth" value="@DataContext.Model.ClosetProSettings.TripleDrillingMinDepth.AsMillimeters()" @onchange="UpdateTripleDrillingDepth" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
+                        <input type="number" step="any" id="triple_drilling_depth" min="0" value="@DataContext.Model.ClosetProSettings.TripleDrillingMinDepth.AsMillimeters()" @onchange="UpdateTripleDrillingDepth" placeholder="XX" class="mt-1 w-full px-3 py-2 rounded-md max-w-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" />
                     </div>
 
                     <div>
