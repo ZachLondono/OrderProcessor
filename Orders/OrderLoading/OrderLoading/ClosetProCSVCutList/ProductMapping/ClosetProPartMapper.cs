@@ -304,11 +304,11 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 		List<HangingRail> rails = [];
 
-		foreach (var part in parts) {
+		foreach (var part in parts.Where(p => p.PartType.Equals("Rod", StringComparison.InvariantCultureIgnoreCase))) {
 
-            if (part.PartName != "Hang Rod") {
-                continue;
-            }
+			if (part.ExportName.Contains("DEALER PROVIDED", StringComparison.InvariantCultureIgnoreCase)) {
+				continue;
+			}
 
 			double adjLength = part.Width - 0.25;
             Dimension length = Dimension.FromMillimeters(Math.Round(Dimension.FromInches(adjLength).AsMillimeters()));
