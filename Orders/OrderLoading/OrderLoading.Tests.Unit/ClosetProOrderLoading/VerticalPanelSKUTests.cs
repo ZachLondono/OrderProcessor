@@ -12,7 +12,7 @@ public class VerticalPanelSKUTests {
 
         var vp = CreateVP(VerticalPanelDrilling.DrilledThrough, VerticalPanelLEDChannel.None);
 
-        var product = vp.ToProduct(Dimension.Zero) as ClosetPart;
+        var product = vp.ToProduct(Dimension.Zero, Dimension.Zero) as ClosetPart;
 
         product!.SKU.Should().Be("PC");
 
@@ -23,7 +23,7 @@ public class VerticalPanelSKUTests {
 
         var vp = CreateVP(VerticalPanelDrilling.FinishedLeft, VerticalPanelLEDChannel.None);
 
-        var product = vp.ToProduct(Dimension.Zero) as ClosetPart;
+        var product = vp.ToProduct(Dimension.Zero, Dimension.Zero) as ClosetPart;
 
         product!.SKU.Should().Be("PE");
 
@@ -34,7 +34,7 @@ public class VerticalPanelSKUTests {
 
         var vp = CreateVP(VerticalPanelDrilling.FinishedRight, VerticalPanelLEDChannel.None);
 
-        var product = vp.ToProduct(Dimension.Zero) as ClosetPart;
+        var product = vp.ToProduct(Dimension.Zero, Dimension.Zero) as ClosetPart;
 
         product!.SKU.Should().Be("PE");
 
@@ -45,7 +45,7 @@ public class VerticalPanelSKUTests {
 
         var vp = CreateVP(VerticalPanelDrilling.FinishedLeft, VerticalPanelLEDChannel.Right);
 
-        var product = vp.ToProduct(Dimension.Zero) as ClosetPart;
+        var product = vp.ToProduct(Dimension.Zero, Dimension.Zero) as ClosetPart;
 
         product!.SKU.Should().Be("PE-LED");
 
@@ -56,7 +56,7 @@ public class VerticalPanelSKUTests {
 
         var vp = CreateVP(VerticalPanelDrilling.FinishedRight, VerticalPanelLEDChannel.Left);
 
-        var product = vp.ToProduct(Dimension.Zero) as ClosetPart;
+        var product = vp.ToProduct(Dimension.Zero, Dimension.Zero) as ClosetPart;
 
         product!.SKU.Should().Be("PE-LED");
 
@@ -67,7 +67,7 @@ public class VerticalPanelSKUTests {
 
         var vp = CreateVP(VerticalPanelDrilling.FinishedRight, VerticalPanelLEDChannel.Right);
 
-        var action = () => vp.ToProduct(Dimension.Zero);
+        var action = () => vp.ToProduct(Dimension.Zero, Dimension.Zero);
 
         action.Should().Throw<NotSupportedException>();
 
@@ -78,7 +78,7 @@ public class VerticalPanelSKUTests {
 
         var vp = CreateVP(VerticalPanelDrilling.FinishedLeft, VerticalPanelLEDChannel.Left);
 
-        var action = () => vp.ToProduct(Dimension.Zero);
+        var action = () => vp.ToProduct(Dimension.Zero, Dimension.Zero);
 
         action.Should().Throw<NotSupportedException>();
 
@@ -89,7 +89,7 @@ public class VerticalPanelSKUTests {
 
         var vp = CreateVP(VerticalPanelDrilling.FinishedLeft, VerticalPanelLEDChannel.Both);
 
-        var action = () => vp.ToProduct(Dimension.Zero);
+        var action = () => vp.ToProduct(Dimension.Zero, Dimension.Zero);
 
         action.Should().Throw<NotSupportedException>();
 
@@ -100,7 +100,7 @@ public class VerticalPanelSKUTests {
 
         var vp = CreateVP(VerticalPanelDrilling.FinishedRight, VerticalPanelLEDChannel.Both);
 
-        var action = () => vp.ToProduct(Dimension.Zero);
+        var action = () => vp.ToProduct(Dimension.Zero, Dimension.Zero);
 
         action.Should().Throw<NotSupportedException>();
 
@@ -111,7 +111,7 @@ public class VerticalPanelSKUTests {
 
         var vp = CreateVP(VerticalPanelDrilling.DrilledThrough, VerticalPanelLEDChannel.Both);
 
-        var action = () => vp.ToProduct(Dimension.Zero);
+        var action = () => vp.ToProduct(Dimension.Zero, Dimension.Zero);
 
         action.Should().Throw<NotSupportedException>();
 
@@ -122,7 +122,7 @@ public class VerticalPanelSKUTests {
 
         var vp = CreateVP(VerticalPanelDrilling.DrilledThrough, VerticalPanelLEDChannel.Left);
 
-        var action = () => vp.ToProduct(Dimension.Zero);
+        var action = () => vp.ToProduct(Dimension.Zero, Dimension.Zero);
 
         action.Should().Throw<NotSupportedException>();
 
@@ -133,7 +133,7 @@ public class VerticalPanelSKUTests {
 
         var vp = CreateVP(VerticalPanelDrilling.DrilledThrough, VerticalPanelLEDChannel.Right);
 
-        var action = () => vp.ToProduct(Dimension.Zero);
+        var action = () => vp.ToProduct(Dimension.Zero, Dimension.Zero);
 
         action.Should().Throw<NotSupportedException>();
 

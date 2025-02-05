@@ -41,7 +41,7 @@ public class ProductMappingTests {
 
         // Act
         var vp = ClosetProPartMapper.CreateVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
-        var product = vp.ToProduct(Dimension.Zero);
+        var product = vp.ToProduct(Dimension.Zero, Dimension.Zero);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -88,7 +88,7 @@ public class ProductMappingTests {
 
         // Act
         var vp = ClosetProPartMapper.CreateVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
-        var product = vp.ToProduct(Dimension.Zero);
+        var product = vp.ToProduct(Dimension.Zero, Dimension.Zero);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -135,7 +135,7 @@ public class ProductMappingTests {
 
         // Act
         var vp = ClosetProPartMapper.CreateVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
-        var product = vp.ToProduct(Dimension.Zero);
+        var product = vp.ToProduct(Dimension.Zero, Dimension.Zero);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -186,7 +186,7 @@ public class ProductMappingTests {
 
         // Act
         var vp = ClosetProPartMapper.CreateVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
-        var product = vp.ToProduct(Dimension.Zero);
+        var product = vp.ToProduct(Dimension.Zero, Dimension.Zero);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -235,7 +235,7 @@ public class ProductMappingTests {
 
         // Act
         var vp = ClosetProPartMapper.CreateTransitionVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
-        var product = vp.ToProduct(Dimension.Zero, false);
+        var product = vp.ToProduct(Dimension.Zero, false, Dimension.Zero);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -284,7 +284,7 @@ public class ProductMappingTests {
 
         // Act
         var vp = ClosetProPartMapper.CreateTransitionVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
-        var product = vp.ToProduct(Dimension.Zero, true);
+        var product = vp.ToProduct(Dimension.Zero, true, Dimension.Zero);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -344,7 +344,7 @@ public class ProductMappingTests {
 
         // Act
         var vp = ClosetProPartMapper.CreateHutchVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
-        var product = vp.ToProduct(Dimension.Zero);
+        var product = vp.ToProduct(Dimension.Zero, Dimension.Zero);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
@@ -394,7 +394,7 @@ public class ProductMappingTests {
 
         // Act
         var vp = ClosetProPartMapper.CreateVerticalPanel(part, false, RoomNamingStrategy.ByWallAndSection);
-        var product = vp.ToProduct(Dimension.Zero);
+        var product = vp.ToProduct(Dimension.Zero, Dimension.Zero);
 
         // Assert
         var closetPart = helper.CompareToProduct(product);
