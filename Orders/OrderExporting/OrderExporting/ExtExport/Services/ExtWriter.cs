@@ -8,7 +8,7 @@ namespace OrderExporting.ExtExport.Services;
 public class ExtWriter : IExtWriter {
 
     private static readonly string _validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_ ";
-    private readonly List<Dictionary<string, string>> _records = new();
+    private readonly List<Dictionary<string, string>> _records = [];
 
     public void AddRecord(JobDescriptor job) => _records.Add(GetRecord(job));
     public void AddRecord(LevelVariableOverride variables) => _records.Add(GetRecord(variables));
