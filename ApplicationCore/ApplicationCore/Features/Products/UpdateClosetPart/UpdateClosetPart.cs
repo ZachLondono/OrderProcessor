@@ -23,12 +23,24 @@ public class UpdateClosetPart {
                         UPDATE closet_parts
                         SET
                             sku = @SKU,
-                            comment = @Comment
+                            width = @Width,
+                            length = @Length,
+                            material_finish = @MaterialFinish,
+                            material_core = @MaterialCore,
+                            paint_color = @PaintColor,
+                            painted_side = @PaintedSide,
+                            edge_banding_finish = @EdgeBandingFinish,
+                            comment = @Comment,
+                            parameters = @Parameters,
+                            install_cams = @InstallCams
                         WHERE product_id = @Id;
                         UPDATE products
                         SET
                             qty = @Qty,
-                            room = @Room
+                            room = @Room,
+                            product_number = @ProductNumber,
+                            unit_price = @UnitPrice,
+                            production_notes = @ProductionNotes
                         WHERE id = @Id;
                         """;
 
@@ -37,9 +49,21 @@ public class UpdateClosetPart {
             int rows = connection.Execute(query, new {
                 command.ClosetPart.Id,
                 command.ClosetPart.SKU,
+                command.ClosetPart.Width,
+                command.ClosetPart.Length,
+                MaterialFinish = command.ClosetPart.Material.Finish,
+                MaterialCore = command.ClosetPart.Material.Core,
+                PaintColor = (command.ClosetPart.Paint?.Color ?? null),
+                PaintedSide = (command.ClosetPart.Paint?.Side ?? null),
+                EdgeBandingFinish = command.ClosetPart.EdgeBandingColor,
                 command.ClosetPart.Comment,
+                Parameters = (IDictionary<string, string>) command.ClosetPart.Parameters,
+                command.ClosetPart.InstallCams,
                 command.ClosetPart.Qty,
-                command.ClosetPart.Room
+                command.ClosetPart.Room,
+                command.ClosetPart.UnitPrice,
+                command.ClosetPart.ProductNumber,
+                command.ClosetPart.ProductionNotes,
             });
 
             if (rows != 2) {

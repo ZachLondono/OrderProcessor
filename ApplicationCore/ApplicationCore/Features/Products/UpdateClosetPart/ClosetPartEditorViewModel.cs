@@ -1,5 +1,4 @@
 ﻿using Domain.Infrastructure.Bus;
-using Domain.Orders.Entities.Products.Closets;
 
 namespace ApplicationCore.Features.Products.UpdateClosetPart;
 
@@ -11,7 +10,7 @@ public class ClosetPartEditorViewModel {
     public Func<Task>? CloseAsync { get; set; }
 
     // TODO: load a model specifically for the editor
-    public ClosetPart? Product { get; set; }
+    public ClosetPartEditModel? EditModel { get; set; }
 
     private Error? error;
     public Error? Error {
@@ -28,13 +27,13 @@ public class ClosetPartEditorViewModel {
 
     public async Task Update() {
 
-        if (_bus is null || Product is null) return;
+        if (_bus is null || EditModel is null) return;
 
         Error = null;
 
         try {
 
-            var response = await _bus.Send(new UpdateClosetPart.Command(Product));
+            var response = await _bus.Send(new UpdateClosetPart.Command(EditModel.ToProduct()));
 
             await response.Match(
                 unit => CloseAsync?.Invoke() ?? Task.CompletedTask,
@@ -52,6 +51,19 @@ public class ClosetPartEditorViewModel {
 
         }
 
+    }
+
+    public void AddAskParameter() {
+        EditModel?.AskParameters.Add(new() {
+            Name = "",
+            Value = ""
+        });
+        OnPropertyChanged?.Invoke();
+    }
+
+    public void RemoveAskParameter(AskParameter parameter) {
+        EditModel?.AskParameters.Remove(parameter);
+        OnPropertyChanged?.Invoke();
     }
 
 }

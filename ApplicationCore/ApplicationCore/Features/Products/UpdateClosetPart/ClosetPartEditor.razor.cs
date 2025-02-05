@@ -24,8 +24,9 @@ public partial class ClosetPartEditor {
         DataContext.OnPropertyChanged += StateHasChanged;
         DataContext.CloseAsync += BlazoredModal.CloseAsync;
 
-        // TODO: load a model specifically for the editor
-        DataContext.Product = Product;
+        if (Product is not null) {
+            DataContext.EditModel = ClosetPartEditModel.FromProduct(Product);
+        }
 
     }
 
