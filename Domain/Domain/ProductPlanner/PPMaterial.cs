@@ -9,7 +9,7 @@ public class PPMaterial {
 
     public PPMaterial(string material, string color, double thickness = 0, PPUnits units = PPUnits.Millimeters) {
         Material = material;
-        Color = color;
+        Color = color.Replace("(", "").Replace(")", "");
         Thickness = thickness;
         Units = units;
     }
