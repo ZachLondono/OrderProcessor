@@ -38,7 +38,7 @@ public class CabinetPart : IProduct, IPPProductContainer {
     public bool ContainsPPProducts() => true;
 
     public IEnumerable<PPProduct> GetPPProducts() {
-        return new List<PPProduct>() { new PPProduct(Id, Qty, Room, SKU, ProductNumber, "Royal2", GetMaterialType(), "Buyout", "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), Parameters, new Dictionary<string, string>(), new Dictionary<string, string>()) };
+        return new List<PPProduct>() { new PPProduct(Id, Qty, Room, SKU, ProductNumber, "Royal2", GetMaterialType(), "Buyout", "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), Parameters, new Dictionary<string, string>(), new Dictionary<string, string>(), new Dictionary<string, double>()) };
     }
 
     private string GetMaterialType() => Material.Core switch {

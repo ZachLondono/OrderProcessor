@@ -24,7 +24,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
     public CabinetSideType RightSideType { get; }
     public CabinetSideType LeftSideType { get; }
     public string Comment { get; }
-    public List<string> ProductionNotes { get; set; } = new();
+    public List<string> ProductionNotes { get; set; } = [];
     public abstract string GetDescription();
     public abstract string GetSimpleDescription();
 
@@ -66,7 +66,7 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
                 TopThickness = Dimension.FromMillimeters(19),
                 BottomThickness = Dimension.FromMillimeters(19),
                 SideThickness = Dimension.FromMillimeters(19),  // Cabinets with plywood finished sides (Crown Veneer) are still treated as having 19mm thick sides
-                BackThickness = Dimension.FromMillimeters(13),
+                BackThickness = boxMaterial.Finish.Equals("White", StringComparison.InvariantCultureIgnoreCase) ? Dimension.FromMillimeters(13) : Dimension.FromMillimeters(19),
                 BackInset = Dimension.FromMillimeters(9)
             },
             CabinetMaterialCore.Plywood => new() {
@@ -186,12 +186,40 @@ public abstract class Cabinet : IProduct, IPPProductContainer {
     public bool ContainsPPProducts() => true;
 
     public IEnumerable<PPProduct> GetPPProducts() {
-        yield return new PPProduct(Id, Qty, Room, GetProductSku(), ProductNumber, "Royal2", GetMaterialType(), GetDoorType(), "Standard", Comment, GetFinishMaterials(), GetEBMaterials(), GetParameters(), GetParameterOverrides(), GetManualOverrideParameters());
+        yield return new PPProduct(Id,
+                                   Qty,
+                                   Room,
+                                   GetProductSku(),
+                                   ProductNumber,
+                                   "Royal2",
+                                   GetMaterialType(),
+                                   GetDoorType(),
+                                   "Standard",
+                                   Comment,
+                                   GetFinishMaterials(),
+                                   GetEBMaterials(),
+                                   GetParameters(),
+                                   GetParameterOverrides(),
+                                   GetManualOverrideParameters(),
+                                   GetCoreThicknesses());
     }
 
     public abstract string GetProductSku();
     protected virtual IDictionary<string, string> GetParameters() => new Dictionary<string, string>();
     protected virtual IDictionary<string, string> GetParameterOverrides() => new Dictionary<string, string>();
     protected virtual IDictionary<string, string> GetManualOverrideParameters() => new Dictionary<string, string>();
+
+    protected virtual IDictionary<string, double> GetCoreThicknesses() {
+
+        if (BoxMaterial.Finish.Equals("White", StringComparison.InvariantCultureIgnoreCase) || BoxMaterial.Core != CabinetMaterialCore.ParticleBoard) {
+            return new Dictionary<string, double>();
+        }
+
+        return new Dictionary<string, double> {
+            ["M_Back"] = Construction.BackThickness.AsMillimeters(),
+            ["M_BackOpen"] = Construction.BackThickness.AsMillimeters(),
+        };
+
+    }
 
 }

@@ -72,7 +72,7 @@ public partial class ClosetPart : IPPProductContainer, IClosetPartProduct {
             ["ProductLength"] = Length.AsMillimeters().ToString()
         };
 
-        return new List<PPProduct>() { new PPProduct(Id, Qty, Room, SKU, ProductNumber, "Royal_c", materialType, "slab", "standard", Comment, finishMaterials, ebMaterials, parameters, new Dictionary<string, string>(), new Dictionary<string, string>()) };
+        return new List<PPProduct>() { new PPProduct(Id, Qty, Room, SKU, ProductNumber, "Royal_c", materialType, "slab", "standard", Comment, finishMaterials, ebMaterials, parameters, new Dictionary<string, string>(), new Dictionary<string, string>(), new Dictionary<string, double>()) };
 
     }
 

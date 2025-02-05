@@ -21,7 +21,7 @@ public class PPJobConverter {
                             new Room() {
                                 Name = group.Key,
 
-                                Groups = group.GroupBy(prod => new ProductGroupKey(prod.Catalog, prod.MaterialType, prod.DoorType, prod.HardwareType, prod.FinishMaterials, prod.EBMaterials, prod.OverrideParameters), new ProductGroupKeyComparer())
+                                Groups = group.GroupBy(prod => new ProductGroupKey(prod.Catalog, prod.MaterialType, prod.DoorType, prod.HardwareType, prod.FinishMaterials, prod.EBMaterials, prod.OverrideParameters, prod.CoreThicknesses), new ProductGroupKeyComparer())
                                                 .Select(group => new ProductGroup() {
                                                     Key = group.Key,
                                                     Products = group.ToList()
@@ -106,6 +106,7 @@ public class PPJobConverter {
 
                 AddMaterialVariablesToWriter(firstGroup.Key, level.LevelId);
                 AddVariableOverridesToWriter(firstGroup.Key, level.LevelId);
+                AddCoreThicknessVariablesToWriter(firstGroup.Key, level.LevelId);
 
                 foreach (var product in firstGroup.Products) {
                     AddProductToWriter(product, jobId + roomIdx);
@@ -154,6 +155,7 @@ public class PPJobConverter {
 
         AddMaterialVariablesToWriter(group.Key, subLevel.LevelId);
         AddVariableOverridesToWriter(group.Key, subLevel.LevelId);
+        AddCoreThicknessVariablesToWriter(group.Key, subLevel.LevelId);
 
         foreach (var product in group.Products) {
             AddProductToWriter(product, subLevel.LevelId);
@@ -173,19 +175,35 @@ public class PPJobConverter {
 
     }
 
+    private void AddCoreThicknessVariablesToWriter(ProductGroupKey groupKey, int levelId) {
+
+        if (!groupKey.CoreThicknesses.Any()) {
+            return;
+        }
+
+        var overrides = new LevelVariableOverride() {
+            LevelId = levelId,
+            Units = PPUnits.Millimeters,
+            Parameters = groupKey.CoreThicknesses.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToString())
+        };
+
+        _writer.AddRecord(overrides);
+
+    }
+
     private void AddVariableOverridesToWriter(ProductGroupKey groupKey, int levelId) {
 
-        if (groupKey.OverrideParameters.Any()) {
-
-            var overrides = new LevelVariableOverride() {
-                LevelId = levelId,
-                Units = PPUnits.Millimeters,
-                Parameters = groupKey.OverrideParameters
-            };
-
-            _writer.AddRecord(overrides);
-
+        if (!groupKey.OverrideParameters.Any()) {
+            return;
         }
+
+        var overrides = new LevelVariableOverride() {
+            LevelId = levelId,
+            Units = PPUnits.Millimeters,
+            Parameters = groupKey.OverrideParameters
+        };
+
+        _writer.AddRecord(overrides);
 
     }
 
@@ -224,6 +242,22 @@ public class PPJobConverter {
         return true;
     }
 
+    public static bool AreDictionariesEquivalent<T1, T2>(IDictionary<T1, T2>? x, IDictionary<T1, T2>? y) {
+        if (x is null && y is null) return true;
+        if (x is null && y is not null || y is null && x is not null) return false;
+        if (x!.Count != y!.Count) return false;
+
+        foreach (var (key, value) in x) {
+
+            if (!y.TryGetValue(key, out T2? yValue)) return false;
+            if (value is null) return yValue is null;
+            if (!value.Equals(yValue)) return false;
+
+        }
+
+        return true;
+    }
+
     class Room {
         public required string Name { get; set; }
         public required IEnumerable<ProductGroup> Groups { get; set; }
@@ -244,8 +278,9 @@ public class PPJobConverter {
         public IDictionary<string, PPMaterial> EBMaterials { get; }
         public IDictionary<string, string> AllMaterials { get; }
         public IDictionary<string, string> OverrideParameters { get; }
+        public IDictionary<string, double> CoreThicknesses { get; }
 
-        public ProductGroupKey(string catalog, string materialType, string doorType, string hardwareType, IDictionary<string, PPMaterial> finishMaterials, IDictionary<string, PPMaterial> ebMaterials, IDictionary<string, string> overrideParameters) {
+        public ProductGroupKey(string catalog, string materialType, string doorType, string hardwareType, IDictionary<string, PPMaterial> finishMaterials, IDictionary<string, PPMaterial> ebMaterials, IDictionary<string, string> overrideParameters, IDictionary<string, double> coreThicknesses) {
             Catalog = catalog;
             MaterialType = materialType;
             DoorType = doorType;
@@ -258,6 +293,7 @@ public class PPJobConverter {
             EBMaterials.ForEach(mat => AllMaterials.Add(mat.Key, mat.Value.ToString()));
 
             OverrideParameters = overrideParameters;
+            CoreThicknesses = coreThicknesses;
         }
 
     }
@@ -269,6 +305,7 @@ public class PPJobConverter {
             if (x.Catalog != y.Catalog || x.MaterialType != y.MaterialType || x.DoorType != y.DoorType || x.HardwareType != y.HardwareType) return false;
             if (!AreDictionariesEquivalent(y.AllMaterials, x.AllMaterials)) return false;
             if (!AreDictionariesEquivalent(y.OverrideParameters, x.OverrideParameters)) return false;
+            if (!AreDictionariesEquivalent(y.CoreThicknesses, x.CoreThicknesses)) return false;
             return true;
         }
 

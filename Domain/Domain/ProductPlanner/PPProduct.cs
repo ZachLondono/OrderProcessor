@@ -17,8 +17,9 @@ public class PPProduct {
     public IDictionary<string, string> Parameters { get; }
     public IDictionary<string, string> OverrideParameters { get; }
     public IDictionary<string, string> ManualOverrideParameters { get; }
+    public IDictionary<string, double> CoreThicknesses { get; }
 
-    public PPProduct(Guid productId, int qty, string room, string name, int sequenceNum, string catalog, string materialType, string doorType, string hardwareType, string comment, IDictionary<string, PPMaterial> finishMaterials, IDictionary<string, PPMaterial> ebMaterials, IDictionary<string, string> parameters, IDictionary<string, string> overrideParameters, IDictionary<string, string> manualOverrideParameters) {
+    public PPProduct(Guid productId, int qty, string room, string name, int sequenceNum, string catalog, string materialType, string doorType, string hardwareType, string comment, IDictionary<string, PPMaterial> finishMaterials, IDictionary<string, PPMaterial> ebMaterials, IDictionary<string, string> parameters, IDictionary<string, string> overrideParameters, IDictionary<string, string> manualOverrideParameters, IDictionary<string, double> coreThicknesses) {
         ProductId = productId;
         Qty = qty;
         Room = room;
@@ -34,6 +35,7 @@ public class PPProduct {
         Parameters = parameters;
         OverrideParameters = overrideParameters;
         ManualOverrideParameters = manualOverrideParameters;
+        CoreThicknesses = coreThicknesses;
     }
 
 }

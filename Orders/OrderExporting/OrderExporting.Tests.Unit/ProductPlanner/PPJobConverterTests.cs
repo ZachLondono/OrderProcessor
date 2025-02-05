@@ -244,6 +244,7 @@ public class PPJobConverterTests {
                ebMaterials ?? [],
                new Dictionary<string, string>(),
                overrideParameters ?? [],
-               new Dictionary<string, string>());
+               new Dictionary<string, string>(),
+               new Dictionary<string, double>());
 
 }
