@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Domain.Excel;
 using Domain.Infrastructure.Bus;
+using System.Runtime.InteropServices;
 
 namespace ApplicationCore.Features.OpenDoorOrders;
 
@@ -82,12 +83,34 @@ public class GetOpenDoorOrders {
                     }
                 }
 
+            } catch (COMException ex) {
+
+                _logger.LogError(ex, "Exception thrown while trying to list all open door orders");
+
+                if (ex.Message.Contains("RPC_E_SERVERCALL_RETRYLATER", StringComparison.InvariantCultureIgnoreCase)) {
+
+                    return Task.FromResult(Response<IEnumerable<DoorOrder>>.Error(new() {
+                        Title = "Excel is Being Edited",
+                        Details = "Please stop editing cells in Excel and try again."
+                    }));
+
+                } else {
+
+                    return Task.FromResult(Response<IEnumerable<DoorOrder>>.Error(new() {
+                        Title = "Failed to Get Open Orders",
+                        Details = ex.Message
+                    }));
+
+                }
+
             } catch (Exception ex) {
+
                 _logger.LogError(ex, "Exception thrown while trying to list all open door orders");
                 return Task.FromResult(Response<IEnumerable<DoorOrder>>.Error(new() {
                     Title = "Failed to Get Open Orders",
                     Details = ex.Message
                 }));
+
             }
 
             return Task.FromResult(Response<IEnumerable<DoorOrder>>.Success(doorOrders));

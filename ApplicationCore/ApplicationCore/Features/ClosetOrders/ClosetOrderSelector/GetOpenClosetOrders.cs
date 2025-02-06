@@ -4,6 +4,8 @@ using System.Diagnostics;
 using Domain.Excel;
 using ExcelApplication = Microsoft.Office.Interop.Excel.Application;
 using Domain.Infrastructure.Bus;
+using Error = Domain.Infrastructure.Bus.Error;
+using System.Runtime.InteropServices;
 
 namespace ApplicationCore.Features.ClosetOrders.ClosetOrderSelector;
 
@@ -23,20 +25,41 @@ public class GetOpenClosetOrders {
 
             try {
 
-                List<ClosetOrder> closetOrders = await Task.Run(LoadOpenClosetOrders);
-                return Response<IEnumerable<ClosetOrder>>.Success(closetOrders);
+                return await Task.Run(LoadOpenClosetOrders);
+
+            } catch (COMException ex) {
+
+                _logger.LogError(ex, "Exception thrown while trying to list all open closet orders");
+
+                if (ex.Message.Contains("RPC_E_SERVERCALL_RETRYLATER", StringComparison.InvariantCultureIgnoreCase)) {
+
+                    return new Error() {
+                        Title = "Excel is Being Edited",
+                        Details = "Please stop editing cells in Excel and try again."
+                    };
+
+                } else {
+
+                    return new Error() {
+                        Title = "Failed to Get Open Orders",
+                        Details = ex.Message
+                    };
+
+                }
 
             } catch (Exception ex) {
-                _logger.LogError(ex, "Exception thrown while trying to list all open door orders");
-                return Response<IEnumerable<ClosetOrder>>.Error(new() {
+
+                _logger.LogError(ex, "Exception thrown while trying to list all open closet orders");
+                return new Error() {
                     Title = "Failed to Get Open Orders",
                     Details = ex.Message
-                });
+                };
+
             }
 
         }
 
-        private List<ClosetOrder> LoadOpenClosetOrders() {
+        private Response<IEnumerable<ClosetOrder>> LoadOpenClosetOrders() {
 
             List<ClosetOrder> closetOrders = [];
 

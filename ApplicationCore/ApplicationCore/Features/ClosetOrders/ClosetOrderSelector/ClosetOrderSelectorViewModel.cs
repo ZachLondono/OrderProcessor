@@ -42,11 +42,15 @@ public class ClosetOrderSelectorViewModel {
     public async Task LoadOpenOrders() {
 
         IsLoading = true;
+        _error = string.Empty;
 
         var response = await _bus.Send(new GetOpenClosetOrders.Query());
         response.Match(
             orders => _openClosetOrders = new(orders),
-            error => _error = $"{error.Title} - {error.Details}"
+            error => {
+                _openClosetOrders = [];
+                _error = $"{error.Title} - {error.Details}";
+            }
         );
 
         IsLoading = false;

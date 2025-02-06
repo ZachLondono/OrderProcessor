@@ -74,6 +74,7 @@
     private void LoadOpenOrders() {
 
         _isLoading = true;
+        _error = string.Empty;
         StateHasChanged();
 
         _ = Task.Run(() => {
@@ -81,7 +82,10 @@
             var response = Bus.Send(new GetOpenDoorOrders.Query()).Result;
             response.Match(
                 orders => _openDoorOrders = new(orders),
-                error => _error = $"{error.Title} - {error.Details}"
+                error => {
+                    _openDoorOrders = [];
+                    _error = $"{error.Title} - {error.Details}";
+                }
             );
             _isLoading = false;
             InvokeAsync(StateHasChanged);
