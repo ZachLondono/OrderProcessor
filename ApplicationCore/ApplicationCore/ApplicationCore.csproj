@@ -74,8 +74,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\HafeleMDFDoorOrders\GetOrder\" />
-  </ItemGroup>
-
 </Project>
