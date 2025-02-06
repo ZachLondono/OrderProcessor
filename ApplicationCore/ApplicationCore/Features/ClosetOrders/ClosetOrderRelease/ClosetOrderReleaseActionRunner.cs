@@ -335,6 +335,8 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                 var workbook = workbooks.Open(filePath);
                 Sheets worksheets = workbook.Worksheets;
 
+                app.Calculate();
+
                 var pdfSheetNames = new List<string>();
 
                 if (includeCover || (invoice && Directory.Exists(invoiceDirectory))) {

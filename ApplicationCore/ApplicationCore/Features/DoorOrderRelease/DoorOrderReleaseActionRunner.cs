@@ -241,6 +241,8 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
                 var workbook = workbooks.Open(doorOrder.OrderFile);
                 var worksheets = workbook.Worksheets;
 
+                app.Calculate();
+
                 if (options.GenerateGCodeFromWorkbook) {
                     batches = GenerateBatchesFromDoorOrder(app, worksheets, doorOrder);
 
