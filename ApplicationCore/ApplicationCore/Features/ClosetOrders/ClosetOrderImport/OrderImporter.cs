@@ -1,4 +1,5 @@
-﻿using Outlook = Microsoft.Office.Interop.Outlook;
+﻿using Domain.Extensions;
+using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace ApplicationCore.Features.ClosetOrders.ClosetOrderImport;
 
@@ -65,7 +66,7 @@ public class OrderImporter {
         var senders = GetEmailSenders();
 
         var name = _mailItem.SenderName;
-        var address = _mailItem.SenderEmailAddress;
+        var address = GetEmailAddress(_mailItem);
 
         foreach (var sender in senders) {
             if (CustomerWorkingDirectoryRoots.ContainsKey(sender.EmailAddress)) {
@@ -92,20 +93,59 @@ public class OrderImporter {
     private EmailSender[] GetEmailSenders() {
 
         List<EmailSender> senders = [
-            new(_mailItem.SenderName, _mailItem.SenderEmailAddress)
+            new(_mailItem.SenderName, GetEmailAddress(_mailItem))
         ];
 
         var conv = _mailItem.GetConversation();
 
         if (conv is null) return senders.ToArray();
 
-        var convSenders = conv.GetRootItems()
+        conv.GetRootItems()
                               .OfType<Outlook.MailItem>()
-                              .Select(i => new EmailSender(i.SenderName, i.SenderEmailAddress));
+            .Select(i => new EmailSender(i.SenderName, GetEmailAddress(i)))
+            .ForEach(s => senders.Add(s));
 
-        senders.AddRange(convSenders);
+        foreach (var item in conv.GetRootItems()) {
+            senders.AddRange(GetAllSendersFromConversation(item, conv));
+        }
 
         return senders.ToArray();
+
+    }
+
+    private static string GetEmailAddress(Outlook.MailItem mailItem) {
+
+        if (mailItem.SenderEmailType == "EX") {
+            return mailItem.Sender.GetExchangeUser().PrimarySmtpAddress;
+        }
+
+        return mailItem.SenderEmailAddress;
+
+    }
+
+    private static List<EmailSender> GetAllSendersFromConversation(object item, Outlook.Conversation conversation) {
+        List<EmailSender> senders = [];
+        GetAllSendersFromConversationHelper(item, conversation, senders);
+        return senders;
+    }
+
+    private static void GetAllSendersFromConversationHelper(object item, Outlook.Conversation conversation, List<EmailSender> senders) {
+
+        Outlook.SimpleItems items = conversation.GetChildren(item);
+
+        if (items.Count <= 0) {
+            return;
+        }
+
+        foreach (object childItem in items) {
+
+            if (childItem is Outlook.MailItem mailItem) {
+                senders.Add(new(mailItem.SenderName, GetEmailAddress(mailItem)));
+            }
+
+            GetAllSendersFromConversationHelper(childItem, conversation, senders);
+
+        }
 
     }
 
