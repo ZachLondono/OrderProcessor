@@ -7,14 +7,11 @@ public class OrderImporter {
 
     private readonly Outlook.MailItem _mailItem;
 
-    public static readonly Dictionary<string, string> CustomerWorkingDirectoryRoots = new() {
-
-        { "cbg57c@aol.com", @"R:\Job Scans\Closets by Glinsky - CBG" },
-
-        { "lkerekes@tailoredcloset.com", @"R:\Job Scans\Closets-TLMid- TLMid" },
-        { "tkerekes@tailoredcloset.com", @"R:\Job Scans\Closets-TLMid- TLMid" },
-
-    };
+    public static readonly Dealer[] Dealers = [
+        new("cbg57c@aol.com", @"R:\Job Scans\Closets by Glinsky - CBG", "CBG"),
+        new("lkerekes@tailoredcloset.com", @"R:\Job Scans\Closets-TLMid- TLMid", "TLMid"),
+        new("tkerekes@tailoredcloset.com", @"R:\Job Scans\Closets-TLMid- TLMid", "TLMid"),
+    ];
 
     public OrderImporter(Outlook.MailItem mailItem) {
         _mailItem = mailItem;
@@ -69,7 +66,7 @@ public class OrderImporter {
         var address = GetEmailAddress(_mailItem);
 
         foreach (var sender in senders) {
-            if (CustomerWorkingDirectoryRoots.ContainsKey(sender.EmailAddress)) {
+            if (Dealers.Any(d => d.IncomingEmail.Equals(sender.EmailAddress))) {
                 name = sender.Name;
                 address = sender.EmailAddress;
                 break;
@@ -101,7 +98,7 @@ public class OrderImporter {
         if (conv is null) return senders.ToArray();
 
         conv.GetRootItems()
-                              .OfType<Outlook.MailItem>()
+            .OfType<Outlook.MailItem>()
             .Select(i => new EmailSender(i.SenderName, GetEmailAddress(i)))
             .ForEach(s => senders.Add(s));
 
@@ -150,5 +147,7 @@ public class OrderImporter {
     }
 
     private record struct EmailSender(string Name, string EmailAddress);
+
+    public record Dealer(string IncomingEmail, string OutputDirectory, string OrderNumberPrefix);
 
 }

@@ -1,4 +1,5 @@
 ﻿@using Domain.Components
+@using static ApplicationCore.Features.ClosetOrders.ClosetOrderImport.OrderImporter
 @using static Domain.Components.Button
 
 @switch (_state) {
@@ -20,7 +21,7 @@
 
     case DialogState.Setup:
         <div>
-        
+
             @if(_loadingError is not null) {
                 <span>@_loadingError</span>
             } else if(_isLoading) {
@@ -28,9 +29,9 @@
             } else if (_message is null) {
                 <span>No Message Selected</span>
             } else {
-        
+
                 <h1 class="font-bold text-lg">Currently Selected Message</h1>
-        
+
                 <div class="mt-3">
                     <span class="text-xs text-gray-500">Sender</span>
                     <div>@_message.SenderName</div>
@@ -79,17 +80,17 @@
                 <div class="mt-10">
                     <Button OnClickAsync="ImportSelectedOrder" Class="w-full" Color="ButtonColor.Primary">Import</Button>
                 </div>
-                
+
             }
-        
+
             <div class="mt-5 text-center">
                 <Button OnClick="LoadCurrentMessageDetails" Color="ButtonColor.Secondary">Refresh</Button>
                 <Button OnClickAsync="Cancel" Color="ButtonColor.Secondary">Cancel</Button>
             </div>
-        
+
         </div>
         break;
-    
+
 }
 
 @code {
@@ -144,8 +145,10 @@
 
             _importer = new OrderImporter(mailItem);
             _message =  _importer.GetMessageDetails();
-            if (OrderImporter.CustomerWorkingDirectoryRoots.TryGetValue(_message.SenderEmail, out string? wdr)) {
-                _workingDirectoryRoot = wdr;
+            Dealer? dealer = OrderImporter.Dealers.Where(d => d.IncomingEmail.Equals(_message.SenderEmail)).FirstOrDefault();
+            if (dealer is not null) {
+                _workingDirectoryRoot = dealer.OutputDirectory;
+                _orderNumber = GetNextOrderNumber(dealer.OutputDirectory, dealer.OrderNumberPrefix);
             }
 
             _isLoading = false;
@@ -182,6 +185,18 @@
             return;
         }
 
+        if (string.IsNullOrWhiteSpace(_orderNumber)) {
+            _loadingError = "Order number required";
+            StateHasChanged();
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_orderName)) {
+            _loadingError = "Order name required";
+            StateHasChanged();
+            return;
+        }
+
         _state = DialogState.Importing;
         StateHasChanged();
 
@@ -193,6 +208,32 @@
 
         _state = DialogState.Complete;
         StateHasChanged();
+
+    }
+
+    private static string GetNextOrderNumber(string workingDirectoryRoot, string orderNumberPrefix) {
+
+        try {
+
+            var subDirs = Directory.EnumerateDirectories(workingDirectoryRoot, $"{orderNumberPrefix}*").Select(d => Path.GetFileName(d)).OfType<string>();
+
+            int maxNum = 0;
+            foreach (var subdir in subDirs) {
+                var numStr = subdir.Substring(orderNumberPrefix.Length, subdir.IndexOf(' ') - orderNumberPrefix.Length).Trim();
+                if (int.TryParse(numStr, out int num)){
+                    if (num > 1000) continue;
+                    if (num <= maxNum) continue;
+                    maxNum = num;
+                }
+            }
+
+            return $"{orderNumberPrefix}{maxNum + 1}";
+
+        } catch {
+
+            return string.Empty;
+
+        }
 
     }
 
