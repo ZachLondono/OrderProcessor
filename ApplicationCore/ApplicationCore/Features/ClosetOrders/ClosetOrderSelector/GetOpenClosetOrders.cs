@@ -79,6 +79,7 @@ public class GetOpenClosetOrders {
             }
 
             foreach (var app in excelApps) {
+
                 Workbooks workbooks = app.Workbooks;
                 foreach (Workbook workbook in workbooks) {
                     Sheets worksheets = workbook.Worksheets;
@@ -120,7 +121,7 @@ public class GetOpenClosetOrders {
                             containsOther = !string.IsNullOrWhiteSpace(firstQty);
                         }
 
-                        closetOrders.Add(new(customerName, jobName, jobNumber, orderDate, dueDate, containsMDF, containsDovetail, containsOther, reportFilePath, filePath, directory));
+                        closetOrders.Add(new(customerName, jobName, jobNumber, orderDate, dueDate, containsMDF, containsDovetail, containsOther, reportFilePath, filePath, directory, app.IsSandboxed));
 
                     } catch (Exception ex) {
                         _logger.LogWarning(ex, "Exception thrown while trying to read order info from door order Cover tab");

@@ -11,4 +11,5 @@ public record ClosetOrder(
     bool ContainsOther,
     string ReportFilePath,
     string OrderFile,
-    string OrderFileDirectory);
+    string OrderFileDirectory,
+    bool IsSandBoxed);

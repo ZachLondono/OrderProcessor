@@ -15,6 +15,11 @@
 } else {
 
     @if (_openDoorOrders.Any()) {
+
+        @if (_openDoorOrders.Any(c => c.IsSandBoxed)) {
+            <span class="text-red-500">Excel Order Form is In Protected View - Enable Editing to Continue</span>
+        }
+
         <table class="table-auto">
             <thead class="border-b border-slate-300">
                 <tr>
@@ -27,7 +32,7 @@
             </thead>
             <tbody>
                 @foreach (var order in _openDoorOrders) {
-                    <tr title="@(order.ReleasedDate is null ? "" : "Order has been previously released.")" class="text-center border-b cursor-pointer @(RowClass(order))" @onclick="() => SelectOrder(order)">
+                    <tr title="@(order.ReleasedDate is null ? "" : "Order has been previously released.")" class="text-center border-b @(RowClass(order))" @onclick="() => SelectOrder(order)">
                         <td class="p-5">@order.OrderNumber</td>
                         <td class="p-5">@order.OrderName</td>
                         <td class="p-5">@order.Customer</td>
@@ -94,15 +99,25 @@
 
     }
 
-    private Task SelectOrder(DoorOrder selectedOrder)
-        => BlazoredModal.CloseAsync(ModalResult.Ok(selectedOrder));
+    private async Task SelectOrder(DoorOrder selectedOrder) {
+        if (selectedOrder.IsSandBoxed) return;
+        await BlazoredModal.CloseAsync(ModalResult.Ok(selectedOrder));
+    }
 
     private async Task Close() {
         await BlazoredModal.CloseAsync();
     }
 
     private string RowClass(DoorOrder order) {
-        return order.ReleasedDate is null ? "hover:bg-slate-200 " : "bg-red-100 hover:bg-red-200";
+
+        if (order.IsSandBoxed) {
+            return "cursor-not-allowed bg-red-400";
+        } else if (order.ReleasedDate is not null) {
+            return "cursor-pointer bg-red-100 hover:bg-red-200";
+        } else {
+            return "cursor-pointer hover:bg-slate-200";
+        }
+
     }
 
 }

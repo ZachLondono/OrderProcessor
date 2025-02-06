@@ -10,4 +10,5 @@ public record DoorOrder(string Customer,
                         DateTime? ReleasedDate,
                         DateTime? OrderDate,
                         DateTime? DueDate,
-                        int ItemCount);
+                        int ItemCount,
+                        bool IsSandBoxed);
