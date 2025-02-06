@@ -527,27 +527,37 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             SetPrintArea(worksheets, sheetName, "J");
             PDFSheetNames.Add(sheetName);
 
-            if (print && TryGetSheet(worksheets, sheetName, out Worksheet sheet)) sheet.PrintOutEx();
+            if (print && TryGetSheet(worksheets, sheetName, out Worksheet sheet)) {
+                sheet.Calculate();
+                sheet.PrintOutEx();
+            }
         }
         if (packingList) {
             const string sheetName = "MDF Packing List";
             SetPrintArea(worksheets, sheetName, "E");
             PDFSheetNames.Add(sheetName);
 
-            if (print && TryGetSheet(worksheets, sheetName, out Worksheet sheet)) sheet.PrintOutEx(Copies: 2);
+            if (print && TryGetSheet(worksheets, sheetName, out Worksheet sheet)) {
+                sheet.Calculate();
+                sheet.PrintOutEx(Copies: 2);
+            }
         }
         if (invoice) {
             const string sheetName = "MDF Invoice";
             SetPrintArea(worksheets, sheetName, "E");
             PDFSheetNames.Add(sheetName);
 
-            if (print && TryGetSheet(worksheets, sheetName, out Worksheet sheet)) sheet.PrintOutEx();
+            if (print && TryGetSheet(worksheets, sheetName, out Worksheet sheet)) {
+                sheet.Calculate();
+                sheet.PrintOutEx();
+            }
         }
         if (orderForm) {
             const string sheetName = "MDF Order Form";
             if (TryGetSheet(worksheets, sheetName, out Worksheet sheet)) {
                 if (print) {
                     sheet.PageSetup.PrintArea = "A1:G86";
+                    sheet.Calculate();
                     sheet.PrintOutEx(Copies: 2);
                 }
                 sheet.PageSetup.PrintArea = "A1:G45";
@@ -565,6 +575,7 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         worksheets[sheetsToSelect].Select();
 
         Worksheet activeSheet = workbook.ActiveSheet;
+        activeSheet.Calculate();
         activeSheet.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, tmpFileName, OpenAfterPublish: false);
 
         previouslyActiveSheet?.Select();

@@ -360,6 +360,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                             app.PrintCommunication = true;
 
                             invoiceFilePath = Path.Combine(invoiceDirectory, $"{ClosetOrder?.OrderNumber} Invoice");
+                            cover.Calculate();
                             cover.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, invoiceFilePath, OpenAfterPublish: false);
                             invoiceFilePath += ".pdf";
                             PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, invoiceFilePath));
@@ -437,6 +438,7 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                 worksheets[sheetsToSelect].Select();
 
                 Worksheet activeSheet = workbook.ActiveSheet;
+                activeSheet.Calculate();
                 activeSheet.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, tmpFileName, OpenAfterPublish: false);
 
                 previouslyActiveSheet?.Select();
