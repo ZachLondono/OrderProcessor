@@ -1,4 +1,5 @@
 ﻿@using Domain.Components
+@using System.Diagnostics
 @using static ApplicationCore.Features.ClosetOrders.ClosetOrderImport.OrderImporter
 @using static Domain.Components.Button
 
@@ -12,7 +13,7 @@
 
     case DialogState.Complete:
         <div>
-            <span>Order imported to '@_newWorkingDirectory'</span>
+            <span>Order imported to <Button Style="ButtonStyle.Text" OnClick="OpenWorkingDirectory">@_newWorkingDirectory</Button></span>
         </div>
         <div class="mt-5">
             <Button OnClickAsync="Cancel" Color="ButtonColor.Primary">Close</Button>
@@ -241,6 +242,25 @@
             return string.Empty;
 
         }
+
+    }
+
+    public void OpenWorkingDirectory() {
+
+        if (!Directory.Exists(_newWorkingDirectory)) {
+            return;
+        } 
+
+        try {
+
+            ProcessStartInfo startInfo = new ProcessStartInfo {
+                Arguments = "\"" + _newWorkingDirectory.Replace('/', '\\') + "\"",
+                FileName = "explorer.exe"
+            };
+
+            Process.Start(startInfo);
+
+        } catch { }
 
     }
 
