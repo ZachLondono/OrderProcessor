@@ -1,4 +1,8 @@
-﻿namespace ApplicationCore.Features.ClosetOrders.ClosetOrderImport;
+﻿using Microsoft.Office.Interop.Excel;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+
+namespace ApplicationCore.Features.ClosetOrders.ClosetOrderImport;
 
 public class ClosetOrderDirectoryStructure {
 
@@ -20,13 +24,18 @@ public class ClosetOrderDirectoryStructure {
         CutListDirectory = cutListDirectory;
     }
 
-    public string AddFileToOrders(string filePath) {
+    public string AddFileToOrders(string filePath, bool writeOrderNumber) {
 
         var fileName = Path.GetFileName(filePath);
-        var orderFileName = Path.Combine(OrdersDirectory, $"{OrderNumber}{(_orderFileIndex > 0 ? $"-{_orderFileIndex}" : "")} {fileName}");
+        var actualOrderNumber = $"{OrderNumber}{(_orderFileIndex > 0 ? $"-{_orderFileIndex}" : "")}";
+        var orderFileName = Path.Combine(OrdersDirectory, $"{actualOrderNumber} {fileName}");
 
-        File.Copy(filePath, orderFileName, true);
-        FileUnblocker.Unblock(orderFileName);
+        if (writeOrderNumber) {
+            TryToFillOrderForm(filePath, orderFileName, actualOrderNumber);
+        } else {
+            File.Copy(filePath, orderFileName, true);
+            FileUnblocker.Unblock(orderFileName);
+        }
 
         _orderFileIndex++;
 
@@ -75,6 +84,58 @@ public class ClosetOrderDirectoryStructure {
         }
 
         return new(number, name, workingDirectory, incomingDir, ordersDir, cutlistDir);
+
+    }
+
+    public static void TryToFillOrderForm(string originalFilePath, string newFilePath, string number) {
+
+        Application? app = null;
+        Workbooks? workbooks = null;
+        Workbook? workbook = null;
+        Sheets? sheets = null;
+        Worksheet? sheet = null;
+
+        try {
+
+            app = new Application();
+            app.DisplayAlerts = false;
+
+            workbooks = app.Workbooks;
+            workbook = workbooks.Open(originalFilePath, ReadOnly: false);
+            sheets = workbook.Worksheets;
+            sheet = sheets["Cover"];
+
+            sheet.Range["OrderNum"].Value2 = number;
+
+            workbook.SaveAs2(newFilePath);
+            workbook.Close(SaveChanges: true);
+
+        } catch (Exception ex) {
+
+            Debug.WriteLine(ex.Message);
+
+        } finally {
+
+            if (sheet is not null) Marshal.ReleaseComObject(sheet);
+            if (sheets is not null) Marshal.ReleaseComObject(sheets);
+            if (workbook is not null) Marshal.ReleaseComObject(workbook);
+
+            if (workbooks is not null) {
+                workbooks.Close();
+                Marshal.ReleaseComObject(workbooks);
+            }
+
+            if (app is not null) {
+                app.Quit();
+                Marshal.ReleaseComObject(app);
+            }
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+        }
 
     }
 

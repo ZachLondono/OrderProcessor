@@ -17,7 +17,7 @@ public class OrderImporter {
         _mailItem = mailItem;
     }
 
-    public string? ImportOrderFromMailItem(ClosetOrder order, string workingDirectoryRoot) {
+    public string? ImportOrderFromMailItem(ClosetOrder order, string workingDirectoryRoot, bool writeOrderNumber) {
 
         if (workingDirectoryRoot is null || !Directory.Exists(workingDirectoryRoot)) {
             return null;
@@ -41,7 +41,7 @@ public class OrderImporter {
                 continue;
             }
 
-            ImportOrderFile(structure, attachment, orderAttachment.CopyToOrders);
+            ImportOrderFile(structure, attachment, orderAttachment.CopyToOrders, writeOrderNumber);
 
         }
 
@@ -49,12 +49,12 @@ public class OrderImporter {
 
     }
 
-    private static void ImportOrderFile(ClosetOrderDirectoryStructure structure, Outlook.Attachment attachment, bool copyToOrders) {
+    private static void ImportOrderFile(ClosetOrderDirectoryStructure structure, Outlook.Attachment attachment, bool copyToOrders, bool writeOrderNumber) {
 
         var savePath = Path.Combine(structure.IncomingDirectory, attachment.FileName);
         attachment.SaveAsFile(savePath);
 
-        if (copyToOrders) _ = structure.AddFileToOrders(savePath);
+        if (copyToOrders) _ = structure.AddFileToOrders(savePath, writeOrderNumber);
 
     }
 

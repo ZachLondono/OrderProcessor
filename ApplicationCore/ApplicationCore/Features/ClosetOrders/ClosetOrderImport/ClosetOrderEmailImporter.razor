@@ -54,6 +54,12 @@
                     <input type="text" class="input-text w-full" @bind-value="_orderName" />
                 </div>
 
+                <div class="mt-5 ml-3">
+                    <CheckBox @bind-IsChecked="_writeOrderNumber">
+                        Write Number to Order Forms
+                    </CheckBox>
+                </div>
+
                 <div class="mt-10">
                     <table class="ml-3 table">
                         <thead>
@@ -108,6 +114,7 @@
     private string _orderNumber = "";
     private string _orderName = "";
     private string _workingDirectoryRoot = "";
+    private bool _writeOrderNumber = false;
     private OrderMessage? _message = null;
     private OutlookWrapper? _wrapper = null;
     private OrderImporter? _importer = null;
@@ -203,7 +210,7 @@
         var order = new ClosetOrder(_orderNumber, _orderName, _message.Attachments);
         await Task.Run(() =>
         {
-            _newWorkingDirectory = _importer.ImportOrderFromMailItem(order, _workingDirectoryRoot);
+            _newWorkingDirectory = _importer.ImportOrderFromMailItem(order, _workingDirectoryRoot, _writeOrderNumber);
         });
 
         _state = DialogState.Complete;
