@@ -10,13 +10,13 @@ using Range = Microsoft.Office.Interop.Excel.Range;
 
 namespace ApplicationCore.Features.HafeleMDFDoorOrders;
 
-public class HafeleMDFDoorProcessor {
+public class HafeleMDFDoorImporter {
 
     private const string _workingDirectoryRoot = "";
     private readonly ExportSettings _exportSettings;
     private readonly IFileReader _fileReader;
 
-    public HafeleMDFDoorProcessor(IOptions<ExportSettings> exportSettings, IFileReader fileReader) {
+    public HafeleMDFDoorImporter(IOptions<ExportSettings> exportSettings, IFileReader fileReader) {
         _exportSettings = exportSettings.Value;
         _fileReader = fileReader;
     }
