@@ -12,6 +12,7 @@ namespace ApplicationCore.Features.HafeleMDFDoorOrders;
 
 public class HafeleMDFDoorProcessor {
 
+    private const string _workingDirectoryRoot = "";
     private readonly ExportSettings _exportSettings;
     private readonly IFileReader _fileReader;
 
@@ -20,17 +21,29 @@ public class HafeleMDFDoorProcessor {
         _fileReader = fileReader;
     }
 
-    public void ProcessOrder() {
-
-        // Create output directory
-        string orderFilePath = "";
-        string ordersDirectory = "";
+    public void ProcessOrder(string orderFilePath) {
 
         // Read order file
         var orderData = HafeleMDFDoorOrder.Load(orderFilePath);
 
+        // Create output directory
+        string workingDirectory = Path.Combine(_workingDirectoryRoot, $"{orderData.Options.Company} - {orderData.Options.HafelePO}");
+        var dirInfo = Directory.CreateDirectory(workingDirectory);
+        if (!dirInfo.Exists) {
+            throw new InvalidOperationException($"Failed to create directory '{workingDirectory}'");
+        }
+
+        string cutlistDir = Path.Combine(workingDirectory, "CUTLIST");
+        _ = Directory.CreateDirectory(cutlistDir);
+        string incomingDir = Path.Combine(workingDirectory, "incoming");
+        _ = Directory.CreateDirectory(incomingDir);
+        string ordersDir = Path.Combine(workingDirectory, "orders");
+        _ = Directory.CreateDirectory(ordersDir);
+
+        File.Copy(orderFilePath, Path.Combine(incomingDir, Path.GetFileName(orderFilePath)));
+
         // Fill order form
-        FillMDFDoorForm(orderData, ordersDirectory);
+        FillMDFDoorForm(orderData, ordersDir);
 
     }
 
