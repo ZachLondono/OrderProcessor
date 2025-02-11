@@ -1,6 +1,6 @@
 ﻿using Outlook = Microsoft.Office.Interop.Outlook;
 
-namespace ApplicationCore.Features.ClosetOrders.ClosetOrderImport;
+namespace ApplicationCore.Shared.Services;
 
 public class OutlookWrapper {
 

@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.DoorOrderRelease;
+﻿namespace ApplicationCore.Features.MDFDoorOrders.DoorOrderRelease;
 
 public class DoorOrderReleaseOptions {
 

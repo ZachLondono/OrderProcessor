@@ -1,0 +1,91 @@
+﻿@using Domain.Components
+@using static Domain.Components.Button
+
+
+<div>
+    @switch (_state)
+    {
+
+        case State.Complete:
+            <span>Complete</span>
+            break;
+
+        case State.Importing:
+            <span>Importing...</span>
+            break;
+
+        case State.Setup:
+
+            @if (_loadingError is not null)
+            {
+                <span>@_loadingError</span>
+            }
+            else if (_isLoading)
+            {
+                <span>Loading Message...</span>
+            }
+            else if (_emailDetails is null)
+            {
+                <span>No Message Selected</span>
+            }
+            else
+            {
+
+                <h1 class="font-bold text-lg">Currently Selected Message</h1>
+
+                <div class="mt-3">
+                    <h2 class="font-semibold text-md">Order Number</h2>
+                    <input type="text" class="input-text w-full" @bind-value="_emailDetails.OrderNumber" />
+                </div>
+                <div class="mt-3">
+                    <h2 class="font-semibold text-md">Company</h2>
+                    <input type="text" class="input-text w-full" @bind-value="_emailDetails.Company" />
+                </div>
+
+                <div class="mt-10">
+                    <table class="ml-3 table">
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Incoming</th>
+                                <th>Is Order</th>
+                            </tr>
+                        </thead>
+                        @foreach (var attachment in _emailDetails.Attachments)
+                        {
+                            <tr>
+                                <td>@attachment.FileName</td>
+                                <td class="text-center">
+                                    <CheckBox @bind-IsChecked="attachment.CopyToIncoming" />
+                                </td>
+                                <td class="text-center">
+                                    <CheckBox @bind-IsChecked="attachment.IsOrderForm" />
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+
+                <div class="mt-10">
+                    <Button OnClickAsync="ImportSelectedOrder" Class="w-full" Color="ButtonColor.Primary">Import</Button>
+                </div>
+
+            }
+            break;
+
+        default:
+            <span>Unknown state</span>
+            break;
+
+    }
+
+
+    @if (_state != State.Importing) {
+        <div class="mt-5 text-center">
+            <Button OnClick="LoadCurrentMessageDetails" Color="ButtonColor.Secondary">Refresh</Button>
+            <Button OnClickAsync="Cancel" Color="ButtonColor.Secondary">Cancel</Button>
+        </div>
+    }
+
+</div>
+

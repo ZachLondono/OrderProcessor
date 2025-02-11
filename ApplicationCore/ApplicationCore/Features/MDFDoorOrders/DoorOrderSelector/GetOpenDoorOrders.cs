@@ -6,7 +6,7 @@ using Domain.Excel;
 using Domain.Infrastructure.Bus;
 using System.Runtime.InteropServices;
 
-namespace ApplicationCore.Features.OpenDoorOrders;
+namespace ApplicationCore.Features.MDFDoorOrders.OpenDoorOrders;
 
 public class GetOpenDoorOrders {
 

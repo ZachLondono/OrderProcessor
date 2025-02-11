@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.IO.Pipes;
 
-namespace ApplicationCore.Features.DoorOrderRelease;
+namespace ApplicationCore.Features.MDFDoorOrders.DoorOrderRelease;
 
 public class NamedPipeServer {
 
