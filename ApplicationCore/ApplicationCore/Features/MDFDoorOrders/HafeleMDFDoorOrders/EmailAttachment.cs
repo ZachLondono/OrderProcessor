@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.HafeleMDFDoorOrders;
+﻿namespace ApplicationCore.Features.MDFDoorOrders.HafeleMDFDoorOrders;
 
 public class EmailAttachment {
 

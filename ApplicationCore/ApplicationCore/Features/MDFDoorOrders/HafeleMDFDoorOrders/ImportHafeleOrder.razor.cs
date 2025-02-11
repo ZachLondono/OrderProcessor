@@ -3,7 +3,7 @@ using Blazored.Modal;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Office.Interop.Outlook;
 
-namespace ApplicationCore.Features.HafeleMDFDoorOrders;
+namespace ApplicationCore.Features.MDFDoorOrders.HafeleMDFDoorOrders;
 
 public partial class ImportHafeleOrder {
 

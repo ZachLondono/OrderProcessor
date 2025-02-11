@@ -1,0 +1,73 @@
+﻿@using ApplicationCore.Features.MDFDoorOrders.DoorOrderRelease
+@using ApplicationCore.Features.MDFDoorOrders.DoorOrderSelector
+@using ApplicationCore.Features.MDFDoorOrders.HafeleMDFDoorOrders
+@using ApplicationCore.Features.MDFDoorOrders.OpenDoorOrders
+@using ApplicationCore.Features.MDFDoorOrders.OpenDoorOrderFile
+@using Domain.Components;
+@using static Domain.Components.Button;
+
+<div>
+	<div class="mb-5">
+		<Button OnClickAsync="ReleaseOpenFile" Color="ButtonColor.Primary">Release Open File</Button>
+	</div>
+	<div>
+        <Button OnClickAsync="ImportFromEmail" Color="ButtonColor.Primary">Import Hafele Order From Email</Button>
+    </div>
+</div>
+
+<hr class="my-6" />
+
+<div>
+    <DoorOrderNumber />
+</div>
+
+
+@code {
+
+    [CascadingParameter]
+    public IModalService ModalService { get; set; } = default!;
+
+    [CascadingParameter]
+    private BlazoredModalInstance ModalInstance { get; set; } = default!;
+
+    private async Task ReleaseOpenFile() {
+
+        await ModalInstance.CloseAsync();
+
+		var dialog = ModalService.Show<DoorOrderSelectorWidget>("", new ModalOptions() {
+			Size = ModalSize.Automatic,
+			HideHeader = true,
+			DisableBackgroundCancel = true
+		});
+
+        var result = await dialog.Result;	
+
+		if (result.Confirmed && result.Data is DoorOrder order) {
+
+			_ = await ModalService.Show<DoorOrderReleaseDialog>("Door Order Release",
+			new ModalParameters() {
+				{ "Order", order }
+			}, new ModalOptions() {
+				DisableBackgroundCancel = true,
+				Size = ModalSize.ExtraLarge
+			}).Result;
+
+		}
+
+	}
+
+	private async Task ImportFromEmail() {
+
+		await ModalInstance.CloseAsync();
+
+		var dialog = ModalService.Show<ImportHafeleOrder>("", new ModalOptions() {
+			Size = ModalSize.Automatic,
+			HideHeader = true,
+			DisableBackgroundCancel = true
+		});
+
+		_ = await dialog.Result;
+
+    }
+
+}

@@ -1,9 +1,7 @@
 ﻿@using ApplicationCore.Features.BugReport
 @using ApplicationCore.Features.ClosetOrders
-@using ApplicationCore.Features.DoorOrderRelease
-@using ApplicationCore.Features.DoorOrderSelector
+@using ApplicationCore.Features.MDFDoorOrders
 @using ApplicationCore.Features.GeneralReleasePDF
-@using ApplicationCore.Features.OpenDoorOrders
 @using ApplicationCore.Features.Orders
 @using ApplicationCore.Features.Orders.OrderLoading.Dialog
 @using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource
@@ -233,23 +231,14 @@
 	}
 
 	private async Task OpenDoorOrdersDialog() {
-		var dialog = Modal.Show<DoorOrderSelectorWidget>("", new ModalOptions() {
+
+		var dialog = Modal.Show<MDFOrderActionSelector>("MDF Door Orders", new ModalOptions() {
 			Size = ModalSize.Automatic,
-			HideHeader = true,
-			DisableBackgroundCancel = true
+			DisableBackgroundCancel = true,
 		});
-		var result = await dialog.Result;
-		if (result.Confirmed && result.Data is DoorOrder order) {
 
-			_ = await Modal.Show<DoorOrderReleaseDialog>("Door Order Release",
-			new ModalParameters() {
-				{ "Order", order }
-			}, new ModalOptions() {
-				DisableBackgroundCancel = true,
-				Size = ModalSize.ExtraLarge
-			}).Result;
+		_ = await dialog.Result;
 
-		}
 	}
 
 	private async Task OpenClosetOrdersDialog() {

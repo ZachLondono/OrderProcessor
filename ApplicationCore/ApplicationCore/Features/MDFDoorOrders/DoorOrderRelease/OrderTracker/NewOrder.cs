@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.DoorOrderRelease.OrderTracker;
+﻿namespace ApplicationCore.Features.MDFDoorOrders.DoorOrderRelease.OrderTracker;
 
 public class NewOrder {
     public required string Number { get; set; }

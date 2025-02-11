@@ -1,5 +1,4 @@
-﻿@using ApplicationCore.Features.OpenDoorOrders;
-@using ApplicationCore.Features.OpenDoorOrderFile;
+﻿@using ApplicationCore.Features.MDFDoorOrders.OpenDoorOrders;
 @using Domain.Infrastructure.Bus;
 @using Domain.Components
 @using static Domain.Components.Button;
@@ -51,12 +50,6 @@
     <div class="mt-5">
         <Button OnClickAsync="Close" Color="ButtonColor.Danger">Close</Button>
         <Button OnClick="LoadOpenOrders" Color="ButtonColor.Secondary">Refresh</Button>
-    </div>
-
-    <hr class="my-6" />
-
-    <div>
-        <DoorOrderNumber />
     </div>
 
 }

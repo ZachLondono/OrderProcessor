@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.OpenDoorOrders;
+﻿namespace ApplicationCore.Features.MDFDoorOrders.OpenDoorOrders;
 
 public record DoorOrder(string Customer,
                         string Vendor,
