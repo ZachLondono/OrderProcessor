@@ -37,6 +37,7 @@ public class Options {
     public required string Phone { get; init; }
     public required string Email { get; init; }
     public required string Delivery { get; init; }
+    public required string TrackingNumber { get; init; }
 
     public static Options LoadFromWorkbook(XLWorkbook workbook) {
 
@@ -45,7 +46,7 @@ public class Options {
         var data = sheet.Range("Ordered_Date").FirstCell().Value;
 
         return new() {
-            Date = DateTime.UnixEpoch, //sheet.Cell("Date").GetValue<DateTime>(),
+            Date = sheet.Cell("Ordered_Date").GetDateTime(),
             ProductionTime = sheet.Cell("Production_Time").GetValue<string>(),
             PurchaseOrder = sheet.Cell("Customer_PO").GetValue<string>(),
             JobName = sheet.Cell("Customer_Job_Name").GetValue<string>(),
@@ -73,7 +74,8 @@ public class Options {
             Zip = sheet.Cell("Zip").GetValue<string>(),
             Phone = sheet.Cell("Phone").GetValue<string>(),
             Email = sheet.Cell("Email").GetValue<string>(),
-            Delivery = sheet.Cell("Delivery_Selection").GetValue<string>()
+            Delivery = sheet.Cell("Delivery_Selection").GetValue<string>(),
+            TrackingNumber = sheet.Cell("Tracking_Number").GetValue<string>()
         };
 
     }
