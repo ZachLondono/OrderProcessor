@@ -6,6 +6,7 @@ using ApplicationCore.Features.DataFilePaths;
 using ApplicationCore.Features.DeleteOrder;
 using ApplicationCore.Features.DoorOrderRelease;
 using ApplicationCore.Features.GeneralReleasePDF;
+using ApplicationCore.Features.HafeleMDFDoorOrders;
 using ApplicationCore.Features.OrderList;
 using ApplicationCore.Features.OrderRelationshipList;
 using ApplicationCore.Features.Orders.CustomerOrderNumber;
@@ -79,6 +80,8 @@ public static class DependencyInjection {
 
         services.AddTransient<ExportService>();
         services.AddOrderExporting();
+
+        services.AddTransient<HafeleMDFDoorImporter>();
 
         return services;
 

@@ -3,16 +3,17 @@ using ApplicationCore.Shared.Settings;
 using Domain.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.Office.Interop.Excel;
+using Microsoft.Office.Interop.Outlook;
 using System.Runtime.InteropServices;
-using Action = System.Action;
+using Exception = System.Exception;
 using Options = ApplicationCore.Features.HafeleMDFDoorOrders.ReadOrderFile.Options;
-using Range = Microsoft.Office.Interop.Excel.Range;
+using Application = Microsoft.Office.Interop.Excel.Application;
 
 namespace ApplicationCore.Features.HafeleMDFDoorOrders;
 
 public class HafeleMDFDoorImporter {
 
-    private const string _workingDirectoryRoot = "";
+    private const string _workingDirectoryRoot = @"R:\Door Orders\Hafele\Orders";
     private readonly ExportSettings _exportSettings;
     private readonly IFileReader _fileReader;
 
@@ -21,13 +22,39 @@ public class HafeleMDFDoorImporter {
         _fileReader = fileReader;
     }
 
-    public void ProcessOrder(string orderFilePath) {
+    public void ImportOrderFromMailItem(EmailDetails details, MailItem mailItem) {
 
-        // Read order file
-        var orderData = HafeleMDFDoorOrder.Load(orderFilePath);
+        var structure = CreateDirectoryStructure(_workingDirectoryRoot, $"{details.Company} - {details.OrderNumber}");
 
-        // Create output directory
-        string workingDirectory = Path.Combine(_workingDirectoryRoot, $"{orderData.Options.Company} - {orderData.Options.HafelePO}");
+        foreach (var emailAttachment in details.Attachments) {
+
+            if (!emailAttachment.CopyToIncoming) {
+                continue;
+            }
+
+            var attachment = mailItem.Attachments[emailAttachment.Index];
+
+            if (attachment is null) {
+                continue;
+            }
+
+            var orderFilePath = Path.Combine(structure.IncomingDirectory, attachment.FileName);
+            attachment.SaveAsFile(orderFilePath);
+
+            if (!emailAttachment.IsOrderForm) {
+                continue;
+            }
+
+            var orderData = HafeleMDFDoorOrder.Load(orderFilePath);
+            FillMDFDoorForm(orderData, structure.OrdersDirectory, attachment.FileName, orderFilePath);
+
+        }
+
+    }
+
+    public static DirectoryStructure CreateDirectoryStructure(string workingDirectoryRoot, string workingDirectoryName) {
+
+        string workingDirectory = Path.Combine(_workingDirectoryRoot, workingDirectoryName);
         var dirInfo = Directory.CreateDirectory(workingDirectory);
         if (!dirInfo.Exists) {
             throw new InvalidOperationException($"Failed to create directory '{workingDirectory}'");
@@ -40,14 +67,11 @@ public class HafeleMDFDoorImporter {
         string ordersDir = Path.Combine(workingDirectory, "orders");
         _ = Directory.CreateDirectory(ordersDir);
 
-        File.Copy(orderFilePath, Path.Combine(incomingDir, Path.GetFileName(orderFilePath)));
-
-        // Fill order form
-        FillMDFDoorForm(orderData, ordersDir);
+        return new DirectoryStructure(workingDirectory, incomingDir, ordersDir, cutlistDir );
 
     }
 
-    public void FillMDFDoorForm(HafeleMDFDoorOrder orderData, string outputDir) {
+    public void FillMDFDoorForm(HafeleMDFDoorOrder orderData, string outputDir, string fileName, string incomingDataFile) {
 
         List<string> errors = [];
 
@@ -57,27 +81,26 @@ public class HafeleMDFDoorImporter {
         }
 
         if (!Directory.Exists(outputDir)) {
-            errors.Add("Dovetail order output directory does not exist");
+            errors.Add("MDF order output directory does not exist");
             return;
         }
 
         ExcelWrapper(_exportSettings.MDFDoorTemplateFilePath, (workbook, worksheet) => {
 
-            FillOrderHeader(worksheet, orderData.Options);
+            FillOrderHeader(worksheet, orderData.Options, incomingDataFile);
             int offset = 1;
             foreach (var size in orderData.Sizes) {
                 WriteLineItem(worksheet, offset++, size);
             }
 
-            string fileName = _fileReader.GetAvailableFileName(outputDir, $"{orderData.Options.HafelePO} - {orderData.Options.Company} MDF DOORS", ".xlsm");
-            string finalPath = Path.GetFullPath(fileName);
+            string finalPath = Path.Combine(outputDir, Path.GetFileNameWithoutExtension(fileName) + ".xlsm");
             workbook.SaveAs(finalPath);
 
         });
 
     }
 
-    private static void FillOrderHeader(Worksheet sheet, Options options) {
+    private static void FillOrderHeader(Worksheet sheet, Options options, string incomingDataFile) {
 
         sheet.Range["Material"].Value2 = options.Material;
         sheet.Range["FramingBead"].Value2 = options.DoorStyle;
@@ -90,19 +113,21 @@ public class HafeleMDFDoorImporter {
         sheet.Range["ARail"].Value2 = options.PanelDetail;
 
         sheet.Range["PanelDrop"].Value2 = options.PanelDrop;
-        sheet.Range["FinishOption"].Value2 = options.Finish;
+        sheet.Range["FinishOption"].Value2 = options.Finish; // TODO: map these values
         sheet.Range["FinishColor"].Value2 = ""; // TODO: get this value
 
         sheet.Range["HingeStyle"].Value2 = options.HingeDrilling;
-        sheet.Range["Tab"].Value2 = options.HingeTab;
+        sheet.Range["HingeTab"].Value2 = options.HingeTab;
 
-        sheet.Range["Vendor"].Value2 = "Hafele";
+        sheet.Range["Vendor"].Value2 = "Hafele America Co.";
 
         sheet.Range["Company"].Value2 = options.Company;
         sheet.Range["JobNumber"].Value2 = options.HafelePO;
         sheet.Range["JobName"].Value2 = options.JobName;
 
         sheet.Range["units"].Value2 = "English (frac)";
+
+        sheet.Range["Hafele_Incoming_Data"].Value2 = incomingDataFile;
 
     }
 
