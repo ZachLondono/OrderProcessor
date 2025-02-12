@@ -117,6 +117,10 @@ public class CustomDrilledVerticalPanel : IProduct, IPPProductContainer, ICNCPar
             throw new InvalidProductOptionsException("Invalid notch dimensions");
         }
 
+        if (ledChannelOffFront != Dimension.Zero || ledChannelWidth != Dimension.Zero || ledChannelDepth != Dimension.Zero) {
+            ProductionNotes.Add("Verify LED Channel - May need to be added manually !!");
+        }
+
     }
 
     public bool ContainsPPProducts() => !_requiresCustomDrilling;
