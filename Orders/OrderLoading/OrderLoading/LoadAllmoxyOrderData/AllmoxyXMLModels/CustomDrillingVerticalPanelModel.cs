@@ -79,7 +79,7 @@ public class CustomDrillingVerticalPanelModel : ProductOrItemModel {
 	[XmlElement("bottomNotchHeight")]
 	public double BottomNotchHeight { get; set; }
 
-	[XmlElement("ledChannelFront")]
+	[XmlElement("ledChannelOffFront")]
 	public double LEDChannelOffFront { get; set; }
 
 	[XmlElement("ledChannelWidth")]
