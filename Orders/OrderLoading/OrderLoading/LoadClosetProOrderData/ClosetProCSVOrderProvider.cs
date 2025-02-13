@@ -519,13 +519,13 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 	private static bool AreCamsIncludedInPickList(IEnumerable<PickPart> pickList) {
         return !pickList.Where(static p => p.Type.Equals("Hardware", StringComparison.InvariantCultureIgnoreCase))
 						.Where(static p => p.Name.Contains("Installed Rafix Cam", StringComparison.InvariantCultureIgnoreCase))
-						.Any(static p => p.Cost.Contains("provided by dealer", StringComparison.InvariantCultureIgnoreCase));
+						.Any();
     }
 
 	private static bool AreShelfPinsIncludedInPickList(IEnumerable<PickPart> pickList) {
         return !pickList.Where(static p => p.Type.Equals("Hardware", StringComparison.InvariantCultureIgnoreCase))
 						.Where(static p => p.Name.Contains("Shelf Pins", StringComparison.InvariantCultureIgnoreCase))
-						.Any(static p => p.Cost.Contains("provided by dealer", StringComparison.InvariantCultureIgnoreCase));
+						.Any();
     }
 
 }

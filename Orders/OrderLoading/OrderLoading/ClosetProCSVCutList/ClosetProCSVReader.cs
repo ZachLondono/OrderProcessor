@@ -116,7 +116,12 @@ public class ClosetProCSVReader {
 
 		}
 
-		return new(orderInfo, parts, pickList, accessories, buyOutParts);
+        parts = parts.Where(p => !p.PartCost.Contains("provided by dealer", StringComparison.CurrentCultureIgnoreCase)).ToList();
+        pickList = pickList.Where(p => !p.Cost.Contains("provided by dealer", StringComparison.CurrentCultureIgnoreCase)).ToList();
+        accessories = accessories.Where(a => !a.Cost.Contains("provided by dealer", StringComparison.CurrentCultureIgnoreCase)).ToList();
+        buyOutParts = buyOutParts.Where(a => !a.PartCost.Contains("provided by dealer", StringComparison.CurrentCultureIgnoreCase)).ToList();
+
+        return new(orderInfo, parts, pickList, accessories, buyOutParts);
 
 	}
 
