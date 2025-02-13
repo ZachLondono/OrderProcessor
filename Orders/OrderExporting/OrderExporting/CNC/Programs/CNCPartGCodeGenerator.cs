@@ -67,7 +67,12 @@ public class CNCPartGCodeGenerator {
         var usedToolNames = GetUsedToolNamesFromBatch(batch);
 
         var releases = result.MachineResults
-                             .Select(machineResult => GetMachineRelease(machineResult, machineToolMaps, machineSettings, usedToolNames));
+                             .Select(machineResult => GetMachineRelease(machineResult, machineToolMaps, machineSettings, usedToolNames))
+                             .ToArray();
+
+        if (releases is null || releases.Length == 0) {
+            return null;
+        }
 
         return new ReleasedJob() {
             JobName = batch.Name,

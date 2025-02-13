@@ -462,7 +462,9 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
                 }
 
                 var decorator = _releaseDecoratorFactory.Create(job);
-                decorators.Add(decorator);
+                if (decorator is not null) {
+                    decorators.Add(decorator);
+                }
 
                 releasedJobs.Add(job);
 
