@@ -1,0 +1,91 @@
+﻿@using Domain.Components
+@using Domain.Infrastructure.Settings
+@using Microsoft.Extensions.Options
+@using OrderExporting.CNC.Settings
+@using static Domain.Components.Button
+
+@if (_settings is null){
+    <span>Loading...</span>
+} else {
+
+    <section class="mb-10">
+        <h3 class="font-semibold">CADCode Web Authentication</h3>
+
+        @if (_settings.AuthenticationSettings is null) {
+            <Button OnClick="AddWebAuth" Color="ButtonColor.Secondary">Add Web Auth</Button>
+        } else {
+            <div>
+                <label>Username</label>
+                <input type="text" class="input-text w-full" @bind-value="_settings.AuthenticationSettings.Username" />
+            </div>
+            <div>
+                <label>Password</label>
+                <input type="text" class="input-text w-full" @bind-value="_settings.AuthenticationSettings.Password" />
+            </div>
+            <div>
+                <Button OnClick="RemoveWebAuth" Color="ButtonColor.Danger" Size="ButtonSize.XSmall">Remove Web Auth</Button>
+            </div>
+        }
+    </section>
+
+    <section class="mb-10">
+        <h3 class="font-semibold">Default Inventory Size</h3>
+
+        <div>
+            <label>Width</label>
+            <input type="number" min="0" class="input-text" @bind-value="_settings.DefaultInventorySize.Width" />
+        </div>
+
+        <div>
+            <label>Length</label>
+            <input type="number" min="0" class="input-text" @bind-value="_settings.DefaultInventorySize.Length" />
+        </div>
+    </section>
+
+    <Button OnClick="SaveChanges" Color="ButtonColor.Primary">Save</Button>
+
+}
+
+@code {
+
+    [Inject]
+    public IWritableOptions<CNCSettings> Options { get; set; } = default!;
+
+    private CNCSettings? _settings = null;
+
+    protected override void OnParametersSet() {
+        _settings = Options.Value;
+        base.OnParametersSet();
+    }
+
+    private void AddWebAuth() {
+        if (_settings is null) {
+            return;
+        }
+        _settings.AuthenticationSettings = new();
+        StateHasChanged();
+    }
+
+    private void RemoveWebAuth() {
+        if (_settings is null) {
+            return;
+        }
+        _settings.AuthenticationSettings = null;
+        StateHasChanged();
+    }
+
+    private void SaveChanges() {
+        if (_settings is null) {
+            return;
+        }
+
+        Options.Update(s => {
+            s.AuthenticationSettings = _settings.AuthenticationSettings;
+            s.MachineSettings = _settings.MachineSettings;
+            s.DefaultInventorySize = _settings.DefaultInventorySize;
+            s.Inventory = _settings.Inventory;
+        });
+
+    }
+
+}
