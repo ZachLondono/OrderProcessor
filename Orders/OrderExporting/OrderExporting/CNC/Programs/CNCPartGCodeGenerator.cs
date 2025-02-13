@@ -9,6 +9,7 @@ using OrderExporting.CNC.Programs.Domain;
 using OrderExporting.CNC.Programs.Job;
 using OrderExporting.CNC.Settings;
 using ApplicationCore.Shared.Settings.Tools;
+using CADCodeProxy.CADCodeProxy;
 
 namespace OrderExporting.CNC.Programs;
 
@@ -30,6 +31,11 @@ public class CNCPartGCodeGenerator {
 
     public async Task<ReleasedJob?> GenerateGCode(Batch batch, string customerName, string vendorName, DateTime orderDate, DateTime? dueDate) {
 
+        WebAuthCredentials? webAuthCredentials = null;
+        if (_cncSettings.AuthenticationSettings is CADCodeAuthentication auth) {
+            webAuthCredentials = new WebAuthCredentials(auth.Username, auth.Password);
+        }
+        
         var generator = new GCodeGenerator(CADCodeProxy.Enums.LinearUnits.Millimeters);
 
         if (SetProgressBarValue is not null) {

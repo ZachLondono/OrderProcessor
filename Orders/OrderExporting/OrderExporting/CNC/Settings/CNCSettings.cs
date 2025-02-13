@@ -4,6 +4,9 @@ namespace OrderExporting.CNC.Settings;
 
 public class CNCSettings {
 
+    [ConfigurationKeyName("cadcode_authentication")]
+    public CADCodeAuthentication? AuthenticationSettings { get; set; } = null;
+
     /// <summary>
     /// A map of machine names to settings used for gcode generation
     /// </summary>
