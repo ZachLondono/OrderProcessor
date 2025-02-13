@@ -21,6 +21,14 @@
         "IncludeInvoice": false,
         "IncludeOrderForm": false,
         "Print": true
+      },
+      "Hafele America Co.": {
+        "EmailRecipients": [ "maciej@royalcabinet.com" ],
+        "IncludeCover": true,
+        "IncludePackingList": true,
+        "IncludeInvoice": false,
+        "IncludeOrderForm": false,
+        "Print": true
       }
     }
 
