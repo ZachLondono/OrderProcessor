@@ -221,7 +221,7 @@
 
         StateHasChanged();
 
-        var file = await GetReportFile(Order.OrderNumber);
+        var file = await GetReportFile(Order.OrderNumber, settings.WSXMLReportDirectory);
         if (file is not null) {
             Model.WSXMLReportFilePath = file; // TODO: allow for multiple files
             Model.AddExistingWSXMLReport = true;
@@ -231,11 +231,11 @@
 
     }
 
-    private static async Task<string?> GetReportFile(string number) {
+    private static async Task<string?> GetReportFile(string number, string wsxmlReportDir) {
         return await Task.Run(() => {
             try {
 
-                var files = Directory.GetFiles(@"Y:\CADCode\Reports\", $"{number}* - *.xml");
+                var files = Directory.GetFiles(wsxmlReportDir, $"{number}* - *.xml");
 
                 var exactMatches = files.Where(f => f.StartsWith($"{number} - ")).ToArray();
                 if (exactMatches.Any()) {

@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using Domain.Excel;
 using Domain.Infrastructure.Bus;
 using System.Runtime.InteropServices;
+using ApplicationCore.Shared.Settings;
+using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.MDFDoorOrders.OpenDoorOrders;
 
@@ -15,9 +17,11 @@ public class GetOpenDoorOrders {
     public class Handler : QueryHandler<Query, IEnumerable<DoorOrder>> {
 
         private readonly ILogger<Handler> _logger;
+        private readonly MDFReleaseSettings _settings;
 
-        public Handler(ILogger<Handler> logger) {
+        public Handler(ILogger<Handler> logger, IOptions<MDFReleaseSettings> settings) {
             _logger = logger;
+            _settings = settings.Value;
         }
 
         public override Task<Response<IEnumerable<DoorOrder>>> Handle(Query query) {
@@ -53,7 +57,7 @@ public class GetOpenDoorOrders {
                                 string vendorName = worksheet.Range["Vendor"].Value2.ToString();
                                 string jobName = worksheet.Range["JobName"].Value2.ToString();
                                 string jobNumber = worksheet.Range["JobNumber"].Value2.ToString();
-                                string reportFilePath = @$"Y:\CADCode\Reports\{jobNumber} - {jobName}.xml"; // TODO: Get this directory from a settings file
+                                string reportFilePath = Path.Combine(_settings.WSXMLReportDirectory, $"{jobNumber} - {jobName}.xml");
                                 string directory = workbook.Path;
                                 string filePath = workbook.FullName;
                                 int itemCount = (int) worksheet.Range["DoorCount"].Value2;

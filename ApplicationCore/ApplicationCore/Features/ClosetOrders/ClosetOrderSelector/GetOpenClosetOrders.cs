@@ -6,6 +6,8 @@ using ExcelApplication = Microsoft.Office.Interop.Excel.Application;
 using Domain.Infrastructure.Bus;
 using Error = Domain.Infrastructure.Bus.Error;
 using System.Runtime.InteropServices;
+using ApplicationCore.Shared.Settings;
+using Microsoft.Extensions.Options;
 
 namespace ApplicationCore.Features.ClosetOrders.ClosetOrderSelector;
 
@@ -16,9 +18,11 @@ public class GetOpenClosetOrders {
     public class Handler : QueryHandler<Query, IEnumerable<ClosetOrder>> {
 
         private readonly ILogger<Handler> _logger;
+        private readonly ClosetReleaseSettings _settings;
 
-        public Handler(ILogger<Handler> logger) {
+        public Handler(ILogger<Handler> logger, IOptions<ClosetReleaseSettings> settings) {
             _logger = logger;
+            _settings = settings.Value;
         }
 
         public override async Task<Response<IEnumerable<ClosetOrder>>> Handle(Query query) {
@@ -96,7 +100,7 @@ public class GetOpenClosetOrders {
                         string jobName = coverSheet.Range["JobName"].Value2.ToString();
                         DateTime orderDate = ReadDateTimeFromWorkbook(coverSheet, "E4");
                         DateTime dueDate = ReadDateTimeFromWorkbook(coverSheet, "E5");
-                        string reportFilePath = @$"Y:\CADCode\Reports\{jobNumber} {jobName}.xml"; // TODO: Get this directory from a settings file
+                        string reportFilePath = Path.Combine(_settings.WSXMLReportDirectory, $"{jobNumber} {jobName}.xml");
                         string directory = workbook.Path;
                         string filePath = workbook.FullName;
 
