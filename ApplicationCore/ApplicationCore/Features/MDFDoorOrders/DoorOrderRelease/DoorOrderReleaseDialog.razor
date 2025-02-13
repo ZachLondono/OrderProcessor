@@ -236,6 +236,13 @@
             try {
 
                 var files = Directory.GetFiles(@"Y:\CADCode\Reports\", $"{number}* - *.xml");
+
+                var exactMatches = files.Where(f => f.StartsWith($"{number} - ")).ToArray();
+                if (exactMatches.Any()) {
+                    return exactMatches.OrderByDescending(file => new FileInfo(file).LastWriteTime)
+                                        .FirstOrDefault();
+                }
+
                 return files.OrderByDescending(file => new FileInfo(file).LastWriteTime)
                             .FirstOrDefault();
 
