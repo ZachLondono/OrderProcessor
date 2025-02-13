@@ -56,7 +56,8 @@ public class ExportDovetailOrder {
                 allBoxes = command.Order
                                   .Products
                                   .OfType<IDovetailDrawerBoxContainer>()
-                                  .SelectMany(p => p.GetDovetailDrawerBoxes(_factory.CreateDovetailDrawerBoxBuilder));
+                                  .SelectMany(p => p.GetDovetailDrawerBoxes(_factory.CreateDovetailDrawerBoxBuilder))
+                                  .ToArray();
 
             } catch (Exception ex) {
 
