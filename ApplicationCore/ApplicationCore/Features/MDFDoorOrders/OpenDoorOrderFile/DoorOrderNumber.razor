@@ -44,8 +44,19 @@
 
         try {
 
+            var fileName = "'";
+
+            var exactMatches = files.Where(f => f.StartsWith($"{OrderNumber} "));
+            if (exactMatches.Any()) {
+                fileName = exactMatches.OrderByDescending(file => new FileInfo(file).LastWriteTime)
+                                        .FirstOrDefault();
+            } else {
+                fileName = files.OrderByDescending(file => new FileInfo(file).LastWriteTime)
+                                .FirstOrDefault();
+            }
+
             var psi = new ProcessStartInfo {
-                FileName = files.First(),
+                FileName = fileName,
                 UseShellExecute = true
             };
             Process.Start(psi);
