@@ -1,5 +1,4 @@
-﻿using Dapper;
-using Domain.Infrastructure.Bus;
+﻿using Domain.Infrastructure.Bus;
 using Domain.Orders.Entities.Products.Closets;
 using Domain.Orders.Persistance;
 
@@ -54,7 +53,7 @@ public class UpdateClosetPart {
                 MaterialFinish = command.ClosetPart.Material.Finish,
                 MaterialCore = command.ClosetPart.Material.Core,
                 PaintColor = (command.ClosetPart.Paint?.Color ?? null),
-                PaintedSide = (command.ClosetPart.Paint?.Side ?? null),
+                PaintedSide = (command.ClosetPart.Paint?.Side ?? 0),
                 EdgeBandingFinish = command.ClosetPart.EdgeBandingColor,
                 command.ClosetPart.Comment,
                 Parameters = (IDictionary<string, string>) command.ClosetPart.Parameters,
