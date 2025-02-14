@@ -1,9 +1,12 @@
 ﻿using Domain.Infrastructure.Bus;
+using Microsoft.Extensions.Logging;
+using Serilog.Context;
 
 namespace ApplicationCore.Features.Products.UpdateClosetPart;
 
 public class ClosetPartEditorViewModel {
 
+    private readonly ILogger<ClosetPartEditorViewModel> _logger;
     private readonly IBus _bus;
 
     public Action? OnPropertyChanged { get; set; }
@@ -21,7 +24,8 @@ public class ClosetPartEditorViewModel {
         }
     }
 
-    public ClosetPartEditorViewModel(IBus bus) {
+    public ClosetPartEditorViewModel(ILogger<ClosetPartEditorViewModel> logger, IBus bus) {
+        _logger = logger;
         _bus = bus;
     }
 
@@ -31,25 +35,34 @@ public class ClosetPartEditorViewModel {
 
         Error = null;
 
-        try {
+        using (LogContext.PushProperty("EditModel", EditModel, true)) {
 
-            var response = await _bus.Send(new UpdateClosetPart.Command(EditModel.ToProduct()));
 
-            await response.Match(
-                unit => CloseAsync?.Invoke() ?? Task.CompletedTask,
-                error => {
-                    Error = error;
-                    return Task.CompletedTask;
-                });
+            try {
 
-        } catch (Exception ex) {
+                var response = await _bus.Send(new UpdateClosetPart.Command(EditModel.ToProduct()));
 
-            Error = new() {
-                Title = "Failed to Update Closet Part",
-                Details = ex.Message
-            };
+                await response.Match(
+                    unit => CloseAsync?.Invoke() ?? Task.CompletedTask,
+                    error => {
+                        _logger.LogError("An error was returned from the UpdateClosetPart command while trying to update a closet part from the closet part editor. {Error}", Error);
+                        Error = error;
+                        return Task.CompletedTask;
+                    });
+
+            } catch (Exception ex) {
+
+                _logger.LogError(ex, "Exception thrown by the UpdateClosetPart command while trying to update a closet part from the closet part editor.");
+                Error = new() {
+                    Title = "Failed to Update Closet Part",
+                    Details = ex.Message
+                };
+
+            }
 
         }
+
+        OnPropertyChanged?.Invoke();
 
     }
 

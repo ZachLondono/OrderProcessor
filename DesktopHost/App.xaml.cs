@@ -123,6 +123,7 @@ public partial class App : Application {
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Is(level)
             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .Enrich.FromLogContext()
             .WriteTo.Debug()
             .WriteTo.SQLite(@"C:\ProgramData\OrderProcessor\Logs\logs.db")
             .CreateLogger();
