@@ -16,6 +16,7 @@ using OrderLoading.ClosetProCSVCutList.Products.Fronts;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Hardware;
 using OrderLoading.ClosetProCSVCutList.CSVModels;
+using Domain.Orders.Entities.Products.Closets;
 
 namespace OrderLoading.LoadClosetProOrderData;
 
@@ -124,6 +125,15 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 		var includeCams = AreCamsIncludedInPickList(info.PickList);
 		var includeShelfPins = AreShelfPinsIncludedInPickList(info.PickList);
+
+		if (!includeCams) {
+			products.ForEach(p => {
+				if (p is not ClosetPart closetPart) {
+					return;
+				}
+				closetPart.InstallCams = false;
+			});
+		}
 
         (HangingRail[] hangRails, Supply[] hangRailSupplies) = ClosetProPartMapper.GetHangingRailsFromBuyOutParts(info.BuyOutParts);
         (DrawerSlide[] slides, Supply[] slideSupplies) = GetDrawerSlides(products);
