@@ -291,9 +291,9 @@ public class JobSummaryModelFactory {
         if (doweledDbBoxes.Length != 0) {
             var doweledDBNotches = doweledDbBoxes.Select(d => d.UMNotch);
             if (doweledDBNotches.All(x => x == doweledDBNotches.First())) {
-                doweledDBMessage = $"MELA BOXES - {doweledDBNotches.First()}";
+                doweledDBMessage = $"DOWELED BOXES - {doweledDBNotches.First()}";
             } else {
-                doweledDBMessage = "CHECK PACKING LIST FOR MELA BOX NOTCHES";
+                doweledDBMessage = "CHECK PACKING LIST FOR DOWELED BOX NOTCHES";
             }
         }
 
