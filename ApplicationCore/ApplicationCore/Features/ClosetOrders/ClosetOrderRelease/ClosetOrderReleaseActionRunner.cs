@@ -329,13 +329,11 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
 
                 app.ScreenUpdating = false;
                 app.DisplayAlerts = false;
-                app.Calculation = XlCalculation.xlCalculationManual;
 
                 var workbooks = app.Workbooks;
                 var workbook = workbooks.Open(filePath);
                 Sheets worksheets = workbook.Worksheets;
 
-                app.Calculate();
 
                 var pdfSheetNames = new List<string>();
 
@@ -362,7 +360,6 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                             app.PrintCommunication = true;
 
                             invoiceFilePath = Path.Combine(invoiceDirectory, $"{ClosetOrder?.OrderNumber} Invoice");
-                            cover.Calculate();
                             cover.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, invoiceFilePath, OpenAfterPublish: false);
                             invoiceFilePath += ".pdf";
                             PublishProgressMessage?.Invoke(new(ProgressLogMessageType.FileCreated, invoiceFilePath));
@@ -440,7 +437,6 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                 worksheets[sheetsToSelect].Select();
 
                 Worksheet activeSheet = workbook.ActiveSheet;
-                activeSheet.Calculate();
                 activeSheet.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, tmpFileName, OpenAfterPublish: false);
 
                 previouslyActiveSheet?.Select();
@@ -450,7 +446,6 @@ public class ClosetOrderReleaseActionRunner(ILogger<ClosetOrderReleaseActionRunn
                 if (app is not null) {
                     app.ScreenUpdating = true;
                     app.DisplayAlerts = true;
-                    app.Calculation = XlCalculation.xlCalculationAutomatic;
                 }
 
                 _windowFocuser.TryToSetMainWindowFocus();

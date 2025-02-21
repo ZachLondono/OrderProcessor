@@ -235,13 +235,10 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
 
                 app.ScreenUpdating = false;
                 app.DisplayAlerts = false;
-                app.Calculation = XlCalculation.xlCalculationManual;
 
                 var workbooks = app.Workbooks;
                 var workbook = workbooks.Open(doorOrder.OrderFile);
                 var worksheets = workbook.Worksheets;
-
-                app.Calculate();
 
                 if (options.GenerateGCodeFromWorkbook) {
                     batches = GenerateBatchesFromDoorOrder(app, worksheets, doorOrder);
@@ -266,7 +263,6 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
                 if (app is not null) {
                     app.ScreenUpdating = true;
                     app.DisplayAlerts = true;
-                    app.Calculation = XlCalculation.xlCalculationAutomatic;
                 }
 
                 _windowFocuser.TryToSetMainWindowFocus();
@@ -532,7 +528,6 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             PDFSheetNames.Add(sheetName);
 
             if (print && TryGetSheet(worksheets, sheetName, out Worksheet sheet)) {
-                sheet.Calculate();
                 sheet.PrintOutEx();
             }
         }
@@ -542,7 +537,6 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             PDFSheetNames.Add(sheetName);
 
             if (print && TryGetSheet(worksheets, sheetName, out Worksheet sheet)) {
-                sheet.Calculate();
                 sheet.PrintOutEx(Copies: 2);
             }
         }
@@ -552,7 +546,6 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             PDFSheetNames.Add(sheetName);
 
             if (print && TryGetSheet(worksheets, sheetName, out Worksheet sheet)) {
-                sheet.Calculate();
                 sheet.PrintOutEx();
             }
         }
@@ -561,7 +554,6 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
             if (TryGetSheet(worksheets, sheetName, out Worksheet sheet)) {
                 if (print) {
                     sheet.PageSetup.PrintArea = "A1:G86";
-                    sheet.Calculate();
                     sheet.PrintOutEx(Copies: 2);
                 }
                 sheet.PageSetup.PrintArea = "A1:G45";
@@ -579,7 +571,6 @@ public class DoorOrderReleaseActionRunner : IActionRunner {
         worksheets[sheetsToSelect].Select();
 
         Worksheet activeSheet = workbook.ActiveSheet;
-        activeSheet.Calculate();
         activeSheet.ExportAsFixedFormat2(XlFixedFormatType.xlTypePDF, tmpFileName, OpenAfterPublish: false);
 
         previouslyActiveSheet?.Select();
