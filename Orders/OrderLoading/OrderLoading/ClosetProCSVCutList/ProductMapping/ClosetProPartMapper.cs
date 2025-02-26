@@ -262,6 +262,10 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 		List<OtherPart> items = [];
 		foreach (var item in parts) {
 
+			if (item.Quantity == 0) {
+                continue;
+            }
+
 			if (!TryParseMoneyString(item.Cost, out var cost)) {
 				cost = 0;
 			}
@@ -284,7 +288,11 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 		foreach (var accessory in accessories) {
 
-			if (!TryParseMoneyString(accessory.Cost, out var cost)) {
+			if (accessory.Quantity == 0) {
+                continue;
+            }
+
+            if (!TryParseMoneyString(accessory.Cost, out var cost)) {
 				cost = 0;
 			}
 
@@ -305,6 +313,10 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 		List<HangingRail> rails = [];
 
 		foreach (var part in parts.Where(p => p.PartType.Equals("Rod", StringComparison.InvariantCultureIgnoreCase))) {
+
+			if (part.Quantity == 0) {
+				continue;
+			}
 
 			if (part.ExportName.Contains("DEALER PROVIDED", StringComparison.InvariantCultureIgnoreCase)) {
 				continue;
@@ -349,6 +361,8 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 		List<Supply> supplies = [];
 
 		foreach (var part in parts) {
+
+			if (part.Quantity == 0) continue;
 
 			if (part.PartName == "Left Rod End") {
 				supplies.Add(Supply.RodMountingBracketOpen(part.Quantity));
