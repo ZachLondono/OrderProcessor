@@ -368,14 +368,18 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 		foreach (var part in parts) {
 
-			if (!TryParseMoneyString(part.PartCost, out decimal unitPrice)) {
-				unitPrice = 0M;
+			if (!TryParseMoneyString(part.PartCost, out decimal totalPrice)) {
+				totalPrice = 0M;
+			}
+
+			if (part.Quantity == 0) {
+				continue;
 			}
 
             items.Add(new() {
                 Qty = part.Quantity,
                 Name = part.PartName,
-                UnitPrice = (unitPrice / (decimal)part.Quantity)
+                UnitPrice = (totalPrice / (decimal)part.Quantity)
             });
 
         }
