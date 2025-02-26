@@ -153,7 +153,7 @@ public class ExportDovetailOrder {
                 OrderName = order.Name,
                 OrderDate = order.OrderDate,
                 OrderSource = "Order Processor",
-                BoxCount = group.Count(),
+                BoxCount = group.Sum(g => g.Qty),
                 RushMessage = order.Rush ? "RUSH" : "",
                 OrderSourceLink = order.Source,
                 SubTotal = order.SubTotal,
