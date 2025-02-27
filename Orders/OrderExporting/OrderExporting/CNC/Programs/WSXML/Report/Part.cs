@@ -23,8 +23,8 @@ public record Part(string Id,
                    element.AttributeValue("LabelID"),
                    element.ElementValue("Name"),
                    element.ElementValue("Description"),
-                   element.ElementDouble("FinishedWidth"),
-                   element.ElementDouble("FinishedLength"),
+                   element.ElementDouble("CutWidth"),
+                   element.ElementDouble("CutLength"),
                    element.AttributeValue("PatSchID").Split(' '),
                    variables);
 
