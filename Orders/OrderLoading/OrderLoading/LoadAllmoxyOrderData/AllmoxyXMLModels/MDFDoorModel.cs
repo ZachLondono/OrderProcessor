@@ -37,7 +37,7 @@ public class MDFDoorModel : ProductOrItemModel {
 	[XmlElement("topRail")]
 	public double TopRail { get; set; }
 
-	[XmlElement("bottomRail")]
+	[XmlElement("botRail")]
 	public double BottomRail { get; set; }
 
 	[XmlElement("leftStile")]
@@ -118,7 +118,13 @@ public class MDFDoorModel : ProductOrItemModel {
 			additionalOpenings.Add(new(Dimension.FromMillimeters(Rail4), Dimension.FromMillimeters(Opening2)));
 		}
 
-		var product = MDFDoorProduct.Create(unitPrice, Room, Qty, GetProductNumber(), type, height, width, Note, frameSize, Material, thickness, FramingBead, EdgeProfile, PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), Finish);
+		string? paintColor = null;
+		if (Finish != "Sanded") {
+			// TODO: Handle the case when Finish = "Un-Sanded" or "Primed"
+			paintColor = Finish;
+		}
+
+		var product = MDFDoorProduct.Create(unitPrice, Room, Qty, GetProductNumber(), type, height, width, Note, frameSize, Material, thickness, FramingBead, EdgeProfile, PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), paintColor);
 		product.ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList();
 		return product;
 

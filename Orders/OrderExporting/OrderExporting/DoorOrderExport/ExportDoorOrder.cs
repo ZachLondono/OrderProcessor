@@ -181,9 +181,15 @@ public class ExportDoorOrder {
             ws.Range["FramingBead"].Value2 = doors.Key.FramingBead;
             ws.Range["EdgeDetail"].Value2 = doors.Key.EdgeDetail;
             ws.Range["PanelDetail"].Value2 = doors.Key.PanelDetail;
-            ws.Range["PanelDrop"].Value2 = doors.Key.PanelDrop;
-            ws.Range["FinishOption"].Value2 = doors.Key.FinishType;
-            ws.Range["FinishColor"].Value2 = doors.Key.FinishColor;
+
+            if (doors.Key.PanelDrop != 0) {
+                ws.Range["PanelDrop"].Value2 = doors.Key.PanelDrop;
+            }
+
+            if (!doors.Key.FinishType.Equals("None", StringComparison.InvariantCultureIgnoreCase)) {
+                ws.Range["FinishOption"].Value2 = doors.Key.FinishType;
+                ws.Range["FinishColor"].Value2 = doors.Key.FinishColor;
+            }
 
             ws.Range["units"].Value2 = "Metric (mm)";
 
@@ -194,7 +200,7 @@ public class ExportDoorOrder {
             WriteRectangularArray(ws, CreateRectangularArray(frameData), "P", 16, "S");
 
             var ids = CreateIdData(doors);
-            WriteRectangularArray(ws, CreateRectangularArray(ids), "BM", 16, "BJ");
+            WriteRectangularArray(ws, CreateRectangularArray(ids), "BN", 16, "BN");
 
         }
 
