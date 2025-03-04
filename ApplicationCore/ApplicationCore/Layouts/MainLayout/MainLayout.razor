@@ -24,7 +24,7 @@
 
 <div class="page">
 	<header class="w-48 h-screen fixed top-0 left-0 bg-slate-100">
-        <nav>
+		<nav>
 			<section>
 				<div class="grid grid-cols-2 text-white">
 					<div @onclick="GoBack" class="grid justify-items-center cursor-pointer p-2 ease-out duration-300 hover:bg-slate-200 text-gray-500 hover:text-black">
@@ -47,8 +47,8 @@
 			<section class="text-gray-500">
 				<NavLink href="/" Match="NavLinkMatch.All" ActiveClass="text-blue-500" class="nav-link block cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 hover:text-black">
 					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 inline-block">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
-                    </svg>
+						<path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
+					</svg>
 					<span class="h-6 align-middle">Home</span>
 				</NavLink>
 				<NavLink href="/orders/list" ActiveClass="text-blue-500" class="nav-link block cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 hover:text-black">
@@ -70,12 +70,14 @@
 					</svg>
 					<span class="h-6 align-middle">Settings</span>
 				</NavLink>
-				<NavLink href="/closetpro" ActiveClass="text-blue-500" class="nav-link block cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 hover:text-black">
-					<img class="w-6 h-6 mr-2 inline-block" src="images/ClosetPro.png">
-					<span class="h-6 align-middle">CP -> Allmoxy</span>
-				</NavLink>
+				@if(IsDebug()) {
+                    <NavLink href="/closetpro" ActiveClass="text-blue-500" class="nav-link block cursor-pointer select-none h-10 p-2 ease-out duration-300 hover:bg-slate-200 hover:text-black">
+                        <img class="w-6 h-6 mr-2 inline-block" src="images/ClosetPro.png">
+                        <span class="h-6 align-middle">CP -> Allmoxy</span>
+                    </NavLink>
+                }
 			</section>
-				
+
 			<div class="px-2 my-2">
 				<hr />
 			</div>
@@ -152,13 +154,13 @@
 			</section>
 
 		</nav>
-    </header>
+	</header>
 	<main class="ml-48">
-        @*<article class="content px-4">*@
+		@*<article class="content px-4">*@
 		<article class="container mx-auto my-12 px-0 sm:px-10">
-            @Body
-        </article>
-    </main>
+			@Body
+		</article>
+	</main>
 </div>
 
 @code {
@@ -251,7 +253,7 @@
 		_ = await dialog.Result;
 
 	}
-	
+
 	private async Task GoBack() {
 		await JSRuntime.InvokeVoidAsync("history.back");
 	}
@@ -268,5 +270,13 @@
 		});
 
 	}
+
+	private bool IsDebug() {
+#if DEBUG
+		return true;
+#else
+        return false;
+#endif
+    }
 
 }
