@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using Blazored.Modal;
 using Blazored.Modal.Services;
-using ApplicationCore.Features.Orders.ProductDrawings.Queries;
-using Domain.Infrastructure.Bus;
 using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
 
 namespace ApplicationCore.Features.Products.ProductDrawings.Views;
@@ -18,7 +15,9 @@ public partial class ProductDrawingManagerButton {
     [Inject]
     public ProductDrawingManagerButtonViewModel? DataContext { get; set; }
 
-    protected override async Task OnInitializedAsync() {
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+
+        if (!firstRender) return;
 
         if (DataContext is null) return;
 
