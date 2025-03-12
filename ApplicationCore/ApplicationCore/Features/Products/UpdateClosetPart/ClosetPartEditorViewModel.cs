@@ -15,6 +15,15 @@ public class ClosetPartEditorViewModel {
     // TODO: load a model specifically for the editor
     public ClosetPartEditModel? EditModel { get; set; }
 
+    private bool _isUpdating;
+    public bool IsUpdating {
+        get => _isUpdating;
+        set {
+            _isUpdating = value;
+            OnPropertyChanged?.Invoke();
+        }
+    }
+
     private Error? error;
     public Error? Error {
         get => error;
@@ -33,6 +42,7 @@ public class ClosetPartEditorViewModel {
 
         if (_bus is null || EditModel is null) return;
 
+        IsUpdating = true;
         Error = null;
 
         using (LogContext.PushProperty("EditModel", EditModel, true)) {
@@ -62,7 +72,7 @@ public class ClosetPartEditorViewModel {
 
         }
 
-        OnPropertyChanged?.Invoke();
+        IsUpdating = false;
 
     }
 
