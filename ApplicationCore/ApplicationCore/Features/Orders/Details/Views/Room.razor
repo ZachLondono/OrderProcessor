@@ -49,103 +49,88 @@
                 </div>
             </header>
             <div class="bg-white px-3 py-10 space-y-5">
-                @if (Model.DovetailDrawerBoxes.Any())
-                {
+
+                @if (Model.DovetailDrawerBoxes.Count != 0) {
                     <div>
                         <h3 class="font-semibold text-lg pl-3">Dovetail Drawer Boxes (@Model.DovetailDrawerBoxes.Count)</h3>
-                        <DovetailDrawerBoxProductTable
-                        DrawerBoxes="@Model.DovetailDrawerBoxes"
-                        ActionColumn="ProductActionsColumn"
-                        UseInches="@UseInches"
-                        Context="product" />
+                        <DovetailDrawerBoxProductTable DrawerBoxes="@Model.DovetailDrawerBoxes"
+                                                       ActionColumn="ProductActionsColumn"
+                                                       UseInches="@UseInches"
+                                                       Context="product" />
                     </div>
                 }
 
-                @if (Model.DoweledDrawerBoxes.Any())
-                {
+                @if (Model.DoweledDrawerBoxes.Count != 0) {
                     <div>
                         <h3 class="font-semibold text-lg pl-3">Doweled Drawer Boxes (@Model.DoweledDrawerBoxes.Count)</h3>
-                        <DoweledDrawerBoxProductTable 
-                        DrawerBoxes="@Model.DoweledDrawerBoxes"
-                        ActionColumn="ProductActionsColumn"
-                        UseInches="@UseInches"
-                        Context="product" />
+                        <DoweledDrawerBoxProductTable DrawerBoxes="@Model.DoweledDrawerBoxes"
+                                                      ActionColumn="ProductActionsColumn"
+                                                      UseInches="@UseInches"
+                                                      Context="product" />
                     </div>
                 }
 
-                @if (Model.Cabinets.Any())
-                {
+                @if (Model.Cabinets.Count != 0) {
                     <div>
                         <h3 class="font-semibold text-lg pl-3">Cabinets (@Model.Cabinets.Count)</h3>
-                        <CabinetProductTable
-                        Cabinets="@Model.Cabinets"
-                        ActionColumn="ProductActionsColumn"
-                        UseInches="@UseInches"
-                        Context="product" />
+                        <CabinetProductTable Cabinets="@Model.Cabinets"
+                                             ActionColumn="ProductActionsColumn"
+                                             UseInches="@UseInches"
+                                             Context="product" />
                     </div>
                 }
 
-                @if (Model.CabinetParts.Any())
-                {
+                @if (Model.CabinetParts.Count != 0) {
                     <div>
                         <h3 class="font-semibold text-lg pl-3">Cabinet Extra Parts (@Model.CabinetParts.Count)</h3>
-                        <CabinetPartProductTable
-                        CabinetParts="@Model.CabinetParts"
-                        ActionColumn="ProductActionsColumn"
-                        UseInches="@UseInches"
-                        Context="product" />
+                        <CabinetPartProductTable CabinetParts="@Model.CabinetParts"
+                                                 ActionColumn="ProductActionsColumn"
+                                                 UseInches="@UseInches"
+                                                 Context="product" />
                     </div>
                 }
 
-                @if (Model.ClosetParts.Any())
-                {
+                @if (Model.ClosetParts.Count != 0) {
                     <div>
                         <h3 class="font-semibold text-lg pl-3">Closet Parts (@Model.ClosetParts.Count)</h3>
-                        <ClosetPartProductTable 
-                        ClosetParts="@Model.ClosetParts"
-                        ActionColumn="ProductActionsColumn"
-                        UseInches="@UseInches"
-                        Context="product" />
+                        <ClosetPartProductTable ClosetParts="@Model.ClosetParts"
+                                                ActionColumn="ProductActionsColumn"
+                                                UseInches="@UseInches"
+                                                Context="product" />
                     </div>
                 }
 
-                @if (Model.ZargenDrawers.Any())
-                {
+                @if (Model.ZargenDrawers.Count != 0) {
                     <div>
                         <h3 class="font-semibold text-lg pl-3">Zargen Drawers (@Model.ZargenDrawers.Count)</h3>
-                        <ZargenDrawerProductTable
-                        ZargenDrawers="@Model.ZargenDrawers"
-                        ActionColumn="ProductActionsColumn"
-                        UseInches="@UseInches"
-                        Context="product" />
+                        <ZargenDrawerProductTable ZargenDrawers="@Model.ZargenDrawers"
+                                                  ActionColumn="ProductActionsColumn"
+                                                  UseInches="@UseInches"
+                                                  Context="product" />
                     </div>
                 }
 
-                @if (Model.MDFDoors.Any())
-                {
+                @if (Model.MDFDoors.Count != 0) {
                     <div>
                         <h3 class="font-semibold text-lg pl-3">MDF Doors (@Model.MDFDoors.Count)</h3>
-                        <MDFDoorProductTable 
-                        MDFDoors="@Model.MDFDoors"
-                        ActionColumn="ProductActionsColumn"
-                        UseInches="@UseInches"
-                        Context="product" />
+                        <MDFDoorProductTable MDFDoors="@Model.MDFDoors"
+                                             ActionColumn="ProductActionsColumn"
+                                             UseInches="@UseInches"
+                                             Context="product" />
                     </div>
                 }
 
-                @if (Model.FivePieceDoors.Any())
-                {
+                @if (Model.FivePieceDoors.Count != 0) {
                     <div>
                         <h3 class="font-semibold text-lg pl-3">Five Piece Doors (@Model.FivePieceDoors.Count)</h3>
-                        <FivePieceDoorProductTable 
-                        Doors="@Model.FivePieceDoors"
-                        ActionColumn="ProductActionsColumn"
-                        UseInches="@UseInches"
-                        Context="product" />
+                        <FivePieceDoorProductTable Doors="@Model.FivePieceDoors"
+                                                   ActionColumn="ProductActionsColumn"
+                                                   UseInches="@UseInches"
+                                                   Context="product" />
                     </div>
                 }
 
-                @if (Model.CounterTops.Any()) {
+                @if (Model.CounterTops.Count != 0) {
                     <div>
                         <h3 class="font-semibold text-lg pl-3">Counter Tops (@Model.CounterTops.Count())</h3>
                         <CounterTopProductTable CounterTops="@Model.CounterTops"
@@ -154,6 +139,7 @@
                                                 Context="product" />
                     </div>
                 }
+
             </div>
         </div>
     }
