@@ -29,11 +29,11 @@
     <div class="ml-5 mt-5">
         <h3>PDFs Generated:</h3>
         <ul class="list-disc">
-        @foreach (var fileName in DataContext.GeneratedFiles) {
-            <li>
-                <a onclick="@(() => OpenFile(fileName))" class="underline cursor-pointer">@fileName</a> 
-            </li>
-        }
+            @foreach (var fileName in DataContext.GeneratedFiles) {
+                <li>
+                    <a onclick="@(() => OpenFile(fileName))" class="underline cursor-pointer">@fileName</a> 
+                </li>
+            }
         </ul>
     </div>
 
@@ -93,24 +93,24 @@
                 <span class="font-semibold">Additional Files</span>
             </CheckBox>
             @if (DataContext.Model.AttachAdditionalFiles) {
-                     <div class="mt-3 ml-3">
-                        <div>
-                            <Button OnClick="ChooseAdditionalFile" Color="Button.ButtonColor.Secondary">+ Add File</Button>
-                        </div>
+                <div class="mt-3 ml-3">
+                    <div>
+                        <Button OnClick="ChooseAdditionalFile" Color="Button.ButtonColor.Secondary">+ Add File</Button>
+                    </div>
 
-                        @if (DataContext.Model.AdditionalFilePaths.Any()) {
-                            foreach (var file in DataContext.Model.AdditionalFilePaths) {
-                                <div class="text-sm">
-                                    <Button OnClick="@(() => RemoveAdditionalFile(file))">X</Button>@TruncateString(file)
-                                </div>
-                            }
-                        } else {
-                            <div class="text-sm">No File Selected</div>
+                    @if (DataContext.Model.AdditionalFilePaths.Any()) {
+                        foreach (var file in DataContext.Model.AdditionalFilePaths) {
+                            <div class="text-sm">
+                                <Button OnClick="@(() => RemoveAdditionalFile(file))">X</Button>@TruncateString(file)
+                            </div>
                         }
-                    </div>                           
+                    } else {
+                        <div class="text-sm">No File Selected</div>
+                    }
+                </div>                           
             }
         </div>
-    
+
         <div class="mt-3">
             <CheckBox @bind-IsChecked="DataContext.Model.Print">
                 <span class="font-semibold">Print</span>
@@ -121,7 +121,7 @@
             <Button OnClickAsync="DataContext.GeneratePDF" Color="Button.ButtonColor.Primary" class="mt-3">Generate PDF</Button>
             <Button OnClick="DataContext.InitializeModel" Color="Button.ButtonColor.Secondary" class="mt-3">Refresh</Button>
         </div>
-    
+
     </EditForm>
 
 }
@@ -131,11 +131,15 @@
     protected override void OnInitialized() {
         base.OnInitialized();
         DataContext.OnPropertyChanged += StateHasChanged;
+    }
+
+    protected override void OnAfterRender(bool firstRender) {
+        if (!firstRender) return;
         DataContext.InitializeModel();
     }
 
     private void ChooseReportFile()
-        => FilePicker.PickFile(new() {
+    => FilePicker.PickFile(new() {
             Title = "Select CADCode WS Report File",
             InitialDirectory = DataContext.Settings.WSXMLReportsDirectory, 
             Filter = new("CADCode WS Report", "xml"),
