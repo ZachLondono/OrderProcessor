@@ -56,8 +56,6 @@ public class ProductDrawingRowViewModel {
 
         IsLoading = true;
 
-        await Task.Delay(1000);
-
         try {
 
             var response = await _bus.Send(new ImportProductDrawingIntoActiveDocument.Command(drawing, mode));
