@@ -20,6 +20,15 @@ internal class OrderExportModalViewModel {
         }
     }
 
+    private bool _isLoading = true;
+    public bool IsLoading {
+        get => _isLoading;
+        set {
+            _isLoading = value;
+            OnPropertyChanged?.Invoke();
+        }
+    }
+
     private Order? _order;
     private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
     private readonly ExportService _service;
@@ -31,6 +40,7 @@ internal class OrderExportModalViewModel {
 
     public async Task LoadConfiguration(Order order) {
 
+        IsLoading = true;
         _order = order;
 
         var vendor = await _getVendorByIdAsync(order.VendorId);
@@ -67,11 +77,14 @@ internal class OrderExportModalViewModel {
             OutputDirectory = Path.Combine(order.WorkingDirectory, "orders")
         };
 
+        IsLoading = false;
+
     }
 
     public ModalParameters CreateExportProgressModalParameters() {
 
         if (_order is null) throw new InvalidOperationException("Cannot create export modal parameters before order is loaded");
+        if (Configuration is null) throw new InvalidOperationException("No export configuration set");
 
         return new ModalParameters() {
             { "ActionRunner",  new ExportActionRunner(_order, _service, Configuration) },

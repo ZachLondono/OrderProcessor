@@ -10,7 +10,7 @@
 @inject OrderExportModalViewModel DataContext
 @inject ILogger<OrderExportModal> Logger
 
-@if (DataContext.Configuration is null) {
+@if (DataContext.IsLoading) {
     <span>Loading...</span>    
 } else {
 

@@ -35,18 +35,9 @@
 
         _isExporting = true;
 
-        Order? order = null;
-        var response = await Bus.Send(new GetOrderById.Query(OrderId));
-        response.OnSuccess(o => order = o);
-
-        if (order is null) {
-            _isExporting = false;
-            return;
-        }
-
         var dialog = Modal.Show<OrderExportModal>("Export Setup",
             new ModalParameters() {
-                { "Order", order }
+                { "OrderId", OrderId }
             }, new ModalOptions() {
                 HideHeader = false,
                 HideCloseButton = true,
