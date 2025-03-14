@@ -147,7 +147,7 @@
 
         try {
 
-            await DataContext.LoadOrders(CustomerId, VendorId, SearchTerm);
+            await DataContext.LoadOrders(() => new(CustomerId, VendorId, SearchTerm));
 
         } catch (IncompatibleDatabaseVersion ex) {
 

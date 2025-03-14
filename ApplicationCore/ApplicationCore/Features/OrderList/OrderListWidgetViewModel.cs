@@ -96,21 +96,29 @@ public class OrderListWidgetViewModel {
         _navigationService.NavigateToOrderPage(orderId);
     }
 
-    public async Task LoadOrders(Guid? customerId, Guid? vendorId, string? searchTerm) {
+    public async Task LoadOrders(Func<SearchFilter> getSearchFilter) {
 
         IsLoading = true;
         HasError = false;
 
         try {
 
-            var countResponse = await _bus.Send(new GetOrderCount.Query(customerId, vendorId, searchTerm));
+            var filter = getSearchFilter();
+
+            var response = await _bus.Send(new GetOrderList.Query(filter.CustomerId, filter.VendorId, filter.SearchTerm, Page, PageSize));
+            var countResponse = await _bus.Send(new GetOrderCount.Query(filter.CustomerId, filter.VendorId, filter.SearchTerm));
+
+            if (filter != getSearchFilter()) {
+                // Result is stale
+                return;
+            }
+
             countResponse.OnSuccess(
                 totalOrders => {
                     TotalOrderCount = totalOrders;
                     PageCount = (int)Math.Ceiling(totalOrders / (float)PageSize);
                 });
 
-            var response = await _bus.Send(new GetOrderList.Query(customerId, vendorId, searchTerm, Page, PageSize));
             response.Match(
                 orders => {
                     Orders = orders;
@@ -122,6 +130,11 @@ public class OrderListWidgetViewModel {
 
             if (Orders is null) {
                 IsLoading = false;
+                return;
+            }
+
+            if (filter != getSearchFilter()) {
+                // Result is stale
                 return;
             }
 
@@ -167,5 +180,7 @@ public class OrderListWidgetViewModel {
     public void OpenVendorPage(Guid companyId) {
         _navigationService.NavigateToVendorPage(companyId);
     }
+
+    public record SearchFilter(Guid? CustomerId, Guid? VendorId, string? SearchTerm);
 
 }
