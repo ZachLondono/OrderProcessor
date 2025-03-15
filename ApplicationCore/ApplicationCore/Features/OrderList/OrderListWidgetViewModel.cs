@@ -128,8 +128,9 @@ public class OrderListWidgetViewModel {
                 }
             );
 
+            IsLoading = false;
+
             if (Orders is null) {
-                IsLoading = false;
                 return;
             }
 
