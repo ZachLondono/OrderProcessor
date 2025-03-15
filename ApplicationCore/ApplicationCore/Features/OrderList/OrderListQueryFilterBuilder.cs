@@ -28,9 +28,7 @@ public class OrderListQueryFilterBuilder {
 
         string offset = "";
         if (Page >= 1 && PageSize > 0) {
-            // This should be somewhat more efficient then using OFFSET (which is apparently just an alias for "discard N first results")
-            // Instead, just selecting the id column should be somewhat more efficient than selecting all columns. Then just don't include those in the final result.
-            offset = $"{(filters.Any() ? " AND" : " WHERE")} id NOT IN (SELECT id FROM orders {filter} ORDER BY order_date DESC LIMIT @CurrentPageStart)";
+            offset = $" OFFSET @CurrentPageStart";
         }
 
         string limit = "";
@@ -39,10 +37,9 @@ public class OrderListQueryFilterBuilder {
         }
 
         return $"""
-                {filter}{offset}
-                ORDER BY order_date DESC{limit}
+                {filter}
+                ORDER BY order_date DESC{limit}{offset}
                 """;
-
 
     }
 
