@@ -25,27 +25,31 @@ public class GetOrderList {
 
             using var connection = await _factory.CreateConnection();
 
-            var queryFilter = new OrderListQueryFilterBuilder() {
-                SearchTerm = request.SearchTerm,
-                CustomerId = request.CustomerId,
-                VendorId = request.VendorId,
-                Page = request.Page,
-                PageSize = request.PageSize,
-            }.GetQueryFilter();
+            var items = await Task.Run(() => {
 
-            var query = $"""
-                        SELECT
-                            id,
-                            name,
-                            number,
-                            order_date AS OrderDate,
-                            customer_id AS CustomerId,
-                            vendor_id AS VendorId,
-                            (select SUM(qty) from products where products.order_id=orders.id) AS ItemCount
-                        FROM orders{queryFilter};
-                        """;
+                var queryFilter = new OrderListQueryFilterBuilder() {
+                    SearchTerm = request.SearchTerm,
+                    CustomerId = request.CustomerId,
+                    VendorId = request.VendorId,
+                    Page = request.Page,
+                    PageSize = request.PageSize,
+                }.GetQueryFilter();
 
-            var items = await Task.Run(() => connection.Query<OrderListItem>(query, request));
+                var query = $"""
+                            SELECT
+                                id,
+                                name,
+                                number,
+                                order_date AS OrderDate,
+                                customer_id AS CustomerId,
+                                vendor_id AS VendorId,
+                                (select SUM(qty) from products where products.order_id=orders.id) AS ItemCount
+                            FROM orders{queryFilter};
+                            """;
+
+                return connection.Query<OrderListItem>(query, request);
+
+            });
 
             return new(items);
 
