@@ -8,6 +8,7 @@ using OrderLoading.LoadHafeleDBSpreadsheetOrderData;
 using Microsoft.Extensions.DependencyInjection;
 using OrderLoading.LoadClosetProOrderData.LoadClosetProWebOrderData;
 using OrderLoading;
+using OrderLoading.LoadHafeleMDFDoorSpreadsheetOrderData;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.Models;
 
@@ -28,6 +29,7 @@ public class OrderProviderFactory : IOrderProviderFactory {
         OrderSourceType.DoweledDBOrderForm => _serviceProvider.GetRequiredService<DoweledDBSpreadsheetOrderProvider>(),
         OrderSourceType.ClosetOrderForm => _serviceProvider.GetRequiredService<ClosetSpreadsheetOrderProvider>(),
         OrderSourceType.HafeleDBOrderForm => _serviceProvider.GetRequiredService<HafeleDBSpreadSheetOrderProvider>(),
+        OrderSourceType.HafeleMDFOrderForm => _serviceProvider.GetRequiredService<HafeleMDFDoorOrderProvider>(),
         _ => throw new KeyNotFoundException("No valid order provider for given order source type"),
     };
 

@@ -9,6 +9,7 @@ public class OrderProvidersConfiguration {
     public bool ClosetProWebCSV { get; set; }
     public bool DoweledDBOrderForm { get; set; }
     public bool ClosetOrderForm { get; set; }
-    public bool HafeleDBOrderFor { get; set; }
+    public bool HafeleDBOrderForm { get; set; }
+    public bool HafeleMDFOrderForm { get; set; }
 
 }

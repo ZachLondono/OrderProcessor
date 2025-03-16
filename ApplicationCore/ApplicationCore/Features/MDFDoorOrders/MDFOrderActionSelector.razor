@@ -1,6 +1,5 @@
 ﻿@using ApplicationCore.Features.MDFDoorOrders.DoorOrderRelease
 @using ApplicationCore.Features.MDFDoorOrders.DoorOrderSelector
-@using ApplicationCore.Features.MDFDoorOrders.HafeleMDFDoorOrders
 @using ApplicationCore.Features.MDFDoorOrders.OpenDoorOrders
 @using ApplicationCore.Features.MDFDoorOrders.OpenDoorOrderFile
 @using Domain.Components;
@@ -10,9 +9,6 @@
 	<div class="mb-5">
 		<Button OnClickAsync="ReleaseOpenFile" Color="ButtonColor.Primary">Release Open File</Button>
 	</div>
-	<div>
-        <Button OnClickAsync="ImportFromEmail" Color="ButtonColor.Primary">Import Hafele Order From Email</Button>
-    </div>
 </div>
 
 <hr class="my-6" />
@@ -55,19 +51,5 @@
 		}
 
 	}
-
-	private async Task ImportFromEmail() {
-
-		await ModalInstance.CloseAsync();
-
-		var dialog = ModalService.Show<ImportHafeleOrder>("", new ModalOptions() {
-			Size = ModalSize.Automatic,
-			HideHeader = true,
-			DisableBackgroundCancel = true
-		});
-
-		_ = await dialog.Result;
-
-    }
 
 }

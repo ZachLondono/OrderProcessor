@@ -1,4 +1,4 @@
-﻿namespace ApplicationCore.Features.MDFDoorOrders.HafeleMDFDoorOrders;
+﻿namespace OrderLoading.LoadHafeleMDFDoorSpreadsheetOrderData;
 
 public class EmailDetails {
 

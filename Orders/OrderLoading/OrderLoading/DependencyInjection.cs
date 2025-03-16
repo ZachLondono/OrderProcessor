@@ -11,6 +11,7 @@ using OrderLoading.LoadClosetProOrderData.LoadClosetProWebOrderData;
 using OrderLoading.LoadDoweledDBSpreadsheetOrderData;
 using OrderLoading.LoadDoweledDBSpreadsheetOrderData.Models;
 using OrderLoading.LoadHafeleDBSpreadsheetOrderData;
+using OrderLoading.LoadHafeleMDFDoorSpreadsheetOrderData;
 
 namespace OrderLoading;
 
@@ -33,7 +34,8 @@ public static class DependencyInjection {
 						.AddTransient<DoweledDBSpreadsheetOrderProvider>()
 						.AddTransient<ClosetSpreadsheetOrderProvider>()
 						.AddTransient<AllmoxyClientFactory>()
-						.AddTransient<IXMLValidator, XMLValidator>();
+						.AddTransient<IXMLValidator, XMLValidator>()
+						.AddTransient<HafeleMDFDoorOrderProvider>();
 
 	}
 

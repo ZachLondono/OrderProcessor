@@ -1,0 +1,46 @@
+﻿using ClosedXML.Excel;
+
+namespace OrderLoading.LoadHafeleMDFDoorSpreadsheetOrderData.ReadOrderFile;
+
+public class Options {
+
+    public required DateTime Date { get; init; }
+    public required string ProductionTime { get; init; }
+    public required string PurchaseOrder { get; init; }
+    public required string JobName { get; init; }
+
+    public required string HafelePO { get; init; }
+    public required string HafeleOrderNumber { get; init; }
+
+    public required string OrderComments { get; init; }
+
+    public required string Material { get; init; }
+    public required string DoorStyle { get; init; }
+    public required string Rails { get; init; }
+    public required string Stiles { get; init; }
+    public required string AStyleDrawerFrontRails { get; init; }
+    public required string EdgeProfile { get; init; }
+    public required string PanelDetail { get; init; }
+    public required string PanelDrop { get; init; }
+    public required string Finish { get; init; }
+    public required string HingeDrilling { get; init; }
+    public required string HingeTab { get; init; }
+
+    public required string Contact { get; init; }
+    public required string Company { get; init; }
+    public required string AccountNumber { get; init; }
+    public required string AddressLine1 { get; init; }
+    public required string AddressLine2 { get; init; }
+    public required string City { get; init; }
+    public required string State { get; init; }
+    public required string Zip { get; init; }
+    public required string Phone { get; init; }
+    public required string Email { get; init; }
+    public required string Delivery { get; init; }
+    public required string TrackingNumber { get; init; }
+
+    public static ParsingResult<Options> LoadFromWorkbook(XLWorkbook workbook) {
+        return ExcelReader.LoadFromWorkbook(workbook);
+    }
+
+}

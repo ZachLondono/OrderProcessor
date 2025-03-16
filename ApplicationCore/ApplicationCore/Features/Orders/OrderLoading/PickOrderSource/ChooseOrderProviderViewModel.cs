@@ -6,7 +6,7 @@ using OrderLoading.LoadDoorSpreadsheetOrderData.DoorOrderModels;
 using OrderLoading.LoadDoweledDBSpreadsheetOrderData.Models;
 using OrderLoading.LoadHafeleDBSpreadsheetOrderData;
 using Microsoft.Extensions.Options;
-using ApplicationCore.Features.Orders.OrderLoading;
+using OrderLoading.LoadHafeleMDFDoorSpreadsheetOrderData;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 
@@ -75,12 +75,21 @@ public class ChooseOrderProviderViewModel {
             });
         }
 
-        if (_configuration.HafeleDBOrderFor) {
+        if (_configuration.HafeleDBOrderForm) {
             sourceConfigs.Add(new() {
                 Name = "Hafele Dowel DB",
                 SourceType = OrderSourceType.HafeleDBOrderForm,
                 DialogTitle = "Select Hafele Order Spreadsheet",
                 SourcePickerDialogType = typeof(GetHafeleDBOrderSpreadsheetPathDialog)
+            });
+        }
+
+        if (_configuration.HafeleMDFOrderForm) {
+            sourceConfigs.Add(new() {
+                Name = "Hafele MDF Doors",
+                SourceType = OrderSourceType.HafeleMDFOrderForm,
+                DialogTitle = "Select Hafele MDF Order Spreadsheet",
+                SourcePickerDialogType = typeof(GetHafeleMDFOrderSpreadsheetPathDialog)
             });
         }
 

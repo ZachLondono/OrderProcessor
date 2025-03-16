@@ -29,4 +29,10 @@
     <ProjectReference Include="..\OrderLoading\OrderLoading.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="HafeleMDFDoorOrderLoading\TestData\Test1.3.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
