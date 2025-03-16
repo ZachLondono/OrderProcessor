@@ -159,7 +159,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 
 			"ShoeShelf" => CreateShoeShelf(part, false, wallHasBacking, strategy),
 
-			"Toe Kick_3.75" or "Toe Kick_2.5"
+			"Toe Kick_3.75" or "Toe Kick_2.5" or "Toe Kick_5"
 				=> CreateToeKick(part, strategy),
 
 			"Cleat" => CreateCleat(part, strategy),
