@@ -182,6 +182,8 @@ public class ExportDoorOrder {
             ws.Range["EdgeDetail"].Value2 = doors.Key.EdgeDetail;
             ws.Range["PanelDetail"].Value2 = doors.Key.PanelDetail;
 
+            ws.Range["Processor_Order_Id"].Value2 = order.Id;
+
             if (doors.Key.PanelDrop != 0) {
                 ws.Range["PanelDrop"].Value2 = doors.Key.PanelDrop;
             }
