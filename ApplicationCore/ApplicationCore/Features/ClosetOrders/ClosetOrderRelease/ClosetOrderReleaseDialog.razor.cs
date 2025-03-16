@@ -32,15 +32,32 @@ public partial class ClosetOrderReleaseDialog {
     public IFilePicker? FilePicker { get; set; }
 
     [Inject]
-    public IOptions<ClosetReleaseSettings> Options { get; set; }
+    public IOptions<ClosetReleaseSettings> Options { get; set; } = default!;
 
     public ClosetOrderReleaseOptions Model { get; set; } = new();
 
+    private bool _isLoading = true;
+    public bool IsLoading {
+        get => _isLoading;
+        set {
+            _isLoading = value;
+            StateHasChanged();
+        }
+    }
+
     private string? _errorMessage = null;
 
-    protected override async Task OnInitializedAsync() {
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
 
-        if (Order is null || Bus is null) return;
+        if (!firstRender) return;
+
+        IsLoading = true;
+
+        if (Order is null || Bus is null) {
+            _errorMessage = "";
+            IsLoading = false;
+            return;
+        }
 
         var settings = Options.Value;
 
@@ -112,11 +129,13 @@ public partial class ClosetOrderReleaseDialog {
 
         };
 
-        StateHasChanged();
+        IsLoading = false;
 
         var file = await GetReportFile(Order.OrderNumber);
         Model.WSXMLReportFilePath = file ?? ""; // TODO: allow for multiple files
         Model.AddExistingWSXMLReport = file is not null;
+
+        StateHasChanged();
 
     }
 
