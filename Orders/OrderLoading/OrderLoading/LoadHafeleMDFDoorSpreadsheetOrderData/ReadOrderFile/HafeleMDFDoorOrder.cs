@@ -6,10 +6,12 @@ public class HafeleMDFDoorOrder {
 
     public Options Options { get; }
     public Size[] Sizes { get; }
+    public Data Data { get; }
 
-    public HafeleMDFDoorOrder(Options options, Size[] sizes) {
+    public HafeleMDFDoorOrder(Options options, Size[] sizes, Data data) {
         Options = options;
         Sizes = sizes;
+        Data = data;
     }
 
     public static ParsingResult<HafeleMDFDoorOrder> Load(string workbookPath) {
@@ -25,14 +27,14 @@ public class HafeleMDFDoorOrder {
         warnings.AddRange(result.Warnings);
 
         var sizes = Size.LoadFromWorkbook(wb);
+        var data = Data.LoadFromWorkbook(wb);
 
-        HafeleMDFDoorOrder? data = null;
-        if (options is not null && sizes is not null) {
-            data = new HafeleMDFDoorOrder(options, sizes);
+        HafeleMDFDoorOrder? order = null;
+        if (options is not null && sizes is not null && data is not null) {
+            order = new HafeleMDFDoorOrder(options, sizes, data);
         }
 
-
-        return new(warnings, errors, data);
+        return new(warnings, errors, order);
 
     }
 
