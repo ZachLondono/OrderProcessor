@@ -16,15 +16,15 @@ public class Options {
 
     public required string Material { get; init; }
     public required string DoorStyle { get; init; }
-    public required string Rails { get; init; }
-    public required string Stiles { get; init; }
-    public required string AStyleDrawerFrontRails { get; init; }
+    public required double Rails { get; init; }
+    public required double Stiles { get; init; }
+    public required double AStyleDrawerFrontRails { get; init; }
     public required string EdgeProfile { get; init; }
     public required string PanelDetail { get; init; }
-    public required string PanelDrop { get; init; }
+    public required double PanelDrop { get; init; }
     public required string Finish { get; init; }
     public required string HingeDrilling { get; init; }
-    public required string HingeTab { get; init; }
+    public required double HingeTab { get; init; }
 
     public required string Contact { get; init; }
     public required string Company { get; init; }

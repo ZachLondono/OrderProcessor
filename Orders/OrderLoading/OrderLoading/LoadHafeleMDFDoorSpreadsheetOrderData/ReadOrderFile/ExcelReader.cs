@@ -1,5 +1,4 @@
 ﻿using ClosedXML.Excel;
-using OneOf;
 
 namespace OrderLoading.LoadHafeleMDFDoorSpreadsheetOrderData.ReadOrderFile;
 
@@ -17,15 +16,15 @@ public class ExcelReader {
 
     public string Material { get; set; } = string.Empty;
     public string DoorStyle { get; set; } = string.Empty;
-    public string Rails { get; set; } = string.Empty;
-    public string Stiles { get; set; } = string.Empty;
-    public string AStyleDrawerFrontRails { get; set; } = string.Empty;
+    public double Rails { get; set; }
+    public double Stiles { get; set; }
+    public double AStyleDrawerFrontRails { get; set; }
     public string EdgeProfile { get; set; } = string.Empty;
     public string PanelDetail { get; set; } = string.Empty;
-    public string PanelDrop { get; set; } = string.Empty;
+    public double PanelDrop { get; set; }
     public string Finish { get; set; } = string.Empty;
     public string HingeDrilling { get; set; } = string.Empty;
-    public string HingeTab { get; set; } = string.Empty;
+    public double HingeTab { get; set; }
 
     public string Contact { get; set; } = string.Empty;
     public string Company { get; set; } = string.Empty;
@@ -44,23 +43,23 @@ public class ExcelReader {
 
         var monad = new Monad(workbook)
                         .ReadDateTimeValue("Ordered_Date", (v, r) => r.Date = v, false)
-                        .ReadStringValue("Production_Time", (v, r) => r.PurchaseOrder = v)
+                        .ReadStringValue("Production_Time", (v, r) => r.ProductionTime = v)
                         .ReadStringValue("Customer_PO", (v, r) => r.PurchaseOrder = v)
                         .ReadStringValue("Customer_Job_Name", (v, r) => r.JobName = v)
                         .ReadStringValue("Hafele_PO", (v, r) => r.HafelePO = v)
-                        .ReadStringValue("HafeleOrderNumber", (v, r) => r.HafeleOrderNumber = v, false)
-                        .ReadStringValue("OrderComments", (v, r) => r.OrderComments = v, false)
+                        .ReadStringValue("Hafele_Order_Number", (v, r) => r.HafeleOrderNumber = v, false)
+                        .ReadStringValue("Order_Comments", (v, r) => r.OrderComments = v, false)
                         .ReadStringValue("Material", (v, r) => r.Material = v)
                         .ReadStringValue("Framing_Bead", (v, r) => r.DoorStyle = v)
-                        .ReadStringValue("Default_Rails", (v, r) => r.Rails = v)
-                        .ReadStringValue("Default_Stiles", (v, r) => r.Stiles = v)
-                        .ReadStringValue("Default_A_Rails", (v, r) => r.AStyleDrawerFrontRails = v)
+                        .ReadDoubleValue("Default_Rails", (v, r) => r.Rails = v)
+                        .ReadDoubleValue("Default_Stiles", (v, r) => r.Stiles = v)
+                        .ReadDoubleValue("Default_A_Rails", (v, r) => r.AStyleDrawerFrontRails = v)
                         .ReadStringValue("Edge_Profile", (v, r) => r.EdgeProfile = v)
                         .ReadStringValue("Panel_Detail", (v, r) => r.PanelDetail = v)
-                        .ReadStringValue("Panel_Drop", (v, r) => r.PanelDrop = v)
+                        .ReadDoubleValue("Panel_Drop", (v, r) => r.PanelDrop = v)
                         .ReadStringValue("Finish_Type", (v, r) => r.Finish = v)
                         .ReadStringValue("Hinge_Drilling", (v, r) => r.HingeDrilling = v)
-                        .ReadStringValue("Hinge_Tab", (v, r) => r.HingeTab = v)
+                        .ReadDoubleValue("Hinge_Tab", (v, r) => r.HingeTab = v)
                         .ReadStringValue("Contact", (v, r) => r.Contact = v, false)
                         .ReadStringValue("Company", (v, r) => r.Company = v, false)
                         .ReadStringValue("Account_Number", (v, r) => r.AccountNumber = v, false)
@@ -82,7 +81,7 @@ public class ExcelReader {
     }
 
     private Options MapToOptions()
-        => new Options() {
+        => new() {
             Date = Date,
             ProductionTime = ProductionTime,
             PurchaseOrder = PurchaseOrder,
@@ -172,7 +171,7 @@ public class ExcelReader {
 
         }
 
-        public Monad ReadStringValue(string range, Action<string, ExcelReader> action, bool isRequred = true) {
+        public Monad ReadStringValue(string range, Action<string, ExcelReader> action, bool isRequired = true) {
 
             try {
 
@@ -188,7 +187,7 @@ public class ExcelReader {
             } catch {
 
                 string msg = $"Could not read value from range '{range}' in workbook.";
-                if (isRequred) {
+                if (isRequired) {
                     _errors.Add(msg);
                 } else {
                     _warnings.Add(msg);
@@ -200,7 +199,35 @@ public class ExcelReader {
 
         }
 
-        public Monad ReadDateTimeValue(string range, Action<DateTime, ExcelReader> action, bool isRequred = true) {
+        public Monad ReadDoubleValue(string range, Action<double, ExcelReader> action, bool isRequired = true) {
+
+            try {
+
+                var sheet = GetWoksheet();
+                if (sheet is not null) {
+
+                    var value = sheet.Cell(range).GetDouble();
+
+                    action(value, ExcelReader);
+
+                }
+
+            } catch {
+
+                string msg = $"Could not read value from range '{range}' in workbook.";
+                if (isRequired) {
+                    _errors.Add(msg);
+                } else {
+                    _warnings.Add(msg);
+                }
+
+            }
+
+            return this;
+
+        }
+
+        public Monad ReadDateTimeValue(string range, Action<DateTime, ExcelReader> action, bool isRequired = true) {
 
             try {
 
@@ -216,7 +243,7 @@ public class ExcelReader {
             } catch {
 
                 string msg = $"Could not read date value from range '{range}' in workbook.";
-                if (isRequred) {
+                if (isRequired) {
                     _errors.Add(msg);
                 } else {
                     _warnings.Add(msg);
