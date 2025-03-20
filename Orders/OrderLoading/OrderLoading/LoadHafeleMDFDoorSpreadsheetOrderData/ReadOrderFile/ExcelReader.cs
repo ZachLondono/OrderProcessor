@@ -131,7 +131,7 @@ public class ExcelReader {
             _workbook = workbook;
         }
 
-        private IXLWorksheet? GetWoksheet() {
+        private IXLWorksheet? GetWorksheet() {
 
             if (_worksheet is null) {
 
@@ -148,18 +148,18 @@ public class ExcelReader {
 
         }
 
-        public Monad WorksheetAction(Action<IXLWorksheet, ExcelReader> action, string errorMessage, bool isRequred = true) {
+        public Monad WorksheetAction(Action<IXLWorksheet, ExcelReader> action, string errorMessage, bool isRequired = true) {
 
             try {
 
-                var sheet = GetWoksheet();
+                var sheet = GetWorksheet();
                 if (sheet is not null) {
                     action(sheet, ExcelReader);
                 }
 
             } catch {
 
-                if (isRequred) {
+                if (isRequired) {
                     _errors.Add(errorMessage);
                 } else {
                     _warnings.Add(errorMessage);
@@ -175,7 +175,7 @@ public class ExcelReader {
 
             try {
 
-                var sheet = GetWoksheet();
+                var sheet = GetWorksheet();
                 if (sheet is not null) {
 
                     var value = sheet.Cell(range).GetValue<string>();
@@ -203,7 +203,7 @@ public class ExcelReader {
 
             try {
 
-                var sheet = GetWoksheet();
+                var sheet = GetWorksheet();
                 if (sheet is not null) {
 
                     var value = sheet.Cell(range).GetDouble();
@@ -231,7 +231,7 @@ public class ExcelReader {
 
             try {
 
-                var sheet = GetWoksheet();
+                var sheet = GetWorksheet();
                 if (sheet is not null) {
 
                     var value = sheet.Cell(range).GetDateTime();
