@@ -90,6 +90,9 @@ public class HafeleMDFDoorOrderLoadingTests {
 
         data.Should().NotBeNull();
 
+        data.HafeleMarkUpToCustomers.Should().Be(0.3);
+        data.DiscountToHafele.Should().Be(0.2);
+
         data.MaterialThicknessesByName.Should().Contain(new KeyValuePair<string, double>("MDF-3/4\"", 0.75));
         data.MaterialThicknessesByName.Should().Contain(new KeyValuePair<string, double>("MDF-1\"", 1));
         data.MaterialThicknessesByName.Should().Contain(new KeyValuePair<string, double>("White Mela MDF-3/4\"", 0.75));
