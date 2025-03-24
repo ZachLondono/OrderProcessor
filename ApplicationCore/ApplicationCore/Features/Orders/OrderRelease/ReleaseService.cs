@@ -789,46 +789,124 @@ public class ReleaseService {
         foreach (var order in orders) {
 
             var outputDirectory = Path.Combine(order.WorkingDirectory, "CUTLIST");
-            var cutListResults = await Task.Run(() =>
-                order.Products
-                    .OfType<DoweledDrawerBoxProduct>()
-                    .GroupBy(d => d.BottomMaterial)
-                    .Select(group => new DoweledDrawerBoxCutList() {
-                        CustomerName = customerName,
-                        VendorName = vendorName,
-                        Note = order.Note,
-                        Material = $"{group.First().BottomMaterial.Thickness.RoundToInchMultiple(0.0625).AsInchFraction()} {group.First().BottomMaterial.Name}",
-                        OrderDate = order.OrderDate,
-                        OrderName = order.Name,
-                        OrderNumber = order.Number,
-                        TotalBoxCount = group.Sum(box => box.Qty),
-                        Items = group.Select(box => (box.ProductNumber, box.GetBottom(DoweledDrawerBox.Construction)))
-                                        .GroupBy(b => (b.Item2.Width, b.Item2.Length))
-                                        .OrderByDescending(g => g.Key.Length)
-                                        .OrderByDescending(g => g.Key.Width)
-                                        .Select(bottomGroup => new DoweledDBCutListLineItem() {
-                                            CabNumbers = string.Join(", ", bottomGroup.Select(p => p.ProductNumber)),
-                                            Note = "",
-                                            Qty = bottomGroup.Sum(p => p.Item2.Qty),
-                                            PartName = "Bottom",
-                                            Length = bottomGroup.Key.Length.AsMillimeters(),
-                                            Width = bottomGroup.Key.Width.AsMillimeters()
-                                        })
-                                        .ToList()
-                    })
-                    .Select(cutList => _doweledDrawerBoxCutListWriter.WriteCutList(cutList, outputDirectory, true))
-                    .OfType<DoweledDBCutListResult>()
-                    .ToList()
-            );
 
-            cutListResults.Select(result => result.ExcelFilePath)
-                            .ForEach(file => OnFileGenerated?.Invoke(file));
+            List<DoweledDBCutListResult> sidesCutLists = await CreateSidesCutList(customerName, vendorName, order, outputDirectory);
+            generatedFiles.AddRange(sidesCutLists.Select(result => result.PDFFilePath).OfType<string>());
 
-            generatedFiles.AddRange(cutListResults.Select(result => result.PDFFilePath).OfType<string>());
+            List<DoweledDBCutListResult> bottomCutLists = await CreateBottomsCutList(customerName, vendorName, order, outputDirectory);
+            generatedFiles.AddRange(bottomCutLists.Select(result => result.PDFFilePath).OfType<string>());
 
         }
 
         return generatedFiles;
+
+    }
+
+    private async Task<List<DoweledDBCutListResult>> CreateBottomsCutList(string customerName, string vendorName, Order order, string outputDirectory) {
+
+        var cutListResults = await Task.Run(() =>
+            order.Products
+                .OfType<DoweledDrawerBoxProduct>()
+                .GroupBy(d => d.BottomMaterial)
+                .Select(group => new DoweledDrawerBoxCutList() {
+                    CustomerName = customerName,
+                    VendorName = vendorName,
+                    Note = order.Note,
+                    Material = $"{group.First().BottomMaterial.Thickness.RoundToInchMultiple(0.0625).AsInchFraction()} {group.First().BottomMaterial.Name}",
+                    OrderDate = order.OrderDate,
+                    OrderName = order.Name,
+                    OrderNumber = order.Number,
+                    TotalBoxCount = group.Sum(box => box.Qty),
+                    Items = group.Select(box => (box.ProductNumber, box.GetBottom(DoweledDrawerBox.Construction)))
+                                    .GroupBy(b => (b.Item2.Width, b.Item2.Length))
+                                    .OrderByDescending(g => g.Key.Length)
+                                    .OrderByDescending(g => g.Key.Width)
+                                    .Select(bottomGroup => new DoweledDBCutListLineItem() {
+                                        CabNumbers = string.Join(", ", bottomGroup.Select(p => p.ProductNumber)),
+                                        Note = "",
+                                        Qty = bottomGroup.Sum(p => p.Item2.Qty),
+                                        PartName = "Bottom",
+                                        Length = bottomGroup.Key.Length.AsMillimeters(),
+                                        Width = bottomGroup.Key.Width.AsMillimeters()
+                                    })
+                                    .ToList()
+                })
+                .Select(cutList => _doweledDrawerBoxCutListWriter.WriteCutList(cutList, outputDirectory, true))
+                .OfType<DoweledDBCutListResult>()
+                .ToList()
+        );
+
+        cutListResults.Select(result => result.ExcelFilePath)
+                        .ForEach(file => OnFileGenerated?.Invoke(file));
+        return cutListResults;
+
+    }
+
+    private async Task<List<DoweledDBCutListResult>> CreateSidesCutList(string customerName, string vendorName, Order order, string outputDirectory) {
+
+        var cutListResults = await Task.Run(() => {
+
+            var boxesByMaterial = order.Products
+                .OfType<DoweledDrawerBoxProduct>()
+                .GroupBy(d => d.BottomMaterial);
+
+
+            List<DoweledDrawerBoxCutList> cutLists = [];
+
+            foreach (var group in boxesByMaterial) {
+
+                List<DoweledDBCutListLineItem> items = [];
+
+                foreach (var box in group) {
+
+                    var sides = box.GetSideParts(DoweledDrawerBox.Construction);
+                    var front = box.GetFrontPart(DoweledDrawerBox.Construction);
+                    var back = box.GetBackPart(DoweledDrawerBox.Construction);
+
+                    items.Add(PartToLineItem(box.ProductNumber, front, "Front"));
+                    items.Add(PartToLineItem(box.ProductNumber, back, "Back"));
+                    items.Add(PartToLineItem(box.ProductNumber, sides.Left, "Left Side"));
+                    items.Add(PartToLineItem(box.ProductNumber, sides.Right, "Right Side"));
+
+                }
+
+                var cutList = new DoweledDrawerBoxCutList() {
+                    CustomerName = customerName,
+                    VendorName = vendorName,
+                    Note = order.Note,
+                    Material = $"{group.First().FrontMaterial.Thickness.RoundToInchMultiple(0.0625).AsInchFraction()} {group.First().FrontMaterial.Name}",
+                    OrderDate = order.OrderDate,
+                    OrderName = order.Name,
+                    OrderNumber = order.Number,
+                    TotalBoxCount = group.Sum(box => box.Qty),
+                    Items = items 
+                };
+
+                cutLists.Add(cutList);
+
+            }
+
+            return cutLists.Select(cutList => _doweledDrawerBoxCutListWriter.WriteCutList(cutList, outputDirectory, true))
+                            .OfType<DoweledDBCutListResult>()
+                            .ToList();
+
+            static DoweledDBCutListLineItem PartToLineItem(int productNumber, CADCodeProxy.Machining.Part part, string description, string note = "") {
+                return new() {
+                    CabNumbers = productNumber.ToString(),
+                    Qty = part.Qty,
+                    Note = note,
+                    PartName = description,
+                    Length = part.Length,
+                    Width = part.Width
+                };
+            }
+
+        });
+
+        cutListResults.Select(result => result.ExcelFilePath)
+                        .ForEach(file => OnFileGenerated?.Invoke(file));
+
+        return cutListResults;
 
     }
 
