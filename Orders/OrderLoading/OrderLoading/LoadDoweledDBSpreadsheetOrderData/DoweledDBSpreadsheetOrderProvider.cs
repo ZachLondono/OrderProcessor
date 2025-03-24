@@ -11,6 +11,7 @@ using Domain.Orders.Entities.Products;
 using Domain.Services;
 using Domain.Orders.ValueObjects;
 using Address = Domain.Companies.ValueObjects.Address;
+using static OrderLoading.IOrderProvider;
 
 namespace OrderLoading.LoadDoweledDBSpreadsheetOrderData;
 
@@ -23,8 +24,6 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 	private readonly CompanyDirectory.GetCustomerIdByNameAsync _getCustomerByNamAsync;
 	private readonly CompanyDirectory.GetCustomerWorkingDirectoryRootByIdAsync _getCustomerWorkingDirectoryRootByIdAsync;
 
-	public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
-
 	public DoweledDBSpreadsheetOrderProvider(IFileReader fileReader, ILogger<DoweledDBSpreadsheetOrderProvider> logger, IOptions<DoweledDBOrderProviderOptions> options, CompanyDirectory.InsertCustomerAsync insertCustomerAsync, CompanyDirectory.GetCustomerIdByNameAsync getCustomerByNamAsync, CompanyDirectory.GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync) {
 		_fileReader = fileReader;
 		_logger = logger;
@@ -34,19 +33,19 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 		_getCustomerWorkingDirectoryRootByIdAsync = getCustomerWorkingDirectoryRootByIdAsync;
 	}
 
-	public async Task<OrderData?> LoadOrderData(string source) {
+	public async Task<OrderData?> LoadOrderData(string source, LogProgress logProgress) {
 
 		if (!_fileReader.DoesFileExist(source)) {
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not access given filepath");
+			logProgress(MessageSeverity.Error, "Could not access given file path");
 			return null;
 		}
 
 		var extension = Path.GetExtension(source);
 		if (extension is null || extension != ".xlsx" && extension != ".xlsm") {
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Given filepath is not an excel document");
+			logProgress(MessageSeverity.Error, "Given file path is not an excel document");
 			return null;
 		}
-		Microsoft.Office.Interop.Excel.Application? app = null;
+		Application? app = null;
 		Workbook? workbook = null;
 		Workbooks? workbooks = null;
 
@@ -64,12 +63,12 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 			Worksheet? specSheet = (Worksheet?)workbook.Worksheets["Dowel Specs"];
 
 			if (orderSheet is null) {
-				OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find Order sheet in workbook");
+				logProgress(MessageSeverity.Error, "Could not find Order sheet in workbook");
 				return null;
 			}
 
 			if (specSheet is null) {
-				OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find Spec sheet in workbook");
+				logProgress(MessageSeverity.Error, "Could not find Spec sheet in workbook");
 				return null;
 			}
 
@@ -85,7 +84,7 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 			bool machineThicknessForUMSlides = slideSpecs.UMSlideMachining;
 			var frontBackHeightAdjustment = Dimension.FromMillimeters(constructionSpecs.FrontBackDrop);
 			string notches = header.UnderMountNotches;
-			var boxes = LoadAllLineItems(orderSheet)
+			var boxes = LoadAllLineItems(orderSheet, logProgress)
 											.Select(i => i.CreateDoweledDrawerBoxProduct(useInches, machineThicknessForUMSlides, frontBackHeightAdjustment, notches))
 											.Cast<IProduct>()
 											.ToList();
@@ -104,7 +103,7 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 
 			var dirRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customerId);
 			if (string.IsNullOrWhiteSpace(dirRoot)) dirRoot = null;
-			var workingDirectory = CreateWorkingDirectory(source, header.OrderNumber, header.OrderName, header.CustomerName, dirRoot);
+			var workingDirectory = CreateWorkingDirectory(source, header.OrderNumber, header.OrderName, header.CustomerName, dirRoot, logProgress);
 
 			return new() {
 				VendorId = vendorId,
@@ -138,7 +137,7 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 
 		} catch (Exception ex) {
 
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Error occurred while reading order from workbook {ex}");
+			logProgress(MessageSeverity.Error, $"Error occurred while reading order from workbook {ex}");
 			_logger.LogError(ex, "Exception thrown while loading order from workbook");
 
 		} finally {
@@ -163,7 +162,7 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 
 	}
 
-	private IEnumerable<LineItem> LoadAllLineItems(Worksheet worksheet) {
+	private IEnumerable<LineItem> LoadAllLineItems(Worksheet worksheet, LogProgress logProgress) {
 
 		List<LineItem> lineItems = new();
 
@@ -182,7 +181,7 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 
 			} catch (Exception ex) {
 
-				OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Error reading line item at line {row}");
+				logProgress(MessageSeverity.Error, $"Error reading line item at line {row}");
 				_logger.LogError(ex, "Exception thrown while reading line item from workbook");
 
 			}
@@ -232,13 +231,13 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 
 	}
 
-	private string CreateWorkingDirectory(string source, string orderNumber, string orderName, string customerName, string? customerWorkingDirectory) {
+	private string CreateWorkingDirectory(string source, string orderNumber, string orderName, string customerName, string? customerWorkingDirectory, LogProgress logProgress) {
 		if (string.IsNullOrWhiteSpace(customerWorkingDirectory) && string.IsNullOrWhiteSpace(_options.DefaultWorkingDirectory)) {
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "No valid working directory root found. Working directory must be created manually and incoming data copied.");
-			return string.Empty;
+            logProgress(MessageSeverity.Error, "No valid working directory root found. Working directory must be created manually and incoming data copied.");
+            return string.Empty;
 		}
 		string workingDirectory = Path.Combine((customerWorkingDirectory ?? _options.DefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {customerName} - {orderName}", ' '));
-		if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDirectory) && incomingDirectory is not null) {
+		if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDirectory, logProgress) && incomingDirectory is not null) {
 			string dataFile = _fileReader.GetAvailableFileName(incomingDirectory, $"{orderNumber} - Incoming", Path.GetExtension(source));
 			File.Copy(source, dataFile);
 		}
@@ -246,7 +245,7 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 		return workingDirectory;
 	}
 
-	private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
+	private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory, LogProgress logProgress) {
 
 		workingDirectory = workingDirectory.Trim();
 
@@ -265,7 +264,7 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 
 		} catch (Exception ex) {
 			incomingDirectory = null;
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
+			logProgress(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
 		}
 
 		return false;

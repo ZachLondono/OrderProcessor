@@ -13,12 +13,11 @@ using Companies.Customers.Queries;
 using Companies.Customers.Commands;
 using Companies.Vendors.Queries;
 using Domain.Services;
+using static OrderLoading.IOrderProvider;
 
 namespace OrderLoading.LoadHafeleDBSpreadsheetOrderData;
 
 public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
-
-	public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
 
 	private readonly HafeleDBOrderProviderSettings _settings;
 	private readonly IFileReader _fileReader;
@@ -30,16 +29,16 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 		_bus = bus;
 	}
 
-	public async Task<OrderData?> LoadOrderData(string source) {
+	public async Task<OrderData?> LoadOrderData(string source, LogProgress logProgress) {
 
-		if (!_fileReader.DoesFileExist(source)) {
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not access given filepath");
-			return null;
+        if (!_fileReader.DoesFileExist(source)) {
+            logProgress(MessageSeverity.Error, "Could not access given file path");
+            return null;
 		}
 
 		var extension = Path.GetExtension(source);
 		if (extension is null || extension != ".xlsx") {
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Given filepath is not an excel document");
+			logProgress(MessageSeverity.Error, "Given file path is not an excel document");
 			return null;
 		}
 
@@ -70,11 +69,11 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 			app = null;
 
 			if (data is null) {
-				OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not load order data from workbook");
+				logProgress(MessageSeverity.Error, "Could not load order data from workbook");
 				return null;
 			}
 
-			var (orderData, incomingDirectory) = await MapWorkbookDataToOrderData(data);
+			var (orderData, incomingDirectory) = await MapWorkbookDataToOrderData(data, logProgress);
 
 			if (incomingDirectory is not null) {
 				var fileName = Path.GetFileNameWithoutExtension(source);
@@ -87,7 +86,7 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 
 		} catch (Exception ex) {
 
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Error occurred while reading order from workbook {ex}");
+			logProgress(MessageSeverity.Error, $"Error occurred while reading order from workbook {ex}");
 
 		} finally {
 
@@ -111,7 +110,7 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 
 	}
 
-	public async Task<(OrderData, string?)> MapWorkbookDataToOrderData(WorkbookOrderData workbookData) {
+	public async Task<(OrderData, string?)> MapWorkbookDataToOrderData(WorkbookOrderData workbookData, LogProgress logProgress) {
 
 		bool metric = workbookData.GlobalDrawerSpecs.Units.Equals("millimeters", StringComparison.InvariantCultureIgnoreCase);
 
@@ -135,7 +134,7 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 		var billing = await GetVendorBillingInfo(_settings.VendorId);
 
 		string workingDirectory = Path.Combine(_settings.WorkingDirectoryRoot.Replace('/', '\\'), $"{workbookData.OrderDetails.HafelePO} - {workbookData.OrderDetails.JobName} - {workbookData.ContactInformation.Company}");
-		if (!TryToCreateWorkingDirectory(workingDirectory, out string? incomingDirectory)) {
+		if (!TryToCreateWorkingDirectory(workingDirectory, out string? incomingDirectory, logProgress)) {
 			incomingDirectory = null;
 		}
 
@@ -296,7 +295,7 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 
 	}
 
-	private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
+	private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory, LogProgress logProgress) {
 
 		workingDirectory = workingDirectory.Trim();
 
@@ -315,7 +314,7 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 
 		} catch (Exception ex) {
 			incomingDirectory = null;
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
+			logProgress(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
 		}
 
 		return false;

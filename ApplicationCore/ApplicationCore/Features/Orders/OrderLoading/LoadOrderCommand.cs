@@ -15,9 +15,10 @@ public class LoadOrderCommand {
         public override async Task<Response<OrderData?>> Handle(Command request) {
 
             IOrderProvider provider = _factory.GetOrderProvider(request.SourceType);
-            provider.OrderLoadingViewModel = request.OrderLoadingViewModel;
 
-            OrderData? data = await provider.LoadOrderData(request.Source);
+            OrderData? data = await provider.LoadOrderData(request.Source, (severity, msg) => {
+                request.OrderLoadingViewModel?.AddLoadingMessage(severity, msg);
+            });
 
             if (data is null) {
 

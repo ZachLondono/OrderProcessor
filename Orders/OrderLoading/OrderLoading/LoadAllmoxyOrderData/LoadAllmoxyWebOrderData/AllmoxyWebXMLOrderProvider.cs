@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using OrderLoading.LoadAllmoxyOrderData.XMLValidation;
 using Microsoft.Extensions.Logging;
 using Domain.Services;
+using static OrderLoading.IOrderProvider;
 
 namespace OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyWebOrderData;
 
@@ -19,12 +20,12 @@ public class AllmoxyWebXMLOrderProvider : AllmoxyXMLOrderProvider {
 		_clientFactory = clientFactory;
 	}
 
-	protected override async Task<string> GetExportXMLFromSource(string source) {
+	protected override async Task<string> GetExportXMLFromSource(string source, LogProgress logProgress) {
 		try {
 			string exportXML = await _clientFactory.CreateClient().GetExportAsync(source, 6);
 			return exportXML;
 		} catch (Exception ex) {
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not load order data from Allmoxy: {ex.Message}");
+			logProgress(MessageSeverity.Error, $"Could not load order data from Allmoxy: {ex.Message}");
 			return string.Empty;
 		}
 	}

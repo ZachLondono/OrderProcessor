@@ -2,8 +2,8 @@
 
 public interface IOrderProvider {
 
-	public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
+    public delegate void LogProgress(MessageSeverity severity, string message);
 
-	public Task<OrderData?> LoadOrderData(string source);
+    public Task<OrderData?> LoadOrderData(string source, LogProgress logProgress);
 
 }
