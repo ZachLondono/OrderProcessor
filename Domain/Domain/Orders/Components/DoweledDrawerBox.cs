@@ -516,7 +516,7 @@ public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
         LargeBottomDadoToolMinimum = Dimension.FromMillimeters(12.7),
         BottomDadoScoringDepth = Dimension.FromMillimeters(1.5),
         BottomDadoStartHeight = Dimension.FromInches(0.5),
-        BottomDadoDepth = Dimension.FromMillimeters(8),
+        BottomDadoDepth = Dimension.FromMillimeters(6.5),
         BottomDadoHeightOversize = Dimension.FromMillimeters(0.75),
         FrontBackBottomDadoLengthOversize = Dimension.FromMillimeters(3),
         BottomUndersize = Dimension.FromMillimeters(1),
