@@ -6,7 +6,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Orders.Components;
 
-public class DovetailDrawerBox : IComponent, IDrawerSlideContainer, ISupplyContainer {
+public class DovetailDrawerBox : IDrawerSlideContainer, ISupplyContainer {
 
     public int Qty { get; }
     public int ProductNumber { get; }

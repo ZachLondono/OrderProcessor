@@ -4,7 +4,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Orders.Components;
 
-public class MDFDoor : IComponent {
+public class MDFDoor {
 
     public int Qty { get; }
     public int ProductNumber { get; }

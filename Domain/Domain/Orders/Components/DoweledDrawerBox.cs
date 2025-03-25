@@ -6,7 +6,7 @@ using CADCodeProxy.Machining.Tokens;
 
 namespace Domain.Orders.Components;
 
-public class DoweledDrawerBox : DoweledDrawerBoxConfig, IComponent {
+public class DoweledDrawerBox : DoweledDrawerBoxConfig {
 
     public int Qty { get; }
     public Dimension Height { get; }
