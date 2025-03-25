@@ -20,9 +20,9 @@ public class AllmoxyWebXMLOrderProvider : AllmoxyXMLOrderProvider {
 		_clientFactory = clientFactory;
 	}
 
-	protected override async Task<string> GetExportXMLFromSource(string source, LogProgress logProgress) {
+	protected override async Task<string> GetExportXML(LogProgress logProgress) {
 		try {
-			string exportXML = await _clientFactory.CreateClient().GetExportAsync(source, 6);
+			string exportXML = await _clientFactory.CreateClient().GetExportAsync(Source, 6);
 			return exportXML;
 		} catch (Exception ex) {
 			logProgress(MessageSeverity.Error, $"Could not load order data from Allmoxy: {ex.Message}");

@@ -25,6 +25,8 @@ namespace OrderLoading.LoadAllmoxyOrderData;
 
 public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 
+	public string Source { get; set; } = "";
+
 	private readonly AllmoxyConfiguration _configuration;
 	private readonly IXMLValidator _validator;
 	private readonly ProductBuilderFactory _builderFactory;
@@ -49,11 +51,11 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 		_logger = logger;
 	}
 
-	protected abstract Task<string> GetExportXMLFromSource(string source, LogProgress logProgress);
+	protected abstract Task<string> GetExportXML(LogProgress logProgress);
 
-	public async Task<OrderData?> LoadOrderData(string source, LogProgress logProgress) {
+	public async Task<OrderData?> LoadOrderData(LogProgress logProgress) {
 
-		var exportXML = await GetExportXMLFromSource(source, logProgress);
+		var exportXML = await GetExportXML(logProgress);
 
 		if (exportXML == string.Empty) {
 			logProgress(MessageSeverity.Error, "No order data found");

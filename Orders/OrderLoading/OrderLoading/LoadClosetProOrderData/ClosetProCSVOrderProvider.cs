@@ -33,6 +33,8 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 	private readonly GetCustomerByIdAsync _getCustomerByIdAsync;
 	private readonly ComponentBuilderFactory _componentBuilderFactory;
 
+	public ClosetProSource? Source { get; set; } = null; 
+
 	public ClosetProCSVOrderProvider(ClosetProCSVReader reader, ClosetProPartMapper partMapper, IFileReader fileReader, IOrderingDbConnectionFactory dbConnectionFactory, GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, InsertCustomerAsync insertCustomerAsync, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerByIdAsync getCustomerByIdAsync, GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync, ComponentBuilderFactory componentBuilderFactory) {
 		_reader = reader;
 		_partMapper = partMapper;
@@ -46,23 +48,20 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 		_componentBuilderFactory = componentBuilderFactory;
 	}
 
-	protected abstract Task<string?> GetCSVDataFromSourceAsync(string source, LogProgress logProgress);
+	protected abstract Task<string?> GetCSVDataFromSourceAsync(LogProgress logProgress);
 
 	public record FrontHardware(string Name, Dimension Spread);
 
-	public async Task<OrderData?> LoadOrderData(string sourceObj, LogProgress logProgress) {
+	public async Task<OrderData?> LoadOrderData(LogProgress logProgress) {
 
-        var sourceObjParts = sourceObj.Split('*');
-
-        if (sourceObjParts.Length != 3) {
+        if (Source is null) {
             throw new InvalidOperationException("Invalid data source");
         }
 
-        string source = sourceObjParts[0];
-        string? customOrderNumber = string.IsNullOrWhiteSpace(sourceObjParts[1]) ? null : sourceObjParts[1];
-        string? customWorkingDirectoryRoot = string.IsNullOrWhiteSpace(sourceObjParts[2]) ? null : sourceObjParts[2];
+        string? customOrderNumber = string.IsNullOrWhiteSpace(Source.OrderNumber) ? null : Source.OrderNumber;
+        string? customWorkingDirectoryRoot = string.IsNullOrWhiteSpace(Source.WorkingDirectoryRoot) ? null : Source.WorkingDirectoryRoot;
 
-        var csvData = await GetCSVDataFromSourceAsync(source, logProgress);
+        var csvData = await GetCSVDataFromSourceAsync(logProgress);
 
         if (csvData is null) {
             logProgress(MessageSeverity.Error, "No order data found");
@@ -533,5 +532,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 						.Where(static p => p.Name.Contains("Shelf Pins", StringComparison.InvariantCultureIgnoreCase))
 						.Any();
     }
+
+	public record ClosetProSource(string OrderId, string? OrderNumber, string? WorkingDirectoryRoot);
 
 }

@@ -6,7 +6,7 @@
 <div>
     <Button OnClick="ChooseFile">Select File</Button>
     @if (string.IsNullOrEmpty(FilePath)) {
-       <span>No file chosen...</span> 
+        <span>No file chosen...</span> 
     } else {
         <span>@FilePath</span>
     }
@@ -37,6 +37,9 @@
     [CascadingParameter]
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
+    [Inject]
+    public ClosetSpreadsheetOrderProvider OrderProvider { get; set; } = default!;
+
     public string FilePath { get; set; } = string.Empty;
     public string OrderNumber { get; set; } = string.Empty;
     public string WorkingDirectoryRoot { get; set; } = string.Empty;
@@ -46,7 +49,8 @@
     }
 
     public async Task ReturnValue() {
-        await BlazoredModal.CloseAsync(ModalResult.Ok($"{FilePath}*{OrderNumber}*{WorkingDirectoryRoot}"));
+        OrderProvider.Source = new(FilePath, OrderNumber, WorkingDirectoryRoot);
+        await BlazoredModal.CloseAsync(ModalResult.Ok(OrderProvider));
     }
 
     public async Task Cancel() {

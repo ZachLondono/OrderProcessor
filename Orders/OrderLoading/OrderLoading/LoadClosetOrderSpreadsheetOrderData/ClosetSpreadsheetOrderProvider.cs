@@ -17,6 +17,8 @@ namespace OrderLoading.LoadClosetOrderSpreadsheetOrderData;
 
 public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
+	public SourceData? Source { get; set; } = null;
+
 	private readonly IFileReader _fileReader;
 	private readonly GetCustomerOrderPrefixByIdAsync _getCustomerOrderPrefixByIdAsync;
 	private readonly GetCustomerWorkingDirectoryRootByIdAsync _getCustomerWorkingDirectoryRootByIdAsync;
@@ -31,24 +33,21 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 		_getCustomerIdByNameAsync = getCustomerIdByNameAsync;
 	}
 
-	public async Task<OrderData?> LoadOrderData(string data, LogProgress logProgress) {
+	public async Task<OrderData?> LoadOrderData(LogProgress logProgress) {
 
-		var parts = data.Split('*');
-
-		if (parts.Length != 3) {
+		if (Source is null) {
 			throw new InvalidOperationException("Invalid data source");
 		}
 
-		string source = parts[0];
-		string? customOrderNumber = string.IsNullOrWhiteSpace(parts[1]) ? null : parts[1];
-		string? customWorkingDirectoryRoot = string.IsNullOrWhiteSpace(parts[2]) ? null : parts[2];
+		string? customOrderNumber = string.IsNullOrWhiteSpace(Source.OrderNumber) ? null : Source.OrderNumber;
+		string? customWorkingDirectoryRoot = string.IsNullOrWhiteSpace(Source.WorkingDirectoryRoot) ? null : Source.WorkingDirectoryRoot;
 
-		if (!_fileReader.DoesFileExist(source)) {
+		if (!_fileReader.DoesFileExist(Source.FilePath)) {
 			logProgress(MessageSeverity.Error, "Could not access given file path");
 			return null;
 		}
 
-		var extension = Path.GetExtension(source);
+		var extension = Path.GetExtension(Source.FilePath);
 		if (extension is null || extension != ".xlsx" && extension != ".xlsm") {
 			logProgress(MessageSeverity.Error, "Given file path is not an excel document");
 			return null;
@@ -66,7 +65,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 			};
 
 			workbooks = app.Workbooks;
-			workbook = workbooks.Open(source, ReadOnly: true);
+			workbook = workbooks.Open(Source.FilePath, ReadOnly: true);
 			if (!TryGetWorksheet(workbook, "Cover", out Worksheet? coverSheet, logProgress) || coverSheet is null) return null;
 			if (!TryGetWorksheet(workbook, "Closet Parts", out Worksheet? closetPartSheet, logProgress) || closetPartSheet is null) return null;
 			if (!TryGetWorksheet(workbook, "Corner Shelves", out Worksheet? cornerShelfSheet, logProgress) || cornerShelfSheet is null) return null;
@@ -107,8 +106,8 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 				return null;
 			}
 			if (incomingDirectory is not null) {
-				string fileName = Path.GetFileName(source);
-				File.Copy(source, Path.Combine(incomingDirectory, fileName));
+				string fileName = Path.GetFileName(Source.FilePath);
+				File.Copy(Source.FilePath, Path.Combine(incomingDirectory, fileName));
 			}
 
 			var closetParts = LoadItemsFromWorksheet<ClosetPart>(closetPartSheet, logProgress);
@@ -509,5 +508,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 		}
 
 	}
+
+	public record SourceData(string FilePath, string OrderNumber, string WorkingDirectoryRoot);
 
 }

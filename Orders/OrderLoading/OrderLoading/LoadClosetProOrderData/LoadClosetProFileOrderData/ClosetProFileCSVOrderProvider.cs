@@ -18,15 +18,22 @@ public class ClosetProFileCSVOrderProvider : ClosetProCSVOrderProvider {
 		_fileReader = fileReader;
 	}
 
-	protected override async Task<string?> GetCSVDataFromSourceAsync(string source, LogProgress logProgress) {
+	protected override async Task<string?> GetCSVDataFromSourceAsync(LogProgress logProgress) {
+
+		if (Source is null) {
+			logProgress(MessageSeverity.Error, "No source data provided");
+			return null;
+		}
+
 		try {
-			using var stream = _fileReader.OpenReadFileStream(source);
+			using var stream = _fileReader.OpenReadFileStream(Source.OrderId);
 			using var reader = new StreamReader(stream);
 			return await reader.ReadToEndAsync();
 		} catch (Exception ex) {
 			logProgress(MessageSeverity.Error, $"Could not load order data from Closet Pro: {ex.Message}");
 			return null;
 		}
+
 	}
 
 }

@@ -19,6 +19,8 @@ namespace OrderLoading.LoadHafeleDBSpreadsheetOrderData;
 
 public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 
+	public string FilePath { get; set; } = string.Empty;
+
 	private readonly HafeleDBOrderProviderSettings _settings;
 	private readonly IFileReader _fileReader;
 	private readonly IBus _bus;
@@ -29,14 +31,14 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 		_bus = bus;
 	}
 
-	public async Task<OrderData?> LoadOrderData(string source, LogProgress logProgress) {
+	public async Task<OrderData?> LoadOrderData(LogProgress logProgress) {
 
-        if (!_fileReader.DoesFileExist(source)) {
+        if (!_fileReader.DoesFileExist(FilePath)) {
             logProgress(MessageSeverity.Error, "Could not access given file path");
             return null;
 		}
 
-		var extension = Path.GetExtension(source);
+		var extension = Path.GetExtension(FilePath);
 		if (extension is null || extension != ".xlsx") {
 			logProgress(MessageSeverity.Error, "Given file path is not an excel document");
 			return null;
@@ -54,7 +56,7 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 			};
 
 			workbooks = app.Workbooks;
-			workbook = workbooks.Open(source, ReadOnly: true);
+			workbook = workbooks.Open(FilePath, ReadOnly: true);
 
 			var data = WorkbookOrderData.ReadWorkbook(workbook);
 
@@ -76,10 +78,10 @@ public class HafeleDBSpreadSheetOrderProvider : IOrderProvider {
 			var (orderData, incomingDirectory) = await MapWorkbookDataToOrderData(data, logProgress);
 
 			if (incomingDirectory is not null) {
-				var fileName = Path.GetFileNameWithoutExtension(source);
-				var ext = Path.GetExtension(source);
+				var fileName = Path.GetFileNameWithoutExtension(FilePath);
+				var ext = Path.GetExtension(FilePath);
 				var newFileName = _fileReader.GetAvailableFileName(incomingDirectory, fileName, ext);
-				File.Copy(source, newFileName);
+				File.Copy(FilePath, newFileName);
 			}
 
 			return orderData;

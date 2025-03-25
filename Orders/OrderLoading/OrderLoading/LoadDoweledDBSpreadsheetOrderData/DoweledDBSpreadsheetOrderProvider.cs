@@ -17,6 +17,8 @@ namespace OrderLoading.LoadDoweledDBSpreadsheetOrderData;
 
 public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 
+	public string FilePath { get; set; } = string.Empty;
+
 	private readonly IFileReader _fileReader;
 	private readonly ILogger<DoweledDBSpreadsheetOrderProvider> _logger;
 	private readonly DoweledDBOrderProviderOptions _options;
@@ -33,14 +35,19 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 		_getCustomerWorkingDirectoryRootByIdAsync = getCustomerWorkingDirectoryRootByIdAsync;
 	}
 
-	public async Task<OrderData?> LoadOrderData(string source, LogProgress logProgress) {
+	public async Task<OrderData?> LoadOrderData(LogProgress logProgress) {
 
-		if (!_fileReader.DoesFileExist(source)) {
+		if (string.IsNullOrWhiteSpace(FilePath)) {
+			logProgress(MessageSeverity.Error, "No file path provided");
+			return null;
+		}
+
+		if (!_fileReader.DoesFileExist(FilePath)) {
 			logProgress(MessageSeverity.Error, "Could not access given file path");
 			return null;
 		}
 
-		var extension = Path.GetExtension(source);
+		var extension = Path.GetExtension(FilePath);
 		if (extension is null || extension != ".xlsx" && extension != ".xlsm") {
 			logProgress(MessageSeverity.Error, "Given file path is not an excel document");
 			return null;
@@ -57,7 +64,7 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 			};
 
 			workbooks = app.Workbooks;
-			workbook = workbooks.Open(source, ReadOnly: true);
+			workbook = workbooks.Open(FilePath, ReadOnly: true);
 
 			Worksheet? orderSheet = (Worksheet?)workbook.Worksheets["Dowel Order"];
 			Worksheet? specSheet = (Worksheet?)workbook.Worksheets["Dowel Specs"];
@@ -103,7 +110,7 @@ public class DoweledDBSpreadsheetOrderProvider : IOrderProvider {
 
 			var dirRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customerId);
 			if (string.IsNullOrWhiteSpace(dirRoot)) dirRoot = null;
-			var workingDirectory = CreateWorkingDirectory(source, header.OrderNumber, header.OrderName, header.CustomerName, dirRoot, logProgress);
+			var workingDirectory = CreateWorkingDirectory(FilePath, header.OrderNumber, header.OrderName, header.CustomerName, dirRoot, logProgress);
 
 			return new() {
 				VendorId = vendorId,

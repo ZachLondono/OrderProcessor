@@ -43,7 +43,7 @@
 
 @if (DataContext.Messages.Any()) {
 
-    <div class="my-5 shadow-md max-h-48 w-full overflow-x-hidden overflow-y-scroll p-1.5 border border-gray-200" @ref="_messagebox">
+    <div class="my-5 shadow-md max-h-48 w-full overflow-x-hidden overflow-y-scroll p-1.5 border border-gray-200" @ref="_messageBox">
         <table class="w-full border-collapse text-xs">
             <tr>
                 <td colspan="2" class="text-[0.5rem] italic">
@@ -92,12 +92,9 @@
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
     [Parameter]
-    public OrderSourceType SourceType { get; set; }
+    public IOrderProvider OrderProvider { get; set; } = default!;
 
-    [Parameter]
-    public string Source { get; set; } = string.Empty;
-
-    private ElementReference _messagebox;
+    private ElementReference _messageBox;
 
     protected override void OnInitialized() {
         DataContext.OnPropertyChanged += StateHasChanged;
@@ -106,12 +103,12 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender) {
         if (!firstRender) return;
-        await DataContext.LoadOrderFromSourceAsync(SourceType, Source);
+        await DataContext.LoadOrderFromSourceAsync(OrderProvider);
     }
 
     private void OnMessageAdded() {
         InvokeAsync(StateHasChanged);
-        JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messagebox });
+        JSRuntime.InvokeVoidAsync("scrollToEnd", new object[] { _messageBox });
     }
 
     private async Task CloseDialog() {

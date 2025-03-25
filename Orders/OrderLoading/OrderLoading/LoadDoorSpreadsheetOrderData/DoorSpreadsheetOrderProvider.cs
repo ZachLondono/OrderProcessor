@@ -20,6 +20,8 @@ namespace OrderLoading.LoadDoorSpreadsheetOrderData;
 
 public class DoorSpreadsheetOrderProvider : IOrderProvider {
 
+	public string FilePath { get; set; } = string.Empty;
+
 	private readonly IFileReader _fileReader;
 	private readonly DoorOrderProviderOptions _options;
 	private readonly ILogger<DoorSpreadsheetOrderProvider> _logger;
@@ -34,14 +36,14 @@ public class DoorSpreadsheetOrderProvider : IOrderProvider {
 		_getCustomerByNamAsync = getCustomerByNamAsync;
 	}
 
-	public async Task<OrderData?> LoadOrderData(string source, LogProgress logProgress) {
+	public async Task<OrderData?> LoadOrderData(LogProgress logProgress) {
 
-		if (!_fileReader.DoesFileExist(source)) {
+		if (!_fileReader.DoesFileExist(FilePath)) {
 			logProgress(MessageSeverity.Error, "Could not access given file path");
 			return null;
 		}
 
-		var extension = Path.GetExtension(source);
+		var extension = Path.GetExtension(FilePath);
 		if (extension is null || extension != ".xlsx" && extension != ".xlsm") {
 			logProgress(MessageSeverity.Error, "Given file path is not an excel document");
 			return null;
@@ -59,7 +61,7 @@ public class DoorSpreadsheetOrderProvider : IOrderProvider {
 			};
 
 			workbooks = app.Workbooks;
-			workbook = workbooks.Open(source, ReadOnly: true);
+			workbook = workbooks.Open(FilePath, ReadOnly: true);
 			Worksheet? orderSheet = (Worksheet?)workbook.Sheets["MDF"];
 
 			if (orderSheet is null) {
@@ -96,7 +98,7 @@ public class DoorSpreadsheetOrderProvider : IOrderProvider {
 			var vendorId = Guid.Parse(_options.VendorIds[header.VendorName]);
 			var customerId = await GetCustomerId(header);
 
-			var workingDirectory = Path.GetDirectoryName(source) ?? ".\\Output";
+			var workingDirectory = Path.GetDirectoryName(FilePath) ?? ".\\Output";
 
 			var data = MapWorkbookData(header, workingDirectory, lines, vendorId, customerId ?? Guid.Empty);
 

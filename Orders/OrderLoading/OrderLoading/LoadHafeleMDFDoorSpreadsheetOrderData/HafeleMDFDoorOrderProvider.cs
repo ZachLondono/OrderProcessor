@@ -10,20 +10,20 @@ namespace OrderLoading.LoadHafeleMDFDoorSpreadsheetOrderData;
 
 public class HafeleMDFDoorOrderProvider : IOrderProvider {
 
+    public HafeleMDFDoorOrderSource? Source { get; set; }  = null;
+
     private const string _workingDirectoryRoot = @"R:\Door Orders\Hafele\Orders";
 
-    public Task<OrderData?> LoadOrderData(string source, LogProgress logProgress) {
+    public Task<OrderData?> LoadOrderData(LogProgress logProgress) {
 
-        var parts = source.Split(":");
-
-        if (parts.Length != 3) {
-            logProgress(MessageSeverity.Error, $"Improper Hafele MDF Door Order Form Source - {source}");
+        if (Source is null) {
+            logProgress(MessageSeverity.Error, $"Invalid Hafele MDF Door Order Form Source");
             return Task.FromResult<OrderData?>(null);
         }
 
-        var company = parts[0];
-        var orderNumber = parts[1];
-        var filePath = parts[2];
+        var company = Source.Company;
+        var orderNumber = Source.OrderNumber;
+        var filePath = Source.FilePath;
 
         var structure = CreateDirectoryStructure(_workingDirectoryRoot, $"{orderNumber} - {company}", logProgress);
         
@@ -212,5 +212,7 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
         Prime,
         Paint
     }
+
+    public record HafeleMDFDoorOrderSource(string FilePath, string Company, string OrderNumber);
 
 }

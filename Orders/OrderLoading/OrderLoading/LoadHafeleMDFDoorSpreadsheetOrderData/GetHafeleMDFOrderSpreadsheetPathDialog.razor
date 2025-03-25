@@ -33,6 +33,9 @@
     [CascadingParameter]
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
+    [Inject]
+    public HafeleMDFDoorOrderProvider OrderProvider { get; set; } = default!;
+
     public string FilePath { get; set; } = string.Empty;
     public string OrderNumber { get; set; } = string.Empty;
     public string Company { get; set; } = string.Empty;
@@ -42,7 +45,8 @@
     }
 
     public async Task ReturnValue() {
-        await BlazoredModal.CloseAsync(ModalResult.Ok($"{OrderNumber}:{Company}:{FilePath}"));
+        OrderProvider.Source = new(FilePath, OrderNumber, Company);
+        await BlazoredModal.CloseAsync(ModalResult.Ok(OrderProvider));
     }
 
     public async Task Cancel() {

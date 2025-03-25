@@ -16,9 +16,14 @@ public class ClosetProWebCSVOrderProvider : ClosetProCSVOrderProvider {
 		_factory = factory;
 	}
 
-	protected override async Task<string?> GetCSVDataFromSourceAsync(string source, LogProgress logProgress) {
+	protected override async Task<string?> GetCSVDataFromSourceAsync(LogProgress logProgress) {
 
-		if (int.TryParse(source, out int designId)) {
+		if (Source is null) {
+			logProgress(MessageSeverity.Error, "No source data provided");
+			return null;
+		}
+
+		if (int.TryParse(Source.OrderId, out int designId)) {
 
 			var client = _factory.CreateClient();
 
@@ -30,7 +35,7 @@ public class ClosetProWebCSVOrderProvider : ClosetProCSVOrderProvider {
 
 		} else {
 
-			logProgress(MessageSeverity.Error, $"Invalid design ID format '{source}'. Design ID must be an integer.");
+			logProgress(MessageSeverity.Error, $"Invalid design ID format '{Source.OrderId}'. Design ID must be an integer.");
 			return null;
 
 		}
