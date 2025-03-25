@@ -7,7 +7,7 @@ using OrderLoading;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.Dialog;
 
-public class OrderLoadWidgetViewModel : IOrderLoadWidgetViewModel {
+public class OrderLoadWidgetViewModel {
 
     private readonly ILogger<OrderLoadWidget> _logger;
     private readonly IBus _bus;
