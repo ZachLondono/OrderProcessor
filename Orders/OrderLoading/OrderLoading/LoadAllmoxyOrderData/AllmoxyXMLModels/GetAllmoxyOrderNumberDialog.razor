@@ -1,4 +1,6 @@
 ﻿@using Domain.Components
+@using Microsoft.Extensions.DependencyInjection
+@using OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyWebOrderData
 @using static Domain.Components.Button;
 
 <div>
@@ -16,10 +18,14 @@
     [CascadingParameter]
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
+    [Inject]
+    public AllmoxyWebXMLOrderProvider OrderProvider { get; set; } = default!;
+
     public string OrderNumber { get; set; } = string.Empty;
 
     public async Task ReturnValue() {
-        await BlazoredModal.CloseAsync(ModalResult.Ok(OrderNumber));
+        OrderProvider.Source = OrderNumber;
+        await BlazoredModal.CloseAsync(ModalResult.Ok(OrderProvider));
     }
 
     public async Task Cancel() {

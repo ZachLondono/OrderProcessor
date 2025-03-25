@@ -13,7 +13,6 @@ using ApplicationCore.Features.Orders.Details.Models.WorkingDirectory;
 using ApplicationCore.Features.Orders.Details.ViewModels;
 using ApplicationCore.Features.Orders.OrderExport;
 using ApplicationCore.Features.Orders.OrderLoading.Dialog;
-using ApplicationCore.Features.Orders.OrderLoading.Models;
 using ApplicationCore.Features.Orders.OrderLoading.PickOrderSource;
 using ApplicationCore.Features.Orders.OrderRelease;
 using ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
@@ -72,7 +71,6 @@ public static class DependencyInjection {
 
         services.Configure<OrderProvidersConfiguration>(configuration.GetRequiredSection("OrderProviders"));
         services.Configure<ConstructionValues>(configuration.GetRequiredSection("DrawerBoxConstruction"));
-        services.AddTransient<IOrderProviderFactory, OrderProviderFactory>();
         services.AddOrderLoading(configuration);
 
         services.AddTransient<ReleaseService>();

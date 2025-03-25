@@ -7,7 +7,7 @@ using OrderLoading;
 
 namespace ApplicationCore.Features.Orders.OrderLoading.Dialog;
 
-public class OrderLoadWidgetViewModel : IOrderLoadWidgetViewModel {
+public class OrderLoadWidgetViewModel {
 
     private readonly ILogger<OrderLoadWidget> _logger;
     private readonly IBus _bus;
@@ -42,18 +42,18 @@ public class OrderLoadWidgetViewModel : IOrderLoadWidgetViewModel {
         OnMessageAdded?.Invoke();
     }
 
-    public async Task LoadOrderFromSourceAsync(OrderSourceType sourceType, string source) {
+    public async Task LoadOrderFromSourceAsync(IOrderProvider orderProvider) {
 
         State = State.Loading;
 
-        var data = await LoadOrderDataFromSourceAsync(sourceType, source);
+        var data = await LoadOrderDataFromSourceAsync(orderProvider);
 
         if (data is null) {
-            _logger.LogWarning("No order data was loaded from {Source} of type {SourceType}", source, sourceType);
+            _logger.LogWarning("No order data was loaded");
             return;
         }
 
-        var order = await CreateOrderFromDataAsync(source, data);
+        var order = await CreateOrderFromDataAsync(data);
 
         if (order is null) {
             _logger.LogWarning("No order was created from order data {Data}", data);
@@ -66,24 +66,21 @@ public class OrderLoadWidgetViewModel : IOrderLoadWidgetViewModel {
 
     }
 
-    private async Task<OrderData?> LoadOrderDataFromSourceAsync(OrderSourceType sourceType, string source) {
+    private async Task<OrderData?> LoadOrderDataFromSourceAsync(IOrderProvider provider) {
 
         OrderData? data = null;
 
         try {
 
-            var result = await _bus.Send(new LoadOrderCommand.Command(sourceType, source, this));
+            OrderData? newData = await provider.LoadOrderData(AddLoadingMessage);
 
-            result.Match(
-                newData => {
-                    data = newData;
-                },
-                error => {
-                    _logger.LogError("Error loading order data {Source} {SourceType} {Error}", source, sourceType, error);
-                    AddLoadingMessage(MessageSeverity.Error, error.Title + " - " + error.Details);
-                    State = State.Error;
-                }
-            );
+            if (newData is not null) {
+                data = newData;
+            } else {
+                _logger.LogError("Error loading order data");
+                AddLoadingMessage(MessageSeverity.Error, $"Order data could not be read from the provided order source");
+                State = State.Error;
+            }
 
         } catch (Exception ex) {
 
@@ -97,13 +94,13 @@ public class OrderLoadWidgetViewModel : IOrderLoadWidgetViewModel {
 
     }
 
-    private async Task<Order?> CreateOrderFromDataAsync(string source, OrderData data) {
+    private async Task<Order?> CreateOrderFromDataAsync(OrderData data) {
 
         Order? order = null;
 
         try {
 
-            order = Order.Create(source.Trim(),
+            order = Order.Create("",
                                  data.Number.Trim(),
                                  data.Name.Trim(),
                                  string.Empty,

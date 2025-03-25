@@ -14,12 +14,13 @@ using OrderAddress = Domain.Orders.ValueObjects.Address;
 using Domain.Orders.Entities.Products;
 using Domain.Orders.Entities.Products.Doors;
 using Domain.Services;
+using static OrderLoading.IOrderProvider;
 
 namespace OrderLoading.LoadDoorSpreadsheetOrderData;
 
 public class DoorSpreadsheetOrderProvider : IOrderProvider {
 
-	public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
+	public string FilePath { get; set; } = string.Empty;
 
 	private readonly IFileReader _fileReader;
 	private readonly DoorOrderProviderOptions _options;
@@ -35,20 +36,20 @@ public class DoorSpreadsheetOrderProvider : IOrderProvider {
 		_getCustomerByNamAsync = getCustomerByNamAsync;
 	}
 
-	public async Task<OrderData?> LoadOrderData(string source) {
+	public async Task<OrderData?> LoadOrderData(LogProgress logProgress) {
 
-		if (!_fileReader.DoesFileExist(source)) {
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not access given filepath");
+		if (!_fileReader.DoesFileExist(FilePath)) {
+			logProgress(MessageSeverity.Error, "Could not access given file path");
 			return null;
 		}
 
-		var extension = Path.GetExtension(source);
+		var extension = Path.GetExtension(FilePath);
 		if (extension is null || extension != ".xlsx" && extension != ".xlsm") {
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Given filepath is not an excel document");
+			logProgress(MessageSeverity.Error, "Given file path is not an excel document");
 			return null;
 		}
 
-		Microsoft.Office.Interop.Excel.Application? app = null;
+		Application? app = null;
 		Workbook? workbook = null;
 		Workbooks? workbooks = null;
 
@@ -60,11 +61,11 @@ public class DoorSpreadsheetOrderProvider : IOrderProvider {
 			};
 
 			workbooks = app.Workbooks;
-			workbook = workbooks.Open(source, ReadOnly: true);
+			workbook = workbooks.Open(FilePath, ReadOnly: true);
 			Worksheet? orderSheet = (Worksheet?)workbook.Sheets["MDF"];
 
 			if (orderSheet is null) {
-				OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find MDF sheet in workbook");
+				logProgress(MessageSeverity.Error, "Could not find MDF sheet in workbook");
 				return null;
 			}
 
@@ -85,19 +86,19 @@ public class DoorSpreadsheetOrderProvider : IOrderProvider {
 					lines.Add(LineItem.ReadFromWorksheet(orderSheet, line));
 				} catch (Exception ex) {
 
-					OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Error reading line item at line {line}");
+					logProgress(MessageSeverity.Error, $"Error reading line item at line {line}");
 					_logger.LogError(ex, "Exception thrown while reading line item from workbook");
 
 				}
 
 			}
 
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Info, $"{lines.Count} line items read from workbook");
+			logProgress(MessageSeverity.Info, $"{lines.Count} line items read from workbook");
 
 			var vendorId = Guid.Parse(_options.VendorIds[header.VendorName]);
 			var customerId = await GetCustomerId(header);
 
-			var workingDirectory = Path.GetDirectoryName(source) ?? ".\\Output";
+			var workingDirectory = Path.GetDirectoryName(FilePath) ?? ".\\Output";
 
 			var data = MapWorkbookData(header, workingDirectory, lines, vendorId, customerId ?? Guid.Empty);
 
@@ -105,7 +106,7 @@ public class DoorSpreadsheetOrderProvider : IOrderProvider {
 
 		} catch (Exception ex) {
 
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Error occurred while reading order from workbook {ex}");
+			logProgress(MessageSeverity.Error, $"Error occurred while reading order from workbook {ex}");
 
 		} finally {
 

@@ -4,7 +4,6 @@ using Domain.Companies.ValueObjects;
 using Domain.Orders.Builders;
 using Domain.Orders.Entities;
 using Domain.ValueObjects;
-using Microsoft.Extensions.Logging;
 using static Domain.Companies.CompanyDirectory;
 using CompanyCustomer = Domain.Companies.Entities.Customer;
 using Domain.Orders.Entities.Products;
@@ -17,14 +16,12 @@ using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Hardware;
 using OrderLoading.ClosetProCSVCutList.CSVModels;
 using Domain.Orders.Entities.Products.Closets;
+using static OrderLoading.IOrderProvider;
 
 namespace OrderLoading.LoadClosetProOrderData;
 
 public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
-	public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
-
-	private readonly ILogger<ClosetProCSVOrderProvider> _logger;
 	private readonly ClosetProCSVReader _reader;
 	private readonly ClosetProPartMapper _partMapper;
 	private readonly IFileReader _fileReader;
@@ -36,8 +33,9 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 	private readonly GetCustomerByIdAsync _getCustomerByIdAsync;
 	private readonly ComponentBuilderFactory _componentBuilderFactory;
 
-	public ClosetProCSVOrderProvider(ILogger<ClosetProCSVOrderProvider> logger, ClosetProCSVReader reader, ClosetProPartMapper partMapper, IFileReader fileReader, IOrderingDbConnectionFactory dbConnectionFactory, GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, InsertCustomerAsync insertCustomerAsync, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerByIdAsync getCustomerByIdAsync, GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync, ComponentBuilderFactory componentBuilderFactory) {
-		_logger = logger;
+	public ClosetProSource? Source { get; set; } = null; 
+
+	public ClosetProCSVOrderProvider(ClosetProCSVReader reader, ClosetProPartMapper partMapper, IFileReader fileReader, IOrderingDbConnectionFactory dbConnectionFactory, GetCustomerIdByNameAsync getCustomerIdByNameIdAsync, InsertCustomerAsync insertCustomerAsync, GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerByIdAsync getCustomerByIdAsync, GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync, ComponentBuilderFactory componentBuilderFactory) {
 		_reader = reader;
 		_partMapper = partMapper;
 		_fileReader = fileReader;
@@ -50,30 +48,27 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 		_componentBuilderFactory = componentBuilderFactory;
 	}
 
-	protected abstract Task<string?> GetCSVDataFromSourceAsync(string source);
+	protected abstract Task<string?> GetCSVDataFromSourceAsync(LogProgress logProgress);
 
 	public record FrontHardware(string Name, Dimension Spread);
 
-	public async Task<OrderData?> LoadOrderData(string sourceObj) {
+	public async Task<OrderData?> LoadOrderData(LogProgress logProgress) {
 
-        var sourceObjParts = sourceObj.Split('*');
-
-        if (sourceObjParts.Length != 3) {
+        if (Source is null) {
             throw new InvalidOperationException("Invalid data source");
         }
 
-        string source = sourceObjParts[0];
-        string? customOrderNumber = string.IsNullOrWhiteSpace(sourceObjParts[1]) ? null : sourceObjParts[1];
-        string? customWorkingDirectoryRoot = string.IsNullOrWhiteSpace(sourceObjParts[2]) ? null : sourceObjParts[2];
+        string? customOrderNumber = string.IsNullOrWhiteSpace(Source.OrderNumber) ? null : Source.OrderNumber;
+        string? customWorkingDirectoryRoot = string.IsNullOrWhiteSpace(Source.WorkingDirectoryRoot) ? null : Source.WorkingDirectoryRoot;
 
-        var csvData = await GetCSVDataFromSourceAsync(source);
+        var csvData = await GetCSVDataFromSourceAsync(logProgress);
 
         if (csvData is null) {
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "No order data found");
+            logProgress(MessageSeverity.Error, "No order data found");
             return null;
         }
 
-        _reader.OnReadError += (msg) => OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, msg);
+        _reader.OnReadError += (msg) => logProgress(MessageSeverity.Error, msg);
         var info = await _reader.ReadCSVData(csvData);
 
         // TODO: get this info from a configuration file
@@ -121,7 +116,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
         string orderName = GetOrderName(info.Header.OrderName);
 
-        string workingDirectory = await CreateWorkingDirectory(csvData, info.Header.DesignerCompany, orderName, orderNumber, workingDirectoryRoot);
+        string workingDirectory = await CreateWorkingDirectory(csvData, info.Header.DesignerCompany, orderName, orderNumber, workingDirectoryRoot, logProgress);
 
 		var includeCams = AreCamsIncludedInPickList(info.PickList);
 		var includeShelfPins = AreShelfPinsIncludedInPickList(info.PickList);
@@ -357,10 +352,10 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
     }
 
-    private async Task<string> CreateWorkingDirectory(string csvData, string company, string orderName, string orderNumber, string? customerWorkingDirectoryRoot) {
+    private async Task<string> CreateWorkingDirectory(string csvData, string company, string orderName, string orderNumber, string? customerWorkingDirectoryRoot, LogProgress logProgress) {
 		string cpDefaultWorkingDirectory = @"R:\Job Scans\ClosetProSoftware"; // TODO: Get base directory from configuration file
 		string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? cpDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{orderNumber} - {company} - {orderName}", ' '));
-		if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDir) && incomingDir is not null) {
+		if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDir, logProgress) && incomingDir is not null) {
 			string dataFile = _fileReader.GetAvailableFileName(incomingDir, $"{orderNumber} - Incoming", ".csv");
 			await File.WriteAllTextAsync(dataFile, csvData);
 		}
@@ -438,7 +433,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 	}
 
-	private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
+	private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory, LogProgress logProgress) {
 
 		workingDirectory = workingDirectory.Trim();
 
@@ -457,7 +452,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 
 		} catch (Exception ex) {
 			incomingDirectory = null;
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
+			logProgress(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
 		}
 
 		return false;
@@ -537,5 +532,7 @@ public abstract class ClosetProCSVOrderProvider : IOrderProvider {
 						.Where(static p => p.Name.Contains("Shelf Pins", StringComparison.InvariantCultureIgnoreCase))
 						.Any();
     }
+
+	public record ClosetProSource(string OrderId, string? OrderNumber, string? WorkingDirectoryRoot);
 
 }

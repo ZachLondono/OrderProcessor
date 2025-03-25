@@ -178,13 +178,17 @@
 			}
 
 			var sourceDialogResult = await Modal.Show(sourceConfig.SourcePickerDialogType, sourceConfig.DialogTitle).Result;
-			if (sourceDialogResult.Data is not string orderSource || string.IsNullOrWhiteSpace(orderSource)) {
+
+            if (sourceDialogResult.Cancelled) {
+                return;
+            }
+
+			if (sourceDialogResult.Data is not IOrderProvider provider) {
 				return;
 			}
 
 			var parameters = new ModalParameters() {
-				{ "SourceType", sourceConfig.SourceType },
-				{ "Source", orderSource.Trim() }
+				{ "OrderProvider", provider }
 			};
 
 			var options = new ModalOptions() {

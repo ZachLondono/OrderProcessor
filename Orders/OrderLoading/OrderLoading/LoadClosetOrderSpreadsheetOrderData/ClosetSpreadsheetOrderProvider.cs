@@ -11,12 +11,13 @@ using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.Entities.Products.DrawerBoxes;
 using Domain.Orders.Persistance;
 using Domain.Services;
+using static OrderLoading.IOrderProvider;
 
 namespace OrderLoading.LoadClosetOrderSpreadsheetOrderData;
 
 public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
-	public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
+	public SourceData? Source { get; set; } = null;
 
 	private readonly IFileReader _fileReader;
 	private readonly GetCustomerOrderPrefixByIdAsync _getCustomerOrderPrefixByIdAsync;
@@ -32,26 +33,23 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 		_getCustomerIdByNameAsync = getCustomerIdByNameAsync;
 	}
 
-	public async Task<OrderData?> LoadOrderData(string data) {
+	public async Task<OrderData?> LoadOrderData(LogProgress logProgress) {
 
-		var parts = data.Split('*');
-
-		if (parts.Length != 3) {
+		if (Source is null) {
 			throw new InvalidOperationException("Invalid data source");
 		}
 
-		string source = parts[0];
-		string? customOrderNumber = string.IsNullOrWhiteSpace(parts[1]) ? null : parts[1];
-		string? customWorkingDirectoryRoot = string.IsNullOrWhiteSpace(parts[2]) ? null : parts[2];
+		string? customOrderNumber = string.IsNullOrWhiteSpace(Source.OrderNumber) ? null : Source.OrderNumber;
+		string? customWorkingDirectoryRoot = string.IsNullOrWhiteSpace(Source.WorkingDirectoryRoot) ? null : Source.WorkingDirectoryRoot;
 
-		if (!_fileReader.DoesFileExist(source)) {
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not access given filepath");
+		if (!_fileReader.DoesFileExist(Source.FilePath)) {
+			logProgress(MessageSeverity.Error, "Could not access given file path");
 			return null;
 		}
 
-		var extension = Path.GetExtension(source);
+		var extension = Path.GetExtension(Source.FilePath);
 		if (extension is null || extension != ".xlsx" && extension != ".xlsm") {
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Given filepath is not an excel document");
+			logProgress(MessageSeverity.Error, "Given file path is not an excel document");
 			return null;
 		}
 
@@ -67,21 +65,21 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 			};
 
 			workbooks = app.Workbooks;
-			workbook = workbooks.Open(source, ReadOnly: true);
-			if (!TryGetWorksheet(workbook, "Cover", out Worksheet? coverSheet) || coverSheet is null) return null;
-			if (!TryGetWorksheet(workbook, "Closet Parts", out Worksheet? closetPartSheet) || closetPartSheet is null) return null;
-			if (!TryGetWorksheet(workbook, "Corner Shelves", out Worksheet? cornerShelfSheet) || cornerShelfSheet is null) return null;
-			if (!TryGetWorksheet(workbook, "Zargen", out Worksheet? zargenSheet) || zargenSheet is null) return null;
-			if (!TryGetWorksheet(workbook, "Dovetail", out Worksheet? dovetailSheet) || dovetailSheet is null) return null;
-			if (!TryGetWorksheet(workbook, "Melamine DB", out Worksheet? melaDbSheet) || melaDbSheet is null) return null;
-			if (!TryGetWorksheet(workbook, "MDF Fronts", out Worksheet? mdfFrontSheet) || mdfFrontSheet is null) return null;
+			workbook = workbooks.Open(Source.FilePath, ReadOnly: true);
+			if (!TryGetWorksheet(workbook, "Cover", out Worksheet? coverSheet, logProgress) || coverSheet is null) return null;
+			if (!TryGetWorksheet(workbook, "Closet Parts", out Worksheet? closetPartSheet, logProgress) || closetPartSheet is null) return null;
+			if (!TryGetWorksheet(workbook, "Corner Shelves", out Worksheet? cornerShelfSheet, logProgress) || cornerShelfSheet is null) return null;
+			if (!TryGetWorksheet(workbook, "Zargen", out Worksheet? zargenSheet, logProgress) || zargenSheet is null) return null;
+			if (!TryGetWorksheet(workbook, "Dovetail", out Worksheet? dovetailSheet, logProgress) || dovetailSheet is null) return null;
+			if (!TryGetWorksheet(workbook, "Melamine DB", out Worksheet? melaDbSheet, logProgress) || melaDbSheet is null) return null;
+			if (!TryGetWorksheet(workbook, "MDF Fronts", out Worksheet? mdfFrontSheet, logProgress) || mdfFrontSheet is null) return null;
 
 			var cover = Cover.ReadFromWorksheet(coverSheet);
 
 			Guid? customerId = await _getCustomerIdByNameAsync(cover.CustomerName);
 
 			if (customerId is null) {
-				OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not find customer");
+				logProgress(MessageSeverity.Error, $"Could not find customer");
 				return null;
 			}
 
@@ -103,40 +101,40 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 				return null;
 			}
 			string workingDirectory = Path.Combine(workingDirectoryRoot, _fileReader.RemoveInvalidPathCharacters($"{orderNumber} {cover.JobName}", ' '));
-			if (!TryToCreateWorkingDirectory(workingDirectory, out string? incomingDirectory)) {
-				OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not create working directory");
+			if (!TryToCreateWorkingDirectory(workingDirectory, out string? incomingDirectory, logProgress)) {
+				logProgress(MessageSeverity.Error, $"Could not create working directory");
 				return null;
 			}
 			if (incomingDirectory is not null) {
-				string fileName = Path.GetFileName(source);
-				File.Copy(source, Path.Combine(incomingDirectory, fileName));
+				string fileName = Path.GetFileName(Source.FilePath);
+				File.Copy(Source.FilePath, Path.Combine(incomingDirectory, fileName));
 			}
 
-			var closetParts = LoadItemsFromWorksheet<ClosetPart>(closetPartSheet);
-			var cornerShelves = LoadItemsFromWorksheet<CornerShelf>(cornerShelfSheet);
-			var zargens = LoadItemsFromWorksheet<Zargen>(zargenSheet);
+			var closetParts = LoadItemsFromWorksheet<ClosetPart>(closetPartSheet, logProgress);
+			var cornerShelves = LoadItemsFromWorksheet<CornerShelf>(cornerShelfSheet, logProgress);
+			var zargens = LoadItemsFromWorksheet<Zargen>(zargenSheet, logProgress);
 
 			var dovetailDBHeader = DovetailDBHeader.ReadFromWorksheet(dovetailSheet);
-			var dovetailDBs = LoadItemsFromWorksheet<DovetailDB>(dovetailSheet);
+			var dovetailDBs = LoadItemsFromWorksheet<DovetailDB>(dovetailSheet, logProgress);
 
 			var melamineDBHeader = MelamineDBHeader.ReadFromWorksheet(melaDbSheet);
-			var melamineDBs = LoadItemsFromWorksheet<MelamineDB>(melaDbSheet);
+			var melamineDBs = LoadItemsFromWorksheet<MelamineDB>(melaDbSheet, logProgress);
 
 			var mdfFrontHeader = MDFFrontHeader.ReadFromWorksheet(mdfFrontSheet);
-			var mdfFronts = LoadItemsFromWorksheet<MDFFront>(mdfFrontSheet);
+			var mdfFronts = LoadItemsFromWorksheet<MDFFront>(mdfFrontSheet, logProgress);
 
 			bool installCams = cover.InstallCamsCharge > 0;
 
 			List<IProduct> products = [
 				.. MapClosetPartToProduct(cover, closetParts, installCams),
 				.. MapCornerShelfToProduct(cover, cornerShelves, installCams),
-				.. MapZargenToProduct(cover, zargens),
+				.. MapZargenToProduct(cover, zargens, logProgress),
 				.. MapDovetailDBToProduct(dovetailDBHeader, dovetailDBs),
 				.. MapMelamineDBToProduct(melamineDBHeader, melamineDBs),
 				.. MapMDFFrontToProduct(mdfFrontHeader, mdfFronts),
 			];
 
-			List<AdditionalItem> additionalItems = new();
+			List<AdditionalItem> additionalItems = [];
 
 			if (cover.InstallCamsCharge > 0) {
 				additionalItems.Add(AdditionalItem.Create(1, "Install Cams", cover.InstallCamsCharge));
@@ -191,7 +189,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
 		} catch (Exception ex) {
 
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Error occurred while reading order from workbook {ex}");
+			logProgress(MessageSeverity.Error, $"Error occurred while reading order from workbook {ex}");
 
 		} finally {
 
@@ -215,7 +213,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
 	}
 
-	private IEnumerable<IProduct> MapClosetPartToProduct(Cover cover, IEnumerable<ClosetPart> closetParts, bool installCams) {
+	private static IEnumerable<IProduct> MapClosetPartToProduct(Cover cover, IEnumerable<ClosetPart> closetParts, bool installCams) {
 
 		foreach (var closetPart in closetParts) {
 
@@ -244,7 +242,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
 	}
 
-	private IEnumerable<IProduct> MapCornerShelfToProduct(Cover cover, IEnumerable<CornerShelf> cornerShelves, bool installCams) {
+	private static IEnumerable<IProduct> MapCornerShelfToProduct(Cover cover, IEnumerable<CornerShelf> cornerShelves, bool installCams) {
 
 		foreach (var cornerShelf in cornerShelves) {
 
@@ -274,14 +272,14 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
 	}
 
-	private IEnumerable<IProduct> MapZargenToProduct(Cover cover, IEnumerable<Zargen> zargens) {
+	private static IEnumerable<IProduct> MapZargenToProduct(Cover cover, IEnumerable<Zargen> zargens, LogProgress logProgress) {
 
 		int line = 1;
 
 		foreach (var zargen in zargens) {
 
 			if (!zargen.Item.StartsWith('D') || !double.TryParse(zargen.Item[1..], out double height)) {
-				OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Unexpected zargen item name {zargen.Item} on line {line}");
+				logProgress(MessageSeverity.Error, $"Unexpected zargen item name {zargen.Item} on line {line}");
 				continue;
 			}
 
@@ -296,7 +294,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
 	}
 
-	private IEnumerable<IProduct> MapMelamineDBToProduct(MelamineDBHeader header, IEnumerable<MelamineDB> melamineDBs) {
+	private static IEnumerable<IProduct> MapMelamineDBToProduct(MelamineDBHeader header, IEnumerable<MelamineDB> melamineDBs) {
 
 		foreach (var melamine in melamineDBs) {
 
@@ -320,7 +318,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
 	}
 
-	private IEnumerable<IProduct> MapDovetailDBToProduct(DovetailDBHeader header, IEnumerable<DovetailDB> dovetailDBs) {
+	private static IEnumerable<IProduct> MapDovetailDBToProduct(DovetailDBHeader header, IEnumerable<DovetailDB> dovetailDBs) {
 
 		string accessory = header.IncludeHettichSlides ? "Hettich Slides" : "";
 
@@ -350,7 +348,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
 	}
 
-	private IEnumerable<IProduct> MapMDFFrontToProduct(MDFFrontHeader header, IEnumerable<MDFFront> mdfFronts) {
+	private static IEnumerable<IProduct> MapMDFFrontToProduct(MDFFrontHeader header, IEnumerable<MDFFront> mdfFronts) {
 
 		foreach (var front in mdfFronts) {
 
@@ -377,9 +375,9 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
 	}
 
-	private IEnumerable<T> LoadItemsFromWorksheet<T>(Worksheet worksheet) where T : IWorksheetReadable<T>, new() {
+	private static IEnumerable<T> LoadItemsFromWorksheet<T>(Worksheet worksheet, LogProgress logProgress) where T : IWorksheetReadable<T>, new() {
 
-		List<T> items = new();
+		List<T> items = [];
 
 		int row = T.FirstRow;
 		while (true) {
@@ -392,7 +390,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 			try {
 				items.Add(T.ReadFromWorksheet(worksheet, row));
 			} catch {
-				OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Error reading item at row {row}");
+				logProgress(MessageSeverity.Error, $"Error reading item at row {row}");
 				// TODO: log exception
 			}
 
@@ -425,16 +423,16 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 		};
 	}
 
-	private bool TryGetWorksheet(Workbook workbook, string name, out Worksheet? worksheet) {
+	private static bool TryGetWorksheet(Workbook workbook, string name, out Worksheet? worksheet, LogProgress logProgress) {
 		worksheet = (Worksheet?)workbook.Sheets[name];
 		if (worksheet is null) {
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not find sheet '{name}' in workbook");
+			logProgress(MessageSeverity.Error, $"Could not find sheet '{name}' in workbook");
 			return false;
 		}
 		return true;
 	}
 
-	private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
+	private static bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory, LogProgress logProgress) {
 
 		workingDirectory = workingDirectory.Trim();
 
@@ -453,7 +451,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
 		} catch (Exception ex) {
 			incomingDirectory = null;
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
+			logProgress(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
 		}
 
 		return false;
@@ -510,5 +508,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 		}
 
 	}
+
+	public record SourceData(string FilePath, string OrderNumber, string WorkingDirectoryRoot);
 
 }

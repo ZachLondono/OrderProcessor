@@ -1,4 +1,5 @@
 ﻿@using Domain.Components
+@using OrderLoading.LoadClosetProOrderData.LoadClosetProFileOrderData
 @using static Domain.Components.Button;
 
 <div>
@@ -31,13 +32,20 @@
 
     [CascadingParameter]
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Inject]
+    public ClosetProWebCSVOrderProvider OrderProvider { get; set; } = default!;
+
     public string OrderNumber { get; set; } = string.Empty;
     public string WorkingDirectoryRoot { get; set; } = string.Empty;
 
     public string OrderId { get; set; } = string.Empty;
 
     public async Task ReturnValue() {
-        await BlazoredModal.CloseAsync(ModalResult.Ok($"{OrderId}*{OrderNumber}*{WorkingDirectoryRoot}"));
+
+        OrderProvider.Source = new(OrderId, OrderNumber, WorkingDirectoryRoot);
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok(OrderProvider));
     }
 
     public async Task Cancel() {

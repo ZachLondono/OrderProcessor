@@ -19,10 +19,13 @@ using Domain.Services;
 using Domain.Extensions;
 using Domain.Orders.Entities.Hardware;
 using Domain.Orders.Entities.Products.Closets;
+using static OrderLoading.IOrderProvider;
 
 namespace OrderLoading.LoadAllmoxyOrderData;
 
 public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
+
+	public string Source { get; set; } = "";
 
 	private readonly AllmoxyConfiguration _configuration;
 	private readonly IXMLValidator _validator;
@@ -33,8 +36,6 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 	private readonly GetCustomerOrderPrefixByIdAsync _getCustomerOrderPrefixByIdAsync;
 	private readonly GetCustomerWorkingDirectoryRootByIdAsync _getCustomerWorkingDirectoryRootByIdAsync;
 	private readonly ILogger<AllmoxyXMLOrderProvider> _logger;
-
-	public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
 
 	public AllmoxyXMLOrderProvider(IOptions<AllmoxyConfiguration> configuration, IXMLValidator validator, ProductBuilderFactory builderFactory, GetCustomerIdByAllmoxyIdAsync getCustomerIdByAllmoxyIdAsync, InsertCustomerAsync insertCustomerAsync, IFileReader fileReader,
 									GetCustomerOrderPrefixByIdAsync getCustomerOrderPrefixByIdAsync, GetCustomerWorkingDirectoryRootByIdAsync getCustomerWorkingDirectoryRootByIdAsync,
@@ -50,27 +51,27 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 		_logger = logger;
 	}
 
-	protected abstract Task<string> GetExportXMLFromSource(string source);
+	protected abstract Task<string> GetExportXML(LogProgress logProgress);
 
-	public async Task<OrderData?> LoadOrderData(string source) {
+	public async Task<OrderData?> LoadOrderData(LogProgress logProgress) {
 
-		var exportXML = await GetExportXMLFromSource(source);
+		var exportXML = await GetExportXML(logProgress);
 
 		if (exportXML == string.Empty) {
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "No order data found");
+			logProgress(MessageSeverity.Error, "No order data found");
 			return null;
 		}
 
 		// Validate data
-		if (!ValidateData(exportXML)) {
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Order data was not valid");
+		if (!ValidateData(exportXML, logProgress)) {
+			logProgress(MessageSeverity.Error, "Order data was not valid");
 			return null;
 		}
 
 		// Deserialize data
 		OrderModel? data = DeserializeData(exportXML);
 		if (data is null) {
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not find order information in given data");
+			logProgress(MessageSeverity.Error, "Could not find order information in given data");
 			return null;
 		}
 
@@ -101,7 +102,7 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 			{ "Allmoxy Customer Id", data.Customer.CompanyId.ToString() }
 		};
 
-		DateTime orderDate = ParseOrderDate(data.OrderDate);
+		DateTime orderDate = ParseOrderDate(data.OrderDate, logProgress);
 
 		var billing = new BillingInfo() {
 			InvoiceEmail = null,
@@ -119,7 +120,7 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 
 		List<IProduct> products = [];
 		List<AdditionalItem> items = [];
-		data.Products.ForEach(c => MapAndAddProduct(c, products, items));
+		data.Products.ForEach(c => MapAndAddProduct(c, products, items, logProgress));
 
 		// 'Folder 1' is the default allmoxy folder name, if that is the only folder name than it can be removed
 		var roomNames = products.Select(p => p.Room).Distinct().ToList();
@@ -136,7 +137,7 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 		string? customerWorkingDirectoryRoot = await _getCustomerWorkingDirectoryRootByIdAsync(customerId);
 		string allmoxyDefaultWorkingDirectory = @"R:\Job Scans\Allmoxy"; // TODO: Get base directory from configuration file
 		string workingDirectory = Path.Combine((customerWorkingDirectoryRoot ?? allmoxyDefaultWorkingDirectory), _fileReader.RemoveInvalidPathCharacters($"{number} - {data.Customer.Company} - {data.Name}", ' '));
-		if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDir) && incomingDir is not null) {
+		if (TryToCreateWorkingDirectory(workingDirectory, out string? incomingDir, logProgress) && incomingDir is not null) {
 			string dataFile = _fileReader.GetAvailableFileName(incomingDir, $"{number} - Incoming", ".xml");
 			await File.WriteAllTextAsync(dataFile, exportXML);
 		}
@@ -188,7 +189,7 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 
 	}
 
-	private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory) {
+	private bool TryToCreateWorkingDirectory(string workingDirectory, out string? incomingDirectory, LogProgress logProgress) {
 
 		workingDirectory = workingDirectory.Trim();
 
@@ -207,7 +208,7 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 
 		} catch (Exception ex) {
 			incomingDirectory = null;
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
+			logProgress(MessageSeverity.Warning, $"Could not create working directory {workingDirectory} - {ex.Message}");
 		}
 
 		return false;
@@ -264,7 +265,7 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 
 	}
 
-	public bool ValidateData(string data) {
+	public bool ValidateData(string data, LogProgress logProgress) {
 
 		try {
 
@@ -273,7 +274,7 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 			var directory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
 			if (directory is null) {
-				OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Failed to get directory of Allmoxy XML Schema");
+				logProgress(MessageSeverity.Error, "Failed to get directory of Allmoxy XML Schema");
 				_logger.LogError("Failed to get directory of Allmoxy XML Schema from assembly location {AssemblyLocation}", System.Reflection.Assembly.GetExecutingAssembly().Location);
 				return false;
 			}
@@ -286,26 +287,26 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 				if (error.Exception is XmlSchemaValidationException schemaEx) {
 					message = $"L{schemaEx.LineNumber}P{schemaEx.LinePosition} " + message;
 				}
-				OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Error] [{error.Severity}] {message}");
+				logProgress(MessageSeverity.Error, $"[XML Error] [{error.Severity}] {message}");
 			});
 
 			return !errors.Any();
 
 		} catch (XmlSchemaException ex) {
 
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Schema Error] XML schema is not valid L{ex.LineNumber} - {ex.Message}");
+			logProgress(MessageSeverity.Error, $"[XML Schema Error] XML schema is not valid L{ex.LineNumber} - {ex.Message}");
 			_logger.LogError(ex, "Exception thrown while comparing Allmoxy XML order data against schema");
 			return false;
 
 		} catch (XmlException ex) {
 
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"[XML Schema Error] XML schema is not valid L{ex.LineNumber} - {ex.Message}");
+			logProgress(MessageSeverity.Error, $"[XML Schema Error] XML schema is not valid L{ex.LineNumber} - {ex.Message}");
 			_logger.LogError(ex, "Exception thrown while comparing Allmoxy XML order data against schema");
 			return false;
 
 		} catch (Exception ex) {
 
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, "Could not verify order data against schema");
+			logProgress(MessageSeverity.Error, "Could not verify order data against schema");
 			_logger.LogError(ex, "Exception thrown while comparing Allmoxy XML order data against schema");
 			return false;
 
@@ -313,19 +314,19 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 
 	}
 
-	private DateTime ParseOrderDate(string orderDateStr) {
+	private static DateTime ParseOrderDate(string orderDateStr, LogProgress logProgress) {
 
 		if (DateTime.TryParse(orderDateStr, out DateTime orderDate)) {
 			return orderDate;
 		}
 
-		OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, $"Could not parse order date '{(orderDateStr == "" ? "[BLANK]" : orderDateStr)}'");
+		logProgress(MessageSeverity.Warning, $"Could not parse order date '{(orderDateStr == "" ? "[BLANK]" : orderDateStr)}'");
 
 		return DateTime.Now;
 
 	}
 
-	private void MapAndAddProduct(ProductOrItemModel data, List<IProduct> products, List<AdditionalItem> items) {
+	private void MapAndAddProduct(ProductOrItemModel data, List<IProduct> products, List<AdditionalItem> items, LogProgress logProgress) {
 
 		try {
 
@@ -344,7 +345,7 @@ public abstract class AllmoxyXMLOrderProvider : IOrderProvider {
 
 		} catch (Exception ex) {
 
-			OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Could not load product {ex.Message}");
+			logProgress(MessageSeverity.Error, $"Could not load product {ex.Message}");
 			_logger.LogError(ex, "Exception thrown while mapping order data to product: {Data}", data);
 
 		}

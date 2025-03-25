@@ -1,12 +1,13 @@
 ﻿@using Domain.Components
 @using static Domain.Components.Button;
 @using Domain.Services;
+@using OrderLoading.LoadAllmoxyOrderData.LoadAllmoxyFileOrderData
 @inject IFilePicker FilePicker 
 
 <div>
     <Button OnClick="ChooseFile">Select File</Button>
     @if (string.IsNullOrEmpty(FilePath)) {
-       <span>No file chosen...</span> 
+        <span>No file chosen...</span> 
     } else {
         <span>@FilePath</span>
     }
@@ -22,6 +23,9 @@
     [CascadingParameter]
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
+    [Inject]
+    public AllmoxyFileXMLOrderProvider OrderProvider { get; set; } = default!;
+
     public string FilePath { get; set; } = string.Empty;
 
     protected override void OnInitialized() {
@@ -29,7 +33,8 @@
     }
 
     public async Task ReturnValue() {
-        await BlazoredModal.CloseAsync(ModalResult.Ok(FilePath));
+        OrderProvider.Source = FilePath; 
+        await BlazoredModal.CloseAsync(ModalResult.Ok(OrderProvider));
     }
 
     public async Task Cancel() {

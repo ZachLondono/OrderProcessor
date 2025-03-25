@@ -4,29 +4,28 @@ using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using OrderLoading.LoadHafeleMDFDoorSpreadsheetOrderData.ReadOrderFile;
+using static OrderLoading.IOrderProvider;
 
 namespace OrderLoading.LoadHafeleMDFDoorSpreadsheetOrderData;
 
 public class HafeleMDFDoorOrderProvider : IOrderProvider {
 
+    public HafeleMDFDoorOrderSource? Source { get; set; }  = null;
+
     private const string _workingDirectoryRoot = @"R:\Door Orders\Hafele\Orders";
 
-    public IOrderLoadWidgetViewModel? OrderLoadingViewModel { get; set; }
+    public Task<OrderData?> LoadOrderData(LogProgress logProgress) {
 
-    public Task<OrderData?> LoadOrderData(string source) {
-
-        var parts = source.Split(":");
-
-        if (parts.Length != 3) {
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Improper Hafele MDF Door Order Form Source - {source}");
+        if (Source is null) {
+            logProgress(MessageSeverity.Error, $"Invalid Hafele MDF Door Order Form Source");
             return Task.FromResult<OrderData?>(null);
         }
 
-        var company = parts[0];
-        var orderNumber = parts[1];
-        var filePath = parts[2];
+        var company = Source.Company;
+        var orderNumber = Source.OrderNumber;
+        var filePath = Source.FilePath;
 
-        var structure = CreateDirectoryStructure(_workingDirectoryRoot, $"{orderNumber} - {company}");
+        var structure = CreateDirectoryStructure(_workingDirectoryRoot, $"{orderNumber} - {company}", logProgress);
         
         if (structure is null) {
             return Task.FromResult<OrderData?>(null);
@@ -37,15 +36,15 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
         var result = HafeleMDFDoorOrder.Load(filePath);
 
         foreach (var error in result.Errors) {
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, error);
+            logProgress(MessageSeverity.Error, error);
         }
 
         foreach (var warning in result.Warnings) {
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Warning, warning);
+            logProgress(MessageSeverity.Warning, warning);
         }
 
         if (result.Data is null) {
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Failed to load order data from '{filePath}'");
+            logProgress(MessageSeverity.Error, $"Failed to load order data from '{filePath}'");
             return Task.FromResult<OrderData?>(null);
         }
 
@@ -57,12 +56,12 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
 
     }
 
-    public DirectoryStructure? CreateDirectoryStructure(string workingDirectoryRoot, string workingDirectoryName) {
+    public DirectoryStructure? CreateDirectoryStructure(string workingDirectoryRoot, string workingDirectoryName, LogProgress logProgress) {
 
         string workingDirectory = Path.Combine(_workingDirectoryRoot, workingDirectoryName);
         var dirInfo = Directory.CreateDirectory(workingDirectory);
         if (!dirInfo.Exists) {
-            OrderLoadingViewModel?.AddLoadingMessage(MessageSeverity.Error, $"Failed to create directory '{workingDirectory}'");
+            logProgress(MessageSeverity.Error, $"Failed to create directory '{workingDirectory}'");
             return null;
         }
 
@@ -213,5 +212,7 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
         Prime,
         Paint
     }
+
+    public record HafeleMDFDoorOrderSource(string FilePath, string Company, string OrderNumber);
 
 }
