@@ -2,12 +2,10 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Office.Interop.Excel;
 using Domain.Orders.Builders;
-using Domain.Orders.Enums;
 using Domain.Orders.Entities;
 using Domain.Companies;
 using System.Runtime.InteropServices;
 using Domain.Orders.Components;
-using Domain.Orders.Entities.Products;
 using Domain.Infrastructure.Bus;
 using Domain.Services;
 
@@ -23,22 +21,24 @@ public class ExportDoorOrder {
         private readonly IFileReader _fileReader;
         private readonly ComponentBuilderFactory _factory;
         private readonly CompanyDirectory.GetCustomerByIdAsync _getCustomerByIdAsync;
+        private readonly CompanyDirectory.GetVendorByIdAsync _getVendorByIdAsync;
 
-        public Handler(ILogger<ExportDoorOrder> logger, IFileReader fileReader, ComponentBuilderFactory factory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync) {
+        public Handler(ILogger<ExportDoorOrder> logger, IFileReader fileReader, ComponentBuilderFactory factory, CompanyDirectory.GetCustomerByIdAsync getCustomerByIdAsync, CompanyDirectory.GetVendorByIdAsync getVendorByIdAsync) {
             _logger = logger;
             _fileReader = fileReader;
             _factory = factory;
             _getCustomerByIdAsync = getCustomerByIdAsync;
+            _getVendorByIdAsync = getVendorByIdAsync;
         }
 
         public override async Task<Response<DoorOrderExportResult>> Handle(Command command) {
 
             var doors = command.Order.Products
-                                .Where(p => p is IMDFDoorContainer)
-                                .SelectMany(SelectDoorsFromProduct)
+                                .OfType<IMDFDoorContainer>()
+                                .SelectMany(p => p.GetDoors(() => _factory.CreateMDFDoorBuilder()))
                                 .ToList();
 
-            if (!doors.Any()) {
+            if (doors.Count == 0) {
                 return new Domain.Infrastructure.Bus.Error() {
                     Title = "Cannot Export Door Order",
                     Details = "The provided order does not contain any doors"
@@ -61,8 +61,9 @@ public class ExportDoorOrder {
 
             try {
 
-                var result = await GenerateOrderForms(command.Order, doors, command.TemplateFilePath, command.OutputDirectory);
-                return result;
+                var orders = await CreateDoorOrders(command.Order, doors);
+
+                return GenerateOrderForms(orders, command.TemplateFilePath, command.OutputDirectory);
 
             } catch (Exception ex) {
 
@@ -76,43 +77,19 @@ public class ExportDoorOrder {
 
         }
 
-        private IEnumerable<MDFDoorComponent> SelectDoorsFromProduct(IProduct p) {
-            try {
-
-                return ((IMDFDoorContainer)p).GetDoors(_factory.CreateMDFDoorBuilder)
-                                                .Select(d => new MDFDoorComponent() {
-                                                    ProductId = p.Id,
-                                                    Door = d
-                                                });
-
-            } catch {
-                return Enumerable.Empty<MDFDoorComponent>();
-            }
-        }
-
-        private async Task<DoorOrderExportResult> GenerateOrderForms(Order order, IEnumerable<MDFDoorComponent> doors, string template, string outputDirectory) {
-
-            var groups = doors.GroupBy(d => new DoorStyleGroupKey() {
-                Material = d.Door.Material,
-                FramingBead = d.Door.FramingBead,
-                EdgeDetail = d.Door.EdgeDetail,
-                PanelDrop = d.Door.PanelDrop.AsMillimeters(),
-                PanelDetail = d.Door.PanelDetail,
-                FinishType = d.Door.PaintColor is null ? "None" : "Std. Color",
-                FinishColor = d.Door.PaintColor ?? ""
-            });
+        private DoorOrderExportResult GenerateOrderForms(DoorOrder[] orders, string template, string outputDirectory) {
 
             Application app = new() {
                 DisplayAlerts = false,
-                Visible = false
+                Visible = false,
+                ScreenUpdating = false
             };
 
             List<string> filesGenerated = new();
 
-            int index = 0;
             var workbooks = app.Workbooks;
             bool wasExceptionThrown = false;
-            foreach (var group in groups) {
+            foreach (var order in orders) {
 
                 Workbook? workbook = null;
 
@@ -120,23 +97,20 @@ public class ExportDoorOrder {
 
                     workbook = workbooks.Open(template, ReadOnly: true);
 
-                    string orderNumber = $"{order.Number}{(groups.Count() == 1 ? "" : $"-{++index}")}";
-
-                    var customer = await _getCustomerByIdAsync(order.CustomerId);
-                    var customerName = customer?.Name ?? "";
+                    app.Calculation = XlCalculation.xlCalculationManual;
 
                     var worksheets = workbook.Worksheets;
                     Worksheet worksheet = (Worksheet)worksheets["MDF"];
-                    FillOrderSheet(order, customerName, group, worksheet, orderNumber);
+
+                    order.WriteToWorksheet(worksheet);
+
                     _ = Marshal.ReleaseComObject(worksheet);
                     _ = Marshal.ReleaseComObject(worksheets);
 
-                    string fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{orderNumber} - {order.Name} MDF DOORS", ".xlsm");
+                    string fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{order.TrackingNumber} - {order.JobName} MDF DOORS", ".xlsm");
                     string finalPath = Path.GetFullPath(fileName);
 
                     workbook.SaveAs(finalPath);
-                    workbook?.Close(SaveChanges: false);
-                    if (workbook is not null) _ = Marshal.ReleaseComObject(workbook);
 
                     filesGenerated.Add(finalPath);
 
@@ -145,8 +119,11 @@ public class ExportDoorOrder {
                     _logger.LogError(ex, "Exception thrown while filling door order group");
                     wasExceptionThrown = true;
 
+                } finally {
+
                     if (workbook is not null) {
                         workbook.Close(SaveChanges: false);
+                        _ = Marshal.ReleaseComObject(workbook);
                     }
 
                 }
@@ -170,113 +147,12 @@ public class ExportDoorOrder {
 
         }
 
-        private static void FillOrderSheet(Order order, string customerName, IGrouping<DoorStyleGroupKey, MDFDoorComponent> doors, Worksheet ws, string orderNumber) {
+        private async Task<DoorOrder[]> CreateDoorOrders(Order order, IEnumerable<MDFDoor> doors) {
 
-            ws.Range["OrderDate"].Value2 = order.OrderDate;
-            ws.Range["Company"].Value2 = customerName;
-            ws.Range["JobNumber"].Value2 = orderNumber;
-            ws.Range["JobName"].Value2 = order.Name;
+            var customer = await _getCustomerByIdAsync(order.CustomerId);
+            var vendor = await _getVendorByIdAsync(order.VendorId);
 
-            ws.Range["Material"].Value2 = doors.Key.Material;
-            ws.Range["FramingBead"].Value2 = doors.Key.FramingBead;
-            ws.Range["EdgeDetail"].Value2 = doors.Key.EdgeDetail;
-            ws.Range["PanelDetail"].Value2 = doors.Key.PanelDetail;
-
-            ws.Range["Processor_Order_Id"].Value2 = order.Id;
-
-            if (doors.Key.PanelDrop != 0) {
-                ws.Range["PanelDrop"].Value2 = doors.Key.PanelDrop;
-            }
-
-            if (!doors.Key.FinishType.Equals("None", StringComparison.InvariantCultureIgnoreCase)) {
-                ws.Range["FinishOption"].Value2 = doors.Key.FinishType;
-                ws.Range["FinishColor"].Value2 = doors.Key.FinishColor;
-            }
-
-            ws.Range["units"].Value2 = "Metric (mm)";
-
-            var data = CreateMainDoorData(doors);
-            WriteRectangularArray(ws, CreateRectangularArray(data), "A", 16, "G");
-
-            var frameData = CreateFrameData(doors);
-            WriteRectangularArray(ws, CreateRectangularArray(frameData), "P", 16, "S");
-
-            var ids = CreateIdData(doors);
-            WriteRectangularArray(ws, CreateRectangularArray(ids), "BN", 16, "BN");
-
-        }
-
-        private static dynamic[][] CreateIdData(IGrouping<DoorStyleGroupKey, MDFDoorComponent> doors) {
-            return doors.Select(d => new dynamic[] { d.ProductId.ToString() }).ToArray();
-        }
-
-        private static dynamic[][] CreateFrameData(IGrouping<DoorStyleGroupKey, MDFDoorComponent> doors) {
-            return doors.Select(d => new dynamic[] {
-                                d.Door.FrameSize.LeftStile.AsMillimeters(),
-                                d.Door.FrameSize.RightStile.AsMillimeters(),
-                                d.Door.FrameSize.TopRail.AsMillimeters(),
-                                d.Door.FrameSize.BottomRail.AsMillimeters()
-                            }).ToArray();
-        }
-
-        private static dynamic[][] CreateMainDoorData(IGrouping<DoorStyleGroupKey, MDFDoorComponent> doors) {
-            int offset = 1;
-            return doors.Select(d => new dynamic[] {
-                            d.Door.ProductNumber,
-                            d.Door.Type switch {
-                                DoorType.Door => "Door",
-                                DoorType.DrawerFront => "Drawer Front",
-                                _ => "Door"
-                            },
-                            offset++,
-                            d.Door.Qty,
-                            d.Door.Width.AsMillimeters(),
-                            d.Door.Height.AsMillimeters(),
-                            d.Door.Note
-                        }).ToArray();
-        }
-
-        private static void WriteRectangularArray(Worksheet ws, dynamic[,] rows, string colStart, int rowStart, string colEnd) {
-            ws.Range[$"{colStart}{rowStart}:{colEnd}{rowStart - 1 + rows.GetLength(0)}"].Value2 = rows;
-        }
-
-        private static dynamic[,] CreateRectangularArray(IList<dynamic>[] arrays) {
-
-            int minorLength = arrays[0].Count;
-            dynamic[,] ret = new dynamic[arrays.Length, minorLength];
-
-            for (int i = 0; i < arrays.Length; i++) {
-                var array = arrays[i];
-
-                if (array.Count != minorLength) {
-                    throw new ArgumentException("All arrays must be the same length");
-                }
-
-                for (int j = 0; j < minorLength; j++) {
-                    ret[i, j] = array[j];
-                }
-            }
-
-            return ret;
-
-        }
-
-        public record MDFDoorComponent {
-
-            public required Guid ProductId { get; set; }
-            public required MDFDoor Door { get; set; }
-
-        }
-
-        public record DoorStyleGroupKey {
-
-            public required string FramingBead { get; init; }
-            public required string EdgeDetail { get; init; }
-            public required string PanelDetail { get; init; }
-            public required string Material { get; init; }
-            public required double PanelDrop { get; init; }
-            public required string FinishType { get; init; }
-            public required string FinishColor { get; init; }
+            return DoorOrder.FromOrder(order, doors, customer?.Name ?? "", vendor?.Name ?? "").ToArray();
 
         }
 
