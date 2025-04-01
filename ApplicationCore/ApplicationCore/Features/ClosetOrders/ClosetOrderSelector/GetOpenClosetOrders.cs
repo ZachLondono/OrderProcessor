@@ -8,6 +8,7 @@ using Error = Domain.Infrastructure.Bus.Error;
 using System.Runtime.InteropServices;
 using ApplicationCore.Shared.Settings;
 using Microsoft.Extensions.Options;
+using Range = Microsoft.Office.Interop.Excel.Range;
 
 namespace ApplicationCore.Features.ClosetOrders.ClosetOrderSelector;
 
@@ -104,25 +105,32 @@ public class GetOpenClosetOrders {
                         string directory = workbook.Path;
                         string filePath = workbook.FullName;
 
+                        static bool containsItems(Range range) {
+                            var values = (object[,]?) range?.Value2;
+                            if (values is null) return false;
+                            foreach (var item in values) {
+                                bool notEmpty = !string.IsNullOrWhiteSpace(item?.ToString() ?? null);
+                                if (notEmpty) return true;
+                            }
+                            return false;
+                        }
+
                         bool containsDovetail = false;
                         var dovetailSheet = worksheets.OfType<Worksheet>().FirstOrDefault(ws => ws.Name == "Dovetail");
                         if (dovetailSheet is not null) {
-                            string? firstQty = dovetailSheet.Range["B17"]?.Value2?.ToString() ?? null;
-                            containsDovetail = !string.IsNullOrWhiteSpace(firstQty);
+                            containsDovetail = containsItems(dovetailSheet.Range["B17:B25"]);
                         }
 
                         bool containsMDF = false;
                         var mdfSheet = worksheets.OfType<Worksheet>().FirstOrDefault(ws => ws.Name == "MDF Fronts");
                         if (mdfSheet is not null) {
-                            string? firstQty = mdfSheet.Range["B6"]?.Value2?.ToString() ?? null;
-                            containsMDF = !string.IsNullOrWhiteSpace(firstQty);
+                            containsMDF = containsItems(mdfSheet.Range["B6:B30"]);
                         }
 
                         bool containsOther = false;
                         var otherSheet = worksheets.OfType<Worksheet>().FirstOrDefault(ws => ws.Name == "Other");
                         if (otherSheet is not null) {
-                            string? firstQty = otherSheet.Range["B2"]?.Value2?.ToString() ?? null;
-                            containsOther = !string.IsNullOrWhiteSpace(firstQty);
+                            containsOther = containsItems(otherSheet.Range["B2:B11"]);
                         }
 
                         closetOrders.Add(new(customerName, jobName, jobNumber, orderDate, dueDate, containsMDF, containsDovetail, containsOther, reportFilePath, filePath, directory, app.IsSandboxed));
