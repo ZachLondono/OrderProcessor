@@ -74,6 +74,7 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
             }
         }
 
+
         Doors = doors;
         ToeType = toeType;
         Drawers = drawers;
@@ -81,8 +82,13 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
         DrawerBoxOptions = drawerBoxOptions;
         BaseNotch = baseNotch;
 
+
+        if (doors.Quantity == 0 && inside.RollOutBoxes.Positions.Length > 2) {
+            ProductionNotes.Add("PSI does not support Base cabinet with no doors (B0D) and more than 2 roll out drawer boxes - REQUIRES CUSTOMIZATION");
+        }
+
         if (Inside.RollOutBoxes.Positions.Length > 0 && DrawerBoxOptions is not null && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
-            ProductionNotes.Add("PSI may not support roll out drawer boxes with side mount slieds");
+            ProductionNotes.Add("PSI may not support roll out drawer boxes with side mount slides.");
         }
 
     }
