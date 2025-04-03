@@ -83,8 +83,9 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
         BaseNotch = baseNotch;
 
 
-        if (doors.Quantity == 0 && inside.RollOutBoxes.Positions.Length > 2) {
-            ProductionNotes.Add("PSI does not support Base cabinet with no doors (B0D) and more than 2 roll out drawer boxes - REQUIRES CUSTOMIZATION");
+        if ((doors.Quantity == 0 || drawers.Quantity > 0)
+            && inside.RollOutBoxes.Positions.Length > 2) {
+            ProductionNotes.Add("PSI does not support more than 2 roll out drawer boxes in certain base cabinet configurations - REQUIRES CUSTOMIZATION");
         }
 
         if (Inside.RollOutBoxes.Positions.Length > 0 && DrawerBoxOptions is not null && DrawerBoxOptions.SlideType == DrawerSlideType.SideMount) {
