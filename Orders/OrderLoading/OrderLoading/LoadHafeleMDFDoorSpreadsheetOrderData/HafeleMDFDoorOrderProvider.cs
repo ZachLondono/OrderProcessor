@@ -1,10 +1,14 @@
-﻿using Domain.Orders.Entities.Products;
+﻿using Domain.Companies.Entities;
+using Domain.Companies.ValueObjects;
+using Domain.Orders.Entities.Products;
 using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using OrderLoading.LoadHafeleMDFDoorSpreadsheetOrderData.ReadOrderFile;
+using static Domain.Companies.CompanyDirectory;
 using static OrderLoading.IOrderProvider;
+using Address = Domain.Orders.ValueObjects.Address;
 
 namespace OrderLoading.LoadHafeleMDFDoorSpreadsheetOrderData;
 
@@ -13,12 +17,20 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
     public HafeleMDFDoorOrderSource? Source { get; set; }  = null;
 
     private const string _workingDirectoryRoot = @"R:\Door Orders\Hafele\Orders";
+    private Guid _vendorId = new Guid("38dc201f-669d-41be-b0f4-adfa4c003a99");
+	private readonly GetCustomerIdByNameAsync _getCustomerIdByNameAsync;
+	private readonly InsertCustomerAsync _insertCustomerAsync;
 
-    public Task<OrderData?> LoadOrderData(LogProgress logProgress) {
+    public HafeleMDFDoorOrderProvider(GetCustomerIdByNameAsync getCustomerIdByNameAsync, InsertCustomerAsync insertCustomerAsync) {
+        _getCustomerIdByNameAsync = getCustomerIdByNameAsync;
+        _insertCustomerAsync = insertCustomerAsync;
+    }
+
+    public async Task<OrderData?> LoadOrderData(LogProgress logProgress) {
 
         if (Source is null) {
             logProgress(MessageSeverity.Error, $"Invalid Hafele MDF Door Order Form Source");
-            return Task.FromResult<OrderData?>(null);
+            return null;
         }
 
         var company = Source.Company;
@@ -28,10 +40,10 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
         var structure = CreateDirectoryStructure(_workingDirectoryRoot, $"{orderNumber} - {company}", logProgress);
         
         if (structure is null) {
-            return Task.FromResult<OrderData?>(null);
+            return null;
         }
 
-        File.Copy(filePath, Path.Combine(structure.IncomingDirectory));
+        File.Copy(filePath, Path.Combine(structure.IncomingDirectory, $"{orderNumber} - incoming{Path.GetExtension(filePath)}"), true);
 
         var result = HafeleMDFDoorOrder.Load(filePath);
 
@@ -45,18 +57,20 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
 
         if (result.Data is null) {
             logProgress(MessageSeverity.Error, $"Failed to load order data from '{filePath}'");
-            return Task.FromResult<OrderData?>(null);
+            return null;
         }
 
         var fileData = result.Data;
 
-        var orderData = MapHafeleOrder(orderNumber, Guid.Empty, Guid.Empty, fileData, structure.WorkingDirectory);
+        var customerId = await GetOrCreateCustomerAsync(result.Data.Options);
 
-        return Task.FromResult<OrderData?>(orderData);
+        var orderData = MapHafeleOrder(orderNumber, customerId, _vendorId, fileData, structure.WorkingDirectory);
+
+        return orderData;
 
     }
 
-    public DirectoryStructure? CreateDirectoryStructure(string workingDirectoryRoot, string workingDirectoryName, LogProgress logProgress) {
+    private static DirectoryStructure? CreateDirectoryStructure(string workingDirectoryRoot, string workingDirectoryName, LogProgress logProgress) {
 
         string workingDirectory = Path.Combine(_workingDirectoryRoot, workingDirectoryName);
         var dirInfo = Directory.CreateDirectory(workingDirectory);
@@ -76,7 +90,7 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
 
     }
 
-    public OrderData MapHafeleOrder(string orderNumber, Guid customerId, Guid vendorId, HafeleMDFDoorOrder data, string workingDirectory) {
+    private OrderData MapHafeleOrder(string orderNumber, Guid customerId, Guid vendorId, HafeleMDFDoorOrder data, string workingDirectory) {
 
         if (!data.Data.MaterialThicknessesByName.TryGetValue(data.Options.Material, out var materialThickness)) {
             throw new InvalidOperationException($"Material '{data.Options.Material}' not found in material thicknesses look up");
@@ -86,7 +100,7 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
 
         string? paintColor = GetFinish(data.Options.Finish)?.Color ?? null;
 
-        var products = data.Sizes.Select(s => CreateProduct(data.Options, s, thicknessDim, paintColor)).ToList();
+        var products = data.Sizes.Select(s => CreateProduct(data.Options, s, thicknessDim, paintColor)).ToList<IProduct>();
 
         var orderedDate = data.Options.Date;
         var dueDate = orderedDate.AddDays(GetLeadTime(data.Options.ProductionTime));
@@ -143,7 +157,7 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
 
     }
 
-    public static IProduct CreateProduct(Options options, Size size, Dimension thickness, string? paintColor) {
+    private static MDFDoorProduct CreateProduct(Options options, Size size, Dimension thickness, string? paintColor) {
 
         AdditionalOpening[] additionalOpenings;
         DoorType doorType;
@@ -185,13 +199,13 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
 
     }
 
-    public int GetLeadTime(string leadTime) => leadTime switch {
+    private static int GetLeadTime(string leadTime) => leadTime switch {
         "Standard 10 day" => 10,
         "5 Day Rush" => 5,
         _ => throw new InvalidOperationException($"Unexpected lead time - '{leadTime}'")
     };
 
-    public bool IsRush(string leadTime) => leadTime switch {
+    private static bool IsRush(string leadTime) => leadTime switch {
         "Standard 10 day" => false,
         "5 Day Rush" => true,
         _ => throw new InvalidOperationException($"Unexpected lead time - '{leadTime}'")
@@ -206,6 +220,32 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
         "Custom Color" => new(FinishType.Paint, "Custom Color"),
         _ => throw new InvalidOperationException($"Unexpected finish option - '{finish}'")
     };
+
+    private async Task<Guid> GetOrCreateCustomerAsync(Options options) {
+
+        Guid? customerId = await _getCustomerIdByNameAsync(options.Company);
+
+        if (customerId is Guid id) {
+
+            return id;
+
+        } else {
+
+            var contact = new Contact() {
+                Name = options.Contact,
+                Email = options.Email,
+                Phone = options.Phone 
+            };
+
+            var newCustomer = Customer.Create(options.Company, "", contact, new(), contact, new());
+
+			await _insertCustomerAsync(newCustomer);
+
+            return newCustomer.Id;
+
+        }
+
+    }
 
     record Finish(FinishType Type, string Color);
     enum FinishType {
