@@ -45,7 +45,7 @@
     }
 
     public async Task ReturnValue() {
-        OrderProvider.Source = new(FilePath, OrderNumber, Company);
+        OrderProvider.Source = new(FilePath, Company, OrderNumber);
         await BlazoredModal.CloseAsync(ModalResult.Ok(OrderProvider));
     }
 
