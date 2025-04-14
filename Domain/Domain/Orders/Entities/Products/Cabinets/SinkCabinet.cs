@@ -183,7 +183,7 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
         if (DoorQty > 0) {
 
             // supplies.Add(Supply.DoorPull(DoorQty * Qty));
-            supplies.AddRange(Supply.StandardHinge(DoorHeight, DoorQty * Qty));
+            supplies.AddRange(Supply.FullOverlayHinge(DoorHeight, DoorQty * Qty));
 
         }
 

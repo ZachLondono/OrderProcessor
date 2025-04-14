@@ -28,9 +28,13 @@ public record Supply(Guid Id, int Qty, string Description) {
     /// </summary>
     public static Supply DrawerSlideShortEuroScrews(int slideQty) => new(Guid.NewGuid(), slideQty * 2, "Short Euro Screws, For Drawer Slide");
 
-    public static IEnumerable<Supply> StandardHinge(int qty) => new Supply[2] { new(Guid.NewGuid(), qty, "Hinge, 125"), new(Guid.NewGuid(), qty, "Hinge Plate") };
+    public static IEnumerable<Supply> FullOverlayHinge(int qty) => new Supply[2] { new(Guid.NewGuid(), qty, "Full Overlay Hinge"), new(Guid.NewGuid(), qty, "Hinge Plate") };
 
-    public static IEnumerable<Supply> StandardHinge(Dimension doorHeight, int doorQty) => StandardHinge(doorQty * GetHingeQty(doorHeight));
+    public static IEnumerable<Supply> FullOverlayHinge(Dimension doorHeight, int doorQty) => FullOverlayHinge(doorQty * GetHingeQty(doorHeight));
+
+    public static IEnumerable<Supply> HalfOverlayHinge(int qty) => new Supply[2] { new(Guid.NewGuid(), qty, "Half Overlay Hinge"), new(Guid.NewGuid(), qty, "Hinge Plate") };
+
+    public static IEnumerable<Supply> HalfOverlayHinge(Dimension doorHeight, int doorQty) => HalfOverlayHinge(doorQty * GetHingeQty(doorHeight));
 
     public static IEnumerable<Supply> BlindCornerHinge(int qty) => new Supply[2] { new(Guid.NewGuid(), qty, "Hinge, Blind Corner"), new(Guid.NewGuid(), qty, "Hinge Plate") };
 

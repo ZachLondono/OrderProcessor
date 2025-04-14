@@ -106,7 +106,7 @@ public class SinkCabinetSuppliesTests {
                                 .WithQty(2)
                                 .Build();
 
-        IEnumerable<Supply> expectedSupplies = Supply.StandardHinge(cabinet.Qty * expectedHingeQty);
+        IEnumerable<Supply> expectedSupplies = Supply.FullOverlayHinge(cabinet.Qty * expectedHingeQty);
 
         // Act
         var supplies = cabinet.GetSupplies();

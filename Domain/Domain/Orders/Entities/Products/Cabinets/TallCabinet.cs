@@ -202,14 +202,14 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
         if (Doors.LowerQuantity > 0) {
 
             // supplies.Add(Supply.DoorPull(Doors.LowerQuantity * Qty));
-            supplies.AddRange(Supply.StandardHinge(LowerDoorHeight, Doors.LowerQuantity * Qty));
+            supplies.AddRange(Supply.FullOverlayHinge(LowerDoorHeight, Doors.LowerQuantity * Qty));
 
         }
 
         if (Doors.UpperQuantity > 0) {
 
             // supplies.Add(Supply.DoorPull(Doors.UpperQuantity * Qty));
-            supplies.AddRange(Supply.StandardHinge(UpperDoorHeight, Doors.UpperQuantity * Qty));
+            supplies.AddRange(Supply.FullOverlayHinge(UpperDoorHeight, Doors.UpperQuantity * Qty));
 
         }
 

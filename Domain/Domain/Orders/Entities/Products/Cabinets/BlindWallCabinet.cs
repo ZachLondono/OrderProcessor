@@ -116,7 +116,7 @@ public class BlindWallCabinet : GarageCabinet, IMDFDoorContainer, ISupplyContain
         if (Doors.Quantity > 0) {
 
             // supplies.Add(Supply.DoorPull(Qty * Doors.Quantity));
-            supplies.AddRange(Supply.StandardHinge(DoorHeight, Qty * Doors.Quantity));
+            supplies.AddRange(Supply.FullOverlayHinge(DoorHeight, Qty * Doors.Quantity));
 
         }
 

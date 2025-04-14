@@ -95,7 +95,7 @@ public class BasePieCutCornerCabinetSuppliesTests {
                                 .WithDepth(Dimension.FromMillimeters(500))
                                 .WithQty(2)
                                 .Build();
-        var expectedSupplies = Supply.StandardHinge(cabinet.Qty * expectedHingeQty);
+        var expectedSupplies = Supply.FullOverlayHinge(cabinet.Qty * expectedHingeQty);
 
         // Act
         var supplies = cabinet.GetSupplies();

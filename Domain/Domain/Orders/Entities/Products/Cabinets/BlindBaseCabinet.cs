@@ -171,11 +171,11 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
             } else if (Doors.HingeSide == HingeSide.NotApplicable) {
 
                 supplies.AddRange(Supply.BlindCornerHinge(DoorHeight, Qty));
-                supplies.AddRange(Supply.StandardHinge(DoorHeight, Qty));
+                supplies.AddRange(Supply.FullOverlayHinge(DoorHeight, Qty));
 
             } else {
 
-                supplies.AddRange(Supply.StandardHinge(DoorHeight, Qty));
+                supplies.AddRange(Supply.FullOverlayHinge(DoorHeight, Qty));
 
             }
 

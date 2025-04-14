@@ -87,7 +87,7 @@ public class WallPieCutCornerCabinet : Cabinet, IMDFDoorContainer, ISupplyContai
 
         List<Supply> supplies = [
             //Supply.DoorPull(Qty),
-            .. Supply.StandardHinge(DoorHeight, Qty)
+            .. Supply.FullOverlayHinge(DoorHeight, Qty)
         ];
 
         if (AdjustableShelves > 0) {
