@@ -16,7 +16,8 @@ public class HafeleMDFDoorOrder {
 
     public static ParsingResult<HafeleMDFDoorOrder> Load(string workbookPath) {
 
-        var wb = new XLWorkbook(workbookPath);
+        using Stream stream = new FileStream(workbookPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using var wb = new XLWorkbook(stream);
 
         List<string> errors = [];
         List<string> warnings = [];
