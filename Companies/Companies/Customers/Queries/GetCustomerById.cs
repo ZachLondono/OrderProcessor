@@ -65,7 +65,8 @@ public class GetCustomerById {
                     closet_pro_settings.doweled_drawer_box_material_finish AS CPDoweledDrawerBoxMaterialFinish,
                     closet_pro_settings.vertical_panel_bottom_radius AS CPVerticalPanelBottomRadius,
                     closet_pro_settings.use_two_sided_transition_panels AS CPUseTwoSidedTransitionPanels,
-                    closet_pro_settings.triple_drilling_minimum_depth AS CPTripleDrillingMinDepth
+                    closet_pro_settings.triple_drilling_minimum_depth AS CPTripleDrillingMinDepth,
+                    closet_pro_settings.cubby_shelf_type AS CPCubbyShelfType
 
                 FROM customers
                     
