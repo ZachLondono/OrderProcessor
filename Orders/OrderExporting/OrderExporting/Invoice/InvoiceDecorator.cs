@@ -175,8 +175,10 @@ public class InvoiceDecorator(Invoice inovice) : IDocumentDecorator {
                                 table.Cell().PaddingLeft(5).Text(invoice.OrderNumber).FontSize(12);
                                 table.Cell().AlignRight().Text("Job").FontSize(12).SemiBold();
                                 table.Cell().PaddingLeft(5).Text(invoice.OrderName).FontSize(12);
-                                table.Cell().AlignRight().Text("Terms").FontSize(12).SemiBold();
-                                table.Cell().PaddingLeft(5).Text("COD").FontSize(12);
+                                if (!string.IsNullOrEmpty(invoice.Terms)) {
+                                    table.Cell().AlignRight().Text("Terms").FontSize(12).SemiBold();
+                                    table.Cell().PaddingLeft(5).Text(invoice.Terms).FontSize(12);
+                                }
                             });
 
                     ComposeDetails(infoCol, invoice);
