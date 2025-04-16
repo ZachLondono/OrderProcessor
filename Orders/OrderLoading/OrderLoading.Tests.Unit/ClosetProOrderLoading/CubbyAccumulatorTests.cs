@@ -1,4 +1,5 @@
-﻿using Domain.ValueObjects;
+﻿using Domain.Companies.ValueObjects;
+using Domain.ValueObjects;
 using FluentAssertions;
 using OrderLoading.ClosetProCSVCutList;
 using OrderLoading.ClosetProCSVCutList.CSVModels;
@@ -58,8 +59,8 @@ public class CubbyAccumulatorTests {
         var cubby = accum.CreateCubby(RoomNamingStrategy.ByWallAndSection);
 
         // Assert
-        cubby.FixedShelves.Sum(s => s.Qty).Should().Be(2);
-        var fixedShelf = cubby.FixedShelves.First();
+        cubby.Shelves.Sum(s => s.Qty).Should().Be(2);
+        var fixedShelf = cubby.Shelves.First();
         fixedShelf.UnitPrice.Should().Be(shelfPrice / 2);
         fixedShelf.Width.Should().Be((cubbyWidth - Dimension.FromInches(0.75)) / 2);
         fixedShelf.Depth.Should().Be(cubbyDepth);

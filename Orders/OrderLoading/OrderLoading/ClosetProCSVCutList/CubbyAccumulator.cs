@@ -5,13 +5,14 @@ using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using OrderLoading.ClosetProCSVCutList.Products.Shelves;
 using OrderLoading.ClosetProCSVCutList.Products.Verticals;
+using Domain.Companies.ValueObjects;
 
 namespace OrderLoading.ClosetProCSVCutList;
 
 public class CubbyAccumulator {
 
-	private readonly List<Part> _verticalPanels = new();
-	private readonly List<Part> _horizontalPanels = new();
+	private readonly List<Part> _verticalPanels = [];
+	private readonly List<Part> _horizontalPanels = [];
 	private Part? _topShelf = null;
 	private Part? _bottomShelf = null;
 
@@ -147,7 +148,7 @@ public class CubbyAccumulator {
 			shelfWidth = Dimension.FromInches(_topShelf.Width);
 		}
 
-		var fixedShelves = _horizontalPanels.Select(p => {
+		var shelves = _horizontalPanels.Select(p => {
 
 			if (!ClosetProPartMapper.TryParseMoneyString(p.PartCost, out decimal unitPrice)) {
 				unitPrice = 0M;
@@ -176,7 +177,7 @@ public class CubbyAccumulator {
 			TopDividerShelf = topShelf,
 			BottomDividerShelf = bottomShelf,
 			DividerPanels = dividerPanels,
-			FixedShelves = fixedShelves,
+			Shelves = shelves,
 			Material = material,
 			EdgeBandingColor = edgeBandingColor,
 			Room = roomName,

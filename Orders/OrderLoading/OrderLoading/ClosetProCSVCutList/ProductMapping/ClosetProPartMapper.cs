@@ -233,7 +233,7 @@ public partial class ClosetProPartMapper(ComponentBuilderFactory factory) {
 		};
 
 		prods.AddRange(cubby.DividerPanels);
-		prods.AddRange(cubby.FixedShelves);
+		prods.AddRange(cubby.Shelves);
 
 		return prods;
 

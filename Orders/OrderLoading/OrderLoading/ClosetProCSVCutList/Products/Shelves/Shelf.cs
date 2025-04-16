@@ -24,11 +24,23 @@ public class Shelf : IClosetProProduct {
 
 	public IProduct ToProduct(ClosetProSettings settings) {
 
-		if (Type != ShelfType.Fixed && Type != ShelfType.Adjustable && LEDChannel) {
-			throw new NotSupportedException($"LED channels are not supported for {Type}");
+		ShelfType actualType = Type;
+
+        if (Type == ShelfType.Cubby) {
+
+			actualType = settings.CubbyShelfType switch {
+				ClosetProSettings.ShelfType.Fixed => ShelfType.Fixed,
+				ClosetProSettings.ShelfType.Adjustable => ShelfType.Adjustable,
+                _ => throw new InvalidOperationException($"Unexpected cubby shelf type '{settings.CubbyShelfType}'")
+			};
+
 		}
 
-		string sku = Type switch {
+		if (actualType != ShelfType.Fixed && actualType != ShelfType.Adjustable && LEDChannel) {
+			throw new NotSupportedException($"LED channels are not supported for {actualType}");
+		}
+
+		string sku = actualType switch {
 			ShelfType.Adjustable => settings.AdjustableShelfSKU,
 			ShelfType.Fixed => settings.FixedShelfSKU,
 			ShelfType.Shoe => GetShoeShelfSku(),
@@ -67,7 +79,7 @@ public class Shelf : IClosetProProduct {
 			part.ProductionNotes.Add("Verify that any drilling on this full depth shelf part correctly lines up with it's vertical panel. Some PSI products do not support the 'ExtendBack' parameter.");
 		}
 
-		if ((Type == ShelfType.Fixed || (Type == ShelfType.Adjustable && settings.AdjustableShelfSKU.StartsWith("SA5")))
+		if ((actualType == ShelfType.Fixed || (actualType == ShelfType.Adjustable && settings.AdjustableShelfSKU.StartsWith("SA5")))
 			&& settings.TripleDrillingMinDepth != Dimension.Zero && Depth >= settings.TripleDrillingMinDepth) {
             part.ProductionNotes.Add("Add centered third line of drilling.");
         }
