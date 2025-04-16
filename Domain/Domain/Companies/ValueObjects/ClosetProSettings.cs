@@ -24,7 +24,11 @@ public record ClosetProSettings {
 
     public Dimension TripleDrillingMinDepth { get; set; }
 
-    //public string DividerShelfDrillingType { get; set; } = "";
-    //public string DividerPanelDrillingType { get; set; } = "";
+    public ShelfType CubbyShelfType { get; set; } = ShelfType.Fixed;
+
+    public enum ShelfType {
+        Fixed,
+        Adjustable
+    }
 
 }

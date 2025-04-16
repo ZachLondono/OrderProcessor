@@ -203,10 +203,9 @@ public class InsertCustomer {
             int rows = connection.Execute(
                 """
                 INSERT INTO closet_pro_settings
-                    (id, toe_kick_sku, adjustable_shelf_sku, fixed_shelf_sku, l_fixed_shelf_sku, l_adjustable_shelf_sku, l_shelf_radius, diagonal_fixed_shelf_sku, diagonal_adjustable_shelf_sku, doweled_drawer_box_material_finish, vertical_panel_bottom_radius, use_two_sided_transition_panels, triple_drilling_minimum_depth)
+                    (id, toe_kick_sku, adjustable_shelf_sku, fixed_shelf_sku, l_fixed_shelf_sku, l_adjustable_shelf_sku, l_shelf_radius, diagonal_fixed_shelf_sku, diagonal_adjustable_shelf_sku, doweled_drawer_box_material_finish, vertical_panel_bottom_radius, use_two_sided_transition_panels, triple_drilling_minimum_depth, cubby_shelf_type)
                 VALUES
-                    (@Id, @ToeKickSKU, @AdjustableShelfSKU, @FixedShelfSKU, @LFixedShelfSKU, @LAdjustableShelfSKU, @LShelfRadius, @DiagonalFixedShelfSKU, @DiagonalAdjustableShelfSKU, @DoweledDrawerBoxMaterialFinish, @VerticalPanelBottomRadius, @UseTwoSidedTransitionPanels, @TripleDrillingMinDepth);
-
+                    (@Id, @ToeKickSKU, @AdjustableShelfSKU, @FixedShelfSKU, @LFixedShelfSKU, @LAdjustableShelfSKU, @LShelfRadius, @DiagonalFixedShelfSKU, @DiagonalAdjustableShelfSKU, @DoweledDrawerBoxMaterialFinish, @VerticalPanelBottomRadius, @UseTwoSidedTransitionPanels, @TripleDrillingMinDepth, @CubbyShelfType);
                 """,
                 new {
                     Id = id,
@@ -221,7 +220,8 @@ public class InsertCustomer {
                     settings.DoweledDrawerBoxMaterialFinish,
                     settings.VerticalPanelBottomRadius,
                     settings.UseTwoSidedTransitionPanels,
-                    settings.TripleDrillingMinDepth
+                    settings.TripleDrillingMinDepth,
+                    settings.CubbyShelfType
                 }, trx);
 
             if (rows != 1) {

@@ -165,8 +165,16 @@
                     </div>
 
                     <div>
+                        <label for="triple_drilling_depth" class="block text-sm font-medium text-gray-700">Cubby Shelf Type</label>
+                        <InputSelect class="w-full mt-1 max-w-md px-3 py-2 rounded-md border focus:outline-0 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary ease-in-out duration-300" @bind-Value="@DataContext.Model.ClosetProSettings.CubbyShelfType">
+                            <option value="@ClosetProSettings.ShelfType.Fixed">Fixed</option>
+                            <option value="@ClosetProSettings.ShelfType.Adjustable">Adjustable</option>
+                        </InputSelect>
+                    </div>
+
+                    <div>
                         <CheckBox @bind-IsChecked="@DataContext.Model.ClosetProSettings.UseTwoSidedTransitionPanels">
-                            Two Sided Transition Panels
+                            <span class="text-sm font-medium text-gray-700">Two Sided Transition Panels</span>
                         </CheckBox>
                     </div>
                 </div>
