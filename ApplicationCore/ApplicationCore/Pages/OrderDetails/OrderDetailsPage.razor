@@ -5,6 +5,7 @@
 @using ApplicationCore.Features.Orders.OrderExport
 @using ApplicationCore.Features.Orders.OrderRelease
 @using ApplicationCore.Features.ProgressTracker
+@using ApplicationCore.Features.VendorInvoice
 @using Domain.Orders.Entities;
 @using Domain.Orders.Persistance;
 @using ApplicationCore.Features.Products.ProductDrawings.Views
@@ -36,6 +37,7 @@
                         <OrderDeleteButton OrderId="OrderId" OnOrderDeleted="OnOrderDeleted" />
                         <BricsCADFileSaveWidget OutputDirectory="@order.WorkingDirectory"/>
                         <AddOrderToProgressTrackerWidget OrderId="OrderId"/>
+                        <VendorInvoiceButton OrderId="OrderId"/>
                         <!--
                             <AddToScheduleButton Order="order" />
                         -->

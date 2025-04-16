@@ -100,7 +100,9 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
 
         string? paintColor = GetFinish(data.Options.Finish)?.Color ?? null;
 
-        var products = data.Sizes.Select(s => CreateProduct(data.Options, s, thicknessDim, paintColor)).ToList<IProduct>();
+        decimal markUp = (decimal) data.Data.HafeleMarkUpToCustomers;
+
+        var products = data.Sizes.Select(s => CreateProduct(data.Options, s, thicknessDim, paintColor, markUp)).ToList<IProduct>();
 
         var orderedDate = data.Options.Date;
         var dueDate = orderedDate.AddDays(GetLeadTime(data.Options.ProductionTime));
@@ -157,7 +159,7 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
 
     }
 
-    private static MDFDoorProduct CreateProduct(Options options, Size size, Dimension thickness, string? paintColor) {
+    private static MDFDoorProduct CreateProduct(Options options, Size size, Dimension thickness, string? paintColor, decimal hafeleMarkUpToCustomer) {
 
         AdditionalOpening[] additionalOpenings;
         DoorType doorType;
@@ -178,7 +180,9 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
             RightStile = Dimension.FromInches(size.RightStile),
         };
 
-        return MDFDoorProduct.Create(size.UnitPrice,
+        var adjustedUnitPrice = size.UnitPrice / (1 + hafeleMarkUpToCustomer);
+
+        return MDFDoorProduct.Create(adjustedUnitPrice,
                                     "",
                                     size.Qty,
                                     size.LineNumber,

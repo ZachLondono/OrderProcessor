@@ -363,7 +363,7 @@ public class ReleaseService {
         }
 
         if (configuration.IncludeInvoiceInRelease) {
-            var invoice = InvoiceModelFactory.CreateInvoiceModel(order, vendor, customer);
+            var invoice = InvoiceModelFactory.CreateInvoiceModel(order, vendor, customer.Name);
             models.Invoice = invoice;
         }
 
@@ -924,7 +924,7 @@ public class ReleaseService {
 
         IEnumerable<string> filePaths = Enumerable.Empty<string>();
         try {
-            var invoice = InvoiceModelFactory.CreateInvoiceModel(order, vendor, customer);
+            var invoice = InvoiceModelFactory.CreateInvoiceModel(order, vendor, customer.Name);
             var decorator = new InvoiceDecorator(invoice);
             var documentBytes = await Task.Run(() => Document.Create(doc => decorator.Decorate(doc)).GeneratePdf());
             filePaths = await SaveFileDataToDirectoriesAsync(documentBytes, invoiceDirectories, customer.Name, filename, isTemp);

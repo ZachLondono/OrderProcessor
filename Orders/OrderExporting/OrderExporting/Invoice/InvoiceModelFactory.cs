@@ -10,7 +10,7 @@ namespace OrderExporting.Invoice;
 
 public class InvoiceModelFactory {
 
-    public static Invoice CreateInvoiceModel(Order order, Vendor vendor, Customer customer) {
+    public static Invoice CreateInvoiceModel(Order order, Vendor vendor, string customerName) {
 
         return new Invoice() {
             OrderNumber = order.Number,
@@ -30,7 +30,7 @@ public class InvoiceModelFactory {
                 Line4 = vendor?.Phone ?? "",
             },
             Customer = new() {
-                Name = customer?.Name ?? "",
+                Name = customerName,
                 Line1 = order.Billing.Address.Line1,
                 Line2 = order.Billing.Address.Line2,
                 Line3 = order.Billing.Address.GetLine4(),
