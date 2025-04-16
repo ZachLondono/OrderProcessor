@@ -1,0 +1,1 @@
+﻿ALTER TABLE closet_pro_settings ADD cubby_shelf_type INTEGER NOT NULL DEFAULT 0;

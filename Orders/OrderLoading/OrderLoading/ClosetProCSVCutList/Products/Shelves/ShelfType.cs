@@ -4,6 +4,7 @@ public enum ShelfType {
 	Fixed,
 	Adjustable,
 	Shoe,
-	RollOut
+	RollOut,
+	Cubby
 }
 

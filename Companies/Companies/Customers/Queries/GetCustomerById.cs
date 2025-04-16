@@ -134,6 +134,7 @@ public class GetCustomerById {
             public Dimension CPVerticalPanelBottomRadius { get; set; } = Dimension.Zero;
             public bool CPUseTwoSidedTransitionPanels { get; set; } = false;
             public Dimension CPTripleDrillingMinDepth { get; set; } = Dimension.Zero;
+            public ClosetProSettings.ShelfType CPCubbyShelfType { get; set; } = ClosetProSettings.ShelfType.Fixed;
 
             public Customer AsCustomer() {
 
@@ -181,7 +182,8 @@ public class GetCustomerById {
                     DoweledDrawerBoxMaterialFinish = CPDoweledDrawerBoxMaterialFinish,
                     VerticalPanelBottomRadius = CPVerticalPanelBottomRadius,
                     UseTwoSidedTransitionPanels = CPUseTwoSidedTransitionPanels,
-                    TripleDrillingMinDepth = CPTripleDrillingMinDepth
+                    TripleDrillingMinDepth = CPTripleDrillingMinDepth,
+                    CubbyShelfType = CPCubbyShelfType
                 };
 
                 return new Customer(Id, Name, ShippingMethod, shippingContact, shippingAddress, billingContact, billingAddress, OrderNumberPrefix, closetProSettings, WorkingDirectoryRoot);
