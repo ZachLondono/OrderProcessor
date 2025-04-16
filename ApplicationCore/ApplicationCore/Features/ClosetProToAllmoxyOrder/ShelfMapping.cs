@@ -15,6 +15,7 @@ public partial class ClosetProToAllmoxyMapper {
             ShelfType.Shoe => MapPartToShoeShelf(shelf),
             ShelfType.Fixed => MapPartToFixedShelf(shelf, useDoubleCams),
             ShelfType.RollOut => MapPartToAdjustableShelf(shelf, false),
+            ShelfType.Cubby => MapPartToFixedShelf(shelf, useDoubleCams),
             _ => throw new InvalidOperationException("Unexpected shelf product type")
         };
 
