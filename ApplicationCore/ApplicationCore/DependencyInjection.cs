@@ -33,6 +33,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrderExporting;
 using OrderLoading;
 using System.Runtime.CompilerServices;
+using ApplicationCore.Features.VendorInvoice;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -78,6 +79,7 @@ public static class DependencyInjection {
         services.AddTransient<ExportService>();
         services.AddOrderExporting();
 
+        services.AddTransient<VendorInvoiceService>();
 
         return services;
 
