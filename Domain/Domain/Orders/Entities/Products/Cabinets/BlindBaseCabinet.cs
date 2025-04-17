@@ -106,8 +106,11 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
 											.WithProductNumber(ProductNumber)
 											.WithType(DoorType.Door)
 											.WithFramingBead(mdf.FramingBead)
-											.WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
-											.Build(height, width);
+                                            .WithPaintColor(mdf.Finish.Match<string?>(
+                                                    paint => paint.Color,
+                                                    _ => null,
+                                                    _ => null))
+                                            .Build(height, width);
 					doors.Add(door);
 				}
 
@@ -117,8 +120,11 @@ public class BlindBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawe
 												.WithProductNumber(ProductNumber)
 												.WithType(DoorType.DrawerFront)
 												.WithFramingBead(mdf.FramingBead)
-												.WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
-												.Build(Drawers.FaceHeight, drwWidth);
+                                                .WithPaintColor(mdf.Finish.Match<string?>(
+                                                    paint => paint.Color,
+                                                    _ => null,
+                                                    _ => null))
+                                                .Build(Drawers.FaceHeight, drwWidth);
 					doors.Add(drawers);
 				}
 

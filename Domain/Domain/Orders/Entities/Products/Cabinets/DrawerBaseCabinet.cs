@@ -81,7 +81,7 @@ public class DrawerBaseCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDraw
                                             .WithType(DoorType.Door)
                                             .WithProductNumber(ProductNumber)
                                             .WithFramingBead(mdf.FramingBead)
-                                            .WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
+                                            .WithPaintColor(mdf.Finish.Match<string?>(
                                             .Build(height, width);
 
                     doors.Add(door);
