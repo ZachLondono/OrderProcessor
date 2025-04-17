@@ -17,8 +17,7 @@ public class MDFFrontComparer : IEqualityComparer<MDFFront> {
 			|| x.Frame != y.Frame
 			|| x.Style != y.Style
 			|| x.Type != y.Type
-			|| x.HardwareSpread != y.HardwareSpread
-			|| x.PaintColor != y.PaintColor) {
+			|| x.HardwareSpread != y.HardwareSpread) {
 			return false;
 		}
 
@@ -28,18 +27,14 @@ public class MDFFrontComparer : IEqualityComparer<MDFFront> {
 
 	public int GetHashCode([DisallowNull] MDFFront obj) {
 
-		var a = HashCode.Combine(obj.Room,
+		return HashCode.Combine(obj.Room,
 								obj.UnitPrice,
 								obj.Height,
 								obj.Width,
 								obj.Frame,
 								obj.Style,
-								obj.Type);
-
-		var b = HashCode.Combine(obj.HardwareSpread,
-								obj.PaintColor);
-
-		return HashCode.Combine(a, b);
+								obj.Type,
+								obj.HardwareSpread);
 
 	}
 

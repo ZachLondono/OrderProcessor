@@ -1,8 +1,10 @@
 ﻿using Domain.Orders.Components;
 using Domain.Orders.Entities;
 using Domain.Orders.Enums;
+using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using Microsoft.Office.Interop.Excel;
+using OneOf.Types;
 
 namespace OrderExporting.DoorOrderExport;
 
@@ -58,10 +60,19 @@ public record DoorOrder {
 
             string finish = "None";
             Optional<string> color = Optional<string>.None;
-            if (d.PaintColor is not null) {
-                finish = "Std. Color";
-                color = d.PaintColor;
-            }
+            d.Finish.Switch(
+                (Paint paint) => {
+                    finish = "Std. Color";
+                    color = paint.Color;
+                },
+                (Primer primer) => {
+                    finish = "Prime Only";
+                    color = primer.Color;
+                },
+                (None _) => {
+                    finish = "None";
+                    color = Optional<string>.None;
+                });
 
             return new GeneralSpecs() {
 

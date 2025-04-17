@@ -93,8 +93,7 @@ public partial class ClosetProPartMapper {
 			HardwareSpread = hardwareSpread,
 			Type = doorType,
 			Frame = frame,
-			Style = style,
-			PaintColor = rail.Color
+			Style = style
 		};
 
 	}

@@ -1,5 +1,4 @@
-﻿using OrderLoading.LoadAllmoxyOrderData;
-using Domain.Orders.Builders;
+﻿using Domain.Orders.Builders;
 using Domain.Orders.Entities;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
@@ -8,6 +7,7 @@ using Domain.Orders.Entities.Products.Doors;
 using Domain.ValueObjects;
 using OneOf;
 using System.Xml.Serialization;
+using OneOf.Types;
 
 namespace OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 
@@ -118,13 +118,19 @@ public class MDFDoorModel : ProductOrItemModel {
 			additionalOpenings.Add(new(Dimension.FromMillimeters(Rail4), Dimension.FromMillimeters(Opening2)));
 		}
 
-		string? paintColor = null;
-		if (Finish != "Sanded") {
-			// TODO: Handle the case when Finish = "Un-Sanded" or "Primed"
-			paintColor = Finish;
-		}
+		MDFDoorFinish finish = Finish switch {
+			"Un-Sanded" => throw new NotImplementedException(),
+			"Sanded" => new None(),
+			"Primed" => new Primer(),
+			"Pure White" => new Paint("Pure White"),
+			"Frosty White" => new Paint("Frosty White"),
+			"White Mela Match" => new Paint("White Mela Match"),
+			"BM Gray 2121" => new Paint("BM Gray 2121"),
+            "Custom Color (comment color, +$50 mixing charge)" => new Paint("Custom Color"),
+			_ => throw new InvalidOperationException($"Unknown finish type {Finish}")
+        };
 
-		var product = MDFDoorProduct.Create(unitPrice, Room, Qty, GetProductNumber(), type, height, width, Note, frameSize, Material, thickness, FramingBead, EdgeProfile, PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), paintColor);
+		var product = MDFDoorProduct.Create(unitPrice, Room, Qty, GetProductNumber(), type, height, width, Note, frameSize, Material, thickness, FramingBead, EdgeProfile, PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), finish);
 		product.ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList();
 		return product;
 

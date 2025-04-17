@@ -12,6 +12,7 @@ using Domain.Orders.Entities.Products.DrawerBoxes;
 using Domain.Orders.Persistance;
 using Domain.Services;
 using static OrderLoading.IOrderProvider;
+using OneOf.Types;
 
 namespace OrderLoading.LoadClosetOrderSpreadsheetOrderData;
 
@@ -369,7 +370,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 											   Dimension.Zero,
 											   DoorOrientation.Vertical,
 											   Array.Empty<AdditionalOpening>(),
-											   string.IsNullOrWhiteSpace(header.PaintColor) ? null : "");
+											   string.IsNullOrWhiteSpace(header.PaintColor) ? new None() : new Paint(header.PaintColor));
 
 		}
 

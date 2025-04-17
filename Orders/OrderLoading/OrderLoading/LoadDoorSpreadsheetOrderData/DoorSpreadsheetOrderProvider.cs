@@ -15,6 +15,7 @@ using Domain.Orders.Entities.Products;
 using Domain.Orders.Entities.Products.Doors;
 using Domain.Services;
 using static OrderLoading.IOrderProvider;
+using OneOf.Types;
 
 namespace OrderLoading.LoadDoorSpreadsheetOrderData;
 
@@ -376,13 +377,20 @@ public class DoorSpreadsheetOrderProvider : IOrderProvider {
 			"vertical" or _ => DoorOrientation.Vertical
 		};
 
+		MDFDoorFinish finish = header.Finish switch {
+            "Std. Color" or "Custom Color" => new Paint(header.Color),
+            "Prime Only" => new Primer(header.Color),
+            "None" or "" => new None(),
+			_ => throw new InvalidOperationException($"Finish type is not supported - '{header.Finish}'")
+		};
+
 		ArgumentNullException.ThrowIfNull(lineItem.UnitPrice);
 		ArgumentNullException.ThrowIfNull(lineItem.Qty);
 		ArgumentNullException.ThrowIfNull(lineItem.PartNumber);
 		ArgumentNullException.ThrowIfNull(lineItem.Note);
 		ArgumentNullException.ThrowIfNull(lineItem.Material);
 
-		return MDFDoorProduct.Create(lineItem.UnitPrice, "", lineItem.Qty, lineItem.PartNumber, type, height, width, lineItem.Note, frame, lineItem.Material, thickness, header.Style, header.EdgeProfile, header.PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), header.Color);
+		return MDFDoorProduct.Create(lineItem.UnitPrice, "", lineItem.Qty, lineItem.PartNumber, type, height, width, lineItem.Note, frame, lineItem.Material, thickness, header.Style, header.EdgeProfile, header.PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), finish);
 
 	}
 

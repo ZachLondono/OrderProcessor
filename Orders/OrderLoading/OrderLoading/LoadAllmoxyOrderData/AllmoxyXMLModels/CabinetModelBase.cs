@@ -4,6 +4,7 @@ using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products.Cabinets;
 using Domain.ValueObjects;
 using System.Xml.Serialization;
+using OneOf.Types;
 
 namespace OrderLoading.LoadAllmoxyOrderData.AllmoxyXMLModels;
 
@@ -45,8 +46,15 @@ public abstract class CabinetModelBase : ProductOrItemModel {
 			if (Cabinet.Fronts.FinishType == AllmoxyXMLOrderProviderHelpers.MELAMINE_FINISH_CODE || Cabinet.Fronts.FinishType == AllmoxyXMLOrderProviderHelpers.VENEER_FINISH_CODE) {
 				throw new InvalidOperationException("Invalid combination of door finish and door type");
 			}
+
+			MDFDoorFinish finish = Cabinet.Fronts.FinishType switch {
+				AllmoxyXMLOrderProviderHelpers.NO_FINISH_CODE => new None(),
+				AllmoxyXMLOrderProviderHelpers.PAINT_FINISH_CODE => new Paint(Cabinet.Fronts.Color),
+				_ => throw new InvalidOperationException($"Unknown front finish type {Cabinet.Fronts.FinishType}")
+			};
+
 			// TODO: if Cabinet.Fronts.Color == "Match Finish" then the finished sides must be painted
-			doorConfiguration = new MDFDoorOptions("MDF", Dimension.FromInches(0.75), Cabinet.Fronts.Style, "Eased", "Flat", Dimension.Zero, Cabinet.Fronts.Color);
+			doorConfiguration = new MDFDoorOptions("MDF", Dimension.FromInches(0.75), Cabinet.Fronts.Style, "Eased", "Flat", Dimension.Zero, finish);
 
 		} else if (Cabinet.Fronts.Type == "Slab") {
 

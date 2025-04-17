@@ -3,6 +3,7 @@ using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
+using OneOf.Types;
 
 namespace OrderLoading.ClosetProCSVCutList.Products.Fronts;
 
@@ -19,7 +20,6 @@ public class MDFFront : IClosetProProduct {
 	public required string Style { get; init; }
 	public required DoorType Type { get; init; }
 	public required Dimension? HardwareSpread { get; init; }
-	public required string PaintColor { get; set; }
 
 	public IProduct ToProduct() {
 
@@ -41,7 +41,7 @@ public class MDFFront : IClosetProProduct {
 									Dimension.FromInches(0.25),
 									DoorOrientation.Vertical,
 									[],
-									PaintColor);
+									new None());
 
 	}
 
