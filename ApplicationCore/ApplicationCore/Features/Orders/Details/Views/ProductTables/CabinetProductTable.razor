@@ -84,7 +84,11 @@
     public string GetDoorPaint(Cabinet cabinet)
         => cabinet.DoorConfiguration.Match(
             slab => slab.PaintColor ?? "N/A",
-            mdf => mdf.PaintColor ?? "N/A",
+            mdf => mdf.Finish.Match(
+                paint => paint.Color,
+                primer => $"{primer.Color} primer",
+                none => "N/A"
+            ),
             byothers => "N/A"
         );
 
