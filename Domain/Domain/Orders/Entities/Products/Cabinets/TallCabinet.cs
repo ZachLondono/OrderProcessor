@@ -135,8 +135,8 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
 					doors.Add(builder.WithQty(Doors.UpperQuantity * Qty)
 									.WithProductNumber(ProductNumber)
 									.WithFramingBead(mdf.FramingBead)
-									.WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
-									.Build(height, width));
+                                    .WithFinish(mdf.Finish)
+                                    .Build(height, width));
 
 				}
 
@@ -150,8 +150,8 @@ public class TallCabinet : GarageCabinet, IMDFDoorContainer, IDovetailDrawerBoxC
 					doors.Add(builder.WithQty(Doors.LowerQuantity * Qty)
 									.WithProductNumber(ProductNumber)
 									.WithFramingBead(mdf.FramingBead)
-									.WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
-									.Build(height, width));
+                                    .WithFinish(mdf.Finish)
+                                    .Build(height, width));
 
 				}
 

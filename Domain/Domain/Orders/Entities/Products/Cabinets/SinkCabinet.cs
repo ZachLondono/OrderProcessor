@@ -120,8 +120,8 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
 											.WithType(DoorType.Door)
 											.WithProductNumber(ProductNumber)
 											.WithFramingBead(mdf.FramingBead)
-											.WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
-											.Build(height, width);
+                                            .WithFinish(mdf.Finish)
+                                            .Build(height, width);
 					doors.Add(door);
 				}
 
@@ -131,8 +131,8 @@ public class SinkCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContain
 												.WithType(DoorType.DrawerFront)
 												.WithProductNumber(ProductNumber)
 												.WithFramingBead(mdf.FramingBead)
-												.WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
-												.Build(DrawerFaceHeight, drwWidth);
+                                                .WithFinish(mdf.Finish)
+                                                .Build(DrawerFaceHeight, drwWidth);
 					doors.Add(drawers);
 				}
 

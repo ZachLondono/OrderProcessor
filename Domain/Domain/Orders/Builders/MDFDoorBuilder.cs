@@ -2,6 +2,7 @@
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
+using OneOf.Types;
 
 namespace Domain.Orders.Builders;
 
@@ -19,7 +20,7 @@ public class MDFDoorBuilder {
     private DoorFrame _frameSize;
     private DoorOrientation _orientation;
     private AdditionalOpening[] _additionalOpenings;
-    private string? _paintColor;
+    private MDFDoorFinish _finish;
 
     public MDFDoorBuilder(MDFDoorConfiguration configuration) {
 
@@ -38,6 +39,7 @@ public class MDFDoorBuilder {
         };
         _orientation = _orientation = DoorOrientation.Vertical;
         _additionalOpenings = Array.Empty<AdditionalOpening>();
+        _finish = new None();
 
     }
 
@@ -101,14 +103,14 @@ public class MDFDoorBuilder {
         return this;
     }
 
-    public MDFDoorBuilder WithPaintColor(string? paintColor) {
-        _paintColor = paintColor;
+    public MDFDoorBuilder WithFinish(MDFDoorFinish finish) {
+        _finish = finish;
         return this;
     }
 
     public MDFDoor Build(Dimension height, Dimension width) {
 
-        return new MDFDoor(_qty, _productNumber, _type, height, width, _note, _frameSize, _material, _thickness, _framingBead, _edgeDetail, _panelDetail, Dimension.Zero, _orientation, _additionalOpenings, _paintColor);
+        return new MDFDoor(_qty, _productNumber, _type, height, width, _note, _frameSize, _material, _thickness, _framingBead, _edgeDetail, _panelDetail, Dimension.Zero, _orientation, _additionalOpenings, _finish);
 
     }
 

@@ -87,8 +87,8 @@ public class WallCabinet : GarageCabinet, IMDFDoorContainer, ISupplyContainer {
 										.WithType(DoorType.Door)
 										.WithProductNumber(ProductNumber)
 										.WithFramingBead(mdf.FramingBead)
-										.WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
-										.Build(height, width);
+                                        .WithFinish(mdf.Finish)
+                                        .Build(height, width);
 
 				return [door];
 

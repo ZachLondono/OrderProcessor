@@ -5,6 +5,7 @@ using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
+using OneOf.Types;
 using OrderLoading.LoadHafeleMDFDoorSpreadsheetOrderData.ReadOrderFile;
 using static Domain.Companies.CompanyDirectory;
 using static OrderLoading.IOrderProvider;
@@ -98,11 +99,11 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
 
         var thicknessDim = Dimension.FromInches(materialThickness);
 
-        string? paintColor = GetFinish(data.Options.Finish)?.Color ?? null;
+        var finish = GetFinish(data.Options.Finish);
 
         decimal markUp = (decimal) data.Data.HafeleMarkUpToCustomers;
 
-        var products = data.Sizes.Select(s => CreateProduct(data.Options, s, thicknessDim, paintColor, markUp)).ToList<IProduct>();
+        var products = data.Sizes.Select(s => CreateProduct(data.Options, s, thicknessDim, finish, markUp)).ToList<IProduct>();
 
         var orderedDate = data.Options.Date;
         var dueDate = orderedDate.AddDays(GetLeadTime(data.Options.ProductionTime));
@@ -159,7 +160,7 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
 
     }
 
-    private static MDFDoorProduct CreateProduct(Options options, Size size, Dimension thickness, string? paintColor, decimal hafeleMarkUpToCustomer) {
+    private static MDFDoorProduct CreateProduct(Options options, Size size, Dimension thickness, MDFDoorFinish finish, decimal hafeleMarkUpToCustomer) {
 
         AdditionalOpening[] additionalOpenings;
         DoorType doorType;
@@ -199,7 +200,7 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
                                     Dimension.FromInches(options.PanelDrop),
                                     DoorOrientation.Vertical,
                                     additionalOpenings,
-                                    paintColor);
+                                    finish);
 
     }
 
@@ -215,13 +216,13 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
         _ => throw new InvalidOperationException($"Unexpected lead time - '{leadTime}'")
     };
 
-    private static Finish? GetFinish(string finish) => finish switch {
-        "None" => null,
-        "White Prime Only" => new(FinishType.Prime, "White Primer"),
-        "Grey Prime Only" => new(FinishType.Prime, "Grey Primer"),
-        "Black Prime Only" => new(FinishType.Prime, "Black Primer"),
-        "Standard Color" => new(FinishType.Paint, "Standard Color"),
-        "Custom Color" => new(FinishType.Paint, "Custom Color"),
+    private static MDFDoorFinish GetFinish(string finish) => finish switch {
+        "None" => new None(),
+        "White Prime Only" => new Primer("White Primer"),
+        "Grey Prime Only" => new Primer("Grey Primer"),
+        "Black Prime Only" => new Primer("Black Primer"),
+        "Standard Color" => new Paint("Standard Color"),
+        "Custom Color" => new Paint("Custom Color"),
         _ => throw new InvalidOperationException($"Unexpected finish option - '{finish}'")
     };
 
@@ -249,12 +250,6 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
 
         }
 
-    }
-
-    record Finish(FinishType Type, string Color);
-    enum FinishType {
-        Prime,
-        Paint
     }
 
     public record HafeleMDFDoorOrderSource(string FilePath, string Company, string OrderNumber);

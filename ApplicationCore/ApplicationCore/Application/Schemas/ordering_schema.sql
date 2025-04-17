@@ -560,7 +560,8 @@ CREATE TABLE mdf_door_configs (
 	thickness TEXT NOT NULL,
 	material TEXT NOT NULL,
 	panel_drop REAL,
-	paint_color TEXT,
+	finish_type INTEGER,
+	finish_color TEXT,
 	PRIMARY KEY (id)
 );
 

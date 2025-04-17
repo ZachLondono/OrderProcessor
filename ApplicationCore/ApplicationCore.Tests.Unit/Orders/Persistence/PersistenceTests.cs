@@ -25,7 +25,7 @@ public abstract class PersistenceTests : IDisposable {
         Factory.Dispose();
     }
 
-    protected async Task<T> InsertAndQueryOrderWithProduct<T>(T product) where T : IProduct {
+    protected async Task<T> InsertAndQueryOrderWithProduct<T>(T product, Action<T>? action = null) where T : IProduct {
 
         Order order = new OrderBuilder() {
             Products = new() {
@@ -56,6 +56,10 @@ public abstract class PersistenceTests : IDisposable {
         var foundProduct = (T)foundOrder.Products.First();
         foundProduct.Should().NotBeNull();
         foundProduct.Should().BeEquivalentTo(product);
+
+        if (action is not null) {
+            action(foundProduct);
+        }
 
         return foundProduct;
 

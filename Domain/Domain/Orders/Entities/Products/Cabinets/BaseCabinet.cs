@@ -162,7 +162,7 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
                                             .WithProductNumber(ProductNumber)
                                             .WithType(DoorType.Door)
                                             .WithFramingBead(mdf.FramingBead)
-                                            .WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
+                                            .WithFinish(mdf.Finish)
                                             .Build(height, width);
                     doors.Add(door);
                 }
@@ -173,7 +173,7 @@ public class BaseCabinet : GarageCabinet, IDovetailDrawerBoxContainer, IMDFDoorC
                                                 .WithProductNumber(ProductNumber)
                                                 .WithType(DoorType.DrawerFront)
                                                 .WithFramingBead(mdf.FramingBead)
-                                                .WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
+                                                .WithFinish(mdf.Finish)
                                                 .Build(Drawers.FaceHeight, drwWidth);
                     doors.Add(drawers);
                 }

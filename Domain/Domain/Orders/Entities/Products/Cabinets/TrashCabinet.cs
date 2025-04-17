@@ -81,16 +81,16 @@ public class TrashCabinet : Cabinet, IMDFDoorContainer, IDovetailDrawerBoxContai
 										.WithProductNumber(ProductNumber)
 										.WithType(DoorType.Door)
 										.WithFramingBead(mdf.FramingBead)
-										.WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
-										.Build(height, width);
+                                        .WithFinish(mdf.Finish)
+                                        .Build(height, width);
 				doors.Add(door);
 
 				var drawers = getBuilder().WithQty(Qty)
 											.WithProductNumber(ProductNumber)
 											.WithType(DoorType.DrawerFront)
 											.WithFramingBead(mdf.FramingBead)
-											.WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
-											.Build(DrawerFaceHeight, width);
+                                            .WithFinish(mdf.Finish)
+                                            .Build(DrawerFaceHeight, width);
 				doors.Add(drawers);
 
 				return doors;

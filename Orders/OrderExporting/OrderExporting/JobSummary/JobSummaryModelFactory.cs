@@ -15,6 +15,8 @@ using Domain.Orders.Entities.Products.DrawerBoxes;
 using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders;
 using Domain.Orders.Entities.Products;
+using Domain.Orders.ValueObjects;
+using OneOf.Types;
 
 namespace OrderExporting.JobSummary;
 
@@ -205,7 +207,10 @@ public class JobSummaryModelFactory {
                         .OfType<MDFDoorProduct>()
                         .GroupBy(d => new MDFDoorGroup {
                             Room = d.Room,
-                            Finish = d.PaintColor ?? "",
+                            Finish = d.Finish.Match(
+                                (Paint p) => p.Color,
+                                (Primer p) => $"{p.Color} Primer",
+                                (None _) => "None"),
                             Material = d.Material,
                             Style = d.FramingBead
                         }, new MDFDoorGroupComparer())

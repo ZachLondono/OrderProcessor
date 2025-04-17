@@ -94,8 +94,8 @@ public class BlindWallCabinet : GarageCabinet, IMDFDoorContainer, ISupplyContain
 										.WithProductNumber(ProductNumber)
 										.WithType(DoorType.Door)
 										.WithFramingBead(mdf.FramingBead)
-										.WithPaintColor(mdf.PaintColor == "" ? null : mdf.PaintColor)
-										.Build(height, width);
+                                        .WithFinish(mdf.Finish)
+                                        .Build(height, width);
 
 
 				return [door];
