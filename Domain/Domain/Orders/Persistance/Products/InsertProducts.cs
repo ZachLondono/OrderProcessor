@@ -2,6 +2,8 @@
 using Domain.Orders.Entities.Products.Cabinets;
 using Domain.Orders.Entities.Products;
 using Domain.Orders.ValueObjects;
+using Domain.Orders.Persistance.DataModels;
+using OneOf.Types;
 
 namespace Domain.Orders.Persistance.Products;
 
@@ -146,7 +148,16 @@ public static partial class ProductsPersistance {
             MDFThickness = options.Thickness,
             MDFMaterial = options.Material,
             MDFPanelDrop = options.PanelDrop,
-            MDFPaintColor = options.PaintColor
+            MDFFinishType = options.Finish.Match(
+                (Paint _) => MDFDoorFinishType.Paint,
+                (Primer _) => MDFDoorFinishType.Primer,
+                (None _) => MDFDoorFinishType.None
+            ),
+            MDFFinishColor = options.Finish.Match<string?>(
+                (Paint paint) => paint.Color,
+                (Primer primer) => primer.Color,
+                (None none) => null
+            )
         };
 
         connection.Execute(

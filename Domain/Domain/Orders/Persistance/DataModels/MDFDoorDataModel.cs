@@ -3,6 +3,7 @@ using Domain.Orders.Entities.Products.Doors;
 using Domain.Orders.ValueObjects;
 using Domain.Orders.Entities.Products;
 using Domain.ValueObjects;
+using OneOf.Types;
 
 namespace Domain.Orders.Persistance.DataModels;
 
@@ -26,7 +27,8 @@ public class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuerya
     public Dimension Thickness { get; set; }
     public string Material { get; set; } = string.Empty;
     public Dimension PanelDrop { get; set; }
-    public string? PaintColor { get; set; }
+    public MDFDoorFinishType FinishType { get; set; }
+    public string? FinishColor { get; set; }
 
     public static string GetQueryByOrderId
         =>
@@ -56,7 +58,8 @@ public class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuerya
         	mdf_config.thickness,
         	mdf_config.material,
         	mdf_config.panel_drop AS PanelDrop,
-        	mdf_config.paint_color AS PaintColor
+        	mdf_config.finish_color AS FinishColor,
+        	mdf_config.finish_type AS FinishType
 
         FROM mdf_door_products AS mdf_product
 
@@ -85,7 +88,14 @@ public class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuerya
             RightStile = RightStile
         };
 
-        return new MDFDoorProduct(Id, UnitPrice, Room, Qty, ProductNumber, Type, Height, Width, Note, frameSize, Material, Thickness, FramingBead, EdgeDetail, PanelDetail, PanelDrop, Orientation, AdditionalOpenings, PaintColor) {
+        MDFDoorFinish finish = FinishType switch {
+            MDFDoorFinishType.None => new None(),
+            MDFDoorFinishType.Primer => new Primer(FinishColor ?? "Unknown"),
+            MDFDoorFinishType.Paint => new Paint(FinishColor ?? "Unknown"),
+            _ => throw new InvalidOperationException("Invalid finish type")
+        };
+
+        return new MDFDoorProduct(Id, UnitPrice, Room, Qty, ProductNumber, Type, Height, Width, Note, frameSize, Material, Thickness, FramingBead, EdgeDetail, PanelDetail, PanelDrop, Orientation, AdditionalOpenings, finish) {
             ProductionNotes = ProductionNotes
         };
 

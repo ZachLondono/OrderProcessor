@@ -69,7 +69,8 @@ public class PieCutBaseCabinetDataModel : CabinetDataModelBase, IProductDataMode
            	    mdf_door_configs.thickness,
            	    mdf_door_configs.material,
            	    mdf_door_configs.panel_drop AS PanelDrop,
-           	    mdf_door_configs.paint_color AS PaintColor,
+           	    mdf_door_configs.finish_type AS FinishType,
+           	    mdf_door_configs.finish_color AS FinishColor,
 
            	    cabinets.slab_door_material_id IS NOT NULL AS ContainsSlabDoors,
                 cabinet_slab_door_materials.core AS SlabDoorCore,

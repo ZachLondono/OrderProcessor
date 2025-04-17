@@ -1,6 +1,7 @@
 ﻿using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
+using OneOf.Types;
 
 namespace Domain.Orders.Persistance.DataModels;
 
@@ -35,11 +36,22 @@ public abstract class CabinetDataModelBase : ProductDataModelBase {
     public Dimension? Thickness { get; set; }
     public string? Material { get; set; }
     public Dimension? PanelDrop { get; set; }
-    public string? PaintColor { get; set; }
+    public MDFDoorFinishType FinishType { get; set; }
+    public string? FinishColor { get; set; }
 
     protected MDFDoorOptions? GetMDFDoorConfiguration() {
+
         if (!ContainsMDFDoor) return null;
-        return new(Material ?? "", Thickness ?? Dimension.Zero, FramingBead ?? "", EdgeDetail ?? "", PanelDetail ?? "", PanelDrop ?? Dimension.Zero, PaintColor);
+
+        MDFDoorFinish finish = FinishType switch {
+            MDFDoorFinishType.None => new None(),
+            MDFDoorFinishType.Paint => new Paint(FinishColor ?? "Unknown"),
+            MDFDoorFinishType.Primer => new Primer(FinishColor ?? "Unknown"),
+            _ => throw new InvalidOperationException("Invalid MDF door finish type")
+        };
+
+        return new(Material ?? "", Thickness ?? Dimension.Zero, FramingBead ?? "", EdgeDetail ?? "", PanelDetail ?? "", PanelDrop ?? Dimension.Zero, finish);
+
     }
 
     protected CabinetSlabDoorMaterial? GetSlabDoorMaterial() {
