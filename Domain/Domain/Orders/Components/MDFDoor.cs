@@ -21,7 +21,7 @@ public class MDFDoor {
     public string EdgeDetail { get; }
     public string PanelDetail { get; }
     public Dimension PanelDrop { get; }
-    public string? PaintColor { get; }
+    public MDFDoorFinish Finish { get; }
 
     public MDFDoor(int qty,
 				   int productNumber,
@@ -38,7 +38,7 @@ public class MDFDoor {
 				   Dimension panelDrop,
 				   DoorOrientation orientation,
 				   AdditionalOpening[] additionalOpenings,
-				   string? paintColor) {
+				   MDFDoorFinish finish) {
         Qty = qty;
         ProductNumber = productNumber;
         Type = type;
@@ -54,7 +54,7 @@ public class MDFDoor {
         EdgeDetail = edgeDetail;
         PanelDetail = panelDetail;
         PanelDrop = panelDrop;
-        PaintColor = paintColor;
+        Finish = finish;
     }
 
     public MDFDoorOptions GetMDFDoorOptions() => new(Material,
@@ -63,6 +63,6 @@ public class MDFDoor {
 													 EdgeDetail,
 													 PanelDetail,
 													 PanelDrop,
-													 PaintColor);
+													 Finish);
 
 }

@@ -8,4 +8,4 @@ public record MDFDoorOptions(string Material,
 							 string EdgeDetail,
 							 string PanelDetail,
 							 Dimension PanelDrop,
-							 string? PaintColor);
+							 MDFDoorFinish Finish);
