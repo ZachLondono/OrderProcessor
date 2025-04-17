@@ -170,7 +170,8 @@ public static partial class ProductsPersistance {
                     thickness,
                     material,
                     panel_drop,
-                    paint_color)
+                    finish_type,
+                    finish_color)
                 VALUES
                     (@MDFConfigId,
                     @MDFFramingBead,
@@ -179,7 +180,8 @@ public static partial class ProductsPersistance {
                     @MDFThickness,
                     @MDFMaterial,
                     @MDFPanelDrop,
-                    @MDFPaintColor);
+                    @MDFFinishType,
+                    @MDFFinishColor);
                 """, parameters, trx);
 
     }
