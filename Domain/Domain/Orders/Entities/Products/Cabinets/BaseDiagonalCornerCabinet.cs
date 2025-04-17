@@ -93,10 +93,7 @@ public class BaseDiagonalCornerCabinet : GarageCabinet, IMDFDoorContainer, ISupp
                 var door = getBuilder().WithQty(DoorQty * Qty)
                                         .WithProductNumber(ProductNumber)
                                         .WithFramingBead(mdfOptions.FramingBead)
-                                        .WithPaintColor(mdfOptions.Finish.Match<string?>(
-                                            paint => paint.Color,
-                                            _ => null,
-                                            _ => null))
+                                        .WithFinish(mdfOptions.Finish)
                                         .Build(height, width);
 
                 return new MDFDoor[] { door };

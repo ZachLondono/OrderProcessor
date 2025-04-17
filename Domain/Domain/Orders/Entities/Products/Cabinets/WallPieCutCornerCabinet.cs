@@ -68,20 +68,14 @@ public class WallPieCutCornerCabinet : Cabinet, IMDFDoorContainer, ISupplyContai
 				MDFDoor leftDoor = getBuilder().WithQty(Qty)
 												.WithProductNumber(ProductNumber)
 												.WithFramingBead(mdf.FramingBead)
-                                                .WithPaintColor(mdf.Finish.Match<string?>(
-                                                    paint => paint.Color,
-                                                    _ => null,
-                                                    _ => null))
+                                                .WithFinish(mdf.Finish)
                                                 .Build(height, leftWidth);
 
 				Dimension rightWidth = RightWidth - Depth - bumperWidth - doorThickness - DoorGaps.EdgeReveal;
 				MDFDoor rightDoor = getBuilder().WithQty(Qty)
 												.WithProductNumber(ProductNumber)
 												.WithFramingBead(mdf.FramingBead)
-												.WithPaintColor(mdf.Finish.Match<string?>(
-                                                    paint => paint.Color,
-                                                    _ => null,
-                                                    _ => null))
+                                                .WithFinish(mdf.Finish)
 												.Build(height, rightWidth);
 
 				return new List<MDFDoor>() { leftDoor, rightDoor };
