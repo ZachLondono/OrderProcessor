@@ -4,6 +4,7 @@
 @using static ApplicationCore.Features.Orders.Details.Views.OrderDetails;
 @using Domain.Orders.Entities.Products;
 @using Domain.Orders.Entities.Products.Cabinets;
+@using OneOf.Types
 
 <div class="overflow-x-auto">
     <table class="table-auto w-full">
@@ -85,9 +86,9 @@
         => cabinet.DoorConfiguration.Match(
             slab => slab.PaintColor ?? "N/A",
             mdf => mdf.Finish.Match(
-                paint => paint.Color,
-                primer => $"{primer.Color} primer",
-                none => "N/A"
+                (Paint paint) => paint.Color,
+                (Primer primer) => $"{primer.Color} primer",
+                (None none) => "N/A"
             ),
             byothers => "N/A"
         );
