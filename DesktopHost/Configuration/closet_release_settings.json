@@ -11,8 +11,8 @@
     "ReleaseProfilesByCustomer": {
 
       "Closets by Glinsky": {
-        "AcknowledgementEmailRecipients": [ "cbg57c@aol.com", "aglin65@aol.com" ],
-        "InvoiceEmailRecipients": [ "cbg57c@aol.com", "aglin65@aol.com" ],
+        "AcknowledgementEmailRecipients": [ "closetman1@gmail.com", "aglin65@aol.com" ],
+        "InvoiceEmailRecipients": [ "closetman1@gmail.com", "aglin65@aol.com" ],
         "IncludeCover":  true,
         "IncludePackingList":  true,
         "IncludeSummary": false 
