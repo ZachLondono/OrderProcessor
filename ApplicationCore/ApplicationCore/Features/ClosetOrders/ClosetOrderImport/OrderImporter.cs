@@ -8,9 +8,8 @@ public class OrderImporter {
     private readonly Outlook.MailItem _mailItem;
 
     public static readonly Dealer[] Dealers = [
-        new("cbg57c@aol.com", @"R:\Job Scans\Closets by Glinsky - CBG", "CBG"),
-        new("lkerekes@tailoredcloset.com", @"R:\Job Scans\Closets-TLMid- TLMid", "TLMid"),
-        new("tkerekes@tailoredcloset.com", @"R:\Job Scans\Closets-TLMid- TLMid", "TLMid"),
+        new( [ "cbg57c@aol.com", "closetman1@gmail.com" ], @"R:\Job Scans\Closets by Glinsky - CBG", "CBG"),
+        new( [ "tkerekes@tailoredcloset.com", "lkerekes@tailoredcloset.com" ], @"R:\Job Scans\Closets-TLMid- TLMid", "TLMid"),
     ];
 
     public OrderImporter(Outlook.MailItem mailItem) {
@@ -66,7 +65,7 @@ public class OrderImporter {
         var address = GetEmailAddress(_mailItem);
 
         foreach (var sender in senders) {
-            if (Dealers.Any(d => d.IncomingEmail.Equals(sender.EmailAddress))) {
+            if (Dealers.Any(d => d.IncomingEmails.Any(e => e.Equals(sender.EmailAddress)))) {
                 name = sender.Name;
                 address = sender.EmailAddress;
                 break;
@@ -148,6 +147,6 @@ public class OrderImporter {
 
     private record struct EmailSender(string Name, string EmailAddress);
 
-    public record Dealer(string IncomingEmail, string OutputDirectory, string OrderNumberPrefix);
+    public record Dealer(string[] IncomingEmails, string OutputDirectory, string OrderNumberPrefix);
 
 }

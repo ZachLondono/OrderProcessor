@@ -151,7 +151,7 @@
 
             _importer = new OrderImporter(mailItem);
             _message =  _importer.GetMessageDetails();
-            Dealer? dealer = OrderImporter.Dealers.Where(d => d.IncomingEmail.Equals(_message.SenderEmail)).FirstOrDefault();
+            Dealer? dealer = OrderImporter.Dealers.Where(d => d.IncomingEmails.Any(e => e.Equals(_message.SenderEmail))).FirstOrDefault();
             if (dealer is not null) {
                 _workingDirectoryRoot = dealer.OutputDirectory;
                 _orderNumber = GetNextOrderNumber(dealer.OutputDirectory, dealer.OrderNumberPrefix);
