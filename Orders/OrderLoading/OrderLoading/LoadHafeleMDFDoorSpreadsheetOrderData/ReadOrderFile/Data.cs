@@ -72,6 +72,7 @@ public class Data {
         }
 
         var doorTypes = doorTypesRange.Select(c => c.GetValue<string>())
+                                      .Where(v => !string.IsNullOrWhiteSpace(v))
                                       .ToArray();
 
 
@@ -90,7 +91,9 @@ public class Data {
 
         }
 
-        var doorPanelCounts = panelCountRange.Select(c => (int)c.GetDouble())
+        var doorPanelCounts = panelCountRange.Select(c => c.GetValue<string>())
+                                   .Where(v => !string.IsNullOrWhiteSpace(v))
+                                   .Select(v => int.Parse(v))
                                    .ToArray();
 
         return (doorTypes, doorPanelCounts);
