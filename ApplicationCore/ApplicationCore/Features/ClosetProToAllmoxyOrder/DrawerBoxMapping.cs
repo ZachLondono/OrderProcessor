@@ -28,6 +28,7 @@ public partial class ClosetProToAllmoxyMapper {
             UndermountNotching = notch,
             Clips = DrawerBoxClips.HETTICH,
             IncludeSlides = DrawerBoxSlides.HETTICH,
+            Assembled = true,
             Comments = "",
             Qty = box.Qty,
             Height = DrawerBoxMaterial.GetStandardHeight(box.GetBoxHeight()),

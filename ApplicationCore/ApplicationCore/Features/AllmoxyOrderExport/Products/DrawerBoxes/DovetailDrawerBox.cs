@@ -12,13 +12,14 @@ public class DovetailDrawerBox : IAllmoxyProduct {
     [Index(5)] public required string Clips { get; set; }
     [Index(6)] public required string IncludeSlides { get; set; }
     [Index(7)] public required string Comments { get; set; }
-    [Index(8)] public required int Qty { get; set; }
-    [Index(9)] public required string Height { get; set; }
-    [Index(10)] public required double Width { get; set; }
-    [Index(11)] public required double Depth { get; set; }
-    [Index(12)] public required bool Scoop { get; set; }
-    [Index(13)] public required bool Logo { get; set; }
-    [Index(14)] public required string LabelNote { get; set; }
-    [Index(15)] public required string Insert { get; set; }
+    [Index(8)] public required bool Assembled { get; set; }
+    [Index(9)] public required int Qty { get; set; }
+    [Index(10)] public required string Height { get; set; }
+    [Index(11)] public required double Width { get; set; }
+    [Index(12)] public required double Depth { get; set; }
+    [Index(13)] public required bool Scoop { get; set; }
+    [Index(14)] public required bool Logo { get; set; }
+    [Index(15)] public required string LabelNote { get; set; }
+    [Index(16)] public required string Insert { get; set; }
 
 }
