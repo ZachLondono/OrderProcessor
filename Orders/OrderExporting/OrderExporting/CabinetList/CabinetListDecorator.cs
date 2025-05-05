@@ -80,7 +80,7 @@ public class CabinetListDecorator(CabinetList data) : IDocumentDecorator {
 
                             });
 
-                            foreach (var cab in Data.Cabinets) {
+                            foreach (var cab in Data.Cabinets.OrderBy(c => c.CabNum)) {
 
                                 TextSpanDescriptor addCenteredCell(object value) =>
                                     table.Cell()
