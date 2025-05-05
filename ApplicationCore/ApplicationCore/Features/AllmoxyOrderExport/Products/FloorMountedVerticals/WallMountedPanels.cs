@@ -11,11 +11,12 @@ public class WallMountedPanels : IAllmoxyProduct {
     [Index(4)] public required bool EdgeBandTop { get; set; }
     [Index(5)] public required bool RadiusedBottom { get; set; }
     [Index(6)] public required bool ExtendForBackPanel { get; set; }
-    [Index(7)] public required string PanelFinish { get; set; }
-    [Index(8)] public required int Qty { get; set; }
-    [Index(9)] public required string PanelHeight { get; set; }
-    [Index(10)] public required double Depth { get; set; }
-    [Index(11)] public required string FinishedSide { get; set; }
-    [Index(12)] public required string PartComment { get; set; }
+    [Index(7)] public required bool NotchForWallBracket { get; set; }
+    [Index(8)] public required string PanelFinish { get; set; }
+    [Index(9)] public required int Qty { get; set; }
+    [Index(10)] public required string PanelHeight { get; set; }
+    [Index(11)] public required double Depth { get; set; }
+    [Index(12)] public required string FinishedSide { get; set; }
+    [Index(13)] public required string PartComment { get; set; }
 
 }

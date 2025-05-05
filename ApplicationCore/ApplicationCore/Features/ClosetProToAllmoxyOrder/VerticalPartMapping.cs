@@ -32,6 +32,7 @@ public partial class ClosetProToAllmoxyMapper {
                 RadiusedBottom = panel.HasBottomRadius,
                 EdgeBandTop = false,
                 ExtendForBackPanel = panel.ExtendBack,
+                NotchForWallBracket = true,
                 PanelFinish = PanelFinish.NONE,
                 Qty = panel.Qty,
                 PanelHeight = VerticalPanelHeight.GetNearestCompliantHeight(panel.Height).AsInches().ToString("#.000"),
