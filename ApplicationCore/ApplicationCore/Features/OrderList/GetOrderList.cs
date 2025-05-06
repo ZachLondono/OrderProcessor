@@ -35,6 +35,9 @@ public class GetOrderList {
                     PageSize = request.PageSize,
                 }.GetQueryFilter();
 
+                // Using a subquery here is actually significantly more performant,
+                // when combined with the index `CREATE INDEX IF NOT EXISTS idx_products_order_id ON products (order_id);`,
+                // then using a join.
                 var query = $"""
                             SELECT
                                 id,

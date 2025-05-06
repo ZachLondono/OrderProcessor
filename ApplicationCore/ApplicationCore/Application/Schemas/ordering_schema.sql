@@ -619,3 +619,6 @@ CREATE TABLE counter_tops (
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS idx_orders_order_date ON orders (order_date DESC);
+CREATE INDEX IF NOT EXISTS idx_products_order_id ON products (order_id);
