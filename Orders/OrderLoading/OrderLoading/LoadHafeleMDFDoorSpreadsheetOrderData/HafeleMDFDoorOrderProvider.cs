@@ -1,11 +1,7 @@
 ﻿using Domain.Companies.Entities;
 using Domain.Companies.ValueObjects;
 using Domain.Orders.Entities.Products;
-using Domain.Orders.Entities.Products.Doors;
-using Domain.Orders.Enums;
 using Domain.Orders.ValueObjects;
-using Domain.ValueObjects;
-using OneOf.Types;
 using OrderLoading.LoadHafeleMDFDoorSpreadsheetOrderData.ReadOrderFile;
 using static Domain.Companies.CompanyDirectory;
 using static OrderLoading.IOrderProvider;
@@ -97,16 +93,10 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
             throw new InvalidOperationException($"Material '{data.Options.Material}' not found in material thicknesses look up");
         }
 
-        var thicknessDim = Dimension.FromInches(materialThickness);
-
-        var finish = GetFinish(data.Options.Finish);
-
-        decimal markUp = (decimal) data.Data.HafeleMarkUpToCustomers;
-
-        var products = data.Sizes.Select(s => CreateProduct(data.Options, s, thicknessDim, finish, markUp)).ToList<IProduct>();
+        var products = new List<IProduct>(data.GetProducts());
 
         var orderedDate = data.Options.Date;
-        var dueDate = orderedDate.AddDays(GetLeadTime(data.Options.ProductionTime));
+        var dueDate = data.Options.GetDueDate();
 
         var isRush = IsRush(data.Options.ProductionTime);
 
@@ -151,7 +141,7 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
             CustomerId = customerId,
             VendorId = vendorId,
             Rush = isRush,
-            Info = [],
+            Info = info,
             Products = products,
             Hardware = Hardware.None(),
             AdditionalItems = [],
@@ -160,70 +150,10 @@ public class HafeleMDFDoorOrderProvider : IOrderProvider {
 
     }
 
-    private static MDFDoorProduct CreateProduct(Options options, Size size, Dimension thickness, MDFDoorFinish finish, decimal hafeleMarkUpToCustomer) {
-
-        AdditionalOpening[] additionalOpenings;
-        DoorType doorType;
-
-        switch (size.Type) {
-
-            default:
-                doorType = DoorType.Door;
-                additionalOpenings = [];
-                break;
-
-        };
-
-        var frameSize = new DoorFrame() {
-            TopRail = Dimension.FromInches(size.TopRail),
-            BottomRail = Dimension.FromInches(size.BottomRail),
-            LeftStile = Dimension.FromInches(size.LeftStile),
-            RightStile = Dimension.FromInches(size.RightStile),
-        };
-
-        var adjustedUnitPrice = size.UnitPrice / (1 + hafeleMarkUpToCustomer);
-
-        return MDFDoorProduct.Create(adjustedUnitPrice,
-                                    "",
-                                    size.Qty,
-                                    size.LineNumber,
-                                    doorType,
-                                    Dimension.FromInches(size.Height),
-                                    Dimension.FromInches(size.Width),
-                                    size.SpecialInstructions,
-                                    frameSize,
-                                    options.Material,
-                                    thickness,
-                                    options.DoorStyle,
-                                    options.EdgeProfile,
-                                    options.PanelDetail,
-                                    Dimension.FromInches(options.PanelDrop),
-                                    DoorOrientation.Vertical,
-                                    additionalOpenings,
-                                    finish);
-
-    }
-
-    private static int GetLeadTime(string leadTime) => leadTime switch {
-        "Standard 10 day" => 10,
-        "5 Day Rush" => 5,
-        _ => throw new InvalidOperationException($"Unexpected lead time - '{leadTime}'")
-    };
-
     private static bool IsRush(string leadTime) => leadTime switch {
         "Standard 10 day" => false,
         "5 Day Rush" => true,
         _ => throw new InvalidOperationException($"Unexpected lead time - '{leadTime}'")
-    };
-
-    private static MDFDoorFinish GetFinish(string finish) => finish switch {
-        "None" => new None(),
-        "White Prime Only" => new Primer("White Primer"),
-        "Grey Prime Only" => new Primer("Grey Primer"),
-        "Black Prime Only" => new Primer("Black Primer"),
-        "Standard Color" => new Paint("Standard Color"),
-        "Custom Color" => new Paint("Custom Color"),
-        _ => throw new InvalidOperationException($"Unexpected finish option - '{finish}'")
     };
 
     private async Task<Guid> GetOrCreateCustomerAsync(Options options) {
