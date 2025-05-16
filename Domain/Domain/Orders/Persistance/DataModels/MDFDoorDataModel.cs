@@ -18,8 +18,9 @@ public class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuerya
     public Dimension LeftStile { get; set; }
     public Dimension RightStile { get; set; }
     public DoorOrientation Orientation { get; set; }
-    public AdditionalOpening[] AdditionalOpenings { get; set; } = Array.Empty<AdditionalOpening>();
-    public List<string> ProductionNotes { get; set; } = new();
+    public bool IsOpenPanel { get; set; }
+    public AdditionalOpening[] AdditionalOpenings { get; set; } = [];
+    public List<string> ProductionNotes { get; set; } = [];
 
     public string FramingBead { get; set; } = string.Empty;
     public string EdgeDetail { get; set; } = string.Empty;
@@ -59,7 +60,8 @@ public class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuerya
         	mdf_config.material,
         	mdf_config.panel_drop AS PanelDrop,
         	mdf_config.finish_color AS FinishColor,
-        	mdf_config.finish_type AS FinishType
+        	mdf_config.finish_type AS FinishType,
+        	mdf_config.is_open_panel AS IsOpenPanel
 
         FROM mdf_door_products AS mdf_product
 
@@ -74,7 +76,8 @@ public class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuerya
         """
         SELECT
             rail AS RailWidth,
-            opening AS OpeningHeight
+            opening AS OpeningHeight,
+            is_open_panel AS IsOpenPanel
         FROM mdf_door_openings
         WHERE product_id = @ProductId;
         """;
@@ -95,7 +98,7 @@ public class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuerya
             _ => throw new InvalidOperationException("Invalid finish type")
         };
 
-        return new MDFDoorProduct(Id, UnitPrice, Room, Qty, ProductNumber, Type, Height, Width, Note, frameSize, Material, Thickness, FramingBead, EdgeDetail, PanelDetail, PanelDrop, Orientation, AdditionalOpenings, finish) {
+        return new MDFDoorProduct(Id, UnitPrice, Room, Qty, ProductNumber, Type, Height, Width, Note, frameSize, Material, Thickness, FramingBead, EdgeDetail, PanelDetail, PanelDrop, Orientation, AdditionalOpenings, finish, IsOpenPanel) {
             ProductionNotes = ProductionNotes
         };
 

@@ -20,7 +20,8 @@ public static partial class ProductsPersistance {
             mdfdoor.FrameSize.BottomRail,
             mdfdoor.FrameSize.LeftStile,
             mdfdoor.FrameSize.RightStile,
-            mdfdoor.Orientation
+            mdfdoor.Orientation,
+            mdfdoor.IsOpenPanel
         };
 
         connection.Execute("""
@@ -34,7 +35,8 @@ public static partial class ProductsPersistance {
                         bottom_rail,
                         left_stile,
                         right_stile,
-                        orientation)
+                        orientation,
+                        is_open_panel)
                     VALUES
                         (@ProductId,
                         @Note,
@@ -45,7 +47,8 @@ public static partial class ProductsPersistance {
                         @BottomRail,
                         @LeftStile,
                         @RightStile,
-                        @Orientation);
+                        @Orientation,
+                        @IsOpenPanel);
                     """, parameters, trx);
 
         if (mdfdoor.AdditionalOpenings.Any()) {
@@ -55,17 +58,20 @@ public static partial class ProductsPersistance {
                             (id,
                             product_id,
                             opening,
-                            rail)
+                            rail,
+                            is_open_panel)
                         VALUES
                             (@Id,
                             @ProductId,
                             @Opening,
-                            @Rail);
+                            @Rail,
+                            @IsOpenPanel);
                        """, new {
                     Id = Guid.NewGuid(),
                     ProductId = mdfdoor.Id,
                     Opening = opening.OpeningHeight,
-                    Rail = opening.RailWidth
+                    Rail = opening.RailWidth,
+                    IsOpenPanel = opening.IsOpenPanel
                 }, trx);
             }
         }

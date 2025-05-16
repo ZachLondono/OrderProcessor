@@ -562,6 +562,7 @@ CREATE TABLE mdf_door_configs (
 	panel_drop REAL,
 	finish_type INTEGER,
 	finish_color TEXT,
+	is_open_panel INTEGER NOT NULL,
 	PRIMARY KEY (id)
 );
 
@@ -570,6 +571,7 @@ CREATE TABLE mdf_door_openings (
 	product_id BLOB NOT NULL,
 	opening REAL NOT NULL,
 	rail REAL NOT NULL,
+	is_open_panel INTEGER NOT NULL,
 	PRIMARY KEY (id)
 );
 

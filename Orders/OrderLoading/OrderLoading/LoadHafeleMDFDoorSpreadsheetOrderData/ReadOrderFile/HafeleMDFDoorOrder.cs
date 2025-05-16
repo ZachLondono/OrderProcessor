@@ -69,41 +69,47 @@ public class HafeleMDFDoorOrder {
 
         AdditionalOpening[] additionalOpenings;
         DoorType doorType;
+        bool isOpenPanel = false;
 
         switch (size.Type) {
 
             case "Single Panel":
                 doorType = DoorType.Door;
+                isOpenPanel = false;
                 additionalOpenings = [];
                 break;
 
             case "Drawer Front - A":
             case "Drawer Front - B":
                 doorType = DoorType.DrawerFront;
+                isOpenPanel = false;
                 additionalOpenings = [];
                 break;
 
             case "Double Panel, SS":
                 doorType = DoorType.Door;
+                isOpenPanel = false;
                 additionalOpenings = [
-                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height))
+                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height), false)
                     ];
                 break;
 
             case "Triple Panel":
                 doorType = DoorType.Door;
+                isOpenPanel = false;
                 additionalOpenings = [
-                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height)),
-                        new(Dimension.FromInches(size.Rail4), Dimension.FromInches(size.Panel2Height))
+                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height), false),
+                        new(Dimension.FromInches(size.Rail4), Dimension.FromInches(size.Panel2Height), false)
                     ];
                 break;
 
             case "Quadruple Panel":
                 doorType = DoorType.Door;
+                isOpenPanel = false;
                 additionalOpenings = [
-                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height)),
-                        new(Dimension.FromInches(size.Rail4), Dimension.FromInches(size.Panel2Height)),
-                        new(Dimension.FromInches(size.Rail5), Dimension.FromInches(size.Panel3Height))
+                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height), false),
+                        new(Dimension.FromInches(size.Rail4), Dimension.FromInches(size.Panel2Height), false),
+                        new(Dimension.FromInches(size.Rail5), Dimension.FromInches(size.Panel3Height), false)
                     ];
                 break;
 
@@ -138,7 +144,8 @@ public class HafeleMDFDoorOrder {
                                     Dimension.FromInches(Options.PanelDrop),
                                     DoorOrientation.Vertical,
                                     additionalOpenings,
-                                    finish);
+                                    finish,
+                                    isOpenPanel);
 
     }
 
