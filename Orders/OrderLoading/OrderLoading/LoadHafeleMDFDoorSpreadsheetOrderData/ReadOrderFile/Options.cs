@@ -43,4 +43,12 @@ public class Options {
         return ExcelReader.LoadFromWorkbook(workbook);
     }
 
+    public DateTime GetDueDate() => Date.AddDays(GetLeadTime(ProductionTime));
+
+    private static int GetLeadTime(string leadTime) => leadTime switch {
+        "Standard 10 day" => 10,
+        "5 Day Rush" => 5,
+        _ => throw new InvalidOperationException($"Unexpected lead time - '{leadTime}'")
+    };
+
 }
