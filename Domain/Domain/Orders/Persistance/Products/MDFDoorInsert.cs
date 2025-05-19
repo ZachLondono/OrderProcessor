@@ -1,5 +1,6 @@
 ﻿using Domain.Infrastructure.Data;
 using Domain.Orders.Entities.Products.Doors;
+using Domain.Orders.ValueObjects;
 
 namespace Domain.Orders.Persistance.Products;
 
@@ -9,6 +10,7 @@ public static partial class ProductsPersistance {
 
         InsertMDFConfig(mdfdoor.Id, mdfdoor.GetMDFDoorOptions(), connection, trx);
         InsertIntoProductTable(mdfdoor, orderId, connection, trx);
+        var (isOpenPanel, panelId) = InsertMDFPanel(mdfdoor.Panel, connection, trx);
 
         var parameters = new {
             ProductId = mdfdoor.Id,
@@ -20,7 +22,8 @@ public static partial class ProductsPersistance {
             mdfdoor.FrameSize.BottomRail,
             mdfdoor.FrameSize.LeftStile,
             mdfdoor.FrameSize.RightStile,
-            mdfdoor.Orientation
+            mdfdoor.Orientation,
+            PanelId = (Guid?) (isOpenPanel ? panelId : null),
         };
 
         connection.Execute("""
@@ -34,7 +37,8 @@ public static partial class ProductsPersistance {
                         bottom_rail,
                         left_stile,
                         right_stile,
-                        orientation)
+                        orientation,
+                        mdf_open_panel_id)
                     VALUES
                         (@ProductId,
                         @Note,
@@ -45,30 +49,70 @@ public static partial class ProductsPersistance {
                         @BottomRail,
                         @LeftStile,
                         @RightStile,
-                        @Orientation);
+                        @Orientation,
+                        @PanelId);
                     """, parameters, trx);
 
         if (mdfdoor.AdditionalOpenings.Any()) {
             foreach (var opening in mdfdoor.AdditionalOpenings) {
-                connection.Execute("""
-                        INSERT INTO mdf_door_openings 
-                            (id,
-                            product_id,
-                            opening,
-                            rail)
-                        VALUES
-                            (@Id,
-                            @ProductId,
-                            @Opening,
-                            @Rail);
-                       """, new {
-                    Id = Guid.NewGuid(),
-                    ProductId = mdfdoor.Id,
-                    Opening = opening.OpeningHeight,
-                    Rail = opening.RailWidth
-                }, trx);
+
+                (bool isOpen, Guid openingId) = InsertMDFPanel(opening.Panel, connection, trx);
+
+                connection.Execute(
+                    """
+                    INSERT INTO mdf_door_openings 
+                        (id,
+                        product_id,
+                        opening,
+                        rail,
+                        mdf_open_panel_id)
+                    VALUES
+                        (@Id,
+                        @ProductId,
+                        @Opening,
+                        @Rail,
+                        @PanelId);
+                    """, new {
+                        Id = Guid.NewGuid(),
+                        ProductId = mdfdoor.Id,
+                        Opening = opening.OpeningHeight,
+                        Rail = opening.RailWidth,
+                        PanelId = (Guid?) (isOpen ? openingId : null),
+                    }, trx);
+
             }
         }
+
+    }
+
+    public static (bool, Guid) InsertMDFPanel(MDFDoorPanel panel, ISynchronousDbConnection connection, ISynchronousDbTransaction trx) {
+
+        Guid panelId = Guid.NewGuid();
+
+        return panel.Match(
+            (SolidPanel s) => (false, panelId),
+            (OpenPanel o) => {
+
+                connection.Execute("""
+                INSERT INTO mdf_panels
+                    (id,
+                    name,
+                    rabbet_back,
+                    route_for_gasket)
+                VALUES
+                    (@Id,
+                    @Name,
+                    @RabbetBack,
+                    @RouteForGasket);
+                """, new {
+                    Id = panelId,
+                    RabbetBack = o.RabbetBack,
+                    RouteForGasket = o.RouteForGasket
+                }, trx);
+                return (true, panelId);
+
+            });
+
 
     }
 

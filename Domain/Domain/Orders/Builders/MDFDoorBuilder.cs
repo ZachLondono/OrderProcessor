@@ -19,6 +19,7 @@ public class MDFDoorBuilder {
     private string _edgeDetail;
     private DoorFrame _frameSize;
     private DoorOrientation _orientation;
+    private MDFDoorPanel _panel;
     private AdditionalOpening[] _additionalOpenings;
     private MDFDoorFinish _finish;
 
@@ -40,6 +41,7 @@ public class MDFDoorBuilder {
         _orientation = _orientation = DoorOrientation.Vertical;
         _additionalOpenings = Array.Empty<AdditionalOpening>();
         _finish = new None();
+        _panel = new SolidPanel();
 
     }
 
@@ -98,8 +100,13 @@ public class MDFDoorBuilder {
         return this;
     }
 
-    public MDFDoorBuilder WithAditionalOpenings(AdditionalOpening[] additionalOpenings) {
+    public MDFDoorBuilder WithAdditionalOpenings(AdditionalOpening[] additionalOpenings) {
         _additionalOpenings = additionalOpenings;
+        return this;
+    }
+
+    public MDFDoorBuilder WithPanel(MDFDoorPanel panel) {
+        _panel = panel;
         return this;
     }
 
@@ -110,7 +117,7 @@ public class MDFDoorBuilder {
 
     public MDFDoor Build(Dimension height, Dimension width) {
 
-        return new MDFDoor(_qty, _productNumber, _type, height, width, _note, _frameSize, _material, _thickness, _framingBead, _edgeDetail, _panelDetail, Dimension.Zero, _orientation, _additionalOpenings, _finish);
+        return new MDFDoor(_qty, _productNumber, _type, height, width, _note, _frameSize, _material, _thickness, _framingBead, _edgeDetail, _panelDetail, Dimension.Zero, _orientation, _additionalOpenings, _finish, _panel);
 
     }
 

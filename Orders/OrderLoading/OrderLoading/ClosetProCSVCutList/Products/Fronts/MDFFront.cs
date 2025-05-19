@@ -41,7 +41,8 @@ public class MDFFront : IClosetProProduct {
 									Dimension.FromInches(0.25),
 									DoorOrientation.Vertical,
 									[],
-									new None());
+									new None(),
+									new SolidPanel());
 
 	}
 

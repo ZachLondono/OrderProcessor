@@ -14,6 +14,10 @@ public class MDFDoor {
     public string Note { get; }
     public DoorFrame FrameSize { get; }
     public DoorOrientation Orientation { get; }
+    /// <summary>
+    /// Specifies the type of panel for the main opening. Additional openings must set this property separately.
+    /// </summary>
+    public MDFDoorPanel Panel { get; }
     public AdditionalOpening[] AdditionalOpenings { get; }
     public string Material { get; }
     public Dimension Thickness { get; }
@@ -38,7 +42,8 @@ public class MDFDoor {
 				   Dimension panelDrop,
 				   DoorOrientation orientation,
 				   AdditionalOpening[] additionalOpenings,
-				   MDFDoorFinish finish) {
+				   MDFDoorFinish finish,
+                   MDFDoorPanel panel) {
         Qty = qty;
         ProductNumber = productNumber;
         Type = type;
@@ -47,6 +52,7 @@ public class MDFDoor {
         Note = note;
         FrameSize = frameSize;
         Orientation = orientation;
+        Panel = panel;
         AdditionalOpenings = additionalOpenings;
         Material = material;
         Thickness = thickness;

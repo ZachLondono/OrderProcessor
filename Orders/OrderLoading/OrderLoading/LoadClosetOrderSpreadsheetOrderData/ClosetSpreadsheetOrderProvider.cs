@@ -370,7 +370,8 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 											   Dimension.Zero,
 											   DoorOrientation.Vertical,
 											   Array.Empty<AdditionalOpening>(),
-											   string.IsNullOrWhiteSpace(header.PaintColor) ? new None() : new Paint(header.PaintColor));
+											   string.IsNullOrWhiteSpace(header.PaintColor) ? new None() : new Paint(header.PaintColor),
+											   new SolidPanel());
 
 		}
 

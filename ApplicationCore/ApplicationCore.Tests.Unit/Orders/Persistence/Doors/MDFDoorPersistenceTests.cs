@@ -11,7 +11,7 @@ public class MDFDoorPersistenceTests : PersistenceTests {
 
     [Fact]
     public async Task InsertOrderWithMDFDoor_NoFinish() {
-        var door = new MDFDoorProduct(Guid.NewGuid(), 0M, "", 1, 1, DoorType.Door, Dimension.FromInches(12), Dimension.FromInches(12), "", new DoorFrame(Dimension.FromInches(3)), "", Dimension.Zero, "", "", "", Dimension.Zero, DoorOrientation.Vertical, Array.Empty<AdditionalOpening>(), new None());
+        var door = new MDFDoorProduct(Guid.NewGuid(), 0M, "", 1, 1, DoorType.Door, Dimension.FromInches(12), Dimension.FromInches(12), "", new DoorFrame(Dimension.FromInches(3)), "", Dimension.Zero, "", "", "", Dimension.Zero, DoorOrientation.Vertical, Array.Empty<AdditionalOpening>(), new None(), new SolidPanel());
         await InsertAndQueryOrderWithProduct(door, (actual) => {
             actual.Finish.Value.Should().BeOfType<None>();
         });
@@ -20,7 +20,7 @@ public class MDFDoorPersistenceTests : PersistenceTests {
     [Fact]
     public async Task InsertOrderWithMDFDoor_PaintFinish() {
         string color = "Custom Paint Color";
-        var door = new MDFDoorProduct(Guid.NewGuid(), 0M, "", 1, 1, DoorType.Door, Dimension.FromInches(12), Dimension.FromInches(12), "", new DoorFrame(Dimension.FromInches(3)), "", Dimension.Zero, "", "", "", Dimension.Zero, DoorOrientation.Vertical, Array.Empty<AdditionalOpening>(), new Paint(color));
+        var door = new MDFDoorProduct(Guid.NewGuid(), 0M, "", 1, 1, DoorType.Door, Dimension.FromInches(12), Dimension.FromInches(12), "", new DoorFrame(Dimension.FromInches(3)), "", Dimension.Zero, "", "", "", Dimension.Zero, DoorOrientation.Vertical, Array.Empty<AdditionalOpening>(), new Paint(color), new SolidPanel());
         await InsertAndQueryOrderWithProduct(door, (actual) => {
             actual.Finish.Value.Should().BeOfType<Paint>();
             actual.Finish.Value.As<Paint>().Color.Should().Be(color);
@@ -31,7 +31,7 @@ public class MDFDoorPersistenceTests : PersistenceTests {
     [Fact]
     public async Task InsertOrderWithMDFDoor_PrimerFinish() {
         string color = "Custom Primer Color";
-        var door = new MDFDoorProduct(Guid.NewGuid(), 0M, "", 1, 1, DoorType.Door, Dimension.FromInches(12), Dimension.FromInches(12), "", new DoorFrame(Dimension.FromInches(3)), "", Dimension.Zero, "", "", "", Dimension.Zero, DoorOrientation.Vertical, Array.Empty<AdditionalOpening>(), new Primer(color));
+        var door = new MDFDoorProduct(Guid.NewGuid(), 0M, "", 1, 1, DoorType.Door, Dimension.FromInches(12), Dimension.FromInches(12), "", new DoorFrame(Dimension.FromInches(3)), "", Dimension.Zero, "", "", "", Dimension.Zero, DoorOrientation.Vertical, Array.Empty<AdditionalOpening>(), new Primer(color), new SolidPanel());
         await InsertAndQueryOrderWithProduct(door, (actual) => {
             actual.Finish.Value.Should().BeOfType<Primer>();
             actual.Finish.Value.As<Primer>().Color.Should().Be(color);
@@ -40,7 +40,7 @@ public class MDFDoorPersistenceTests : PersistenceTests {
 
     [Fact]
     public async Task DeleteOrderWithMDFDoor() {
-        var door = new MDFDoorProduct(Guid.NewGuid(), 0M, "", 1, 1, DoorType.Door, Dimension.FromInches(12), Dimension.FromInches(12), "", new DoorFrame(Dimension.FromInches(3)), "", Dimension.Zero, "", "", "", Dimension.Zero, DoorOrientation.Vertical, Array.Empty<AdditionalOpening>(), new None());
+        var door = new MDFDoorProduct(Guid.NewGuid(), 0M, "", 1, 1, DoorType.Door, Dimension.FromInches(12), Dimension.FromInches(12), "", new DoorFrame(Dimension.FromInches(3)), "", Dimension.Zero, "", "", "", Dimension.Zero, DoorOrientation.Vertical, Array.Empty<AdditionalOpening>(), new None(), new SolidPanel());
         await InsertAndDeleteOrderWithProduct(door);
     }
 
