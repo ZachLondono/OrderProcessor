@@ -163,6 +163,7 @@ CREATE TABLE mdf_door_products (
 	left_stile REAL NOT NULL,
 	right_stile REAL NOT NULL,
 	orientation INTEGER NOT NULL,
+	mdf_open_panel_id BLOB,
 	PRIMARY KEY (product_id),
 	FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
 	FOREIGN KEY (product_id) REFERENCES mdf_door_configs(id)
@@ -562,7 +563,6 @@ CREATE TABLE mdf_door_configs (
 	panel_drop REAL,
 	finish_type INTEGER,
 	finish_color TEXT,
-	is_open_panel INTEGER NOT NULL,
 	PRIMARY KEY (id)
 );
 
@@ -571,7 +571,14 @@ CREATE TABLE mdf_door_openings (
 	product_id BLOB NOT NULL,
 	opening REAL NOT NULL,
 	rail REAL NOT NULL,
-	is_open_panel INTEGER NOT NULL,
+	mdf_open_panel_id BLOB,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE mdf_open_panels (
+	id BLOB NOT NULL,
+	rabbet_back INTEGER NOT NULL,
+	route_for_gasket INTEGER NOT NULL,
 	PRIMARY KEY (id)
 );
 

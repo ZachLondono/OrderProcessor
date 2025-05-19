@@ -366,10 +366,10 @@ public class DoorSpreadsheetOrderProvider : IOrderProvider {
 
 		var additionalOpenings = new List<AdditionalOpening>();
 		if (lineItem.Opening1 > 0 && lineItem.Rail3 > 0) {
-			additionalOpenings.Add(new(rail3, opening1));
+			additionalOpenings.Add(new(rail3, opening1, new SolidPanel()));
 		}
 		if (lineItem.Opening1 > 0 && lineItem.Rail3 > 0) {
-			additionalOpenings.Add(new(rail4, opening2));
+			additionalOpenings.Add(new(rail4, opening2, new SolidPanel()));
 		}
 
 		var orientation = lineItem.Orientation.ToLower() switch {
@@ -390,7 +390,7 @@ public class DoorSpreadsheetOrderProvider : IOrderProvider {
 		ArgumentNullException.ThrowIfNull(lineItem.Note);
 		ArgumentNullException.ThrowIfNull(lineItem.Material);
 
-		return MDFDoorProduct.Create(lineItem.UnitPrice, "", lineItem.Qty, lineItem.PartNumber, type, height, width, lineItem.Note, frame, lineItem.Material, thickness, header.Style, header.EdgeProfile, header.PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), finish);
+		return MDFDoorProduct.Create(lineItem.UnitPrice, "", lineItem.Qty, lineItem.PartNumber, type, height, width, lineItem.Note, frame, lineItem.Material, thickness, header.Style, header.EdgeProfile, header.PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), finish, new SolidPanel());
 
 	}
 

@@ -18,9 +18,12 @@ public class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuerya
     public Dimension LeftStile { get; set; }
     public Dimension RightStile { get; set; }
     public DoorOrientation Orientation { get; set; }
-    public bool IsOpenPanel { get; set; }
     public AdditionalOpening[] AdditionalOpenings { get; set; } = [];
     public List<string> ProductionNotes { get; set; } = [];
+
+    public bool IsOpenPanel { get; set; }
+    public bool RabbetBack { get; set; }
+    public bool RouteForGasket { get; set; }
 
     public string FramingBead { get; set; } = string.Empty;
     public string EdgeDetail { get; set; } = string.Empty;
@@ -61,12 +64,16 @@ public class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuerya
         	mdf_config.panel_drop AS PanelDrop,
         	mdf_config.finish_color AS FinishColor,
         	mdf_config.finish_type AS FinishType,
-        	mdf_config.is_open_panel AS IsOpenPanel
+
+            CASE WHEN mdf_product.mdf_open_panel_id IS NULL THEN 0 ELSE 1 END AS IsOpenPanel,
+            IFNULL(mdf_open_panel.rabbet_back, 0) AS RabbetBack,
+            IFNULL(mdf_open_panel.route_for_gasket, 0) AS RouteForGasket
 
         FROM mdf_door_products AS mdf_product
 
         	JOIN products ON mdf_product.product_id = products.id
         	JOIN mdf_door_configs AS mdf_config ON mdf_config.id = products.id
+            LEFT JOIN mdf_open_panels AS mdf_open_panel ON mdf_open_panel.id = mdf_product.mdf_open_panel_id
 
         WHERE products.order_id = @OrderId;
         """;
@@ -77,8 +84,11 @@ public class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuerya
         SELECT
             rail AS RailWidth,
             opening AS OpeningHeight,
-            is_open_panel AS IsOpenPanel
+            CASE WHEN mdf_open_panel_id IS NULL THEN 0 ELSE 1 END AS IsOpenPanel,
+            IFNULL(mdf_open_panel.rabbet_back, 0) AS RabbetBack,
+            IFNULL(mdf_open_panel.route_for_gasket, 0) AS RouteForGasket
         FROM mdf_door_openings
+            LEFT JOIN mdf_open_panels AS mdf_open_panel ON mdf_open_panel.id = mdf_door_openings.mdf_open_panel_id
         WHERE product_id = @ProductId;
         """;
 
@@ -98,7 +108,14 @@ public class MDFDoorDataModel : ProductDataModelBase, IProductDataModel, IQuerya
             _ => throw new InvalidOperationException("Invalid finish type")
         };
 
-        return new MDFDoorProduct(Id, UnitPrice, Room, Qty, ProductNumber, Type, Height, Width, Note, frameSize, Material, Thickness, FramingBead, EdgeDetail, PanelDetail, PanelDrop, Orientation, AdditionalOpenings, finish, IsOpenPanel) {
+        MDFDoorPanel panel;
+        if (IsOpenPanel) {
+            panel = new OpenPanel(RabbetBack, RouteForGasket);
+        } else {
+            panel = new SolidPanel();
+        }
+
+        return new MDFDoorProduct(Id, UnitPrice, Room, Qty, ProductNumber, Type, Height, Width, Note, frameSize, Material, Thickness, FramingBead, EdgeDetail, PanelDetail, PanelDrop, Orientation, AdditionalOpenings, finish, panel) {
             ProductionNotes = ProductionNotes
         };
 

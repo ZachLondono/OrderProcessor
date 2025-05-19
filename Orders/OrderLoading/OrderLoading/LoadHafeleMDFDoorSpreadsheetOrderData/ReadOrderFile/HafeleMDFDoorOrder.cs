@@ -69,48 +69,100 @@ public class HafeleMDFDoorOrder {
 
         AdditionalOpening[] additionalOpenings;
         DoorType doorType;
-        bool isOpenPanel = false;
+        MDFDoorPanel panel = new SolidPanel();
+        string framingBead = Options.DoorStyle;
 
         switch (size.Type) {
 
             case "Single Panel":
                 doorType = DoorType.Door;
-                isOpenPanel = false;
                 additionalOpenings = [];
+                break;
+
+            case "Single Open Panel, w/ Gasket Route":
+                doorType = DoorType.Door;
+                additionalOpenings = [];
+                panel = new OpenPanel(true, true);
+                break;
+
+            case "Single Open Panel, no rabbet":
+                doorType = DoorType.Door;
+                additionalOpenings = [];
+                panel = new OpenPanel(false, false);
                 break;
 
             case "Drawer Front - A":
             case "Drawer Front - B":
                 doorType = DoorType.DrawerFront;
-                isOpenPanel = false;
                 additionalOpenings = [];
                 break;
 
             case "Double Panel, SS":
                 doorType = DoorType.Door;
-                isOpenPanel = false;
                 additionalOpenings = [
-                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height), false)
+                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height), new SolidPanel())
+                    ];
+                break;
+
+            case "Double Panel, OS":
+                doorType = DoorType.Door;
+                additionalOpenings = [
+                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height), new OpenPanel(true, false))
+                    ];
+                break;
+
+            case "Double Panel, OS, w/ Gasket Route":
+                doorType = DoorType.Door;
+                additionalOpenings = [
+                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height), new OpenPanel(true, true))
+                    ];
+                break;
+
+            case "Double Panel, SO":
+                doorType = DoorType.Door;
+                panel = new OpenPanel(true, false);
+                additionalOpenings = [
+                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height), new SolidPanel())
+                    ];
+                break;
+
+            case "Double Panel, OO":
+                doorType = DoorType.Door;
+                panel = new OpenPanel(true, false);
+                additionalOpenings = [
+                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height), new OpenPanel(true, false))
+                    ];
+                break;
+
+            case "Double Panel, OO, w/ Gasket Route":
+                doorType = DoorType.Door;
+                panel = new OpenPanel(true, false);
+                additionalOpenings = [
+                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height), new OpenPanel(true, true))
                     ];
                 break;
 
             case "Triple Panel":
                 doorType = DoorType.Door;
-                isOpenPanel = false;
                 additionalOpenings = [
-                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height), false),
-                        new(Dimension.FromInches(size.Rail4), Dimension.FromInches(size.Panel2Height), false)
+                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height), new SolidPanel()),
+                        new(Dimension.FromInches(size.Rail4), Dimension.FromInches(size.Panel2Height), new SolidPanel())
                     ];
                 break;
 
             case "Quadruple Panel":
                 doorType = DoorType.Door;
-                isOpenPanel = false;
                 additionalOpenings = [
-                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height), false),
-                        new(Dimension.FromInches(size.Rail4), Dimension.FromInches(size.Panel2Height), false),
-                        new(Dimension.FromInches(size.Rail5), Dimension.FromInches(size.Panel3Height), false)
+                        new(Dimension.FromInches(size.Rail3), Dimension.FromInches(size.Panel1Height), new SolidPanel()),
+                        new(Dimension.FromInches(size.Rail4), Dimension.FromInches(size.Panel2Height), new SolidPanel()),
+                        new(Dimension.FromInches(size.Rail5), Dimension.FromInches(size.Panel3Height), new SolidPanel())
                     ];
+                break;
+
+            case "Slab":
+                doorType = DoorType.Door;
+                additionalOpenings = [];
+                framingBead = "Slab";
                 break;
 
             default:
@@ -138,14 +190,14 @@ public class HafeleMDFDoorOrder {
                                     frameSize,
                                     Options.Material,
                                     thickness,
-                                    Options.DoorStyle,
+                                    framingBead,
                                     Options.EdgeProfile,
                                     Options.PanelDetail,
                                     Dimension.FromInches(Options.PanelDrop),
                                     DoorOrientation.Vertical,
                                     additionalOpenings,
                                     finish,
-                                    isOpenPanel);
+                                    panel);
 
     }
 

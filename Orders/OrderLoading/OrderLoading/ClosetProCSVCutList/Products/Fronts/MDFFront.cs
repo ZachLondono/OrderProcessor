@@ -42,7 +42,7 @@ public class MDFFront : IClosetProProduct {
 									DoorOrientation.Vertical,
 									[],
 									new None(),
-									false);
+									new SolidPanel());
 
 	}
 

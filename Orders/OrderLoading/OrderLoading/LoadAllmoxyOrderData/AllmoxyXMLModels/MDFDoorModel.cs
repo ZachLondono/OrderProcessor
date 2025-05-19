@@ -111,11 +111,11 @@ public class MDFDoorModel : ProductOrItemModel {
 
 		var additionalOpenings = new List<AdditionalOpening>();
 		if (Opening1 > 0) {
-			additionalOpenings.Add(new(Dimension.FromMillimeters(Rail3), Dimension.FromMillimeters(Opening1)));
+			additionalOpenings.Add(new(Dimension.FromMillimeters(Rail3), Dimension.FromMillimeters(Opening1), new SolidPanel()));
 		}
 
 		if (Opening2 > 0) {
-			additionalOpenings.Add(new(Dimension.FromMillimeters(Rail4), Dimension.FromMillimeters(Opening2)));
+			additionalOpenings.Add(new(Dimension.FromMillimeters(Rail4), Dimension.FromMillimeters(Opening2), new SolidPanel()));
 		}
 
 		MDFDoorFinish finish = Finish switch {
@@ -130,7 +130,7 @@ public class MDFDoorModel : ProductOrItemModel {
 			_ => throw new InvalidOperationException($"Unknown finish type {Finish}")
         };
 
-		var product = MDFDoorProduct.Create(unitPrice, Room, Qty, GetProductNumber(), type, height, width, Note, frameSize, Material, thickness, FramingBead, EdgeProfile, PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), finish);
+		var product = MDFDoorProduct.Create(unitPrice, Room, Qty, GetProductNumber(), type, height, width, Note, frameSize, Material, thickness, FramingBead, EdgeProfile, PanelDetail, panelDrop, orientation, additionalOpenings.ToArray(), finish, new SolidPanel());
 		product.ProductionNotes = ProductionNotes.Where(n => !string.IsNullOrWhiteSpace(n)).ToList();
 		return product;
 
