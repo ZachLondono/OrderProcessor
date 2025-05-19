@@ -121,9 +121,9 @@ public class GetOrderById {
 
                 string openingsQuery = MDFDoorDataModel.GetAdditionalOpeningsQueryByProductId;
                 foreach (var door in doors) {
-                    var data = connection.Query<AdditionalOpening>(openingsQuery, new { ProductId = door.Id });
-                    if (data is IEnumerable<AdditionalOpening> openings) {
-                        door.AdditionalOpenings = openings.ToArray();
+                    var data = connection.Query<AdditionalOpeningDataModel>(openingsQuery, new { ProductId = door.Id });
+                    if (data is IEnumerable<AdditionalOpeningDataModel> openings) {
+                        door.AdditionalOpenings = openings.Select(o => o.ToAdditionalOpening()).ToArray();
                     } else {
                         door.AdditionalOpenings = Array.Empty<AdditionalOpening>();
                     }
