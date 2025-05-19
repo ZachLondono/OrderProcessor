@@ -10,7 +10,7 @@ namespace Domain.Orders.Persistance;
 
 public class SqliteOrderingDbConnectionFactory : IOrderingDbConnectionFactory {
 
-    public const int DB_VERSION = 8;
+    public const int DB_VERSION = 9;
     private static readonly SemaphoreSlim semaphore = new(1);
 
     private readonly IConfiguration _configuration;
