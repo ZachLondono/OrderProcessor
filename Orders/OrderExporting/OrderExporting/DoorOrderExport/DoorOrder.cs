@@ -56,47 +56,7 @@ public record DoorOrder {
 
     public static IEnumerable<DoorOrder> FromOrder(Order order, IEnumerable<MDFDoor> doors, string customerName, string vendorName) {
 
-        var groups = doors.GroupBy(d => {
-
-            string finish = "None";
-            Optional<string> color = Optional<string>.None;
-            d.Finish.Switch(
-                (Paint paint) => {
-                    finish = "Std. Color";
-                    color = paint.Color;
-                },
-                (Primer primer) => {
-                    finish = "Prime Only";
-                    color = primer.Color;
-                },
-                (None _) => {
-                    finish = "None";
-                    color = Optional<string>.None;
-                });
-
-            return new GeneralSpecs() {
-
-                Material = d.Material,
-                Style = d.FramingBead,
-                EdgeProfile = d.EdgeDetail,
-                PanelDetail = d.PanelDetail,
-                Finish = finish,
-                Color = color,
-                PanelDrop = d.PanelDrop == Dimension.Zero ? Optional<double>.None : d.PanelDrop.AsMillimeters(),
-
-                HingePattern = Optional<string>.None,
-                Tab = Optional<double>.None,
-                StilesRails = Optional<double>.None,
-                AStyleRails = Optional<double>.None,
-                AStyleDwrFrontMax = Optional<double>.None,
-                DoorType = Optional<string>.None,
-                HingeFromTopBottom = Optional<double>.None,
-                Hardware = Optional<string>.None,
-                HardwareFromTopBottom = Optional<double>.None
-
-            };
-
-        }).ToArray();
+        var groups = GeneralSpecs.SeparateDoorsBySpecs(doors);
 
         for (int i = 0; i < groups.Length; i++) {
 
@@ -113,73 +73,8 @@ public record DoorOrder {
                 ProcessorOrderId = order.Id,
                 Units = METRIC_UNITS,
                 VendorName = vendorName,
-
                 Specs = group.Key,
-
-                LineItems = group.Select(d => new LineItem() {
-                    PartNumber = d.ProductNumber,
-                    Description = d.Type switch {
-                        DoorType.Door or DoorType.HamperDoor => "Door",
-                        DoorType.DrawerFront => "Drawer Front",
-                        _ => throw new InvalidOperationException($"Unexpected door type {d.Type}")
-                    },
-                    Qty = d.Qty,
-                    Width = d.Width.AsMillimeters(),
-                    Height = d.Height.AsMillimeters(),
-                    SpecialFeatures = Optional<string>.None,
-                    DoorType = Optional<string>.None,
-                    StileLeft = d.FrameSize.LeftStile.AsMillimeters(),
-                    StileRight = d.FrameSize.RightStile.AsMillimeters(),
-                    RailTop = d.FrameSize.TopRail.AsMillimeters(),
-                    RailBottom = d.FrameSize.BottomRail.AsMillimeters(),
-                    HingeTop = Optional<double>.None,
-                    HingeBottom = Optional<double>.None,
-                    Hinge3 = Optional<double>.None,
-                    Hinge4 = Optional<double>.None,
-                    Hinge5 = Optional<double>.None,
-                    Tab = Optional<double>.None,
-                    CupDiameter = Optional<double>.None,
-                    HingePattern = Optional<string>.None,
-                    CupDepth = Optional<double>.None,
-                    SwingDirection = Optional<string>.None,
-                    HardwareReference = Optional<string>.None,
-                    Hardware = Optional<string>.None,
-                    HardwareTBOffset = Optional<double>.None,
-                    HardwareSideOffset = Optional<double>.None,
-                    HardwareDepth = Optional<double>.None,
-                    DoubleHardware = Optional<string>.None,
-                    Panel1 = Optional<double>.None,
-                    RailStile3 = Optional<double>.None,
-                    Panel2 = Optional<double>.None,
-                    RailStile4 = Optional<double>.None,
-                    Panel3 = Optional<double>.None,
-                    RailStile5 = Optional<double>.None,
-                    RabbetDepth = Optional<double>.None,
-                    RabbetWidth = Optional<double>.None,
-                    SquareRabbet = Optional<string>.None,
-                    PanelClearance = Optional<double>.None,
-                    PanelRadius = Optional<double>.None,
-                    PanelThickness = Optional<double>.None,
-                    PanelStyle = Optional<double>.None,
-                    MullionOpening = Optional<string>.None,
-                    MullionShape = Optional<string>.None,
-                    MullionWidth = Optional<double>.None,
-                    HorizontalMullions = Optional<int>.None,
-                    VerticalMullions = Optional<int>.None,
-                    Row1 = Optional<double>.None,
-                    Col1 = Optional<double>.None,
-                    Row2 = Optional<double>.None,
-                    Col2 = Optional<double>.None,
-                    Ease = Optional<string>.None,
-                    MachinedEdges = Optional<string>.None,
-                    Thickness = Optional<double>.None,
-                    Material = Optional<string>.None,
-                    BackCut = Optional<string>.None,
-                    RailSeams = Optional<string>.None,
-                    Grain = Optional<string>.None,
-                    PanelOrientation = Optional<string>.None,
-                })
-
+                LineItems = group.Select(LineItem.FromDoor)
             };
 
         }

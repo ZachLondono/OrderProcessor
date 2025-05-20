@@ -1,5 +1,8 @@
-﻿using Domain.ValueObjects;
+﻿using Domain.Orders.Components;
+using Domain.Orders.ValueObjects;
+using Domain.ValueObjects;
 using Microsoft.Office.Interop.Excel;
+using OneOf.Types;
 using Range = Microsoft.Office.Interop.Excel.Range;
 
 namespace OrderExporting.DoorOrderExport;
@@ -62,5 +65,47 @@ public record GeneralSpecs {
         if (rng is null || data is null) return;
         rng.Value2 = data;
     }
+
+    public static IGrouping<GeneralSpecs, MDFDoor>[] SeparateDoorsBySpecs(IEnumerable<MDFDoor> doors) => doors.GroupBy(d => {
+
+        string finish = "None";
+        Optional<string> color = Optional<string>.None;
+        d.Finish.Switch(
+            (Paint paint) => {
+                finish = "Std. Color";
+                color = paint.Color;
+            },
+            (Primer primer) => {
+                finish = "Prime Only";
+                color = primer.Color;
+            },
+            (None _) => {
+                finish = "None";
+                color = Optional<string>.None;
+            });
+
+        return new GeneralSpecs() {
+
+            Material = d.Material,
+            Style = d.FramingBead,
+            EdgeProfile = d.EdgeDetail,
+            PanelDetail = d.PanelDetail,
+            Finish = finish,
+            Color = color,
+            PanelDrop = d.PanelDrop == Dimension.Zero ? Optional<double>.None : d.PanelDrop.AsMillimeters(),
+
+            HingePattern = Optional<string>.None,
+            Tab = Optional<double>.None,
+            StilesRails = Optional<double>.None,
+            AStyleRails = Optional<double>.None,
+            AStyleDwrFrontMax = Optional<double>.None,
+            DoorType = Optional<string>.None,
+            HingeFromTopBottom = Optional<double>.None,
+            Hardware = Optional<string>.None,
+            HardwareFromTopBottom = Optional<double>.None
+
+        };
+
+    }).ToArray();
 
 }

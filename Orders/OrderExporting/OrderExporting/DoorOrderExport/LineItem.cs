@@ -1,4 +1,5 @@
-﻿using Domain.ValueObjects;
+﻿using Domain.Orders.Components;
+using Domain.ValueObjects;
 
 namespace OrderExporting.DoorOrderExport;
 
@@ -70,5 +71,69 @@ public record LineItem {
     public required Optional<string> RailSeams { get; set; }
     public required Optional<string> Grain { get; set; }
     public required Optional<string> PanelOrientation { get; set; }
+
+    public static LineItem FromDoor(MDFDoor door) => new LineItem() {
+        PartNumber = door.ProductNumber,
+        Description = door.Type switch {
+            Domain.Orders.Enums.DoorType.Door or Domain.Orders.Enums.DoorType.HamperDoor => "Door",
+            Domain.Orders.Enums.DoorType.DrawerFront => "Drawer Front",
+            _ => throw new InvalidOperationException($"Unexpected door type {door.Type}")
+        },
+        Qty = door.Qty,
+        Width = door.Width.AsMillimeters(),
+        Height = door.Height.AsMillimeters(),
+        SpecialFeatures = Optional<string>.None,
+        DoorType = Optional<string>.None,
+        StileLeft = door.FrameSize.LeftStile.AsMillimeters(),
+        StileRight = door.FrameSize.RightStile.AsMillimeters(),
+        RailTop = door.FrameSize.TopRail.AsMillimeters(),
+        RailBottom = door.FrameSize.BottomRail.AsMillimeters(),
+        HingeTop = Optional<double>.None,
+        HingeBottom = Optional<double>.None,
+        Hinge3 = Optional<double>.None,
+        Hinge4 = Optional<double>.None,
+        Hinge5 = Optional<double>.None,
+        Tab = Optional<double>.None,
+        CupDiameter = Optional<double>.None,
+        HingePattern = Optional<string>.None,
+        CupDepth = Optional<double>.None,
+        SwingDirection = Optional<string>.None,
+        HardwareReference = Optional<string>.None,
+        Hardware = Optional<string>.None,
+        HardwareTBOffset = Optional<double>.None,
+        HardwareSideOffset = Optional<double>.None,
+        HardwareDepth = Optional<double>.None,
+        DoubleHardware = Optional<string>.None,
+        Panel1 = Optional<double>.None,
+        RailStile3 = Optional<double>.None,
+        Panel2 = Optional<double>.None,
+        RailStile4 = Optional<double>.None,
+        Panel3 = Optional<double>.None,
+        RailStile5 = Optional<double>.None,
+        RabbetDepth = Optional<double>.None,
+        RabbetWidth = Optional<double>.None,
+        SquareRabbet = Optional<string>.None,
+        PanelClearance = Optional<double>.None,
+        PanelRadius = Optional<double>.None,
+        PanelThickness = Optional<double>.None,
+        PanelStyle = Optional<double>.None,
+        MullionOpening = Optional<string>.None,
+        MullionShape = Optional<string>.None,
+        MullionWidth = Optional<double>.None,
+        HorizontalMullions = Optional<int>.None,
+        VerticalMullions = Optional<int>.None,
+        Row1 = Optional<double>.None,
+        Col1 = Optional<double>.None,
+        Row2 = Optional<double>.None,
+        Col2 = Optional<double>.None,
+        Ease = Optional<string>.None,
+        MachinedEdges = Optional<string>.None,
+        Thickness = Optional<double>.None,
+        Material = Optional<string>.None,
+        BackCut = Optional<string>.None,
+        RailSeams = Optional<string>.None,
+        Grain = Optional<string>.None,
+        PanelOrientation = Optional<string>.None,
+    };
 
 }
