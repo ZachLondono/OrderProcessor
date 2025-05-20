@@ -96,18 +96,13 @@
 
 @code {
 
+    [Inject]
+    public HafeleMDFDoorOrderProcessor Processor { get; set; } = default!;
+
     public ProcessOptions Options = new();
 
-    //protected override void OnInitialized() {
-    //    base.OnInitialized();
-    //    Options.OnPropertyChanged += (StateHasChanged);
-    //}
-
     public async Task ProcessOrder() {
-        
-        var processor = new HafeleMDFDoorOrderProcessor();
-        await processor.ProcessOrderAsync(Options);
-
+        await Processor.ProcessOrderAsync(Options);
     }
 
     public void RemoveEmailRecipients(Email email) {

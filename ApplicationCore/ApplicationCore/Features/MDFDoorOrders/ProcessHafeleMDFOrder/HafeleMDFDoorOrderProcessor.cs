@@ -1,15 +1,18 @@
-﻿using ApplicationCore.Pages.CustomerDetails;
-using Domain.Companies.Entities;
+﻿using Domain.Services;
+using Microsoft.Office.Interop.Excel;
+using OrderExporting.DoorOrderExport;
 using OrderLoading.LoadHafeleMDFDoorSpreadsheetOrderData.ReadOrderFile;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace ApplicationCore.Features.MDFDoorOrders.ProcessHafeleMDFOrder;
 
 public class HafeleMDFDoorOrderProcessor {
+
+    private readonly IFileReader _fileReader;
+
+    public HafeleMDFDoorOrderProcessor(IFileReader fileReader) {
+        _fileReader = fileReader;
+    }
 
     public async Task ProcessOrderAsync(ProcessOptions options) {
 
@@ -30,7 +33,7 @@ public class HafeleMDFDoorOrderProcessor {
         }
 
         if (options.FillOrderSheet) {
-            FillOrderSheet();
+            _ = FillOrderSheet(orderData, options.OrderSheetTemplatePath, options.OrderSheetOutputDirectory);
         }
 
         if (options.PostToGoogleSheets) {
@@ -50,7 +53,107 @@ public class HafeleMDFDoorOrderProcessor {
 
     private string SendInvoiceEmail() => throw new NotImplementedException();
 
-    private string FillOrderSheet() => throw new NotImplementedException();
+    private IEnumerable<string> FillOrderSheet(HafeleMDFDoorOrder order, string template, string outputDirectory) {
+
+        var orderFiles = CreateDoorOrders(order);
+
+        Application app = new() {
+            DisplayAlerts = false,
+            Visible = false,
+            ScreenUpdating = false
+        };
+
+        List<string> filesGenerated = new();
+
+        var workbooks = app.Workbooks;
+        bool wasExceptionThrown = false;
+        foreach (var orderFile in orderFiles) {
+
+            Workbook? workbook = null;
+
+            try {
+
+                workbook = workbooks.Open(template, ReadOnly: true);
+
+                app.Calculation = XlCalculation.xlCalculationManual;
+
+                var worksheets = workbook.Worksheets;
+                Worksheet worksheet = (Worksheet)worksheets["MDF"];
+
+                orderFile.WriteToWorksheet(worksheet);
+
+                _ = Marshal.ReleaseComObject(worksheet);
+                _ = Marshal.ReleaseComObject(worksheets);
+
+                string fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{order.Options.HafelePO} - {order.Options.JobName} MDF DOORS", ".xlsm");
+                string finalPath = Path.GetFullPath(fileName);
+
+                workbook.SaveAs(finalPath);
+
+                filesGenerated.Add(finalPath);
+
+            } catch (Exception ex) {
+
+                //_logger.LogError(ex, "Exception thrown while filling door order group");
+                wasExceptionThrown = true;
+
+            } finally {
+
+                if (workbook is not null) {
+                    workbook.Close(SaveChanges: false);
+                    _ = Marshal.ReleaseComObject(workbook);
+                }
+
+            }
+
+        }
+
+        workbooks.Close();
+        app?.Quit();
+
+        _ = Marshal.ReleaseComObject(workbooks);
+        if (app is not null) _ = Marshal.ReleaseComObject(app);
+
+        // Clean up COM objects, calling these twice ensures it is fully cleaned up.
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+
+        //string? error = wasExceptionThrown ? "An error occurred while trying to write one or more door orders" : null;
+        //return new(filesGenerated, error);
+
+        return filesGenerated;
+
+    }
+
+    private static IEnumerable<DoorOrder> CreateDoorOrders(HafeleMDFDoorOrder order) {
+
+        var doors = order.GetProducts();
+
+        var groups = GeneralSpecs.SeparateDoorsBySpecs(doors);
+
+        for (int i = 0; i < groups.Length; i++) {
+
+            // TODO: Optimization - find the most common frame width and set that to the default for the group. Then do not overwrite those values in the line items.
+
+            var group = groups[i];
+
+            yield return new() {
+                OrderDate = order.Options.Date,
+                DueDate = order.Options.GetDueDate(),
+                Company = order.Options.Company,
+                TrackingNumber = $"{order.Options.HafelePO}{(groups.Length == 1 ? string.Empty : $"-{i + 1}")}",
+                JobName = order.Options.JobName,
+                ProcessorOrderId = Guid.Empty,
+                Units = DoorOrder.METRIC_UNITS,
+                VendorName = "Hafele America Co.",
+                Specs = group.Key,
+                LineItems = group.Select(LineItem.FromDoor)
+            };
+
+        }
+    }
 
     private static async Task PostOrderToGoogleSheet(HafeleMDFDoorOrder order) {
 
