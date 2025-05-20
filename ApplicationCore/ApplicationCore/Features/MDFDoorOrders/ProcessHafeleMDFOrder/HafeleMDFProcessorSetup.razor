@@ -89,7 +89,7 @@
     <hr class="my-10" />
 
     <div>
-        <Button Color="ButtonColor.Primary" Style="ButtonStyle.Contained" Size="ButtonSize.Medium">Process Order</Button>
+        <Button OnClickAsync="ProcessOrder" Color="ButtonColor.Primary" Style="ButtonStyle.Contained" Size="ButtonSize.Medium">Process Order</Button>
     </div>
 
 </form>
@@ -102,6 +102,13 @@
     //    base.OnInitialized();
     //    Options.OnPropertyChanged += (StateHasChanged);
     //}
+
+    public async Task ProcessOrder() {
+        
+        var processor = new HafeleMDFDoorOrderProcessor();
+        await processor.ProcessOrderAsync(Options);
+
+    }
 
     public void RemoveEmailRecipients(Email email) {
         Options.InvoiceEmailRecipients.Remove(email);
