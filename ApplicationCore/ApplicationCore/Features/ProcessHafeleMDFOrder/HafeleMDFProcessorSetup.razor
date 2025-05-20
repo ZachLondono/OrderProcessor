@@ -1,0 +1,91 @@
+﻿@using Domain.Components
+@using static Domain.Components.Button
+@using static ApplicationCore.Features.ProcessHafeleMDFOrder.ProcessOptions
+<h3>Hafele MDF Door Order Setup</h3>
+
+<form>
+
+    <div>
+        <CheckBox IsChecked="@Options.FillOrderSheet">
+            Fill Order Sheet
+        </CheckBox>
+    </div>
+
+    <div>
+        <label for="generateInvoice">Order Sheet</label>
+        <input class="input-text w-full" id="generateInvoice" @bind-value="Options.OrderSheetTemplatePath" />
+    </div>
+
+    <div>
+        <label for="orderOutputDirectory">Output Directory</label>
+        <input class="input-text w-full" id="orderOutputDirectory" @bind-value="Options.OrderSheetOutputDirectory" />
+    </div>
+
+    <hr />
+
+    <div>
+        <CheckBox IsChecked="@Options.GenerateInvoice">
+            <label for="generateInvoice">Generate Invoice PDF</label>
+        </CheckBox>
+    </div>
+
+    <div>
+        <label for="invoiceOutputDirectory">Output Directory</label>
+        <input class="input-text w-full" id="invoiceOutputDirectory" @bind-value="Options.InvoicePDFOutputDirectory" />
+    </div>
+
+    @if (Options.GenerateInvoice) {
+
+        <div>
+            <CheckBox IsChecked="@Options.SendInvoiceEmail">
+                <label for="generateInvoice">Generate Invoice PDF</label>
+            </CheckBox>
+        </div>
+
+        <div>
+            <CheckBox IsChecked="@Options.PreviewInvoiceEmail">
+                <label for="generateInvoice">Preview Before Sending</label>
+            </CheckBox>
+        </div>
+
+        @if (Options.SendInvoiceEmail) {
+
+            @foreach (var email in Options.InvoiceEmailRecipients) {
+                <div>
+                    <input class="input-text w-full" type="text" id="invoiceEmail" @bind-value="email.Address" />
+                    <Button OnClick="() => RemoveEmailRecipients(email)" Color="ButtonColor.Danger" Style="ButtonStyle.Outline" Size="ButtonSize.Small">X</Button>
+                </div>
+            }
+            <div>
+                <Button OnClick="AddEmailRecipients" Color="ButtonColor.Primary" Style="ButtonStyle.Outline" Size="ButtonSize.Small">+ Add Email</Button>
+            </div>
+
+        }
+
+    }
+
+    <hr />
+
+    <div>
+        <CheckBox IsChecked="@Options.PostToGoogleSheets">
+            <label for="generateInvoice">Post to Google Sheets</label>
+        </CheckBox>
+    </div>
+
+</form>
+
+@code {
+
+    public ProcessOptions Options = new();
+
+    public void RemoveEmailRecipients(Email email) {
+        Options.InvoiceEmailRecipients.Remove(email);
+        StateHasChanged();
+    }
+
+    public void AddEmailRecipients() {
+        Options.InvoiceEmailRecipients.Add(new Email(string.Empty));
+        StateHasChanged();
+    }
+
+}
