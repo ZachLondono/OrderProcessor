@@ -68,7 +68,7 @@ public record DoorOrder {
                 OrderDate = order.OrderDate,
                 DueDate = order.DueDate ?? Optional<DateTime>.None,
                 Company = customerName,
-                TrackingNumber = $"{order.Number}{(groups.Length == 0 ? string.Empty : $"-{i + 1}")}",
+                TrackingNumber = $"{order.Number}{(groups.Length == 1 ? string.Empty : $"-{i + 1}")}",
                 JobName = order.Name,
                 ProcessorOrderId = order.Id,
                 Units = METRIC_UNITS,
