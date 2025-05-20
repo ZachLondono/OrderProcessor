@@ -1,0 +1,125 @@
+﻿@using Domain.Components
+@using static Domain.Components.Button
+@using static ApplicationCore.Features.MDFDoorOrders.ProcessHafeleMDFOrder.ProcessOptions
+@using Domain.Services;
+@inject IFilePicker FilePicker 
+
+<h3>Hafele MDF Door Order Setup</h3>
+
+<form>
+
+    <div>
+        <Button OnClick="ChooseFile" Color="ButtonColor.Primary" Style="ButtonStyle.Contained" Size="ButtonSize.Small">Select File</Button>
+        @if (string.IsNullOrEmpty(Options.DataFile)) {
+            <span>No file chosen...</span>
+        } else {
+            <span>@Options.DataFile</span>
+        }
+    </div>
+
+    <hr class="my-10" />
+
+    <div>
+        <CheckBox @bind-IsChecked="@Options.FillOrderSheet">
+            Fill Order Sheet
+        </CheckBox>
+    </div>
+
+    <div>
+        <label for="templateFilePath">Order Sheet Template</label>
+        <input class="input-text w-full" id="templateFilePath" @bind-value="Options.OrderSheetTemplatePath" />
+    </div>
+
+    <div>
+        <label for="orderOutputDirectory">Output Directory</label>
+        <input class="input-text w-full" id="orderOutputDirectory" @bind-value="Options.OrderSheetOutputDirectory" />
+    </div>
+
+    <hr class="my-10" />
+
+    <div>
+        <CheckBox @bind-IsChecked="@Options.GenerateInvoice">
+            Generate Invoice PDF
+        </CheckBox>
+    </div>
+
+    <div>
+        <label for="invoiceOutputDirectory">Output Directory</label>
+        <input class="input-text w-full" id="invoiceOutputDirectory" @bind-value="Options.InvoicePDFOutputDirectory" />
+    </div>
+
+    @if (Options.GenerateInvoice) {
+
+        <div>
+            <CheckBox @bind-IsChecked="@Options.SendInvoiceEmail">
+                Send Invoice Email
+            </CheckBox>
+        </div>
+
+        <div>
+            <CheckBox @bind-IsChecked="@Options.PreviewInvoiceEmail">
+                Preview Before Sending
+            </CheckBox>
+        </div>
+
+        @if (Options.SendInvoiceEmail) {
+
+            @foreach (var email in Options.InvoiceEmailRecipients) {
+                <div>
+                    <input class="input-text w-96" type="text" id="invoiceEmail" @bind-value="email.Address" />
+                    <Button OnClick="() => RemoveEmailRecipients(email)" Color="ButtonColor.Danger" Style="ButtonStyle.Outline" Size="ButtonSize.Small">X</Button>
+                </div>
+            }
+            <div>
+                <Button OnClick="AddEmailRecipients" Color="ButtonColor.Primary" Style="ButtonStyle.Outline" Size="ButtonSize.Small">+ Add Email</Button>
+            </div>
+
+        }
+
+    }
+
+    <hr class="my-10" />
+
+    <div>
+        <CheckBox @bind-IsChecked="@Options.PostToGoogleSheets">
+            Post to Google Sheets
+        </CheckBox>
+    </div>
+
+    <hr class="my-10" />
+
+    <div>
+        <Button Color="ButtonColor.Primary" Style="ButtonStyle.Contained" Size="ButtonSize.Medium">Process Order</Button>
+    </div>
+
+</form>
+
+@code {
+
+    public ProcessOptions Options = new();
+
+    //protected override void OnInitialized() {
+    //    base.OnInitialized();
+    //    Options.OnPropertyChanged += (StateHasChanged);
+    //}
+
+    public void RemoveEmailRecipients(Email email) {
+        Options.InvoiceEmailRecipients.Remove(email);
+        StateHasChanged();
+    }
+
+    public void AddEmailRecipients() {
+        Options.InvoiceEmailRecipients.Add(new Email(string.Empty));
+        StateHasChanged();
+    }
+
+    public void ChooseFile()
+        => FilePicker.PickFile(new() {
+            Title = "Select Hafele MDF door order file",
+            Filter = new("Hafele MDF door order file", ".xlsx")
+        }, (fileName) => {
+            Options.SetDataFile(fileName);
+            InvokeAsync(StateHasChanged);
+        });
+
+}

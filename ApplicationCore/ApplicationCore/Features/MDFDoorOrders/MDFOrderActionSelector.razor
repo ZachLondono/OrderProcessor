@@ -2,6 +2,7 @@
 @using ApplicationCore.Features.MDFDoorOrders.DoorOrderSelector
 @using ApplicationCore.Features.MDFDoorOrders.OpenDoorOrders
 @using ApplicationCore.Features.MDFDoorOrders.OpenDoorOrderFile
+@using ApplicationCore.Features.MDFDoorOrders.ProcessHafeleMDFOrder
 @using Domain.Components;
 @using static Domain.Components.Button;
 
@@ -9,26 +10,29 @@
 	<div class="mb-5">
 		<Button OnClickAsync="ReleaseOpenFile" Color="ButtonColor.Primary">Release Open File</Button>
 	</div>
+	<div class="mb-5">
+		<Button OnClickAsync="ProcessHafeleOrder" Color="ButtonColor.Primary">Process Hafele Order</Button>
+	</div>
 </div>
 
 <hr class="my-6" />
 
 <div>
-    <DoorOrderNumber />
+	<DoorOrderNumber />
 </div>
 
 
 @code {
 
-    [CascadingParameter]
-    public IModalService ModalService { get; set; } = default!;
+	[CascadingParameter]
+	public IModalService ModalService { get; set; } = default!;
 
-    [CascadingParameter]
-    private BlazoredModalInstance ModalInstance { get; set; } = default!;
+	[CascadingParameter]
+	private BlazoredModalInstance ModalInstance { get; set; } = default!;
 
-    private async Task ReleaseOpenFile() {
+	private async Task ReleaseOpenFile() {
 
-        await ModalInstance.CloseAsync();
+		await ModalInstance.CloseAsync();
 
 		var dialog = ModalService.Show<DoorOrderSelectorWidget>("", new ModalOptions() {
 			Size = ModalSize.Automatic,
@@ -36,7 +40,7 @@
 			DisableBackgroundCancel = true
 		});
 
-        var result = await dialog.Result;	
+		var result = await dialog.Result;	
 
 		if (result.Confirmed && result.Data is DoorOrder order) {
 
@@ -49,6 +53,20 @@
 			}).Result;
 
 		}
+
+	}
+
+	private async Task ProcessHafeleOrder() {
+		
+		await ModalInstance.CloseAsync();
+
+		var dialog = ModalService.Show<HafeleMDFProcessorSetup>("", new ModalOptions() {
+			Size = ModalSize.Automatic,
+			HideHeader = true,
+			DisableBackgroundCancel = true
+		});
+
+		var result = await dialog.Result;	
 
 	}
 
