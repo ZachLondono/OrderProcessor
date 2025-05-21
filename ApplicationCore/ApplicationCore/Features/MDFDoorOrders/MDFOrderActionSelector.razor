@@ -60,9 +60,9 @@
 		
 		await ModalInstance.CloseAsync();
 
-		var dialog = ModalService.Show<HafeleMDFProcessorSetup>("", new ModalOptions() {
-			Size = ModalSize.Automatic,
-			HideHeader = true,
+		var dialog = ModalService.Show<HafeleMDFProcessorSetup>("Hafele MDF Door Order Setup", new ModalOptions() {
+			Size = ModalSize.Large,
+			HideHeader = false,
 			DisableBackgroundCancel = true
 		});
 
