@@ -56,7 +56,7 @@ public record DoorOrder {
 
     public static IEnumerable<DoorOrder> FromOrder(Order order, IEnumerable<MDFDoor> doors, string customerName, string vendorName) {
 
-        var groups = GeneralSpecs.SeparateDoorsBySpecs(doors);
+        var groups = GeneralSpecs.SeparatedDoorsBySpecs(doors);
 
         for (int i = 0; i < groups.Length; i++) {
 

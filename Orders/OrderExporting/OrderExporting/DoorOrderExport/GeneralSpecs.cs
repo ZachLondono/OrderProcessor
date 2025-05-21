@@ -66,7 +66,7 @@ public record GeneralSpecs {
         rng.Value2 = data;
     }
 
-    public static IGrouping<GeneralSpecs, MDFDoor>[] SeparateDoorsBySpecs(IEnumerable<MDFDoor> doors) => doors.GroupBy(d => {
+    public static IGrouping<GeneralSpecs, MDFDoor>[] SeparatedDoorsBySpecs(IEnumerable<MDFDoor> doors) => doors.GroupBy(d => {
 
         string finish = "None";
         Optional<string> color = Optional<string>.None;
