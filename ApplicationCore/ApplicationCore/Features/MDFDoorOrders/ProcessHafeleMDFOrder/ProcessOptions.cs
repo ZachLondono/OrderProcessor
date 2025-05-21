@@ -3,6 +3,7 @@
 public class ProcessOptions {
 
     public string DataFile { get; private set; } = string.Empty;
+    public string HafelePO { get; set; } = string.Empty;
 
     private bool _generateInvoice = false;
     public bool GenerateInvoice {

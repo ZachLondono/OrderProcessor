@@ -4,93 +4,116 @@
 @using Domain.Services;
 @inject IFilePicker FilePicker 
 
-<h3>Hafele MDF Door Order Setup</h3>
-
 <form>
 
     <div>
-        <Button OnClick="ChooseFile" Color="ButtonColor.Primary" Style="ButtonStyle.Contained" Size="ButtonSize.Small">Select File</Button>
+        <Button OnClick="ChooseFile" Color="@(string.IsNullOrEmpty(Options.DataFile) ? ButtonColor.Primary : ButtonColor.Secondary)" Style="ButtonStyle.Contained" Size="ButtonSize.Small">Select File</Button>
         @if (string.IsNullOrEmpty(Options.DataFile)) {
-            <span>No file chosen...</span>
+            <span class="ml-5">No file chosen...</span>
         } else {
-            <span>@Options.DataFile</span>
+            <span class="ml-5">@Path.GetFileName(Options.DataFile)</span>
         }
     </div>
 
-    <hr class="my-10" />
-
-    <div>
-        <CheckBox @bind-IsChecked="@Options.FillOrderSheet">
-            Fill Order Sheet
-        </CheckBox>
+    <div class="mt-5 flex items-center gap-2">
+        <label for="hafelePO">Hafele PO</label>
+        <input class="input-text flex-1" id="hafelePO" @bind-value="Options.HafelePO" />
     </div>
 
-    <div>
-        <label for="templateFilePath">Order Sheet Template</label>
-        <input class="input-text w-full" id="templateFilePath" @bind-value="Options.OrderSheetTemplatePath" />
-    </div>
+    @if (!string.IsNullOrWhiteSpace(Options.DataFile)) {
 
-    <div>
-        <label for="orderOutputDirectory">Output Directory</label>
-        <input class="input-text w-full" id="orderOutputDirectory" @bind-value="Options.OrderSheetOutputDirectory" />
-    </div>
-
-    <hr class="my-10" />
-
-    <div>
-        <CheckBox @bind-IsChecked="@Options.GenerateInvoice">
-            Generate Invoice PDF
-        </CheckBox>
-    </div>
-
-    <div>
-        <label for="invoiceOutputDirectory">Output Directory</label>
-        <input class="input-text w-full" id="invoiceOutputDirectory" @bind-value="Options.InvoicePDFOutputDirectory" />
-    </div>
-
-    @if (Options.GenerateInvoice) {
+        <hr class="my-10" />
 
         <div>
-            <CheckBox @bind-IsChecked="@Options.SendInvoiceEmail">
-                Send Invoice Email
+            <CheckBox @bind-IsChecked="@Options.FillOrderSheet">
+                Fill Order Sheet
             </CheckBox>
         </div>
 
-        <div>
-            <CheckBox @bind-IsChecked="@Options.PreviewInvoiceEmail">
-                Preview Before Sending
-            </CheckBox>
-        </div>
+        @if (Options.FillOrderSheet) {
 
-        @if (Options.SendInvoiceEmail) {
+            <div class="ml-3 mt-3">
+                <label for="templateFilePath">Order Sheet Template</label>
+                <input class="input-text w-full" id="templateFilePath" @bind-value="Options.OrderSheetTemplatePath" />
+            </div>
 
-            @foreach (var email in Options.InvoiceEmailRecipients) {
-                <div>
-                    <input class="input-text w-96" type="text" id="invoiceEmail" @bind-value="email.Address" />
-                    <Button OnClick="() => RemoveEmailRecipients(email)" Color="ButtonColor.Danger" Style="ButtonStyle.Outline" Size="ButtonSize.Small">X</Button>
-                </div>
-            }
-            <div>
-                <Button OnClick="AddEmailRecipients" Color="ButtonColor.Primary" Style="ButtonStyle.Outline" Size="ButtonSize.Small">+ Add Email</Button>
+            <div class="ml-3 mt-3">
+                <label for="orderOutputDirectory">Output Directory</label>
+                <input class="input-text w-full" id="orderOutputDirectory" @bind-value="Options.OrderSheetOutputDirectory" />
             </div>
 
         }
 
+        <hr class="my-10" />
+
+        <div>
+            <CheckBox @bind-IsChecked="@Options.GenerateInvoice">
+                Generate Invoice PDF
+            </CheckBox>
+        </div>
+
+        @if (Options.GenerateInvoice) {
+
+            <div class="ml-3 mt-3">
+                <label for="invoiceOutputDirectory">Output Directory</label>
+                <input class="input-text w-full" id="invoiceOutputDirectory" @bind-value="Options.InvoicePDFOutputDirectory" />
+            </div>
+
+            <div class="ml-3 mt-3">
+                <CheckBox @bind-IsChecked="@Options.SendInvoiceEmail">
+                    Send Invoice Email
+                </CheckBox>
+            </div>
+
+            <div class="ml-3 mt-3">
+                <CheckBox @bind-IsChecked="@Options.PreviewInvoiceEmail">
+                    Preview Before Sending
+                </CheckBox>
+            </div>
+
+            @if (Options.SendInvoiceEmail) {
+
+                <div class="border border-gray-300 rounded-md p-4 ml-3 mt-3">
+
+                    <h3 class="text-sm mb-2">Recipients</h3>
+
+                    @foreach (var email in Options.InvoiceEmailRecipients) {
+                        <div class="mb-3 flex items-center gap-2">
+                            <Button OnClick="() => RemoveEmailRecipients(email)" Color="ButtonColor.Secondary" Style="ButtonStyle.Text" Size="ButtonSize.Small">X</Button>
+                            <input class="input-text flex-1" type="text" id="invoiceEmail" @bind-value="email.Address" />
+                        </div>
+                    }
+                    <div class="ml-3">
+                        <Button OnClick="AddEmailRecipients" Color="ButtonColor.Primary" Style="ButtonStyle.Outline" Size="ButtonSize.Small">+ Add Email Recipient</Button>
+                    </div>
+
+                </div>
+
+            }
+
+        }
+
+        <hr class="my-10" />
+
+        <div>
+            <CheckBox @bind-IsChecked="@Options.PostToGoogleSheets">
+                Post to Google Sheets
+            </CheckBox>
+        </div>
+
+        <hr class="my-10" />
+
+        <div>
+            <Button OnClickAsync="ProcessOrder" Color="ButtonColor.Primary" Style="ButtonStyle.Contained" Size="ButtonSize.Medium" Disabled="_isProcessing">
+                @if (_isProcessing) {
+                    <span>Loading...</span>
+                } else {
+                    <span>Process Order</span>
+                }
+            </Button>
+        </div>
+
     }
-
-    <hr class="my-10" />
-
-    <div>
-        <CheckBox @bind-IsChecked="@Options.PostToGoogleSheets">
-            Post to Google Sheets
-        </CheckBox>
-    </div>
-
-    <hr class="my-10" />
-
-    <div>
-        <Button OnClickAsync="ProcessOrder" Color="ButtonColor.Primary" Style="ButtonStyle.Contained" Size="ButtonSize.Medium">Process Order</Button>
-    </div>
 
 </form>
 
@@ -101,8 +124,14 @@
 
     public ProcessOptions Options = new();
 
+    private bool _isProcessing = false;
+
     public async Task ProcessOrder() {
+        _isProcessing = true;
+        await InvokeAsync(StateHasChanged);
         await Processor.ProcessOrderAsync(Options);
+        _isProcessing = false;
+        await InvokeAsync(StateHasChanged);
     }
 
     public void RemoveEmailRecipients(Email email) {

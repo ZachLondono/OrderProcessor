@@ -16,7 +16,7 @@ public class HafeleMDFDoorOrderProcessor {
 
     public async Task ProcessOrderAsync(ProcessOptions options) {
 
-        var orderData = LoadOrderData(options.DataFile);
+        var orderData = await Task.Run(() => LoadOrderData(options.DataFile));
 
         if (orderData is null) {
 
@@ -33,11 +33,11 @@ public class HafeleMDFDoorOrderProcessor {
         }
 
         if (options.FillOrderSheet) {
-            _ = FillOrderSheet(orderData, options.OrderSheetTemplatePath, options.OrderSheetOutputDirectory);
+            _ = await Task.Run(() => FillOrderSheet(orderData, options.HafelePO, options.OrderSheetTemplatePath, options.OrderSheetOutputDirectory));
         }
 
         if (options.PostToGoogleSheets) {
-            await PostOrderToGoogleSheet(orderData);
+            await PostOrderToGoogleSheet(orderData, options.HafelePO);
         }
 
     }
@@ -53,9 +53,9 @@ public class HafeleMDFDoorOrderProcessor {
 
     private string SendInvoiceEmail() => throw new NotImplementedException();
 
-    private IEnumerable<string> FillOrderSheet(HafeleMDFDoorOrder order, string template, string outputDirectory) {
+    private IEnumerable<string> FillOrderSheet(HafeleMDFDoorOrder order, string hafelePO, string template, string outputDirectory) {
 
-        var orderFiles = CreateDoorOrders(order);
+        var orderFiles = CreateDoorOrders(order, hafelePO);
 
         Application app = new() {
             DisplayAlerts = false,
@@ -85,7 +85,7 @@ public class HafeleMDFDoorOrderProcessor {
                 _ = Marshal.ReleaseComObject(worksheet);
                 _ = Marshal.ReleaseComObject(worksheets);
 
-                string fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{order.Options.HafelePO} - {order.Options.JobName} MDF DOORS", ".xlsm");
+                string fileName = _fileReader.GetAvailableFileName(outputDirectory, $"{hafelePO} - {order.Options.JobName} MDF DOORS", ".xlsm");
                 string finalPath = Path.GetFullPath(fileName);
 
                 workbook.SaveAs(finalPath);
@@ -127,11 +127,11 @@ public class HafeleMDFDoorOrderProcessor {
 
     }
 
-    private static IEnumerable<DoorOrder> CreateDoorOrders(HafeleMDFDoorOrder order) {
+    private static IEnumerable<DoorOrder> CreateDoorOrders(HafeleMDFDoorOrder order, string hafelePO) {
 
         var doors = order.GetProducts();
 
-        var groups = GeneralSpecs.SeparateDoorsBySpecs(doors);
+        var groups = GeneralSpecs.SeparatedDoorsBySpecs(doors);
 
         for (int i = 0; i < groups.Length; i++) {
 
@@ -143,7 +143,7 @@ public class HafeleMDFDoorOrderProcessor {
                 OrderDate = order.Options.Date,
                 DueDate = order.Options.GetDueDate(),
                 Company = order.Options.Company,
-                TrackingNumber = $"{order.Options.HafelePO}{(groups.Length == 1 ? string.Empty : $"-{i + 1}")}",
+                TrackingNumber = $"{hafelePO}{(groups.Length == 1 ? string.Empty : $"-{i + 1}")}",
                 JobName = order.Options.JobName,
                 ProcessorOrderId = Guid.Empty,
                 Units = DoorOrder.METRIC_UNITS,
@@ -155,11 +155,11 @@ public class HafeleMDFDoorOrderProcessor {
         }
     }
 
-    private static async Task PostOrderToGoogleSheet(HafeleMDFDoorOrder order) {
+    private static async Task PostOrderToGoogleSheet(HafeleMDFDoorOrder order, string hafelePO) {
 
         var row = new GoogleSheetRow() {
             FileDate = order.Options.Date.ToShortDateString(),
-            HafelePO = order.Options.HafelePO,
+            HafelePO = hafelePO,
             ProjectNumber = order.Options.HafeleOrderNumber,
             ConfigNumber = "",
             CustomerName = order.Options.Company,
