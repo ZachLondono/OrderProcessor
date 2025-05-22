@@ -65,6 +65,11 @@ public class HafeleMDFDoorOrder {
 
     }
 
+    public decimal GetInvoiceAmount() {
+        decimal markUp = (decimal) Data.HafeleMarkUpToCustomers;
+        return Sizes.Sum(s => s.Qty * GetAdjustedUnitPrice(s.UnitPrice, markUp));
+    }
+
     private MDFDoorProduct CreateProduct(Size size, MDFDoorFinish finish, Dimension thickness, decimal markUp) {
 
         AdditionalOpening[] additionalOpenings;
@@ -177,7 +182,7 @@ public class HafeleMDFDoorOrder {
             RightStile = Dimension.FromInches(size.RightStile),
         };
 
-        var adjustedUnitPrice = size.UnitPrice / (1 + markUp);
+        decimal adjustedUnitPrice = GetAdjustedUnitPrice(size.UnitPrice, markUp);
 
         return MDFDoorProduct.Create(adjustedUnitPrice,
                                     "",
@@ -199,6 +204,10 @@ public class HafeleMDFDoorOrder {
                                     finish,
                                     panel);
 
+    }
+
+    private static decimal GetAdjustedUnitPrice(decimal unitPrice, decimal markUp) {
+        return unitPrice / (1 + markUp);
     }
 
     private static MDFDoorFinish GetFinish(string finish) => finish switch {

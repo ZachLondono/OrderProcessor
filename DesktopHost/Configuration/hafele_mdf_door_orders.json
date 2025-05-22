@@ -1,0 +1,18 @@
+﻿{
+
+    "HafeleMDFDoorOrderSettings": {
+
+        "InvoiceEmailRecipients": [
+            "accountspayable@hafele.us",
+            "hacpurchasing@hafele.us"
+        ],
+        
+        "InvoiceEmailCopyRecipients": [
+            "accounting@royalcabinet.com"
+        ],
+
+        "OrderSheetTemplatePath": "R:\\Forms\\_Door Order 2024, 2.114.xlsm"
+
+    }
+
+}

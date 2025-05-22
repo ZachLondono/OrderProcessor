@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Shared.Settings.Tools;
+﻿using ApplicationCore.Features.MDFDoorOrders.ProcessHafeleMDFOrder;
+using ApplicationCore.Shared.Settings.Tools;
 using Domain.Infrastructure.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,7 @@ public static class Extensions {
             "mdf_release_settings.json",
             "closet_release_settings.json",
             "cnc_release_settings.json",
+            "hafele_mdf_door_orders.json",
             "data.json",
 #if DEBUG
             "data.Development.json"
@@ -93,6 +95,7 @@ public static class Extensions {
         services.ConfigureWritable<ClosetReleaseSettings>(configuration.GetRequiredSection("ClosetReleaseSettings"), Path.Combine(_configDirectory, "closet_release_settings.json"));
         services.ConfigureWritable<CNCReleaseSettings>(configuration.GetRequiredSection("CNCReleaseSettings"), Path.Combine(_configDirectory, "cnc_release_settings.json"));
         services.Configure<PDFConfiguration>(configuration.GetRequiredSection("ReleasePDFConfig"));
+        services.Configure<HafeleMDFDoorOrderSettings>(configuration.GetRequiredSection("HafeleMDFDoorOrderSettings"));
 
         return services;
 

@@ -34,6 +34,7 @@ using OrderExporting;
 using OrderLoading;
 using System.Runtime.CompilerServices;
 using ApplicationCore.Features.VendorInvoice;
+using ApplicationCore.Features.MDFDoorOrders.ProcessHafeleMDFOrder;
 
 [assembly: InternalsVisibleTo("ApplicationCore.Tests.Unit")]
 
@@ -59,6 +60,11 @@ public static class DependencyInjection {
         services.AddTransient<ReleasePDFBuilder>();
 
         services.AddViewModels();
+
+        services.AddTransient<DoorOrderReleaseActionRunner>()
+                .AddTransient<HafeleMDFDoorOrderProcessor>()
+                .AddTransient<ClosetOrderReleaseActionRunner>()
+                .AddTransient<ClosetProToAllmoxyMapper>();
 
         return services;
 
@@ -105,10 +111,7 @@ public static class DependencyInjection {
                 .AddTransient<ReleasePDFDialogViewModel>()
                 .AddTransient<DoorOrderReleaseActionRunnerFactory>()
                 .AddTransient<ClosetOrderReleaseActionRunnerFactory>()
-                .AddTransient<OrderListPageViewModel>()
-                .AddTransient<DoorOrderReleaseActionRunner>()
-                .AddTransient<ClosetOrderReleaseActionRunner>()
-                .AddTransient<ClosetProToAllmoxyMapper>();
+                .AddTransient<OrderListPageViewModel>();
 
     }
 
