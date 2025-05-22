@@ -2,6 +2,7 @@
 @using static Domain.Components.Button
 @using static ApplicationCore.Features.MDFDoorOrders.ProcessHafeleMDFOrder.ProcessOptions
 @using Domain.Services;
+@using Microsoft.Extensions.Options
 @inject IFilePicker FilePicker 
 
 <form>
@@ -136,9 +137,22 @@
     [Inject]
     public HafeleMDFDoorOrderProcessor Processor { get; set; } = default!;
 
+    [Inject]
+    public IOptions<HafeleMDFDoorOrderSettings> Settings { get; set; } = default!;
+
     public ProcessOptions Options = new();
 
     private bool _isProcessing = false;
+
+    protected override void OnInitialized() {
+        base.OnInitialized();
+
+        var settings = Settings.Value;
+        Options.InvoiceEmailRecipients = settings.InvoiceEmailRecipients.Select(e => new Email(e)).ToList();
+        Options.InvoiceEmailCopyRecipients = settings.InvoiceEmailCopyRecipients.Select(e => new Email(e)).ToList();
+        Options.OrderSheetTemplatePath = settings.OrderSheetTemplatePath;
+
+    }
 
     public async Task ProcessOrder() {
         _isProcessing = true;

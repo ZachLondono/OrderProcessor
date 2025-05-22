@@ -5,7 +5,7 @@ public class ProcessOptions {
     public string DataFile { get; private set; } = string.Empty;
     public string HafelePO { get; set; } = string.Empty;
 
-    private bool _generateInvoice = false;
+    private bool _generateInvoice = true;
     public bool GenerateInvoice {
         get => _generateInvoice;
         set {
@@ -17,15 +17,15 @@ public class ProcessOptions {
     }
     public string InvoicePDFOutputDirectory { get; set; } = string.Empty;
 
-    public bool SendInvoiceEmail { get; set; } = false;
+    public bool SendInvoiceEmail { get; set; } = true;
     public bool PreviewInvoiceEmail { get; set; } = false;
     public List<Email> InvoiceEmailRecipients { get; set; } = [];
     public List<Email> InvoiceEmailCopyRecipients { get; set; } = [];
 
-    public bool PostToGoogleSheets { get; set; } = false;
+    public bool PostToGoogleSheets { get; set; } = true;
 
-    public bool FillOrderSheet { get; set; } = false;
-    public string OrderSheetTemplatePath { get; set; } = @"R:\Forms\_Door Order 2024, 2.114.xlsm";
+    public bool FillOrderSheet { get; set; } = true;
+    public string OrderSheetTemplatePath { get; set; } = string.Empty;
     public string OrderSheetOutputDirectory { get; set; } = string.Empty;
 
     public class Email(string address) {
