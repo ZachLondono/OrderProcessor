@@ -20,6 +20,7 @@ public class ProcessOptions {
     public bool SendInvoiceEmail { get; set; } = false;
     public bool PreviewInvoiceEmail { get; set; } = false;
     public List<Email> InvoiceEmailRecipients { get; set; } = [];
+    public List<Email> InvoiceEmailCopyRecipients { get; set; } = [];
 
     public bool PostToGoogleSheets { get; set; } = false;
 

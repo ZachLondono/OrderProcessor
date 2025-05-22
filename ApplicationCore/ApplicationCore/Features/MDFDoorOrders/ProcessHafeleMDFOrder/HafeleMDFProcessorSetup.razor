@@ -75,7 +75,7 @@
 
                 <div class="border border-gray-300 rounded-md p-4 ml-3 mt-3">
 
-                    <h3 class="text-sm mb-2">Recipients</h3>
+                    <h3 class="text-sm mb-2">To:</h3>
 
                     @foreach (var email in Options.InvoiceEmailRecipients) {
                         <div class="mb-3 flex items-center gap-2">
@@ -84,7 +84,21 @@
                         </div>
                     }
                     <div class="ml-3">
-                        <Button OnClick="AddEmailRecipients" Color="ButtonColor.Primary" Style="ButtonStyle.Outline" Size="ButtonSize.Small">+ Add Email Recipient</Button>
+                        <Button OnClick="AddEmailRecipients" Color="ButtonColor.Primary" Style="ButtonStyle.Outline" Size="ButtonSize.Small">+ To</Button>
+                    </div>
+
+                    <hr class="my-5"/>
+
+                    <h3 class="text-sm mb-2">CC:</h3>
+
+                    @foreach (var email in Options.InvoiceEmailCopyRecipients) {
+                        <div class="mb-3 flex items-center gap-2">
+                            <Button OnClick="() => RemoveEmailCopyRecipients(email)" Color="ButtonColor.Secondary" Style="ButtonStyle.Text" Size="ButtonSize.Small">X</Button>
+                            <input class="input-text flex-1" type="text" id="invoiceEmail" @bind-value="email.Address" />
+                        </div>
+                    }
+                    <div class="ml-3">
+                        <Button OnClick="AddEmailCopyRecipients" Color="ButtonColor.Primary" Style="ButtonStyle.Outline" Size="ButtonSize.Small">+ CC</Button>
                     </div>
 
                 </div>
@@ -141,6 +155,16 @@
 
     public void AddEmailRecipients() {
         Options.InvoiceEmailRecipients.Add(new Email(string.Empty));
+        StateHasChanged();
+    }
+
+    public void RemoveEmailCopyRecipients(Email email) {
+        Options.InvoiceEmailCopyRecipients.Remove(email);
+        StateHasChanged();
+    }
+
+    public void AddEmailCopyRecipients() {
+        Options.InvoiceEmailCopyRecipients.Add(new Email(string.Empty));
         StateHasChanged();
     }
 
