@@ -234,7 +234,18 @@ public class ExcelReader {
                 var sheet = GetWorksheet();
                 if (sheet is not null) {
 
-                    var value = sheet.Cell(range).GetDateTime();
+                    DateTime value;
+
+                    var valueStr = sheet.Cell(range).GetString();
+                    if (DateParser.TryParseDate(valueStr, out DateTime date)) {
+
+                        value = date;
+
+                    } else {
+
+                        value = sheet.Cell(range).GetDateTime();
+
+                    }
 
                     action(value, ExcelReader);
 
