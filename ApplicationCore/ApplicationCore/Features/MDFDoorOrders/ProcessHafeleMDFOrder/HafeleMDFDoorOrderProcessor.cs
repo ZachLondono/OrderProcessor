@@ -1,17 +1,28 @@
-﻿using Domain.Services;
+﻿using ApplicationCore.Shared.Services;
+using Domain.Extensions;
+using Domain.Services;
 using Microsoft.Office.Interop.Excel;
+using Microsoft.Office.Interop.Outlook;
+using MimeKit;
 using OrderExporting.DoorOrderExport;
+using OrderExporting.Invoice;
 using OrderLoading.LoadHafeleMDFDoorSpreadsheetOrderData.ReadOrderFile;
+using QuestPDF.Fluent;
 using System.Runtime.InteropServices;
+using ExcelApp = Microsoft.Office.Interop.Excel.Application;
+using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
+using Exception = System.Exception;
 
 namespace ApplicationCore.Features.MDFDoorOrders.ProcessHafeleMDFOrder;
 
 public class HafeleMDFDoorOrderProcessor {
 
     private readonly IFileReader _fileReader;
+    private readonly IEmailService _emailService;
 
-    public HafeleMDFDoorOrderProcessor(IFileReader fileReader) {
+    public HafeleMDFDoorOrderProcessor(IFileReader fileReader, IEmailService emailService) {
         _fileReader = fileReader;
+        _emailService = emailService;
     }
 
     public async Task ProcessOrderAsync(ProcessOptions options) {
@@ -25,10 +36,23 @@ public class HafeleMDFDoorOrderProcessor {
 
         }
 
-        if (options.GenerateInvoice) {
-            var invoice = GenerateInvoice();
-            if (options.SendInvoiceEmail) {
-                SendInvoiceEmail();
+        if (options.GenerateInvoice && Directory.Exists(options.InvoicePDFOutputDirectory)) {
+            var invoice = GenerateInvoice(orderData, options.HafelePO, options.InvoicePDFOutputDirectory);
+            if (options.SendInvoiceEmail && options.InvoiceEmailRecipients.Count > 0) {
+
+                string subject = $"{options.HafelePO} INVOICE";
+                string body = $"Please see attached invoice.";
+
+                if (options.PreviewInvoiceEmail) {
+
+                    CreateAndDisplayOutlookEmail(options.InvoiceEmailRecipients.Select(e => e.Address), options.InvoiceEmailCopyRecipients.Select(e => e.Address), subject, body, [ invoice ]);
+
+                } else {
+
+                    await SendInvoiceEmail(options.InvoiceEmailRecipients.Select(e => e.Address), options.InvoiceEmailCopyRecipients.Select(e => e.Address), subject, body, [ invoice ]);
+
+                }
+
             }
         }
 
@@ -49,15 +73,151 @@ public class HafeleMDFDoorOrderProcessor {
         return result.Data;
     }
 
-    private string GenerateInvoice() => throw new NotImplementedException();
+    private string GenerateInvoice(HafeleMDFDoorOrder orderData, string hafelePO, string outputDirectory) {
 
-    private string SendInvoiceEmail() => throw new NotImplementedException();
+        var doors = orderData.GetProducts();
+        var invoiceAmount = orderData.GetInvoiceAmount();
+
+        var model = new Invoice() {
+            OrderNumber = hafelePO,
+            OrderName = orderData.Options.JobName,
+            Date = DateTime.Today,
+            SubTotal = invoiceAmount,
+            SalesTax = 0,
+            Shipping = 0,
+            Total = invoiceAmount,
+            Terms = "",
+            Discount = 0M,
+            Vendor = new() {
+                Name = "Royal Cabinet Co.",
+                Line1 = "15E Easy St",
+                Line2 = "Bound Brook, NJ 08805",
+                Line3 = "",
+                Line4 = "",
+            },
+            Customer = new() {
+                Name = "Hafele America Co.",
+                Line1 = "3901 Cheyenne Drive",
+                Line2 = "P.O. Box 4000",
+                Line3 = "Archdale, NC 27263",
+                Line4 = "",
+            },
+            MDFDoors = doors.Select(cab => new MDFDoorItem() {
+                                Line = cab.ProductNumber,
+                                Qty = cab.Qty,
+                                Height = cab.Height,
+                                Width = cab.Width,
+                                Description = cab.GetDescription(),
+                                UnitPrice = cab.UnitPrice,
+                            }).ToList(),
+            Cabinets = [],
+            CabinetParts = [],
+            FivePieceDoors = [],
+            ClosetParts = [],
+            ZargenDrawers = [],
+            DovetailDrawerBoxes = [],
+            DoweledDrawerBoxes = [],
+            CounterTops = [],
+            AdditionalItems = []
+        };
+
+        var document = Document.Create(d => {
+            var decorator = new InvoiceDecorator(model);
+            decorator.Decorate(d);
+        });
+
+        var filePath = Path.Combine(outputDirectory, $"{hafelePO} Invoice.pdf");
+
+        document.GeneratePdf(filePath);
+        return filePath;
+
+    }
+
+    private async Task SendInvoiceEmail(IEnumerable<string> recipients, IEnumerable<string> copyRecipients, string subject, string body, IEnumerable<string> attachments) {
+
+        var message = new MimeMessage();
+
+        recipients.Where(s => !string.IsNullOrWhiteSpace(s))
+                  .ForEach(r => message.To.Add(new MailboxAddress(r, r)));
+
+        copyRecipients.Where(s => !string.IsNullOrWhiteSpace(s))
+                  .ForEach(r => message.Cc.Add(new MailboxAddress(r, r)));
+
+        if (message.To.Count == 0) {
+            return;
+        }
+
+        var sender = _emailService.GetSender();
+        message.From.Add(sender);
+        message.Subject = subject;
+
+        var builder = new BodyBuilder {
+            TextBody = body
+        };
+        attachments.Where(a => File.Exists(a)).ForEach(att => builder.Attachments.Add(att));
+
+        message.Body = builder.ToMessageBody();
+
+        _ = await Task.Run(() => _emailService.SendMessageAsync(message));
+
+    }
+
+    private void CreateAndDisplayOutlookEmail(IEnumerable<string> recipients, IEnumerable<string> copyRecipients, string subject, string body, IEnumerable<string> attachments) {
+
+        OutlookApp app = new OutlookApp();
+        MailItem mailItem = (MailItem) app.CreateItem(OlItemType.olMailItem);
+        mailItem.To = string.Join(';', recipients);
+        mailItem.CC = string.Join(';', copyRecipients);
+        mailItem.Subject = subject;
+        mailItem.Body = body;
+
+        attachments.Where(_fileReader.DoesFileExist)
+                   .ForEach(att => mailItem.Attachments.Add(att));
+
+        var senderMailBox = _emailService.GetSender();
+        var sender = GetSenderOutlookAccount(app, senderMailBox.Address);
+
+        if (sender is not null) {
+            mailItem.SendUsingAccount = sender;
+        }
+
+        mailItem.Display();
+
+        Marshal.ReleaseComObject(app);
+        Marshal.ReleaseComObject(mailItem);
+        if (sender is not null) Marshal.ReleaseComObject(sender);
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+
+    }
+
+    private static Account? GetSenderOutlookAccount(OutlookApp app, string preferredEmail) {
+
+        var accounts = app.Session.Accounts;
+        if (accounts is null || accounts.Count == 0) {
+            return null;
+        }
+
+        Account? sender = null;
+        foreach (Account account in accounts) {
+            sender ??= account;
+            if (account.SmtpAddress == preferredEmail) {
+                sender = account;
+                break;
+            }
+        }
+
+        return sender;
+
+    }
 
     private IEnumerable<string> FillOrderSheet(HafeleMDFDoorOrder order, string hafelePO, string template, string outputDirectory) {
 
         var orderFiles = CreateDoorOrders(order, hafelePO);
 
-        Application app = new() {
+        ExcelApp app = new() {
             DisplayAlerts = false,
             Visible = false,
             ScreenUpdating = false
