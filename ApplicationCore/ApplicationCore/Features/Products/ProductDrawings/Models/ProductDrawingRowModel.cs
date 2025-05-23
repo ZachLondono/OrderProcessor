@@ -4,13 +4,13 @@ public class ProductDrawingRowModel {
 
     public string Name { get; set; }
 
-    public ProductDrawing Drawing { get; set; }
+    public ProductDrawingSummary Drawing { get; set; }
 
     public bool IsBeingEdited { get; set; }
 
     public bool IsBeingDeleted { get; set; }
 
-    public ProductDrawingRowModel(ProductDrawing drawing) {
+    public ProductDrawingRowModel(ProductDrawingSummary drawing) {
         Name = drawing.Name;
         Drawing = drawing;
         IsBeingEdited = false;
