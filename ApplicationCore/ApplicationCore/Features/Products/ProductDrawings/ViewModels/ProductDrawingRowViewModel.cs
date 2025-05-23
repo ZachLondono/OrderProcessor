@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.ProductDrawings.Commands;
 using ApplicationCore.Features.Orders.ProductDrawings.Models;
+using ApplicationCore.Features.Orders.ProductDrawings.Queries;
 using Domain.Infrastructure.Bus;
 
 namespace ApplicationCore.Features.Orders.ProductDrawings.ViewModels;
@@ -52,7 +53,7 @@ public class ProductDrawingRowViewModel {
         OnPropertyChanged?.Invoke();
     }
 
-    public async Task ImportIntoDocument(ProductDrawing drawing, ImportProductDrawingIntoActiveDocument.ImportMode mode) {
+    public async Task ImportIntoDocument(ProductDrawingSummary drawing, ImportProductDrawingIntoActiveDocument.ImportMode mode) {
 
         IsLoading = true;
 
@@ -60,11 +61,20 @@ public class ProductDrawingRowViewModel {
 
         try {
 
-            var response = await _bus.Send(new ImportProductDrawingIntoActiveDocument.Command(drawing, mode));
+            var queryResponse = await _bus.Send(new GetProductDrawingDataById.Query(drawing.Id));
 
-            response.Match(
-                _ => Error = null,
-                e => Error = e);
+            await queryResponse.OnSuccessAsync(
+                async data => {
+
+                    var response = await _bus.Send(new ImportProductDrawingIntoActiveDocument.Command(data, mode));
+
+                    response.Match(
+                        _ => Error = null,
+                        e => Error = e);
+
+                });
+
+            queryResponse.OnError(error => Error = error);
 
         } catch (Exception ex) {
 
@@ -79,7 +89,7 @@ public class ProductDrawingRowViewModel {
 
     }
 
-    public async Task UpdateDrawingFromDocument(ProductDrawing drawing) {
+    public async Task UpdateDrawingFromDocument(ProductDrawingSummary drawing) {
 
         IsLoading = true;
 

@@ -116,7 +116,11 @@ public class ProductDrawingManagerViewModel {
 
             saveResponse.Match(
                 _ => {
-                    DrawingRows.Add(new(drawing));
+                    DrawingRows.Add(new(new ProductDrawingSummary() {
+                        Name = drawing.Name,
+                        Id = drawing.Id,
+                        ProductId = drawing.ProductId
+                    }));
                     Error = null;
                 },
                 e => Error = e);

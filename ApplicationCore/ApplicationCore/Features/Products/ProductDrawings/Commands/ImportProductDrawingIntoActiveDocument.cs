@@ -1,5 +1,4 @@
-﻿using ApplicationCore.Features.Orders.ProductDrawings.Models;
-using ApplicationCore.Shared.Services;
+﻿using ApplicationCore.Shared.Services;
 using BricscadApp;
 using Domain.Infrastructure.Bus;
 
@@ -7,7 +6,7 @@ namespace ApplicationCore.Features.Orders.ProductDrawings.Commands;
 
 public class ImportProductDrawingIntoActiveDocument {
 
-    public record Command(ProductDrawing Drawing, ImportMode Mode) : ICommand;
+    public record Command(byte[] DrawingData, ImportMode Mode) : ICommand;
 
     public enum ImportMode {
         New,
@@ -60,7 +59,7 @@ public class ImportProductDrawingIntoActiveDocument {
 
             }
 
-            var uncompressed = CompressionService.Uncompress(command.Drawing.DXFData);
+            var uncompressed = CompressionService.Uncompress(command.DrawingData);
 
             var dxfAscii = System.Text.Encoding.ASCII.GetString(uncompressed);
 

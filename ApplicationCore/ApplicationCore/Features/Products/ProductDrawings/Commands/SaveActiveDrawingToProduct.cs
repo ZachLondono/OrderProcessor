@@ -1,7 +1,6 @@
 ﻿using ApplicationCore.Features.Orders.ProductDrawings.Models;
 using ApplicationCore.Shared.Services;
 using BricscadApp;
-using Dapper;
 using Domain.Infrastructure.Bus;
 using Domain.Orders.Persistance;
 

@@ -1,14 +1,13 @@
-﻿using ApplicationCore.Features.Orders.ProductDrawings.Models;
-using Domain.Infrastructure.Bus;
+﻿using Domain.Infrastructure.Bus;
 using Domain.Orders.Persistance;
 
 namespace ApplicationCore.Features.Orders.ProductDrawings.Queries;
 
-public class GetProductDrawings {
+public class GetProductDrawingDataById {
 
-    public record Query(Guid ProductId) : IQuery<IEnumerable<ProductDrawingSummary>>;
+    public record Query(Guid DrawingId) : IQuery<byte[]>;
 
-    public class Handler : QueryHandler<Query, IEnumerable<ProductDrawingSummary>> {
+    public class Handler : QueryHandler<Query, byte[]> {
 
         private readonly IOrderingDbConnectionFactory _factory;
 
@@ -16,23 +15,21 @@ public class GetProductDrawings {
             _factory = factory;
         }
 
-        public override async Task<Response<IEnumerable<ProductDrawingSummary>>> Handle(Query query) {
+        public override async Task<Response<byte[]>> Handle(Query query) {
 
             try {
 
                 using var connection = await _factory.CreateConnection();
 
-                var drawings = connection.Query<ProductDrawingSummary>(
+                var data = connection.QuerySingle<byte[]>(
                     """
                     SELECT
-                        id AS ID,
-                        product_id AS ProductId,
-                        name AS Name
+                        dxf_data
                     FROM product_drawings
-                    WHERE product_id = @ProductId;
+                    WHERE id = @DrawingId;
                     """, query);
 
-                return Response<IEnumerable<ProductDrawingSummary>>.Success(drawings);
+                return Response<byte[]>.Success(data);
 
             } catch (Exception ex) {
 
