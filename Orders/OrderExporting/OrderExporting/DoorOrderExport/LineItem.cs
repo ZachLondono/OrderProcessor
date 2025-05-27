@@ -1,5 +1,7 @@
 ﻿using Domain.Orders.Components;
+using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
+using OneOf.Types;
 
 namespace OrderExporting.DoorOrderExport;
 
@@ -72,68 +74,211 @@ public record LineItem {
     public required Optional<string> Grain { get; set; }
     public required Optional<string> PanelOrientation { get; set; }
 
-    public static LineItem FromDoor(MDFDoor door) => new LineItem() {
-        PartNumber = door.ProductNumber,
-        Description = door.Type switch {
-            Domain.Orders.Enums.DoorType.Door or Domain.Orders.Enums.DoorType.HamperDoor => "Door",
-            Domain.Orders.Enums.DoorType.DrawerFront => "Drawer Front",
-            _ => throw new InvalidOperationException($"Unexpected door type {door.Type}")
-        },
-        Qty = door.Qty,
-        Width = door.Width.AsMillimeters(),
-        Height = door.Height.AsMillimeters(),
-        SpecialFeatures = Optional<string>.None,
-        DoorType = Optional<string>.None,
-        StileLeft = door.FrameSize.LeftStile.AsMillimeters(),
-        StileRight = door.FrameSize.RightStile.AsMillimeters(),
-        RailTop = door.FrameSize.TopRail.AsMillimeters(),
-        RailBottom = door.FrameSize.BottomRail.AsMillimeters(),
-        HingeTop = Optional<double>.None,
-        HingeBottom = Optional<double>.None,
-        Hinge3 = Optional<double>.None,
-        Hinge4 = Optional<double>.None,
-        Hinge5 = Optional<double>.None,
-        Tab = Optional<double>.None,
-        CupDiameter = Optional<double>.None,
-        HingePattern = Optional<string>.None,
-        CupDepth = Optional<double>.None,
-        SwingDirection = Optional<string>.None,
-        HardwareReference = Optional<string>.None,
-        Hardware = Optional<string>.None,
-        HardwareTBOffset = Optional<double>.None,
-        HardwareSideOffset = Optional<double>.None,
-        HardwareDepth = Optional<double>.None,
-        DoubleHardware = Optional<string>.None,
-        Panel1 = Optional<double>.None,
-        RailStile3 = Optional<double>.None,
-        Panel2 = Optional<double>.None,
-        RailStile4 = Optional<double>.None,
-        Panel3 = Optional<double>.None,
-        RailStile5 = Optional<double>.None,
-        RabbetDepth = Optional<double>.None,
-        RabbetWidth = Optional<double>.None,
-        SquareRabbet = Optional<string>.None,
-        PanelClearance = Optional<double>.None,
-        PanelRadius = Optional<double>.None,
-        PanelThickness = Optional<double>.None,
-        PanelStyle = Optional<double>.None,
-        MullionOpening = Optional<string>.None,
-        MullionShape = Optional<string>.None,
-        MullionWidth = Optional<double>.None,
-        HorizontalMullions = Optional<int>.None,
-        VerticalMullions = Optional<int>.None,
-        Row1 = Optional<double>.None,
-        Col1 = Optional<double>.None,
-        Row2 = Optional<double>.None,
-        Col2 = Optional<double>.None,
-        Ease = Optional<string>.None,
-        MachinedEdges = Optional<string>.None,
-        Thickness = Optional<double>.None,
-        Material = Optional<string>.None,
-        BackCut = Optional<string>.None,
-        RailSeams = Optional<string>.None,
-        Grain = Optional<string>.None,
-        PanelOrientation = Optional<string>.None,
-    };
+    public static LineItem FromDoor(MDFDoor door, Optional<double> defaultStilesRails) {
+
+        string description = "";
+        Optional<string> doorType = Optional<string>.None;
+        Optional<double> panel1 = Optional<double>.None;
+        Optional<double> panel2 = Optional<double>.None;
+        Optional<double> panel3 = Optional<double>.None;
+        Optional<double> rail3 = Optional<double>.None;
+        Optional<double> rail4 = Optional<double>.None;
+        Optional<double> rail5 = Optional<double>.None;
+
+        if (door.Type == Domain.Orders.Enums.DoorType.DrawerFront) {
+
+            description = "Drawer Front";
+
+            if (door.AdditionalOpenings.Length != 0) {
+                throw new InvalidOperationException($"MDF Door spreadsheet does not support drawer fronts with more than 1 opening.");
+            }
+
+        } else {
+
+            description = "Door";
+
+            if (door.AdditionalOpenings.Length >= 1) {
+                panel1 = door.AdditionalOpenings[0].OpeningHeight.AsMillimeters();
+                rail3 = door.AdditionalOpenings[0].RailWidth.AsMillimeters();
+            }
+
+            if (door.AdditionalOpenings.Length >= 2) {
+                panel2 = door.AdditionalOpenings[1].OpeningHeight.AsMillimeters();
+                rail4 = door.AdditionalOpenings[1].RailWidth.AsMillimeters();
+            }
+
+            if (door.AdditionalOpenings.Length >= 3) {
+                panel3 = door.AdditionalOpenings[2].OpeningHeight.AsMillimeters();
+                rail5 = door.AdditionalOpenings[2].RailWidth.AsMillimeters();
+            }
+
+            switch (door.AdditionalOpenings.Length) {
+
+                case 0:
+
+                    door.Panel.Switch(
+                        (SolidPanel _) => { },
+                        (OpenPanel o) => {
+
+                            if (o.RouteForGasket) {
+                                description = "Frame, w/ Gasket Route"; 
+                            } else if (o.RabbetBack) {
+                                description = "Frame Only, w/ Rabbet";
+                            } else {
+                                description = "Frame Only, No Rabbet";
+                            }
+
+                            if (o.RabbetBack) {
+                                doorType = "Door FO";
+                            } else {
+                                doorType = "Door FO, NR";
+                            }
+
+                        });
+
+                    break;
+
+                case 1:
+
+                    description = "Double Door";
+                    string temp = "Double Panel, ";
+
+                    if (door.AdditionalOpenings[0].Panel.IsOpen) {
+                        temp += "O";
+                    } else {
+                        temp += "S";
+                    }
+
+                    if (door.Panel.IsOpen) {
+                        temp += "O";
+                    } else {
+                        temp += "S";
+                    }
+
+                    doorType = temp;
+
+                    break;
+
+                case 2:
+
+                    if (door.Panel.IsOpen && door.AdditionalOpenings.All(o => o.Panel.IsOpen)) {
+                        doorType = "Triple Frame";
+                    } else if (door.Panel.IsSolid && door.AdditionalOpenings.All(o => o.Panel.IsSolid)) {
+                        doorType = "Triple Panel";
+                    } else {
+                        throw new InvalidOperationException("Triple panel doors must be either all open or all solid panels");
+                    }
+
+                    break;
+
+                case 3:
+                    doorType = "Quadruple Panel";
+                    if (door.Panel.IsOpen || door.AdditionalOpenings.Any(o => o.Panel.IsOpen)) {
+                        throw new InvalidOperationException("Quadruple panel doors can not have any open panels");
+                    }
+
+                    break;
+
+                default:
+                    throw new InvalidOperationException($"MDF Door spreadsheet does not support doors with {door.AdditionalOpenings.Length + 1} openings.");
+
+            }
+
+        }
+
+        Optional<double> GetFrameDim(Dimension dim, Optional<double> defaultVal) =>
+            defaultVal.Match(
+                (double some) => {
+
+                    var mm = dim.AsMillimeters();
+                    if (mm == some) {
+                        return Optional<double>.None;
+                    }
+
+                    return mm;
+
+                },
+                (None _) => dim.AsMillimeters());
+
+        /// <summary>
+        /// If there is no value set for the optional dimension, return None. If there is a value set for the optional
+        /// and it matches the default value, return None. Otherwise, return the value.
+        /// </summary>
+        Optional<double> GetFrameDimOpt(Optional<double> dim, Optional<double> defaultVal) =>
+            dim.Match(
+                (double some) => defaultVal.Match(
+                    (double someDefault) => {
+
+                        if (some == someDefault) {
+                            return Optional<double>.None;
+                        }
+
+                        return some;
+
+                    },
+                    (None _) => dim),
+                (None _) => Optional<double>.None);
+
+        return new LineItem() {
+            PartNumber = door.ProductNumber,
+            Description = description,
+            Qty = door.Qty,
+            Width = door.Width.AsMillimeters(),
+            Height = door.Height.AsMillimeters(),
+            SpecialFeatures = door.Note,
+            DoorType = doorType,
+            StileLeft = GetFrameDim(door.FrameSize.LeftStile, defaultStilesRails),
+            StileRight = GetFrameDim(door.FrameSize.RightStile, defaultStilesRails),
+            RailTop = GetFrameDim(door.FrameSize.TopRail, defaultStilesRails),
+            RailBottom = GetFrameDim(door.FrameSize.BottomRail, defaultStilesRails),
+            HingeTop = Optional<double>.None,
+            HingeBottom = Optional<double>.None,
+            Hinge3 = Optional<double>.None,
+            Hinge4 = Optional<double>.None,
+            Hinge5 = Optional<double>.None,
+            Tab = Optional<double>.None,
+            CupDiameter = Optional<double>.None,
+            HingePattern = Optional<string>.None,
+            CupDepth = Optional<double>.None,
+            SwingDirection = Optional<string>.None,
+            HardwareReference = Optional<string>.None,
+            Hardware = Optional<string>.None,
+            HardwareTBOffset = Optional<double>.None,
+            HardwareSideOffset = Optional<double>.None,
+            HardwareDepth = Optional<double>.None,
+            DoubleHardware = Optional<string>.None,
+            Panel1 = panel1,
+            RailStile3 = GetFrameDimOpt(rail3, defaultStilesRails),
+            Panel2 = panel2,
+            RailStile4 = GetFrameDimOpt(rail4, defaultStilesRails),
+            Panel3 = panel3,
+            RailStile5 = GetFrameDimOpt(rail5, defaultStilesRails),
+            RabbetDepth = Optional<double>.None,
+            RabbetWidth = Optional<double>.None,
+            SquareRabbet = Optional<string>.None,
+            PanelClearance = Optional<double>.None,
+            PanelRadius = Optional<double>.None,
+            PanelThickness = Optional<double>.None,
+            PanelStyle = Optional<double>.None,
+            MullionOpening = Optional<string>.None,
+            MullionShape = Optional<string>.None,
+            MullionWidth = Optional<double>.None,
+            HorizontalMullions = Optional<int>.None,
+            VerticalMullions = Optional<int>.None,
+            Row1 = Optional<double>.None,
+            Col1 = Optional<double>.None,
+            Row2 = Optional<double>.None,
+            Col2 = Optional<double>.None,
+            Ease = Optional<string>.None,
+            MachinedEdges = Optional<string>.None,
+            Thickness = Optional<double>.None,
+            Material = Optional<string>.None,
+            BackCut = Optional<string>.None,
+            RailSeams = Optional<string>.None,
+            Grain = Optional<string>.None,
+            PanelOrientation = Optional<string>.None,
+        };
+
+    }
 
 }

@@ -66,46 +66,65 @@ public record GeneralSpecs {
         rng.Value2 = data;
     }
 
-    public static IGrouping<GeneralSpecs, MDFDoor>[] SeparatedDoorsBySpecs(IEnumerable<MDFDoor> doors) => doors.GroupBy(d => {
+    public static IGrouping<GeneralSpecs, MDFDoor>[] SeparatedDoorsBySpecs(IEnumerable<MDFDoor> doors) {
 
-        string finish = "None";
-        Optional<string> color = Optional<string>.None;
-        d.Finish.Switch(
-            (Paint paint) => {
-                finish = "Std. Color";
-                color = paint.Color;
-            },
-            (Primer primer) => {
-                finish = "Prime Only";
-                color = primer.Color;
-            },
-            (None _) => {
-                finish = "None";
-                color = Optional<string>.None;
-            });
+        var groups = doors.GroupBy(d => {
 
-        return new GeneralSpecs() {
+            string finish = "None";
+            Optional<string> color = Optional<string>.None;
+            d.Finish.Switch(
+                (Paint paint) => {
+                    finish = "Std. Color";
+                    color = paint.Color;
+                },
+                (Primer primer) => {
+                    finish = "Prime Only";
+                    color = primer.Color;
+                },
+                (None _) => {
+                    finish = "None";
+                    color = Optional<string>.None;
+                });
 
-            Material = d.Material,
-            Style = d.FramingBead,
-            EdgeProfile = d.EdgeDetail,
-            PanelDetail = d.PanelDetail,
-            Finish = finish,
-            Color = color,
-            PanelDrop = d.PanelDrop == Dimension.Zero ? Optional<double>.None : d.PanelDrop.AsMillimeters(),
+            return new GeneralSpecs() {
 
-            HingePattern = Optional<string>.None,
-            Tab = Optional<double>.None,
-            StilesRails = Optional<double>.None,
-            AStyleRails = Optional<double>.None,
-            AStyleDwrFrontMax = Optional<double>.None,
-            DoorType = Optional<string>.None,
-            HingeFromTopBottom = Optional<double>.None,
-            Hardware = Optional<string>.None,
-            HardwareFromTopBottom = Optional<double>.None
+                Material = d.Material,
+                Style = d.FramingBead,
+                EdgeProfile = d.EdgeDetail,
+                PanelDetail = d.PanelDetail,
+                Finish = finish,
+                Color = color,
+                PanelDrop = d.PanelDrop == Dimension.Zero ? Optional<double>.None : d.PanelDrop.AsMillimeters(),
 
-        };
+                HingePattern = Optional<string>.None,
+                Tab = Optional<double>.None,
+                StilesRails = Optional<double>.None,
+                AStyleRails = Optional<double>.None,
+                AStyleDwrFrontMax = Optional<double>.None,
+                DoorType = Optional<string>.None,
+                HingeFromTopBottom = Optional<double>.None,
+                Hardware = Optional<string>.None,
+                HardwareFromTopBottom = Optional<double>.None
 
-    }).ToArray();
+            };
+
+        }).ToArray();
+
+        foreach (var group in groups) {
+
+            var frame = group.SelectMany<MDFDoor, Dimension>(d => [ d.FrameSize.LeftStile, d.FrameSize.RightStile, d.FrameSize.TopRail, d.FrameSize.BottomRail ])
+                            .GroupBy(v => v)
+                            .OrderByDescending(g => g.Count())
+                            .Select(g => g.Key)
+                            .First();
+
+            var mm = frame.AsMillimeters();
+            group.Key.StilesRails = mm > 0 ? mm : Optional<double>.None;
+
+        }
+
+        return groups;
+
+    }
 
 }
