@@ -140,19 +140,21 @@ public record LineItem {
                 case 1:
 
                     description = "Double Door";
-                    doorType = "Double Panel, ";
+                    string temp = "Double Panel, ";
 
                     if (door.AdditionalOpenings[0].Panel.IsOpen) {
-                        doorType += "O";
+                        temp += "O";
                     } else {
-                        doorType += "S";
+                        temp += "S";
                     }
 
                     if (door.Panel.IsOpen) {
-                        doorType += "O";
+                        temp += "O";
                     } else {
-                        doorType += "S";
+                        temp += "S";
                     }
+
+                    doorType = temp;
 
                     break;
 
