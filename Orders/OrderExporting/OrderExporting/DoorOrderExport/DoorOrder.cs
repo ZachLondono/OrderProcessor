@@ -1,10 +1,7 @@
 ﻿using Domain.Orders.Components;
 using Domain.Orders.Entities;
-using Domain.Orders.Enums;
-using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using Microsoft.Office.Interop.Excel;
-using OneOf.Types;
 
 namespace OrderExporting.DoorOrderExport;
 
@@ -74,7 +71,7 @@ public record DoorOrder {
                 Units = METRIC_UNITS,
                 VendorName = vendorName,
                 Specs = group.Key,
-                LineItems = group.Select(LineItem.FromDoor)
+                LineItems = group.Select(d => LineItem.FromDoor(d, group.Key.StilesRails))
             };
 
         }

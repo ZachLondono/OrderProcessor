@@ -1,6 +1,7 @@
 ﻿using Domain.Orders.Components;
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
+using OneOf.Types;
 
 namespace OrderExporting.DoorOrderExport;
 
@@ -73,7 +74,7 @@ public record LineItem {
     public required Optional<string> Grain { get; set; }
     public required Optional<string> PanelOrientation { get; set; }
 
-    public static LineItem FromDoor(MDFDoor door) {
+    public static LineItem FromDoor(MDFDoor door, Optional<double> defaultStilesRails) {
 
         string description = "";
         Optional<string> doorType = Optional<string>.None;
@@ -115,7 +116,7 @@ public record LineItem {
 
                 case 0:
 
-                    door.AdditionalOpenings[0].Panel.Switch(
+                    door.Panel.Switch(
                         (SolidPanel _) => { },
                         (OpenPanel o) => {
 
@@ -185,6 +186,39 @@ public record LineItem {
 
         }
 
+        Optional<double> GetFrameDim(Dimension dim, Optional<double> defaultVal) =>
+            defaultVal.Match(
+                (double some) => {
+
+                    var mm = dim.AsMillimeters();
+                    if (mm == some) {
+                        return Optional<double>.None;
+                    }
+
+                    return mm;
+
+                },
+                (None _) => dim.AsMillimeters());
+
+        /// <summary>
+        /// If there is no value set for the optional dimension, return None. If there is a value set for the optional
+        /// and it matches the default value, return None. Otherwise, return the value.
+        /// </summary>
+        Optional<double> GetFrameDimOpt(Optional<double> dim, Optional<double> defaultVal) =>
+            dim.Match(
+                (double some) => defaultVal.Match(
+                    (double someDefault) => {
+
+                        if (some == someDefault) {
+                            return Optional<double>.None;
+                        }
+
+                        return some;
+
+                    },
+                    (None _) => dim),
+                (None _) => Optional<double>.None);
+
         return new LineItem() {
             PartNumber = door.ProductNumber,
             Description = description,
@@ -193,10 +227,10 @@ public record LineItem {
             Height = door.Height.AsMillimeters(),
             SpecialFeatures = door.Note,
             DoorType = doorType,
-            StileLeft = door.FrameSize.LeftStile.AsMillimeters(),
-            StileRight = door.FrameSize.RightStile.AsMillimeters(),
-            RailTop = door.FrameSize.TopRail.AsMillimeters(),
-            RailBottom = door.FrameSize.BottomRail.AsMillimeters(),
+            StileLeft = GetFrameDim(door.FrameSize.LeftStile, defaultStilesRails),
+            StileRight = GetFrameDim(door.FrameSize.RightStile, defaultStilesRails),
+            RailTop = GetFrameDim(door.FrameSize.TopRail, defaultStilesRails),
+            RailBottom = GetFrameDim(door.FrameSize.BottomRail, defaultStilesRails),
             HingeTop = Optional<double>.None,
             HingeBottom = Optional<double>.None,
             Hinge3 = Optional<double>.None,
@@ -214,11 +248,11 @@ public record LineItem {
             HardwareDepth = Optional<double>.None,
             DoubleHardware = Optional<string>.None,
             Panel1 = panel1,
-            RailStile3 = rail3,
+            RailStile3 = GetFrameDimOpt(rail3, defaultStilesRails),
             Panel2 = panel2,
-            RailStile4 = rail4,
+            RailStile4 = GetFrameDimOpt(rail4, defaultStilesRails),
             Panel3 = panel3,
-            RailStile5 = rail5,
+            RailStile5 = GetFrameDimOpt(rail5, defaultStilesRails),
             RabbetDepth = Optional<double>.None,
             RabbetWidth = Optional<double>.None,
             SquareRabbet = Optional<string>.None,

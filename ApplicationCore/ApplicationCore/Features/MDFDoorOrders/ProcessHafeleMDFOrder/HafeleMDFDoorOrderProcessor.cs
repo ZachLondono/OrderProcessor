@@ -309,7 +309,7 @@ public class HafeleMDFDoorOrderProcessor {
                 Units = DoorOrder.METRIC_UNITS,
                 VendorName = "Hafele America Co.",
                 Specs = group.Key,
-                LineItems = group.Select(LineItem.FromDoor)
+                LineItems = group.Select(d => LineItem.FromDoor(d, group.Key.StilesRails))
             };
 
         }
