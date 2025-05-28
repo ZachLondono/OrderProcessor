@@ -202,6 +202,7 @@ public class ExportDovetailOrder {
                     Notch = b.DrawerBoxOptions.Notches,
                     Insert = b.DrawerBoxOptions.Accessory,
                     Clips = b.DrawerBoxOptions.Clips,
+                    Slides = b.DrawerBoxOptions.Slides,
                     MountingHoles = b.DrawerBoxOptions.FaceMountingHoles ? "Yes" : "No",
                     PostFinish = b.DrawerBoxOptions.PostFinish ? "Yes" : "No",
                     ScoopFront = b.DrawerBoxOptions.ScoopFront ? "Yes" : "No",
@@ -231,6 +232,7 @@ public class ExportDovetailOrder {
                 Notch = ws.Range["NotchCol"],
                 Insert = ws.Range["InsertCol"],
                 Clips = ws.Range["ClipCol"],
+                Slides = ws.Range["SlidesCol"],
                 MountingHoles = ws.Range["MountingHolesCol"],
                 PostFinish = ws.Range["FinishCol"],
                 ScoopFront = ws.Range["ScoopCol"],
@@ -335,6 +337,7 @@ public class ExportDovetailOrder {
                 public object? Notch { get; set; }
                 public object? Insert { get; set; }
                 public object? Clips { get; set; }
+                public object? Slides { get; set; }
                 public object? MountingHoles { get; set; }
                 public object? PostFinish { get; set; }
                 public object? ScoopFront { get; set; }
@@ -364,6 +367,7 @@ public class ExportDovetailOrder {
             public Microsoft.Office.Interop.Excel.Range? Notch { get; set; }
             public Microsoft.Office.Interop.Excel.Range? Insert { get; set; }
             public Microsoft.Office.Interop.Excel.Range? Clips { get; set; }
+            public Microsoft.Office.Interop.Excel.Range? Slides { get; set; }
             public Microsoft.Office.Interop.Excel.Range? MountingHoles { get; set; }
             public Microsoft.Office.Interop.Excel.Range? PostFinish { get; set; }
             public Microsoft.Office.Interop.Excel.Range? ScoopFront { get; set; }
@@ -388,6 +392,7 @@ public class ExportDovetailOrder {
                 Notch = Notch?.Offset[1];
                 Insert = Insert?.Offset[1];
                 Clips = Clips?.Offset[1];
+                Slides = Slides?.Offset[1];
                 MountingHoles = MountingHoles?.Offset[1];
                 PostFinish = PostFinish?.Offset[1];
                 ScoopFront = ScoopFront?.Offset[1];
@@ -413,6 +418,7 @@ public class ExportDovetailOrder {
                 if (Notch is not null) Notch.Value = lineItem.Notch ?? "";
                 if (Insert is not null) Insert.Value = lineItem.Insert ?? "";
                 if (Clips is not null) Clips.Value = lineItem.Clips ?? "";
+                if (Slides is not null) Slides.Value = lineItem.Slides ?? "";
                 if (MountingHoles is not null) MountingHoles.Value = lineItem.MountingHoles ?? "";
                 if (PostFinish is not null) PostFinish.Value = lineItem.PostFinish ?? "";
                 if (ScoopFront is not null) ScoopFront.Value = lineItem.ScoopFront ?? "";
@@ -438,6 +444,7 @@ public class ExportDovetailOrder {
                 if (Notch is not null) _ = Marshal.ReleaseComObject(Notch);
                 if (Insert is not null) _ = Marshal.ReleaseComObject(Insert);
                 if (Clips is not null) _ = Marshal.ReleaseComObject(Clips);
+                if (Slides is not null) _ = Marshal.ReleaseComObject(Slides);
                 if (MountingHoles is not null) _ = Marshal.ReleaseComObject(MountingHoles);
                 if (PostFinish is not null) _ = Marshal.ReleaseComObject(PostFinish);
                 if (ScoopFront is not null) _ = Marshal.ReleaseComObject(ScoopFront);

@@ -25,6 +25,7 @@ public class DrawerBoxBuilder {
         "",
         "",
         "",
+        "",
         LogoPosition.None);
 
     public DrawerBoxBuilder WithId(Guid id) {

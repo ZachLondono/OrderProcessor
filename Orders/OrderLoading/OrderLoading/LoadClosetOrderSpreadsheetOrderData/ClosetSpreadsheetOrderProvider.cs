@@ -321,7 +321,7 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 
 	private static IEnumerable<IProduct> MapDovetailDBToProduct(DovetailDBHeader header, IEnumerable<DovetailDB> dovetailDBs) {
 
-		string accessory = header.IncludeHettichSlides ? "Hettich Slides" : "";
+		string slides = header.IncludeHettichSlides ? "Hettich Slides" : "";
 
 		foreach (var dovetail in dovetailDBs) {
 
@@ -340,8 +340,9 @@ public class ClosetSpreadsheetOrderProvider : IOrderProvider {
 															 header.BoxMaterial,
 															 header.BottomMaterial,
 															 header.Clips,
+															 slides,
 															 header.Notch,
-															 accessory,
+															 string.Empty,
 															 Domain.Orders.Enums.LogoPosition.None,
 															 header.PostFinish));
 

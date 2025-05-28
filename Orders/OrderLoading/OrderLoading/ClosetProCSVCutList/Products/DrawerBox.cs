@@ -70,17 +70,18 @@ public class DrawerBox : IClosetProProduct {
 		string clips = "None";
 		string notch = DovetailDrawerBoxConfig.NO_NOTCH;
 		string accessory = "None";
+		string slides = string.Empty;
 		DrawerSlideType slideType = DrawerSlideType.SideMount;
 		if (UnderMountNotches) {
 			notch = DovetailDrawerBoxConfig.STD_NOTCH;
-			accessory = "Hettich Quadro V6 Slides";
+			slides = "Hettich Quadro V6 Slides";
 			clips = "Hettich";
 			slideType = DrawerSlideType.UnderMount;
 		}
 
 		// TODO: Add slides property to drawer box and set the slide type there instead of in the accessory property
 		return factory.CreateDovetailDrawerBoxBuilder()
-			.WithOptions(new(materialName, materialName, materialName, bottomMaterial, clips, notch, accessory, LogoPosition.None, scoopFront: ScoopFront))
+			.WithOptions(new(materialName, materialName, materialName, bottomMaterial, clips, slides, notch, accessory, LogoPosition.None, scoopFront: ScoopFront))
 			.WithBoxHeight(GetBoxHeight())
 			.WithInnerCabinetWidth(Width, 1, slideType)
 			.WithInnerClosetBayDepth(Depth, slideType)

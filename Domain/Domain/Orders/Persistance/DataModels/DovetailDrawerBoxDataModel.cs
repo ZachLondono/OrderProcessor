@@ -20,6 +20,7 @@ public class DovetailDrawerBoxDataModel : ProductDataModelBase, IProductDataMode
     public string SideMaterial { get; set; } = string.Empty;
     public string BottomMaterial { get; set; } = string.Empty;
     public string Clips { get; set; } = string.Empty;
+    public string Slides { get; set; } = string.Empty;
     public string Notches { get; set; } = string.Empty;
     public string Accessory { get; set; } = string.Empty;
     public LogoPosition Logo { get; set; }
@@ -50,6 +51,7 @@ public class DovetailDrawerBoxDataModel : ProductDataModelBase, IProductDataMode
             	db_config.side_material AS SideMaterial,
             	db_config.bottom_material AS BottomMaterial,
             	db_config.clips,
+                db_config.slides,
             	db_config.notches,
             	db_config.accessory,
             	db_config.logo,
@@ -68,7 +70,7 @@ public class DovetailDrawerBoxDataModel : ProductDataModelBase, IProductDataMode
 
     public IProduct MapToProduct() {
 
-        var options = new DovetailDrawerBoxConfig(FrontMaterial, BackMaterial, SideMaterial, BottomMaterial, Clips, Notches, Accessory, Logo, PostFinish, ScoopFront, FaceMountingHoles, Assembled, null, null);
+        var options = new DovetailDrawerBoxConfig(FrontMaterial, BackMaterial, SideMaterial, BottomMaterial, Clips, Slides, Notches, Accessory, Logo, PostFinish, ScoopFront, FaceMountingHoles, Assembled, null, null);
 
         var box = new DovetailDrawerBoxProduct(Id, UnitPrice, Qty, Room, ProductNumber, Height, Width, Depth, Note, LabelFields.AsReadOnly(), options) {
             ProductionNotes = ProductionNotes

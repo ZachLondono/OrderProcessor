@@ -65,7 +65,7 @@ public class InsertDovetailDBProductInOrder {
             var labelFields = new Dictionary<string, string>();
 
             var options = new DovetailDrawerBoxConfig(data.BoxMaterial, data.BoxMaterial, data.BoxMaterial, data.BottomMaterial,
-                                                data.Clips, data.Notches, data.Accessory, LogoPosition.None);
+                                                data.Clips, data.Slides, data.Notches, data.Accessory, LogoPosition.None);
 
             var box = new DovetailDrawerBoxProduct(
                 id, data.UnitPrice, data.Qty, data.Room, data.ProductNumber,
