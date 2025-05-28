@@ -12,7 +12,7 @@ public record CabinetDrawerBoxOptions(CabinetDrawerBoxMaterial Material, DrawerS
             _ => "UNKNOWN"
         };
 
-        return new(materialName, materialName, materialName, "1/4\" Ply", "Hettich", GetNotchFromSlideType(SlideType), "None", LogoPosition.None);
+        return new(materialName, materialName, materialName, "1/4\" Ply", "Hettich", "Hettich", GetNotchFromSlideType(SlideType), "None", LogoPosition.None);
     }
 
     private static string GetNotchFromSlideType(DrawerSlideType slide) => slide switch {

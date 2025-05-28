@@ -589,6 +589,7 @@ CREATE TABLE dovetail_drawer_box_configs (
 	side_material TEXT NOT NULL,
 	bottom_material TEXT NOT NULL,
 	clips TEXT NOT NULL,
+	slides TEXT NOT NULL,
 	notches TEXT NOT NULL,
 	accessory TEXT NOT NULL,
 	logo INTEGER NOT NULL,
