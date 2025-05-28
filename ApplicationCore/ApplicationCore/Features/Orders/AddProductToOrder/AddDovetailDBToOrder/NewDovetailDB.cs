@@ -16,6 +16,7 @@ public class NewDovetailDB {
 
     public string Notches { get; set; } = string.Empty;
     public string Clips { get; set; } = string.Empty;
+    public string Slides { get; set; } = string.Empty;
     public string Accessory { get; set; } = string.Empty;
 
     public string Note { get; set; } = string.Empty;

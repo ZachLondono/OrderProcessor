@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Application\Schemas\Ordering Migrations\version10.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="BricscadApp">
       <HintPath>..\..\Dependencies\BricscadApp.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
