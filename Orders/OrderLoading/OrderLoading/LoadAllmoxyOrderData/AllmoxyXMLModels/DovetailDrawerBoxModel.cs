@@ -110,7 +110,9 @@ public class DovetailDrawerBoxModel : ProductOrItemModel {
 			productionNotes.Add("CHECK LOGO OPTION");
 		}
 
-		var options = new DovetailDrawerBoxConfig(Material, Material, Material, Bottom, Clips, notch, Insert, logo);
+		string slides = string.Empty;
+
+		var options = new DovetailDrawerBoxConfig(Material, Material, Material, Bottom, Clips, slides, notch, Insert, logo);
 
 		var product = DovetailDrawerBoxProduct.Create(unitPrice, Qty, Room, GetProductNumber(), height, width, depth, Note, labelFields, options);
 		product.ProductionNotes = productionNotes;
