@@ -79,9 +79,9 @@ public partial class ClosetProToAllmoxyMapper {
 
     public static IAllmoxyProduct MapTo5PieceDoor(FivePieceFront front) {
 
-        if (front.Frame.TopRail != front.Frame.BottomRail
-            || front.Frame.TopRail != front.Frame.LeftStile
-            || front.Frame.TopRail != front.Frame.RightStile) {
+        if ( ((front.Frame.TopRail - front.Frame.BottomRail).AsMillimeters() > 0.1)
+            || ((front.Frame.TopRail - front.Frame.LeftStile).AsMillimeters() > 0.1)
+            || ((front.Frame.TopRail - front.Frame.RightStile).AsMillimeters() > 0.1)) {
             throw new InvalidOperationException("Allmoxy 5-Piece door product does not support different stile/rail widths");
         }
 
