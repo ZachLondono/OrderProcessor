@@ -204,11 +204,11 @@ public partial class ClosetProToAllmoxyMapper {
 
     }
 
-    public static IAllmoxyProduct MapCornerShelfToAllmoxyProduct(CornerShelf shelf) {
+    public static IAllmoxyProduct MapCornerShelfToAllmoxyProduct(CornerShelf shelf, bool useDoubleCams) {
 
         return shelf.Type switch {
             CornerShelfType.LAdjustable => MapPartToAdjustableLShelf(shelf),
-            CornerShelfType.LFixed => MapPartToFixedLShelf(shelf),
+            CornerShelfType.LFixed => MapPartToFixedLShelf(shelf, useDoubleCams),
             CornerShelfType.DiagonalAdjustable => MapPartToAdjustableAngledShelf(shelf),
             CornerShelfType.DiagonalFixed => MapPartToFixedAngledShelf(shelf),
             _ => throw new InvalidOperationException("Unexpected corner shelf product type")
@@ -243,7 +243,7 @@ public partial class ClosetProToAllmoxyMapper {
 
     }
 
-    public static IAllmoxyProduct MapPartToFixedLShelf(CornerShelf shelf) {
+    public static IAllmoxyProduct MapPartToFixedLShelf(CornerShelf shelf, bool useDoubleCams) {
 
         string bandingColor;
         if (shelf.Color == shelf.EdgeBandingColor) {
@@ -257,6 +257,8 @@ public partial class ClosetProToAllmoxyMapper {
             ClosetMaterial = ClosetMaterials.GetMatchingMaterialName(shelf.Color),
             BandingColor = bandingColor,
             PanelFinish = PanelFinish.NONE,
+            DoubleCams = useDoubleCams,
+            InstallCams = true,
             Qty = shelf.Qty,
             PartComment = string.Empty,
             A = shelf.NotchSideLength.AsInches(),

@@ -22,7 +22,7 @@ public partial class ClosetProToAllmoxyMapper() {
         } else if (cpProduct is DividerShelf dividerShelf) {
             return MapDividerShelfPartToAllmoxyProduct(dividerShelf, settings.UseDoubleCamShelves);
         } else if (cpProduct is CornerShelf cornerShelf) {
-            return MapCornerShelfToAllmoxyProduct(cornerShelf);
+            return MapCornerShelfToAllmoxyProduct(cornerShelf, settings.UseDoubleCamShelves);
         } else if (cpProduct is DrawerBox box) {
             return MapDrawerBoxToAllmoxyProduct(box);
         } else if (cpProduct is MDFFront mdf) {
