@@ -79,8 +79,15 @@ public class HafeleMDFDoorOrder {
 
         switch (size.Type) {
 
+            case "Door":
             case "Single Panel":
                 doorType = DoorType.Door;
+                additionalOpenings = [];
+                break;
+
+            case "Panel Only":
+                // If there were hinge drilling specs in this order, this door would not have hinges.
+                doorType = DoorType.AppliedPanel;
                 additionalOpenings = [];
                 break;
 
@@ -91,9 +98,17 @@ public class HafeleMDFDoorOrder {
                 break;
 
             case "Single Open Panel, no rabbet":
+                // Has no rabbet, no gasket route. Used as a frame without a solid or glass panel. Example: a frame around an appliance.
                 doorType = DoorType.Door;
                 additionalOpenings = [];
                 panel = new OpenPanel(false, false);
+                break;
+
+            case "Single Open Panel, 1/2 Rabbet":
+                // Has a rabbet, no gasket route
+                doorType = DoorType.Door;
+                additionalOpenings = [];
+                panel = new OpenPanel(true, false);
                 break;
 
             case "Drawer Front - A":
