@@ -2,6 +2,7 @@
 using Domain.Orders.ValueObjects;
 using Domain.ValueObjects;
 using OneOf.Types;
+using DoorTypeEnum = Domain.Orders.Enums.DoorType;
 
 namespace OrderExporting.DoorOrderExport;
 
@@ -76,157 +77,14 @@ public record LineItem {
 
     public static LineItem FromDoor(MDFDoor door, Optional<double> defaultStilesRails) {
 
-        string description = "";
-        Optional<string> doorType = Optional<string>.None;
-        Optional<double> panel1 = Optional<double>.None;
-        Optional<double> panel2 = Optional<double>.None;
-        Optional<double> panel3 = Optional<double>.None;
-        Optional<double> rail3 = Optional<double>.None;
-        Optional<double> rail4 = Optional<double>.None;
-        Optional<double> rail5 = Optional<double>.None;
-
-        if (door.Type == Domain.Orders.Enums.DoorType.DrawerFront) {
-
-            description = "Drawer Front";
-
-            if (door.AdditionalOpenings.Length != 0) {
-                throw new InvalidOperationException($"MDF Door spreadsheet does not support drawer fronts with more than 1 opening.");
-            }
-
-        } else {
-
-            description = "Door";
-
-            if (door.AdditionalOpenings.Length >= 1) {
-                panel1 = door.AdditionalOpenings[0].OpeningHeight.AsMillimeters();
-                rail3 = door.AdditionalOpenings[0].RailWidth.AsMillimeters();
-            }
-
-            if (door.AdditionalOpenings.Length >= 2) {
-                panel2 = door.AdditionalOpenings[1].OpeningHeight.AsMillimeters();
-                rail4 = door.AdditionalOpenings[1].RailWidth.AsMillimeters();
-            }
-
-            if (door.AdditionalOpenings.Length >= 3) {
-                panel3 = door.AdditionalOpenings[2].OpeningHeight.AsMillimeters();
-                rail5 = door.AdditionalOpenings[2].RailWidth.AsMillimeters();
-            }
-
-            switch (door.AdditionalOpenings.Length) {
-
-                case 0:
-
-                    door.Panel.Switch(
-                        (SolidPanel _) => { },
-                        (OpenPanel o) => {
-
-                            if (o.RouteForGasket) {
-                                description = "Frame, w/ Gasket Route"; 
-                            } else if (o.RabbetBack) {
-                                description = "Frame Only, w/ Rabbet";
-                            } else {
-                                description = "Frame Only, No Rabbet";
-                            }
-
-                            if (o.RabbetBack) {
-                                doorType = "Door FO";
-                            } else {
-                                doorType = "Door FO, NR";
-                            }
-
-                        });
-
-                    break;
-
-                case 1:
-
-                    description = "Double Door";
-                    string temp = "Double Panel, ";
-
-                    if (door.AdditionalOpenings[0].Panel.IsOpen) {
-                        temp += "O";
-                    } else {
-                        temp += "S";
-                    }
-
-                    if (door.Panel.IsOpen) {
-                        temp += "O";
-                    } else {
-                        temp += "S";
-                    }
-
-                    doorType = temp;
-
-                    break;
-
-                case 2:
-
-                    if (door.Panel.IsOpen && door.AdditionalOpenings.All(o => o.Panel.IsOpen)) {
-                        doorType = "Triple Frame";
-                    } else if (door.Panel.IsSolid && door.AdditionalOpenings.All(o => o.Panel.IsSolid)) {
-                        doorType = "Triple Panel";
-                    } else {
-                        throw new InvalidOperationException("Triple panel doors must be either all open or all solid panels");
-                    }
-
-                    break;
-
-                case 3:
-                    doorType = "Quadruple Panel";
-                    if (door.Panel.IsOpen || door.AdditionalOpenings.Any(o => o.Panel.IsOpen)) {
-                        throw new InvalidOperationException("Quadruple panel doors can not have any open panels");
-                    }
-
-                    break;
-
-                default:
-                    throw new InvalidOperationException($"MDF Door spreadsheet does not support doors with {door.AdditionalOpenings.Length + 1} openings.");
-
-            }
-
-        }
-
-        Optional<double> GetFrameDim(Dimension dim, Optional<double> defaultVal) =>
-            defaultVal.Match(
-                (double some) => {
-
-                    var mm = dim.AsMillimeters();
-                    if (mm == some) {
-                        return Optional<double>.None;
-                    }
-
-                    return mm;
-
-                },
-                (None _) => dim.AsMillimeters());
-
-        /// <summary>
-        /// If there is no value set for the optional dimension, return None. If there is a value set for the optional
-        /// and it matches the default value, return None. Otherwise, return the value.
-        /// </summary>
-        Optional<double> GetFrameDimOpt(Optional<double> dim, Optional<double> defaultVal) =>
-            dim.Match(
-                (double some) => defaultVal.Match(
-                    (double someDefault) => {
-
-                        if (some == someDefault) {
-                            return Optional<double>.None;
-                        }
-
-                        return some;
-
-                    },
-                    (None _) => dim),
-                (None _) => Optional<double>.None);
-
-        return new LineItem() {
+        var lineItem = new LineItem() {
             PartNumber = door.ProductNumber,
-            Description = description,
+            Description = "",
             Qty = door.Qty,
             Width = door.Width.AsMillimeters(),
             Height = door.Height.AsMillimeters(),
             SpecialFeatures = door.Note,
-            DoorType = doorType,
+            DoorType = Optional<string>.None,
             StileLeft = GetFrameDim(door.FrameSize.LeftStile, defaultStilesRails),
             StileRight = GetFrameDim(door.FrameSize.RightStile, defaultStilesRails),
             RailTop = GetFrameDim(door.FrameSize.TopRail, defaultStilesRails),
@@ -247,12 +105,12 @@ public record LineItem {
             HardwareSideOffset = Optional<double>.None,
             HardwareDepth = Optional<double>.None,
             DoubleHardware = Optional<string>.None,
-            Panel1 = panel1,
-            RailStile3 = GetFrameDimOpt(rail3, defaultStilesRails),
-            Panel2 = panel2,
-            RailStile4 = GetFrameDimOpt(rail4, defaultStilesRails),
-            Panel3 = panel3,
-            RailStile5 = GetFrameDimOpt(rail5, defaultStilesRails),
+            Panel1 = Optional<double>.None,
+            RailStile3 = Optional<double>.None,
+            Panel2 = Optional<double>.None,
+            RailStile4 = Optional<double>.None,
+            Panel3 = Optional<double>.None,
+            RailStile5 = Optional<double>.None,
             RabbetDepth = Optional<double>.None,
             RabbetWidth = Optional<double>.None,
             SquareRabbet = Optional<string>.None,
@@ -276,8 +134,182 @@ public record LineItem {
             BackCut = Optional<string>.None,
             RailSeams = Optional<string>.None,
             Grain = Optional<string>.None,
-            PanelOrientation = Optional<string>.None,
+            PanelOrientation = door.Orientation switch {
+                DoorOrientation.Horizontal => "Horizontal",
+                DoorOrientation.Vertical => "Vertical",
+                _ => throw new ArgumentOutOfRangeException(nameof(door.Orientation), "Invalid door orientation."),
+            }
         };
+
+        switch (door.Type) {
+            case DoorTypeEnum.DrawerFront:
+                lineItem.Description = "Drawer Front";
+
+                if (door.AdditionalOpenings.Length != 0) {
+                    throw new InvalidOperationException($"MDF Door spreadsheet does not support drawer fronts with more than 1 opening.");
+                }
+
+                if (door.Panel.IsOpen) {
+                    throw new InvalidOperationException("Drawer fronts cannot have open panels.");
+                }
+
+                break;
+
+            case DoorTypeEnum.AppliedPanel:
+                lineItem.Description = "Applied Panel";
+                lineItem.DoorType = "Applied Panel";
+
+                lineItem.SetAdditionalOpeningProperties(door, defaultStilesRails);
+
+                if (door.Panel.IsOpen || door.AdditionalOpenings.Any(a => a.Panel.IsOpen)) {
+                    throw new InvalidOperationException("Applied panels cannot have open panels.");
+                }
+
+                break;
+
+            case DoorTypeEnum.HamperDoor:
+                throw new NotImplementedException("Exporting hamper doors is not implemented.");
+
+            case DoorTypeEnum.Door:
+
+                lineItem.Description = "Door";
+
+                lineItem.SetAdditionalOpeningProperties(door, defaultStilesRails);
+                lineItem.SetMultiOpeningDoorTypeAndDescription(door);
+
+                break;
+
+        }
+
+        Optional<double> GetFrameDim(Dimension dim, Optional<double> defaultVal) =>
+            defaultVal.Match(
+                (double some) => {
+
+                    var mm = dim.AsMillimeters();
+                    if (mm == some) {
+                        return Optional<double>.None;
+                    }
+
+                    return mm;
+
+                },
+                (None _) => dim.AsMillimeters());
+
+        return lineItem;
+
+    }
+
+    private void SetMultiOpeningDoorTypeAndDescription(MDFDoor door) {
+
+        switch (door.AdditionalOpenings.Length) {
+
+            case 0:
+
+                door.Panel.Switch(
+                    (SolidPanel _) => { },
+                    (OpenPanel o) => {
+
+                        if (o.RouteForGasket) {
+                            Description = "Frame, w/ Gasket Route";
+                        } else if (o.RabbetBack) {
+                            Description = "Frame Only, w/ Rabbet";
+                        } else {
+                            Description = "Frame Only, No Rabbet";
+                        }
+
+                        if (o.RabbetBack) {
+                            DoorType = "Door FO";
+                        } else {
+                            DoorType = "Door FO, NR";
+                        }
+
+                    });
+
+                break;
+
+            case 1:
+
+                Description = "Double Door";
+                string temp = "Double Panel, ";
+
+                if (door.AdditionalOpenings[0].Panel.IsOpen) {
+                    temp += "O";
+                } else {
+                    temp += "S";
+                }
+
+                if (door.Panel.IsOpen) {
+                    temp += "O";
+                } else {
+                    temp += "S";
+                }
+
+                DoorType = temp;
+
+                break;
+
+            case 2:
+
+                if (door.Panel.IsOpen && door.AdditionalOpenings.All(o => o.Panel.IsOpen)) {
+                    DoorType = "Triple Frame";
+                } else if (door.Panel.IsSolid && door.AdditionalOpenings.All(o => o.Panel.IsSolid)) {
+                    DoorType = "Triple Panel";
+                } else {
+                    throw new InvalidOperationException("Triple panel doors must be either all open or all solid panels");
+                }
+
+                break;
+
+            case 3:
+                DoorType = "Quadruple Panel";
+                if (door.Panel.IsOpen || door.AdditionalOpenings.Any(o => o.Panel.IsOpen)) {
+                    throw new InvalidOperationException("Quadruple panel doors can not have any open panels");
+                }
+
+                break;
+
+            default:
+                throw new InvalidOperationException($"MDF Door spreadsheet does not support doors with {door.AdditionalOpenings.Length + 1} openings.");
+
+        }
+
+    }
+
+    private void SetAdditionalOpeningProperties(MDFDoor door, Optional<double> defaultVal) {
+
+        if (door.AdditionalOpenings.Length >= 1) {
+            Panel1 = door.AdditionalOpenings[0].OpeningHeight.AsMillimeters();
+            RailStile3 = GetFrameDimOpt(door.AdditionalOpenings[0].RailWidth.AsMillimeters(), defaultVal);
+        }
+
+        if (door.AdditionalOpenings.Length >= 2) {
+            Panel2 = door.AdditionalOpenings[1].OpeningHeight.AsMillimeters();
+            RailStile4 = GetFrameDimOpt(door.AdditionalOpenings[1].RailWidth.AsMillimeters(), defaultVal);
+        }
+
+        if (door.AdditionalOpenings.Length >= 3) {
+            Panel3 = door.AdditionalOpenings[2].OpeningHeight.AsMillimeters();
+            RailStile5 = GetFrameDimOpt(door.AdditionalOpenings[2].RailWidth.AsMillimeters(), defaultVal);
+        }
+
+        /// <summary>
+        /// If there is no value set for the optional dimension, return None. If there is a value set for the optional
+        /// and it matches the default value, return None. Otherwise, return the value.
+        /// </summary>
+        Optional<double> GetFrameDimOpt(Optional<double> dim, Optional<double> defaultVal) =>
+            dim.Match(
+                (double some) => defaultVal.Match(
+                    (double someDefault) => {
+
+                        if (some == someDefault) {
+                            return Optional<double>.None;
+                        }
+
+                        return some;
+
+                    },
+                    (None _) => dim),
+                (None _) => Optional<double>.None);
 
     }
 
