@@ -13,7 +13,7 @@ public class ToeKickHeightTests {
     [InlineData(63.5, 2, 64)]
     public void ShouldConvertHeightToCompliantHeight_WhenErrorIsWithinTolerances(double inputMM, double errorMM, double expectedMM) {
 
-        var didWork = MiscellaneousClosetPart.TryGetNearest32MMComplientToeKickHeight(Dimension.FromMillimeters(inputMM), out Dimension output, errorMM);
+        var didWork = MiscellaneousClosetPart.TryGetNearest32MMCompliantToeKickHeight(Dimension.FromMillimeters(inputMM), out Dimension output, errorMM);
 
         didWork.Should().BeTrue();
         output.AsMillimeters().Should().Be(expectedMM);
@@ -25,7 +25,7 @@ public class ToeKickHeightTests {
     [InlineData(60, 2)]
     public void ShouldNotConvertHeightToCompliantHeight_WhenErrorIsNotWithinTolerances(double inputMM, double errorMM) {
 
-        var didWork = MiscellaneousClosetPart.TryGetNearest32MMComplientToeKickHeight(Dimension.FromMillimeters(inputMM), out _, errorMM);
+        var didWork = MiscellaneousClosetPart.TryGetNearest32MMCompliantToeKickHeight(Dimension.FromMillimeters(inputMM), out _, errorMM);
 
         didWork.Should().BeFalse();
 

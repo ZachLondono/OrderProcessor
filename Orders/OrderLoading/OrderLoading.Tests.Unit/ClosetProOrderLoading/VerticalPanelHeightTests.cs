@@ -14,7 +14,7 @@ public class VerticalPanelHeightTests {
     [InlineData(2933, 2, 2931)]
     public void ShouldConvertHeightToCompliantHeight_WhenErrorIsWithinTolerances(double inputMM, double errorMM, double expectedMM) {
 
-        var didWork = VerticalPanel.TryGetNearest32MMComplientHeight(Dimension.FromMillimeters(inputMM), out Dimension output, errorMM);
+        var didWork = VerticalPanel.TryGetNearest32MMCompliantHeight(Dimension.FromMillimeters(inputMM), out Dimension output, errorMM);
 
         didWork.Should().BeTrue();
         output.AsMillimeters().Should().Be(expectedMM);
@@ -27,7 +27,7 @@ public class VerticalPanelHeightTests {
     [InlineData(2933, 1)]
     public void ShouldNotConvertHeightToCompliantHeight_WhenErrorIsNotWithinTolerances(double inputMM, double errorMM) {
 
-        var didWork = VerticalPanel.TryGetNearest32MMComplientHeight(Dimension.FromMillimeters(inputMM), out _, errorMM);
+        var didWork = VerticalPanel.TryGetNearest32MMCompliantHeight(Dimension.FromMillimeters(inputMM), out _, errorMM);
 
         didWork.Should().BeFalse();
 

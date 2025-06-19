@@ -17,7 +17,7 @@ public class DoorHeightTests {
     [InlineData(12.6, 3.1, 317)]
     public void ShouldConvertHeightToCompliantHeight_WhenErrorIsWithinTolerances(double inputIN, double errorMM, double expectedMM) {
 
-        var didWork = MelamineSlabFront.TryGetNearest32MMComplientHalfOverlayHeight(Dimension.FromInches(inputIN), out Dimension output, errorMM);
+        var didWork = MelamineSlabFront.TryGetNearest32MMCompliantHalfOverlayHeight(Dimension.FromInches(inputIN), out Dimension output, errorMM);
 
         didWork.Should().BeTrue();
         output.AsMillimeters().Should().Be(expectedMM);

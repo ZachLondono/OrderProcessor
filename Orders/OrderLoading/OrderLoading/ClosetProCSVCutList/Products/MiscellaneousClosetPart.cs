@@ -32,7 +32,7 @@ public class MiscellaneousClosetPart : IClosetProProduct {
 		};
 
 		Dimension finalWidth = Width;
-        if (Type == MiscellaneousType.ToeKick && !TryGetNearest32MMComplientToeKickHeight(Width, out finalWidth)) {
+        if (Type == MiscellaneousType.ToeKick && !TryGetNearest32MMCompliantToeKickHeight(Width, out finalWidth)) {
             finalWidth = Width;
         }
 
@@ -55,7 +55,7 @@ public class MiscellaneousClosetPart : IClosetProProduct {
 
 	}
 
-    public static bool TryGetNearest32MMComplientToeKickHeight(Dimension input, out Dimension output, double maxErrorMM = 2) {
+    public static bool TryGetNearest32MMCompliantToeKickHeight(Dimension input, out Dimension output, double maxErrorMM = 2) {
 
         var multiple = input.AsMillimeters() / 32d;
 

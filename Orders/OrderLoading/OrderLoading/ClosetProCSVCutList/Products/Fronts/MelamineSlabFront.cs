@@ -22,7 +22,7 @@ public class MelamineSlabFront : IClosetProProduct {
 
 	public Dimension GetActualHeight() {
 
-        if (TryGetNearest32MMComplientHalfOverlayHeight(Height, out Dimension actualHeight)) {
+        if (TryGetNearest32MMCompliantHalfOverlayHeight(Height, out Dimension actualHeight)) {
 
 			return actualHeight;
 
@@ -49,7 +49,7 @@ public class MelamineSlabFront : IClosetProProduct {
 
 				sku = "DOOR";
 				width = Width;
-				if (!TryGetNearest32MMComplientHalfOverlayHeight(Height, out length)) {
+				if (!TryGetNearest32MMCompliantHalfOverlayHeight(Height, out length)) {
 					length = Height;
 				}
 
@@ -61,7 +61,7 @@ public class MelamineSlabFront : IClosetProProduct {
 
 				sku = "DF-XX";
 				length = Width;
-				if (!TryGetNearest32MMComplientHalfOverlayHeight(Height, out width)) {
+				if (!TryGetNearest32MMCompliantHalfOverlayHeight(Height, out width)) {
 					width = Height;
 				}
 
@@ -75,7 +75,7 @@ public class MelamineSlabFront : IClosetProProduct {
 
 				sku = "HAMPDOOR";
 				width = Width;
-				if (!TryGetNearest32MMComplientHalfOverlayHeight(Height, out length)) {
+				if (!TryGetNearest32MMCompliantHalfOverlayHeight(Height, out length)) {
 					length = Height;
 				}
 
@@ -86,7 +86,7 @@ public class MelamineSlabFront : IClosetProProduct {
 				break;
 
 			default:
-				throw new InvalidOperationException("Unexpected melamine slab front tyep");
+				throw new InvalidOperationException("Unexpected melamine slab front type.");
 
 		}
 
@@ -102,7 +102,7 @@ public class MelamineSlabFront : IClosetProProduct {
 	/// <param name="output">The nearest 32mm half overlay compliant door height</param>
 	/// <param name="maxErrorMM">The maximum amount of deviation from a compliant height which is still considered not intentionally specifying a non-compliant height</param>
 	/// <returns></returns>
-	public static bool TryGetNearest32MMComplientHalfOverlayHeight(Dimension input, out Dimension output, double maxErrorMM = 3.1) {
+	public static bool TryGetNearest32MMCompliantHalfOverlayHeight(Dimension input, out Dimension output, double maxErrorMM = 3.1) {
 
 		var multiple = (input.AsMillimeters() - 29d) / 32d;
 

@@ -409,7 +409,7 @@ public class ProductMappingTests {
     }
 
     [Fact]
-    public void SlabDoor_HeightShouldBeChangedToComplientHeight_WhenWithinErrorRange() {
+    public void SlabDoor_HeightShouldBeChangedToCompliantHeight_WhenWithinErrorRange() {
 
         // Arrange
         var part = new Part() {
@@ -428,7 +428,7 @@ public class ProductMappingTests {
     }
 
     [Fact]
-    public void SlabHamperDoor_HeightShouldBeChangedToComplientHeight_WhenWithinErrorRange() {
+    public void SlabHamperDoor_HeightShouldBeChangedToCompliantHeight_WhenWithinErrorRange() {
 
         // Arrange
         var part = new Part() {
@@ -447,7 +447,7 @@ public class ProductMappingTests {
     }
 
     [Fact]
-    public void SlabDrawerFront_HeightShouldBeChangedToComplientHeight_WhenWithinErrorRange() {
+    public void SlabDrawerFront_HeightShouldBeChangedToCompliantHeight_WhenWithinErrorRange() {
 
         // Arrange
         var part = new Part() {
@@ -466,7 +466,7 @@ public class ProductMappingTests {
     }
 
     [Fact]
-    public void SlabDoor_HeightShouldNotBeChangedToComplientHeight_WhenOutsideErrorRange() {
+    public void SlabDoor_HeightShouldNotBeChangedToCompliantHeight_WhenOutsideErrorRange() {
 
         // Arrange
         var part = new Part() {
@@ -485,7 +485,7 @@ public class ProductMappingTests {
     }
 
     [Fact]
-    public void SlabHamperDoor_HeightShouldNotBeChangedToComplientHeight_WhenOutsideErrorRange() {
+    public void SlabHamperDoor_HeightShouldNotBeChangedToCompliantHeight_WhenOutsideErrorRange() {
 
         // Arrange
         var part = new Part() {
@@ -504,7 +504,7 @@ public class ProductMappingTests {
     }
 
     [Fact]
-    public void SlabDrawerFront_HeightShouldNotBeChangedToComplientHeight_WhenOutsideErrorRange() {
+    public void SlabDrawerFront_HeightShouldNotBeChangedToCompliantHeight_WhenOutsideErrorRange() {
 
         // Arrange
         var part = new Part() {

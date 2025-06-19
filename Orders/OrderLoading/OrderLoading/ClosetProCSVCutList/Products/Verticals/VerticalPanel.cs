@@ -43,7 +43,7 @@ public class VerticalPanel : IClosetProProduct {
             { "BottomRadius", HasBottomRadius ? verticalPanelBottomRadius.AsMillimeters().ToString() : "0" },
 		};
 
-		if (!TryGetNearest32MMComplientHeight(Height, out Dimension finalHeight)) {
+		if (!TryGetNearest32MMCompliantHeight(Height, out Dimension finalHeight)) {
 			finalHeight = Height;
 		}
 
@@ -97,7 +97,7 @@ public class VerticalPanel : IClosetProProduct {
 
     }
 
-    public static bool TryGetNearest32MMComplientHeight(Dimension input, out Dimension output, double maxErrorMM = 2) {
+    public static bool TryGetNearest32MMCompliantHeight(Dimension input, out Dimension output, double maxErrorMM = 2) {
 
 		var multiple = (input.AsMillimeters() - 19d) / 32d;
 
