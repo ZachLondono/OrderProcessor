@@ -226,7 +226,7 @@ public class HafeleMDFDoorOrder {
     }
 
     private static MDFDoorFinish GetFinish(string finish) => finish switch {
-        "None" => new None(),
+        "None" or "Sanded" => new None(),
         "White Prime Only" => new Primer("White Primer"),
         "Grey Prime Only" => new Primer("Grey Primer"),
         "Black Prime Only" => new Primer("Black Primer"),
