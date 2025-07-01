@@ -12,15 +12,18 @@ using System.Runtime.InteropServices;
 using ExcelApp = Microsoft.Office.Interop.Excel.Application;
 using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
 using Exception = System.Exception;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.MDFDoorOrders.ProcessHafeleMDFOrder;
 
 public class HafeleMDFDoorOrderProcessor {
 
+    private readonly ILogger<HafeleMDFDoorOrderProcessor> _logger;
     private readonly IFileReader _fileReader;
     private readonly IEmailService _emailService;
 
-    public HafeleMDFDoorOrderProcessor(IFileReader fileReader, IEmailService emailService) {
+    public HafeleMDFDoorOrderProcessor(ILogger<HafeleMDFDoorOrderProcessor> logger, IFileReader fileReader, IEmailService emailService) {
+        _logger = logger;
         _fileReader = fileReader;
         _emailService = emailService;
     }
@@ -31,7 +34,7 @@ public class HafeleMDFDoorOrderProcessor {
 
         if (orderData is null) {
 
-            // Could not load order data
+            _logger.LogError("Failed to load order data from file: {FilePath}", options.DataFile);
             return;
 
         }
@@ -68,8 +71,12 @@ public class HafeleMDFDoorOrderProcessor {
 
     private HafeleMDFDoorOrder? LoadOrderData(string orderData) {
         var result = HafeleMDFDoorOrder.Load(orderData);
-        //result.Warnings
-        //result.Errors
+        foreach (var warning in result.Warnings) {
+            _logger.LogWarning("Hafele Order Parsing Warning: " + warning);
+        }
+        foreach (var error in result.Errors) {
+            _logger.LogError("Hafele Order Parsing Error: " + error);
+        }
         return result.Data;
     }
 
@@ -254,7 +261,7 @@ public class HafeleMDFDoorOrderProcessor {
 
             } catch (Exception ex) {
 
-                //_logger.LogError(ex, "Exception thrown while filling door order group");
+                _logger.LogError(ex, "Exception thrown while filling door order group");
                 wasExceptionThrown = true;
 
             } finally {
