@@ -59,7 +59,7 @@ public class ExcelReader {
                         .ReadDoubleValue("Panel_Drop", (v, r) => r.PanelDrop = v)
                         .ReadStringValue("Finish_Type", (v, r) => r.Finish = v)
                         .ReadStringValue("Hinge_Drilling", (v, r) => r.HingeDrilling = v)
-                        .ReadDoubleValue("Hinge_Tab", (v, r) => r.HingeTab = v)
+                        .ReadDoubleValue("Hinge_Tab", (v, r) => r.HingeTab = v, (r) => !r.HingeDrilling.Equals("None")) // Tab is only required when hinge drilling is not "None"
                         .ReadStringValue("Contact", (v, r) => r.Contact = v, false)
                         .ReadStringValue("Company", (v, r) => r.Company = v, false)
                         .ReadStringValue("Account_Number", (v, r) => r.AccountNumber = v, false)
@@ -198,6 +198,8 @@ public class ExcelReader {
             return this;
 
         }
+
+        public Monad ReadDoubleValue(string range, Action<double, ExcelReader> action, Func<ExcelReader, bool> isRequired) => ReadDoubleValue(range, action, isRequired(ExcelReader));
 
         public Monad ReadDoubleValue(string range, Action<double, ExcelReader> action, bool isRequired = true) {
 

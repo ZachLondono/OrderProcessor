@@ -1,18 +1,19 @@
 ﻿using ApplicationCore.Shared.Services;
 using Domain.Extensions;
 using Domain.Services;
+using Microsoft.Extensions.Logging;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.Outlook;
 using MimeKit;
 using OrderExporting.DoorOrderExport;
 using OrderExporting.Invoice;
+using OrderLoading;
 using OrderLoading.LoadHafeleMDFDoorSpreadsheetOrderData.ReadOrderFile;
 using QuestPDF.Fluent;
 using System.Runtime.InteropServices;
 using ExcelApp = Microsoft.Office.Interop.Excel.Application;
-using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
 using Exception = System.Exception;
-using Microsoft.Extensions.Logging;
+using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
 
 namespace ApplicationCore.Features.MDFDoorOrders.ProcessHafeleMDFOrder;
 
@@ -39,24 +40,8 @@ public class HafeleMDFDoorOrderProcessor {
 
         }
 
-        if (options.GenerateInvoice && Directory.Exists(options.InvoicePDFOutputDirectory)) {
-            var invoice = GenerateInvoice(orderData, options.HafelePO, options.InvoicePDFOutputDirectory);
-            if (options.SendInvoiceEmail && options.InvoiceEmailRecipients.Count > 0) {
-
-                string subject = $"{options.HafelePO} INVOICE";
-                string body = $"Please see attached invoice.";
-
-                if (options.PreviewInvoiceEmail) {
-
-                    CreateAndDisplayOutlookEmail(options.InvoiceEmailRecipients.Select(e => e.Address), options.InvoiceEmailCopyRecipients.Select(e => e.Address), subject, body, [ invoice ]);
-
-                } else {
-
-                    await SendInvoiceEmail(options.InvoiceEmailRecipients.Select(e => e.Address), options.InvoiceEmailCopyRecipients.Select(e => e.Address), subject, body, [ invoice ]);
-
-                }
-
-            }
+        if (options.GenerateInvoice) {
+            await HandleInvoiceGenerationAsync(options, orderData);
         }
 
         if (options.FillOrderSheet) {
@@ -65,6 +50,39 @@ public class HafeleMDFDoorOrderProcessor {
 
         if (options.PostToGoogleSheets) {
             await PostOrderToGoogleSheet(orderData, options.HafelePO);
+        }
+
+    }
+
+    private async Task HandleInvoiceGenerationAsync(ProcessOptions options, HafeleMDFDoorOrder orderData) {
+        
+        if (!Directory.Exists(options.InvoicePDFOutputDirectory)) {
+            _logger.LogError("Not generating invoice because invoice output directory does not exist: {Directory}", options.InvoicePDFOutputDirectory);
+            return;
+        }
+
+        var invoice = GenerateInvoice(orderData, options.HafelePO, options.InvoicePDFOutputDirectory);
+
+        if (options.SendInvoiceEmail) {
+            await HandleInvoiceEmailAsync(options, invoice);
+        }
+
+    }
+
+    private async Task HandleInvoiceEmailAsync(ProcessOptions options, string invoiceFilePath) {
+        
+        if (options.InvoiceEmailRecipients.Count == 0) {
+            _logger.LogWarning("Not sending invoice email because no recipients were specified");
+            return;
+        }
+
+        string subject = $"{options.HafelePO} INVOICE";
+        string body = $"Please see attached invoice.";
+
+        if (options.PreviewInvoiceEmail) {
+            CreateAndDisplayOutlookEmail(options.InvoiceEmailRecipients.Select(e => e.Address), options.InvoiceEmailCopyRecipients.Select(e => e.Address), subject, body, [invoiceFilePath]);
+        } else {
+            await SendInvoiceEmail(options.InvoiceEmailRecipients.Select(e => e.Address), options.InvoiceEmailCopyRecipients.Select(e => e.Address), subject, body, [invoiceFilePath]);
         }
 
     }
@@ -219,7 +237,7 @@ public class HafeleMDFDoorOrderProcessor {
         return sender;
 
     }
-
+    
     private IEnumerable<string> FillOrderSheet(HafeleMDFDoorOrder order, string hafelePO, string template, string outputDirectory) {
 
         var orderFiles = CreateDoorOrders(order, hafelePO);
@@ -233,7 +251,7 @@ public class HafeleMDFDoorOrderProcessor {
         List<string> filesGenerated = new();
 
         var workbooks = app.Workbooks;
-        bool wasExceptionThrown = false;
+        //bool wasExceptionThrown = false;
         foreach (var orderFile in orderFiles) {
 
             Workbook? workbook = null;
@@ -262,7 +280,7 @@ public class HafeleMDFDoorOrderProcessor {
             } catch (Exception ex) {
 
                 _logger.LogError(ex, "Exception thrown while filling door order group");
-                wasExceptionThrown = true;
+                //wasExceptionThrown = true;
 
             } finally {
 
